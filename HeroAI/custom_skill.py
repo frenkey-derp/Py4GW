@@ -38,7 +38,13 @@ class CustomSkillClass:
                 self.IsMoving = False
                 self.IsAttacking = False
                 self.IsHoldingItem = False
-            
+                self.HasControlledSpiritsOrMinionsInEarshot = False
+                self.HasControlledSpiritsInCompass = False
+                self.HasControlledSpiritsInEarshot = False
+                self.RequiresSpiritInEarshot = False
+                self.OverrideEffect = False
+                self.SharedEffects = []
+                
                 # Targeting Rules
                 self.TargetingStrict = True
                 self.SelfFirst = False
@@ -3449,6 +3455,7 @@ class CustomSkillClass:
         skill.Conditions.LessEnergy = 0.4
         skill.Conditions.SacrificeHealth = 0.5
         skill.Conditions.TargetingStrict = True
+        skill.Conditions.UniqueProperty = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -7333,7 +7340,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Enchantment.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
-        skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -7742,9 +7749,10 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Armor_of_Unfeeling")
         skill.SkillType = SkillType.Skill.value
-        skill.TargetAllegiance = Skilltarget.Self.value
-        skill.Nature = SkillNature.Buff.value
-        skill.Conditions.IsOutOfCombat = True
+        skill.TargetAllegiance = Skilltarget.Spirit.value
+        skill.Nature = SkillNature.Neutral.value
+        skill.Conditions.IsOutOfCombat = False
+        skill.Conditions.HasControlledSpiritsInEarshot = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8063,6 +8071,7 @@ class CustomSkillClass:
         skill.Nature = SkillNature.Healing.value
         skill.Conditions.LessLife = 0.6
         skill.Conditions.SacrificeHealth = 0.3
+        skill.Conditions.RequiresSpiritInEarshot = True	
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8078,6 +8087,7 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Ally.value
         skill.Nature = SkillNature.Healing.value
         skill.Conditions.LessLife = 0.5
+        skill.Conditions.RequiresSpiritInEarshot = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8086,6 +8096,7 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.HasControlledSpiritsInEarshot = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8358,6 +8369,7 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.SharedEffects = [Skill.GetID("Incoming")]
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8386,6 +8398,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Shout.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.SharedEffects = [Skill.GetID("Fall_Back")]
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9634,15 +9648,21 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Summon_Spirits_kurzick")
         skill.SkillType = SkillType.Spell.value
-        skill.TargetAllegiance = Skilltarget.Self.value
+        skill.TargetAllegiance = Skilltarget.Spirit.value
         skill.Nature = SkillNature.Neutral.value
+        skill.Conditions.HasControlledSpiritsInCompass = True
+        skill.Conditions.LessLife = 0.75
+        skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Summon_Spirits_luxon")
         skill.SkillType = SkillType.Spell.value
-        skill.TargetAllegiance = Skilltarget.Self.value
+        skill.TargetAllegiance = Skilltarget.Spirit.value
         skill.Nature = SkillNature.Neutral.value
+        skill.Conditions.HasControlledSpiritsInCompass = True
+        skill.Conditions.LessLife = 0.75
+        skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()

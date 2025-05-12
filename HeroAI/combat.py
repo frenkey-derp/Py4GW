@@ -145,6 +145,9 @@ class CombatClass:
         self.weakness = Skill.GetID("Weakness")
         self.comfort_animal = Skill.GetID("Comfort_Animal")
         self.heal_as_one = Skill.GetID("Heal_as_One")
+        self.incoming = Skill.GetID("Incoming")       
+        self.fall_back = Skill.GetID("Fall_Back")   
+        self.blood_is_power = Skill.GetID("Blood_is_Power")
         self.heroic_refrain = Skill.GetID("Heroic_Refrain")
         
     def Update(self, cached_data):
@@ -426,13 +429,20 @@ class CombatClass:
             return True
         """
         result = False
+        custom_skill_data = custom_skill_data_handler.get_skill(skill_id)
+        shared_effects = getattr(custom_skill_data.Conditions, "SharedEffects", []) if custom_skill_data else []
+
+
         if self.IsPartyMember(agent_id):
             player_buffs = self.shared_memory_handler.get_agent_buffs(agent_id)
-            for buff in player_buffs:
-                if buff == skill_id:
+            for buff in player_buffs:                
+                if buff == skill_id or buff in shared_effects:
                     result = True
         else:
-            result = Effects.BuffExists(agent_id, skill_id) or Effects.EffectExists(agent_id, skill_id)
+            result = (
+                Effects.BuffExists(agent_id, skill_id) 
+                or Effects.EffectExists(agent_id, skill_id)
+                or any(Effects.BuffExists(agent_id, shared_buff) or Effects.EffectExists(agent_id, shared_buff) for shared_buff in shared_effects))
 
         if not result and not exact_weapon_spell:
            skilltype, _ = Skill.GetType(skill_id)
@@ -460,6 +470,20 @@ class CombatClass:
                 self.skills[slot].skill_id == self.ether_lord 
                 ):
                 return self.GetEnergyValues(Player.GetAgentID()) < Conditions.LessEnergy
+                            
+                          
+            if (self.skills[slot].skill_id == self.blood_is_power):
+                hasBloodIsPower = self.HasEffect(vTarget, self.blood_is_power)
+                energy = self.GetEnergyValues(vTarget)
+                hasLowEnergy = energy < Conditions.LessEnergy
+                ConsoleLog("COMBAT", "Blood Is Power: "+ RawAgentArray().get_name(vTarget) + " ID: " + str(vTarget) + " Energy: " + str(energy), Console.MessageType.Info)
+                return hasLowEnergy and not hasBloodIsPower
+
+        
+            if (self.skills[slot].skill_id == self.incoming or self.skills[slot].skill_id == self.fall_back):
+                hasFallBack = self.HasEffect(Player.GetAgentID(), self.fall_back)
+                hasIncoming = self.HasEffect(Player.GetAgentID(), self.incoming)
+                return not hasFallBack and not hasIncoming
         
             if (self.skills[slot].skill_id == self.essence_strike):
                 energy = self.GetEnergyValues(Player.GetAgentID()) < Conditions.LessEnergy
@@ -479,8 +503,9 @@ class CombatClass:
                 return energy and not Agent.IsCasting(vTarget) and not Agent.IsAttacking(vTarget)
 
             if (self.skills[slot].skill_id == self.mend_body_and_soul):
+                spirits_exist = Routines.Agents.GetNearestSpirit(Range.Earshot.value)
                 life = Agent.GetHealth(Player.GetAgentID()) < Conditions.LessLife
-                return life and Agent.IsConditioned(vTarget)
+                return life or (spirits_exist and Agent.IsConditioned(vTarget))
 
             if (self.skills[slot].skill_id == self.grenths_balance):
                 life = Agent.GetHealth(Player.GetAgentID()) < Conditions.LessLife
@@ -571,7 +596,11 @@ class CombatClass:
         feature_count += (1 if Conditions.LessEnergy > 0 else 0)
         feature_count += (1 if Conditions.Overcast > 0 else 0)
         feature_count += (1 if Conditions.IsPartyWide else 0)
-
+        feature_count += (1 if Conditions.HasControlledSpiritsInCompass else 0)
+        feature_count += (1 if Conditions.HasControlledSpiritsOrMinionsInEarshot else 0)
+        feature_count += (1 if Conditions.HasControlledSpiritsInEarshot else 0)
+        feature_count += (1 if Conditions.RequiresSpiritInEarshot else 0)
+        
         if Conditions.IsAlive:
             if Agent.IsAlive(vTarget):
                 number_of_features += 1
@@ -738,6 +767,55 @@ class CombatClass:
             if total_group_life < less_life:
                 number_of_features += 1
                     
+        if Conditions.HasControlledSpiritsOrMinionsInEarshot:
+            def _IsControlled(agent_id):
+                return Agent.GetOwnerID(agent_id) == Agent.GetOwnerID(Player.GetAgentID())
+            
+            distance = Range.Compass.value
+            spirit_array = AgentArray.GetSpiritPetArray()
+            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)            
+            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: _IsControlled(agent_id))
+
+            minion_array = AgentArray.GetMinionArray()
+            minion_array = AgentArray.Filter.ByDistance(minion_array, Player.GetXY(), distance)
+            minion_array = AgentArray.Filter.ByCondition(minion_array, lambda agent_id: _IsControlled(agent_id))
+
+            if(len(spirit_array) > 0 or len(minion_array) > 0):
+                number_of_features += 1
+        
+        if Conditions.HasControlledSpiritsInCompass:
+            def _IsControlled(agent_id):
+                return Agent.GetOwnerID(agent_id) == Agent.GetOwnerID(Player.GetAgentID())
+            
+            distance = Range.Compass.value
+            spirit_array = AgentArray.GetSpiritPetArray()
+            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)            
+            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: _IsControlled(agent_id))
+            
+            if(len(spirit_array) > 0):
+                number_of_features += 1
+        
+        if Conditions.HasControlledSpiritsInEarshot:
+            def _IsControlled(agent_id):
+                return Agent.GetOwnerID(agent_id) == Agent.GetOwnerID(Player.GetAgentID())
+            
+            distance = Range.Earshot.value            
+            spirit_array = AgentArray.GetSpiritPetArray()
+            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)
+            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: _IsControlled(agent_id))
+
+            if(len(spirit_array) > 0):
+                number_of_features += 1
+        
+        if Conditions.RequiresSpiritInEarshot:            
+            distance = Range.Earshot.value
+            spirit_array = AgentArray.GetSpiritPetArray()
+            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)            
+            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: Agent.IsAlive(agent_id))
+            
+            if(len(spirit_array) > 0):
+                number_of_features += 1
+                    
         if self.skills[slot].custom_skill_data.SkillType == SkillType.PetAttack.value:
             pet_id = Party.Pets.GetPetID(Player.GetAgentID())
             if Agent.IsDead(pet_id):
@@ -899,7 +977,14 @@ class CombatClass:
         if not self.in_aggro:
             return False
 
-        target_id = Player.GetTargetID()
+        target_id = Player.GetTargetID()    
+
+        # If the Player carries an item don't change the target and don't interact
+        weapon_type, _ = Agent.GetWeaponType(Player.GetAgentID())
+
+        if weapon_type == 0:
+            return False
+        
         if Agent.IsValid(target_id) or target_id == 0:
             _, target_aliegance = Agent.GetAllegiance(target_id)
         

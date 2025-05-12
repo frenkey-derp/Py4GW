@@ -142,6 +142,8 @@ def Follow(cached_data:CacheData):
 
 
 def draw_Targeting_floating_buttons(cached_data:CacheData):
+    return
+
     if not Map.IsExplorable():
         return
     enemies = AgentArray.GetEnemyArray()
