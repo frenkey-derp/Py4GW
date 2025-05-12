@@ -9,14 +9,13 @@ from typing import Set
 from Py4GWCoreLib import Player, Party, PyImGui
 
 # ─── Make sure “Blessed_helpers” is on the import path ──────────────────
-# (so that `from Blessed_helpers import …` works)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 project_root     = os.path.abspath(os.path.join(script_directory, os.pardir))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # ─── Now import your facade package ──────────────────────────────────────
-from Blessed_helpers import has_any_blessing, BlessingRunner, FLAG_DIR
+from Bots.Blessed_helpers import has_any_blessing, BlessingRunner, FLAG_DIR
 
 # ─── INI File Setup ─────────────────────────────────────────────────────
 BASE_DIR = os.path.join(project_root, "Config")
@@ -136,8 +135,32 @@ def setup():
 def configure():
     setup()
 
+_run_sequence_called = False
+
+# ─── External API ────────────────────────────────────────────────────────────
+def Get_Blessed():
+    """
+    External API: Called from outside scripts (e.g., bots, automation tools)
+    to start the blessing sequence exactly as if the UI button had been clicked.
+    """
+    from Py4GWCoreLib import Player, Party
+
+    me = Player.GetAgentID()
+    is_leader = (Party.GetPartyLeaderID() == me)
+
+    # Mirror the AUTO_RUN_ALL + leader logic
+    if AUTO_RUN_ALL and is_leader:
+        write_run_flag(True)
+
+    # Start the background blessing runner
+    _runner.start()
+
+    # Let the UI know we’re running
+    global _running
+    _running = True
+
 def main():
     me = Player.GetAgentID()
     on_imgui_render(me)
 
-__all__ = ["main", "configure"]
+__all__ = ["main", "configure", "Get_Blessed"]
