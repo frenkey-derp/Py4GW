@@ -1215,15 +1215,10 @@ def show_team_view():
 
             # List all accounts in the team
             for account in team.accounts:
-                if imgui.tree_node(f"{account.character_name}##{id(account)}"):
-                    imgui.spacing()
-                    
-                    # Launch individual accounts
-                    if imgui.button(f"Launch {account.character_name}##{id(account)}"):
-                        log_history.append(f"Launching account: {account.character_name}")
-                        launch_gw.launch_gw(account)
-
-                    imgui.tree_pop()
+                # Launch individual accounts
+                if imgui.button(f"Launch {account.character_name}##{id(account)}"):
+                    log_history.append(f"Launching account: {account.character_name}")
+                    launch_gw.launch_gw(account)
 
             imgui.tree_pop()
 

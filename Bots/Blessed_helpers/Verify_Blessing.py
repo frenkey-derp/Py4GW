@@ -26,7 +26,7 @@ class Blessings(Enum):
 
     # — Factions —
     Blessing_of_the_Kurzicks = (593, 912)
-    Blessing_of_the_Luxons   = (1947,)
+    Blessing_of_the_Luxons   = (1947, 1946)
 
     # — Eye of the North —
     Dwarven_Raider           = (2445, 2446, 2447, 2448, 2549, 2565, 2566, 2567, 2568)
