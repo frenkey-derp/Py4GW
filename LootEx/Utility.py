@@ -1,23 +1,26 @@
 from typing import Optional
-from LootEx import Data, LootItem
+from LootEx import Data, item_configuration
+from LootEx.item_actions import ItemAction
+from LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Attribute, ItemType, Rarity, DyeColor
 
-importlib.reload(LootItem)
-    
+importlib.reload(item_configuration)
+
+
 class Util:
     @staticmethod
-    def GetAttributes(itemType : ItemType) -> list[Attribute]:
+    def GetAttributes(itemType: ItemType) -> list[Attribute]:
         if itemType in Data.AttributeRequirements:
             return Data.AttributeRequirements[itemType]
         else:
             return []
-    
+
     @staticmethod
-    def GetAttributeName(attribute : Attribute) -> str:
+    def GetAttributeName(attribute: Attribute) -> str:
         namme = attribute.name
 
         # Split the name by uppercase letters
@@ -31,46 +34,61 @@ class Util:
         name = ''.join(parts)
 
         # Split the name by underscores
-        name = name.replace("_", " ")        
+        name = name.replace("_", " ")
 
         return name
     
     @staticmethod
-    def GetMaxDamage(requirement : int, itemType : Optional[ItemType] = ItemType.Unknown) -> Data.IntRange:
+    def GetActionName(action : ItemAction) -> str:
+        name = action.name
+
+        # Split the name at underscores
+        parts = name.split("_")
+        
+        # Capitalize the first letter of each part
+        parts = [part.capitalize() for part in parts]
+        
+        # Join the parts back together with spaces
+        name = ' '.join(parts)
+
+        return name
+
+    @staticmethod
+    def GetMaxDamage(requirement: int, itemType: Optional[ItemType] = ItemType.Unknown) -> Data.IntRange:
         requirement = 9 if requirement > 9 else requirement
         itemType = itemType if itemType != None else ItemType.Unknown
 
         return Data.DamageRanges[itemType][requirement] if itemType in Data.DamageRanges and requirement in Data.DamageRanges[itemType] else Data.IntRange(0, 0)
 
-    @staticmethod 
-    def IsMaxDamage(damage_range : Data.IntRange, requirement : int, itemType : ItemType = ItemType.Unknown, tollerance : Data.IntRange = Data.IntRange()) -> bool:
-        max_damage = Util.GetMaxDamage(requirement, itemType)
-        
-        if max_damage.Min == 0 and max_damage.Max == 0:
-            return False
-            
-        return damage_range.Min == max_damage.Min - tollerance.Min and damage_range.Max >= max_damage.Max - tollerance.Max
-        
     @staticmethod
-    def IsArmor(item: LootItem.LootItem) -> bool:
-        dataitem = Data.Items[item.ModelId] if item.ModelId in Data.Items else None
+    def IsMaxDamage(damage_range: Data.IntRange, requirement: int, itemType: ItemType = ItemType.Unknown, tollerance: Data.IntRange = Data.IntRange()) -> bool:
+        max_damage = Util.GetMaxDamage(requirement, itemType)
 
-        if dataitem is not None: 
+        if max_damage.min == 0 and max_damage.max == 0:
+            return False
+
+        return damage_range.min == max_damage.min - tollerance.min and damage_range.max >= max_damage.max - tollerance.max
+
+    @staticmethod
+    def IsArmor(item: ItemConfiguration) -> bool:
+        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
+
+        if dataitem is not None:
             itemtype = dataitem.ItemType
             return itemtype in {
-            ItemType.Headpiece,
-            ItemType.Chestpiece,
-            ItemType.Gloves,
-            ItemType.Leggings,
-            ItemType.Boots,
-        }
+                ItemType.Headpiece,
+                ItemType.Chestpiece,
+                ItemType.Gloves,
+                ItemType.Leggings,
+                ItemType.Boots,
+            }
         return False
 
     @staticmethod
-    def IsWeapon(item: LootItem.LootItem) -> bool:
-        dataitem = Data.Items[item.ModelId] if item.ModelId in Data.Items else None
+    def IsWeapon(item: ItemConfiguration) -> bool:
+        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
 
-        if dataitem is not None: 
+        if dataitem is not None:
             itemtype = dataitem.ItemType
             if itemtype in {
                 ItemType.Axe,
@@ -93,7 +111,7 @@ class Util:
         for item_type in ItemType:
             if int == item_type.value:
                 return item_type
-            
+
         return ItemType.Unknown
 
     @staticmethod
@@ -126,7 +144,7 @@ class Util:
             },
         }
 
-        if(rarity in rarity_colors):
+        if (rarity in rarity_colors):
             return rarity_colors[rarity]
         else:
             return {
@@ -136,7 +154,7 @@ class Util:
             }
 
     @staticmethod
-    def GetDyeColor(dye, alpha = 255):
+    def GetDyeColor(dye, alpha=255):
         dye_colors = {
             DyeColor.NoColor: Utils.RGBToColor(255, 255, 255, alpha),
             DyeColor.Gray: Utils.RGBToColor(51, 50, 46, alpha),
@@ -146,14 +164,14 @@ class Util:
             DyeColor.Brown: Utils.RGBToColor(67, 33, 13, alpha),
             DyeColor.Purple: Utils.RGBToColor(59, 13, 81, alpha),
             DyeColor.Pink: Utils.RGBToColor(255, 43, 107, alpha),
-            DyeColor.Red: Utils.RGBToColor(166, 0 , 0, alpha),
+            DyeColor.Red: Utils.RGBToColor(166, 0, 0, alpha),
             DyeColor.Silver: Utils.RGBToColor(68, 74, 82, alpha),
             DyeColor.White: Utils.RGBToColor(175, 175, 175, alpha),
             DyeColor.Black: Utils.RGBToColor(15, 15, 15, alpha),
             DyeColor.Orange: Utils.RGBToColor(136, 56, 0, alpha),
         }
 
-        if(dye in dye_colors):
+        if (dye in dye_colors):
             return dye_colors[dye]
         else:
             return Utils.RGBToColor(255, 255, 255, 125)

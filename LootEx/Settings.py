@@ -1,93 +1,110 @@
 from typing import Optional
-from Py4GW import Console
 
-from LootEx.LootFilter import LootFilter
-from LootEx.LootProfile import LootProfile
+from Py4GW import Console
+from LootEx.loot_filter import LootFilter
+from LootEx.loot_profile import LootProfile
 from Py4GWCoreLib import Player, UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 
+
 class FrameCoords:
-    def __init__(self, frame_id):
+    def __init__(self, frame_id: int):
         self.frame_id = frame_id
-        self.left, self.top, self.right, self.bottom = UIManager.GetFrameCoords(self.frame_id) 
+        self.left, self.top, self.right, self.bottom = UIManager.GetFrameCoords(
+            self.frame_id)
         self.height = self.bottom - self.top
-        self.width = self.right - self.left  
+        self.width = self.right - self.left
+
 
 class Settings:
     def __init__(self):
-        self.ProfileCombo : int = 0
-        self.LootProfile : Optional[LootProfile] = None
-        self.LootProfiles : list[LootProfile] = []
-        self.SelectedLootFilter: Optional[LootFilter] = None
-        self.AutomaticInventoryHandling : bool = "games" in Player.GetAccountEmail().lower()
-        self.WindowSize : tuple[float, float] = (800, 600)
-        self.WindowPosition : tuple[float, float] = (500, 200)
-        self.WindowCollapsed : bool = False
-        self.WindowVisible : bool = False
-        self.ManualWindowVisible : bool = False
+        self.profile_combo: int = 0
+        self.loot_profile: Optional[LootProfile] = None
+        self.loot_profiles: list[LootProfile] = []
+        self.selected_loot_filter: Optional[LootFilter] = None
+        self.automatic_inventory_handling: bool = "games" in Player.GetAccountEmail().lower()
+        self.window_size: tuple[float, float] = (800, 600)
+        self.window_position: tuple[float, float] = (500, 200)
+        self.window_collapsed: bool = False
+        self.window_visible: bool = False
+        self.manual_window_visible: bool = False
 
-        self.Settings_file_path : str = ""
-        self.ProfilesPath : str = ""
-        
-        self.inventory_frame_exists = False
-        self.inventory_frame_coords: FrameCoords
-        self.parent_frame_id: int
+        self.settings_file_path: str = ""
+        self.profiles_path: str = ""
 
+        self.inventory_frame_exists: bool = False
+        self.inventory_frame_coords: Optional[FrameCoords] = None
+        self.parent_frame_id: Optional[int] = None
 
-    def Save(self):
-        # Save the settings as a JSON file
-
+    def save(self):
+        """Save the settings as a JSON file."""
         import json
+
         settings_dict = {
-            "LootProfile": self.LootProfile.Name if self.LootProfile else None,
-            "AutomaticInventoryHandling": self.AutomaticInventoryHandling,
-            "WindowSize": self.WindowSize,
-            "WindowPosition": self.WindowPosition,
-            "WindowCollapsed": self.WindowCollapsed,
-            "ManualWindowVisible": self.ManualWindowVisible,
+            "loot_profile": self.loot_profile.name if self.loot_profile else None,
+            "automatic_inventory_handling": self.automatic_inventory_handling,
+            "window_size": self.window_size,
+            "window_position": self.window_position,
+            "window_collapsed": self.window_collapsed,
+            "manual_window_visible": self.manual_window_visible,
         }
 
-        with open(self.Settings_file_path, 'w') as f:
-            json.dump(settings_dict, f, indent=4)
-            # ConsoleLog("LootEx", f"Settings saved to {self.Settings_file_path}", Console.MessageType.Info)
+        with open(self.settings_file_path, 'w') as file:
+            json.dump(settings_dict, file, indent=4)
 
-    def Load(self):
-        # Load the settings from a JSON file
+    def load(self):
+        """Load the settings from a JSON file."""
         import json
+        import os
 
         # Create the directory if it doesn't exist
-        import os
-        os.makedirs(os.path.dirname(self.Settings_file_path), exist_ok=True)
-        os.makedirs(self.ProfilesPath, exist_ok=True)
+        os.makedirs(os.path.dirname(self.settings_file_path), exist_ok=True)
+        os.makedirs(self.profiles_path, exist_ok=True)
 
         # Load profiles
-        for file_name in os.listdir(self.ProfilesPath):
+        for file_name in os.listdir(self.profiles_path):
             if file_name.endswith(".json"):
                 profile = LootProfile(file_name[:-5])
-                profile.Load()
-                self.LootProfiles.append(profile)
+                profile.load()
+                self.loot_profiles.append(profile)
 
-        if not self.LootProfiles:
-            self.LootProfiles.append(LootProfile("Default"))
-            self.LootProfiles[0].Save()
-            
+        if not self.loot_profiles:
+            default_profile = LootProfile("Default")
+            default_profile.save()
+            self.loot_profiles.append(default_profile)
+
         try:
-            with open(self.Settings_file_path, 'r') as f:
-                settings_dict = json.load(f)
-                self.LootProfile = next((profile for profile in self.LootProfiles if profile.Name == settings_dict.get("LootProfile")), None)
-                self.ProfileCombo = self.LootProfiles.index(self.LootProfile) if self.LootProfile else 0
-                self.AutomaticInventoryHandling = settings_dict.get("AutomaticInventoryHandling", True)
-                self.WindowSize = tuple(settings_dict.get("WindowSize", (400, 200)))
-                self.WindowPosition = tuple(settings_dict.get("WindowPosition", (200, 200)))
-                self.WindowCollapsed = settings_dict.get("WindowCollapsed", False)
-                self.ManualWindowVisible = settings_dict.get("ManualWindowVisible", False)
-                # ConsoleLog("LootEx", f"Settings loaded from {self.Settings_file_path}", Console.MessageType.Info)
+            with open(self.settings_file_path, 'r') as file:
+                settings_dict = json.load(file)
+                self.loot_profile = next(
+                    (profile for profile in self.loot_profiles if profile.name ==
+                     settings_dict.get("loot_profile")),
+                    None
+                )
+                self.profile_combo = self.loot_profiles.index(
+                    self.loot_profile) if self.loot_profile else 0
+                self.automatic_inventory_handling = settings_dict.get(
+                    "automatic_inventory_handling", True)
+                self.window_size = tuple(
+                    settings_dict.get("window_size", (400, 200)))
+                self.window_position = tuple(
+                    settings_dict.get("window_position", (200, 200)))
+                self.window_collapsed = settings_dict.get(
+                    "window_collapsed", False)
+                self.manual_window_visible = settings_dict.get(
+                    "manual_window_visible", False)
 
-            self.AutomaticInventoryHandling = self.AutomaticInventoryHandling if self.LootProfile != None else False
-            self.LootProfile = self.LootProfiles[0] if self.LootProfile is None else self.LootProfile
+            self.automatic_inventory_handling = (
+                self.automatic_inventory_handling if self.loot_profile else False
+            )
+            self.loot_profile = self.loot_profiles[0] if self.loot_profile is None else self.loot_profile
 
         except FileNotFoundError:
-            ConsoleLog("LootEx", f"Settings file {self.Settings_file_path} not found. Using default settings.", Console.MessageType.Warning)
+            ConsoleLog(
+                "LootEx",
+                f"Settings file {self.settings_file_path} not found. Using default settings.",
+                Console.MessageType.Warning,
+            )
 
 
-Current = Settings()
+current = Settings()

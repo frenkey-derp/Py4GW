@@ -6,18 +6,18 @@ from Py4GWCoreLib.enums import ItemType, Rarity, Profession
 
 class IntRange:
     def __init__(self, min: int = 0, max: Optional[int] = None):
-        self.Min : int = min
-        self.Max : int = max if max is not None else min
+        self.min : int = min
+        self.max : int = max if max is not None else min
 
     def __str__(self) -> str:
-        return f"{self.Min} - {self.Max}"
+        return f"{self.min} - {self.max}"
 
     def __repr__(self) -> str:
-        return f"IntRange({self.Min}, {self.Max})"
+        return f"IntRange({self.min}, {self.max})"
 
     def __eq__(self, other):
         if isinstance(other, IntRange):
-            return self.Min == other.Min and self.Max == other.Max
+            return self.min == other.min and self.max == other.max
         return False
 
 class Rune():
