@@ -24,7 +24,7 @@ class LootProfile:
 
         self.runes: dict[str, bool] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
-        self.items: dict[str, ItemConfiguration] = {}
+        self.items: dict[int, ItemConfiguration] = {}
 
     def save(self):
         """Save the profile as a JSON file."""
@@ -42,7 +42,7 @@ class LootProfile:
                            is_active in types.items()}
                 for mod_name, types in self.weapon_mods.items()
             },
-            "items": {item.model_id.name: ItemConfiguration.to_dict(item) for item_id, item in self.items.items()}
+            "items": {item.model_id: ItemConfiguration.to_dict(item) for item_id, item in self.items.items()}
         }
         file_path = os.path.join(
             settings.current.profiles_path, f"{self.name}.json")

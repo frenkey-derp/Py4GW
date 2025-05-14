@@ -1870,6 +1870,7 @@ explorable_name_to_id = {name: id for id, name in explorables.items()}
 class ModelID(IntEnum):
     Umbral_Shell = 98765432111
     Vampiric_Fang = 987654789
+    BoneDragonStaff_AirMagic = 123
     Water_Djinn_Essence = 78965412365 
     Ancient_Kappa_Shell = 123654789691    # Dummy modelid's to insure no LootManager Crash - will be changed to correct value 
     Animal_Hide = 1236547896911    # Dummy modelid's to insure no LootManager Crash - will be changed to correct value

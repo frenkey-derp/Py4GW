@@ -5,6 +5,7 @@ from LootEx import Data
 from LootEx import loot_check
 from LootEx import item_configuration
 from LootEx import utility
+from LootEx import enum
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -783,7 +784,7 @@ def draw_loot_items():
                 item_search = search
                 filtered_loot_items = [
                     SelectableItem(item) for item in Data.Items.values()
-                    if item and item.Name and (item.Name.lower().find(item_search.lower()) != -1 or str(item.ModelID).find(item_search.lower()) != -1)
+                    if item and item.name and (item.name.lower().find(item_search.lower()) != -1 or str(item.model_id).find(item_search.lower()) != -1)
                 ]
 
             if PyImGui.begin_child("selectable_items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
@@ -803,7 +804,7 @@ def draw_loot_items():
                 selected_loot_items) == 1 else None
 
             if selected_loot_item:
-                has_settings = selected_loot_item.item_info.ModelID and selected_loot_item.item_info.ModelID.name in settings.current.loot_profile.items
+                has_settings = selected_loot_item.item_info.model_id and selected_loot_item.item_info.model_id in settings.current.loot_profile.items
                 details_height = 130
 
                 if PyImGui.begin_child("item_info", (0, details_height), True, PyImGui.WindowFlags.NoFlag):
@@ -816,7 +817,7 @@ def draw_loot_items():
                         PyImGui.push_style_color(
                             PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
                         PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
-                            selected_loot_item.item_info.ModelID), details_height - 20, details_height - 20)
+                            selected_loot_item.item_info.model_id), details_height - 20, details_height - 20)
                         PyImGui.pop_style_color(3)
                     PyImGui.end_child()
 
@@ -824,21 +825,21 @@ def draw_loot_items():
 
                     if PyImGui.begin_child("item_details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
                         PyImGui.text(
-                            "Name: " + selected_loot_item.item_info.Name)
+                            "Name: " + selected_loot_item.item_info.name)
 
                         remaining_size = PyImGui.get_content_region_avail()
                         PyImGui.same_line(remaining_size[0] - 30, 0)
 
                         if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, 0, 0):
                             Player.SendChatCommand(
-                                "wiki " + selected_loot_item.item_info.Name)
+                                "wiki " + selected_loot_item.item_info.name)
 
                         PyImGui.text("Model ID: " +
-                                     str(selected_loot_item.item_info.ModelID))
+                                     str(selected_loot_item.item_info.model_id))
                         PyImGui.text(
-                            "Type: " + utility.Util.GetItemType(selected_loot_item.item_info.ItemType).name)
+                            "Type: " + utility.Util.GetItemType(selected_loot_item.item_info.item_type).name)
                         PyImGui.text_wrapped(
-                            "Drop Info: " + selected_loot_item.item_info.DropInfo)
+                            "Drop Info: " + selected_loot_item.item_info.drop_info)
 
                     PyImGui.end_child()
 
@@ -847,7 +848,7 @@ def draw_loot_items():
                 if PyImGui.begin_child("item_settings", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                     if has_settings:
                         loot_item = settings.current.loot_profile.items.get(
-                            selected_loot_item.item_info.ModelID.name)
+                            selected_loot_item.item_info.model_id)
 
                         if PyImGui.begin_tab_bar("item_conditions") and loot_item:
                             for condition in loot_item.conditions:
@@ -904,8 +905,8 @@ def draw_loot_items():
                                                     continue
                                                 mod_names.append(mod.Name)
 
-                                            available_attributes = selected_loot_item.item_info.Attributes if selected_loot_item.item_info.Attributes else utility.Util.GetAttributes(
-                                                selected_loot_item.item_info.ItemType)
+                                            available_attributes = selected_loot_item.item_info.attributes if selected_loot_item.item_info.attributes else utility.Util.GetAttributes(
+                                                selected_loot_item.item_info.item_type)
                                             if len(available_attributes) > 1:
                                                 available_attributes.insert(
                                                     0, Attribute.None_)
@@ -920,9 +921,9 @@ def draw_loot_items():
                                                 [attribute.max for attribute in condition.requirements.values()])
 
                                             min_damage_in_requirements = utility.Util.GetMaxDamage(
-                                                min_requirement, selected_loot_item.item_info.ItemType).min
+                                                min_requirement, selected_loot_item.item_info.item_type).min
                                             max_damage_in_requirements = utility.Util.GetMaxDamage(
-                                                max_requirement, selected_loot_item.item_info.ItemType).max
+                                                max_requirement, selected_loot_item.item_info.item_type).max
 
                                             if not condition.damage_range:
                                                 condition.damage_range = Data.IntRange(
@@ -1094,9 +1095,9 @@ def draw_loot_items():
                         PyImGui.text_wrapped("Item is not yet configured.")
                         PyImGui.pop_style_color(1)
 
-                        if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Add to Profile", 0, 25) and selected_loot_item and selected_loot_item.item_info.ModelID not in settings.current.loot_profile.items:
-                            settings.current.loot_profile.items[selected_loot_item.item_info.ModelID.name] = ItemConfiguration(
-                                selected_loot_item.item_info.ModelID)
+                        if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Add to Profile", 0, 25) and selected_loot_item and selected_loot_item.item_info.model_id not in settings.current.loot_profile.items:
+                            settings.current.loot_profile.items[selected_loot_item.item_info.model_id] = ItemConfiguration(
+                                selected_loot_item.item_info.model_id)
                             settings.current.loot_profile.save()
 
                 PyImGui.end_child()
@@ -1112,16 +1113,16 @@ def draw_loot_items():
 
                 if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Create Default Rule", 0, 25):
                     for item in selected_loot_items:
-                        if item and item.item_info.ModelID and item.item_info.ModelID.name not in settings.current.loot_profile.items:
-                            settings.current.loot_profile.items[item.item_info.ModelID.name] = ItemConfiguration(
-                                item.item_info.ModelID)
+                        if item and item.item_info.model_id and item.item_info.model_id not in settings.current.loot_profile.items:
+                            settings.current.loot_profile.items[item.item_info.model_id] = ItemConfiguration(
+                                item.item_info.model_id)
                             settings.current.loot_profile.save()
                             
                 if PyImGui.button(IconsFontAwesome5.ICON_TRASH + " Delete All Rules", 0, 25):
                     for item in selected_loot_items:
-                        if item and item.item_info.ModelID and item.item_info.ModelID.name in settings.current.loot_profile.items:
+                        if item and item.item_info.model_id and item.item_info.model_id in settings.current.loot_profile.items:
                             settings.current.loot_profile.items.pop(
-                                item.item_info.ModelID.name, None)
+                                item.item_info.model_id, None)
                             settings.current.loot_profile.save()
 
             else:
@@ -1175,7 +1176,7 @@ def draw_weapon_mods():
         ):
             PyImGui.begin_table(
                 "Weapon Mods Table",
-                len(Data.WeaponType) + 2,
+                len(enum.WeaponType) + 2,
                 PyImGui.TableFlags.ScrollY,
             )
             PyImGui.table_setup_column(
@@ -1183,7 +1184,7 @@ def draw_weapon_mods():
             PyImGui.table_setup_column(
                 "Name", PyImGui.TableColumnFlags.WidthStretch)
 
-            for weapon_type in Data.WeaponType:
+            for weapon_type in enum.WeaponType:
                 PyImGui.table_setup_column(
                     weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
                 )
@@ -1200,7 +1201,7 @@ def draw_weapon_mods():
         ):
             PyImGui.begin_table(
                 "Weapon Mods Table",
-                len(Data.WeaponType) + 2,
+                len(enum.WeaponType) + 2,
                 PyImGui.TableFlags.RowBg | PyImGui.TableFlags.BordersInnerH,
             )
             PyImGui.table_setup_column(
@@ -1208,7 +1209,7 @@ def draw_weapon_mods():
             PyImGui.table_setup_column(
                 "Name", PyImGui.TableColumnFlags.WidthStretch)
 
-            for weapon_type in Data.WeaponType:
+            for weapon_type in enum.WeaponType:
                 PyImGui.table_setup_column(
                     weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
                 )
@@ -1257,7 +1258,7 @@ def draw_weapon_mods():
                 )
 
                 # Weapon type checkboxes
-                for weapon_type in Data.WeaponType:
+                for weapon_type in enum.WeaponType:
                     PyImGui.table_next_column()
                     unique_id = f"##{mod.Struct}{weapon_type}"
                     PyImGui.push_style_var2(
@@ -1532,7 +1533,7 @@ def draw_selectable_item(item: SelectableItem):
 
     PyImGui.push_style_var2(ImGui.ImGuiStyleVar.ItemSpacing, 0, 0)
     PyImGui.begin_child(
-        f"SelectableItem{item.item_info.ModelID}",
+        f"SelectableItem{item.item_info.model_id}",
         (0, 20),
         False,
         PyImGui.WindowFlags.NoFlag,
@@ -1541,20 +1542,20 @@ def draw_selectable_item(item: SelectableItem):
     # Construct item name with attributes if available
     attributes = (
         [utility.Util.GetAttributeName(
-            attr) + ", " for attr in item.item_info.Attributes]
-        if item.item_info.Attributes
+            attr) + ", " for attr in item.item_info.attributes]
+        if item.item_info.attributes
         else []
     )
     item_name = (
-        item.item_info.Name
-        if not item.item_info.Attributes
-        else f"{item.item_info.Name} ({''.join(attributes).removesuffix(',')})"
-        if len(item.item_info.Attributes) > 1
-        else f"{item.item_info.Name} ({utility.Util.GetAttributeName(item.item_info.Attributes[0])})"
+        item.item_info.name
+        if not item.item_info.attributes
+        else f"{item.item_info.name} ({''.join(attributes).removesuffix(',')})"
+        if len(item.item_info.attributes) > 1
+        else f"{item.item_info.name} ({utility.Util.GetAttributeName(item.item_info.attributes[0])})"
     )
 
     # Determine text color based on whether the item has settings
-    has_settings = item.item_info.ModelID.name in settings.current.loot_profile.items
+    has_settings = item.item_info.model_id in settings.current.loot_profile.items
     text_color = (
         utility.Util.GetRarityColor(Rarity.Gold)["text"]
         if has_settings

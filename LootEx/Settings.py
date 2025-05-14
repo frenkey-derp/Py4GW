@@ -1,10 +1,8 @@
 from typing import Optional
-
-from Py4GW import Console
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
 from Py4GWCoreLib import Player, UIManager
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
 
 
 class FrameCoords:
@@ -31,6 +29,7 @@ class Settings:
 
         self.settings_file_path: str = ""
         self.profiles_path: str = ""
+        self.data_collection_path: str = ""
 
         self.inventory_frame_exists: bool = False
         self.inventory_frame_coords: Optional[FrameCoords] = None
@@ -60,6 +59,7 @@ class Settings:
         # Create the directory if it doesn't exist
         os.makedirs(os.path.dirname(self.settings_file_path), exist_ok=True)
         os.makedirs(self.profiles_path, exist_ok=True)
+        os.makedirs(self.data_collection_path, exist_ok=True)
 
         # Load profiles
         for file_name in os.listdir(self.profiles_path):

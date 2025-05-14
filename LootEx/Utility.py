@@ -1,17 +1,113 @@
 from typing import Optional
 from LootEx import Data, item_configuration
+from LootEx.enum import ModifierIdentifier
 from LootEx.item_actions import ItemAction
 from LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
+from Py4GWCoreLib import Item
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
-from Py4GWCoreLib.enums import Attribute, ItemType, Rarity, DyeColor
+from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, Rarity, DyeColor
 
 importlib.reload(item_configuration)
 
 
 class Util:
+    @staticmethod
+    def GetMods(item_id: int):
+        item_type = Item.GetItemType(item_id)
+        mods = []
+        
+        if Util.IsArmorType(ItemType[item_type[1]]):
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
+                identifier = mod.GetIdentifier()
+                
+                if identifier in Data.Runes:
+                    mods.append(Data.Runes[identifier])
+        
+        elif Util.IsWeaponType(ItemType[item_type[1]]):
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
+                identifier = mod.GetIdentifier()
+                
+                if identifier in Data.WeaponMods:
+                    mods.append(Data.WeaponMods[identifier])
+        
+        return mods       
+    
+    @staticmethod
+    def GetItemRequirements(item_id: int) -> Optional[tuple[Attribute, int]]:        
+        """
+        Retrieves the attribute and requirement level for a given item.
+        Args:
+            item_id (int): The unique identifier of the item.
+        Returns:
+            Optional[tuple[Attribute, int]]: A tuple containing the attribute 
+            (as an `Attribute` object) and the requirement level (as an integer) 
+            if the item has a requirement. Returns `None` if no requirements are found.
+        """
+        _, attribute_id, requirement = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.Requirement)
+        
+        if attribute_id == None or requirement == None:
+            return None
+        
+        attribute = Attribute(attribute_id)
+        return attribute, requirement       
+    
+    @staticmethod
+    def GetItemDamage(item_id: int) -> Optional[tuple[int, int]]:
+        """
+        Retrieves the minimum and maximum damage values for a given item.
+        This method fetches the damage modifier values associated with the specified
+        item ID. If no damage values are found, it returns None. Otherwise, it returns
+        a tuple containing the minimum and maximum damage values, defaulting to 0 if
+        either value is missing.
+        Args:
+            item_id (int): The unique identifier of the item.
+        Returns:
+            Optional[tuple[int, int]]: A tuple containing the minimum and maximum damage
+            values, or None if no damage values are available.
+        """
+        _, max_damage, min_damage = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.Damage)
+        
+        if max_damage == None and min_damage == None:
+            return None
+        
+        return min_damage if min_damage else 0, max_damage if max_damage else 0
+    
+    @staticmethod
+    def GetItemDamageType(item_id: int) -> Optional[DamageType]:
+        """
+        Retrieves the damage type associated with a specific item.
+
+        Args:
+            item_id (int): The unique identifier of the item.
+
+        Returns:
+            Optional[DamageType]: The damage type of the item if it exists, 
+            otherwise None.
+        """
+        _, damage_type_id, _ = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.DamageType)        
+        return DamageType(damage_type_id) if damage_type_id else None
+        
+    @staticmethod
+    def GetShieldArmor(item_id: int) -> Optional[tuple[int, int]]:
+        """
+        Retrieves the armor value for a shield item.
+
+        Args:
+            item_id (int): The unique identifier of the item.
+
+        Returns:
+            Optional[int]: The armor value of the shield if it exists, otherwise None.
+        """
+        _, armor_at_or_above_requirement, armor_below_requirement = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.ShieldArmor)
+        
+        if armor_at_or_above_requirement == None or armor_below_requirement == None:
+            return None
+        
+        return armor_at_or_above_requirement, armor_below_requirement
+    
     @staticmethod
     def GetAttributes(itemType: ItemType) -> list[Attribute]:
         if itemType in Data.AttributeRequirements:
@@ -70,27 +166,24 @@ class Util:
         return damage_range.min == max_damage.min - tollerance.min and damage_range.max >= max_damage.max - tollerance.max
 
     @staticmethod
-    def IsArmor(item: ItemConfiguration) -> bool:
-        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
-
-        if dataitem is not None:
-            itemtype = dataitem.ItemType
+    def IsArmorType(itemtype: ItemType) -> bool:
             return itemtype in {
                 ItemType.Headpiece,
                 ItemType.Chestpiece,
                 ItemType.Gloves,
                 ItemType.Leggings,
                 ItemType.Boots,
+                ItemType.Salvage,
             }
-        return False
+    
+    @staticmethod
+    def IsArmor(item: ItemConfiguration) -> bool:
+        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
+        return Util.IsArmorType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
-    def IsWeapon(item: ItemConfiguration) -> bool:
-        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
-
-        if dataitem is not None:
-            itemtype = dataitem.ItemType
-            if itemtype in {
+    def IsWeaponType(itemtype: ItemType) -> bool:
+            return itemtype in {
                 ItemType.Axe,
                 ItemType.Bow,
                 ItemType.Daggers,
@@ -102,9 +195,12 @@ class Util:
                 ItemType.Staff,
                 ItemType.Sword,
                 ItemType.Wand
-            }:
-                return True
-        return False
+            }
+            
+    @staticmethod
+    def IsWeapon(item: ItemConfiguration) -> bool:
+        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
+        return Util.IsWeaponType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
     def GetItemType(int) -> ItemType:

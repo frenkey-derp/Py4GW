@@ -1,7 +1,9 @@
+from dataclasses import dataclass, field
 from enum import Enum, IntEnum
-from typing import Optional
+from typing import List, Optional
+from LootEx.enum import EnemyType, ModType
 from Py4GWCoreLib import ModelID
-from Py4GWCoreLib.enums import Attribute
+from Py4GWCoreLib.enums import Attribute, DamageType
 from Py4GWCoreLib.enums import ItemType, Rarity, Profession
 
 class IntRange:
@@ -36,6 +38,7 @@ class Rune():
         self.Profession : Profession = profession
         self.Rarity : Rarity = rarity
     
+#TODO: Implement the mod types
 Runes : dict[str, Rune] = (
     {
         # Warrior
@@ -254,47 +257,6 @@ for rune in Runes.values():
 for profession in RunesByProfession:
     RunesByProfession[profession].sort(key=lambda x: x.Rarity.value)
 
-class WeaponType(IntEnum):
-    Axe = 1
-    Sword = 2
-    Spear = 3
-    Wand = 4
-    Daggers = 5
-    Hammer = 6
-    Scythe = 7
-    Bow = 8
-    Staff = 9
-    Focus = 10
-    Shield = 11
-
-class WeaponModType(Enum):
-    None_ = 0
-    Inherent = 1
-    Prefix = 2
-    Suffix = 3
-
-    
-class DamageType(IntEnum):
-    Blunt = 0
-    Piercing = 1
-    Slashing = 2
-    Cold = 3
-    Lightning = 4
-    Fire = 5
-    Earth = 11
-
-class EnemyType(IntEnum):
-    Undead = 0
-    Charr = 1
-    Troll = 2
-    Plant = 3
-    Skeleton = 4
-    Giant = 5
-    Dwarf = 6
-    Tengu = 7
-    Demon = 8
-    Dragon = 9
-    Ogre = 10
 
 DamageRanges = {
     ItemType.Axe: {
@@ -485,7 +447,7 @@ AttributeRequirements = {
 }
 
 class WeaponMod():
-    def __init__(self, struct, name):        
+    def __init__(self, struct, name, modType=ModType.None_):        
         self.Struct = struct
         self.name_format = name
 
@@ -494,6 +456,7 @@ class WeaponMod():
         self.Arg1 = b[1]
         self.Arg2 = b[0]
         self.Args = (self.Arg1 << 8) | self.Arg2
+        self.ModType = modType
         
     @property
     def Name(self) -> str:
@@ -563,6 +526,7 @@ class WeaponMod():
         )
 
 
+#TODO: Implement the mod types
 WeaponMods : dict[str, WeaponMod] = (
     {
         '1400B822' : WeaponMod('1400B822', "+{arg2}% Enchantment Duration"),
@@ -714,2499 +678,2528 @@ def GetWeaponModName(struct : str) -> str:
     else:
         return "Unknown Weapon Mod"
 
-class Item():
-    def __init__(self, modelid : ModelID, name : str, itemType : ItemType, dropInfo : str = "", attributes : list[Attribute] = []):
-        self.ModelID : ModelID = modelid
-        self.Name : str = name
-        self.ItemType : ItemType = itemType
-        self.DropInfo : str = dropInfo
-        self.Attributes : list[Attribute] = attributes
+@dataclass
+class Item():        
+    model_id : int
+    name : str
+    item_type : ItemType
+    drop_info : str = ""
+    attributes: List[Attribute] = field(default_factory=list)
+    wiki_url : str = ""
+    materials : List[int] = field(default_factory=list)
+    rare_materials : List[int] = field(default_factory=list)
+    is_nick_item : bool = False
+    
+    def to_json(self) -> dict:
+        return {
+            "ModelID" : self.model_id,
+            "Name" : self.name,
+            "ItemType" : self.item_type.name,
+            "DropInfo" : self.drop_info,
+            "Attributes" : [attribute.name for attribute in self.attributes],
+            "WikiURL" : self.wiki_url,
+            "Materials" : self.materials,
+            "RareMaterials" : self.rare_materials,
+            "IsNickItem" : self.is_nick_item,
+        }
+        
+    
+    def from_json(self, json : dict):
+        self.model_id = json["ModelID"]
+        self.name = json["Name"]
+        self.item_type = ItemType[json["ItemType"]]
+        self.drop_info = json["DropInfo"]
+        self.attributes = [Attribute[attribute] for attribute in json["Attributes"]]
+        self.wiki_url = json["WikiURL"]
+        self.materials = json["Materials"]
+        self.rare_materials = json["RareMaterials"]
+        self.is_nick_item = json["IsNickItem"]
 
-Items : dict[ModelID, Item] = {
+Items : dict[int, Item] = {
     ModelID.Abnormal_Seed : Item(
-        modelid     =   ModelID.Abnormal_Seed, 
+        model_id     =   ModelID.Abnormal_Seed, 
         name        =   "Abnormal Seed", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =  "Dropped by Ancient Oakhearts, Entangling Roots, Large- and Spined Aloe, Oakhearts, Reed Stalkers in the Kryta."),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =  "Dropped by Ancient Oakhearts, Entangling Roots, Large- and Spined Aloe, Oakhearts, Reed Stalkers in the Kryta."),
 
     ModelID.Aged_Dwarven_Ale : Item(
-        modelid     =   ModelID.Aged_Dwarven_Ale,
+        model_id     =   ModelID.Aged_Dwarven_Ale,
         name        =   "Aged Dwarven Ale",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Irontoe's Chest"),
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Irontoe's Chest"),
 
     ModelID.Alpine_Seed : Item(
-        modelid     =   ModelID.Alpine_Seed, 
+        model_id     =   ModelID.Alpine_Seed, 
         name        =   "Alpine Seed", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Ancient Oakhearts, Entangling Roots, Large- and Spined Aloe, Oakhearts, Reed Stalkers in the Kryta"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Ancient Oakhearts, Entangling Roots, Large- and Spined Aloe, Oakhearts, Reed Stalkers in the Kryta"),
 
     ModelID.Amber_Chunk : Item(
-        modelid     =   ModelID.Amber_Chunk, 
+        model_id     =   ModelID.Amber_Chunk, 
         name        =   "Amber Chunk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Amphibian_Tongue : Item(
-        modelid     =   ModelID.Amphibian_Tongue, 
+        model_id     =   ModelID.Amphibian_Tongue, 
         name        =   "Amphibian Tongue", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Heket enemies in the Maguuma Jungle"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Heket enemies in the Maguuma Jungle"),
 
     ModelID.Ancient_Elonian_Key : Item(
-        modelid     =   ModelID.Ancient_Elonian_Key, 
+        model_id     =   ModelID.Ancient_Elonian_Key, 
         name        =   "Ancient Elonian Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes The Desolation"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes The Desolation"),
 
     ModelID.Ancient_Eye : Item(
-        modelid     =   ModelID.Ancient_Eye, 
+        model_id     =   ModelID.Ancient_Eye, 
         name        =   "Ancient Eye", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "MODELID NOT AQUIRED!!! Dropped by Wind Riders in Maguuma Jungle"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "MODELID NOT AQUIRED!!! Dropped by Wind Riders in Maguuma Jungle"),
 
     ModelID.Ancient_Kappa_Shell : Item(
-        modelid     =   ModelID.Ancient_Kappa_Shell, 
+        model_id     =   ModelID.Ancient_Kappa_Shell, 
         name        =   "Ancient Kappa Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "MODELID NOT AQUIRED!!! Dropped by Ancient Kappa in The Undercity, Kaineng City"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "MODELID NOT AQUIRED!!! Dropped by Ancient Kappa in The Undercity, Kaineng City"),
 
     ModelID.Animal_Hide : Item(
-        modelid     =   ModelID.Animal_Hide, 
+        model_id     =   ModelID.Animal_Hide, 
         name        =   "Animal Hide", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "MODELID NOT AQUIRED!!!"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "MODELID NOT AQUIRED!!!"),
 
     ModelID.Archaic_Kappa_Shell : Item(
-        modelid     =   ModelID.Archaic_Kappa_Shell, 
+        model_id     =   ModelID.Archaic_Kappa_Shell, 
         name        =   "Archaic Kappa Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Kappa in the Shenzun Tunnels, Factions"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Kappa in the Shenzun Tunnels, Factions"),
 
     ModelID.Arachnis_Scythe : Item(
-        modelid     =   ModelID.Arachnis_Scythe,
+        model_id     =   ModelID.Arachnis_Scythe,
         name        =   "Arachni's Scythe",
-        itemType    =   ItemType.Scythe,
-        dropInfo    =   "Arachni's Scythe is a unique scythe obtained from the Arachni's Spoils chest that spawns after killing Arachni in Arachni's Haunt."),            
+        item_type    =   ItemType.Scythe,
+        drop_info    =   "Arachni's Scythe is a unique scythe obtained from the Arachni's Spoils chest that spawns after killing Arachni in Arachni's Haunt."),            
 
     ModelID.Ascalonian_Key : Item(
-        modelid     =   ModelID.Ascalonian_Key, 
+        model_id     =   ModelID.Ascalonian_Key, 
         name        =   "Ascalonian Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Ascalon"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Ascalon"),
 
     ModelID.Ashen_Wurm_Husk : Item(
-        modelid     =   ModelID.Ashen_Wurm_Husk, 
+        model_id     =   ModelID.Ashen_Wurm_Husk, 
         name        =   "Ashen Wurm Husk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "MODELID NOT AQUIRED!!!"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "MODELID NOT AQUIRED!!!"),
 
     ModelID.Assassin_Elitetome : Item(
-        modelid     =   ModelID.Assassin_Elitetome, 
+        model_id     =   ModelID.Assassin_Elitetome, 
         name        =   "Assassin Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
         
     ModelID.Assassin_Tome : Item(
-        modelid     =   ModelID.Assassin_Tome, 
+        model_id     =   ModelID.Assassin_Tome, 
         name        =   "Assassin Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
         
     ModelID.Augmented_Flesh : Item(
-        modelid     =   ModelID.Augmented_Flesh, 
+        model_id     =   ModelID.Augmented_Flesh, 
         name        =   "Augmented Flesh", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by afflicted in Sing Jea Island"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by afflicted in Sing Jea Island"),
         
     ModelID.Azure_Crest : Item(
-        modelid     =   ModelID.Azure_Crest, 
+        model_id     =   ModelID.Azure_Crest, 
         name        =   "Azure Crest", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Rockhide and Saltspray Dragons in The Jade Sea"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Rockhide and Saltspray Dragons in The Jade Sea"),
         
     ModelID.Azure_Remains : Item(
-        modelid     =   ModelID.Azure_Remains, 
+        model_id     =   ModelID.Azure_Remains, 
         name        =   "Azure Remains", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Azure Shadows in Southern Shiverpeaks"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Azure Shadows in Southern Shiverpeaks"),
         
     ModelID.Baked_Husk : Item(
-        modelid     =   ModelID.Baked_Husk, 
+        model_id     =   ModelID.Baked_Husk, 
         name        =   "Baked Husk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Plague Worm, Worm Queen in Lakeside County - Ascalon (pre-Searing)"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Plague Worm, Worm Queen in Lakeside County - Ascalon (pre-Searing)"),
         
     ModelID.Battle_Isle_Iced_Tea : Item(
-        modelid     =   ModelID.Battle_Isle_Iced_Tea, 
+        model_id     =   ModelID.Battle_Isle_Iced_Tea, 
         name        =   "Battle Isle Iced Tea", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration"),
         
     ModelID.Beetle_Egg : Item(
-        modelid     =   ModelID.Beetle_Egg, 
+        model_id     =   ModelID.Beetle_Egg, 
         name        =   "Beetle Egg", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Ghosteater Beetle, Thorn Beetle, Thorn Beetle Queen in Depths of Tyria - EOTN"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Ghosteater Beetle, Thorn Beetle, Thorn Beetle Queen in Depths of Tyria - EOTN"),
         
     ModelID.Behemoth_Hide : Item(
-        modelid     =   ModelID.Behemoth_Hide, 
+        model_id     =   ModelID.Behemoth_Hide, 
         name        =   "Behemoth Hide", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Behemoth Gravebane, Scytheclaw Behemoth in Vabii - Nightfall"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Behemoth Gravebane, Scytheclaw Behemoth in Vabii - Nightfall"),
         
     ModelID.Behemoth_Jaw : Item(
-        modelid     =   ModelID.Behemoth_Jaw, 
+        model_id     =   ModelID.Behemoth_Jaw, 
         name        =   "Behemoth Jaw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Henge Guardian, Root Begemoth in Maguuma Jungle - Prophecies"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Henge Guardian, Root Begemoth in Maguuma Jungle - Prophecies"),
         
     ModelID.Berserker_Horn : Item(
-        modelid     =   ModelID.Berserker_Horn, 
+        model_id     =   ModelID.Berserker_Horn, 
         name        =   "Berserker Horn", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Berserking Creatures in Far Shiverpeaks - EOTN"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Berserking Creatures in Far Shiverpeaks - EOTN"),
         
     ModelID.Birthday_Cupcake : Item(
-        modelid     =   ModelID.Birthday_Cupcake, 
+        model_id     =   ModelID.Birthday_Cupcake, 
         name        =   "Birthday Cupcake", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebrations & Dragon Festival & Canthan New Year"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebrations & Dragon Festival & Canthan New Year"),
         
     ModelID.Black_Pearl : Item(
-        modelid     =   ModelID.Black_Pearl, 
+        model_id     =   ModelID.Black_Pearl, 
         name        =   "Black Pearl", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Creeping Carp, Irukandji, Scuttle Fish - The Jade Sea"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Creeping Carp, Irukandji, Scuttle Fish - The Jade Sea"),
         
     ModelID.Bleached_Carapace : Item(
-        modelid     =   ModelID.Bleached_Carapace, 
+        model_id     =   ModelID.Bleached_Carapace, 
         name        =   "Bleached Carapace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Rockshot Devourer in Crystal Desert - Prophecies & Dalada Uplands - EOTN"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Rockshot Devourer in Crystal Desert - Prophecies & Dalada Uplands - EOTN"),
         
     ModelID.Bleached_Shell : Item(
-        modelid     =   ModelID.Bleached_Shell, 
+        model_id     =   ModelID.Bleached_Shell, 
         name        =   "Bleached Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "MODELID NOT AQUIRED!!! Dropped by Sand Wurm, Siege Wurm in Crystal Desert - Prophecies"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "MODELID NOT AQUIRED!!! Dropped by Sand Wurm, Siege Wurm in Crystal Desert - Prophecies"),
         
     ModelID.Blessing_Of_War : Item(
-        modelid     =   ModelID.Blessing_Of_War, 
+        model_id     =   ModelID.Blessing_Of_War, 
         name        =   "Blessing Of War", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped after every 25 Zaishen Keys are used to open the Zaishen Chest"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped after every 25 Zaishen Keys are used to open the Zaishen Chest"),
         
     ModelID.Blob_Of_Ooze : Item(
-        modelid     =   ModelID.Blob_Of_Ooze, 
+        model_id     =   ModelID.Blob_Of_Ooze, 
         name        =   "Blob Of Ooze", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by Ooze in Depths of Tyria & Magma Blister in Charr Homelands - EOTN"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by Ooze in Depths of Tyria & Magma Blister in Charr Homelands - EOTN"),
         
     ModelID.Blood_Drinker_Pelt : Item(
-        modelid     =   ModelID.Blood_Drinker_Pelt, 
+        model_id     =   ModelID.Blood_Drinker_Pelt, 
         name        =   "Blood Drinker Pelt", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "MODELID NOT AQUIRED!!! Dropped by Blood Drinker, Rhythm Drinker in Echovald Forest - Factions"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "MODELID NOT AQUIRED!!! Dropped by Blood Drinker, Rhythm Drinker in Echovald Forest - Factions"),
         
     ModelID.Bolt_Of_Cloth : Item(
-        modelid     =   ModelID.Bolt_Of_Cloth, 
+        model_id     =   ModelID.Bolt_Of_Cloth, 
         name        =   "Bolt Of Cloth", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
         
     ModelID.Bolt_Of_Damask : Item(
-        modelid     =   ModelID.Bolt_Of_Damask, 
+        model_id     =   ModelID.Bolt_Of_Damask, 
         name        =   "Bolt Of Damask", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
         
     ModelID.Bolt_Of_Linen : Item(
-        modelid     =   ModelID.Bolt_Of_Linen, 
+        model_id     =   ModelID.Bolt_Of_Linen, 
         name        =   "Bolt Of Linen", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
         
     ModelID.Bolt_Of_Silk : Item(
-        modelid     =   ModelID.Bolt_Of_Silk, 
+        model_id     =   ModelID.Bolt_Of_Silk, 
         name        =   "Bolt Of Silk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
         
     ModelID.Bone : Item(
-        modelid     =   ModelID.Bone, 
+        model_id     =   ModelID.Bone, 
         name        =   "Bone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
         
     ModelID.Bottle_Of_Grog : Item(
-        modelid     =   ModelID.Bottle_Of_Grog, 
+        model_id     =   ModelID.Bottle_Of_Grog, 
         name        =   "Bottle Of Grog", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Pirate Week"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Pirate Week"),
         
     ModelID.Bottle_Of_Rice_Wine : Item(
-        modelid     =   ModelID.Bottle_Of_Rice_Wine, 
+        model_id     =   ModelID.Bottle_Of_Rice_Wine, 
         name        =   "Bottle Of Rice Wine", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Jarimiya the Unmerciful"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Jarimiya the Unmerciful"),
         
     ModelID.Bottle_Of_Vabbian_Wine : Item(
-        modelid     =   ModelID.Bottle_Of_Vabbian_Wine, 
+        model_id     =   ModelID.Bottle_Of_Vabbian_Wine, 
         name        =   "Bottle Of Vabbian Wine", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Jarimiya the Unmerciful"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Jarimiya the Unmerciful"),
         
     ModelID.Bottle_Rocket : Item(
-        modelid     =   ModelID.Bottle_Rocket, 
+        model_id     =   ModelID.Bottle_Rocket, 
         name        =   "Bottle Rocket", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration & Wayfarer's Reverie"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration & Wayfarer's Reverie"),
         
     ModelID.Canthan_Key : Item(
-        modelid     =   ModelID.Canthan_Key, 
+        model_id     =   ModelID.Canthan_Key, 
         name        =   "Canthan Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Kaineng City"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Kaineng City"),
         
     ModelID.Cc_Shard : Item(
-        modelid     =   ModelID.Cc_Shard, 
+        model_id     =   ModelID.Cc_Shard, 
         name        =   "Cc Shard", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped during Wintersday, randomly dropped by PvE foes"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped during Wintersday, randomly dropped by PvE foes"),
         
     ModelID.Celestial_Essence : Item(
-        modelid     =   ModelID.Celestial_Essence, 
+        model_id     =   ModelID.Celestial_Essence, 
         name        =   "Celestial Essence", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Champagne_Popper : Item(
-        modelid     =   ModelID.Champagne_Popper, 
+        model_id     =   ModelID.Champagne_Popper, 
         name        =   "Champagne Popper", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration & Wayfarer's Reverie"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration & Wayfarer's Reverie"),
         
     ModelID.Charr_Carving : Item(
-        modelid     =   ModelID.Charr_Carving, 
+        model_id     =   ModelID.Charr_Carving, 
         name        =   "Charr Carving", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Chitin_Fragment : Item(
-        modelid     =   ModelID.Chitin_Fragment, 
+        model_id     =   ModelID.Chitin_Fragment, 
         name        =   "Chitin Fragment", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
         
     ModelID.Chocolate_Bunny : Item(
-        modelid     =   ModelID.Chocolate_Bunny, 
+        model_id     =   ModelID.Chocolate_Bunny, 
         name        =   "Chocolate Bunny", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Sweet Treats Week"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Sweet Treats Week"),
         
     ModelID.Chromatic_Scale : Item(
-        modelid     =   ModelID.Chromatic_Scale, 
+        model_id     =   ModelID.Chromatic_Scale, 
         name        =   "Chromatic Scale", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Chunk_Of_Drake_Flesh : Item(
-        modelid     =   ModelID.Chunk_Of_Drake_Flesh, 
+        model_id     =   ModelID.Chunk_Of_Drake_Flesh, 
         name        =   "Chunk Of Drake Flesh", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Cloth_Of_The_Brotherhood : Item(
-        modelid     =   ModelID.Cloth_Of_The_Brotherhood, 
+        model_id     =   ModelID.Cloth_Of_The_Brotherhood, 
         name        =   "Cloth Of The Brotherhood", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped from Chest of the Brotherhood"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped from Chest of the Brotherhood"),
 
     ModelID.Cobalt_Talon : Item(
-        modelid     =   ModelID.Cobalt_Talon, 
+        model_id     =   ModelID.Cobalt_Talon, 
         name        =   "Cobalt Talon", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Confessors_Orders : Item(
-        modelid     =   ModelID.Confessors_Orders, 
+        model_id     =   ModelID.Confessors_Orders, 
         name        =   "Confessors Orders", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by the White Mantle & Peacekeepers"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by the White Mantle & Peacekeepers"),
 
     ModelID.Copper_Chrimson_Skull_Coin : Item(
-        modelid     =   ModelID.Copper_Chrimson_Skull_Coin, 
+        model_id     =   ModelID.Copper_Chrimson_Skull_Coin, 
         name        =   "Copper Chrimson Skull Coin", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Copper_Shilling : Item(
-        modelid     =   ModelID.Copper_Shilling, 
+        model_id     =   ModelID.Copper_Shilling, 
         name        =   "Copper Shilling", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Corrosive_Spider_Leg : Item(
-        modelid     =   ModelID.Corrosive_Spider_Leg, 
+        model_id     =   ModelID.Corrosive_Spider_Leg, 
         name        =   "Corrosive Spider Leg", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Creme_Brulee : Item(
-        modelid     =   ModelID.Creme_Brulee, 
+        model_id     =   ModelID.Creme_Brulee, 
         name        =   "Creme Brulee", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration & Dragon Festival"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration & Dragon Festival"),
 
     ModelID.Curved_Mintaur_Horn : Item(
-        modelid     =   ModelID.Curved_Mintaur_Horn, 
+        model_id     =   ModelID.Curved_Mintaur_Horn, 
         name        =   "Curved Mintaur Horn", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dark_Claw : Item(
-        modelid     =   ModelID.Dark_Claw, 
+        model_id     =   ModelID.Dark_Claw, 
         name        =   "Dark Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dark_Flame_Fang : Item(
-        modelid     =   ModelID.Dark_Flame_Fang, 
+        model_id     =   ModelID.Dark_Flame_Fang, 
         name        =   "Dark Flame Fang", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dark_Remains : Item(
-        modelid     =   ModelID.Dark_Remains, 
+        model_id     =   ModelID.Dark_Remains, 
         name        =   "Dark Remains", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Darkstone_Key : Item(
-        modelid     =   ModelID.Darkstone_Key, 
+        model_id     =   ModelID.Darkstone_Key, 
         name        =   "Darkstone Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Ring Of Fire Island Chain"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Ring Of Fire Island Chain"),
 
     ModelID.Decayed_Orr_Emblem : Item(
-        modelid     =   ModelID.Decayed_Orr_Emblem, 
+        model_id     =   ModelID.Decayed_Orr_Emblem, 
         name        =   "Decayed Orr Emblem", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Deep_Jade_Key : Item(
-        modelid     =   ModelID.Deep_Jade_Key, 
+        model_id     =   ModelID.Deep_Jade_Key, 
         name        =   "Deep Jade Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes The Deep"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes The Deep"),
 
     ModelID.Deldrimor_Armor_Remnant : Item(
-        modelid     =   ModelID.Deldrimor_Armor_Remnant, 
+        model_id     =   ModelID.Deldrimor_Armor_Remnant, 
         name        =   "Deldrimor Armor Remnant", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped from Hierophant's Chest"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped from Hierophant's Chest"),
 
     ModelID.Deldrimor_Steel_Ingot : Item(
-        modelid     =   ModelID.Deldrimor_Steel_Ingot, 
+        model_id     =   ModelID.Deldrimor_Steel_Ingot, 
         name        =   "Deldrimor Steel Ingot", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Delicious_Cake : Item(
-        modelid     =   ModelID.Delicious_Cake, 
+        model_id     =   ModelID.Delicious_Cake, 
         name        =   "Delicious Cake", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration"),
 
     ModelID.Demonic_Fang : Item(
-        modelid     =   ModelID.Demonic_Fang, 
+        model_id     =   ModelID.Demonic_Fang, 
         name        =   "Demonic Fang", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Demonic_Key : Item(
-        modelid     =   ModelID.Demonic_Key, 
+        model_id     =   ModelID.Demonic_Key, 
         name        =   "Demonic Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Domain Of Anguish"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Domain Of Anguish"),
 
     ModelID.Demonic_Relic : Item(
-        modelid     =   ModelID.Demonic_Relic, 
+        model_id     =   ModelID.Demonic_Relic, 
         name        =   "Demonic Relic", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Demonic_Remains : Item(
-        modelid     =   ModelID.Demonic_Remains, 
+        model_id     =   ModelID.Demonic_Remains, 
         name        =   "Demonic Remains", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dervish_Elitetome : Item(
-        modelid     =   ModelID.Dervish_Elitetome, 
+        model_id     =   ModelID.Dervish_Elitetome, 
         name        =   "Dervish Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Dervish_Tome : Item(
-        modelid     =   ModelID.Dervish_Tome, 
+        model_id     =   ModelID.Dervish_Tome, 
         name        =   "Dervish Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Dessicated_Hydra_Claw : Item(
-        modelid     =   ModelID.Dessicated_Hydra_Claw, 
+        model_id     =   ModelID.Dessicated_Hydra_Claw, 
         name        =   "Dessicated Hydra Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Destroyer_Core : Item(
-        modelid     =   ModelID.Destroyer_Core, 
+        model_id     =   ModelID.Destroyer_Core, 
         name        =   "Destroyer Core", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Diamond : Item(
-        modelid     =   ModelID.Diamond, 
+        model_id     =   ModelID.Diamond, 
         name        =   "Diamond", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Diamond_Djinn_Essence : Item(
-        modelid     =   ModelID.Diamond_Djinn_Essence, 
+        model_id     =   ModelID.Diamond_Djinn_Essence, 
         name        =   "Diamond Djinn Essence", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Diessa_Chalice : Item(
-        modelid     =   ModelID.Diessa_Chalice, 
+        model_id     =   ModelID.Diessa_Chalice, 
         name        =   "Diessa Chalice", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes in the Cathedral of Flames during the Temple of the Damned quest"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes in the Cathedral of Flames during the Temple of the Damned quest"),
 
     ModelID.Dragon_Root : Item(
-        modelid     =   ModelID.Dragon_Root, 
+        model_id     =   ModelID.Dragon_Root, 
         name        =   "Dragon Root", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dredge_Incisor : Item(
-        modelid     =   ModelID.Dredge_Incisor, 
+        model_id     =   ModelID.Dredge_Incisor, 
         name        =   "Dredge Incisor", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dregde_Charm : Item(
-        modelid     =   ModelID.Dregde_Charm, 
+        model_id     =   ModelID.Dregde_Charm, 
         name        =   "Dregde Charm", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dregde_Manifesto : Item(
-        modelid     =   ModelID.Dregde_Manifesto, 
+        model_id     =   ModelID.Dregde_Manifesto, 
         name        =   "Dregde Manifesto", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dryder_Web : Item(
-        modelid     =   ModelID.Dryder_Web, 
+        model_id     =   ModelID.Dryder_Web, 
         name        =   "Dryder Web", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dull_Carapace : Item(
-        modelid     =   ModelID.Dull_Carapace, 
+        model_id     =   ModelID.Dull_Carapace, 
         name        =   "Dull Carapace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dune_Burrower_Jaw : Item(
-        modelid     =   ModelID.Dune_Burrower_Jaw, 
+        model_id     =   ModelID.Dune_Burrower_Jaw, 
         name        =   "Dune Burrower Jaw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dusty_Insect_Carapace : Item(
-        modelid     =   ModelID.Dusty_Insect_Carapace, 
+        model_id     =   ModelID.Dusty_Insect_Carapace, 
         name        =   "Dusty Insect Carapace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Dwarven_Ale : Item(
-        modelid     =   ModelID.Dwarven_Ale, 
+        model_id     =   ModelID.Dwarven_Ale, 
         name        =   "Dwarven Ale", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Irontoe's Chest"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Irontoe's Chest"),
 
     ModelID.Ebon_Spider_Leg : Item(
-        modelid     =   ModelID.Ebon_Spider_Leg, 
+        model_id     =   ModelID.Ebon_Spider_Leg, 
         name        =   "Ebon Spider Leg", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Eggnog : Item(
-        modelid     =   ModelID.Eggnog, 
+        model_id     =   ModelID.Eggnog, 
         name        =   "Eggnog", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
         
     ModelID.El_Mischievious_Tonic : Item(
-        modelid     =   ModelID.El_Mischievious_Tonic, 
+        model_id     =   ModelID.El_Mischievious_Tonic, 
         name        =   "El Mischievious Tonic", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday"),
         
     ModelID.El_Yuletide_Tonic : Item(
-        modelid     =   ModelID.El_Yuletide_Tonic, 
+        model_id     =   ModelID.El_Yuletide_Tonic, 
         name        =   "El Yuletide Tonic", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
         
     ModelID.Elder_Kappa_Shell : Item(
-        modelid     =   ModelID.Elder_Kappa_Shell, 
+        model_id     =   ModelID.Elder_Kappa_Shell, 
         name        =   "Elder Kappa Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Elementalist_Elitetome : Item(
-        modelid     =   ModelID.Elementalist_Elitetome, 
+        model_id     =   ModelID.Elementalist_Elitetome, 
         name        =   "Elementalist Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
         
     ModelID.Elementalist_Tome : Item(
-        modelid     =   ModelID.Elementalist_Tome, 
+        model_id     =   ModelID.Elementalist_Tome, 
         name        =   "Elementalist Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
         
     ModelID.Elonian_Key : Item(
-        modelid     =   ModelID.Elonian_Key, 
+        model_id     =   ModelID.Elonian_Key, 
         name        =   "Elonian Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Crystal Desert"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Crystal Desert"),
         
     ModelID.Elonian_Leather_Square : Item(
-        modelid     =   ModelID.Elonian_Leather_Square, 
+        model_id     =   ModelID.Elonian_Leather_Square, 
         name        =   "Elonian Leather Square", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
         
     ModelID.Enchanted_Lodestone : Item(
-        modelid     =   ModelID.Enchanted_Lodestone, 
+        model_id     =   ModelID.Enchanted_Lodestone, 
         name        =   "Enchanted Lodestone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Enchanted_Vine : Item(
-        modelid     =   ModelID.Enchanted_Vine, 
+        model_id     =   ModelID.Enchanted_Vine, 
         name        =   "Enchanted Vine", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Encrusted_Lodestone : Item(
-        modelid     =   ModelID.Encrusted_Lodestone, 
+        model_id     =   ModelID.Encrusted_Lodestone, 
         name        =   "Encrusted Lodestone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Enslavement_Stone : Item(
-        modelid     =   ModelID.Enslavement_Stone, 
+        model_id     =   ModelID.Enslavement_Stone, 
         name        =   "Enslavement Stone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Feather : Item(
-        modelid     =   ModelID.Feather, 
+        model_id     =   ModelID.Feather, 
         name        =   "Feather", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
         
     ModelID.Feathered_Avicara_Scalp : Item(
-        modelid     =   ModelID.Feathered_Avicara_Scalp, 
+        model_id     =   ModelID.Feathered_Avicara_Scalp, 
         name        =   "Feathered Avicara Scalp", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Feathered_Caromi_Scalp : Item(
-        modelid     =   ModelID.Feathered_Caromi_Scalp, 
+        model_id     =   ModelID.Feathered_Caromi_Scalp, 
         name        =   "Feathered Caromi Scalp", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Feathered_Crest : Item(
-        modelid     =   ModelID.Feathered_Crest, 
+        model_id     =   ModelID.Feathered_Crest, 
         name        =   "Feathered Crest", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Feathered_Scalp : Item(
-        modelid     =   ModelID.Feathered_Scalp, 
+        model_id     =   ModelID.Feathered_Scalp, 
         name        =   "Feathered Scalp", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Fetid_Carapace : Item(
-        modelid     =   ModelID.Fetid_Carapace, 
+        model_id     =   ModelID.Fetid_Carapace, 
         name        =   "Fetid Carapace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Fibrous_Mandragor_Root : Item(
-        modelid     =   ModelID.Fibrous_Mandragor_Root, 
+        model_id     =   ModelID.Fibrous_Mandragor_Root, 
         name        =   "Fibrous Mandragor Root", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Fiery_Crest : Item(
-        modelid     =   ModelID.Fiery_Crest, 
+        model_id     =   ModelID.Fiery_Crest, 
         name        =   "Fiery Crest", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Fledglin_Skree_Wing : Item(
-        modelid     =   ModelID.Fledglin_Skree_Wing, 
+        model_id     =   ModelID.Fledglin_Skree_Wing, 
         name        =   "Fledglin Skree Wing", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Flesh_Reaver_Morsel : Item(
-        modelid     =   ModelID.Flesh_Reaver_Morsel, 
+        model_id     =   ModelID.Flesh_Reaver_Morsel, 
         name        =   "Flesh Reaver Morsel", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Forbidden_Key : Item(
-        modelid     =   ModelID.Forbidden_Key, 
+        model_id     =   ModelID.Forbidden_Key, 
         name        =   "Forbidden Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Raisu Palace"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Raisu Palace"),
         
     ModelID.Forest_Minotaur_Horn : Item(
-        modelid     =   ModelID.Forest_Minotaur_Horn, 
+        model_id     =   ModelID.Forest_Minotaur_Horn, 
         name        =   "Forest Minotaur Horn", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Forgotten_Seal : Item(
-        modelid     =   ModelID.Forgotten_Seal, 
+        model_id     =   ModelID.Forgotten_Seal, 
         name        =   "Forgotten Seal", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Forgotten_Trinket_Box : Item(
-        modelid     =   ModelID.Forgotten_Trinket_Box, 
+        model_id     =   ModelID.Forgotten_Trinket_Box, 
         name        =   "Forgotten Trinket Box", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Four_Leaf_Clover : Item(
-        modelid     =   ModelID.Four_Leaf_Clover, 
+        model_id     =   ModelID.Four_Leaf_Clover, 
         name        =   "Four Leaf Clover", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Lucky Treats Week"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Lucky Treats Week"),
         
     ModelID.Frigid_Heart : Item(
-        modelid     =   ModelID.Frigid_Heart, 
+        model_id     =   ModelID.Frigid_Heart, 
         name        =   "Frigid Heart", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Frigid_Mandragor_Husk : Item(
-        modelid     =   ModelID.Frigid_Mandragor_Husk, 
+        model_id     =   ModelID.Frigid_Mandragor_Husk, 
         name        =   "Frigid Mandragor Husk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Frosted_Griffon_Wing : Item(
-        modelid     =   ModelID.Frosted_Griffon_Wing, 
+        model_id     =   ModelID.Frosted_Griffon_Wing, 
         name        =   "Frosted Griffon Wing", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Frostfire_Fang : Item(
-        modelid     =   ModelID.Frostfire_Fang, 
+        model_id     =   ModelID.Frostfire_Fang, 
         name        =   "Frostfire Fang", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Frozen_Remnant : Item(
-        modelid     =   ModelID.Frozen_Remnant, 
+        model_id     =   ModelID.Frozen_Remnant, 
         name        =   "Frozen Remnant", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Frozen_Shell : Item(
-        modelid     =   ModelID.Frozen_Shell, 
+        model_id     =   ModelID.Frozen_Shell, 
         name        =   "Frozen Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Frozen_Wurm_Husk : Item(
-        modelid     =   ModelID.Frozen_Wurm_Husk, 
+        model_id     =   ModelID.Frozen_Wurm_Husk, 
         name        =   "Frozen Wurm Husk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Fruitcake : Item(
-        modelid     =   ModelID.Fruitcake, 
+        model_id     =   ModelID.Fruitcake, 
         name        =   "Fruitcake", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
         
     ModelID.Fungal_Root : Item(
-        modelid     =   ModelID.Fungal_Root, 
+        model_id     =   ModelID.Fungal_Root, 
         name        =   "Fungal Root", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
         
     ModelID.Fur_Square : Item(
-        modelid     =   ModelID.Fur_Square, 
+        model_id     =   ModelID.Fur_Square, 
         name        =   "Fur Square", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
         
     ModelID.Gargantuan_Jawbone: Item(
-        modelid     =   ModelID.Gargantuan_Jawbone,
+        model_id     =   ModelID.Gargantuan_Jawbone,
         name        =   "Gargantuan Jawbone",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Gargoyle_Skull: Item(
-        modelid     =   ModelID.Gargoyle_Skull,
+        model_id     =   ModelID.Gargoyle_Skull,
         name        =   "Gargoyle Skull",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Geode: Item(
-        modelid     =   ModelID.Geode,
+        model_id     =   ModelID.Geode,
         name        =   "Geode",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Ghostly_Remains: Item(
-        modelid     =   ModelID.Ghostly_Remains,
+        model_id     =   ModelID.Ghostly_Remains,
         name        =   "Ghostly Remains",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Giant_Tusk: Item(
-        modelid     =   ModelID.Giant_Tusk,
+        model_id     =   ModelID.Giant_Tusk,
         name        =   "Giant Tusk",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Glacial_Stone: Item(
-        modelid     =   ModelID.Glacial_Stone,
+        model_id     =   ModelID.Glacial_Stone,
         name        =   "Glacial Stone",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Glob_Of_Ectoplasm: Item(
-        modelid     =   ModelID.Glob_Of_Ectoplasm,
+        model_id     =   ModelID.Glob_Of_Ectoplasm,
         name        =   "Glob Of Ectoplasm",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Rare Material",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Rare Material",
     ),
 
     ModelID.Glob_Of_Frozen_Ectoplasm: Item(
-        modelid     =   ModelID.Glob_Of_Frozen_Ectoplasm,
+        model_id     =   ModelID.Glob_Of_Frozen_Ectoplasm,
         name        =   "Glob Of Frozen Ectoplasm",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped during In Grenth's Defense and You're a Mean One, Mr. Grenth",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped during In Grenth's Defense and You're a Mean One, Mr. Grenth",
     ),
 
     ModelID.Gloom_Seed: Item(
-        modelid     =   ModelID.Gloom_Seed,
+        model_id     =   ModelID.Gloom_Seed,
         name        =   "Gloom Seed",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Glowing_Heart: Item(
-        modelid     =   ModelID.Glowing_Heart,
+        model_id     =   ModelID.Glowing_Heart,
         name        =   "Glowing Heart",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Gold_Crimson_Skull_Coin: Item(
-        modelid     =   ModelID.Gold_Crimson_Skull_Coin,
+        model_id     =   ModelID.Gold_Crimson_Skull_Coin,
         name        =   "Gold Crimson Skull Coin",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Gold_Doubloon: Item(
-        modelid     =   ModelID.Gold_Doubloon,
+        model_id     =   ModelID.Gold_Doubloon,
         name        =   "Gold Doubloon",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Golden_Egg: Item(
-        modelid     =   ModelID.Golden_Egg,
+        model_id     =   ModelID.Golden_Egg,
         name        =   "Golden Egg",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Sweet Treats Week",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Sweet Treats Week",
     ),
 
     ModelID.Golden_Rin_Relic: Item(
-        modelid     =   ModelID.Golden_Rin_Relic,
+        model_id     =   ModelID.Golden_Rin_Relic,
         name        =   "Golden Rin Relic",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
     
     ModelID.Golem_Runestone: Item(
-        modelid     =   ModelID.Golem_Runestone,
+        model_id     =   ModelID.Golem_Runestone,
         name        =   "Golem Runestone",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Granite_Slab: Item(
-        modelid     =   ModelID.Granite_Slab,
+        model_id     =   ModelID.Granite_Slab,
         name        =   "Granite Slab",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Common Material",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Common Material",
     ),
 
     ModelID.Grawl_Necklace: Item(
-        modelid     =   ModelID.Grawl_Necklace,
+        model_id     =   ModelID.Grawl_Necklace,
         name        =   "Grawl Necklace",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Gruesome_Ribcage: Item(
-        modelid     =   ModelID.Gruesome_Ribcage,
+        model_id     =   ModelID.Gruesome_Ribcage,
         name        =   "Gruesome Ribcage",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Gruesome_Sternum: Item(
-        modelid     =   ModelID.Gruesome_Sternum,
+        model_id     =   ModelID.Gruesome_Sternum,
         name        =   "Gruesome Sternum",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Guardian_Moss: Item(
-        modelid     =   ModelID.Guardian_Moss,
+        model_id     =   ModelID.Guardian_Moss,
         name        =   "Guardian Moss",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Hard_Apple_Cider: Item(
-        modelid     =   ModelID.Hard_Apple_Cider,
+        model_id     =   ModelID.Hard_Apple_Cider,
         name        =   "Hard Apple Cider",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Special Treats Week & Anniversary Celebration",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Special Treats Week & Anniversary Celebration",
     ),
 
     ModelID.Hardened_Hump: Item(
-        modelid     =   ModelID.Hardened_Hump,
+        model_id     =   ModelID.Hardened_Hump,
         name        =   "Hardened Hump",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Heket_Tongue: Item(
-        modelid     =   ModelID.Heket_Tongue,
+        model_id     =   ModelID.Heket_Tongue,
         name        =   "Heket Tongue",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
     
     ModelID.Honeycomb: Item(
-        modelid     =   ModelID.Honeycomb,
+        model_id     =   ModelID.Honeycomb,
         name        =   "Honeycomb",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Anniversary Celebrations & April Fools Day",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Anniversary Celebrations & April Fools Day",
     ),
 
     ModelID.Huge_Jawbone: Item(
-        modelid     =   ModelID.Huge_Jawbone,
+        model_id     =   ModelID.Huge_Jawbone,
         name        =   "Huge Jawbone",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
     
     ModelID.Hunters_Ale: Item(
-        modelid     =   ModelID.Hunters_Ale,
+        model_id     =   ModelID.Hunters_Ale,
         name        =   "Hunters Ale",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Anniversary Celebration",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Anniversary Celebration",
     ),
 
     ModelID.Hunting_Minotaur_Horn: Item(
-        modelid     =   ModelID.Hunting_Minotaur_Horn,
+        model_id     =   ModelID.Hunting_Minotaur_Horn,
         name        =   "Hunting Minotaur Horn",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Iboga_Petal: Item(
-        modelid     =   ModelID.Iboga_Petal,
+        model_id     =   ModelID.Iboga_Petal,
         name        =   "Iboga Petal",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Icy_Hump: Item(
-        modelid     =   ModelID.Icy_Hump,
+        model_id     =   ModelID.Icy_Hump,
         name        =   "Icy Hump",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Icy_Lodestone: Item(
-        modelid     =   ModelID.Icy_Lodestone,
+        model_id     =   ModelID.Icy_Lodestone,
         name        =   "Icy Lodestone",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Igneous_Hump: Item(
-        modelid     =   ModelID.Igneous_Hump,
+        model_id     =   ModelID.Igneous_Hump,
         name        =   "Igneous Hump",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Igneous_Spider_leg: Item(
-        modelid     =   ModelID.Igneous_Spider_leg,
+        model_id     =   ModelID.Igneous_Spider_leg,
         name        =   "Igneous Spider Leg",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Igneous_Spider_Leg: Item(
-        modelid     =   ModelID.Igneous_Spider_Leg,
+        model_id     =   ModelID.Igneous_Spider_Leg,
         name        =   "Igneous Spider Leg 2",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Immolated_Djinn_Essence: Item(
-        modelid     =   ModelID.Immolated_Djinn_Essence,
+        model_id     =   ModelID.Immolated_Djinn_Essence,
         name        =   "Immolated Djinn Essence",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Incubus_Wing: Item(
-        modelid     =   ModelID.Incubus_Wing,
+        model_id     =   ModelID.Incubus_Wing,
         name        =   "Incubus Wing",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Inscribed_Shard: Item(
-        modelid     =   ModelID.Inscribed_Shard,
+        model_id     =   ModelID.Inscribed_Shard,
         name        =   "Inscribed Shard",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Insect_Appendage: Item(
-        modelid     =   ModelID.Insect_Appendage,
+        model_id     =   ModelID.Insect_Appendage,
         name        =   "Insect Appendage",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Insect_Carapace: Item(
-        modelid     =   ModelID.Insect_Carapace,
+        model_id     =   ModelID.Insect_Carapace,
         name        =   "Insect Carapace",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Intricate_Grawl_Necklace: Item(
-        modelid     =   ModelID.Intricate_Grawl_Necklace,
+        model_id     =   ModelID.Intricate_Grawl_Necklace,
         name        =   "Intricate Grawl Necklace",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added",
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added",
     ),
 
     ModelID.Skree_Wing : Item(
-        modelid     =   ModelID.Skree_Wing, 
+        model_id     =   ModelID.Skree_Wing, 
         name        =   "Skree Wing", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Iridescant_Griffon_Wing : Item(
-        modelid     =   ModelID.Iridescant_Griffon_Wing, 
+        model_id     =   ModelID.Iridescant_Griffon_Wing, 
         name        =   "Iridescent Griffon Wing", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Iron_Ingot : Item(
-        modelid     =   ModelID.Iron_Ingot, 
+        model_id     =   ModelID.Iron_Ingot, 
         name        =   "Iron Ingot", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
 
     ModelID.Istani_Key : Item(
-        modelid     =   ModelID.Istani_Key, 
+        model_id     =   ModelID.Istani_Key, 
         name        =   "Istani Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Istan"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Istan"),
 
     ModelID.Ivory_Troll_Tusk : Item(
-        modelid     =   ModelID.Ivory_Troll_Tusk, 
+        model_id     =   ModelID.Ivory_Troll_Tusk, 
         name        =   "Ivory Troll Tusk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Jade_Bracelet : Item(
-        modelid     =   ModelID.Jade_Bracelet, 
+        model_id     =   ModelID.Jade_Bracelet, 
         name        =   "Jade Bracelet", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Jade_Mandible : Item(
-        modelid     =   ModelID.Jade_Mandible, 
+        model_id     =   ModelID.Jade_Mandible, 
         name        =   "Jade Mandible", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Jade_Orb : Item(
-        modelid     =   ModelID.Jade_Orb, 
+        model_id     =   ModelID.Jade_Orb, 
         name        =   "Jade Orb", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Jadeite_Shard : Item(
-        modelid     =   ModelID.Jadeite_Shard, 
+        model_id     =   ModelID.Jadeite_Shard, 
         name        =   "Jadeite Shard", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Jotun_Pelt : Item(
-        modelid     =   ModelID.Jotun_Pelt, 
+        model_id     =   ModelID.Jotun_Pelt, 
         name        =   "Jotun Pelt", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Jungle_Skale_Fin : Item(
-        modelid     =   ModelID.Jungle_Skale_Fin, 
+        model_id     =   ModelID.Jungle_Skale_Fin, 
         name        =   "Jungle Skale Fin", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Jungle_Troll_Tusk : Item(
-        modelid     =   ModelID.Jungle_Troll_Tusk, 
+        model_id     =   ModelID.Jungle_Troll_Tusk, 
         name        =   "Jungle Troll Tusk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Juvenile_Termite_Leg : Item(
-        modelid     =   ModelID.Juvenile_Termite_Leg, 
+        model_id     =   ModelID.Juvenile_Termite_Leg, 
         name        =   "Juvenile Termite Leg", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Kappa_Hatchling_Shell : Item(
-        modelid     =   ModelID.Kappa_Hatchling_Shell, 
+        model_id     =   ModelID.Kappa_Hatchling_Shell, 
         name        =   "Kappa Hatchling Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Kappa_Shell : Item(
-        modelid     =   ModelID.Kappa_Shell, 
+        model_id     =   ModelID.Kappa_Shell, 
         name        =   "Kappa Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Keen_Oni_Claw : Item(
-        modelid     =   ModelID.Keen_Oni_Claw, 
+        model_id     =   ModelID.Keen_Oni_Claw, 
         name        =   "Keen Oni Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Keen_Oni_Talon : Item(
-        modelid     =   ModelID.Keen_Oni_Talon, 
+        model_id     =   ModelID.Keen_Oni_Talon, 
         name        =   "Keen Oni Talon", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Kirin_Horn : Item(
-        modelid     =   ModelID.Kirin_Horn, 
+        model_id     =   ModelID.Kirin_Horn, 
         name        =   "Kirin Horn", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Kournan_Key : Item(
-        modelid     =   ModelID.Kournan_Key, 
+        model_id     =   ModelID.Kournan_Key, 
         name        =   "Kournan Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Kourna"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Kourna"),
 
     ModelID.Kournan_Pendant : Item(
-        modelid     =   ModelID.Kournan_Pendant, 
+        model_id     =   ModelID.Kournan_Pendant, 
         name        =   "Kournan Pendant", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Krait_Skin : Item(
-        modelid     =   ModelID.Krait_Skin, 
+        model_id     =   ModelID.Krait_Skin, 
         name        =   "Krait Skin", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Kraken_Eye : Item(
-        modelid     =   ModelID.Kraken_Eye, 
+        model_id     =   ModelID.Kraken_Eye, 
         name        =   "Kraken Eye", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Krytan_Brandy : Item(
-        modelid     =   ModelID.Krytan_Brandy, 
+        model_id     =   ModelID.Krytan_Brandy, 
         name        =   "Krytan Brandy", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration"),
 
     ModelID.Krytan_Key : Item(
-        modelid     =   ModelID.Krytan_Key, 
+        model_id     =   ModelID.Krytan_Key, 
         name        =   "Krytan Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Kryta"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Kryta"),
 
     ModelID.Kurzick_Bauble : Item(
-        modelid     =   ModelID.Kurzick_Bauble, 
+        model_id     =   ModelID.Kurzick_Bauble, 
         name        =   "Kurzick Bauble", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Kurzick_Key : Item(
-        modelid     =   ModelID.Kurzick_Key, 
+        model_id     =   ModelID.Kurzick_Key, 
         name        =   "Kurzick Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Echovald Forest"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Echovald Forest"),
 
     ModelID.Kuskale_Claw : Item(
-        modelid     =   ModelID.Kuskale_Claw, 
+        model_id     =   ModelID.Kuskale_Claw, 
         name        =   "Kuskale Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Lavastrider_Appendage : Item(
-        modelid     =   ModelID.Lavastrider_Appendage, 
+        model_id     =   ModelID.Lavastrider_Appendage, 
         name        =   "Lavastrider Appendage", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Leather_Belt : Item(
-        modelid     =   ModelID.Leather_Belt, 
+        model_id     =   ModelID.Leather_Belt, 
         name        =   "Leather Belt", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Leather_Square : Item(
-        modelid     =   ModelID.Leather_Square, 
+        model_id     =   ModelID.Leather_Square, 
         name        =   "Leather Square", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Leathery_Claw : Item(
-        modelid     =   ModelID.Leathery_Claw, 
+        model_id     =   ModelID.Leathery_Claw, 
         name        =   "Leathery Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Lockpick : Item(
-        modelid     =   ModelID.Lockpick, 
+        model_id     =   ModelID.Lockpick, 
         name        =   "Lockpick", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes All Regions Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes All Regions Hard Mode"),
 
     ModelID.Losaru_Mane : Item(
-        modelid     =   ModelID.Losaru_Mane, 
+        model_id     =   ModelID.Losaru_Mane, 
         name        =   "Losaru Mane", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Lump_Of_Charcoal : Item(
-        modelid     =   ModelID.Lump_Of_Charcoal, 
+        model_id     =   ModelID.Lump_Of_Charcoal, 
         name        =   "Lump Of Charcoal", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Lunar_Token : Item(
-        modelid     =   ModelID.Lunar_Token, 
+        model_id     =   ModelID.Lunar_Token, 
         name        =   "Lunar Token", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped during Canthan New Year - Random drop by foes"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped during Canthan New Year - Random drop by foes"),
 
     ModelID.Luxon_Key : Item(
-        modelid     =   ModelID.Luxon_Key, 
+        model_id     =   ModelID.Luxon_Key, 
         name        =   "Luxon Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Jade Sea"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Jade Sea"),
 
     ModelID.Luxon_Pendant : Item(
-        modelid     =   ModelID.Luxon_Pendant, 
+        model_id     =   ModelID.Luxon_Pendant, 
         name        =   "Luxon Pendant", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Maguuma_Key : Item(
-        modelid     =   ModelID.Maguuma_Key, 
+        model_id     =   ModelID.Maguuma_Key, 
         name        =   "Maguuma Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Maguuma Jungle"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Maguuma Jungle"),
 
     ModelID.Maguuma_Mane : Item(
-        modelid     =   ModelID.Maguuma_Mane, 
+        model_id     =   ModelID.Maguuma_Mane, 
         name        =   "Maguuma Mane", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mahgo_Claw : Item(
-        modelid     =   ModelID.Mahgo_Claw, 
+        model_id     =   ModelID.Mahgo_Claw, 
         name        =   "Mahgo Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mandragor_Carapace : Item(
-        modelid     =   ModelID.Mandragor_Carapace, 
+        model_id     =   ModelID.Mandragor_Carapace, 
         name        =   "Mandragor Carapace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mandragor_Husk : Item(
-        modelid     =   ModelID.Mandragor_Husk, 
+        model_id     =   ModelID.Mandragor_Husk, 
         name        =   "Mandragor Husk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mandragor_Root : Item(
-        modelid     =   ModelID.Mandragor_Root, 
+        model_id     =   ModelID.Mandragor_Root, 
         name        =   "Mandragor Root", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mandragor_Swamproot : Item(
-        modelid     =   ModelID.Mandragor_Swamproot, 
+        model_id     =   ModelID.Mandragor_Swamproot, 
         name        =   "Mandragor Swamproot", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mantid_Pincer : Item(
-        modelid     =   ModelID.Mantid_Pincer, 
+        model_id     =   ModelID.Mantid_Pincer, 
         name        =   "Mantid Pincer", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mantid_Ungula : Item(
-        modelid     =   ModelID.Mantid_Ungula, 
+        model_id     =   ModelID.Mantid_Ungula, 
         name        =   "Mantid Ungula", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mantis_Pincer : Item(
-        modelid     =   ModelID.Mantis_Pincer, 
+        model_id     =   ModelID.Mantis_Pincer, 
         name        =   "Mantis Pincer", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Map_Piece_Bl : Item(
-        modelid     =   ModelID.Map_Piece_Bl, 
+        model_id     =   ModelID.Map_Piece_Bl, 
         name        =   "Map Piece (Bottom-Left)", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Map_Piece_Br : Item(
-        modelid     =   ModelID.Map_Piece_Br, 
+        model_id     =   ModelID.Map_Piece_Br, 
         name        =   "Map Piece (Bottom-Right)", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Map_Piece_Tl : Item(
-        modelid     =   ModelID.Map_Piece_Tl, 
+        model_id     =   ModelID.Map_Piece_Tl, 
         name        =   "Map Piece (Top-Left)", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Map_Piece_Tr : Item(
-        modelid     =   ModelID.Map_Piece_Tr, 
+        model_id     =   ModelID.Map_Piece_Tr, 
         name        =   "Map Piece (Top-Right)", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Margonite_Gemstone : Item(
-        modelid     =   ModelID.Margonite_Gemstone, 
+        model_id     =   ModelID.Margonite_Gemstone, 
         name        =   "Margonite Gemstone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped in Domain of Anguish (DOA)"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped in Domain of Anguish (DOA)"),
 
     ModelID.Margonite_Key : Item(
-        modelid     =   ModelID.Margonite_Key, 
+        model_id     =   ModelID.Margonite_Key, 
         name        =   "Margonite Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Realm Of Terror"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Realm Of Terror"),
 
     ModelID.Margonite_Mask : Item(
-        modelid     =   ModelID.Margonite_Mask, 
+        model_id     =   ModelID.Margonite_Mask, 
         name        =   "Margonite Mask", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Massive_Jawbone : Item(
-        modelid     =   ModelID.Massive_Jawbone, 
+        model_id     =   ModelID.Massive_Jawbone, 
         name        =   "Massive Jawbone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mergoyle_Skull : Item(
-        modelid     =   ModelID.Mergoyle_Skull, 
+        model_id     =   ModelID.Mergoyle_Skull, 
         name        =   "Mergoyle Skull", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Mesmer_Elitetome : Item(
-        modelid     =   ModelID.Mesmer_Elitetome, 
+        model_id     =   ModelID.Mesmer_Elitetome, 
         name        =   "Mesmer Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Mesmer_Tome : Item(
-        modelid     =   ModelID.Mesmer_Tome, 
+        model_id     =   ModelID.Mesmer_Tome, 
         name        =   "Mesmer Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Miners_Key : Item(
-        modelid     =   ModelID.Miners_Key, 
+        model_id     =   ModelID.Miners_Key, 
         name        =   "Miners Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Sorrows Furnace"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Sorrows Furnace"),
 
     ModelID.Ministerial_Commendation : Item(
-        modelid     =   ModelID.Ministerial_Commendation, 
+        model_id     =   ModelID.Ministerial_Commendation, 
         name        =   "Ministerial Commendation", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Random drop from members of the Ministry of Purity"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Random drop from members of the Ministry of Purity"),
 
     ModelID.Minotaur_Horn : Item(
-        modelid     =   ModelID.Minotaur_Horn, 
+        model_id     =   ModelID.Minotaur_Horn, 
         name        =   "Minotaur Horn", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Modnir_Mane : Item(
-        modelid     =   ModelID.Modnir_Mane, 
+        model_id     =   ModelID.Modnir_Mane, 
         name        =   "Modnir Mane", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Molten_Claw : Item(
-        modelid     =   ModelID.Molten_Claw, 
+        model_id     =   ModelID.Molten_Claw, 
         name        =   "Molten Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Molten_Eye : Item(
-        modelid     =   ModelID.Molten_Eye, 
+        model_id     =   ModelID.Molten_Eye, 
         name        =   "Molten Eye", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Molten_Heart : Item(
-        modelid     =   ModelID.Molten_Heart, 
+        model_id     =   ModelID.Molten_Heart, 
         name        =   "Molten Heart", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Monk_Elitetome : Item(
-        modelid     =   ModelID.Monk_Elitetome, 
+        model_id     =   ModelID.Monk_Elitetome, 
         name        =   "Monk Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Monk_Tome : Item(
-        modelid     =   ModelID.Monk_Tome, 
+        model_id     =   ModelID.Monk_Tome, 
         name        =   "Monk Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Monstrous_Claw : Item(
-        modelid     =   ModelID.Monstrous_Claw, 
+        model_id     =   ModelID.Monstrous_Claw, 
         name        =   "Monstrous Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Monstrous_Eye : Item(
-        modelid     =   ModelID.Monstrous_Eye, 
+        model_id     =   ModelID.Monstrous_Eye, 
         name        =   "Monstrous Eye", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Monstrous_Fang : Item(
-        modelid     =   ModelID.Monstrous_Fang, 
+        model_id     =   ModelID.Monstrous_Fang, 
         name        =   "Monstrous Fang", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Moon_Shell : Item(
-        modelid     =   ModelID.Moon_Shell, 
+        model_id     =   ModelID.Moon_Shell, 
         name        =   "Moon Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Naga_Hide : Item(
-        modelid     =   ModelID.Naga_Hide, 
+        model_id     =   ModelID.Naga_Hide, 
         name        =   "Naga Hide", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Naga_Pelt : Item(
-        modelid     =   ModelID.Naga_Pelt, 
+        model_id     =   ModelID.Naga_Pelt, 
         name        =   "Naga Pelt", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Naga_Skin : Item(
-        modelid     =   ModelID.Naga_Skin, 
+        model_id     =   ModelID.Naga_Skin, 
         name        =   "Naga Skin", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Necromancer_Elitetome : Item(
-        modelid     =   ModelID.Necromancer_Elitetome, 
+        model_id     =   ModelID.Necromancer_Elitetome, 
         name        =   "Necromancer Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Necromancer_Tome : Item(
-        modelid     =   ModelID.Necromancer_Tome, 
+        model_id     =   ModelID.Necromancer_Tome, 
         name        =   "Necromancer Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Obsidian_Burrower_Jaw : Item(
-        modelid     =   ModelID.Obsidian_Burrower_Jaw, 
+        model_id     =   ModelID.Obsidian_Burrower_Jaw, 
         name        =   "Obsidian Burrower Jaw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Obsidian_Key : Item(
-        modelid     =   ModelID.Obsidian_Key, 
+        model_id     =   ModelID.Obsidian_Key, 
         name        =   "Obsidian Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Fissure of Woe"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Fissure of Woe"),
 
     ModelID.Obsidian_Shard : Item(
-        modelid     =   ModelID.Obsidian_Shard, 
+        model_id     =   ModelID.Obsidian_Shard, 
         name        =   "Obsidian Shard", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Oni_Claw : Item(
-        modelid     =   ModelID.Oni_Claw, 
+        model_id     =   ModelID.Oni_Claw, 
         name        =   "Oni Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Oni_Taloon : Item(
-        modelid     =   ModelID.Oni_Taloon, 
+        model_id     =   ModelID.Oni_Taloon, 
         name        =   "Oni Taloon", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Onyx_Gemstone : Item(
-        modelid     =   ModelID.Onyx_Gemstone, 
+        model_id     =   ModelID.Onyx_Gemstone, 
         name        =   "Onyx Gemstone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Ornate_Grawl_Necklace : Item(
-        modelid     =   ModelID.Ornate_Grawl_Necklace, 
+        model_id     =   ModelID.Ornate_Grawl_Necklace, 
         name        =   "Ornate Grawl Necklace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Paragon_Elitetome : Item(
-        modelid     =   ModelID.Paragon_Elitetome, 
+        model_id     =   ModelID.Paragon_Elitetome, 
         name        =   "Paragon Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Paragon_Tome : Item(
-        modelid     =   ModelID.Paragon_Tome, 
+        model_id     =   ModelID.Paragon_Tome, 
         name        =   "Paragon Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Party_Beacon : Item(
-        modelid     =   ModelID.Party_Beacon, 
+        model_id     =   ModelID.Party_Beacon, 
         name        =   "Party Beacon", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration"),
 
     ModelID.Passage_Scroll_Deep : Item(
-        modelid     =   ModelID.Passage_Scroll_Deep, 
+        model_id     =   ModelID.Passage_Scroll_Deep, 
         name        =   "Passage Scroll Deep", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses HM & Foes The Deep"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses HM & Foes The Deep"),
 
     ModelID.Passage_Scroll_Fow : Item(
-        modelid     =   ModelID.Passage_Scroll_Fow, 
+        model_id     =   ModelID.Passage_Scroll_Fow, 
         name        =   "Passage Scroll Fow", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses HM & Foes Fow"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses HM & Foes Fow"),
 
     ModelID.Passage_Scroll_Urgoz : Item(
-        modelid     =   ModelID.Passage_Scroll_Urgoz, 
+        model_id     =   ModelID.Passage_Scroll_Urgoz, 
         name        =   "Passage Scroll Urgoz", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses HM & Foes Urgoz"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses HM & Foes Urgoz"),
 
     ModelID.Passage_Scroll_Uw : Item(
-        modelid     =   ModelID.Passage_Scroll_Uw, 
+        model_id     =   ModelID.Passage_Scroll_Uw, 
         name        =   "Passage Scroll Uw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses HM & Foes The Uw"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses HM & Foes The Uw"),
 
     ModelID.Patch_Of_Simian_Fur : Item(
-        modelid     =   ModelID.Patch_Of_Simian_Fur, 
+        model_id     =   ModelID.Patch_Of_Simian_Fur, 
         name        =   "Patch Of Simian Fur", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Peppermint_Cc : Item(
-        modelid     =   ModelID.Peppermint_Cc, 
+        model_id     =   ModelID.Peppermint_Cc, 
         name        =   "Peppermint Cc", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
 
     ModelID.Phantom_Key : Item(
-        modelid     =   ModelID.Phantom_Key, 
+        model_id     =   ModelID.Phantom_Key, 
         name        =   "Phantom Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes The Underworld"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes The Underworld"),
 
     ModelID.Phantom_Residue : Item(
-        modelid     =   ModelID.Phantom_Residue, 
+        model_id     =   ModelID.Phantom_Residue, 
         name        =   "Phantom Residue", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Pile_Of_Elemental_Dust : Item(
-        modelid     =   ModelID.Pile_Of_Elemental_Dust, 
+        model_id     =   ModelID.Pile_Of_Elemental_Dust, 
         name        =   "Pile Of Elemental Dust", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Pile_Of_Glittering_Dust : Item(
-        modelid     =   ModelID.Pile_Of_Glittering_Dust, 
+        model_id     =   ModelID.Pile_Of_Glittering_Dust, 
         name        =   "Pile Of Glittering Dust", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
 
     ModelID.Plant_Fiber : Item(
-        modelid     =   ModelID.Plant_Fiber, 
+        model_id     =   ModelID.Plant_Fiber, 
         name        =   "Plant Fiber", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
 
     ModelID.Plauge_Idol : Item(
-        modelid     =   ModelID.Plauge_Idol, 
+        model_id     =   ModelID.Plauge_Idol, 
         name        =   "Plague Idol", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Pulsating_Growth : Item(
-        modelid     =   ModelID.Pulsating_Growth, 
+        model_id     =   ModelID.Pulsating_Growth, 
         name        =   "Pulsating Growth", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Putrid_Cyst : Item(
-        modelid     =   ModelID.Putrid_Cyst, 
+        model_id     =   ModelID.Putrid_Cyst, 
         name        =   "Putrid Cyst", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Quetzal_Crest : Item(
-        modelid     =   ModelID.Quetzal_Crest, 
+        model_id     =   ModelID.Quetzal_Crest, 
         name        =   "Quetzal Crest", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Rainbow_Cc : Item(
-        modelid     =   ModelID.Rainbow_Cc, 
+        model_id     =   ModelID.Rainbow_Cc, 
         name        =   "Rainbow Cc", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
 
     ModelID.Ranger_Elitetome : Item(
-        modelid     =   ModelID.Ranger_Elitetome, 
+        model_id     =   ModelID.Ranger_Elitetome, 
         name        =   "Ranger Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Ranger_Tome : Item(
-        modelid     =   ModelID.Ranger_Tome, 
+        model_id     =   ModelID.Ranger_Tome, 
         name        =   "Ranger Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Rawhide_Belt : Item(
-        modelid     =   ModelID.Rawhide_Belt, 
+        model_id     =   ModelID.Rawhide_Belt, 
         name        =   "Rawhide Belt", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Red_Bean_Cake : Item(
-        modelid     =   ModelID.Red_Bean_Cake, 
+        model_id     =   ModelID.Red_Bean_Cake, 
         name        =   "Red Bean Cake", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration & Dragon Festival"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration & Dragon Festival"),
 
     ModelID.Red_Iris_Flower : Item(
-        modelid     =   ModelID.Red_Iris_Flower, 
+        model_id     =   ModelID.Red_Iris_Flower, 
         name        =   "Red Iris Flower", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Rinkhal_Talon : Item(
-        modelid     =   ModelID.Rinkhal_Talon, 
+        model_id     =   ModelID.Rinkhal_Talon, 
         name        =   "Rinkhal Talon", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Ritualist_Elitetome : Item(
-        modelid     =   ModelID.Ritualist_Elitetome, 
+        model_id     =   ModelID.Ritualist_Elitetome, 
         name        =   "Ritualist Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Ritualist_Tome : Item(
-        modelid     =   ModelID.Ritualist_Tome, 
+        model_id     =   ModelID.Ritualist_Tome, 
         name        =   "Ritualist Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
                     
     ModelID.Ritualist_Elitetome : Item(
-        modelid     =   ModelID.Ritualist_Elitetome, 
+        model_id     =   ModelID.Ritualist_Elitetome, 
         name        =   "Ritualist Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Ritualist_Tome : Item(
-        modelid     =   ModelID.Ritualist_Tome, 
+        model_id     =   ModelID.Ritualist_Tome, 
         name        =   "Ritualist Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Roaring_Ether_Claw : Item(
-        modelid     =   ModelID.Roaring_Ether_Claw, 
+        model_id     =   ModelID.Roaring_Ether_Claw, 
         name        =   "Roaring Ether Claw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Roll_Of_Parchment : Item(
-        modelid     =   ModelID.Roll_Of_Parchment, 
+        model_id     =   ModelID.Roll_Of_Parchment, 
         name        =   "Roll Of Parchment", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Roll_Of_Vellum : Item(
-        modelid     =   ModelID.Roll_Of_Vellum, 
+        model_id     =   ModelID.Roll_Of_Vellum, 
         name        =   "Roll Of Vellum", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Rot_Wallow_Tusk : Item(
-        modelid     =   ModelID.Rot_Wallow_Tusk, 
+        model_id     =   ModelID.Rot_Wallow_Tusk, 
         name        =   "Rot Wallow Tusk", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Ruby : Item(
-        modelid     =   ModelID.Ruby, 
+        model_id     =   ModelID.Ruby, 
         name        =   "Ruby", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Ruby_Djinn_Essence : Item(
-        modelid     =   ModelID.Ruby_Djinn_Essence, 
+        model_id     =   ModelID.Ruby_Djinn_Essence, 
         name        =   "Ruby Djinn Essence", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sandblasted_Lodestone : Item(
-        modelid     =   ModelID.Sandblasted_Lodestone, 
+        model_id     =   ModelID.Sandblasted_Lodestone, 
         name        =   "Sandblasted Lodestone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sapphire : Item(
-        modelid     =   ModelID.Sapphire, 
+        model_id     =   ModelID.Sapphire, 
         name        =   "Sapphire", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Sapphire_Djinn_Essence : Item(
-        modelid     =   ModelID.Sapphire_Djinn_Essence, 
+        model_id     =   ModelID.Sapphire_Djinn_Essence, 
         name        =   "Sapphire Djinn Essence", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Saurian_Bone : Item(
-        modelid     =   ModelID.Saurian_Bone, 
+        model_id     =   ModelID.Saurian_Bone, 
         name        =   "Saurian Bone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Scale : Item(
-        modelid     =   ModelID.Scale, 
+        model_id     =   ModelID.Scale, 
         name        =   "Scale", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
 
     ModelID.Scar_Behemoth_Jaw : Item(
-        modelid     =   ModelID.Scar_Behemoth_Jaw, 
+        model_id     =   ModelID.Scar_Behemoth_Jaw, 
         name        =   "Scar Behemoth Jaw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Scorched_Lodestone : Item(
-        modelid     =   ModelID.Scorched_Lodestone, 
+        model_id     =   ModelID.Scorched_Lodestone, 
         name        =   "Scorched Lodestone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Scorched_Seed : Item(
-        modelid     =   ModelID.Scorched_Seed, 
+        model_id     =   ModelID.Scorched_Seed, 
         name        =   "Scorched Seed", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Scroll_Of_Adventurers_Insight : Item(
-        modelid     =   ModelID.Scroll_Of_Adventurers_Insight, 
+        model_id     =   ModelID.Scroll_Of_Adventurers_Insight, 
         name        =   "Scroll Of Adventurers Insight", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses NM & HM"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses NM & HM"),
 
     ModelID.Scroll_Of_Berserkers_Insight : Item(
-        modelid     =   ModelID.Scroll_Of_Berserkers_Insight, 
+        model_id     =   ModelID.Scroll_Of_Berserkers_Insight, 
         name        =   "Scroll Of Berserkers Insight", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses NM & HM"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses NM & HM"),
 
     ModelID.Scroll_Of_Heros_Insight : Item(
-        modelid     =   ModelID.Scroll_Of_Heros_Insight, 
+        model_id     =   ModelID.Scroll_Of_Heros_Insight, 
         name        =   "Scroll Of Heros Insight", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses NM & HM"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses NM & HM"),
 
     ModelID.Scroll_Of_Hunters_Insight : Item(
-        modelid     =   ModelID.Scroll_Of_Hunters_Insight, 
+        model_id     =   ModelID.Scroll_Of_Hunters_Insight, 
         name        =   "Scroll Of Hunters Insight", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses NM & HM"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses NM & HM"),
 
     ModelID.Scroll_Of_Rampagers_Insight : Item(
-        modelid     =   ModelID.Scroll_Of_Rampagers_Insight, 
+        model_id     =   ModelID.Scroll_Of_Rampagers_Insight, 
         name        =   "Scroll Of Rampagers Insight", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses NM & HM"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses NM & HM"),
 
     ModelID.Searing_Burrower_Jaw : Item(
-        modelid     =   ModelID.Searing_Burrower_Jaw, 
+        model_id     =   ModelID.Searing_Burrower_Jaw, 
         name        =   "Searing Burrower Jaw", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Searing_Ribcage : Item(
-        modelid     =   ModelID.Searing_Ribcage, 
+        model_id     =   ModelID.Searing_Ribcage, 
         name        =   "Searing Ribcage", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sentient_Lodestone : Item(
-        modelid     =   ModelID.Sentient_Lodestone, 
+        model_id     =   ModelID.Sentient_Lodestone, 
         name        =   "Sentient Lodestone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sentient_Root : Item(
-        modelid     =   ModelID.Sentient_Root, 
+        model_id     =   ModelID.Sentient_Root, 
         name        =   "Sentient Root", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sentient_Seed : Item(
-        modelid     =   ModelID.Sentient_Seed, 
+        model_id     =   ModelID.Sentient_Seed, 
         name        =   "Sentient Seed", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sentient_Spore : Item(
-        modelid     =   ModelID.Sentient_Spore, 
+        model_id     =   ModelID.Sentient_Spore, 
         name        =   "Sentient Spore", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Sentient_Vine : Item(
-        modelid     =   ModelID.Sentient_Vine, 
+        model_id     =   ModelID.Sentient_Vine, 
         name        =   "Sentient Vine", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Shadowy_Crest : Item(
-        modelid     =   ModelID.Shadowy_Crest, 
+        model_id     =   ModelID.Shadowy_Crest, 
         name        =   "Shadowy Crest", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Shamrock_Ale : Item(
-        modelid     =   ModelID.Shamrock_Ale, 
+        model_id     =   ModelID.Shamrock_Ale, 
         name        =   "Shamrock Ale", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Lucky Treats Week"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Lucky Treats Week"),
 
     ModelID.Shing_Jea_Key : Item(
-        modelid     =   ModelID.Shing_Jea_Key, 
+        model_id     =   ModelID.Shing_Jea_Key, 
         name        =   "Shing Jea Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Shing Jea Island"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Shing Jea Island"),
 
     ModelID.Shiverpeak_Key : Item(
-        modelid     =   ModelID.Shiverpeak_Key, 
+        model_id     =   ModelID.Shiverpeak_Key, 
         name        =   "Shiverpeak Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Southern Shiverpeaks"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Southern Shiverpeaks"),
 
     ModelID.Slayers_Insight_Scroll : Item(
-        modelid     =   ModelID.Slayers_Insight_Scroll, 
+        model_id     =   ModelID.Slayers_Insight_Scroll, 
         name        =   "Slayers Insight Scroll", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses NM & HM"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses NM & HM"),
 
     ModelID.Slice_Of_Pumpkin_Pie : Item(
-        modelid     =   ModelID.Slice_Of_Pumpkin_Pie, 
+        model_id     =   ModelID.Slice_Of_Pumpkin_Pie, 
         name        =   "Slice Of Pumpkin Pie", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Special Treats Week"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Special Treats Week"),
 
     ModelID.Snowman_Summoner : Item(
-        modelid     =   ModelID.Snowman_Summoner, 
+        model_id     =   ModelID.Snowman_Summoner, 
         name        =   "Snowman Summoner", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
 
     ModelID.Sparkler : Item(
-        modelid     =   ModelID.Sparkler, 
+        model_id     =   ModelID.Sparkler, 
         name        =   "Sparkler", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebration & Wayfarer's Reverie"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebration & Wayfarer's Reverie"),
 
     ModelID.Spiked_Eggnog : Item(
-        modelid     =   ModelID.Spiked_Eggnog, 
+        model_id     =   ModelID.Spiked_Eggnog, 
         name        =   "Spiked Eggnog", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
 
     ModelID.Spiritwood_Plank : Item(
-        modelid     =   ModelID.Spiritwood_Plank, 
+        model_id     =   ModelID.Spiritwood_Plank, 
         name        =   "Spiritwood Plank", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
 
     ModelID.Spiritwood_Plank : Item(
-        modelid     =   ModelID.Spiritwood_Plank, 
+        model_id     =   ModelID.Spiritwood_Plank, 
         name        =   "Spiritwood Plank", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Steel_Ingot : Item(
-        modelid     =   ModelID.Steel_Ingot, 
+        model_id     =   ModelID.Steel_Ingot, 
         name        =   "Steel Ingot", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Steel_Key : Item(
-        modelid     =   ModelID.Steel_Key, 
+        model_id     =   ModelID.Steel_Key, 
         name        =   "Steel Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Northern Silverpeaks"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Northern Silverpeaks"),
 
     ModelID.Stoneroot_Key : Item(
-        modelid     =   ModelID.Stoneroot_Key, 
+        model_id     =   ModelID.Stoneroot_Key, 
         name        =   "Stoneroot Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Urgoz Warren"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Urgoz Warren"),
 
     ModelID.Stygian_Gemstone : Item(
-        modelid     =   ModelID.Stygian_Gemstone, 
+        model_id     =   ModelID.Stygian_Gemstone, 
         name        =   "Stygian Gemstone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped in Domain of Anguish (DOA)"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped in Domain of Anguish (DOA)"),
 
     ModelID.Sugary_Blue_Drink : Item(
-        modelid     =   ModelID.Sugary_Blue_Drink, 
+        model_id     =   ModelID.Sugary_Blue_Drink, 
         name        =   "Sugary Blue Drink", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Anniversary Celebrations & Wayfarer's Reverie & Dragon Festival & Canthan New Year"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Anniversary Celebrations & Wayfarer's Reverie & Dragon Festival & Canthan New Year"),
 
     ModelID.Superior_Charr_Carving : Item(
-        modelid     =   ModelID.Superior_Charr_Carving, 
+        model_id     =   ModelID.Superior_Charr_Carving, 
         name        =   "Superior Charr Carving", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Tangled_Seed : Item(
-        modelid     =   ModelID.Tangled_Seed, 
+        model_id     =   ModelID.Tangled_Seed, 
         name        =   "Tangled Seed", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Tanned_Hide_Square : Item(
-        modelid     =   ModelID.Tanned_Hide_Square, 
+        model_id     =   ModelID.Tanned_Hide_Square, 
         name        =   "Tanned Hide Square", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Common Material"),
 
     ModelID.Tempered_Glass_Vial : Item(
-        modelid     =   ModelID.Tempered_Glass_Vial, 
+        model_id     =   ModelID.Tempered_Glass_Vial, 
         name        =   "Tempered Glass Vial", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Thorny_Carapace : Item(
-        modelid     =   ModelID.Thorny_Carapace, 
+        model_id     =   ModelID.Thorny_Carapace, 
         name        =   "Thorny Carapace", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Titan_Gemstone : Item(
-        modelid     =   ModelID.Titan_Gemstone, 
+        model_id     =   ModelID.Titan_Gemstone, 
         name        =   "Titan Gemstone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped in Domain of Anguish (DOA)"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped in Domain of Anguish (DOA)"),
 
     ModelID.Topaz_Crest : Item(
-        modelid     =   ModelID.Topaz_Crest, 
+        model_id     =   ModelID.Topaz_Crest, 
         name        =   "Topaz Crest", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Torment_Gemstone : Item(
-        modelid     =   ModelID.Torment_Gemstone, 
+        model_id     =   ModelID.Torment_Gemstone, 
         name        =   "Torment Gemstone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped in Domain of Anguish (DOA)"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped in Domain of Anguish (DOA)"),
 
     ModelID.Truffle : Item(
-        modelid     =   ModelID.Truffle, 
+        model_id     =   ModelID.Truffle, 
         name        =   "Truffle", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Umbral_Eye : Item(
-        modelid     =   ModelID.Umbral_Eye, 
+        model_id     =   ModelID.Umbral_Eye, 
         name        =   "Umbral Eye", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Umbral_Shell : Item(
-        modelid     =   ModelID.Umbral_Shell, 
+        model_id     =   ModelID.Umbral_Shell, 
         name        =   "Umbral Shell", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Umbral_Skeletal_Limb : Item(
-        modelid     =   ModelID.Umbral_Skeletal_Limb, 
+        model_id     =   ModelID.Umbral_Skeletal_Limb, 
         name        =   "Umbral Skeletal Limb", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Unctuous_Remains : Item(
-        modelid     =   ModelID.Unctuous_Remains, 
+        model_id     =   ModelID.Unctuous_Remains, 
         name        =   "Unctuous Remains", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Undead_Bone : Item(
-        modelid     =   ModelID.Undead_Bone, 
+        model_id     =   ModelID.Undead_Bone, 
         name        =   "Undead Bone", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Unnatural_Seed : Item(
-        modelid     =   ModelID.Unnatural_Seed, 
+        model_id     =   ModelID.Unnatural_Seed, 
         name        =   "Unnatural Seed", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Vabbian_Key : Item(
-        modelid     =   ModelID.Vabbian_Key, 
+        model_id     =   ModelID.Vabbian_Key, 
         name        =   "Vabbian Key", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes Vabbi"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes Vabbi"),
 
     ModelID.Vaettir_Essence : Item(
-        modelid     =   ModelID.Vaettir_Essence, 
+        model_id     =   ModelID.Vaettir_Essence, 
         name        =   "Vaettir Essence", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Vampiric_Fang : Item(
-        modelid     =   ModelID.Vampiric_Fang, 
+        model_id     =   ModelID.Vampiric_Fang, 
         name        =   "Vampiric Fang", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped in Urgoz's Warren by Hopping Vampire & Thought Stealer"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped in Urgoz's Warren by Hopping Vampire & Thought Stealer"),
 
     ModelID.Venerable_Mantid_Pincer : Item(
-        modelid     =   ModelID.Venerable_Mantid_Pincer, 
+        model_id     =   ModelID.Venerable_Mantid_Pincer, 
         name        =   "Venerable Mantid Pincer", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Vermin_Hide : Item(
-        modelid     =   ModelID.Vermin_Hide, 
+        model_id     =   ModelID.Vermin_Hide, 
         name        =   "Vermin Hide", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Vial_Of_Absinthe : Item(
-        modelid     =   ModelID.Vial_Of_Absinthe, 
+        model_id     =   ModelID.Vial_Of_Absinthe, 
         name        =   "Vial Of Absinthe", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Halloween"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Halloween"),
 
     ModelID.Vial_Of_Ink : Item(
-        modelid     =   ModelID.Vial_Of_Ink, 
+        model_id     =   ModelID.Vial_Of_Ink, 
         name        =   "Vial Of Ink", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Rare Material"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Rare Material"),
 
     ModelID.Victory_Token : Item(
-        modelid     =   ModelID.Victory_Token, 
+        model_id     =   ModelID.Victory_Token, 
         name        =   "Victory Token", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped during Anniversary & Dragon Festival - Randomly dropped by PvE foes"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped during Anniversary & Dragon Festival - Randomly dropped by PvE foes"),
 
     ModelID.War_Supplies : Item(
-        modelid     =   ModelID.War_Supplies, 
+        model_id     =   ModelID.War_Supplies, 
         name        =   "War Supplies", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Warden_Horn : Item(
-        modelid     =   ModelID.Warden_Horn, 
+        model_id     =   ModelID.Warden_Horn, 
         name        =   "Warden Horn", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Warrior_Elitetome : Item(
-        modelid     =   ModelID.Warrior_Elitetome, 
+        model_id     =   ModelID.Warrior_Elitetome, 
         name        =   "Warrior Elitetome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Bosses & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Bosses & Chests in Hard Mode"),
 
     ModelID.Warrior_Tome : Item(
-        modelid     =   ModelID.Warrior_Tome, 
+        model_id     =   ModelID.Warrior_Tome, 
         name        =   "Warrior Tome", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Foes & Chests in Hard Mode"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Foes & Chests in Hard Mode"),
 
     ModelID.Water_Djinn_Essence : Item(
-        modelid     =   ModelID.Water_Djinn_Essence, 
+        model_id     =   ModelID.Water_Djinn_Essence, 
         name        =   "Water Djinn Essence", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Wayfarer_Mark : Item(
-        modelid     =   ModelID.Wayfarer_Mark, 
+        model_id     =   ModelID.Wayfarer_Mark, 
         name        =   "Wayfarer Mark", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped during Wayfarer's Reverie, randomly dropped by PvE foes"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped during Wayfarer's Reverie, randomly dropped by PvE foes"),
 
     ModelID.Weaver_Leg : Item(
-        modelid     =   ModelID.Weaver_Leg, 
+        model_id     =   ModelID.Weaver_Leg, 
         name        =   "Weaver Leg", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.White_Mantle_Badge : Item(
-        modelid     =   ModelID.White_Mantle_Badge, 
+        model_id     =   ModelID.White_Mantle_Badge, 
         name        =   "White Mantle Badge", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.White_Mantle_Emblem : Item(
-        modelid     =   ModelID.White_Mantle_Emblem, 
+        model_id     =   ModelID.White_Mantle_Emblem, 
         name        =   "White Mantle Emblem", 
-        itemType    =   ItemType.Unknown, 
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown, 
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Wintergreen_Cc : Item(
-        modelid     =   ModelID.Wintergreen_Cc,
+        model_id     =   ModelID.Wintergreen_Cc,
         name        =   "Wintergreen Cc",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Wintersday & Chest of Wintersday Past"),
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Wintersday & Chest of Wintersday Past"),
     
     ModelID.Witchs_Brew : Item(
-        modelid     =   ModelID.Witchs_Brew,
+        model_id     =   ModelID.Witchs_Brew,
         name        =   "Witchs Brew",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Halloween"),
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Halloween"),
 
     ModelID.Wood_Plank : Item(
-        modelid     =   ModelID.Wood_Plank,
+        model_id     =   ModelID.Wood_Plank,
         name        =   "Wood Plank",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Common Material"),
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Common Material"),
 
     ModelID.Worn_Belt : Item(
-        modelid     =   ModelID.Worn_Belt,
+        model_id     =   ModelID.Worn_Belt,
         name        =   "Worn Belt",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "Dropped by data to be added"),
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "Dropped by data to be added"),
 
     ModelID.Zehtukas_Jug : Item(
-        modelid     =   ModelID.Zehtukas_Jug,
+        model_id     =   ModelID.Zehtukas_Jug,
         name        =   "Zehtukas Jug",
-        itemType    =   ItemType.Unknown,
-        dropInfo    =   "The Desolation"),
+        item_type    =   ItemType.Unknown,
+        drop_info    =   "The Desolation"),
     
     ModelID.Bds_Air : Item(
-        modelid     =   ModelID.Bds_Air,
+        model_id     =   ModelID.Bds_Air,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.AirMagic]),
 
     
     ModelID.Bds_Blood : Item(
-        modelid     =   ModelID.Bds_Blood,
+        model_id     =   ModelID.Bds_Blood,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.BloodMagic]),
     
     ModelID.Bds_Channeling : Item(
-        modelid     =   ModelID.Bds_Channeling,
+        model_id     =   ModelID.Bds_Channeling,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.ChannelingMagic]),
 
     ModelID.Bds_Communing : Item(
-        modelid     =   ModelID.Bds_Communing,
+        model_id     =   ModelID.Bds_Communing,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.Communing]),
 
     ModelID.Bds_Curses : Item(
-        modelid     =   ModelID.Bds_Curses,
+        model_id     =   ModelID.Bds_Curses,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.Curses]),
 
     ModelID.Bds_Death : Item(
-        modelid     =   ModelID.Bds_Death,
+        model_id     =   ModelID.Bds_Death,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.DeathMagic]),
 
     ModelID.Bds_Divine : Item(
-        modelid     =   ModelID.Bds_Divine,
+        model_id     =   ModelID.Bds_Divine,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.DivineFavor]),
 
     ModelID.Bds_Domination : Item(
-        modelid     =   ModelID.Bds_Domination,
+        model_id     =   ModelID.Bds_Domination,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.DominationMagic]),
 
     ModelID.Bds_Earth : Item(
-        modelid     =   ModelID.Bds_Earth,
+        model_id     =   ModelID.Bds_Earth,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.EarthMagic]),
 
     ModelID.Bds_Energy_Storage : Item(
-        modelid     =   ModelID.Bds_Energy_Storage,
+        model_id     =   ModelID.Bds_Energy_Storage,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.EnergyStorage]),
 
     ModelID.Bds_Fast_Casting : Item(
-        modelid     =   ModelID.Bds_Fast_Casting,
+        model_id     =   ModelID.Bds_Fast_Casting,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.FastCasting]),
 
     ModelID.Bds_Fire : Item(
-        modelid     =   ModelID.Bds_Fire,
+        model_id     =   ModelID.Bds_Fire,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.FireMagic]),
 
     ModelID.Bds_Healing : Item(
-        modelid     =   ModelID.Bds_Healing,
+        model_id     =   ModelID.Bds_Healing,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.HealingPrayers]),
 
     ModelID.Bds_Illusion : Item(
-        modelid     =   ModelID.Bds_Illusion,
+        model_id     =   ModelID.Bds_Illusion,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.IllusionMagic]),
 
     ModelID.Bds_Inspiration : Item(
-        modelid     =   ModelID.Bds_Inspiration,
+        model_id     =   ModelID.Bds_Inspiration,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.InspirationMagic]),
 
     ModelID.Bds_Protection : Item(
-        modelid     =   ModelID.Bds_Protection,
+        model_id     =   ModelID.Bds_Protection,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.ProtectionPrayers]),
 
     ModelID.Bds_Restoration : Item(
-        modelid     =   ModelID.Bds_Restoration,
+        model_id     =   ModelID.Bds_Restoration,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.RestorationMagic]),
 
     ModelID.Bds_Smiting : Item(
-        modelid     =   ModelID.Bds_Smiting,
+        model_id     =   ModelID.Bds_Smiting,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.SmitingPrayers]),
 
     ModelID.Bds_Soul_Reaping : Item(
-        modelid     =   ModelID.Bds_Soul_Reaping,
+        model_id     =   ModelID.Bds_Soul_Reaping,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.SoulReaping]),
 
     ModelID.Bds_Spawning : Item(
-        modelid     =   ModelID.Bds_Spawning,
+        model_id     =   ModelID.Bds_Spawning,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.SpawningPower]),
 
     ModelID.Bds_Water : Item(
-        modelid     =   ModelID.Bds_Water,
+        model_id     =   ModelID.Bds_Water,
         name        =   "Bone Dragon Staff",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Bone Dragon Staff is a rare staff which drops only from Fendi's Chest, after completing the Shards of Orr dungeon.",
         attributes  =   [Attribute.WaterMagic]),
 
     ModelID.Froggy_Air : Item(
-        modelid     =   ModelID.Froggy_Air,
+        model_id     =   ModelID.Froggy_Air,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.AirMagic]),
 
     ModelID.Froggy_Blood: Item(
-        modelid     =   ModelID.Froggy_Blood,
+        model_id     =   ModelID.Froggy_Blood,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.BloodMagic]),
 
     ModelID.Froggy_Channeling: Item(
-        modelid     =   ModelID.Froggy_Channeling,
+        model_id     =   ModelID.Froggy_Channeling,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.ChannelingMagic]),
 
     ModelID.Froggy_Communing: Item(
-        modelid     =   ModelID.Froggy_Communing,
+        model_id     =   ModelID.Froggy_Communing,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.Communing]),
 
     ModelID.Froggy_Curses: Item(
-        modelid     =   ModelID.Froggy_Curses,
+        model_id     =   ModelID.Froggy_Curses,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.Curses]),
 
     ModelID.Froggy_Death: Item(
-        modelid     =   ModelID.Froggy_Death,
+        model_id     =   ModelID.Froggy_Death,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.DeathMagic]),
 
     ModelID.Froggy_Divine: Item(
-        modelid     =   ModelID.Froggy_Divine,
+        model_id     =   ModelID.Froggy_Divine,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.DivineFavor]),
 
     ModelID.Froggy_Domination: Item(
-        modelid     =   ModelID.Froggy_Domination,
+        model_id     =   ModelID.Froggy_Domination,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.DominationMagic]),
 
     ModelID.Froggy_Earth: Item(
-        modelid     =   ModelID.Froggy_Earth,
+        model_id     =   ModelID.Froggy_Earth,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.EarthMagic]),
 
     ModelID.Froggy_Energy_Storage: Item(
-        modelid     =   ModelID.Froggy_Energy_Storage,
+        model_id     =   ModelID.Froggy_Energy_Storage,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.EnergyStorage]),
 
     ModelID.Froggy_Fast_Casting: Item(
-        modelid     =   ModelID.Froggy_Fast_Casting,
+        model_id     =   ModelID.Froggy_Fast_Casting,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.FastCasting]),
 
     ModelID.Froggy_Fire: Item(
-        modelid     =   ModelID.Froggy_Fire,
+        model_id     =   ModelID.Froggy_Fire,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.FireMagic]),
 
     ModelID.Froggy_Healing: Item(
-        modelid     =   ModelID.Froggy_Healing,
+        model_id     =   ModelID.Froggy_Healing,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.HealingPrayers]),
 
     ModelID.Froggy_Illusion: Item(
-        modelid     =   ModelID.Froggy_Illusion,
+        model_id     =   ModelID.Froggy_Illusion,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.IllusionMagic]),
 
     ModelID.Froggy_Inspiration: Item(
-        modelid     =   ModelID.Froggy_Inspiration,
+        model_id     =   ModelID.Froggy_Inspiration,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.InspirationMagic]),
 
     ModelID.Froggy_Protection: Item(
-        modelid     =   ModelID.Froggy_Protection,
+        model_id     =   ModelID.Froggy_Protection,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.ProtectionPrayers]),
 
     ModelID.Froggy_Restoration: Item(
-        modelid     =   ModelID.Froggy_Restoration,
+        model_id     =   ModelID.Froggy_Restoration,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.RestorationMagic]),
 
     ModelID.Froggy_Smiting: Item(
-        modelid     =   ModelID.Froggy_Smiting,
+        model_id     =   ModelID.Froggy_Smiting,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.SmitingPrayers]),
 
     ModelID.Froggy_Soul_Reaping: Item(
-        modelid     =   ModelID.Froggy_Soul_Reaping,
+        model_id     =   ModelID.Froggy_Soul_Reaping,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.SoulReaping]),
 
     ModelID.Froggy_Spawning: Item(
-        modelid     =   ModelID.Froggy_Spawning,
+        model_id     =   ModelID.Froggy_Spawning,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.SpawningPower]),
 
     ModelID.Froggy_Water: Item(
-        modelid     =   ModelID.Froggy_Water,
+        model_id     =   ModelID.Froggy_Water,
         name        =   "Frog Scepter",
-        itemType    =   ItemType.Staff,
-        dropInfo    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
+        item_type    =   ItemType.Staff,
+        drop_info    =   "The Frog Scepter is a rare scepter which drops only from Bogroot Chest, after completing the Bogroot Growths dungeon.",
         attributes  =   [Attribute.WaterMagic]),
 }
 
 # For each ModelID that is not in the dictionary, create an Item object
-for modelid in ModelID:
-    if modelid not in Items:
-        name = modelid.name
+for model_id in ModelID:
+    if model_id not in Items:
+        name = model_id.name
         # Replace all underscores with spaces
         name = name.replace("_", " ")
 
-        Items[modelid] = Item(
-            modelid     =   modelid, 
+        Items[model_id] = Item(
+            model_id     =   model_id, 
             name        =   name, 
-            itemType    =   ItemType.Unknown, 
-            dropInfo    =   "No data added yet")
+            item_type    =   ItemType.Unknown, 
+            drop_info    =   "No data added yet")
         
 
 #Sort the items by name
-Items = dict(sorted(Items.items(), key=lambda x: x[1].Name))
+Items = dict(sorted(Items.items(), key=lambda x: x[1].name))
 
 # Grouped by type
 ItemsByType = {}
 for item in Items.values():
-    if item.ItemType not in ItemsByType:
-        ItemsByType[item.ItemType] = []
-    ItemsByType[item.ItemType].append(item)
+    if item.item_type not in ItemsByType:
+        ItemsByType[item.item_type] = []
+    ItemsByType[item.item_type].append(item)
 
 # Sort each group by name
-for itemType in ItemsByType:
-    ItemsByType[itemType].sort(key=lambda x: x.Name)
+for item_type in ItemsByType:
+    ItemsByType[item_type].sort(key=lambda x: x.name)

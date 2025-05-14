@@ -1,5 +1,4 @@
-from LootEx import settings, loot_check, loot_handling, loot_profile
-from LootEx import settings
+from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector
 from Py4GWCoreLib import *
 from LootEx import gui
 
@@ -9,10 +8,12 @@ importlib.reload(gui)
 importlib.reload(loot_profile)
 importlib.reload(settings)
 importlib.reload(loot_handling)
+importlib.reload(data_collector)
+importlib.reload(loot_check)
 
 MODULE_NAME = "LootEx"
 loot_handling_timer = ThrottledTimer(50)
-throttle_timer = ThrottledTimer(50)
+throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 # Load settings
@@ -20,15 +21,16 @@ settings.current.settings_file_path = os.path.join(
     script_directory, "Config", "LootEx", "LootExSettings.json")
 settings.current.profiles_path = os.path.join(
     script_directory, "Config", "LootEx", "Profiles")
+settings.current.data_collection_path = os.path.join(
+    script_directory, "Config", "LootEx", "DataCollection")
 settings.current.load()
 
 inventory_frame_hash = 291586130
-
+collector = data_collector.DataCollector()
 
 def configure():
     if not settings.current.window_visible is True:
         settings.current.window_visible = True
-
     pass
 
 
@@ -58,6 +60,7 @@ def main():
         gui.draw_window()
 
     settings.current.window_visible = False
+    
 
     if not loot_check.trader_queue.action_queue.is_empty():
         loot_check.LootCheck.process_trader_queue()
@@ -66,14 +69,16 @@ def main():
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():
             return
+        
+        collector.run()
 
         loot_handling_timer.Reset()
 
-        throttle_time = loot_handling.HandleInventoryLoot()
+        # throttle_time = loot_handling.HandleInventoryLoot()
 
-        if throttle_time > 0:
-            loot_handling_timer.SetThrottleTime(throttle_time)
-            return
+        # if throttle_time > 0:
+        #     loot_handling_timer.SetThrottleTime(throttle_time)
+        #     return
 
 
 # if __name__ == "__main__":

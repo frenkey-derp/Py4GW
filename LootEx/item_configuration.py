@@ -22,8 +22,8 @@ class ConfigurationCondition:
 
 
 class ItemConfiguration:
-    def __init__(self, model_id: ModelID):
-        self.model_id: ModelID = model_id
+    def __init__(self, model_id: int):
+        self.model_id: int = model_id
         default_condition = ConfigurationCondition("Default")
 
         self.conditions: list[ConfigurationCondition] = [default_condition]
