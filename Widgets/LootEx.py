@@ -1,4 +1,4 @@
-from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector
+from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector, data
 from Py4GWCoreLib import *
 from LootEx import gui
 
@@ -15,6 +15,8 @@ MODULE_NAME = "LootEx"
 loot_handling_timer = ThrottledTimer(50)
 throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
+
+data.Load()
 
 # Load settings
 settings.current.settings_file_path = os.path.join(

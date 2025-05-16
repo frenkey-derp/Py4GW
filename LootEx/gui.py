@@ -1,11 +1,6 @@
 from LootEx import *
-from LootEx import settings
-from LootEx import item_actions
-from LootEx import Data
-from LootEx import loot_check
-from LootEx import item_configuration
-from LootEx import utility
-from LootEx import enum
+from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum
+from LootEx import models
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -14,7 +9,8 @@ from Py4GWCoreLib import *
 
 import importlib
 importlib.reload(settings)
-importlib.reload(Data)
+importlib.reload(data)
+importlib.reload(models)
 importlib.reload(loot_check)
 importlib.reload(item_configuration)
 importlib.reload(utility)
@@ -24,7 +20,7 @@ class SelectableItem:
     """
     Represents an item that can be selected and hovered over in a GUI.
     Attributes:
-        item_info (Data.Item): The information about the item.
+        item_info (data.Item): The information about the item.
         is_selected (bool): Indicates whether the item is currently selected. Defaults to False.
         is_hovered (bool): Indicates whether the item is currently being hovered over. Defaults to False.
     Methods:
@@ -32,8 +28,8 @@ class SelectableItem:
         __repr__(): Returns a string representation of the SelectableItem instance (same as __str__).
     """
 
-    def __init__(self, item: Data.Item, is_selected: bool = False):
-        self.item_info: Data.Item = item
+    def __init__(self, item: models.Item, is_selected: bool = False):
+        self.item_info: models.Item = item
         self.is_selected: bool = is_selected
         self.is_hovered: bool = False
 
@@ -47,7 +43,7 @@ class SelectableItem:
 selected_loot_items: list[SelectableItem] = []
 loot_items_selection_dragging: bool = False
 filtered_loot_items: list[SelectableItem] = [
-    SelectableItem(item) for item in Data.Items.values()
+    SelectableItem(item) for item in data.Items
 ]
 selected_condition: Optional[ConfigurationCondition] = None
 filter_name: str = ""
@@ -55,7 +51,7 @@ condition_name: str = ""
 item_search: str = ""
 new_profile_name: str = ""
 mod_search: str = ""
-filtered_weapon_mods: dict[str, Data.WeaponMod] = Data.WeaponMods
+filtered_weapon_mods: list[models.WeaponMod] = data.Weapon_Mods
 scroll_bar_visible: bool = False
 trader_type: str = ""
 entered_price_threshold: int = 1000
@@ -208,7 +204,6 @@ def draw_window():
             settings.current.window_position[0], settings.current.window_position[1]
         )
         PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
-        first_draw = False
 
     screen_width = PyImGui.get_io().display_size_x
     screen_height = PyImGui.get_io().display_size_y
@@ -237,6 +232,36 @@ def draw_window():
             PyImGui.WindowFlags.NoMove if PyImGui.is_mouse_down(
                 0) else PyImGui.WindowFlags.NoFlag
         )
+
+        if PyImGui.button("Test"):
+            script_directory = os.path.dirname(os.path.abspath(__file__))
+            
+            path = os.path.join(
+                script_directory, "data",  "items.json")
+            
+            with open(path, "w") as file:
+                itemList = [item.to_json() for item in data.Items]  
+                json.dump(itemList, file, indent=4)
+                ConsoleLog("LootEx", f"Saved items to {path}")
+                
+            path = os.path.join(
+                script_directory, "data",  "runes.json")
+            
+            with open(path, "w") as file:
+                runeList = [item.to_json() for item in data.Runes]  
+                json.dump(runeList, file, indent=4)
+                ConsoleLog("LootEx", f"Saved items to {path}")
+                
+            path = os.path.join(
+                script_directory, "data",  "weapon_mods.json")
+            
+            with open(path, "w") as file:
+                modList = [item.to_json() for item in data.Weapon_Mods]  
+                json.dump(modList, file, indent=4)
+                ConsoleLog("LootEx", f"Saved items to {path}")
+                
+            
+                                
 
         profile_names = [
             profile.name for profile in settings.current.loot_profiles]
@@ -322,6 +347,7 @@ def draw_window():
         settings.current.window_collapsed = collapsed
         settings.current.save()
 
+    first_draw = False
 
 def draw_delete_profile_popup():
     global show_delete_profile_popup
@@ -759,7 +785,12 @@ def draw_add_loot_filter_popup():
 
 
 def draw_loot_items():
-    global selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging
+    global first_draw, selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging
+
+    if first_draw :
+        filtered_loot_items = [
+        SelectableItem(item) for item in data.Items
+    ]
 
     if PyImGui.begin_tab_item("Item Actions") and settings.current.loot_profile:
         # Get size of the tab
@@ -783,7 +814,7 @@ def draw_loot_items():
             if search is not None and search != item_search:
                 item_search = search
                 filtered_loot_items = [
-                    SelectableItem(item) for item in Data.Items.values()
+                    SelectableItem(item) for item in data.Items
                     if item and item.name and (item.name.lower().find(item_search.lower()) != -1 or str(item.model_id).find(item_search.lower()) != -1)
                 ]
 
@@ -900,10 +931,10 @@ def draw_loot_items():
                                             PyImGui.text("Item Stats")
                                             PyImGui.separator()
                                             mod_names = ["Any"]
-                                            for mod in Data.WeaponMods.values():
-                                                if mod == None or mod.Struct == "":
+                                            for mod in data.Weapon_Mods:
+                                                if mod == None or mod.struct == "":
                                                     continue
-                                                mod_names.append(mod.Name)
+                                                mod_names.append(mod.name)
 
                                             available_attributes = selected_loot_item.item_info.attributes if selected_loot_item.item_info.attributes else utility.Util.GetAttributes(
                                                 selected_loot_item.item_info.item_type)
@@ -912,7 +943,7 @@ def draw_loot_items():
                                                     0, Attribute.None_)
 
                                             if not condition.requirements:
-                                                condition.requirements = {attribute: Data.IntRange(
+                                                condition.requirements = {attribute: models.IntRange(
                                                     0, 13) for attribute in available_attributes}
 
                                             min_requirement = min(
@@ -926,7 +957,7 @@ def draw_loot_items():
                                                 max_requirement, selected_loot_item.item_info.item_type).max
 
                                             if not condition.damage_range:
-                                                condition.damage_range = Data.IntRange(
+                                                condition.damage_range = models.IntRange(
                                                     min_damage_in_requirements, max_damage_in_requirements)
 
                                             draw_vertical_centered_text(
@@ -963,7 +994,7 @@ def draw_loot_items():
 
                                             draw_vertical_centered_text(
                                                 "Prefix|Suffix", label_spacing)
-                                            prefix_name = Data.GetWeaponModName(
+                                            prefix_name = utility.Util.GetWeaponModName(
                                                 condition.prefix_mod) if condition.prefix_mod else ""
                                             PyImGui.push_item_width(item_width)
                                             mod = PyImGui.combo("##Prefix", mod_names.index(
@@ -971,10 +1002,10 @@ def draw_loot_items():
                                             if (mod_names[mod] != prefix_name and mod > 0) or (condition.prefix_mod and mod == 0):
                                                 modname = mod_names[mod]
                                                 if modname != None and modname != "Any":
-                                                    # Get the mod struct from Data.WeaponMods
-                                                    for weapon_mod in Data.WeaponMods.values():
-                                                        if weapon_mod.Name == modname:
-                                                            condition.prefix_mod = weapon_mod.Struct
+                                                    # Get the mod struct from data.WeaponMods
+                                                    for weapon_mod in data.Weapon_Mods:
+                                                        if weapon_mod.name == modname:
+                                                            condition.prefix_mod = weapon_mod.struct
                                                             settings.current.loot_profile.save()
                                                             break
                                                 elif condition.prefix_mod and mod == 0:
@@ -982,7 +1013,7 @@ def draw_loot_items():
                                                     settings.current.loot_profile.save()
 
                                             PyImGui.same_line(0, 5)
-                                            suffix_name = Data.GetWeaponModName(
+                                            suffix_name = utility.Util.GetWeaponModName(
                                                 condition.suffix_mod) if condition.suffix_mod else ""
                                             PyImGui.push_item_width(item_width)
                                             mod = PyImGui.combo("##Suffix", mod_names.index(
@@ -990,10 +1021,10 @@ def draw_loot_items():
                                             if mod_names[mod] != suffix_name and mod > 0 or (condition.suffix_mod and mod == 0):
                                                 modname = mod_names[mod]
                                                 if modname != None and modname != "Any":
-                                                    # Get the mod struct from Data.WeaponMods
-                                                    for weapon_mod in Data.WeaponMods.values():
-                                                        if weapon_mod.Name == modname:
-                                                            condition.suffix_mod = weapon_mod.Struct
+                                                    # Get the mod struct from data.WeaponMods
+                                                    for weapon_mod in data.Weapon_Mods:
+                                                        if weapon_mod.name == modname:
+                                                            condition.suffix_mod = weapon_mod.struct
                                                             settings.current.loot_profile.save()
                                                             break
                                                 elif condition.suffix_mod and mod == 0:
@@ -1002,18 +1033,18 @@ def draw_loot_items():
 
                                             draw_vertical_centered_text(
                                                 "Inherent", label_spacing)
-                                            inherent_name = Data.GetWeaponModName(
+                                            inherent_name = utility.Util.GetWeaponModName(
                                                 condition.inherent_mod) if condition.inherent_mod else ""
                                             PyImGui.push_item_width(item_width)
-                                            mod = PyImGui.combo("##Inherent", mod_names.index(Data.GetWeaponModName(
+                                            mod = PyImGui.combo("##Inherent", mod_names.index(utility.Util.GetWeaponModName(
                                                 condition.inherent_mod)) if condition.inherent_mod else 0, mod_names)
                                             if mod_names[mod] != inherent_name and mod > 0 or (condition.inherent_mod and mod == 0):
                                                 modname = mod_names[mod]
                                                 if modname != None and modname != "Any":
-                                                    # Get the mod struct from Data.WeaponMods
-                                                    for weapon_mod in Data.WeaponMods.values():
-                                                        if weapon_mod.Name == modname:
-                                                            condition.inherent_mod = weapon_mod.Struct
+                                                    # Get the mod struct from data.WeaponMods
+                                                    for weapon_mod in data.Weapon_Mods:
+                                                        if weapon_mod.name == modname:
+                                                            condition.inherent_mod = weapon_mod.struct
                                                             settings.current.loot_profile.save()
                                                             break
                                                 elif condition.inherent_mod and mod == 0:
@@ -1151,19 +1182,17 @@ def draw_weapon_mods():
                 Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 125)),
             )
             PyImGui.text(IconsFontAwesome5.ICON_SEARCH +
-                         " Search for Mod Name or Mod Struct...")
+                         " Search for Mod Name, Description or Mod Struct...")
             PyImGui.pop_style_color(1)
 
         if search_input is not None and search_input != mod_search:
             mod_search = search_input
-            filtered_weapon_mods = {
-                mod.Struct: mod
-                for mod in Data.WeaponMods.values()
-                if mod and mod.Struct and (
-                    mod.Name.lower().find(mod_search.lower()) != -1
-                    or mod.Struct.lower().find(mod_search.lower()) != -1
-                )
-            }
+            filtered_weapon_mods  = []
+
+            for mod in data.Weapon_Mods:
+                if mod and mod.name and (mod.name.lower().find(mod_search.lower()) != -1 or mod.description.lower().find(mod_search.lower()) != -1 or str(mod.struct).find(mod_search.lower()) != -1):
+                    filtered_weapon_mods.append(mod)
+
 
         # Table headers
         PyImGui.push_style_var(ImGui.ImGuiStyleVar.ChildBorderSize, 0)
@@ -1176,13 +1205,16 @@ def draw_weapon_mods():
         ):
             PyImGui.begin_table(
                 "Weapon Mods Table",
-                len(enum.WeaponType) + 2,
+                len(enum.WeaponType) + 3,
                 PyImGui.TableFlags.ScrollY,
             )
             PyImGui.table_setup_column(
                 "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
             PyImGui.table_setup_column(
-                "Name", PyImGui.TableColumnFlags.WidthStretch)
+                "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
+            
+            PyImGui.table_setup_column(
+                "Description", PyImGui.TableColumnFlags.WidthStretch)
 
             for weapon_type in enum.WeaponType:
                 PyImGui.table_setup_column(
@@ -1201,32 +1233,25 @@ def draw_weapon_mods():
         ):
             PyImGui.begin_table(
                 "Weapon Mods Table",
-                len(enum.WeaponType) + 2,
+                len(enum.WeaponType) + 3,
                 PyImGui.TableFlags.RowBg | PyImGui.TableFlags.BordersInnerH,
             )
             PyImGui.table_setup_column(
                 "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
             PyImGui.table_setup_column(
-                "Name", PyImGui.TableColumnFlags.WidthStretch)
+                "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
+            
+            PyImGui.table_setup_column(
+                "Description", PyImGui.TableColumnFlags.WidthStretch)
 
             for weapon_type in enum.WeaponType:
                 PyImGui.table_setup_column(
                     weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
                 )
 
-            for count, mod in enumerate(filtered_weapon_mods.values(), start=1):
-                if not mod or not mod.Struct:
+            for mod in filtered_weapon_mods:
+                if not mod or not mod.struct:
                     continue
-
-                row_background_color = (
-                    Utils.RGBToColor(36, 36, 36, 125)
-                    if count % 2 == 0
-                    else Utils.RGBToColor(0, 0, 0, 125)
-                )
-                PyImGui.push_style_color(
-                    PyImGui.ImGuiCol.TableRowBg, Utils.ColorToTuple(
-                        row_background_color)
-                )
 
                 PyImGui.table_next_row()
 
@@ -1246,58 +1271,63 @@ def draw_weapon_mods():
                 )
                 PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 5, 8)
                 PyImGui.button(
-                    IconsFontAwesome5.ICON_SHIELD_ALT + f"##{mod.Struct}")
+                    IconsFontAwesome5.ICON_SHIELD_ALT + f"##{mod.struct}")
                 PyImGui.pop_style_color(3)
                 PyImGui.pop_style_var(1)
 
                 # Mod name
                 PyImGui.table_next_column()
-                PyImGui.button(mod.Name, 0, 25)
+                PyImGui.text_wrapped(mod.name)
                 ImGui.show_tooltip(
-                    f"Mod: {mod.Name}\nStruct: {mod.Struct}\nIdentifier: {mod.Identifier}\nArgs: {mod.Arg1}|{mod.Arg2}"
+                    f"Mod: {mod.name}\nStruct: {mod.struct}\nIdentifier: {mod.identifier}\nArgs: {mod.arg1}|{mod.arg2}"
+                )
+                
+                # Mod name
+                PyImGui.table_next_column()
+                PyImGui.text_wrapped(mod.description)
+                ImGui.show_tooltip(
+                    f"Mod: {mod.description}\nStruct: {mod.struct}\nIdentifier: {mod.identifier}\nArgs: {mod.arg1}|{mod.arg2}"
                 )
 
                 # Weapon type checkboxes
                 for weapon_type in enum.WeaponType:
                     PyImGui.table_next_column()
-                    unique_id = f"##{mod.Struct}{weapon_type}"
+                    unique_id = f"##{mod.struct}{weapon_type}"
                     PyImGui.push_style_var2(
                         ImGui.ImGuiStyleVar.FramePadding, 0, 8)
 
                     is_selected = (
-                        mod.Struct in settings.current.loot_profile.weapon_mods
+                        mod.struct in settings.current.loot_profile.weapon_mods
                         and weapon_type.name
-                        in settings.current.loot_profile.weapon_mods[mod.Struct]
-                        and settings.current.loot_profile.weapon_mods[mod.Struct][weapon_type.name]
+                        in settings.current.loot_profile.weapon_mods[mod.struct]
+                        and settings.current.loot_profile.weapon_mods[mod.struct][weapon_type.name]
                     )
                     mod_selected = PyImGui.checkbox(unique_id, is_selected)
 
                     PyImGui.pop_style_var(1)
                     ImGui.show_tooltip(
-                        f"{'Keep' if is_selected else 'Ignore'} {mod.Name} for {weapon_type.name}"
+                        f"{'Keep' if is_selected else 'Ignore'} {mod.name} for {weapon_type.name}"
                     )
 
                     if is_selected != mod_selected:
                         if mod_selected:
-                            if mod.Struct not in settings.current.loot_profile.weapon_mods:
-                                settings.current.loot_profile.weapon_mods[mod.Struct] = {
+                            if mod.struct not in settings.current.loot_profile.weapon_mods:
+                                settings.current.loot_profile.weapon_mods[mod.struct] = {
                                 }
-                            settings.current.loot_profile.weapon_mods[mod.Struct][
+                            settings.current.loot_profile.weapon_mods[mod.struct][
                                 weapon_type.name
                             ] = True
                         else:
-                            settings.current.loot_profile.weapon_mods[mod.Struct].pop(
+                            settings.current.loot_profile.weapon_mods[mod.struct].pop(
                                 weapon_type.name, None
                             )
-                            if not settings.current.loot_profile.weapon_mods[mod.Struct]:
+                            if not settings.current.loot_profile.weapon_mods[mod.struct]:
                                 settings.current.loot_profile.weapon_mods.pop(
-                                    mod.Struct, None)
+                                    mod.struct, None)
 
                         settings.current.loot_profile.save()
 
                 scroll_bar_visible = scroll_bar_visible or PyImGui.get_scroll_max_y() > 0
-
-                PyImGui.pop_style_color(1)
 
         PyImGui.pop_style_var(2)
         PyImGui.end_table()
@@ -1328,7 +1358,7 @@ def draw_runes():
             PyImGui.separator()
 
             if PyImGui.begin_tab_bar("RunesTabBar"):
-                for profession, runes in Data.RunesByProfession.items():
+                for profession, runes in data.Runes_by_Profession.items():
                     if not runes:
                         continue
 
@@ -1339,11 +1369,11 @@ def draw_runes():
 
                     if PyImGui.begin_child("RunesSelection#1", (0, 0), True, PyImGui.WindowFlags.NoBackground):
                         for rune in runes:
-                            if not rune or not rune.Struct:
+                            if not rune or not rune.struct:
                                 continue
 
                             color = utility.Util.GetRarityColor(
-                                rune.Rarity.value)
+                                rune.rarity.value)
                             PyImGui.push_style_color(
                                 PyImGui.ImGuiCol.Text, Utils.ColorToTuple(color["text"]))
                             PyImGui.push_style_color(
@@ -1351,21 +1381,21 @@ def draw_runes():
                             PyImGui.push_style_color(
                                 PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(color["frame"]))
 
-                            label = f"{rune.Name}"
-                            unique_id = f"##{rune.Struct}"
+                            label = f"{rune.full_name}"
+                            unique_id = f"##{rune.struct}"
                             rune_selected = PyImGui.checkbox(
                                 IconsFontAwesome5.ICON_SHIELD_ALT + " " + label + unique_id,
-                                rune.Struct in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
-                                    rune.Struct]
+                                rune.struct in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
+                                    rune.struct]
                             )
 
-                            if rune.Struct in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.Struct] != rune_selected:
-                                settings.current.loot_profile.runes[rune.Struct] = rune_selected
+                            if rune.struct in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.struct] != rune_selected:
+                                settings.current.loot_profile.runes[rune.struct] = rune_selected
                                 settings.current.loot_profile.save()
 
                             PyImGui.pop_style_color(3)
                             ImGui.show_tooltip(
-                                f"Rune: {rune.Name}\nStruct: {rune.Struct}")
+                                f"Rune: {rune.full_name}\nStruct: {rune.struct}")
 
                         PyImGui.end_child()
 

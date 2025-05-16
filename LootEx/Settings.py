@@ -3,6 +3,7 @@ from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
 from Py4GWCoreLib import Player, UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
+from Py4GWCoreLib.enums import ServerLanguage
 
 
 class FrameCoords:
@@ -30,10 +31,16 @@ class Settings:
         self.settings_file_path: str = ""
         self.profiles_path: str = ""
         self.data_collection_path: str = ""
-
+        
         self.inventory_frame_exists: bool = False
         self.inventory_frame_coords: Optional[FrameCoords] = None
         self.parent_frame_id: Optional[int] = None
+                
+        self.language : ServerLanguage = ServerLanguage.English
+
+    def set_language(self, lang = ServerLanguage.English):
+        self.language = lang
+
 
     def save(self):
         """Save the settings as a JSON file."""
@@ -47,7 +54,15 @@ class Settings:
             "window_collapsed": self.window_collapsed,
             "manual_window_visible": self.manual_window_visible,
         }
-
+        # ConsoleLog(
+        #     "LootEx", f"Saving settings to '{self.settings_file_path}'...", Console.MessageType.Debug)
+        if self.settings_file_path == "":
+            return
+        
+        # Create the directory if it doesn't exist
+        import os
+        os.makedirs(os.path.dirname(self.settings_file_path), exist_ok=True)
+        
         with open(self.settings_file_path, 'w') as file:
             json.dump(settings_dict, file, indent=4)
 

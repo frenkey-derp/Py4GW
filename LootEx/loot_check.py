@@ -1,5 +1,4 @@
-from LootEx import Data
-from LootEx import settings
+from LootEx import settings, data, utility
 from Py4GWCoreLib import Item, Merchant, Console
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
 
@@ -59,7 +58,7 @@ class LootCheck:
                     mod_hex = f'{modifier.GetIdentifier():04x}{modifier.GetArg():04x}'.upper(
                     )
 
-                    if mod_hex and mod_hex in Data.Runes:
+                    if mod_hex and mod_hex in data.Runes:
                         def request_quote_for_item(item):
                             Merchant.Trading.Trader.RequestQuote(item)
 
@@ -69,13 +68,13 @@ class LootCheck:
                             if price is not None:
                                 for modifier in modifiers:
 
-                                    if mod_hex and mod_hex in Data.Runes and settings.current.loot_profile:
+                                    if mod_hex and mod_hex in data.Runes and settings.current.loot_profile:
                                         checked_items.append(mod_hex)
 
                                         if price >= threshold:
                                             ConsoleLog(
                                                 "LootEx",
-                                                f"{Data.Runes[mod_hex].Name} is currently quoted at {format_currency(price)}. Marking it as valuable.",
+                                                f"{data.Runes[mod_hex].full_name} is currently quoted at {format_currency(price)}. Marking it as valuable.",
                                                 Console.MessageType.Debug,
                                             )
                                             settings.current.loot_profile.runes[mod_hex] = True
@@ -91,17 +90,16 @@ class LootCheck:
             create_quotes_for_item(item)
 
         def check_for_missing_runes():
-            for rune in Data.Runes:
-                profession_match = profession is not None and Data.Runes[
-                    rune].Profession == profession
+            for rune in data.Runes:
+                profession_match = profession is not None and rune.profession == profession
 
                 if rune not in checked_items and settings.current.loot_profile and profession_match:
                     ConsoleLog(
                         "LootEx",
-                        f"{Data.Runes[rune].Name} is currently not available. Marking it as valuable.",
+                        f"{rune.full_name} is currently not available. Marking it as valuable.",
                         Console.MessageType.Debug,
                     )
-                    settings.current.loot_profile.runes[rune] = True
+                    settings.current.loot_profile.runes[rune.struct] = True
                     settings.current.loot_profile.save()
             ConsoleLog(
                 "LootEx", "Finished checking for runes and insignias.", Console.MessageType.Debug)

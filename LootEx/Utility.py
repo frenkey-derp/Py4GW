@@ -1,37 +1,75 @@
 from typing import Optional
-from LootEx import Data, item_configuration
+from LootEx import data, item_configuration
+from LootEx import models
 from LootEx.enum import ModifierIdentifier
 from LootEx.item_actions import ItemAction
 from LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
+from LootEx.models import WeaponMod
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, Rarity, DyeColor
 
 importlib.reload(item_configuration)
+importlib.reload(data)
 
 
 class Util:
+    @staticmethod
+    def get_mod_mask(identifier: int, arg1: int, arg2: int) -> str:
+        """
+        Generate a 4-byte legacy mod representation based on Identifier, Arg1, and Arg2.
+
+        Byte layout:
+            Byte 0: Arg2
+            Byte 1: Arg1
+            Bytes 2–3: Identifier (little-endian)
+
+        :param identifier: 16-bit mod identifier (0x0000 - 0xFFFF)
+        :param arg1: 8-bit argument 1 (0x00 - 0xFF)
+        :param arg2: 8-bit argument 2 (0x00 - 0xFF)
+        :return: 4-byte legacy mod representation
+        """
+        if not (0 <= arg1 <= 0xFF):
+            raise ValueError("Arg1 must be a byte (0-255)")
+        if not (0 <= arg2 <= 0xFF):
+            raise ValueError("Arg2 must be a byte (0-255)")
+        if not (0 <= identifier <= 0xFFFF):
+            raise ValueError("Identifier must be a 16-bit value (0-65535)")
+
+        identifier_bytes = identifier.to_bytes(2, byteorder='little')  # Bytes 2–3
+        result = bytearray(4)
+        result[0] = arg2     # Byte 0
+        result[1] = arg1     # Byte 1
+        result[2] = identifier_bytes[0]  # Byte 2
+        result[3] = identifier_bytes[1]  # Byte 3
+        return bytes(result).hex().upper()
+    
+    ##TODO: Add handling for non max mods
     @staticmethod
     def GetMods(item_id: int):
         item_type = Item.GetItemType(item_id)
         mods = []
         
-        if Util.IsArmorType(ItemType[item_type[1]]):
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                identifier = mod.GetIdentifier()
+        # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
+        for mod in Item.Customization.Modifiers.GetModifiers(item_id):
+            mod_hex = f'{mod.GetIdentifier():04x}{mod.GetArg():04x}'.upper()
+            mod_mask = Util.get_mod_mask(mod.GetIdentifier(), mod.GetArg1(), mod.GetArg2())
+            
+            if Util.IsArmorType(ItemType[item_type[1]]):  
+                matching_rune = next((rune for rune in data.Runes if rune.struct == mod_hex), None)
+
+                if matching_rune is not None: 
+                    mods.append(matching_rune)
+                    
+            elif Util.IsWeaponType(ItemType[item_type[1]]):
+                matching_mod = next((mod for mod in data.Weapon_Mods if mod.struct == mod_mask), None)
                 
-                if identifier in Data.Runes:
-                    mods.append(Data.Runes[identifier])
-        
-        elif Util.IsWeaponType(ItemType[item_type[1]]):
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                identifier = mod.GetIdentifier()
-                
-                if identifier in Data.WeaponMods:
-                    mods.append(Data.WeaponMods[identifier])
+                if matching_mod is not None:
+                    ConsoleLog("LootEx", f"Weapon mod found: {matching_mod.full_name}")
+                    mods.append(matching_mod)
         
         return mods       
     
@@ -110,8 +148,8 @@ class Util:
     
     @staticmethod
     def GetAttributes(itemType: ItemType) -> list[Attribute]:
-        if itemType in Data.AttributeRequirements:
-            return Data.AttributeRequirements[itemType]
+        if itemType in data.Attribute_Requirements:
+            return data.Attribute_Requirements[itemType]
         else:
             return []
 
@@ -150,14 +188,14 @@ class Util:
         return name
 
     @staticmethod
-    def GetMaxDamage(requirement: int, itemType: Optional[ItemType] = ItemType.Unknown) -> Data.IntRange:
+    def GetMaxDamage(requirement: int, itemType: Optional[ItemType] = ItemType.Unknown) -> models.IntRange:
         requirement = 9 if requirement > 9 else requirement
         itemType = itemType if itemType != None else ItemType.Unknown
 
-        return Data.DamageRanges[itemType][requirement] if itemType in Data.DamageRanges and requirement in Data.DamageRanges[itemType] else Data.IntRange(0, 0)
+        return data.DamageRanges[itemType][requirement] if itemType in data.DamageRanges and requirement in data.DamageRanges[itemType] else models.IntRange(0, 0)
 
     @staticmethod
-    def IsMaxDamage(damage_range: Data.IntRange, requirement: int, itemType: ItemType = ItemType.Unknown, tollerance: Data.IntRange = Data.IntRange()) -> bool:
+    def IsMaxDamage(damage_range: models.IntRange, requirement: int, itemType: ItemType = ItemType.Unknown, tollerance: models.IntRange = models.IntRange()) -> bool:
         max_damage = Util.GetMaxDamage(requirement, itemType)
 
         if max_damage.min == 0 and max_damage.max == 0:
@@ -178,7 +216,7 @@ class Util:
     
     @staticmethod
     def IsArmor(item: ItemConfiguration) -> bool:
-        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
+        dataitem = data.Items[item.model_id] if item.model_id in data.Items else None
         return Util.IsArmorType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
@@ -199,7 +237,7 @@ class Util:
             
     @staticmethod
     def IsWeapon(item: ItemConfiguration) -> bool:
-        dataitem = Data.Items[item.model_id] if item.model_id in Data.Items else None
+        dataitem = data.Items[item.model_id] if item.model_id in data.Items else None
         return Util.IsWeaponType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
@@ -271,3 +309,17 @@ class Util:
             return dye_colors[dye]
         else:
             return Utils.RGBToColor(255, 255, 255, 125)
+
+    @staticmethod
+    def GetWeaponModName(mod_struct: str) -> str:
+        """
+        Get the name of the weapon mod based on its hex representation.
+        Args:
+            mod (str): The hex representation of the weapon mod.
+        Returns:
+            str: The name of the weapon mod.
+        """
+        if mod_struct in data.Weapon_Mods:
+            return data.Weapon_Mods[mod_struct].full_name
+        else:
+            return "Unknown Weapon Mod"

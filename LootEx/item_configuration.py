@@ -1,14 +1,16 @@
-from LootEx.Data import IntRange
-from LootEx.item_actions import ItemAction, ItemActions, LootItemMode
+from LootEx.item_actions import ItemAction, ItemActions
+from LootEx import models
 from Py4GWCoreLib import *
 
+import importlib
+importlib.reload(models)
 
 class ConfigurationCondition:
     def __init__(self, name: str = "New Condition"):
         self.name: str = name
         self.item_type: Optional[ItemType] = None
-        self.damage_range: Optional[IntRange] = None
-        self.requirements: Optional[dict[Attribute, IntRange]] = None
+        self.damage_range: Optional[models.IntRange] = None
+        self.requirements: Optional[dict[Attribute, models.IntRange]] = None
 
         self.prefix_mod: Optional[str] = None
         self.suffix_mod: Optional[str] = None
@@ -80,7 +82,7 @@ class ItemConfiguration:
                 else None
             )
             condition.damage_range = (
-                IntRange(
+                models.IntRange(
                     condition_data["damage_range"][0], condition_data["damage_range"][1]
                 )
                 if condition_data["damage_range"]
@@ -101,7 +103,7 @@ class ItemConfiguration:
 
             condition.requirements = (
                 {
-                    Attribute[attribute]: IntRange(
+                    Attribute[attribute]: models.IntRange(
                         requirement[0], requirement[1])
                     for attribute, requirement in condition_data[
                         "requirements"

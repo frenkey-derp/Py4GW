@@ -8,6 +8,10 @@ from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import DyeColor
 
 
+import importlib
+importlib.reload(item_configuration)
+
+
 class LootProfile:
     def __init__(self, profile_name: str):
         self.name = profile_name

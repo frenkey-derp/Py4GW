@@ -1,0 +1,15 @@
+{
+    "ModelID": 2078,
+    "Names": {
+        "English": "Serrated Spear of Spear Mastery"
+    },
+    "ItemType": "Spear",
+    "DropInfo": "",
+    "Attributes": [
+        "SpearMastery"
+    ],
+    "WikiURL": "",
+    "Materials": [],
+    "RareMaterials": [],
+    "IsNickItem": false
+}
