@@ -1,0 +1,1892 @@
+[
+    {
+        "Struct": "0A00C821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (while Hexed)"
+        },
+        "Names": {
+            "English": "\"Be Just and Fear Not\""
+        },
+        "Identifier": 8648,
+        "Arg1": 0,
+        "Arg2": 10,
+        "Args": 10,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0500B820",
+        "Descriptions": {
+            "English": "Damage +15% And Energy -{arg2}"
+        },
+        "Names": {
+            "English": "\"Brawn over Brains\""
+        },
+        "Identifier": 8376,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00055828",
+        "Descriptions": {
+            "English": "Reduces Disease duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Cast Out the Unclean\""
+        },
+        "Identifier": 10328,
+        "Arg1": 5,
+        "Arg2": 0,
+        "Args": 1280,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "E3017824",
+        "Descriptions": {
+            "English": "Reduces Disease duration on you by 20% ; [Old School] Shield, Staff or Offhand"
+        },
+        "Names": {
+            "English": "\"Cast Out the Unclean\""
+        },
+        "Identifier": 9336,
+        "Arg1": 1,
+        "Arg2": 227,
+        "Args": 483,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0F00A822",
+        "Descriptions": {
+            "English": "Damage +{arg2}% (while in a Stance)"
+        },
+        "Names": {
+            "English": "\"Dance with Death\""
+        },
+        "Identifier": 8872,
+        "Arg1": 0,
+        "Arg2": 15,
+        "Args": 15,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "14009822",
+        "Descriptions": {
+            "English": "Damage {arg2}% (while Hexed)"
+        },
+        "Names": {
+            "English": "\"Don't Fear the Reaper\""
+        },
+        "Identifier": 8856,
+        "Arg1": 0,
+        "Arg2": 20,
+        "Args": 20,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "07321823",
+        "Descriptions": {
+            "English": "Energy +{arg2} (while Health is below +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Don't call it a comeback!\""
+        },
+        "Identifier": 8984,
+        "Arg1": 50,
+        "Arg2": 7,
+        "Args": 12807,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A32B821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (while Health is below +50%)"
+        },
+        "Names": {
+            "English": "\"Down But Not Out\""
+        },
+        "Identifier": 8632,
+        "Arg1": 50,
+        "Arg2": 10,
+        "Args": 12810,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05009821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (while Enchanted)"
+        },
+        "Names": {
+            "English": "\"Faith is My Shield\""
+        },
+        "Identifier": 8600,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00005828",
+        "Descriptions": {
+            "English": "Reduces Bleeding duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Fear Cuts Deeper\""
+        },
+        "Identifier": 10328,
+        "Arg1": 0,
+        "Arg2": 0,
+        "Args": 0,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0F006822",
+        "Descriptions": {
+            "English": "Damage +{arg2}% (while Enchanted)"
+        },
+        "Names": {
+            "English": "\"Guided by Fate\""
+        },
+        "Identifier": 8808,
+        "Arg1": 0,
+        "Arg2": 15,
+        "Args": 15,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0532A821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (while Health is above +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Hail to the King\""
+        },
+        "Identifier": 8616,
+        "Arg1": 50,
+        "Arg2": 5,
+        "Args": 12805,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05320823",
+        "Descriptions": {
+            "English": "Energy +{arg2} (while health is above +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Hale and Hearty\""
+        },
+        "Identifier": 8968,
+        "Arg1": 50,
+        "Arg2": 5,
+        "Args": 12805,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0500F822",
+        "Descriptions": {
+            "English": "Energy +{arg2} (while Enchanted)"
+        },
+        "Names": {
+            "English": "\"Have Faith\""
+        },
+        "Identifier": 8952,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00015828",
+        "Descriptions": {
+            "English": "Reduces Blind duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"I Can See Clearly Now\""
+        },
+        "Identifier": 10328,
+        "Arg1": 1,
+        "Arg2": 0,
+        "Args": 256,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "07002823",
+        "Descriptions": {
+            "English": "Energy +{arg2} (while hexed)"
+        },
+        "Names": {
+            "English": "\"I am Sorrow.\""
+        },
+        "Identifier": 9000,
+        "Arg1": 0,
+        "Arg2": 7,
+        "Args": 7,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05008821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (while casting)"
+        },
+        "Names": {
+            "English": "\"Knowing is Half the Battle\""
+        },
+        "Identifier": 8584,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0318A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Cold damage)"
+        },
+        "Names": {
+            "English": "\"Leaf on the Wind\""
+        },
+        "Identifier": 41240,
+        "Arg1": 3,
+        "Arg2": 10,
+        "Args": 778,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "1400D820",
+        "Descriptions": {
+            "English": "Health -{arg2}"
+        },
+        "Names": {
+            "English": "\"Life is Pain\""
+        },
+        "Identifier": 8408,
+        "Arg1": 0,
+        "Arg2": 20,
+        "Args": 20,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0B18A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Earth damage)"
+        },
+        "Names": {
+            "English": "\"Like a Rolling Stone\""
+        },
+        "Identifier": 41240,
+        "Arg1": 11,
+        "Arg2": 10,
+        "Args": 2826,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05147820",
+        "Descriptions": {
+            "English": "Received physical damage -{arg2} (Chance: 20%)"
+        },
+        "Names": {
+            "English": "\"Luck of the Draw\""
+        },
+        "Identifier": 8312,
+        "Arg1": 20,
+        "Arg2": 5,
+        "Args": 5125,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05002821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Elemental damage)"
+        },
+        "Names": {
+            "English": "\"Man of all Seasons\""
+        },
+        "Identifier": 8488,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "32000826",
+        "Descriptions": {
+            "English": "Highly salvageable"
+        },
+        "Names": {
+            "English": "\"Measure for Measure\""
+        },
+        "Identifier": 9736,
+        "Arg1": 0,
+        "Arg2": 50,
+        "Args": 50,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05007821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (while attacking)"
+        },
+        "Names": {
+            "English": "\"Might Makes Right\""
+        },
+        "Identifier": 8568,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0018A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Blunt damage)"
+        },
+        "Names": {
+            "English": "\"Not the Face!\""
+        },
+        "Identifier": 41240,
+        "Arg1": 0,
+        "Arg2": 10,
+        "Args": 10,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "03009820",
+        "Descriptions": {
+            "English": "Received physical damage -{arg2} (while Hexed)"
+        },
+        "Names": {
+            "English": "\"Nothing to Fear\""
+        },
+        "Identifier": 8344,
+        "Arg1": 0,
+        "Arg2": 3,
+        "Args": 3,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00085828",
+        "Descriptions": {
+            "English": "Reduces Weakness duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Only the Strong Survive\""
+        },
+        "Identifier": 10328,
+        "Arg1": 8,
+        "Arg2": 0,
+        "Args": 2048,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00065828",
+        "Descriptions": {
+            "English": "Reduces Poison duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Pure of Heart\""
+        },
+        "Identifier": 10328,
+        "Arg1": 6,
+        "Arg2": 0,
+        "Args": 1536,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0418A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Lightning damage)"
+        },
+        "Names": {
+            "English": "\"Riders on the Storm\""
+        },
+        "Identifier": 41240,
+        "Arg1": 4,
+        "Arg2": 10,
+        "Args": 1034,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0200A820",
+        "Descriptions": {
+            "English": "Received physical damage -{arg2} (while in a Stance)"
+        },
+        "Names": {
+            "English": "\"Run For Your Life!\""
+        },
+        "Identifier": 8360,
+        "Arg1": 0,
+        "Arg2": 2,
+        "Args": 2,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0F00D822",
+        "Descriptions": {
+            "English": "Energy +{arg2}"
+        },
+        "Names": {
+            "English": "\"Seize the Day\""
+        },
+        "Identifier": 8920,
+        "Arg1": 0,
+        "Arg2": 15,
+        "Args": 15,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "02008820",
+        "Descriptions": {
+            "English": "Received physical damage -{arg2} (while Enchanted)"
+        },
+        "Names": {
+            "English": "\"Sheltered by Faith\""
+        },
+        "Identifier": 8328,
+        "Arg1": 0,
+        "Arg2": 2,
+        "Args": 2,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "3200F805",
+        "Descriptions": {
+            "English": "Improved sale value"
+        },
+        "Names": {
+            "English": "\"Show me the money!\""
+        },
+        "Identifier": 1528,
+        "Arg1": 0,
+        "Arg2": 50,
+        "Args": 50,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0518A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Fire damage)"
+        },
+        "Names": {
+            "English": "\"Sleep Now in the Fire\""
+        },
+        "Identifier": 41240,
+        "Arg1": 5,
+        "Arg2": 10,
+        "Args": 1290,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00075828",
+        "Descriptions": {
+            "English": "Reduces Dazed duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Soundness of Mind\""
+        },
+        "Identifier": 10328,
+        "Arg1": 7,
+        "Arg2": 0,
+        "Args": 1792,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0F327822",
+        "Descriptions": {
+            "English": "Damage +{arg2}% (while Health is above +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Strength and Honor\""
+        },
+        "Identifier": 8824,
+        "Arg1": 50,
+        "Arg2": 15,
+        "Args": 12815,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00045828",
+        "Descriptions": {
+            "English": "Reduces Deep Wound duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Strength of Body\""
+        },
+        "Identifier": 10328,
+        "Arg1": 4,
+        "Arg2": 0,
+        "Args": 1024,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "05005821",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Physical damage)"
+        },
+        "Names": {
+            "English": "\"Survival of the Fittest\""
+        },
+        "Identifier": 8536,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00035828",
+        "Descriptions": {
+            "English": "Reduces Crippled duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Swift as the Wind\""
+        },
+        "Identifier": 10328,
+        "Arg1": 3,
+        "Arg2": 0,
+        "Args": 768,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0218A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Slashing damage)"
+        },
+        "Names": {
+            "English": "\"The Riddle of Steel\""
+        },
+        "Identifier": 41240,
+        "Arg1": 2,
+        "Arg2": 10,
+        "Args": 522,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0118A1",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs Piercing damage)"
+        },
+        "Names": {
+            "English": "\"Through Thick and Thin\""
+        },
+        "Identifier": 41240,
+        "Arg1": 1,
+        "Arg2": 10,
+        "Args": 266,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A001820",
+        "Descriptions": {
+            "English": "Damage +15% And Armor -{arg2} (while attacking)"
+        },
+        "Names": {
+            "English": "\"To the Pain!\""
+        },
+        "Identifier": 8216,
+        "Arg1": 0,
+        "Arg2": 10,
+        "Args": 10,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0F005822",
+        "Descriptions": {
+            "English": "Damage +{arg2}% (vs Hexed Foes)"
+        },
+        "Names": {
+            "English": "\"Too Much Information\""
+        },
+        "Identifier": 8792,
+        "Arg1": 0,
+        "Arg2": 15,
+        "Args": 15,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "14328822",
+        "Descriptions": {
+            "English": "Damage {arg2}% (while Health is below +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Vengeance is Mine\""
+        },
+        "Identifier": 8840,
+        "Arg1": 50,
+        "Arg2": 20,
+        "Args": 12820,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "DE016824",
+        "Descriptions": {
+            "English": "Lengthens Bleeding duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Barbed"
+        },
+        "Identifier": 9320,
+        "Arg1": 1,
+        "Arg2": 222,
+        "Args": 478,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "E1016824",
+        "Descriptions": {
+            "English": "Lengthens Crippled duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Crippling"
+        },
+        "Identifier": 9320,
+        "Arg1": 1,
+        "Arg2": 225,
+        "Args": 481,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "E2016824",
+        "Descriptions": {
+            "English": "Lengthens Deep Wound duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Cruel"
+        },
+        "Identifier": 9320,
+        "Arg1": 1,
+        "Arg2": 226,
+        "Args": 482,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "000BB824",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Ebon"
+        },
+        "Identifier": 9400,
+        "Arg1": 11,
+        "Arg2": 0,
+        "Args": 2816,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0005B824",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Fiery"
+        },
+        "Identifier": 9400,
+        "Arg1": 5,
+        "Arg2": 0,
+        "Args": 1280,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0A00B823",
+        "Descriptions": {
+            "English": "Double Adrenaline on hit (Chance: +{arg2}%)"
+        },
+        "Names": {
+            "English": "Furious"
+        },
+        "Identifier": 9144,
+        "Arg1": 0,
+        "Arg2": 10,
+        "Args": 10,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "001E4823",
+        "Descriptions": {
+            "English": "+{arg1} Health"
+        },
+        "Names": {
+            "English": "Hale"
+        },
+        "Identifier": 9032,
+        "Arg1": 30,
+        "Arg2": 0,
+        "Args": 7680,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "E6016824",
+        "Descriptions": {
+            "English": "Lengthens Weakness duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Heavy"
+        },
+        "Identifier": 9320,
+        "Arg1": 1,
+        "Arg2": 230,
+        "Args": 486,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0003B824",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Icy"
+        },
+        "Identifier": 9400,
+        "Arg1": 3,
+        "Arg2": 0,
+        "Args": 768,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0500D822",
+        "Descriptions": {
+            "English": "Energy +{arg2}"
+        },
+        "Names": {
+            "English": "Insightful"
+        },
+        "Identifier": 8920,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "E4016824",
+        "Descriptions": {
+            "English": "Lengthens Poison duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Poisonous"
+        },
+        "Identifier": 9320,
+        "Arg1": 1,
+        "Arg2": 228,
+        "Args": 484,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0004B824",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Shocking"
+        },
+        "Identifier": 9400,
+        "Arg1": 4,
+        "Arg2": 0,
+        "Args": 1024,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "E5016824",
+        "Descriptions": {
+            "English": "Lengthens Dazed duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Silencing"
+        },
+        "Identifier": 9320,
+        "Arg1": 1,
+        "Arg2": 229,
+        "Args": 485,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "1414F823",
+        "Descriptions": {
+            "English": "Armor penetration +20% (Chance: 20%)"
+        },
+        "Names": {
+            "English": "Sundering"
+        },
+        "Identifier": 9208,
+        "Arg1": 20,
+        "Arg2": 20,
+        "Args": 5140,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0100E820",
+        "Descriptions": {
+            "English": "Health regeneration -{arg2}"
+        },
+        "Names": {
+            "English": "Vampiric"
+        },
+        "Identifier": 8424,
+        "Arg1": 0,
+        "Arg2": 1,
+        "Args": 1,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "00032825",
+        "Descriptions": {
+            "English": "Vampiric +{arg1}/-1"
+        },
+        "Names": {
+            "English": "Vampiric"
+        },
+        "Identifier": 9512,
+        "Arg1": 3,
+        "Arg2": 0,
+        "Args": 768,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "00052825",
+        "Descriptions": {
+            "English": "Vampiric +{arg1}/-1"
+        },
+        "Names": {
+            "English": "Vampiric"
+        },
+        "Identifier": 9512,
+        "Arg1": 5,
+        "Arg2": 0,
+        "Args": 1280,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0F003822",
+        "Descriptions": {
+            "English": "Damage +{arg2}%"
+        },
+        "Names": {
+            "English": "Vampiric/Zealous Strength"
+        },
+        "Identifier": 8760,
+        "Arg1": 0,
+        "Arg2": 15,
+        "Args": 15,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0100C820",
+        "Descriptions": {
+            "English": "Energy regeneration -{arg2}"
+        },
+        "Names": {
+            "English": "Zealous"
+        },
+        "Identifier": 8392,
+        "Arg1": 0,
+        "Arg2": 1,
+        "Args": 1,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "01001825",
+        "Descriptions": {
+            "English": "Zeal +{arg2}/-1"
+        },
+        "Names": {
+            "English": "Zealous"
+        },
+        "Identifier": 9496,
+        "Arg1": 0,
+        "Arg2": 1,
+        "Args": 1,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "14081824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Air Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 8,
+        "Arg2": 20,
+        "Args": 2068,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00140828",
+        "Descriptions": {
+            "English": "HHalves casting time on spells of item's attribute (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "of Aptitude"
+        },
+        "Identifier": 10248,
+        "Arg1": 20,
+        "Arg2": 0,
+        "Args": 5120,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14121824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Axe Mastery"
+        },
+        "Identifier": 9240,
+        "Arg1": 18,
+        "Arg2": 20,
+        "Args": 4628,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14041824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Blood Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 4,
+        "Arg2": 20,
+        "Args": 1044,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14221824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Channeling Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 34,
+        "Arg2": 20,
+        "Args": 8724,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00018080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Charrslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 1,
+        "Arg2": 0,
+        "Args": 256,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14201824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Communing"
+        },
+        "Identifier": 9240,
+        "Arg1": 32,
+        "Arg2": 20,
+        "Args": 8212,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14071824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Curses"
+        },
+        "Identifier": 9240,
+        "Arg1": 7,
+        "Arg2": 20,
+        "Args": 1812,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "141D1824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Dagger Mastery"
+        },
+        "Identifier": 9240,
+        "Arg1": 29,
+        "Arg2": 20,
+        "Args": 7444,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14051824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Death Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 5,
+        "Arg2": 20,
+        "Args": 1300,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00008080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Deathbane"
+        },
+        "Identifier": 32896,
+        "Arg1": 0,
+        "Arg2": 0,
+        "Args": 0,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "05000821",
+        "Descriptions": {
+            "English": "Armor +{arg2}"
+        },
+        "Names": {
+            "English": "of Defense"
+        },
+        "Identifier": 8456,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00088080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Demonslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 8,
+        "Arg2": 0,
+        "Args": 2048,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "002D6823",
+        "Descriptions": {
+            "English": "+{arg1} Health while Enchanted"
+        },
+        "Names": {
+            "English": "of Devotion"
+        },
+        "Identifier": 9064,
+        "Arg1": 45,
+        "Arg2": 0,
+        "Args": 11520,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14101824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Divine Favor"
+        },
+        "Identifier": 9240,
+        "Arg1": 16,
+        "Arg2": 20,
+        "Args": 4116,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14021824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Domination Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 2,
+        "Arg2": 20,
+        "Args": 532,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00098080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Dragonslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 9,
+        "Arg2": 0,
+        "Args": 2304,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00068080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Dwarfslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 6,
+        "Arg2": 0,
+        "Args": 1536,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14091824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Earth Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 9,
+        "Arg2": 20,
+        "Args": 2324,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "1400B822",
+        "Descriptions": {
+            "English": "+{arg2}% Enchantment Duration"
+        },
+        "Names": {
+            "English": "of Enchanting"
+        },
+        "Identifier": 8888,
+        "Arg1": 0,
+        "Arg2": 20,
+        "Args": 20,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "002D8823",
+        "Descriptions": {
+            "English": "+{arg1} Health while in a Stance"
+        },
+        "Names": {
+            "English": "of Endurance"
+        },
+        "Identifier": 9096,
+        "Arg1": 45,
+        "Arg2": 0,
+        "Args": 11520,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "140A1824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Fire Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 10,
+        "Arg2": 20,
+        "Args": 2580,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "001E4823",
+        "Descriptions": {
+            "English": "+{arg1} Health"
+        },
+        "Names": {
+            "English": "of Fortitude"
+        },
+        "Identifier": 9032,
+        "Arg1": 30,
+        "Arg2": 0,
+        "Args": 7680,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00058080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Giantslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 5,
+        "Arg2": 0,
+        "Args": 1280,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14131824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Hammer Mastery"
+        },
+        "Identifier": 9240,
+        "Arg1": 19,
+        "Arg2": 20,
+        "Args": 4884,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "140D1824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Healing Prayers"
+        },
+        "Identifier": 9240,
+        "Arg1": 13,
+        "Arg2": 20,
+        "Args": 3348,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14011824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Illusion Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 1,
+        "Arg2": 20,
+        "Args": 276,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14031824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Inspiration Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 3,
+        "Arg2": 20,
+        "Args": 788,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14191824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Marksmanship"
+        },
+        "Identifier": 9240,
+        "Arg1": 25,
+        "Arg2": 20,
+        "Args": 6420,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00143828",
+        "Descriptions": {
+            "English": "Item's attribute +1 (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "of Mastery"
+        },
+        "Identifier": 10296,
+        "Arg1": 20,
+        "Arg2": 0,
+        "Args": 5120,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00142828",
+        "Descriptions": {
+            "English": "Halves skill recharge of spells (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "of Memory"
+        },
+        "Identifier": 10280,
+        "Arg1": 20,
+        "Arg2": 0,
+        "Args": 5120,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "000A8080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Ogreslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 10,
+        "Arg2": 0,
+        "Args": 2560,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "140F1824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Protection Prayers"
+        },
+        "Identifier": 9240,
+        "Arg1": 15,
+        "Arg2": 20,
+        "Args": 3860,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00038080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Pruning"
+        },
+        "Identifier": 32896,
+        "Arg1": 3,
+        "Arg2": 0,
+        "Args": 768,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "000AA823",
+        "Descriptions": {
+            "English": "Halves skill recharge of spells (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "of Quickening"
+        },
+        "Identifier": 9128,
+        "Arg1": 10,
+        "Arg2": 0,
+        "Args": 2560,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14211824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Restoration Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 33,
+        "Arg2": 20,
+        "Args": 8468,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14291824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Scythe Mastery"
+        },
+        "Identifier": 9240,
+        "Arg1": 41,
+        "Arg2": 20,
+        "Args": 10516,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "07005821",
+        "Descriptions": {
+            "English": "+{arg2} Armor vs Physical"
+        },
+        "Names": {
+            "English": "of Shelter"
+        },
+        "Identifier": 8536,
+        "Arg1": 0,
+        "Arg2": 7,
+        "Args": 7,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00048080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Skeletonslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 4,
+        "Arg2": 0,
+        "Args": 1024,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "140E1824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Smiting Prayers"
+        },
+        "Identifier": 9240,
+        "Arg1": 14,
+        "Arg2": 20,
+        "Args": 3604,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14061824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Soul Reaping"
+        },
+        "Identifier": 9240,
+        "Arg1": 6,
+        "Arg2": 20,
+        "Args": 1556,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14241824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Spawning Power"
+        },
+        "Identifier": 9240,
+        "Arg1": 36,
+        "Arg2": 20,
+        "Args": 9236,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14251824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Spear Mastery"
+        },
+        "Identifier": 9240,
+        "Arg1": 37,
+        "Arg2": 20,
+        "Args": 9492,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "000A0822",
+        "Descriptions": {
+            "English": "Halves casting time of spells (Chance: +{arg1}%)"
+        },
+        "Names": {
+            "English": "of Swiftness"
+        },
+        "Identifier": 8712,
+        "Arg1": 10,
+        "Arg2": 0,
+        "Args": 2560,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "14141824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Swordsmanship"
+        },
+        "Identifier": 9240,
+        "Arg1": 20,
+        "Arg2": 20,
+        "Args": 5140,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00078080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Tenguslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 7,
+        "Arg2": 0,
+        "Args": 1792,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "00028080",
+        "Descriptions": {
+            "English": "Damge 20% (vs {arg1})"
+        },
+        "Names": {
+            "English": "of Trollslaying"
+        },
+        "Identifier": 32896,
+        "Arg1": 2,
+        "Arg2": 0,
+        "Args": 512,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "003C7823",
+        "Descriptions": {
+            "English": "+{arg1} Health while Hexed"
+        },
+        "Names": {
+            "English": "of Valor"
+        },
+        "Identifier": 9080,
+        "Arg1": 60,
+        "Arg2": 0,
+        "Args": 15360,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "07002821",
+        "Descriptions": {
+            "English": "+{arg2} Armor vs Elemental"
+        },
+        "Names": {
+            "English": "of Warding"
+        },
+        "Identifier": 8488,
+        "Arg1": 0,
+        "Arg2": 7,
+        "Args": 7,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "140B1824",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Water Magic"
+        },
+        "Identifier": 9240,
+        "Arg1": 11,
+        "Arg2": 20,
+        "Args": 2836,
+        "ModType": "Prefix"
+    },
+    {
+        "Struct": "0523A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Assassin"
+        },
+        "Identifier": 10408,
+        "Arg1": 35,
+        "Arg2": 5,
+        "Args": 8965,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "052CA828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Dervish"
+        },
+        "Identifier": 10408,
+        "Arg1": 44,
+        "Arg2": 5,
+        "Args": 11269,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "050CA828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Elementalist"
+        },
+        "Identifier": 10408,
+        "Arg1": 12,
+        "Arg2": 5,
+        "Args": 3077,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0500A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Mesmer"
+        },
+        "Identifier": 10408,
+        "Arg1": 0,
+        "Arg2": 5,
+        "Args": 5,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0510A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Monk"
+        },
+        "Identifier": 10408,
+        "Arg1": 16,
+        "Arg2": 5,
+        "Args": 4101,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0506A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Necromancer"
+        },
+        "Identifier": 10408,
+        "Arg1": 6,
+        "Arg2": 5,
+        "Args": 1541,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0528A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Paragon"
+        },
+        "Identifier": 10408,
+        "Arg1": 40,
+        "Arg2": 5,
+        "Args": 10245,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0517A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Ranger"
+        },
+        "Identifier": 10408,
+        "Arg1": 23,
+        "Arg2": 5,
+        "Args": 5893,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0524A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Ritualist"
+        },
+        "Identifier": 10408,
+        "Arg1": 36,
+        "Arg2": 5,
+        "Args": 9221,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0511A828",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Warrior"
+        },
+        "Identifier": 10408,
+        "Arg1": 17,
+        "Arg2": 5,
+        "Args": 4357,
+        "ModType": "Suffix"
+    },
+    {
+        "Struct": "0A014821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Charr"
+        },
+        "Names": {
+            "English": "vs Charr"
+        },
+        "Identifier": 8520,
+        "Arg1": 1,
+        "Arg2": 10,
+        "Args": 266,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A084821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Demons"
+        },
+        "Names": {
+            "English": "vs Demons"
+        },
+        "Identifier": 8520,
+        "Arg1": 8,
+        "Arg2": 10,
+        "Args": 2058,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A094821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Dragons"
+        },
+        "Names": {
+            "English": "vs Dragons"
+        },
+        "Identifier": 8520,
+        "Arg1": 9,
+        "Arg2": 10,
+        "Args": 2314,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A064821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Dwarves"
+        },
+        "Names": {
+            "English": "vs Dwarves"
+        },
+        "Identifier": 8520,
+        "Arg1": 6,
+        "Arg2": 10,
+        "Args": 1546,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A054821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Giants"
+        },
+        "Names": {
+            "English": "vs Giants"
+        },
+        "Identifier": 8520,
+        "Arg1": 5,
+        "Arg2": 10,
+        "Args": 1290,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A0A4821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Ogres"
+        },
+        "Names": {
+            "English": "vs Ogres"
+        },
+        "Identifier": 8520,
+        "Arg1": 10,
+        "Arg2": 10,
+        "Args": 2570,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A034821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Plants"
+        },
+        "Names": {
+            "English": "vs Plants"
+        },
+        "Identifier": 8520,
+        "Arg1": 3,
+        "Arg2": 10,
+        "Args": 778,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A044821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Skeletons"
+        },
+        "Names": {
+            "English": "vs Skeletons"
+        },
+        "Identifier": 8520,
+        "Arg1": 4,
+        "Arg2": 10,
+        "Args": 1034,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A074821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Tengu"
+        },
+        "Names": {
+            "English": "vs Tengu"
+        },
+        "Identifier": 8520,
+        "Arg1": 7,
+        "Arg2": 10,
+        "Args": 1802,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A024821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Trolls"
+        },
+        "Names": {
+            "English": "vs Trolls"
+        },
+        "Identifier": 8520,
+        "Arg1": 2,
+        "Arg2": 10,
+        "Args": 522,
+        "ModType": "Inherent"
+    },
+    {
+        "Struct": "0A004821",
+        "Descriptions": {
+            "English": "Armor +{arg2} vs Undead"
+        },
+        "Names": {
+            "English": "vs Undead"
+        },
+        "Identifier": 8520,
+        "Arg1": 0,
+        "Arg2": 10,
+        "Args": 10,
+        "ModType": "Inherent"
+    }
+]

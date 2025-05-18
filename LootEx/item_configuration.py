@@ -33,7 +33,7 @@ class ItemConfiguration:
     @staticmethod
     def to_dict(data) -> dict:
         return {
-            "model_id": data.model_id.name if data.model_id else None,
+            "model_id": data.model_id,
             "conditions": [
                 {
                     "name": condition.name,
@@ -62,14 +62,7 @@ class ItemConfiguration:
 
     @staticmethod
     def from_dict(data) -> "ItemConfiguration":
-        model_id = (
-            ModelID[data["model_id"]]
-            if data["model_id"] in ModelID.__members__
-            else None
-        )
-
-        if model_id is None:
-            raise ValueError(f"Invalid model_id: {data['model_id']}")
+        model_id = data["model_id"]
 
         item = ItemConfiguration(model_id)
         item.conditions = []

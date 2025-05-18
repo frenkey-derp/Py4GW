@@ -373,6 +373,11 @@ class ItemType(IntEnum):
     Minipet = 34
     Scythe = 35
     Spear = 36
+    Weapon = 37
+    MartialWeapon = 38
+    OffhandOrShield = 39
+    EquippableItem = 40
+    SpellcastingWeapon = 41
     Storybook = 43
     Costume = 44
     Costume_Headpiece = 45

@@ -7,7 +7,7 @@ from LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
-from LootEx.models import WeaponMod
+from LootEx.models import Rune, WeaponMod
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, Rarity, DyeColor
@@ -50,28 +50,96 @@ class Util:
     ##TODO: Add handling for non max mods
     @staticmethod
     def GetMods(item_id: int):
-        item_type = Item.GetItemType(item_id)
+        item_type = ItemType[Item.GetItemType(item_id)[1]]
         mods = []
-        
+                
         # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
-        for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-            mod_hex = f'{mod.GetIdentifier():04x}{mod.GetArg():04x}'.upper()
-            mod_mask = Util.get_mod_mask(mod.GetIdentifier(), mod.GetArg1(), mod.GetArg2())
-            
-            if Util.IsArmorType(ItemType[item_type[1]]):  
-                matching_rune = next((rune for rune in data.Runes if rune.struct == mod_hex), None)
+        for mod in Item.Customization.Modifiers.GetModifiers(item_id):            
+            if Util.IsArmorType(item_type):  
+                matching_rune = next((rune for rune in data.Runes if rune.is_item_modifier(mod)), None)
 
                 if matching_rune is not None: 
                     mods.append(matching_rune)
                     
-            elif Util.IsWeaponType(ItemType[item_type[1]]):
-                matching_mod = next((mod for mod in data.Weapon_Mods if mod.struct == mod_mask), None)
+            elif Util.IsWeaponType(item_type):
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(mod, item_type)), None)
                 
                 if matching_mod is not None:
                     ConsoleLog("LootEx", f"Weapon mod found: {matching_mod.full_name}")
                     mods.append(matching_mod)
         
-        return mods       
+        return mods
+    
+    
+    @staticmethod
+    def GetModFromRune_Mod(item_id: int):
+        """
+        Retrieves the weapon mod associated with a specific item ID if that item is a Rune or Mod.
+        Args:
+            item_id (int): The unique identifier of the item.
+        Returns:
+            Optional[WeaponMod]: The weapon mod associated with the item ID, 
+            or None if no matching mod is found.
+        """
+
+        item_type = Item.GetItemType(item_id)
+
+        if (item_type == ItemType.Rune_Mod):
+            _, value , _ = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.TargetItemType)
+            target_item_type = ItemType(value) if value else None
+
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):                                    
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(mod, target_item_type)), None)  
+                
+                if matching_mod is not None:                               
+                    matching_mod = next((weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
+                
+                return matching_mod      
+        else:
+            return None
+        
+    @staticmethod
+    def GetWeaponModFromRune_Mod(item_id: int) -> Optional[WeaponMod]:
+        """
+        Retrieves the weapon mod associated with a specific item ID if that item is a Rune or Mod.
+        Args:
+            item_id (int): The unique identifier of the item.
+        Returns:
+            Optional[WeaponMod]: The weapon mod associated with the item ID, 
+            or None if no matching mod is found.
+        """
+
+        item_type = Item.GetItemType(item_id)
+
+        if (item_type == ItemType.Rune_Mod):
+            _, value , _ = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.TargetItemType)
+            target_item_type = ItemType(value) if value else None
+
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):                                    
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(mod, target_item_type)), None)
+                return matching_mod          
+        else:
+            return None
+        
+    @staticmethod
+    def GetRuneFromRune_Mod(item_id: int) -> Optional[Rune]:
+        """
+        Retrieves the weapon mod associated with a specific item ID if that item is a Rune or Mod.
+        Args:
+            item_id (int): The unique identifier of the item.
+        Returns:
+            Optional[WeaponMod]: The weapon mod associated with the item ID, 
+            or None if no matching mod is found.
+        """
+
+        item_type = Item.GetItemType(item_id)
+
+        if (item_type == ItemType.Rune_Mod):
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):                                    
+                matching_mod = next((weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
+                return matching_mod               
+        else:
+            return None
     
     @staticmethod
     def GetItemRequirements(item_id: int) -> Optional[tuple[Attribute, int]]:        
@@ -148,8 +216,8 @@ class Util:
     
     @staticmethod
     def GetAttributes(itemType: ItemType) -> list[Attribute]:
-        if itemType in data.Attribute_Requirements:
-            return data.Attribute_Requirements[itemType]
+        if itemType in data.Item_Attributes:
+            return data.Item_Attributes[itemType]
         else:
             return []
 
@@ -204,6 +272,11 @@ class Util:
         return damage_range.min == max_damage.min - tollerance.min and damage_range.max >= max_damage.max - tollerance.max
 
     @staticmethod
+    def GetDataItem(model_id: int) -> Optional[models.Item]:
+        dataitem = next((data_item for data_item in data.Items if model_id == data_item.model_id), None)
+        return dataitem
+    
+    @staticmethod
     def IsArmorType(itemtype: ItemType) -> bool:
             return itemtype in {
                 ItemType.Headpiece,
@@ -216,7 +289,7 @@ class Util:
     
     @staticmethod
     def IsArmor(item: ItemConfiguration) -> bool:
-        dataitem = data.Items[item.model_id] if item.model_id in data.Items else None
+        dataitem = Util.GetDataItem(item.model_id)
         return Util.IsArmorType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
@@ -237,7 +310,7 @@ class Util:
             
     @staticmethod
     def IsWeapon(item: ItemConfiguration) -> bool:
-        dataitem = data.Items[item.model_id] if item.model_id in data.Items else None
+        dataitem = Util.GetDataItem(item.model_id)
         return Util.IsWeaponType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
@@ -309,17 +382,52 @@ class Util:
             return dye_colors[dye]
         else:
             return Utils.RGBToColor(255, 255, 255, 125)
-
+    
     @staticmethod
-    def GetWeaponModName(mod_struct: str) -> str:
+    def GetWeaponModName(mod_identifier: str, refresh : bool = False) -> str:
         """
         Get the name of the weapon mod based on its hex representation.
+
         Args:
-            mod (str): The hex representation of the weapon mod.
+            mod_identifier (str): The hex representation of the weapon mod.
+
         Returns:
             str: The name of the weapon mod.
         """
-        if mod_struct in data.Weapon_Mods:
-            return data.Weapon_Mods[mod_struct].full_name
-        else:
-            return "Unknown Weapon Mod"
+        if not WeaponMod._mod_identifier_lookup or refresh:
+            WeaponMod._mod_identifier_lookup = {
+                mod.identifier: mod.full_name for mod in data.Weapon_Mods
+            }
+
+        return WeaponMod._mod_identifier_lookup.get(mod_identifier, "Unknown Weapon Mod")
+    
+    @staticmethod
+    def IsMatchingItemType(item_type1 : ItemType, item_type2 : ItemType):
+        """
+        Check if two item types are the same or if one is a subtype of the other.
+
+        Args:
+            item_type1 (ItemType): The first item type.
+            item_type2 (ItemType): The second item type.
+
+        Returns:
+            bool: True if they are the same or one is a subtype of the other, False otherwise.
+        """
+        return item_type1 == item_type2 or item_type1 in data.ItemType_MetaTypes.get(item_type2, [])
+    
+    @staticmethod
+    def GetWeaponTypeFromAttribute(attribute: Attribute) -> ItemType:
+        """
+        Get the weapon type associated with a specific attribute.
+
+        Args:
+            attribute (Attribute): The attribute to check.
+
+        Returns:
+            ItemType: The associated weapon type, or ItemType.Unknown if not found.
+        """
+        for item_type, attributes in data.Item_Attributes.items():
+            if attribute in attributes:
+                return item_type
+
+        return ItemType.Unknown

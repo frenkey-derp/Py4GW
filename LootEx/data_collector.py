@@ -102,7 +102,7 @@ class DataCollector:
             server_language = ServerLanguage(preference)
             ConsoleLog(
                 "LootEx", f"Creating item name for: {Item.GetName(item_id)} ({model_id})")
-            self.data[model_id].names[server_language] = self.format_item_name(item_id)
+            self.data[model_id].names[server_language] = self.format_item_name(item_id) if self.data[model_id].item_type != ItemType.Rune_Mod else Item.GetName(item_id)
             ConsoleLog(
                 "LootEx", f"Added name: {self.data[model_id].names[server_language]} ({model_id})")
 
@@ -175,7 +175,7 @@ class DataCollector:
         if item_collection_node.ProcessQueue():
             return
         
-        for bag_id in range(Bags.EquippedItems, Bags.EquippedItems + 1):
+        for bag_id in range(Bags.Backpack, Bags.Backpack + 1):
             bag_to_check = ItemArray.CreateBagList(bag_id)
             item_array = ItemArray.GetItemArray(bag_to_check)
 

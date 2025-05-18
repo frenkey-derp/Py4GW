@@ -1,0 +1,16 @@
+{
+    "ModelID": 6514,
+    "Names": {
+        "English": "Serrated Shield"
+    },
+    "ItemType": "Shield",
+    "DropInfo": "",
+    "Attributes": [
+        "Tactics"
+    ],
+    "WikiURL": "https://wiki.guildwars.com/wiki/Serrated_Shield",
+    "Materials": [],
+    "RareMaterials": [],
+    "IsNickItem": false,
+    "Profession": null
+}
