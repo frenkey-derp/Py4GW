@@ -1,14 +1,15 @@
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 from LootEx import data, item_configuration
 from LootEx import models
-from LootEx.enum import ModifierIdentifier
+from LootEx.enum import ModifierIdentifier, ModifierValueArg
 from LootEx.item_actions import ItemAction
 from LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
-from LootEx.models import Rune, WeaponMod
-from Py4GWCoreLib import Item
+from LootEx.models import ModifierInfo, Rune, WeaponMod
+from Py4GWCoreLib import Item, Party
+from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, Rarity, DyeColor
 
@@ -39,38 +40,39 @@ class Util:
         if not (0 <= identifier <= 0xFFFF):
             raise ValueError("Identifier must be a 16-bit value (0-65535)")
 
-        identifier_bytes = identifier.to_bytes(2, byteorder='little')  # Bytes 2–3
+        identifier_bytes = identifier.to_bytes(
+            2, byteorder='little')  # Bytes 2–3
         result = bytearray(4)
         result[0] = arg2     # Byte 0
         result[1] = arg1     # Byte 1
         result[2] = identifier_bytes[0]  # Byte 2
         result[3] = identifier_bytes[1]  # Byte 3
         return bytes(result).hex().upper()
-    
-    ##TODO: Add handling for non max mods
+
+    # TODO: Add handling for non max mods
     @staticmethod
     def GetMods(item_id: int):
         item_type = ItemType[Item.GetItemType(item_id)[1]]
         mods = []
-                
-        # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
-        for mod in Item.Customization.Modifiers.GetModifiers(item_id):            
-            if Util.IsArmorType(item_type):  
-                matching_rune = next((rune for rune in data.Runes if rune.is_item_modifier(mod)), None)
 
-                if matching_rune is not None: 
-                    mods.append(matching_rune)
-                    
-            elif Util.IsWeaponType(item_type):
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(mod, item_type)), None)
-                
-                if matching_mod is not None:
-                    ConsoleLog("LootEx", f"Weapon mod found: {matching_mod.full_name}")
-                    mods.append(matching_mod)
-        
+        is_rune = item_type == ItemType.Rune_Mod and Item.Customization.Modifiers.GetModifierValues(
+            item_id, ModifierIdentifier.TargetItemType)[0] == 0
+
+        # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
+        modifiers = Item.Customization.Modifiers.GetModifiers(item_id)
+
+        if Util.IsArmorType(item_type) or is_rune:
+            matching_runes = [
+                rune for rune in data.Runes if rune.is_item_modifier(modifiers)]
+            mods.extend(matching_runes)
+
+        elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
+            matching_mods = [
+                weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(modifiers, item_type)]
+            mods.extend(matching_mods)
+
         return mods
-    
-    
+
     @staticmethod
     def GetModFromRune_Mod(item_id: int):
         """
@@ -85,19 +87,22 @@ class Util:
         item_type = Item.GetItemType(item_id)
 
         if (item_type == ItemType.Rune_Mod):
-            _, value , _ = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.TargetItemType)
+            _, value, _ = Item.Customization.Modifiers.GetModifierValues(
+                item_id, ModifierIdentifier.TargetItemType)
             target_item_type = ItemType(value) if value else None
 
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):                                    
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(mod, target_item_type)), None)  
-                
-                if matching_mod is not None:                               
-                    matching_mod = next((weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
-                
-                return matching_mod      
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(
+                    mod, target_item_type)), None)
+
+                if matching_mod is not None:
+                    matching_mod = next(
+                        (weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
+
+                return matching_mod
         else:
             return None
-        
+
     @staticmethod
     def GetWeaponModFromRune_Mod(item_id: int) -> Optional[WeaponMod]:
         """
@@ -112,15 +117,17 @@ class Util:
         item_type = Item.GetItemType(item_id)
 
         if (item_type == ItemType.Rune_Mod):
-            _, value , _ = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.TargetItemType)
+            _, value, _ = Item.Customization.Modifiers.GetModifierValues(
+                item_id, ModifierIdentifier.TargetItemType)
             target_item_type = ItemType(value) if value else None
 
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):                                    
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(mod, target_item_type)), None)
-                return matching_mod          
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(
+                    mod, target_item_type)), None)
+                return matching_mod
         else:
             return None
-        
+
     @staticmethod
     def GetRuneFromRune_Mod(item_id: int) -> Optional[Rune]:
         """
@@ -135,14 +142,15 @@ class Util:
         item_type = Item.GetItemType(item_id)
 
         if (item_type == ItemType.Rune_Mod):
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):                                    
-                matching_mod = next((weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
-                return matching_mod               
+            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
+                matching_mod = next(
+                    (weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
+                return matching_mod
         else:
             return None
-    
+
     @staticmethod
-    def GetItemRequirements(item_id: int) -> Optional[tuple[Attribute, int]]:        
+    def GetItemRequirements(item_id: int) -> Optional[tuple[Attribute, int]]:
         """
         Retrieves the attribute and requirement level for a given item.
         Args:
@@ -152,14 +160,15 @@ class Util:
             (as an `Attribute` object) and the requirement level (as an integer) 
             if the item has a requirement. Returns `None` if no requirements are found.
         """
-        _, attribute_id, requirement = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.Requirement)
-        
+        _, attribute_id, requirement = Item.Customization.Modifiers.GetModifierValues(
+            item_id, ModifierIdentifier.Requirement)
+
         if attribute_id == None or requirement == None:
             return None
-        
+
         attribute = Attribute(attribute_id)
-        return attribute, requirement       
-    
+        return attribute, requirement
+
     @staticmethod
     def GetItemDamage(item_id: int) -> Optional[tuple[int, int]]:
         """
@@ -174,13 +183,14 @@ class Util:
             Optional[tuple[int, int]]: A tuple containing the minimum and maximum damage
             values, or None if no damage values are available.
         """
-        _, max_damage, min_damage = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.Damage)
-        
+        _, max_damage, min_damage = Item.Customization.Modifiers.GetModifierValues(
+            item_id, ModifierIdentifier.Damage)
+
         if max_damage == None and min_damage == None:
             return None
-        
+
         return min_damage if min_damage else 0, max_damage if max_damage else 0
-    
+
     @staticmethod
     def GetItemDamageType(item_id: int) -> Optional[DamageType]:
         """
@@ -193,9 +203,10 @@ class Util:
             Optional[DamageType]: The damage type of the item if it exists, 
             otherwise None.
         """
-        _, damage_type_id, _ = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.DamageType)        
+        _, damage_type_id, _ = Item.Customization.Modifiers.GetModifierValues(
+            item_id, ModifierIdentifier.DamageType)
         return DamageType(damage_type_id) if damage_type_id else None
-        
+
     @staticmethod
     def GetShieldArmor(item_id: int) -> Optional[tuple[int, int]]:
         """
@@ -207,13 +218,14 @@ class Util:
         Returns:
             Optional[int]: The armor value of the shield if it exists, otherwise None.
         """
-        _, armor_at_or_above_requirement, armor_below_requirement = Item.Customization.Modifiers.GetModifierValues(item_id, ModifierIdentifier.ShieldArmor)
-        
+        _, armor_at_or_above_requirement, armor_below_requirement = Item.Customization.Modifiers.GetModifierValues(
+            item_id, ModifierIdentifier.ShieldArmor)
+
         if armor_at_or_above_requirement == None or armor_below_requirement == None:
             return None
-        
+
         return armor_at_or_above_requirement, armor_below_requirement
-    
+
     @staticmethod
     def GetAttributes(itemType: ItemType) -> list[Attribute]:
         if itemType in data.Item_Attributes:
@@ -239,17 +251,17 @@ class Util:
         name = name.replace("_", " ")
 
         return name
-    
+
     @staticmethod
-    def GetActionName(action : ItemAction) -> str:
+    def GetActionName(action: ItemAction) -> str:
         name = action.name
 
         # Split the name at underscores
         parts = name.split("_")
-        
+
         # Capitalize the first letter of each part
         parts = [part.capitalize() for part in parts]
-        
+
         # Join the parts back together with spaces
         name = ' '.join(parts)
 
@@ -273,20 +285,21 @@ class Util:
 
     @staticmethod
     def GetDataItem(model_id: int) -> Optional[models.Item]:
-        dataitem = next((data_item for data_item in data.Items if model_id == data_item.model_id), None)
+        dataitem = next(
+            (data_item for data_item in data.Items if model_id == data_item.model_id), None)
         return dataitem
-    
+
     @staticmethod
     def IsArmorType(itemtype: ItemType) -> bool:
-            return itemtype in {
-                ItemType.Headpiece,
-                ItemType.Chestpiece,
-                ItemType.Gloves,
-                ItemType.Leggings,
-                ItemType.Boots,
-                ItemType.Salvage,
-            }
-    
+        return itemtype in {
+            ItemType.Headpiece,
+            ItemType.Chestpiece,
+            ItemType.Gloves,
+            ItemType.Leggings,
+            ItemType.Boots,
+            ItemType.Salvage,
+        }
+
     @staticmethod
     def IsArmor(item: ItemConfiguration) -> bool:
         dataitem = Util.GetDataItem(item.model_id)
@@ -294,20 +307,20 @@ class Util:
 
     @staticmethod
     def IsWeaponType(itemtype: ItemType) -> bool:
-            return itemtype in {
-                ItemType.Axe,
-                ItemType.Bow,
-                ItemType.Daggers,
-                ItemType.Hammer,
-                ItemType.Offhand,
-                ItemType.Scythe,
-                ItemType.Shield,
-                ItemType.Spear,
-                ItemType.Staff,
-                ItemType.Sword,
-                ItemType.Wand
-            }
-            
+        return itemtype in {
+            ItemType.Axe,
+            ItemType.Bow,
+            ItemType.Daggers,
+            ItemType.Hammer,
+            ItemType.Offhand,
+            ItemType.Scythe,
+            ItemType.Shield,
+            ItemType.Spear,
+            ItemType.Staff,
+            ItemType.Sword,
+            ItemType.Wand
+        }
+
     @staticmethod
     def IsWeapon(item: ItemConfiguration) -> bool:
         dataitem = Util.GetDataItem(item.model_id)
@@ -382,9 +395,9 @@ class Util:
             return dye_colors[dye]
         else:
             return Utils.RGBToColor(255, 255, 255, 125)
-    
+
     @staticmethod
-    def GetWeaponModName(mod_identifier: str, refresh : bool = False) -> str:
+    def GetWeaponModName(mod_identifier: str, refresh: bool = False) -> str:
         """
         Get the name of the weapon mod based on its hex representation.
 
@@ -400,9 +413,9 @@ class Util:
             }
 
         return WeaponMod._mod_identifier_lookup.get(mod_identifier, "Unknown Weapon Mod")
-    
+
     @staticmethod
-    def IsMatchingItemType(item_type1 : ItemType, item_type2 : ItemType):
+    def IsMatchingItemType(item_type1: ItemType, item_type2: ItemType):
         """
         Check if two item types are the same or if one is a subtype of the other.
 
@@ -414,7 +427,7 @@ class Util:
             bool: True if they are the same or one is a subtype of the other, False otherwise.
         """
         return item_type1 == item_type2 or item_type1 in data.ItemType_MetaTypes.get(item_type2, [])
-    
+
     @staticmethod
     def GetWeaponTypeFromAttribute(attribute: Attribute) -> ItemType:
         """
@@ -431,3 +444,28 @@ class Util:
                 return item_type
 
         return ItemType.Unknown
+
+    @staticmethod
+    def parse_modifier_from_hex(hex_str: str) -> List[ModifierInfo]:
+        identifier = int(hex_str[0:4], 16)  # 0x21E8 = 8680
+        arg = int(hex_str[4:8], 16)         # 0x0803 = 2051
+        arg1, arg2 = ModifierInfo.unpack_arg(arg)
+
+        return [
+            ModifierInfo(
+                identifier=identifier,
+                arg1=arg1,
+                arg2=arg2,
+                modifier_value_arg=ModifierValueArg.Fixed,
+            )
+        ]
+        
+    @staticmethod
+    def IsMapReady(map_id:int = 0):
+        if not Map.IsMapLoading():
+            if Map.IsMapReady():
+                if Party.IsPartyLoaded():
+                    if not Map.IsInCinematic():
+                        if map_id == 0 or Map.GetMapID() == map_id:
+                            return True
+        return False

@@ -1,4 +1,4 @@
-from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector, data
+from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector, data, utility
 from Py4GWCoreLib import *
 from LootEx import gui
 
@@ -40,18 +40,21 @@ def main():
     if (throttle_timer.IsExpired()):
         throttle_timer.Reset()
 
-        if UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
-            settings.current.parent_frame_id = UIManager.GetFrameIDByHash(
-                inventory_frame_hash)
+    if not utility.Util.IsMapReady():
+        return
 
-            if settings.current.parent_frame_id != 0:
-                settings.current.inventory_frame_exists = UIManager.FrameExists(
-                    settings.current.parent_frame_id)
-            else:
-                settings.current.inventory_frame_exists = False
+    if UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+        settings.current.parent_frame_id = UIManager.GetFrameIDByHash(
+            inventory_frame_hash)
+
+        if settings.current.parent_frame_id != 0:
+            settings.current.inventory_frame_exists = UIManager.FrameExists(
+                settings.current.parent_frame_id)
         else:
-            settings.current.parent_frame_id = 0
             settings.current.inventory_frame_exists = False
+    else:
+        settings.current.parent_frame_id = 0
+        settings.current.inventory_frame_exists = False
 
     if settings.current.inventory_frame_exists and settings.current.parent_frame_id != None:
         settings.current.inventory_frame_coords = settings.FrameCoords(

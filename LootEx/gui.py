@@ -1,6 +1,7 @@
 from LootEx import *
 from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum
 from LootEx import models
+from LootEx.data_collector import DataCollector
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -252,53 +253,10 @@ def draw_window():
 
         if PyImGui.button("Test"):
             script_directory = os.path.dirname(os.path.abspath(__file__))
-            
-            # path = os.path.join(
-            #     script_directory, "data",  "items.json")
-            
-            # with open(path, "w") as file:
-            #     itemList = [item.to_json() for item in data.Items]  
-            #     json.dump(itemList, file, indent=4)
-            #     ConsoleLog("LootEx", f"Saved items to {path}")
-                
-            # path = os.path.join(
-            #     script_directory, "data",  "runes.json")
-            
-            # with open(path, "w") as file:
-            #     runeList = [item.to_json() for item in data.Runes]  
-            #     json.dump(runeList, file, indent=4)
-            #     ConsoleLog("LootEx", f"Saved items to {path}")
-                
-            path = os.path.join(
-                script_directory, "data",  "weapon_mods.json")
-
-            added_mods = []
-            identifier_lookup = 9240
-            target_types = [ItemType.MartialWeapon, ItemType.Staff]
-
-            for mod in data.Weapon_Mods:
-                modifier = next((modif for modif in mod.modifiers if modif.identifier == identifier_lookup), None)
-
-                if modifier is not None:
-                    attribute = Attribute(modifier.arg1)
-
-                    if attribute in data.Caster_Attributes:
-                        target_types = [ItemType.Staff]
-                    else:
-                        target_types = [utility.Util.GetWeaponTypeFromAttribute(attribute)]
-
-                    mod.target_types = target_types
-
-                # if modifier is not None and mod.mod_type == enum.ModType.Suffix:
-                #     mod.target_types = target_types
-                    
+            path = os.path.join(script_directory, "data", "runes.json")
             
             with open(path, "w") as file:
-                modList = [item.to_json() for item in data.Weapon_Mods]  
-                json.dump(modList, file, indent=4)
-                ConsoleLog("LootEx", f"Saved items to {path}")
-                
-            
+                json.dump([rune.to_json() for rune in data.Runes], file, indent=4)
                                 
 
         profile_names = [
@@ -1481,7 +1439,7 @@ def draw_runes():
 
                     if PyImGui.begin_child("RunesSelection#1", (0, 0), True, PyImGui.WindowFlags.NoBackground):
                         for rune in runes:
-                            if not rune or not rune.struct:
+                            if not rune or not rune.identifier:
                                 continue
 
                             color = utility.Util.GetRarityColor(
@@ -1494,20 +1452,20 @@ def draw_runes():
                                 PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(color["frame"]))
 
                             label = f"{rune.full_name}"
-                            unique_id = f"##{rune.struct}"
+                            unique_id = f"##{rune.identifier}"
                             rune_selected = PyImGui.checkbox(
                                 IconsFontAwesome5.ICON_SHIELD_ALT + " " + label + unique_id,
-                                rune.struct in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
-                                    rune.struct]
+                                rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
+                                    rune.identifier]
                             )
 
-                            if rune.struct in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.struct] != rune_selected:
-                                settings.current.loot_profile.runes[rune.struct] = rune_selected
+                            if rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.identifier] != rune_selected:
+                                settings.current.loot_profile.runes[rune.identifier] = rune_selected
                                 settings.current.loot_profile.save()
 
                             PyImGui.pop_style_color(3)
                             ImGui.show_tooltip(
-                                f"Rune: {rune.full_name}\nStruct: {rune.struct}")
+                                f"Rune: {rune.full_name}\nStruct: {rune.identifier}")
 
                         PyImGui.end_child()
 

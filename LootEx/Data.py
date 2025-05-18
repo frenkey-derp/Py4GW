@@ -300,7 +300,7 @@ def LoadWeaponMods():
 
 @staticmethod
 def LoadRunes():
-    global Runes, Runes_by_Profession
+    global Runes
 
     #Load runes from data/runes.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
@@ -331,7 +331,7 @@ def LoadRunes():
         Runes_by_Profession[rune.profession].append(rune)
                             
     for profession in Runes_by_Profession:
-        Runes_by_Profession[profession].sort(key=lambda x: (x.rarity.value, x.name))  
+        Runes_by_Profession[profession].sort(key=lambda x: (x.mod_type, x.rarity.value, x.name))  
 
 @staticmethod
 def LoadItems():

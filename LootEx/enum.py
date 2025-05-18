@@ -46,3 +46,5 @@ class ModifierIdentifier(IntEnum):
     DamageType = 9400
     ShieldArmor = 42936
     TargetItemType = 9656
+    RuneAttribute = 8680
+    HealthLoss = 8408

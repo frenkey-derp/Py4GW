@@ -1,0 +1,2946 @@
+[
+    {
+        "Struct": "24080211",
+        "Names": {
+            "English": "Rune of Attunement"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 4354,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080215",
+        "Names": {
+            "English": "Rune of Clarity"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 5378,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240800FD",
+        "Names": {
+            "English": "Rune of Major Absorption"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 64768,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "21E80802",
+        "Names": {
+            "English": "Rune of Major Air Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 520,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81202",
+        "Names": {
+            "English": "Rune of Major Axe Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 530,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81602",
+        "Names": {
+            "English": "Rune of Major Beast Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 534,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80402",
+        "Names": {
+            "English": "Rune of Major Blood Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 516,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82202",
+        "Names": {
+            "English": "Rune of Major Channeling Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 546,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82602",
+        "Names": {
+            "English": "Rune of Major Command"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 550,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82002",
+        "Names": {
+            "English": "Rune of Major Communing"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 544,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82302",
+        "Names": {
+            "English": "Rune of Major Critical Strikes"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 547,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80702",
+        "Names": {
+            "English": "Rune of Major Curses"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 519,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81D02",
+        "Names": {
+            "English": "Rune of Major Dagger Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 541,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81E02",
+        "Names": {
+            "English": "Rune of Major Deadly Arts"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 542,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80502",
+        "Names": {
+            "English": "Rune of Major Death Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 517,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81002",
+        "Names": {
+            "English": "Rune of Major Divine Favor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 528,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80202",
+        "Names": {
+            "English": "Rune of Major Domination Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 514,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80902",
+        "Names": {
+            "English": "Rune of Major Earth Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 521,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82B02",
+        "Names": {
+            "English": "Rune of Major Earth Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 555,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80C02",
+        "Names": {
+            "English": "Rune of Major Energy Storage"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 524,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81702",
+        "Names": {
+            "English": "Rune of Major Expertise"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 535,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80002",
+        "Names": {
+            "English": "Rune of Major Fast Casting"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 512,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80A02",
+        "Names": {
+            "English": "Rune of Major Fire Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 522,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81302",
+        "Names": {
+            "English": "Rune of Major Hammer Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 531,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80D02",
+        "Names": {
+            "English": "Rune of Major Healing Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 525,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80102",
+        "Names": {
+            "English": "Rune of Major Illusion Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 513,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80302",
+        "Names": {
+            "English": "Rune of Major Inspiration Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 515,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82802",
+        "Names": {
+            "English": "Rune of Major Leadership"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 552,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81902",
+        "Names": {
+            "English": "Rune of Major Marksmanship"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 537,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82702",
+        "Names": {
+            "English": "Rune of Major Motivation"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 551,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82C02",
+        "Names": {
+            "English": "Rune of Major Mysticism"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 556,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80F02",
+        "Names": {
+            "English": "Rune of Major Protection Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 527,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82102",
+        "Names": {
+            "English": "Rune of Major Restoration Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 545,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82902",
+        "Names": {
+            "English": "Rune of Major Scythe Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 553,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81F02",
+        "Names": {
+            "English": "Rune of Major Shadow Arts"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 543,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80E02",
+        "Names": {
+            "English": "Rune of Major Smiting Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 526,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80602",
+        "Names": {
+            "English": "Rune of Major Soul Reaping"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 518,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82402",
+        "Names": {
+            "English": "Rune of Major Spawning Power"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 548,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82502",
+        "Names": {
+            "English": "Rune of Major Spear Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 549,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81102",
+        "Names": {
+            "English": "Rune of Major Strength"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 529,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81402",
+        "Names": {
+            "English": "Rune of Major Swordsmanship"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 532,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81502",
+        "Names": {
+            "English": "Rune of Major Tactics"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 533,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "24080100",
+        "Names": {
+            "English": "Rune of Major Vigor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 1,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "21E80B02",
+        "Names": {
+            "English": "Rune of Major Water Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 523,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81802",
+        "Names": {
+            "English": "Rune of Major Wilderness Survival"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 536,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82A02",
+        "Names": {
+            "English": "Rune of Major Wind Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 554,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "240800FC",
+        "Names": {
+            "English": "Rune of Minor Absorption"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 64512,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "21E80801",
+        "Names": {
+            "English": "Rune of Minor Air Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 264,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81201",
+        "Names": {
+            "English": "Rune of Minor Axe Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 274,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81601",
+        "Names": {
+            "English": "Rune of Minor Beast Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 278,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80401",
+        "Names": {
+            "English": "Rune of Minor Blood Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 260,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82201",
+        "Names": {
+            "English": "Rune of Minor Channeling Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 290,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82601",
+        "Names": {
+            "English": "Rune of Minor Command"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 294,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82001",
+        "Names": {
+            "English": "Rune of Minor Communing"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 288,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82301",
+        "Names": {
+            "English": "Rune of Minor Critical Strikes"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 291,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80701",
+        "Names": {
+            "English": "Rune of Minor Curses"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 263,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81D01",
+        "Names": {
+            "English": "Rune of Minor Dagger Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 285,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81E01",
+        "Names": {
+            "English": "Rune of Minor Deadly Arts"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 286,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80501",
+        "Names": {
+            "English": "Rune of Minor Death Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 261,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81001",
+        "Names": {
+            "English": "Rune of Minor Divine Favor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 272,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80201",
+        "Names": {
+            "English": "Rune of Minor Domination Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 258,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80901",
+        "Names": {
+            "English": "Rune of Minor Earth Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 265,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82B01",
+        "Names": {
+            "English": "Rune of Minor Earth Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 299,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80C01",
+        "Names": {
+            "English": "Rune of Minor Energy Storage"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 268,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81701",
+        "Names": {
+            "English": "Rune of Minor Expertise"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 279,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80001",
+        "Names": {
+            "English": "Rune of Minor Fast Casting"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 256,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80A01",
+        "Names": {
+            "English": "Rune of Minor Fire Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 266,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81301",
+        "Names": {
+            "English": "Rune of Minor Hammer Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 275,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80D01",
+        "Names": {
+            "English": "Rune of Minor Healing Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 269,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80101",
+        "Names": {
+            "English": "Rune of Minor Illusion Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 257,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80301",
+        "Names": {
+            "English": "Rune of Minor Inspiration Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 259,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82801",
+        "Names": {
+            "English": "Rune of Minor Leadership"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 296,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81901",
+        "Names": {
+            "English": "Rune of Minor Marksmanship"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 281,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82701",
+        "Names": {
+            "English": "Rune of Minor Motivation"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 295,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82C01",
+        "Names": {
+            "English": "Rune of Minor Mysticism"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 300,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80F01",
+        "Names": {
+            "English": "Rune of Minor Protection Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 271,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82101",
+        "Names": {
+            "English": "Rune of Minor Restoration Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 289,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82901",
+        "Names": {
+            "English": "Rune of Minor Scythe Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 297,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81F01",
+        "Names": {
+            "English": "Rune of Minor Shadow Arts"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 287,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80E01",
+        "Names": {
+            "English": "Rune of Minor Smiting Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 270,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80601",
+        "Names": {
+            "English": "Rune of Minor Soul Reaping"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 262,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82401",
+        "Names": {
+            "English": "Rune of Minor Spawning Power"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 292,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82501",
+        "Names": {
+            "English": "Rune of Minor Spear Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 293,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81101",
+        "Names": {
+            "English": "Rune of Minor Strength"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 273,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81401",
+        "Names": {
+            "English": "Rune of Minor Swordsmanship"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 276,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81501",
+        "Names": {
+            "English": "Rune of Minor Tactics"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 277,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "240800FF",
+        "Names": {
+            "English": "Rune of Minor Vigor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 65280,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240800C2",
+        "Names": {
+            "English": "Rune of Minor Vigor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 49664,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "21E80B01",
+        "Names": {
+            "English": "Rune of Minor Water Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 267,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81801",
+        "Names": {
+            "English": "Rune of Minor Wilderness Survival"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 280,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82A01",
+        "Names": {
+            "English": "Rune of Minor Wind Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 298,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "24080216",
+        "Names": {
+            "English": "Rune of Purity"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 5634,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080213",
+        "Names": {
+            "English": "Rune of Recovery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 4866,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080214",
+        "Names": {
+            "English": "Rune of Restoration"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "ModType": "Suffix",
+        "Identifier": 5122,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240800FE",
+        "Names": {
+            "English": "Rune of Superior Absorption"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 65024,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "21E80803",
+        "Names": {
+            "English": "Rune of Superior Air Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 776,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81203",
+        "Names": {
+            "English": "Rune of Superior Axe Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 786,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81603",
+        "Names": {
+            "English": "Rune of Superior Beast Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 790,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80403",
+        "Names": {
+            "English": "Rune of Superior Blood Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 772,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82203",
+        "Names": {
+            "English": "Rune of Superior Channeling Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 802,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82603",
+        "Names": {
+            "English": "Rune of Superior Command"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 806,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82003",
+        "Names": {
+            "English": "Rune of Superior Communing"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 800,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82303",
+        "Names": {
+            "English": "Rune of Superior Critical Strikes"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 803,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80703",
+        "Names": {
+            "English": "Rune of Superior Curses"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 775,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81D03",
+        "Names": {
+            "English": "Rune of Superior Dagger Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 797,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81E03",
+        "Names": {
+            "English": "Rune of Superior Deadly Arts"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 798,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80503",
+        "Names": {
+            "English": "Rune of Superior Death Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 773,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81003",
+        "Names": {
+            "English": "Rune of Superior Divine Favor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 784,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80203",
+        "Names": {
+            "English": "Rune of Superior Domination Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 770,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80903",
+        "Names": {
+            "English": "Rune of Superior Earth Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 777,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82B03",
+        "Names": {
+            "English": "Rune of Superior Earth Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 811,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80C03",
+        "Names": {
+            "English": "Rune of Superior Energy Storage"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 780,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81703",
+        "Names": {
+            "English": "Rune of Superior Expertise"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 791,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80003",
+        "Names": {
+            "English": "Rune of Superior Fast Casting"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 768,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80A03",
+        "Names": {
+            "English": "Rune of Superior Fire Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 778,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81303",
+        "Names": {
+            "English": "Rune of Superior Hammer Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 787,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80D03",
+        "Names": {
+            "English": "Rune of Superior Healing Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 781,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80103",
+        "Names": {
+            "English": "Rune of Superior Illusion Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 769,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80303",
+        "Names": {
+            "English": "Rune of Superior Inspiration Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 771,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82803",
+        "Names": {
+            "English": "Rune of Superior Leadership"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 808,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81903",
+        "Names": {
+            "English": "Rune of Superior Marksmanship"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 793,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82703",
+        "Names": {
+            "English": "Rune of Superior Motivation"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 807,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82C03",
+        "Names": {
+            "English": "Rune of Superior Mysticism"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 812,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80F03",
+        "Names": {
+            "English": "Rune of Superior Protection Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 783,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82103",
+        "Names": {
+            "English": "Rune of Superior Restoration Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 801,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82903",
+        "Names": {
+            "English": "Rune of Superior Scythe Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 809,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81F03",
+        "Names": {
+            "English": "Rune of Superior Shadow Arts"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 799,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80E03",
+        "Names": {
+            "English": "Rune of Superior Smiting Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 782,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E80603",
+        "Names": {
+            "English": "Rune of Superior Soul Reaping"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 774,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82403",
+        "Names": {
+            "English": "Rune of Superior Spawning Power"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 804,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82503",
+        "Names": {
+            "English": "Rune of Superior Spear Mastery"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 805,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81103",
+        "Names": {
+            "English": "Rune of Superior Strength"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 785,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81403",
+        "Names": {
+            "English": "Rune of Superior Swordsmanship"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 788,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81503",
+        "Names": {
+            "English": "Rune of Superior Tactics"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 789,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "24080101",
+        "Names": {
+            "English": "Rune of Superior Vigor"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 257,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "21E80B03",
+        "Names": {
+            "English": "Rune of Superior Water Magic"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 779,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E81803",
+        "Names": {
+            "English": "Rune of Superior Wilderness Survival"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 792,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "21E82A03",
+        "Names": {
+            "English": "Rune of Superior Wind Prayers"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Gold",
+        "ModType": "Suffix",
+        "Identifier": 810,
+        "Arg1": 232,
+        "Arg2": 33,
+        "Args": 59425
+    },
+    {
+        "Struct": "24080212",
+        "Names": {
+            "English": "Rune of Vitae"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Suffix",
+        "Identifier": 4610,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F5",
+        "Names": {
+            "English": "Aeromancer Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 62721,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F8",
+        "Names": {
+            "English": "Anchorite's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 63489,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E2",
+        "Names": {
+            "English": "Artificer's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 57857,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080200",
+        "Names": {
+            "English": "Beastmaster's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 2,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E9",
+        "Names": {
+            "English": "Blessed Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 59649,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F0",
+        "Names": {
+            "English": "Blighter's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 61441,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "2408020A",
+        "Names": {
+            "English": "Bloodstained Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 2562,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801EE",
+        "Names": {
+            "English": "Bonelace Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 60929,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E8",
+        "Names": {
+            "English": "Brawler's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 59393,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080207",
+        "Names": {
+            "English": "Centurion's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 1794,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F7",
+        "Names": {
+            "English": "Disciple's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 63233,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801FA",
+        "Names": {
+            "English": "Dreadnought Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 64001,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801FD",
+        "Names": {
+            "English": "Earthbound Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 64769,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080203",
+        "Names": {
+            "English": "Forsaken Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 770,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801FC",
+        "Names": {
+            "English": "Frostbound Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 64513,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F3",
+        "Names": {
+            "English": "Geomancer Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 62209,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080205",
+        "Names": {
+            "English": "Ghost Forge Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 1282,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801EA",
+        "Names": {
+            "English": "Herald's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 59905,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F2",
+        "Names": {
+            "English": "Hydromancer Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 61953,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801DF",
+        "Names": {
+            "English": "Infiltrator's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 57089,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F9",
+        "Names": {
+            "English": "Knight's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 63745,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080208",
+        "Names": {
+            "English": "Lieutenant's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 2050,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801EF",
+        "Names": {
+            "English": "Minion Master's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 61185,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080206",
+        "Names": {
+            "English": "Mystic's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 1538,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E1",
+        "Names": {
+            "English": "Nightstalker's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 57601,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F1",
+        "Names": {
+            "English": "Prismatic Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 61697,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E3",
+        "Names": {
+            "English": "Prodigy's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 58113,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801FE",
+        "Names": {
+            "English": "Pyrebound Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 65025,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F4",
+        "Names": {
+            "English": "Pyromancer Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 62465,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E5",
+        "Names": {
+            "English": "Radiant Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 58625,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E0",
+        "Names": {
+            "English": "Saboteur's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 57345,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080201",
+        "Names": {
+            "English": "Scout's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 258,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801FB",
+        "Names": {
+            "English": "Sentinel's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 64257,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801EB",
+        "Names": {
+            "English": "Sentry's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 60161,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080204",
+        "Names": {
+            "English": "Shaman's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 1026,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E7",
+        "Names": {
+            "English": "Stalwart Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 59137,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080209",
+        "Names": {
+            "English": "Stonefist Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 2306,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801FF",
+        "Names": {
+            "English": "Stormbound Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 65281,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E6",
+        "Names": {
+            "English": "Survivor Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 58881,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801EC",
+        "Names": {
+            "English": "Tormentor's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 60417,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801ED",
+        "Names": {
+            "English": "Undertaker's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 60673,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801DE",
+        "Names": {
+            "English": "Vanguard's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 56833,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801E4",
+        "Names": {
+            "English": "Virtuoso's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 58369,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "240801F6",
+        "Names": {
+            "English": "Wanderer's Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 62977,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    },
+    {
+        "Struct": "24080202",
+        "Names": {
+            "English": "Windwalker Insignia"
+        },
+        "Descriptions": {
+            "English": ""
+        },
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "ModType": "Prefix",
+        "Identifier": 514,
+        "Arg1": 8,
+        "Arg2": 36,
+        "Args": 2084
+    }
+]

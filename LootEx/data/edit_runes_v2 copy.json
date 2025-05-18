@@ -1,0 +1,1512 @@
+[
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Health +15 (on chest armor)\nHealth +10 (on leg armor)\nHealth +5 (on other armor)"
+        },
+        "Names": {
+            "English": "Survivor Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9944,
+                "Arg1": 5,
+                "Arg2": 0,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Energy +3 (on chest armor)\nEnergy +2 (on leg armor)\nEnergy +1 (on other armor)"
+        },
+        "Names": {
+            "English": "Radiant Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9928,
+                "Arg1": 0,
+                "Arg2": 1,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Armor +10 (vs. physical damage)"
+        },
+        "Names": {
+            "English": "Stalwart Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 41304,
+                "Arg1": 0,
+                "Arg2": 10,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Armor +10 (while attacking)"
+        },
+        "Names": {
+            "English": "Brawler's Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 42288,
+                "Arg1": 3,
+                "Arg2": 208,
+                "ModifierValueArg": "Fixed"
+            },
+            {
+                "Identifier": 41208,
+                "Arg1": 0,
+                "Arg2": 10,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Armor +10 (while affected by an Enchantment Spell)"
+        },
+        "Names": {
+            "English": "Blessed Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 42288,
+                "Arg1": 3,
+                "Arg2": 210,
+                "ModifierValueArg": "Fixed"
+            },
+            {
+                "Identifier": 41208,
+                "Arg1": 0,
+                "Arg2": 10,
+                "ModifierValueArg": "Fixed"
+            }]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Armor +10 (while holding an item)"
+        },
+        "Names": {
+            "English": "Herald's Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 42288,
+                "Arg1": 3,
+                "Arg2": 212,
+                "ModifierValueArg": "Fixed"
+            },
+            {
+                "Identifier": 41208,
+                "Arg1": 0,
+                "Arg2": 10,
+                "ModifierValueArg": "Fixed"
+            }]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Armor +10 (while in a stance)"
+        },
+        "Names": {
+            "English": "Sentry's Insignia"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 42288,
+                "Arg1": 3,
+                "Arg2": 214,
+                "ModifierValueArg": "Fixed"
+            },
+            {
+                "Identifier": 41208,
+                "Arg1": 0,
+                "Arg2": 10,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": "Received physical damage -3"
+        },
+        "Names": {
+            "English": "Knight's Insignia [Warrior]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Lieutenant's Insignia [Warrior]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Stonefist Insignia [Warrior]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Dreadnought Insignia [Warrior]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Sentinel's Insignia [Warrior]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Frostbound Insignia [Ranger]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Pyrebound Insignia [Ranger]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Stormbound Insignia [Ranger]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Scout's Insignia [Ranger]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Earthbound Insignia [Ranger]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Beastmaster's Insignia [Ranger]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Wanderer's Insignia [Monk]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Disciple's Insignia [Monk]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Anchorite's Insignia [Monk]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Bloodstained Insignia [Necromancer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Tormentor's Insignia [Necromancer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Bonelace Insignia [Necromancer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Minion Master's Insignia [Necromancer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Blighter's Insignia [Necromancer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Undertaker's Insignia [Necromancer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Virtuoso's Insignia [Mesmer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Artificer's Insignia [Mesmer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Prodigy's Insignia [Mesmer]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Hydromancer Insignia [Elementalist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Geomancer Insignia [Elementalist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Pyromancer Insignia [Elementalist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Aeromancer Insignia [Elementalist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Prismatic Insignia [Elementalist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Vanguard's Insignia [Assassin]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Infiltrator's Insignia [Assassin]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Saboteur's Insignia [Assassin]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Nightstalker's Insignia [Assassin]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Shaman's Insignia [Ritualist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Ghost Forge Insignia [Ritualist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Mystic's Insignia [Ritualist]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Centurion's Insignia [Paragon]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Windwalker Insignia [Dervish]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Ag==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Forsaken Insignia [Dervish]"
+        },
+        "ModType": "Prefix",
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Rune of Minor Vigor"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": "Reduces physical damage by 1 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Warrior Rune of Minor Absorption"
+        },
+        "ModType": "Suffix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 10216,
+                "Arg1": 2,
+                "Arg2": 234,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6BgB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Ranger Rune of Minor Wilderness Survival"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 24,
+                "Arg2": 1,
+                "Arg": 6145,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6A0B",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Monk Rune of Minor Healing Prayers"
+        },
+        "ModType": "Suffix",
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 13,
+                "Arg2": 1,
+                "Arg": 3329,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6AQB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Necromancer Rune of Minor Blood Magic"
+        },
+        "ModType": "Suffix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 4,
+                "Arg2": 1,
+                "Arg": 1025,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Mesmer Rune of Minor Fast Casting"
+        },
+        "ModType": "Suffix",
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "AwAh6AwB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Elementalist Rune of Minor Energy Storage"
+        },
+        "ModType": "Suffix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 12,
+                "Arg2": 1,
+                "Arg": 3073,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CMB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Assassin Rune of Minor Critical Strikes"
+        },
+        "ModType": "Suffix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 35,
+                "Arg2": 1,
+                "Arg": 8961,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CIB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Ritualist Rune of Minor Channeling Magic"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 34,
+                "Arg2": 1,
+                "Arg": 8705,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CgB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Paragon Rune of Minor Leadership"
+        },
+        "ModType": "Suffix",
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 40,
+                "Arg2": 1,
+                "Arg": 10241,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CwB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Dervish Rune of Minor Mysticism"
+        },
+        "ModType": "Suffix",
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 44,
+                "Arg2": 1,
+                "Arg": 11265,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Rune of Major Vigor"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": "Reduces physical damage by 2 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Warrior Rune of Major Absorption"
+        },
+        "ModType": "Suffix",
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 10217,
+                "Arg1": 2,
+                "Arg2": 234,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoGAI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ranger Rune of Major Wilderness Survival"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ranger",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 24,
+                "Arg2": 2,
+                "Arg": 6146,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoDQI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Monk Rune of Major Healing Prayers"
+        },
+        "ModType": "Suffix",
+        "Profession": "Monk",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 13,
+                "Arg2": 2,
+                "Arg": 3330,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoBAI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Necromancer Rune of Major Blood Magic"
+        },
+        "ModType": "Suffix",
+        "Profession": "Necromancer",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 4,
+                "Arg2": 2,
+                "Arg": 1026,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAj",
+        "Descriptions": {
+            "English": "\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Mesmer Rune of Major Fast Casting"
+        },
+        "ModType": "Suffix",
+        "Profession": "Mesmer",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoDAI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Elementalist Rune of Major Energy Storage"
+        },
+        "ModType": "Suffix",
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 12,
+                "Arg2": 2,
+                "Arg": 3074,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoIwI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Assassin Rune of Major Critical Strikes"
+        },
+        "ModType": "Suffix",
+        "Profession": "Assassin",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 35,
+                "Arg2": 2,
+                "Arg": 8962,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoIgI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ritualist Rune of Major Channeling Magic"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ritualist",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 34,
+                "Arg2": 2,
+                "Arg": 8706,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoKAI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Paragon Rune of Major Leadership"
+        },
+        "ModType": "Suffix",
+        "Profession": "Paragon",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 40,
+                "Arg2": 2,
+                "Arg": 10242,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoLAI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Dervish Rune of Major Mysticism"
+        },
+        "ModType": "Suffix",
+        "Profession": "Dervish",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 44,
+                "Arg2": 2,
+                "Arg": 11266,
+                "ModifierValueArg": "Fixed",
+                "Min": 2,
+                "Max": 2
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": ""
+        },
+        "Names": {
+            "English": "Rune of Superior Vigor"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Gold",
+        "Modifiers": []
+    },
+    {
+        "Identifier": "Aw==",
+        "Descriptions": {
+            "English": "Reduces physical damage by 3 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Warrior Rune of Superior Absorption"
+        },
+        "ModType": "Suffix",
+        "Profession": "Warrior",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 10217,
+                "Arg1": 2,
+                "Arg2": 234,
+                "ModifierValueArg": "Fixed"
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoGAM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ranger Rune of Superior Wilderness Survival"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ranger",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 24,
+                "Arg2": 3,
+                "Arg": 6147,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoDQM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Monk Rune of Superior Healing Prayers"
+        },
+        "ModType": "Suffix",
+        "Profession": "Monk",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 13,
+                "Arg2": 3,
+                "Arg": 3331,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoBAM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Necromancer Rune of Superior Blood Magic"
+        },
+        "ModType": "Suffix",
+        "Profession": "Necromancer",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 4,
+                "Arg2": 3,
+                "Arg": 1027,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABL",
+        "Descriptions": {
+            "English": "\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Mesmer Rune of Superior Fast Casting"
+        },
+        "ModType": "Suffix",
+        "Profession": "Mesmer",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoDAM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Elementalist Rune of Superior Energy Storage"
+        },
+        "ModType": "Suffix",
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 12,
+                "Arg2": 3,
+                "Arg": 3075,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoIwM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Assassin Rune of Superior Critical Strikes"
+        },
+        "ModType": "Suffix",
+        "Profession": "Assassin",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 35,
+                "Arg2": 3,
+                "Arg": 8963,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoIgM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ritualist Rune of Superior Channeling Magic"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ritualist",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 34,
+                "Arg2": 3,
+                "Arg": 8707,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoKAM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Paragon Rune of Superior Leadership"
+        },
+        "ModType": "Suffix",
+        "Profession": "Paragon",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 40,
+                "Arg2": 3,
+                "Arg": 10243,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoLAM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Dervish Rune of Superior Mysticism"
+        },
+        "ModType": "Suffix",
+        "Profession": "Dervish",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 44,
+                "Arg2": 3,
+                "Arg": 11267,
+                "ModifierValueArg": "Fixed",
+                "Min": 3,
+                "Max": 3
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 75,
+                "Max": 75
+            }
+        ]
+    }
+]
