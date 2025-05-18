@@ -764,7 +764,9 @@
             "English": "\"Measure for Measure\""
         },
         "ModType": "Inherent",
-        "TargetTypes": [],
+        "TargetTypes": [
+            "EquippableItem"
+        ],
         "Modifiers": [
             {
                 "Identifier": 9736,
@@ -1035,7 +1037,9 @@
             "English": "\"Show me the money!\""
         },
         "ModType": "Inherent",
-        "TargetTypes": [],
+        "TargetTypes": [
+            "EquippableItem"
+        ],
         "Modifiers": [
             {
                 "Identifier": 1528,
@@ -1738,9 +1742,9 @@
                 "Arg1": 11,
                 "Arg2": 0,
                 "Arg": 2816,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 11
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
             }
         ]
     },
@@ -1762,9 +1766,9 @@
                 "Arg1": 5,
                 "Arg2": 0,
                 "Arg": 1280,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 5
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
             }
         ]
     },
@@ -1938,9 +1942,9 @@
                 "Arg1": 3,
                 "Arg2": 0,
                 "Arg": 768,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 3
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
             }
         ]
     },
@@ -2159,9 +2163,9 @@
                 "Arg1": 4,
                 "Arg2": 0,
                 "Arg": 1024,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 4
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
             }
         ]
     },
@@ -2505,7 +2509,7 @@
                 "Arg1": 0,
                 "Arg2": 1,
                 "Arg": 1,
-                "ModifierValueArg": "Arg2",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 1
             },
@@ -2686,7 +2690,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -2818,7 +2823,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -2826,8 +2832,8 @@
                 "Arg1": 0,
                 "Arg2": 0,
                 "Arg": 0,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
                 "Max": 0
             },
             {
@@ -2879,7 +2885,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -2989,7 +2996,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3025,7 +3033,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3081,7 +3090,10 @@
             "English": "of Enchanting"
         },
         "ModType": "Suffix",
-        "TargetTypes": [],
+        "TargetTypes": [
+            "MartialWeapon",
+            "Staff"
+        ],
         "Modifiers": [
             {
                 "Identifier": 8888,
@@ -3184,7 +3196,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3388,7 +3401,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3448,7 +3462,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3581,7 +3596,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3761,7 +3777,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {
@@ -3797,7 +3814,8 @@
             "Axe",
             "Bow",
             "Hammer",
-            "Sword"
+            "Sword",
+            "Staff"
         ],
         "Modifiers": [
             {

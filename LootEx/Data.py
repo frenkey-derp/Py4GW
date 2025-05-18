@@ -2,8 +2,9 @@ import json
 import os
 from LootEx import models
 from LootEx.enum import ModType
+from Py4GWCoreLib import UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, ServerLanguage
+from Py4GWCoreLib.enums import Attribute, Console, NumberPreference, ServerLanguage
 from Py4GWCoreLib.enums import ItemType, Rarity, Profession
 
 import importlib
@@ -257,6 +258,18 @@ Runes_by_Profession: dict[Profession, list[models.Rune]] = {}
 # We need to iterate from the mod with the most modifiers to the least modifiers, specialized to less specialized
 Weapon_Mods : list[models.WeaponMod] = []
 
+def UpdateLanguage(server_language : ServerLanguage):
+    global Items, Runes, Weapon_Mods
+    
+    for item in Items:
+        item.update_language(server_language)
+        
+    for rune in Runes:
+        rune.update_language(server_language)
+        
+    for weapon_mod in Weapon_Mods:
+        weapon_mod.update_language(server_language)
+
 def __init__(self):
     pass
     
@@ -285,10 +298,10 @@ def LoadWeaponMods():
         os.makedirs(data_directory)
         
     if not os.path.exists(path):
-        with open(path, 'w') as file:
+        with open(path, 'w', encoding='utf-8') as file:
             file.write('{}')
-            
-    with open(path, 'r') as file:
+
+    with open(path, 'r', encoding='utf-8') as file:
         weapon_mods = json.load(file)
         
         for value in weapon_mods:
@@ -297,6 +310,23 @@ def LoadWeaponMods():
                 Weapon_Mods.append(mod)
 
     Weapon_Mods = sorted(Weapon_Mods, key=lambda x: x.name)
+
+@staticmethod
+def SaveWeaponMods():
+    global Weapon_Mods
+
+    #Save weapon mods to data/weapon_mods.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "weapon_mods.json")
+
+    ConsoleLog("LootEx", f"Saving weapon mods to {path}...", Console.MessageType.Debug)
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    with open(path, 'w', encoding='utf-8') as file:
+        json.dump([mod.to_json() for mod in Weapon_Mods], file, indent=4, ensure_ascii=False)
 
 @staticmethod
 def LoadRunes():
@@ -313,10 +343,10 @@ def LoadRunes():
         os.makedirs(data_directory)
         
     if not os.path.exists(path):
-        with open(path, 'w') as file:
+        with open(path, 'w', encoding='utf-8') as file:
             file.write('{}')
-            
-    with open(path, 'r') as file:
+
+    with open(path, 'r', encoding='utf-8') as file:
         runes = json.load(file)
         
         for value in runes:          
@@ -334,6 +364,23 @@ def LoadRunes():
         Runes_by_Profession[profession].sort(key=lambda x: (x.mod_type, x.rarity.value, x.name))  
 
 @staticmethod
+def SaveRunes():
+    global Runes
+
+    #Save runes to data/runes.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "runes.json")
+
+    ConsoleLog("LootEx", f"Saving runes to {path}...", Console.MessageType.Debug)
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+        
+    with open(path, 'w', encoding='utf-8') as file:
+        json.dump([rune.to_json() for rune in Runes], file, indent=4, ensure_ascii=False)
+
+@staticmethod
 def LoadItems():
     global Items
 
@@ -348,10 +395,10 @@ def LoadItems():
         os.makedirs(data_directory)
         
     if not os.path.exists(path):
-        with open(path, 'w') as file:
+        with open(path, 'w', encoding='utf-8') as file:
             file.write('{}')
-            
-    with open(path, 'r') as file:
+
+    with open(path, 'r', encoding='utf-8') as file:
         items = json.load(file)
         
         for value in items:
@@ -364,3 +411,20 @@ def LoadItems():
             Items_By_Type[item.item_type] = []
 
         Items_By_Type[item.item_type].append(item)
+        
+@staticmethod
+def SaveItems():
+    global Items
+
+    #Save items to data/items.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "items.json")
+
+    ConsoleLog("LootEx", f"Saving items to {path}...", Console.MessageType.Debug)
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    with open(path, 'w', encoding='utf-8') as file:
+        json.dump([item.to_json() for item in Items], file, indent=4, ensure_ascii=False)

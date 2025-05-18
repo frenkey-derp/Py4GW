@@ -1,1892 +1,4422 @@
-{
-    "0A00C821": {
-        "Struct": "0A00C821",
+[
+    {
+        "Identifier": "AQAoCBQA",
+        "Descriptions": {
+            "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "\"Aptitude not Attitude\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10248,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAhyAAK",
         "Descriptions": {
             "English": "Armor +{arg2} (while Hexed)"
         },
         "Names": {
             "English": "\"Be Just and Fear Not\""
         },
-        "Identifier": 8648,
-        "Arg1": 0,
-        "Arg2": 10,
-        "Args": 10,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8648,
+                "Arg1": 0,
+                "Arg2": 10,
+                "Arg": 10,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0500B820": {
-        "Struct": "0500B820",
+    {
+        "Identifier": "AQAguAAFACI4AA8=",
         "Descriptions": {
-            "English": "Damage +15% And Energy -{arg2}"
+            "English": "Damage +{arg2[8760]}%\nEnergy -{arg2[8376]}"
         },
         "Names": {
             "English": "\"Brawn over Brains\""
         },
-        "Identifier": 8376,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8376,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 5
+            },
+            {
+                "Identifier": 8760,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            }
+        ]
     },
-    "00055828": {
-        "Struct": "00055828",
+    {
+        "Identifier": "AQAoWAUA",
         "Descriptions": {
             "English": "Reduces Disease duration on you by 20%"
         },
         "Names": {
             "English": "\"Cast Out the Unclean\""
         },
-        "Identifier": 10328,
-        "Arg1": 5,
-        "Arg2": 0,
-        "Args": 1280,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "0F00A822": {
-        "Struct": "0F00A822",
+    {
+        "Identifier": "AQAkeAHj",
+        "Descriptions": {
+            "English": "Reduces Disease duration on you by 20%\n[Old School] Shield, Staff or Offhand"
+        },
+        "Names": {
+            "English": "\"Cast Out the Unclean\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9336,
+                "Arg1": 1,
+                "Arg2": 227,
+                "Arg": 483,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAiqAAP",
         "Descriptions": {
             "English": "Damage +{arg2}% (while in a Stance)"
         },
         "Names": {
             "English": "\"Dance with Death\""
         },
-        "Identifier": 8872,
-        "Arg1": 0,
-        "Arg2": 15,
-        "Args": 15,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8872,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            }
+        ]
     },
-    "14009822": {
-        "Struct": "14009822",
+    {
+        "Identifier": "AQAimAAU",
         "Descriptions": {
-            "English": "Damage {arg2}% (while Hexed)"
+            "English": "Damage +{arg2}% (while Hexed)"
         },
         "Names": {
             "English": "\"Don't Fear the Reaper\""
         },
-        "Identifier": 8856,
-        "Arg1": 0,
-        "Arg2": 20,
-        "Args": 20,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8856,
+                "Arg1": 0,
+                "Arg2": 20,
+                "Arg": 20,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "07321823": {
-        "Struct": "07321823",
+    {
+        "Identifier": "AQAiCAoA",
+        "Descriptions": {
+            "English": "Halves casting time of spells (Chance: +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Don't Think Twice\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8712,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAjGDIH",
         "Descriptions": {
             "English": "Energy +{arg2} (while Health is below +{arg1}%)"
         },
         "Names": {
             "English": "\"Don't call it a comeback!\""
         },
-        "Identifier": 8984,
-        "Arg1": 50,
-        "Arg2": 7,
-        "Args": 12807,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8984,
+                "Arg1": 50,
+                "Arg2": 7,
+                "Arg": 12807,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 7
+            }
+        ]
     },
-    "0A32B821": {
-        "Struct": "0A32B821",
+    {
+        "Identifier": "AQAhuDIK",
         "Descriptions": {
-            "English": "Armor +{arg2} (while Health is below +50%)"
+            "English": "Armor +{arg2} (while Health is below +{arg1}%)"
         },
         "Names": {
             "English": "\"Down But Not Out\""
         },
-        "Identifier": 8632,
-        "Arg1": 50,
-        "Arg2": 10,
-        "Args": 12810,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8632,
+                "Arg1": 50,
+                "Arg2": 10,
+                "Arg": 12810,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "05009821": {
-        "Struct": "05009821",
+    {
+        "Identifier": "AQAhmAAF",
         "Descriptions": {
             "English": "Armor +{arg2} (while Enchanted)"
         },
         "Names": {
             "English": "\"Faith is My Shield\""
         },
-        "Identifier": 8600,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8600,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "00005828": {
-        "Struct": "00005828",
+    {
+        "Identifier": "AQAoWAAA",
         "Descriptions": {
             "English": "Reduces Bleeding duration on you by 20%"
         },
         "Names": {
             "English": "\"Fear Cuts Deeper\""
         },
-        "Identifier": 10328,
-        "Arg1": 0,
-        "Arg2": 0,
-        "Args": 0,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 0,
+                "Arg2": 0,
+                "Arg": 0,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "0F006822": {
-        "Struct": "0F006822",
+    {
+        "Identifier": "AQAoKBQA",
+        "Descriptions": {
+            "English": "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "\"Forget Me Not\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10280,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 15,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAiaAAP",
         "Descriptions": {
             "English": "Damage +{arg2}% (while Enchanted)"
         },
         "Names": {
             "English": "\"Guided by Fate\""
         },
-        "Identifier": 8808,
-        "Arg1": 0,
-        "Arg2": 15,
-        "Args": 15,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8808,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            }
+        ]
     },
-    "0532A821": {
-        "Struct": "0532A821",
+    {
+        "Identifier": "AQAhqDIF",
         "Descriptions": {
             "English": "Armor +{arg2} (while Health is above +{arg1}%)"
         },
         "Names": {
             "English": "\"Hail to the King\""
         },
-        "Identifier": 8616,
-        "Arg1": 50,
-        "Arg2": 5,
-        "Args": 12805,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8616,
+                "Arg1": 50,
+                "Arg2": 5,
+                "Arg": 12805,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "05320823": {
-        "Struct": "05320823",
+    {
+        "Identifier": "AQAjCDIF",
         "Descriptions": {
             "English": "Energy +{arg2} (while health is above +{arg1}%)"
         },
         "Names": {
             "English": "\"Hale and Hearty\""
         },
-        "Identifier": 8968,
-        "Arg1": 50,
-        "Arg2": 5,
-        "Args": 12805,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8968,
+                "Arg1": 50,
+                "Arg2": 5,
+                "Arg": 12805,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0500F822": {
-        "Struct": "0500F822",
+    {
+        "Identifier": "AQAi-AAF",
         "Descriptions": {
             "English": "Energy +{arg2} (while Enchanted)"
         },
         "Names": {
             "English": "\"Have Faith\""
         },
-        "Identifier": 8952,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8952,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "00015828": {
-        "Struct": "00015828",
+    {
+        "Identifier": "AQAoWAEA",
         "Descriptions": {
             "English": "Reduces Blind duration on you by 20%"
         },
         "Names": {
             "English": "\"I Can See Clearly Now\""
         },
-        "Identifier": 10328,
-        "Arg1": 1,
-        "Arg2": 0,
-        "Args": 256,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 1,
+                "Arg2": 0,
+                "Arg": 256,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "07002823": {
-        "Struct": "07002823",
+    {
+        "Identifier": "AQAjKAAH",
         "Descriptions": {
             "English": "Energy +{arg2} (while hexed)"
         },
         "Names": {
             "English": "\"I am Sorrow.\""
         },
-        "Identifier": 9000,
-        "Arg1": 0,
-        "Arg2": 7,
-        "Args": 7,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9000,
+                "Arg1": 0,
+                "Arg2": 7,
+                "Arg": 7,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 7
+            }
+        ]
     },
-    "05008821": {
-        "Struct": "05008821",
+    {
+        "Identifier": "AQAi2AAF",
+        "Descriptions": {
+            "English": "Energy +{arg2}"
+        },
+        "Names": {
+            "English": "\"I have the power!\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8920,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Fixed",
+                "Min": 5,
+                "Max": 5
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAguAAFACEIAAU=",
+        "Descriptions": {
+            "English": "Armor +{arg2[8456]}\nEnergy -{arg2[8376]}"
+        },
+        "Names": {
+            "English": "\"Ignorance is Bliss\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8456,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            },
+            {
+                "Identifier": 8376,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Fixed",
+                "Min": 5,
+                "Max": 5
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAhiAAF",
         "Descriptions": {
             "English": "Armor +{arg2} (while casting)"
         },
         "Names": {
             "English": "\"Knowing is Half the Battle\""
         },
-        "Identifier": 8584,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8584,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Fixed",
+                "Min": 5,
+                "Max": 5
+            }
+        ]
     },
-    "0A0318A1": {
-        "Struct": "0A0318A1",
+    {
+        "Identifier": "AQChGAMK",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Cold damage)"
+            "English": "Armor +{arg2} (vs. Cold damage)"
         },
         "Names": {
             "English": "\"Leaf on the Wind\""
         },
-        "Identifier": 41240,
-        "Arg1": 3,
-        "Arg2": 10,
-        "Args": 778,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 3,
+                "Arg2": 10,
+                "Arg": 778,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A0B18A1": {
-        "Struct": "0A0B18A1",
+    {
+        "Identifier": "AQAjqAoA",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Earth damage)"
+            "English": "Halves skill recharge of spells (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "\"Let the Memory Live Again\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9128,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAg2AAUACEIAAU=",
+        "Descriptions": {
+            "English": "Armor +{arg2[8456]}\nHealth -{arg2[8408]}"
+        },
+        "Names": {
+            "English": "\"Life is Pain\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8456,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 20,
+                "Arg": 20,
+                "ModifierValueArg": "Fixed",
+                "Min": 20,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQChGAsK",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs. Earth damage)"
         },
         "Names": {
             "English": "\"Like a Rolling Stone\""
         },
-        "Identifier": 41240,
-        "Arg1": 11,
-        "Arg2": 10,
-        "Args": 2826,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 11,
+                "Arg2": 10,
+                "Arg": 2826,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "05147820": {
-        "Struct": "05147820",
+    {
+        "Identifier": "AQAgyAABACLYAA8=",
         "Descriptions": {
-            "English": "Received physical damage -{arg2} (Chance: 20%)"
+            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
+        },
+        "Names": {
+            "English": "\"Live for Today\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8920,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8392,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAgeBQF",
+        "Descriptions": {
+            "English": "Received physical damage -{arg2} (Chance: {arg1}%)"
         },
         "Names": {
             "English": "\"Luck of the Draw\""
         },
-        "Identifier": 8312,
-        "Arg1": 20,
-        "Arg2": 5,
-        "Args": 5125,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8312,
+                "Arg1": 20,
+                "Arg2": 5,
+                "Arg": 5125,
+                "ModifierValueArg": "Arg1",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
     },
-    "05002821": {
-        "Struct": "05002821",
+    {
+        "Identifier": "AQAhKAAF",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Elemental damage)"
+            "English": "Armor +{arg2} (vs. Elemental damage)"
         },
         "Names": {
-            "English": "\"Man of all Seasons\""
+            "English": "\"Man for All Seasons\""
         },
-        "Identifier": 8488,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8488,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "32000826": {
-        "Struct": "32000826",
+    {
+        "Identifier": "AQAoOBQA",
+        "Descriptions": {
+            "English": "Item's attribute +1 (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "\"Master of My Domain!\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10296,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAmCAAy",
         "Descriptions": {
             "English": "Highly salvageable"
         },
         "Names": {
             "English": "\"Measure for Measure\""
         },
-        "Identifier": 9736,
-        "Arg1": 0,
-        "Arg2": 50,
-        "Args": 50,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [],
+        "Modifiers": [
+            {
+                "Identifier": 9736,
+                "Arg1": 0,
+                "Arg2": 50,
+                "Arg": 50,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "05007821": {
-        "Struct": "05007821",
+    {
+        "Identifier": "AQAheAAF",
         "Descriptions": {
             "English": "Armor +{arg2} (while attacking)"
         },
         "Names": {
             "English": "\"Might Makes Right\""
         },
-        "Identifier": 8568,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8568,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0A0018A1": {
-        "Struct": "0A0018A1",
+    {
+        "Identifier": "AQChGAAK",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Blunt damage)"
+            "English": "Armor +{arg2} (vs. Blunt damage)"
         },
         "Names": {
             "English": "\"Not the Face!\""
         },
-        "Identifier": 41240,
-        "Arg1": 0,
-        "Arg2": 10,
-        "Args": 10,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 0,
+                "Arg2": 10,
+                "Arg": 10,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "03009820": {
-        "Struct": "03009820",
+    {
+        "Identifier": "AQAgmAAD",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (while Hexed)"
         },
         "Names": {
             "English": "\"Nothing to Fear\""
         },
-        "Identifier": 8344,
-        "Arg1": 0,
-        "Arg2": 3,
-        "Args": 3,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8344,
+                "Arg1": 0,
+                "Arg2": 3,
+                "Arg": 3,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 3
+            }
+        ]
     },
-    "00085828": {
-        "Struct": "00085828",
+    {
+        "Identifier": "AQAoWAgA",
         "Descriptions": {
             "English": "Reduces Weakness duration on you by 20%"
         },
         "Names": {
             "English": "\"Only the Strong Survive\""
         },
-        "Identifier": 10328,
-        "Arg1": 8,
-        "Arg2": 0,
-        "Args": 2048,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 8,
+                "Arg2": 0,
+                "Arg": 2048,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "00065828": {
-        "Struct": "00065828",
+    {
+        "Identifier": "AQAoWAYA",
         "Descriptions": {
             "English": "Reduces Poison duration on you by 20%"
         },
         "Names": {
             "English": "\"Pure of Heart\""
         },
-        "Identifier": 10328,
-        "Arg1": 6,
-        "Arg2": 0,
-        "Args": 1536,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 6,
+                "Arg2": 0,
+                "Arg": 1536,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "0A0418A1": {
-        "Struct": "0A0418A1",
+    {
+        "Identifier": "AQChGAQK",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Lightning damage)"
+            "English": "Armor +{arg2} (vs. Lightning damage)"
         },
         "Names": {
             "English": "\"Riders on the Storm\""
         },
-        "Identifier": 41240,
-        "Arg1": 4,
-        "Arg2": 10,
-        "Args": 1034,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 4,
+                "Arg2": 10,
+                "Arg": 1034,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0200A820": {
-        "Struct": "0200A820",
+    {
+        "Identifier": "AQAgqAAC",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (while in a Stance)"
         },
         "Names": {
             "English": "\"Run For Your Life!\""
         },
-        "Identifier": 8360,
-        "Arg1": 0,
-        "Arg2": 2,
-        "Args": 2,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8360,
+                "Arg1": 0,
+                "Arg2": 2,
+                "Arg": 2,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 2
+            }
+        ]
     },
-    "02008820": {
-        "Struct": "02008820",
+    {
+        "Identifier": "AQAgyAABACLYAA8=",
+        "Descriptions": {
+            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
+        },
+        "Names": {
+            "English": "\"Seize the Day\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8920,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8392,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAjqAoA",
+        "Descriptions": {
+            "English": "Halves skill recharge of spells (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "\"Serenity Now\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9128,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 7,
+                "Max": 10
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAgiAAC",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (while Enchanted)"
         },
         "Names": {
             "English": "\"Sheltered by Faith\""
         },
-        "Identifier": 8328,
-        "Arg1": 0,
-        "Arg2": 2,
-        "Args": 2,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8328,
+                "Arg1": 0,
+                "Arg2": 2,
+                "Arg": 2,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 2
+            }
+        ]
     },
-    "3200F805": {
-        "Struct": "3200F805",
+    {
+        "Identifier": "AQAF-AAy",
         "Descriptions": {
             "English": "Improved sale value"
         },
         "Names": {
             "English": "\"Show me the money!\""
         },
-        "Identifier": 1528,
-        "Arg1": 0,
-        "Arg2": 50,
-        "Args": 50,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [],
+        "Modifiers": [
+            {
+                "Identifier": 1528,
+                "Arg1": 0,
+                "Arg2": 50,
+                "Arg": 50,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "0A0518A1": {
-        "Struct": "0A0518A1",
+    {
+        "Identifier": "AQChGAUK",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Fire damage)"
+            "English": "Armor +{arg2} (vs. Fire damage)"
         },
         "Names": {
             "English": "\"Sleep Now in the Fire\""
         },
-        "Identifier": 41240,
-        "Arg1": 5,
-        "Arg2": 10,
-        "Args": 1290,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 5,
+                "Arg2": 10,
+                "Arg": 1290,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "00075828": {
-        "Struct": "00075828",
+    {
+        "Identifier": "AQAoWAcA",
         "Descriptions": {
             "English": "Reduces Dazed duration on you by 20%"
         },
         "Names": {
             "English": "\"Soundness of Mind\""
         },
-        "Identifier": 10328,
-        "Arg1": 7,
-        "Arg2": 0,
-        "Args": 1792,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 7,
+                "Arg2": 0,
+                "Arg": 1792,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "0F327822": {
-        "Struct": "0F327822",
+    {
+        "Identifier": "AQAieDIP",
         "Descriptions": {
             "English": "Damage +{arg2}% (while Health is above +{arg1}%)"
         },
         "Names": {
             "English": "\"Strength and Honor\""
         },
-        "Identifier": 8824,
-        "Arg1": 50,
-        "Arg2": 15,
-        "Args": 12815,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8824,
+                "Arg1": 50,
+                "Arg2": 15,
+                "Arg": 12815,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 50
+            }
+        ]
     },
-    "00045828": {
-        "Struct": "00045828",
+    {
+        "Identifier": "AQAoWAQA",
         "Descriptions": {
             "English": "Reduces Deep Wound duration on you by 20%"
         },
         "Names": {
             "English": "\"Strength of Body\""
         },
-        "Identifier": 10328,
-        "Arg1": 4,
-        "Arg2": 0,
-        "Args": 1024,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 4,
+                "Arg2": 0,
+                "Arg": 1024,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "05005821": {
-        "Struct": "05005821",
+    {
+        "Identifier": "AQAhWAAF",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Physical damage)"
+            "English": "Armor +{arg2} (vs. Physical damage)"
         },
         "Names": {
             "English": "\"Survival of the Fittest\""
         },
-        "Identifier": 8536,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Suffix"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8536,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "00035828": {
-        "Struct": "00035828",
+    {
+        "Identifier": "AQAoWAMA",
         "Descriptions": {
             "English": "Reduces Crippled duration on you by 20%"
         },
         "Names": {
             "English": "\"Swift as the Wind\""
         },
-        "Identifier": 10328,
-        "Arg1": 3,
-        "Arg2": 0,
-        "Args": 768,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10328,
+                "Arg1": 3,
+                "Arg2": 0,
+                "Arg": 768,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "0A0218A1": {
-        "Struct": "0A0218A1",
+    {
+        "Identifier": "AQChGAIK",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Slashing damage)"
+            "English": "Armor +{arg2} (vs. Slashing damage)"
         },
         "Names": {
             "English": "\"The Riddle of Steel\""
         },
-        "Identifier": 41240,
-        "Arg1": 2,
-        "Arg2": 10,
-        "Args": 522,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 2,
+                "Arg2": 10,
+                "Arg": 522,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A0118A1": {
-        "Struct": "0A0118A1",
+    {
+        "Identifier": "AQChGAEK",
         "Descriptions": {
-            "English": "Armor +{arg2} (vs Piercing damage)"
+            "English": "Armor +{arg2} (vs. Piercing damage)"
         },
         "Names": {
             "English": "\"Through Thick and Thin\""
         },
-        "Identifier": 41240,
-        "Arg1": 1,
-        "Arg2": 10,
-        "Args": 266,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 1,
+                "Arg2": 10,
+                "Arg": 266,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A001820": {
-        "Struct": "0A001820",
+    {
+        "Identifier": "AQAgGAAKACI4AA8=",
         "Descriptions": {
-            "English": "Damage +15% And Armor -{arg2} (while attacking)"
+            "English": "Damage +{arg2[8760]}%\nArmor -{arg2[8216]} (while attacking)"
         },
         "Names": {
             "English": "\"To the Pain!\""
         },
-        "Identifier": 8216,
-        "Arg1": 0,
-        "Arg2": 10,
-        "Args": 10,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8760,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8216,
+                "Arg1": 0,
+                "Arg2": 10,
+                "Arg": 10,
+                "ModifierValueArg": "Fixed",
+                "Min": 10,
+                "Max": 10
+            }
+        ]
     },
-    "0F005822": {
-        "Struct": "0F005822",
+    {
+        "Identifier": "AQAiWAAP",
         "Descriptions": {
-            "English": "Damage +{arg2}% (vs Hexed Foes)"
+            "English": "Damage +{arg2}% (vs. Hexed Foes)"
         },
         "Names": {
             "English": "\"Too Much Information\""
         },
-        "Identifier": 8792,
-        "Arg1": 0,
-        "Arg2": 15,
-        "Args": 15,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8792,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 15
+            }
+        ]
     },
-    "14328822": {
-        "Struct": "14328822",
+    {
+        "Identifier": "AQAiiDIU",
         "Descriptions": {
-            "English": "Damage {arg2}% (while Health is below +{arg1}%)"
+            "English": "Damage +{arg2}% (while Health is below +{arg1}%)"
         },
         "Names": {
             "English": "\"Vengeance is Mine\""
         },
-        "Identifier": 8840,
-        "Arg1": 50,
-        "Arg2": 20,
-        "Args": 12820,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8840,
+                "Arg1": 50,
+                "Arg2": 20,
+                "Arg": 12820,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 50
+            }
+        ]
     },
-    "0F003822": {
-        "Struct": "0F003822",
+    {
+        "Identifier": "AgAoCBQA",
         "Descriptions": {
-            "English": "Damage +{arg2}%"
+            "English": "Halves casting time of spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "Vampiric/Zealous Strength"
+            "English": "Adept"
         },
-        "Identifier": 8760,
-        "Arg1": 0,
-        "Arg2": 15,
-        "Args": 15,
-        "ModType": "Inherent"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10248,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "0F00D822": {
-        "Struct": "0F00D822",
+    {
+        "Identifier": "AQAkGAgU",
         "Descriptions": {
-            "English": "Energy +{arg2}"
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "\"Seize the Day\""
+            "English": "Air Magic +1"
         },
-        "Identifier": 8920,
-        "Arg1": 0,
-        "Arg2": 15,
-        "Args": 15,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 8,
+                "Arg2": 20,
+                "Arg": 2068,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
     },
-    "0500D822": {
-        "Struct": "0500D822",
+    {
+        "Identifier": "AQAkGBIU",
         "Descriptions": {
-            "English": "Energy +{arg2}"
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "Insightful"
+            "English": "Axe Mastery +1"
         },
-        "Identifier": 8920,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Prefix"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Axe"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 18,
+                "Arg2": 20,
+                "Arg": 4628,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
     },
-    "0100C820": {
-        "Struct": "0100C820",
-        "Descriptions": {
-            "English": "Energy regeneration -{arg2}"
-        },
-        "Names": {
-            "English": "Zealous"
-        },
-        "Identifier": 8392,
-        "Arg1": 0,
-        "Arg2": 1,
-        "Args": 1,
-        "ModType": "Inherent"
-    },
-    "1400D820": {
-        "Struct": "1400D820",
-        "Descriptions": {
-            "English": "Health -{arg2}"
-        },
-        "Names": {
-            "English": "\"Life is Pain\""
-        },
-        "Identifier": 8408,
-        "Arg1": 0,
-        "Arg2": 20,
-        "Args": 20,
-        "ModType": "Inherent"
-    },
-    "0100E820": {
-        "Struct": "0100E820",
-        "Descriptions": {
-            "English": "Health regeneration -{arg2}"
-        },
-        "Names": {
-            "English": "Vampiric"
-        },
-        "Identifier": 8424,
-        "Arg1": 0,
-        "Arg2": 1,
-        "Args": 1,
-        "ModType": "Inherent"
-    },
-    "DE016824": {
-        "Struct": "DE016824",
+    {
+        "Identifier": "AgAkaAHe",
         "Descriptions": {
             "English": "Lengthens Bleeding duration on foes by 33%"
         },
         "Names": {
             "English": "Barbed"
         },
-        "Identifier": 9320,
-        "Arg1": 1,
-        "Arg2": 222,
-        "Args": 478,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Sword",
+            "Daggers",
+            "Scythe",
+            "Bow",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9320,
+                "Arg1": 1,
+                "Arg2": 222,
+                "Arg": 478,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "E6016824": {
-        "Struct": "E6016824",
+    {
+        "Identifier": "AQAkGAQU",
         "Descriptions": {
-            "English": "Lengthens Weakness duration on foes by 33%"
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "Heavy"
+            "English": "Blood Magic +1"
         },
-        "Identifier": 9320,
-        "Arg1": 1,
-        "Arg2": 230,
-        "Args": 486,
-        "ModType": "Prefix"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 4,
+                "Arg2": 20,
+                "Arg": 1044,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
     },
-    "E1016824": {
-        "Struct": "E1016824",
+    {
+        "Identifier": "AQAkGCIU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Channeling Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 34,
+                "Arg2": 20,
+                "Arg": 8724,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGCAU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Communing +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 32,
+                "Arg2": 20,
+                "Arg": 8212,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkaAHh",
         "Descriptions": {
             "English": "Lengthens Crippled duration on foes by 33%"
         },
         "Names": {
             "English": "Crippling"
         },
-        "Identifier": 9320,
-        "Arg1": 1,
-        "Arg2": 225,
-        "Args": 481,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Sword",
+            "Daggers",
+            "Scythe",
+            "Bow",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9320,
+                "Arg1": 1,
+                "Arg2": 225,
+                "Arg": 481,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "E2016824": {
-        "Struct": "E2016824",
+    {
+        "Identifier": "AgAkaAHi",
         "Descriptions": {
             "English": "Lengthens Deep Wound duration on foes by 33%"
         },
         "Names": {
             "English": "Cruel"
         },
-        "Identifier": 9320,
-        "Arg1": 1,
-        "Arg2": 226,
-        "Args": 482,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Hammer",
+            "Sword",
+            "Daggers",
+            "Scythe",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9320,
+                "Arg1": 1,
+                "Arg2": 226,
+                "Arg": 482,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
     },
-    "000BB824": {
-        "Struct": "000BB824",
+    {
+        "Identifier": "AQAkGAcU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Curses +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 7,
+                "Arg2": 20,
+                "Arg": 1812,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGB0U",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Dagger Mastery +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Daggers"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 29,
+                "Arg2": 20,
+                "Arg": 7444,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAUU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Death Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 5,
+                "Arg2": 20,
+                "Arg": 1300,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAhCAAF",
+        "Descriptions": {
+            "English": "Armor +{arg2}"
+        },
+        "Names": {
+            "English": "Defensive"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8456,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 5
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGBAU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Divine Favor +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 16,
+                "Arg2": 20,
+                "Arg": 4116,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAIU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Domination Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 2,
+                "Arg2": 20,
+                "Arg": 532,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAkU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Earth Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 9,
+                "Arg2": 20,
+                "Arg": 2324,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkuAsA",
         "Descriptions": {
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
             "English": "Ebon"
         },
-        "Identifier": 9400,
-        "Arg1": 11,
-        "Arg2": 0,
-        "Args": 2816,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9400,
+                "Arg1": 11,
+                "Arg2": 0,
+                "Arg": 2816,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 11
+            }
+        ]
     },
-    "0005B824": {
-        "Struct": "0005B824",
+    {
+        "Identifier": "AgAkuAUA",
         "Descriptions": {
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
             "English": "Fiery"
         },
-        "Identifier": 9400,
-        "Arg1": 5,
-        "Arg2": 0,
-        "Args": 1280,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9400,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 5
+            }
+        ]
     },
-    "0A00B823": {
-        "Struct": "0A00B823",
+    {
+        "Identifier": "AQAkGAoU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Fire Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 10,
+                "Arg2": 20,
+                "Arg": 2580,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAjuAAK",
         "Descriptions": {
             "English": "Double Adrenaline on hit (Chance: +{arg2}%)"
         },
         "Names": {
             "English": "Furious"
         },
-        "Identifier": 9144,
-        "Arg1": 0,
-        "Arg2": 10,
-        "Args": 10,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Hammer",
+            "Sword",
+            "Daggers",
+            "Scythe",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9144,
+                "Arg1": 0,
+                "Arg2": 10,
+                "Arg": 10,
+                "ModifierValueArg": "Arg2",
+                "Min": 2,
+                "Max": 10
+            }
+        ]
     },
-    "0003B824": {
-        "Struct": "0003B824",
-        "Descriptions": {
-            "English": "Changes Damage to {arg1}"
-        },
-        "Names": {
-            "English": "Icy"
-        },
-        "Identifier": 9400,
-        "Arg1": 3,
-        "Arg2": 0,
-        "Args": 768,
-        "ModType": "Prefix"
-    },
-    "E4016824": {
-        "Struct": "E4016824",
-        "Descriptions": {
-            "English": "Lengthens Poison duration on foes by 33%"
-        },
-        "Names": {
-            "English": "Poisonous"
-        },
-        "Identifier": 9320,
-        "Arg1": 1,
-        "Arg2": 228,
-        "Args": 484,
-        "ModType": "Prefix"
-    },
-    "0004B824": {
-        "Struct": "0004B824",
-        "Descriptions": {
-            "English": "Changes Damage to {arg1}"
-        },
-        "Names": {
-            "English": "Shocking"
-        },
-        "Identifier": 9400,
-        "Arg1": 4,
-        "Arg2": 0,
-        "Args": 1024,
-        "ModType": "Prefix"
-    },
-    "E5016824": {
-        "Struct": "E5016824",
-        "Descriptions": {
-            "English": "Lengthens Dazed duration on foes by 33%"
-        },
-        "Names": {
-            "English": "Silencing"
-        },
-        "Identifier": 9320,
-        "Arg1": 1,
-        "Arg2": 229,
-        "Args": 485,
-        "ModType": "Prefix"
-    },
-    "1414F823": {
-        "Struct": "1414F823",
-        "Descriptions": {
-            "English": "Armor penetration +20% (Chance: 20%)"
-        },
-        "Names": {
-            "English": "Sundering"
-        },
-        "Identifier": 9208,
-        "Arg1": 20,
-        "Arg2": 20,
-        "Args": 5140,
-        "ModType": "Prefix"
-    },
-    "00032825": {
-        "Struct": "00032825",
-        "Descriptions": {
-            "English": "Vampiric +{arg1}/-1"
-        },
-        "Names": {
-            "English": "Vampiric"
-        },
-        "Identifier": 9512,
-        "Arg1": 3,
-        "Arg2": 0,
-        "Args": 768,
-        "ModType": "Prefix"
-    },
-    "00052825": {
-        "Struct": "00052825",
-        "Descriptions": {
-            "English": "Vampiric +{arg1}/-1"
-        },
-        "Names": {
-            "English": "Vampiric"
-        },
-        "Identifier": 9512,
-        "Arg1": 5,
-        "Arg2": 0,
-        "Args": 1280,
-        "ModType": "Prefix"
-    },
-    "01001825": {
-        "Struct": "01001825",
-        "Descriptions": {
-            "English": "Zeal +{arg2}/-1"
-        },
-        "Names": {
-            "English": "Zealous"
-        },
-        "Identifier": 9496,
-        "Arg1": 0,
-        "Arg2": 1,
-        "Args": 1,
-        "ModType": "Prefix"
-    },
-    "E3017824": {
-        "Struct": "E3017824",
-        "Descriptions": {
-            "English": "Reduces Disease duration on you by 20% ; [Old School] Shield, Staff or Offhand"
-        },
-        "Names": {
-            "English": "\"Cast Out the Unclean\""
-        },
-        "Identifier": 9336,
-        "Arg1": 1,
-        "Arg2": 227,
-        "Args": 483,
-        "ModType": "Inherent"
-    },
-    "14081824": {
-        "Struct": "14081824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Air Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 8,
-        "Arg2": 20,
-        "Args": 2068,
-        "ModType": "Suffix"
-    },
-    "00140828": {
-        "Struct": "00140828",
-        "Descriptions": {
-            "English": "HHalves casting time on spells of item's attribute (Chance: {arg1}%)"
-        },
-        "Names": {
-            "English": "of Aptitude"
-        },
-        "Identifier": 10248,
-        "Arg1": 20,
-        "Arg2": 0,
-        "Args": 5120,
-        "ModType": "Suffix"
-    },
-    "14121824": {
-        "Struct": "14121824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Axe Mastery"
-        },
-        "Identifier": 9240,
-        "Arg1": 18,
-        "Arg2": 20,
-        "Args": 4628,
-        "ModType": "Suffix"
-    },
-    "14041824": {
-        "Struct": "14041824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Blood Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 4,
-        "Arg2": 20,
-        "Args": 1044,
-        "ModType": "Suffix"
-    },
-    "14221824": {
-        "Struct": "14221824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Channeling Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 34,
-        "Arg2": 20,
-        "Args": 8724,
-        "ModType": "Suffix"
-    },
-    "00018080": {
-        "Struct": "00018080",
-        "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
-        },
-        "Names": {
-            "English": "of Charrslaying"
-        },
-        "Identifier": 32896,
-        "Arg1": 1,
-        "Arg2": 0,
-        "Args": 256,
-        "ModType": "Suffix"
-    },
-    "14201824": {
-        "Struct": "14201824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Communing"
-        },
-        "Identifier": 9240,
-        "Arg1": 32,
-        "Arg2": 20,
-        "Args": 8212,
-        "ModType": "Suffix"
-    },
-    "14071824": {
-        "Struct": "14071824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Curses"
-        },
-        "Identifier": 9240,
-        "Arg1": 7,
-        "Arg2": 20,
-        "Args": 1812,
-        "ModType": "Suffix"
-    },
-    "141D1824": {
-        "Struct": "141D1824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Dagger Mastery"
-        },
-        "Identifier": 9240,
-        "Arg1": 29,
-        "Arg2": 20,
-        "Args": 7444,
-        "ModType": "Suffix"
-    },
-    "14051824": {
-        "Struct": "14051824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Death Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 5,
-        "Arg2": 20,
-        "Args": 1300,
-        "ModType": "Suffix"
-    },
-    "00008080": {
-        "Struct": "00008080",
-        "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
-        },
-        "Names": {
-            "English": "of Deathbane"
-        },
-        "Identifier": 32896,
-        "Arg1": 0,
-        "Arg2": 0,
-        "Args": 0,
-        "ModType": "Suffix"
-    },
-    "05000821": {
-        "Struct": "05000821",
-        "Descriptions": {
-            "English": "Armor +{arg2}"
-        },
-        "Names": {
-            "English": "of Defense"
-        },
-        "Identifier": 8456,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Suffix"
-    },
-    "00088080": {
-        "Struct": "00088080",
-        "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
-        },
-        "Names": {
-            "English": "of Demonslaying"
-        },
-        "Identifier": 32896,
-        "Arg1": 8,
-        "Arg2": 0,
-        "Args": 2048,
-        "ModType": "Suffix"
-    },
-    "002D6823": {
-        "Struct": "002D6823",
-        "Descriptions": {
-            "English": "+{arg1} Health while Enchanted"
-        },
-        "Names": {
-            "English": "of Devotion"
-        },
-        "Identifier": 9064,
-        "Arg1": 45,
-        "Arg2": 0,
-        "Args": 11520,
-        "ModType": "Suffix"
-    },
-    "14101824": {
-        "Struct": "14101824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Divine Favor"
-        },
-        "Identifier": 9240,
-        "Arg1": 16,
-        "Arg2": 20,
-        "Args": 4116,
-        "ModType": "Suffix"
-    },
-    "14021824": {
-        "Struct": "14021824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Domination Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 2,
-        "Arg2": 20,
-        "Args": 532,
-        "ModType": "Suffix"
-    },
-    "00098080": {
-        "Struct": "00098080",
-        "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
-        },
-        "Names": {
-            "English": "of Dragonslaying"
-        },
-        "Identifier": 32896,
-        "Arg1": 9,
-        "Arg2": 0,
-        "Args": 2304,
-        "ModType": "Suffix"
-    },
-    "00068080": {
-        "Struct": "00068080",
-        "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
-        },
-        "Names": {
-            "English": "of Dwarfslaying"
-        },
-        "Identifier": 32896,
-        "Arg1": 6,
-        "Arg2": 0,
-        "Args": 1536,
-        "ModType": "Suffix"
-    },
-    "14091824": {
-        "Struct": "14091824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Earth Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 9,
-        "Arg2": 20,
-        "Args": 2324,
-        "ModType": "Suffix"
-    },
-    "1400B822": {
-        "Struct": "1400B822",
-        "Descriptions": {
-            "English": "+{arg2}% Enchantment Duration"
-        },
-        "Names": {
-            "English": "of Enchanting"
-        },
-        "Identifier": 8888,
-        "Arg1": 0,
-        "Arg2": 20,
-        "Args": 20,
-        "ModType": "Suffix"
-    },
-    "002D8823": {
-        "Struct": "002D8823",
-        "Descriptions": {
-            "English": "+{arg1} Health while in a Stance"
-        },
-        "Names": {
-            "English": "of Endurance"
-        },
-        "Identifier": 9096,
-        "Arg1": 45,
-        "Arg2": 0,
-        "Args": 11520,
-        "ModType": "Suffix"
-    },
-    "140A1824": {
-        "Struct": "140A1824",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Fire Magic"
-        },
-        "Identifier": 9240,
-        "Arg1": 10,
-        "Arg2": 20,
-        "Args": 2580,
-        "ModType": "Inherent"
-    },
-    "001E4823": {
-        "Struct": "001E4823",
-        "Descriptions": {
-            "English": "+{arg1} Health"
-        },
-        "Names": {
-            "English": "of Fortitude"
-        },
-        "Identifier": 9032,
-        "Arg1": 30,
-        "Arg2": 0,
-        "Args": 7680,
-        "ModType": "Suffix"
-    },
-    "001E4823XXXX": {
-        "Struct": "001E4823",
+    {
+        "Identifier": "AgAjSB4A",
         "Descriptions": {
             "English": "+{arg1} Health"
         },
         "Names": {
             "English": "Hale"
         },
-        "Identifier": 9032,
-        "Arg1": 30,
-        "Arg2": 0,
-        "Args": 7680,
-        "ModType": "Prefix"
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9032,
+                "Arg1": 30,
+                "Arg2": 0,
+                "Arg": 7680,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 30
+            }
+        ]
     },
-    "00058080": {
-        "Struct": "00058080",
+    {
+        "Identifier": "AQAkGBMU",
         "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Hammer Mastery +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Hammer"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 19,
+                "Arg2": 20,
+                "Arg": 4884,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGA0U",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Healing Prayers +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 13,
+                "Arg2": 20,
+                "Arg": 3348,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkaAHm",
+        "Descriptions": {
+            "English": "Lengthens Weakness duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Heavy"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Hammer",
+            "Scythe",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9320,
+                "Arg1": 1,
+                "Arg2": 230,
+                "Arg": 486,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkuAMA",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Icy"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9400,
+                "Arg1": 3,
+                "Arg2": 0,
+                "Arg": 768,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 3
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAEU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Illusion Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 1,
+                "Arg2": 20,
+                "Arg": 276,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAi2AAF",
+        "Descriptions": {
+            "English": "Energy +{arg2}"
+        },
+        "Names": {
+            "English": "Insightful"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8920,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 5
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAMU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Inspiration Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 3,
+                "Arg2": 20,
+                "Arg": 788,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGBkU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Marksmanship +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Bow"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 25,
+                "Arg2": 20,
+                "Arg": 6420,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkaAHk",
+        "Descriptions": {
+            "English": "Lengthens Poison duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Poisonous"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Sword",
+            "Daggers",
+            "Scythe",
+            "Bow",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9320,
+                "Arg1": 1,
+                "Arg2": 228,
+                "Arg": 484,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGA8U",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Protection Prayers +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 15,
+                "Arg2": 20,
+                "Arg": 3860,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGCEU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Restoration Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 33,
+                "Arg2": 20,
+                "Arg": 8468,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGCkU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Scythe Mastery +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Scythe"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 41,
+                "Arg2": 20,
+                "Arg": 10516,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkuAQA",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Shocking"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9400,
+                "Arg1": 4,
+                "Arg2": 0,
+                "Arg": 1024,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 4
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkaAHl",
+        "Descriptions": {
+            "English": "Lengthens Dazed duration on foes by 33%"
+        },
+        "Names": {
+            "English": "Silencing"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Daggers",
+            "Bow",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9320,
+                "Arg1": 1,
+                "Arg2": 229,
+                "Arg": 485,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGA4U",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Smiting Prayers +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 14,
+                "Arg2": 20,
+                "Arg": 3604,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAYU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Soul Reaping +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 6,
+                "Arg2": 20,
+                "Arg": 1556,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGCQU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Spawning Power +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 36,
+                "Arg2": 20,
+                "Arg": 9236,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGCUU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Spear Mastery +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 37,
+                "Arg2": 20,
+                "Arg": 9492,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAj-BQU",
+        "Descriptions": {
+            "English": "Armor penetration +20% (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "Sundering"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9208,
+                "Arg1": 20,
+                "Arg2": 20,
+                "Arg": 5140,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAiCAoA",
+        "Descriptions": {
+            "English": "Halves casting time of spells (Chance: +{arg1}%)"
+        },
+        "Names": {
+            "English": "Swift"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8712,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGBQU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Swordsmanship +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 20,
+                "Arg2": 20,
+                "Arg": 5140,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAg6AABACUoAwA=",
+        "Descriptions": {
+            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
+        },
+        "Names": {
+            "English": "Vampiric"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Axe",
+            "Sword",
+            "Daggers",
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9512,
+                "Arg1": 3,
+                "Arg2": 0,
+                "Arg": 768,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 3
+            },
+            {
+                "Identifier": 8424,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAg6AABACUoBQA=",
+        "Descriptions": {
+            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
+        },
+        "Names": {
+            "English": "Vampiric"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Hammer",
+            "Bow",
+            "Scythe"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9512,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 5
+            },
+            {
+                "Identifier": 8424,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAg6AABACI4AA8=",
+        "Descriptions": {
+            "English": "Damage +{arg2[8760]}%\nHealth regeneration -{arg2[8424]}"
+        },
+        "Names": {
+            "English": "Vampiric Strength"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8760,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8424,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAsU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "Water Magic +1"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 11,
+                "Arg2": 20,
+                "Arg": 2836,
+                "ModifierValueArg": "Arg2",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAgyAABACUYAAE=",
+        "Descriptions": {
+            "English": "Zeal +{arg2[9496]}\nEnergy regeneration -{arg2[8392]}"
+        },
+        "Names": {
+            "English": "Zealous"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9496,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 1
+            },
+            {
+                "Identifier": 8392,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAgyAABACI4AA8=",
+        "Descriptions": {
+            "English": "Damage +{arg2[8760]}%\nEnergy regeneration -{arg2[8392]}"
+        },
+        "Names": {
+            "English": "Zealous Strength"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8760,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8392,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGAgU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Air Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 8,
+                "Arg2": 20,
+                "Arg": 2068,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAoCBQA",
+        "Descriptions": {
+            "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "of Aptitude"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10248,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGBIU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Axe Mastery"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 18,
+                "Arg2": 20,
+                "Arg": 4628,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGAQU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Blood Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 4,
+                "Arg2": 20,
+                "Arg": 1044,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGCIU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Channeling Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 34,
+                "Arg2": 20,
+                "Arg": 8724,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwCAgAEAAKJIFAA=",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Charrslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 1,
+                "Arg2": 0,
+                "Arg": 256,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 1
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGCAU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Communing"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 32,
+                "Arg2": 20,
+                "Arg": 8212,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGAcU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Curses"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 7,
+                "Arg2": 20,
+                "Arg": 1812,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGB0U",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Dagger Mastery"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Daggers"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 29,
+                "Arg2": 20,
+                "Arg": 7444,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGAUU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Death Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 5,
+                "Arg2": 20,
+                "Arg": 1300,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwCAgAAAAKJIFAA=",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Deathbane"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 0,
+                "Arg2": 0,
+                "Arg": 0,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 0
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAhCAAF",
+        "Descriptions": {
+            "English": "Armor +{arg2}"
+        },
+        "Names": {
+            "English": "of Defense"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8456,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 5
+            }
+        ]
+    },
+    {
+        "Identifier": "AwCAgAgAAKJIFAA=",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Demonslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 8,
+                "Arg2": 0,
+                "Arg": 2048,
+                "ModifierValueArg": "Fixed",
+                "Min": 8,
+                "Max": 8
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAjaC0A",
+        "Descriptions": {
+            "English": "+{arg1} Health while Enchanted"
+        },
+        "Names": {
+            "English": "of Devotion"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Shield",
+            "Staff",
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9064,
+                "Arg1": 45,
+                "Arg2": 0,
+                "Arg": 11520,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 45
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGBAU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Divine Favor"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 16,
+                "Arg2": 20,
+                "Arg": 4116,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGAIU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Domination Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 2,
+                "Arg2": 20,
+                "Arg": 532,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwCAgAkAAKJIFAA=",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Dragonslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 9,
+                "Arg2": 0,
+                "Arg": 2304,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 9
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwCAgAYAAKJIFAA=",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Dwarfslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 6,
+                "Arg2": 0,
+                "Arg": 1536,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 6
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkGAkU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Earth Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 9,
+                "Arg2": 20,
+                "Arg": 2324,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAiuAAU",
+        "Descriptions": {
+            "English": "+{arg2}% Enchantment Duration"
+        },
+        "Names": {
+            "English": "of Enchanting"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [],
+        "Modifiers": [
+            {
+                "Identifier": 8888,
+                "Arg1": 0,
+                "Arg2": 20,
+                "Arg": 20,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAjiC0A",
+        "Descriptions": {
+            "English": "+{arg1} Health while in a Stance"
+        },
+        "Names": {
+            "English": "of Endurance"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Shield",
+            "Staff",
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9096,
+                "Arg1": 45,
+                "Arg2": 0,
+                "Arg": 11520,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 45
+            }
+        ]
+    },
+    {
+        "Identifier": "AQAkGAoU",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Fire Magic"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 10,
+                "Arg2": 20,
+                "Arg": 2580,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAjSB4A",
+        "Descriptions": {
+            "English": "+{arg1} Health"
+        },
+        "Names": {
+            "English": "of Fortitude"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Staff",
+            "Shield",
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9032,
+                "Arg1": 30,
+                "Arg2": 0,
+                "Arg": 7680,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 30
+            }
+        ]
+    },
+    {
+        "Identifier": "AwCAgAUAAKJIFAA=",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
             "English": "of Giantslaying"
         },
-        "Identifier": 32896,
-        "Arg1": 5,
-        "Arg2": 0,
-        "Args": 1280,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 5
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14131824": {
-        "Struct": "14131824",
+    {
+        "Identifier": "AwAkGBMU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Hammer Mastery"
         },
-        "Identifier": 9240,
-        "Arg1": 19,
-        "Arg2": 20,
-        "Args": 4884,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Hammer"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 19,
+                "Arg2": 20,
+                "Arg": 4884,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "140D1824": {
-        "Struct": "140D1824",
+    {
+        "Identifier": "AwAkGA0U",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Healing Prayers"
         },
-        "Identifier": 9240,
-        "Arg1": 13,
-        "Arg2": 20,
-        "Args": 3348,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 13,
+                "Arg2": 20,
+                "Arg": 3348,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14011824": {
-        "Struct": "14011824",
+    {
+        "Identifier": "AwAkGAEU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Illusion Magic"
         },
-        "Identifier": 9240,
-        "Arg1": 1,
-        "Arg2": 20,
-        "Args": 276,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 1,
+                "Arg2": 20,
+                "Arg": 276,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14031824": {
-        "Struct": "14031824",
+    {
+        "Identifier": "AwAkGAMU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Inspiration Magic"
         },
-        "Identifier": 9240,
-        "Arg1": 3,
-        "Arg2": 20,
-        "Args": 788,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 3,
+                "Arg2": 20,
+                "Arg": 788,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14191824": {
-        "Struct": "14191824",
+    {
+        "Identifier": "AwAkGBkU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Marksmanship"
         },
-        "Identifier": 9240,
-        "Arg1": 25,
-        "Arg2": 20,
-        "Args": 6420,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Bow"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 25,
+                "Arg2": 20,
+                "Arg": 6420,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "00143828": {
-        "Struct": "00143828",
+    {
+        "Identifier": "AwAoOBQA",
         "Descriptions": {
             "English": "Item's attribute +1 (Chance: {arg1}%)"
         },
         "Names": {
             "English": "of Mastery"
         },
-        "Identifier": 10296,
-        "Arg1": 20,
-        "Arg2": 0,
-        "Args": 5120,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10296,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 11,
+                "Max": 20
+            }
+        ]
     },
-    "00142828": {
-        "Struct": "00142828",
+    {
+        "Identifier": "AwAoKBQA",
         "Descriptions": {
-            "English": "Halves skill recharge of spells (Chance: {arg1}%)"
+            "English": "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"
         },
         "Names": {
             "English": "of Memory"
         },
-        "Identifier": 10280,
-        "Arg1": 20,
-        "Arg2": 0,
-        "Args": 5120,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Wand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10280,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "000A8080": {
-        "Struct": "000A8080",
+    {
+        "Identifier": "AwCAgAoAAKJIFAA=",
         "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
             "English": "of Ogreslaying"
         },
-        "Identifier": 32896,
-        "Arg1": 10,
-        "Arg2": 0,
-        "Args": 2560,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 10
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "140F1824": {
-        "Struct": "140F1824",
+    {
+        "Identifier": "AwAkGA8U",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Protection Prayers"
         },
-        "Identifier": 9240,
-        "Arg1": 15,
-        "Arg2": 20,
-        "Args": 3860,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 15,
+                "Arg2": 20,
+                "Arg": 3860,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "00038080": {
-        "Struct": "00038080",
+    {
+        "Identifier": "AwCAgAMAAKJIFAA=",
         "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
             "English": "of Pruning"
         },
-        "Identifier": 32896,
-        "Arg1": 3,
-        "Arg2": 0,
-        "Args": 768,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 3,
+                "Arg2": 0,
+                "Arg": 768,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 3
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "000AA823": {
-        "Struct": "000AA823",
+    {
+        "Identifier": "AwAjqAoA",
         "Descriptions": {
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
         "Names": {
             "English": "of Quickening"
         },
-        "Identifier": 9128,
-        "Arg1": 10,
-        "Arg2": 0,
-        "Args": 2560,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Wand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9128,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "14211824": {
-        "Struct": "14211824",
+    {
+        "Identifier": "AwAkGCEU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Restoration Magic"
         },
-        "Identifier": 9240,
-        "Arg1": 33,
-        "Arg2": 20,
-        "Args": 8468,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 33,
+                "Arg2": 20,
+                "Arg": 8468,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14291824": {
-        "Struct": "14291824",
+    {
+        "Identifier": "AwAkGCkU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Scythe Mastery"
         },
-        "Identifier": 9240,
-        "Arg1": 41,
-        "Arg2": 20,
-        "Args": 10516,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Scythe"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 41,
+                "Arg2": 20,
+                "Arg": 10516,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "07005821": {
-        "Struct": "07005821",
+    {
+        "Identifier": "AwAhWAAH",
         "Descriptions": {
             "English": "+{arg2} Armor vs Physical"
         },
         "Names": {
             "English": "of Shelter"
         },
-        "Identifier": 8536,
-        "Arg1": 0,
-        "Arg2": 7,
-        "Args": 7,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8536,
+                "Arg1": 0,
+                "Arg2": 7,
+                "Arg": 7,
+                "ModifierValueArg": "Arg2",
+                "Min": 1,
+                "Max": 7
+            }
+        ]
     },
-    "00048080": {
-        "Struct": "00048080",
+    {
+        "Identifier": "AwCAgAQAAKJIFAA=",
         "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
             "English": "of Skeletonslaying"
         },
-        "Identifier": 32896,
-        "Arg1": 4,
-        "Arg2": 0,
-        "Args": 1024,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 4,
+                "Arg2": 0,
+                "Arg": 1024,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 4
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "140E1824": {
-        "Struct": "140E1824",
+    {
+        "Identifier": "AwAkGA4U",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Smiting Prayers"
         },
-        "Identifier": 9240,
-        "Arg1": 14,
-        "Arg2": 20,
-        "Args": 3604,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 14,
+                "Arg2": 20,
+                "Arg": 3604,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14061824": {
-        "Struct": "14061824",
+    {
+        "Identifier": "AwAkGAYU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Soul Reaping"
         },
-        "Identifier": 9240,
-        "Arg1": 6,
-        "Arg2": 20,
-        "Args": 1556,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 6,
+                "Arg2": 20,
+                "Arg": 1556,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14241824": {
-        "Struct": "14241824",
+    {
+        "Identifier": "AwAkGCQU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Spawning Power"
         },
-        "Identifier": 9240,
-        "Arg1": 36,
-        "Arg2": 20,
-        "Args": 9236,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 36,
+                "Arg2": 20,
+                "Arg": 9236,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "14251824": {
-        "Struct": "14251824",
+    {
+        "Identifier": "AwAkGCUU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Spear Mastery"
         },
-        "Identifier": 9240,
-        "Arg1": 37,
-        "Arg2": 20,
-        "Args": 9492,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Spear"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 37,
+                "Arg2": 20,
+                "Arg": 9492,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "000A0822": {
-        "Struct": "000A0822",
+    {
+        "Identifier": "AwAiCAoA",
         "Descriptions": {
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
         "Names": {
             "English": "of Swiftness"
         },
-        "Identifier": 8712,
-        "Arg1": 10,
-        "Arg2": 0,
-        "Args": 2560,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8712,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Arg1",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "14141824": {
-        "Struct": "14141824",
+    {
+        "Identifier": "AwAkGBQU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Swordsmanship"
         },
-        "Identifier": 9240,
-        "Arg1": 20,
-        "Arg2": 20,
-        "Args": 5140,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 20,
+                "Arg2": 20,
+                "Arg": 5140,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "00078080": {
-        "Struct": "00078080",
+    {
+        "Identifier": "AwCAgAcAAKJIFAA=",
         "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
             "English": "of Tenguslaying"
         },
-        "Identifier": 32896,
-        "Arg1": 7,
-        "Arg2": 0,
-        "Args": 1792,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 7,
+                "Arg2": 0,
+                "Arg": 1792,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 7
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "00028080": {
-        "Struct": "00028080",
+    {
+        "Identifier": "AwCAgAIAAKJIFAA=",
         "Descriptions": {
-            "English": "Damge 20% (vs {arg1})"
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
             "English": "of Trollslaying"
         },
-        "Identifier": 32896,
-        "Arg1": 2,
-        "Arg2": 0,
-        "Args": 512,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 2,
+                "Arg2": 0,
+                "Arg": 512,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 2
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "003C7823": {
-        "Struct": "003C7823",
+    {
+        "Identifier": "AwAjeDwA",
         "Descriptions": {
             "English": "+{arg1} Health while Hexed"
         },
         "Names": {
             "English": "of Valor"
         },
-        "Identifier": 9080,
-        "Arg1": 60,
-        "Arg2": 0,
-        "Args": 15360,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Shield",
+            "Staff",
+            "Offhand"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9080,
+                "Arg1": 60,
+                "Arg2": 0,
+                "Arg": 15360,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 60
+            }
+        ]
     },
-    "07002821": {
-        "Struct": "07002821",
+    {
+        "Identifier": "AwAhKAAH",
         "Descriptions": {
             "English": "+{arg2} Armor vs Elemental"
         },
         "Names": {
             "English": "of Warding"
         },
-        "Identifier": 8488,
-        "Arg1": 0,
-        "Arg2": 7,
-        "Args": 7,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8488,
+                "Arg1": 0,
+                "Arg2": 7,
+                "Arg": 7,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 7
+            }
+        ]
     },
-    "140B1824": {
-        "Struct": "140B1824",
+    {
+        "Identifier": "AwAkGAsU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
             "English": "of Water Magic"
         },
-        "Identifier": 9240,
-        "Arg1": 11,
-        "Arg2": 20,
-        "Args": 2836,
-        "ModType": "Prefix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 11,
+                "Arg2": 20,
+                "Arg": 2836,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
     },
-    "0523A828": {
-        "Struct": "0523A828",
+    {
+        "Identifier": "AwAoqCMF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Assassin"
         },
-        "Identifier": 10408,
-        "Arg1": 35,
-        "Arg2": 5,
-        "Args": 8965,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 35,
+                "Arg2": 5,
+                "Arg": 8965,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "052CA828": {
-        "Struct": "052CA828",
+    {
+        "Identifier": "AwAoqCwF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Dervish"
         },
-        "Identifier": 10408,
-        "Arg1": 44,
-        "Arg2": 5,
-        "Args": 11269,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 44,
+                "Arg2": 5,
+                "Arg": 11269,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "050CA828": {
-        "Struct": "050CA828",
+    {
+        "Identifier": "AwAoqAwF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Elementalist"
         },
-        "Identifier": 10408,
-        "Arg1": 12,
-        "Arg2": 5,
-        "Args": 3077,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 12,
+                "Arg2": 5,
+                "Arg": 3077,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0500A828": {
-        "Struct": "0500A828",
+    {
+        "Identifier": "AwAoqAAF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Mesmer"
         },
-        "Identifier": 10408,
-        "Arg1": 0,
-        "Arg2": 5,
-        "Args": 5,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0510A828": {
-        "Struct": "0510A828",
+    {
+        "Identifier": "AwAoqBAF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Monk"
         },
-        "Identifier": 10408,
-        "Arg1": 16,
-        "Arg2": 5,
-        "Args": 4101,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 16,
+                "Arg2": 5,
+                "Arg": 4101,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0506A828": {
-        "Struct": "0506A828",
+    {
+        "Identifier": "AwAoqAYF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Necromancer"
         },
-        "Identifier": 10408,
-        "Arg1": 6,
-        "Arg2": 5,
-        "Args": 1541,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 6,
+                "Arg2": 5,
+                "Arg": 1541,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0528A828": {
-        "Struct": "0528A828",
+    {
+        "Identifier": "AwAoqCgF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Paragon"
         },
-        "Identifier": 10408,
-        "Arg1": 40,
-        "Arg2": 5,
-        "Args": 10245,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 40,
+                "Arg2": 5,
+                "Arg": 10245,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0517A828": {
-        "Struct": "0517A828",
+    {
+        "Identifier": "AwAoqBcF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Ranger"
         },
-        "Identifier": 10408,
-        "Arg1": 23,
-        "Arg2": 5,
-        "Args": 5893,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 23,
+                "Arg2": 5,
+                "Arg": 5893,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0524A828": {
-        "Struct": "0524A828",
+    {
+        "Identifier": "AwAoqCQF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Ritualist"
         },
-        "Identifier": 10408,
-        "Arg1": 36,
-        "Arg2": 5,
-        "Args": 9221,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 36,
+                "Arg2": 5,
+                "Arg": 9221,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0511A828": {
-        "Struct": "0511A828",
+    {
+        "Identifier": "AwAoqBEF",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
             "English": "of the Warrior"
         },
-        "Identifier": 10408,
-        "Arg1": 17,
-        "Arg2": 5,
-        "Args": 4357,
-        "ModType": "Suffix"
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 17,
+                "Arg2": 5,
+                "Arg": 4357,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
     },
-    "0A014821": {
-        "Struct": "0A014821",
+    {
+        "Identifier": "AQAhSAEK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Charr"
+            "English": "Armor +{arg2} vs. Charr"
         },
         "Names": {
-            "English": "vs Charr"
+            "English": "vs. Charr"
         },
-        "Identifier": 8520,
-        "Arg1": 1,
-        "Arg2": 10,
-        "Args": 266,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 1,
+                "Arg2": 10,
+                "Arg": 266,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A084821": {
-        "Struct": "0A084821",
+    {
+        "Identifier": "AQAhSAgK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Demons"
+            "English": "Armor +{arg2} vs. Demons"
         },
         "Names": {
-            "English": "vs Demons"
+            "English": "vs. Demons"
         },
-        "Identifier": 8520,
-        "Arg1": 8,
-        "Arg2": 10,
-        "Args": 2058,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 8,
+                "Arg2": 10,
+                "Arg": 2058,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A094821": {
-        "Struct": "0A094821",
+    {
+        "Identifier": "AQAhSAkK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Dragons"
+            "English": "Armor +{arg2} vs. Dragons"
         },
         "Names": {
-            "English": "vs Dragons"
+            "English": "vs. Dragons"
         },
-        "Identifier": 8520,
-        "Arg1": 9,
-        "Arg2": 10,
-        "Args": 2314,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 9,
+                "Arg2": 10,
+                "Arg": 2314,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A064821": {
-        "Struct": "0A064821",
+    {
+        "Identifier": "AQAhSAYK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Dwarves"
+            "English": "Armor +{arg2} vs. Dwarves"
         },
         "Names": {
-            "English": "vs Dwarves"
+            "English": "vs. Dwarves"
         },
-        "Identifier": 8520,
-        "Arg1": 6,
-        "Arg2": 10,
-        "Args": 1546,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 6,
+                "Arg2": 10,
+                "Arg": 1546,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A054821": {
-        "Struct": "0A054821",
+    {
+        "Identifier": "AQAhSAUK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Giants"
+            "English": "Armor +{arg2} vs. Giants"
         },
         "Names": {
-            "English": "vs Giants"
+            "English": "vs. Giants"
         },
-        "Identifier": 8520,
-        "Arg1": 5,
-        "Arg2": 10,
-        "Args": 1290,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 5,
+                "Arg2": 10,
+                "Arg": 1290,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A0A4821": {
-        "Struct": "0A0A4821",
+    {
+        "Identifier": "AQAhSAoK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Ogres"
+            "English": "Armor +{arg2} vs. Ogres"
         },
         "Names": {
-            "English": "vs Ogres"
+            "English": "vs. Ogres"
         },
-        "Identifier": 8520,
-        "Arg1": 10,
-        "Arg2": 10,
-        "Args": 2570,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 10,
+                "Arg2": 10,
+                "Arg": 2570,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A034821": {
-        "Struct": "0A034821",
+    {
+        "Identifier": "AQAhSAMK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Plants"
+            "English": "Armor +{arg2} vs. Plants"
         },
         "Names": {
-            "English": "vs Plants"
+            "English": "vs. Plants"
         },
-        "Identifier": 8520,
-        "Arg1": 3,
-        "Arg2": 10,
-        "Args": 778,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 3,
+                "Arg2": 10,
+                "Arg": 778,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A044821": {
-        "Struct": "0A044821",
+    {
+        "Identifier": "AQAhSAQK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Skeletons"
+            "English": "Armor +{arg2} vs. Skeletons"
         },
         "Names": {
-            "English": "vs Skeletons"
+            "English": "vs. Skeletons"
         },
-        "Identifier": 8520,
-        "Arg1": 4,
-        "Arg2": 10,
-        "Args": 1034,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 4,
+                "Arg2": 10,
+                "Arg": 1034,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A074821": {
-        "Struct": "0A074821",
+    {
+        "Identifier": "AQAhSAcK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Tengu"
+            "English": "Armor +{arg2} vs. Tengu"
         },
         "Names": {
-            "English": "vs Tengu"
+            "English": "vs. Tengu"
         },
-        "Identifier": 8520,
-        "Arg1": 7,
-        "Arg2": 10,
-        "Args": 1802,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 7,
+                "Arg2": 10,
+                "Arg": 1802,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A024821": {
-        "Struct": "0A024821",
+    {
+        "Identifier": "AQAhSAIK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Trolls"
+            "English": "Armor +{arg2} vs. Trolls"
         },
         "Names": {
-            "English": "vs Trolls"
+            "English": "vs. Trolls"
         },
-        "Identifier": 8520,
-        "Arg1": 2,
-        "Arg2": 10,
-        "Args": 522,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 2,
+                "Arg2": 10,
+                "Arg": 522,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     },
-    "0A004821": {
-        "Struct": "0A004821",
+    {
+        "Identifier": "AQAhSAAK",
         "Descriptions": {
-            "English": "Armor +{arg2} vs Undead"
+            "English": "Armor +{arg2} vs. Undead"
         },
         "Names": {
-            "English": "vs Undead"
+            "English": "vs. Undead"
         },
-        "Identifier": 8520,
-        "Arg1": 0,
-        "Arg2": 10,
-        "Args": 10,
-        "ModType": "Inherent"
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 8520,
+                "Arg1": 0,
+                "Arg2": 10,
+                "Arg": 10,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
     }
-}
+]

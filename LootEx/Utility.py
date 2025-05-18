@@ -8,10 +8,10 @@ from LootEx.item_configuration import ItemConfiguration
 import importlib
 
 from LootEx.models import ModifierInfo, Rune, WeaponMod
-from Py4GWCoreLib import Item, Party
+from Py4GWCoreLib import Item, Party, UIManager
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
-from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, Rarity, DyeColor
+from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, NumberPreference, Rarity, DyeColor, ServerLanguage
 
 importlib.reload(item_configuration)
 importlib.reload(data)
@@ -70,6 +70,8 @@ class Util:
             matching_mods = [
                 weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(modifiers, item_type)]
             mods.extend(matching_mods)
+
+        mods.sort(key=lambda x: x.mod_type, reverse=True)
 
         return mods
 
@@ -459,13 +461,9 @@ class Util:
                 modifier_value_arg=ModifierValueArg.Fixed,
             )
         ]
-        
+    
     @staticmethod
-    def IsMapReady(map_id:int = 0):
-        if not Map.IsMapLoading():
-            if Map.IsMapReady():
-                if Party.IsPartyLoaded():
-                    if not Map.IsInCinematic():
-                        if map_id == 0 or Map.GetMapID() == map_id:
-                            return True
-        return False
+    def get_server_language():
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        return server_language

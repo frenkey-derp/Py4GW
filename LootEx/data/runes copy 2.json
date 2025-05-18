@@ -1,11 +1,12 @@
 [
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH1",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Lightning damage)"
         },
         "Names": {
-            "English": "Aeromancer Insignia [Elementalist]"
+            "English": "Aeromancer Insignia [Elementalist]",
+            "Spanish": "Insignia [Elementalista] de aeromante"
         },
         "ModType": "Prefix",
         "Profession": "Elementalist",
@@ -23,12 +24,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH4",
         "Descriptions": {
             "English": "Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
         },
         "Names": {
-            "English": "Anchorite's Insignia [Monk]"
+            "English": "Anchorite's Insignia [Monk]",
+            "Spanish": "Insignia [Monje] de anacoreta"
         },
         "ModType": "Prefix",
         "Profession": "Monk",
@@ -46,12 +48,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHi",
         "Descriptions": {
             "English": "Armor +3 (for each equipped Signet)"
         },
         "Names": {
-            "English": "Artificer's Insignia [Mesmer]"
+            "English": "Artificer's Insignia [Mesmer]",
+            "Spanish": "Insignia [Hipnotizador] de artífice"
         },
         "ModType": "Prefix",
         "Profession": "Mesmer",
@@ -69,99 +72,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoIwI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Assassin Rune of Major Critical Strikes"
-        },
-        "ModType": "Suffix",
-        "Profession": "Assassin",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 35,
-                "Arg2": 2,
-                "Arg": 8962,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6CMB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Assassin Rune of Minor Critical Strikes"
-        },
-        "ModType": "Suffix",
-        "Profession": "Assassin",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 35,
-                "Arg2": 1,
-                "Arg": 8961,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoIwM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Assassin Rune of Superior Critical Strikes"
-        },
-        "ModType": "Suffix",
-        "Profession": "Assassin",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 35,
-                "Arg2": 3,
-                "Arg": 8963,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAIA",
         "Descriptions": {
             "English": "Armor +10 (while your pet is alive)"
         },
         "Names": {
-            "English": "Beastmaster's Insignia [Ranger]"
+            "English": "Beastmaster's Insignia [Ranger]",
+            "Spanish": "Insignia [Guardabosques] de domador"
         },
         "ModType": "Prefix",
         "Profession": "Ranger",
@@ -179,12 +96,13 @@
         ]
     },
     {
-        "Identifier": "AgCg-AAKAKUwA9I=",
+        "Identifier": "AgAkCAHp",
         "Descriptions": {
             "English": "Armor +10 (while affected by an Enchantment Spell)"
         },
         "Names": {
-            "English": "Blessed Insignia"
+            "English": "Blessed Insignia",
+            "Spanish": "Insignia con bendición"
         },
         "ModType": "Prefix",
         "Profession": "_None",
@@ -202,12 +120,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHw",
         "Descriptions": {
             "English": "Armor +20 (while affected by a Hex Spell)"
         },
         "Names": {
-            "English": "Blighter's Insignia [Necromancer]"
+            "English": "Blighter's Insignia [Necromancer]",
+            "Spanish": "Insignia [Nigromante] de malhechor"
         },
         "ModType": "Prefix",
         "Profession": "Necromancer",
@@ -225,12 +144,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAIK",
         "Descriptions": {
             "English": "Reduces casting time of spells that exploit corpses by 25% (Non-stacking)"
         },
         "Names": {
-            "English": "Bloodstained Insignia [Necromancer]"
+            "English": "Bloodstained Insignia [Necromancer]",
+            "Spanish": "Insignia [Nigromante] con sangre"
         },
         "ModType": "Prefix",
         "Profession": "Necromancer",
@@ -248,12 +168,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHu",
         "Descriptions": {
             "English": "Armor +15 (vs. Piercing damage)"
         },
         "Names": {
-            "English": "Bonelace Insignia [Necromancer]"
+            "English": "Bonelace Insignia [Necromancer]",
+            "Spanish": "Insignia [Nigromante] de cordones de hueso"
         },
         "ModType": "Prefix",
         "Profession": "Necromancer",
@@ -271,12 +192,13 @@
         ]
     },
     {
-        "Identifier": "AgCg-AAKAKUwA9A=",
+        "Identifier": "AgAkCAHo",
         "Descriptions": {
             "English": "Armor +10 (while attacking)"
         },
         "Names": {
-            "English": "Brawler's Insignia"
+            "English": "Brawler's Insignia",
+            "Spanish": "Insignia del pendenciero"
         },
         "ModType": "Prefix",
         "Profession": "_None",
@@ -294,12 +216,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAIH",
         "Descriptions": {
             "English": "Armor +10 (while affected by a Shout, Echo, or Chant)"
         },
         "Names": {
-            "English": "Centurion's Insignia [Paragon]"
+            "English": "Centurion's Insignia [Paragon]",
+            "Spanish": "Insignia [Paragón] de centurión"
         },
         "ModType": "Prefix",
         "Profession": "Paragon",
@@ -317,99 +240,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoLAI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Dervish Rune of Major Mysticism"
-        },
-        "ModType": "Suffix",
-        "Profession": "Dervish",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 44,
-                "Arg2": 2,
-                "Arg": 11266,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6CwB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Dervish Rune of Minor Mysticism"
-        },
-        "ModType": "Suffix",
-        "Profession": "Dervish",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 44,
-                "Arg2": 1,
-                "Arg": 11265,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoLAM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Dervish Rune of Superior Mysticism"
-        },
-        "ModType": "Suffix",
-        "Profession": "Dervish",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 44,
-                "Arg2": 3,
-                "Arg": 11267,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH3",
         "Descriptions": {
             "English": "Armor +15 (while affected by a Condition)"
         },
         "Names": {
-            "English": "Disciple's Insignia [Monk]"
+            "English": "Disciple's Insignia [Monk]",
+            "Spanish": "Insignia [Monje] de discípulo"
         },
         "ModType": "Prefix",
         "Profession": "Monk",
@@ -427,12 +264,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH6",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)"
         },
         "Names": {
-            "English": "Dreadnought Insignia [Warrior]"
+            "English": "Dreadnought Insignia [Warrior]",
+            "Spanish": "Insignia [Guerrero] de Dreadnought"
         },
         "ModType": "Prefix",
         "Profession": "Warrior",
@@ -450,12 +288,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH9",
         "Descriptions": {
             "English": "Armor +15 (vs. Earth damage)"
         },
         "Names": {
-            "English": "Earthbound Insignia [Ranger]"
+            "English": "Earthbound Insignia [Ranger]",
+            "Spanish": "Insignia [Guardabosques] de tierra"
         },
         "ModType": "Prefix",
         "Profession": "Ranger",
@@ -473,99 +312,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoDAI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Elementalist Rune of Major Energy Storage"
-        },
-        "ModType": "Suffix",
-        "Profession": "Elementalist",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 12,
-                "Arg2": 2,
-                "Arg": 3074,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6AwB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Elementalist Rune of Minor Energy Storage"
-        },
-        "ModType": "Suffix",
-        "Profession": "Elementalist",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 12,
-                "Arg2": 1,
-                "Arg": 3073,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoDAM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Elementalist Rune of Superior Energy Storage"
-        },
-        "ModType": "Suffix",
-        "Profession": "Elementalist",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 12,
-                "Arg2": 3,
-                "Arg": 3075,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAID",
         "Descriptions": {
             "English": "Armor +10 (while not affected by an Enchantment Spell)"
         },
         "Names": {
-            "English": "Forsaken Insignia [Dervish]"
+            "English": "Forsaken Insignia [Dervish]",
+            "Spanish": "Insignia [Derviche] de abandonado"
         },
         "ModType": "Prefix",
         "Profession": "Dervish",
@@ -583,12 +336,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH8",
         "Descriptions": {
             "English": "Armor +15 (vs. Cold damage)"
         },
         "Names": {
-            "English": "Frostbound Insignia [Ranger]"
+            "English": "Frostbound Insignia [Ranger]",
+            "Spanish": "Insignia [Guardabosques] de montaña"
         },
         "ModType": "Prefix",
         "Profession": "Ranger",
@@ -606,12 +360,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHz",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Earth damage)"
         },
         "Names": {
-            "English": "Geomancer Insignia [Elementalist]"
+            "English": "Geomancer Insignia [Elementalist]",
+            "Spanish": "Insignia [Elementalista] de geomante"
         },
         "ModType": "Prefix",
         "Profession": "Elementalist",
@@ -629,12 +384,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAIF",
         "Descriptions": {
             "English": "Armor +15 (while affected by a Weapon Spell)"
         },
         "Names": {
-            "English": "Ghost Forge Insignia [Ritualist]"
+            "English": "Ghost Forge Insignia [Ritualist]",
+            "Spanish": "Insignia [Ritualista] de fragua fantasma"
         },
         "ModType": "Prefix",
         "Profession": "Ritualist",
@@ -652,12 +408,13 @@
         ]
     },
     {
-        "Identifier": "AgCg-AAKAKUwA9Q=",
+        "Identifier": "AgAkCAHq",
         "Descriptions": {
             "English": "Armor +10 (while holding an item)"
         },
         "Names": {
-            "English": "Herald's Insignia"
+            "English": "Herald's Insignia",
+            "Spanish": "Insignia de heraldo"
         },
         "ModType": "Prefix",
         "Profession": "_None",
@@ -675,12 +432,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHy",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Cold damage)"
         },
         "Names": {
-            "English": "Hydromancer Insignia [Elementalist]"
+            "English": "Hydromancer Insignia [Elementalist]",
+            "Spanish": "Insignia [Elementalista] de hidromante"
         },
         "ModType": "Prefix",
         "Profession": "Elementalist",
@@ -698,12 +456,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHf",
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Piercing damage)"
         },
         "Names": {
-            "English": "Infiltrator's Insignia [Assassin]"
+            "English": "Infiltrator's Insignia [Assassin]",
+            "Spanish": "Insignia [Asesino] de infiltrado"
         },
         "ModType": "Prefix",
         "Profession": "Assassin",
@@ -721,12 +480,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH5",
         "Descriptions": {
             "English": "Received physical damage -3"
         },
         "Names": {
-            "English": "Knight's Insignia [Warrior]"
+            "English": "Knight's Insignia [Warrior]",
+            "Spanish": "Insignia [Guerrero] de caballero"
         },
         "ModType": "Prefix",
         "Profession": "Warrior",
@@ -744,12 +504,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAII",
         "Descriptions": {
             "English": "Reduces Hex durations on you by 20% and damage dealt by you by 5% (Non-stacking)\nArmor -20"
         },
         "Names": {
-            "English": "Lieutenant's Insignia [Warrior]"
+            "English": "Lieutenant's Insignia [Warrior]",
+            "Spanish": "Insignia [Guerrero] de teniente"
         },
         "ModType": "Prefix",
         "Profession": "Warrior",
@@ -767,99 +528,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAj",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Mesmer Rune of Major Fast Casting"
-        },
-        "ModType": "Suffix",
-        "Profession": "Mesmer",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 0,
-                "Arg2": 2,
-                "Arg": 2,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Aw==",
+        "Identifier": "AgAkCAHv",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Mesmer Rune of Minor Fast Casting"
-        },
-        "ModType": "Suffix",
-        "Profession": "Mesmer",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 0,
-                "Arg2": 1,
-                "Arg": 1,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABL",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Mesmer Rune of Superior Fast Casting"
-        },
-        "ModType": "Suffix",
-        "Profession": "Mesmer",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 0,
-                "Arg2": 3,
-                "Arg": 3,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Minion Master's Insignia [Necromancer]"
+            "English": "Minion Master's Insignia [Necromancer]",
+            "Spanish": "Insignia [Nigromante] de maestro de siervos"
         },
         "ModType": "Prefix",
         "Profession": "Necromancer",
@@ -877,99 +552,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoDQI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Monk Rune of Major Healing Prayers"
-        },
-        "ModType": "Suffix",
-        "Profession": "Monk",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 13,
-                "Arg2": 2,
-                "Arg": 3330,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6A0B",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Monk Rune of Minor Healing Prayers"
-        },
-        "ModType": "Suffix",
-        "Profession": "Monk",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 13,
-                "Arg2": 1,
-                "Arg": 3329,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoDQM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Monk Rune of Superior Healing Prayers"
-        },
-        "ModType": "Suffix",
-        "Profession": "Monk",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 13,
-                "Arg2": 3,
-                "Arg": 3331,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAIG",
         "Descriptions": {
             "English": "Armor +15 (while activating skills)"
         },
         "Names": {
-            "English": "Mystic's Insignia [Ritualist]"
+            "English": "Mystic's Insignia [Ritualist]",
+            "Spanish": "Insignia [Ritualista] de místico"
         },
         "ModType": "Prefix",
         "Profession": "Ritualist",
@@ -987,99 +576,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoBAI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Necromancer Rune of Major Blood Magic"
-        },
-        "ModType": "Suffix",
-        "Profession": "Necromancer",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 4,
-                "Arg2": 2,
-                "Arg": 1026,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6AQB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Necromancer Rune of Minor Blood Magic"
-        },
-        "ModType": "Suffix",
-        "Profession": "Necromancer",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 4,
-                "Arg2": 1,
-                "Arg": 1025,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoBAM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Necromancer Rune of Superior Blood Magic"
-        },
-        "ModType": "Suffix",
-        "Profession": "Necromancer",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 4,
-                "Arg2": 3,
-                "Arg": 1027,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHh",
         "Descriptions": {
             "English": "Armor +15 (while attacking)"
         },
         "Names": {
-            "English": "Nightstalker's Insignia [Assassin]"
+            "English": "Nightstalker's Insignia [Assassin]",
+            "Spanish": "Insignia [Asesino] de acechador nocturno"
         },
         "ModType": "Prefix",
         "Profession": "Assassin",
@@ -1097,108 +600,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoKAI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Paragon Rune of Major Leadership"
-        },
-        "ModType": "Suffix",
-        "Profession": "Paragon",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 40,
-                "Arg2": 2,
-                "Arg": 10242,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6CgB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Paragon Rune of Minor Leadership"
-        },
-        "ModType": "Suffix",
-        "Profession": "Paragon",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 40,
-                "Arg2": 1,
-                "Arg": 10241,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoKAM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Paragon Rune of Superior Leadership"
-        },
-        "ModType": "Suffix",
-        "Profession": "Paragon",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 40,
-                "Arg2": 3,
-                "Arg": 10243,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHx",
         "Descriptions": {
             "English": "Armor +5 (requires 9 Air Magic)\nArmor +5 (requires 9 Earth Magic)\nArmor +5 (requires 9 Fire Magic)\nArmor +5 (requires 9 Water Magic)"
         },
         "Names": {
-            "English": "Prismatic Insignia [Elementalist]"
+            "English": "Prismatic Insignia [Elementalist]",
+            "Spanish": "Insignia [Elementalista] de prismático"
         },
         "ModType": "Prefix",
         "Profession": "Elementalist",
@@ -1216,12 +624,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAHj",
         "Descriptions": {
             "English": "Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
         },
         "Names": {
-            "English": "Prodigy's Insignia [Mesmer]"
+            "English": "Prodigy's Insignia [Mesmer]",
+            "Spanish": "Insignia [Hipnotizador] de prodigio"
         },
         "ModType": "Prefix",
         "Profession": "Mesmer",
@@ -1239,12 +648,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH-",
         "Descriptions": {
             "English": "Armor +15 (vs. Fire damage)"
         },
         "Names": {
-            "English": "Pyrebound Insignia [Ranger]"
+            "English": "Pyrebound Insignia [Ranger]",
+            "Spanish": "Insignia [Guardabosques] de leñero"
         },
         "ModType": "Prefix",
         "Profession": "Ranger",
@@ -1262,12 +672,13 @@
         ]
     },
     {
-        "Identifier": "Ag==",
+        "Identifier": "AgAkCAH0",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Fire damage)"
         },
         "Names": {
-            "English": "Pyromancer Insignia [Elementalist]"
+            "English": "Pyromancer Insignia [Elementalist]",
+            "Spanish": "Insignia [Elementalista] de piromante"
         },
         "ModType": "Prefix",
         "Profession": "Elementalist",
@@ -1285,12 +696,13 @@
         ]
     },
     {
-        "Identifier": "AgAmyAAB",
+        "Identifier": "AgAkCAHl",
         "Descriptions": {
             "English": "Energy +3 (on chest armor)\nEnergy +2 (on leg armor)\nEnergy +1 (on other armor)"
         },
         "Names": {
-            "English": "Radiant Insignia"
+            "English": "Radiant Insignia",
+            "Spanish": "Insignia radiante"
         },
         "ModType": "Prefix",
         "Profession": "_None",
@@ -1308,669 +720,13 @@
         ]
     },
     {
-        "Identifier": "AwAg2AAjACHoGAI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Ranger Rune of Major Wilderness Survival"
-        },
-        "ModType": "Suffix",
-        "Profession": "Ranger",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 24,
-                "Arg2": 2,
-                "Arg": 6146,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6BgB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Ranger Rune of Minor Wilderness Survival"
-        },
-        "ModType": "Suffix",
-        "Profession": "Ranger",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 24,
-                "Arg2": 1,
-                "Arg": 6145,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoGAM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Ranger Rune of Superior Wilderness Survival"
-        },
-        "ModType": "Suffix",
-        "Profession": "Ranger",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 24,
-                "Arg2": 3,
-                "Arg": 6147,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2AAjACHoIgI=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Ritualist Rune of Major Channeling Magic"
-        },
-        "ModType": "Suffix",
-        "Profession": "Ritualist",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 34,
-                "Arg2": 2,
-                "Arg": 8706,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6CIB",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
-        },
-        "Names": {
-            "English": "Ritualist Rune of Minor Channeling Magic"
-        },
-        "ModType": "Suffix",
-        "Profession": "Ritualist",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 34,
-                "Arg2": 1,
-                "Arg": 8705,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAg2ABLACHoIgM=",
-        "Descriptions": {
-            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
-        },
-        "Names": {
-            "English": "Ritualist Rune of Superior Channeling Magic"
-        },
-        "ModType": "Suffix",
-        "Profession": "Ritualist",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 8680,
-                "Arg1": 34,
-                "Arg2": 3,
-                "Arg": 8707,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 8408,
-                "Arg1": 0,
-                "Arg2": 35,
-                "Arg": 35,
-                "ModifierValueArg": "Fixed",
-                "Min": 35,
-                "Max": 35
-            }
-        ]
-    },
-    {
-        "Identifier": "Aw==",
-        "Descriptions": {
-            "English": "Health +41 (Non-stacking)"
-        },
-        "Names": {
-            "English": "Rune of Major Vigor"
-        },
-        "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 0,
-                "Arg": 256,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Aw==",
-        "Descriptions": {
-            "English": "Health +30 (Non-stacking)"
-        },
-        "Names": {
-            "English": "Rune of Minor Vigor"
-        },
-        "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 0,
-                "Arg2": 194,
-                "Arg": 194,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Aw==",
-        "Descriptions": {
-            "English": "Health +50 (Non-stacking)"
-        },
-        "Names": {
-            "English": "Rune of Superior Vigor"
-        },
-        "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 1,
-                "Arg": 257,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Slashing damage)"
-        },
-        "Names": {
-            "English": "Saboteur's Insignia [Assassin]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Assassin",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 224,
-                "Arg": 480,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +10 (while using a Preparation)"
-        },
-        "Names": {
-            "English": "Scout's Insignia [Ranger]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Ranger",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 1,
-                "Arg": 513,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +20 (Requires 13 Strength, vs. elemental damage)"
-        },
-        "Names": {
-            "English": "Sentinel's Insignia [Warrior]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Warrior",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 251,
-                "Arg": 507,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AgCg-AAKAKUwA9Y=",
-        "Descriptions": {
-            "English": "Armor +10 (while in a stance)"
-        },
-        "Names": {
-            "English": "Sentry's Insignia"
-        },
-        "ModType": "Prefix",
-        "Profession": "_None",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 235,
-                "Arg": 491,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +5 (while you control 1 or more Spirits)\nArmor +5 (while you control 2 or more Spirits)\nArmor +5 (while you control 3 or more Spirits)"
-        },
-        "Names": {
-            "English": "Shaman's Insignia [Ritualist]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Ritualist",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 4,
-                "Arg": 516,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AgChWAAK",
-        "Descriptions": {
-            "English": "Armor +10 (vs. physical damage)"
-        },
-        "Names": {
-            "English": "Stalwart Insignia"
-        },
-        "ModType": "Prefix",
-        "Profession": "_None",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 231,
-                "Arg": 487,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Increases knockdown time on foes by 1 second.\n(Maximum: 3 seconds)"
-        },
-        "Names": {
-            "English": "Stonefist Insignia [Warrior]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Warrior",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 9,
-                "Arg": 521,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +15 (vs. Lightning damage)"
-        },
-        "Names": {
-            "English": "Stormbound Insignia [Ranger]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Ranger",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 255,
-                "Arg": 511,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AgAm2AUA",
-        "Descriptions": {
-            "English": "Health +15 (on chest armor)\nHealth +10 (on leg armor)\nHealth +5 (on other armor)"
-        },
-        "Names": {
-            "English": "Survivor Insignia"
-        },
-        "ModType": "Prefix",
-        "Profession": "_None",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 230,
-                "Arg": 486,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Holy damage you receive increased by 6 (on chest armor)\nHoly damage you receive increased by 4 (on leg armor)\nHoly damage you receive increased by 2 (on other armor)\nArmor +10"
-        },
-        "Names": {
-            "English": "Tormentor's Insignia [Necromancer]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Necromancer",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 236,
-                "Arg": 492,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +5 (while health is below 80%)\nArmor +5 (while health is below 60%)\nArmor +5 (while health is below 40%)\nArmor +5 (while health is below 20%)"
-        },
-        "Names": {
-            "English": "Undertaker's Insignia [Necromancer]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Necromancer",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 237,
-                "Arg": 493,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Blunt damage)"
-        },
-        "Names": {
-            "English": "Vanguard's Insignia [Assassin]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Assassin",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 222,
-                "Arg": 478,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +15 (while activating skills)"
-        },
-        "Names": {
-            "English": "Virtuoso's Insignia [Mesmer]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Mesmer",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 228,
-                "Arg": 484,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +10 (vs. elemental damage)"
-        },
-        "Names": {
-            "English": "Wanderer's Insignia [Monk]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Monk",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 1,
-                "Arg2": 246,
-                "Arg": 502,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAn6QLq",
-        "Descriptions": {
-            "English": "Reduces physical damage by 2 (Non-stacking)"
-        },
-        "Names": {
-            "English": "Warrior Rune of Major Absorption"
-        },
-        "ModType": "Suffix",
-        "Profession": "Warrior",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 0,
-                "Arg2": 253,
-                "Arg": 253,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAn6ALq",
-        "Descriptions": {
-            "English": "Reduces physical damage by 1 (Non-stacking)"
-        },
-        "Names": {
-            "English": "Warrior Rune of Minor Absorption"
-        },
-        "ModType": "Suffix",
-        "Profession": "Warrior",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 0,
-                "Arg2": 252,
-                "Arg": 252,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAn6QLq",
-        "Descriptions": {
-            "English": "Reduces physical damage by 3 (Non-stacking)"
-        },
-        "Names": {
-            "English": "Warrior Rune of Superior Absorption"
-        },
-        "ModType": "Suffix",
-        "Profession": "Warrior",
-        "Rarity": "Gold",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 0,
-                "Arg2": 254,
-                "Arg": 254,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "Ag==",
-        "Descriptions": {
-            "English": "Armor +5 (while affected by 1 or more Enchantment Spells)\nArmor +5 (while affected by 2 or more Enchantment Spells)\nArmor +5 (while affected by 3 or more Enchantment Spells)\nArmor +5 (while affected by 4 or more Enchantment Spells)"
-        },
-        "Names": {
-            "English": "Windwalker Insignia [Dervish]"
-        },
-        "ModType": "Prefix",
-        "Profession": "Dervish",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 2,
-                "Arg": 514,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAkCAIR",        
+        "Identifier": "AwAkCAIR",
         "Descriptions": {
             "English": "Energy +2"
         },
         "Names": {
-            "English": "Rune of Attunement"
+            "English": "Rune of Attunement",
+            "Spanish": "Runa (de sintonía)"
         },
         "ModType": "Suffix",
         "Profession": "_None",
@@ -1989,11 +745,12 @@
     },
     {
         "Identifier": "AwAkCAIV",
-                "Descriptions": {
+        "Descriptions": {
             "English": "Reduces Blind duration on you by 20% (Non-stacking)\nReduces Weakness duration on you by 20% (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Clarity"
+            "English": "Rune of Clarity",
+            "Spanish": "Runa (de claridad)"
         },
         "ModType": "Suffix",
         "Profession": "_None",
@@ -2011,12 +768,565 @@
         ]
     },
     {
-        "Identifier": "AwAh6AgC",
+        "Identifier": "AwAkCAEA",
+        "Descriptions": {
+            "English": "Health +41 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Rune of Major Vigor",
+            "Spanish": "Runa (vigor de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 0,
+                "Arg": 256,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAD_",
+        "Descriptions": {
+            "English": "Health +30 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Rune of Minor Vigor",
+            "Spanish": "Runa (vigor de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 0,
+                "Arg2": 255,
+                "Arg": 255,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAIW",
+        "Descriptions": {
+            "English": "Reduces Disease duration on you by 20% (Non-stacking)\nReduces Poison duration on you by 20% (Non-stacking)"
+        },
+        "Names": {
+            "English": "Rune of Purity",
+            "Spanish": "Runa (de pureza)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 22,
+                "Arg": 534,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAIT",
+        "Descriptions": {
+            "English": "Reduces Dazed duration on you by 20% (Non-stacking)\nReduces Deep Wound duration on you by 20% (Non-stacking)"
+        },
+        "Names": {
+            "English": "Rune of Recovery",
+            "Spanish": "Runa (de mejoría)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 19,
+                "Arg": 531,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAIU",
+        "Descriptions": {
+            "English": "Reduces Bleeding duration on you by 20% (Non-stacking)\nReduces Crippled duration on you by 20% (Non-stacking)"
+        },
+        "Names": {
+            "English": "Rune of Restoration",
+            "Spanish": "Runa (de restauración)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 20,
+                "Arg": 532,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAEB",
+        "Descriptions": {
+            "English": "Health +50 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Rune of Superior Vigor",
+            "Spanish": "Runa (vigor de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 1,
+                "Arg": 257,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAIS",
+        "Descriptions": {
+            "English": "Health +10"
+        },
+        "Names": {
+            "English": "Rune of Vitae",
+            "Spanish": "Runa (de vida)"
+        },
+        "ModType": "Suffix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 18,
+                "Arg": 530,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHg",
+        "Descriptions": {
+            "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Slashing damage)"
+        },
+        "Names": {
+            "English": "Saboteur's Insignia [Assassin]",
+            "Spanish": "Insignia [Asesino] de saboteador"
+        },
+        "ModType": "Prefix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 224,
+                "Arg": 480,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAIB",
+        "Descriptions": {
+            "English": "Armor +10 (while using a Preparation)"
+        },
+        "Names": {
+            "English": "Scout's Insignia [Ranger]",
+            "Spanish": "Insignia [Guardabosques] de explorador"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 1,
+                "Arg": 513,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAH7",
+        "Descriptions": {
+            "English": "Armor +20 (Requires 13 Strength, vs. elemental damage)"
+        },
+        "Names": {
+            "English": "Sentinel's Insignia [Warrior]",
+            "Spanish": "Insignia [Guerrero] de centinela"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 251,
+                "Arg": 507,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHr",
+        "Descriptions": {
+            "English": "Armor +10 (while in a stance)"
+        },
+        "Names": {
+            "English": "Sentry's Insignia",
+            "Spanish": "Insignia de centinela"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 235,
+                "Arg": 491,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAIE",
+        "Descriptions": {
+            "English": "Armor +5 (while you control 1 or more Spirits)\nArmor +5 (while you control 2 or more Spirits)\nArmor +5 (while you control 3 or more Spirits)"
+        },
+        "Names": {
+            "English": "Shaman's Insignia [Ritualist]",
+            "Spanish": "Insignia [Ritualista] de chamán"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 4,
+                "Arg": 516,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHn",
+        "Descriptions": {
+            "English": "Armor +10 (vs. physical damage)"
+        },
+        "Names": {
+            "English": "Stalwart Insignia",
+            "Spanish": "Insignia firme"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 231,
+                "Arg": 487,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAIJ",
+        "Descriptions": {
+            "English": "Increases knockdown time on foes by 1 second.\n(Maximum: 3 seconds)"
+        },
+        "Names": {
+            "English": "Stonefist Insignia [Warrior]",
+            "Spanish": "Insignia [Guerrero] de piedra"
+        },
+        "ModType": "Prefix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 9,
+                "Arg": 521,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAH_",
+        "Descriptions": {
+            "English": "Armor +15 (vs. Lightning damage)"
+        },
+        "Names": {
+            "English": "Stormbound Insignia [Ranger]",
+            "Spanish": "Insignia [Guardabosques] de hidromántico"
+        },
+        "ModType": "Prefix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 255,
+                "Arg": 511,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHm",
+        "Descriptions": {
+            "English": "Health +15 (on chest armor)\nHealth +10 (on leg armor)\nHealth +5 (on other armor)"
+        },
+        "Names": {
+            "English": "Survivor Insignia",
+            "Spanish": "Insignia de superviviente"
+        },
+        "ModType": "Prefix",
+        "Profession": "_None",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 230,
+                "Arg": 486,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHs",
+        "Descriptions": {
+            "English": "Holy damage you receive increased by 6 (on chest armor)\nHoly damage you receive increased by 4 (on leg armor)\nHoly damage you receive increased by 2 (on other armor)\nArmor +10"
+        },
+        "Names": {
+            "English": "Tormentor's Insignia [Necromancer]",
+            "Spanish": "Insignia [Nigromante] de torturador"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 236,
+                "Arg": 492,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHt",
+        "Descriptions": {
+            "English": "Armor +5 (while health is below 80%)\nArmor +5 (while health is below 60%)\nArmor +5 (while health is below 40%)\nArmor +5 (while health is below 20%)"
+        },
+        "Names": {
+            "English": "Undertaker's Insignia [Necromancer]",
+            "Spanish": "Insignia [Nigromante] de enterrador"
+        },
+        "ModType": "Prefix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 237,
+                "Arg": 493,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHe",
+        "Descriptions": {
+            "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Blunt damage)"
+        },
+        "Names": {
+            "English": "Vanguard's Insignia [Assassin]",
+            "Spanish": "Insignia [Asesino] de avanzado"
+        },
+        "ModType": "Prefix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 222,
+                "Arg": 478,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAHk",
+        "Descriptions": {
+            "English": "Armor +15 (while activating skills)"
+        },
+        "Names": {
+            "English": "Virtuoso's Insignia [Mesmer]",
+            "Spanish": "Insignia [Hipnotizador] de virtuoso"
+        },
+        "ModType": "Prefix",
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 228,
+                "Arg": 484,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAH2",
+        "Descriptions": {
+            "English": "Armor +10 (vs. elemental damage)"
+        },
+        "Names": {
+            "English": "Wanderer's Insignia [Monk]",
+            "Spanish": "Insignia [Monje] de trotamundos"
+        },
+        "ModType": "Prefix",
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 1,
+                "Arg2": 246,
+                "Arg": 502,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AgAkCAIC",
+        "Descriptions": {
+            "English": "Armor +5 (while affected by 1 or more Enchantment Spells)\nArmor +5 (while affected by 2 or more Enchantment Spells)\nArmor +5 (while affected by 3 or more Enchantment Spells)\nArmor +5 (while affected by 4 or more Enchantment Spells)"
+        },
+        "Names": {
+            "English": "Windwalker Insignia [Dervish]",
+            "Spanish": "Insignia [Derviche] de caminante del viento"
+        },
+        "ModType": "Prefix",
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 2,
+                "Arg2": 2,
+                "Arg": 514,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAkCAD9",
+        "Descriptions": {
+            "English": "Reduces physical damage by 2 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Warrior Rune of Major Absorption",
+            "Spanish": "Runa de Guerrero (absorción de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Warrior",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 0,
+                "Arg2": 253,
+                "Arg": 253,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoCAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Air Magic"
+            "English": "Elementalist Rune of Major Air Magic",
+            "Spanish": "Runa de Elementalista (Magia de aire de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -2043,12 +1353,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BIC",
+        "Identifier": "AwAg2AAjACHoEgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Axe Mastery"
+            "English": "Warrior Rune of Major Axe Mastery",
+            "Spanish": "Runa de Guerrero (Dominio del hacha de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -2075,12 +1386,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BYC",
+        "Identifier": "AwAg2AAjACHoFgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Beast Mastery"
+            "English": "Ranger Rune of Major Beast Mastery",
+            "Spanish": "Runa de Guardabosques (Dominio de bestias de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -2107,12 +1419,79 @@
         ]
     },
     {
-        "Identifier": "AwAh6CYC",
+        "Identifier": "AwAg2AAjACHoBAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Command"
+            "English": "Necromancer Rune of Major Blood Magic",
+            "Spanish": "Runa de Nigromante (Magia de sangre de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Necromancer",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 4,
+                "Arg2": 2,
+                "Arg": 1026,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoIgI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ritualist Rune of Major Channeling Magic",
+            "Spanish": "Runa de Ritualista (Magia de canalización de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ritualist",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 34,
+                "Arg2": 2,
+                "Arg": 8706,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoJgI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Paragon Rune of Major Command",
+            "Spanish": "Runa de Paragón (Mando de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -2139,12 +1518,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CAC",
+        "Identifier": "AwAg2AAjACHoIAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Communing"
+            "English": "Ritualist Rune of Major Communing",
+            "Spanish": "Runa de Ritualista (Comunión de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -2171,12 +1551,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6AcC",
+        "Identifier": "AwAg2AAjACHoIwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Curses"
+            "English": "Assassin Rune of Major Critical Strikes",
+            "Spanish": "Runa de Asesino (Impactos críticos de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Assassin",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 35,
+                "Arg2": 2,
+                "Arg": 8962,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoBwI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Necromancer Rune of Major Curses",
+            "Spanish": "Runa de Nigromante (Maldiciones de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -2203,12 +1617,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6B0C",
+        "Identifier": "AwAg2AAjACHoHQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Dagger Mastery"
+            "English": "Assassin Rune of Major Dagger Mastery",
+            "Spanish": "Runa de Asesino (Dominio de la daga de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -2235,12 +1650,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6B4C",
+        "Identifier": "AwAg2AAjACHoHgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Deadly Arts"
+            "English": "Assassin Rune of Major Deadly Arts",
+            "Spanish": "Runa de Asesino (Artes mortales de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -2267,12 +1683,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AUC",
+        "Identifier": "AwAg2AAjACHoBQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Death Magic"
+            "English": "Necromancer Rune of Major Death Magic",
+            "Spanish": "Runa de Nigromante (Magia de muerte de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -2299,12 +1716,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BAC",
+        "Identifier": "AwAg2AAjACHoEAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Divine Favor"
+            "English": "Monk Rune of Major Divine Favor",
+            "Spanish": "Runa de Monje (Favor divino de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -2331,12 +1749,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AIC",
+        "Identifier": "AwAg2AAjACHoAgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Domination Magic"
+            "English": "Mesmer Rune of Major Domination Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de dominación de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -2363,12 +1782,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AkC",
+        "Identifier": "AwAg2AAjACHoCQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Earth Magic"
+            "English": "Elementalist Rune of Major Earth Magic",
+            "Spanish": "Runa de Elementalista (Magia de tierra de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -2395,12 +1815,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CsC",
+        "Identifier": "AwAg2AAjACHoKwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Earth Prayers"
+            "English": "Dervish Rune of Major Earth Prayers",
+            "Spanish": "Runa para Derviche (Plegarias de tierra de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -2427,12 +1848,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6BcC",
+        "Identifier": "AwAg2AAjACHoDAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Expertise"
+            "English": "Elementalist Rune of Major Energy Storage",
+            "Spanish": "Runa de Elementalista (Almacenamiento energía de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Elementalist",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 12,
+                "Arg2": 2,
+                "Arg": 3074,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoFwI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ranger Rune of Major Expertise",
+            "Spanish": "Runa de Guardabosques (Pericia de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -2459,12 +1914,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6AoC",
+        "Identifier": "AwAg2AAjACHoAAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Fire Magic"
+            "English": "Mesmer Rune of Major Fast Casting",
+            "Spanish": "Runa de Hipnotizador (Lanzar conjuros rápido de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Mesmer",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 0,
+                "Arg2": 2,
+                "Arg": 2,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoCgI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Elementalist Rune of Major Fire Magic",
+            "Spanish": "Runa de Elementalista (Magia de fuego de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -2491,12 +1980,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BMC",
+        "Identifier": "AwAg2AAjACHoEwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Hammer Mastery"
+            "English": "Warrior Rune of Major Hammer Mastery",
+            "Spanish": "Runa de Guerrero (Dominio del martillo de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -2523,12 +2013,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6AEC",
+        "Identifier": "AwAg2AAjACHoDQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Illusion Magic"
+            "English": "Monk Rune of Major Healing Prayers",
+            "Spanish": "Runa de Monje (Plegarias curativas de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Monk",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 13,
+                "Arg2": 2,
+                "Arg": 3330,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoAQI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Mesmer Rune of Major Illusion Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de ilusión de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -2555,12 +2079,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AMC",
+        "Identifier": "AwAg2AAjACHoAwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Inspiration Magic"
+            "English": "Mesmer Rune of Major Inspiration Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de inspiración de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -2587,12 +2112,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6BkC",
+        "Identifier": "AwAg2AAjACHoKAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Marksmanship"
+            "English": "Paragon Rune of Major Leadership",
+            "Spanish": "Runa de Paragón (Liderazgo de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Paragon",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 40,
+                "Arg2": 2,
+                "Arg": 10242,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoGQI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ranger Rune of Major Marksmanship",
+            "Spanish": "Runa de Guardabosques (Puntería de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -2619,12 +2178,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CcC",
+        "Identifier": "AwAg2AAjACHoJwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Motivation"
+            "English": "Paragon Rune of Major Motivation",
+            "Spanish": "Runa de Paragón (Motivación de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -2651,12 +2211,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6A8C",
+        "Identifier": "AwAg2AAjACHoLAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Protection Prayers"
+            "English": "Dervish Rune of Major Mysticism",
+            "Spanish": "Runa para Derviche (Misticismo de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Dervish",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 44,
+                "Arg2": 2,
+                "Arg": 11266,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoDwI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Monk Rune of Major Protection Prayers",
+            "Spanish": "Runa de Monje (Plegarias de protección de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -2683,12 +2277,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CEC",
+        "Identifier": "AwAg2AAjACHoIQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Restoration Magic"
+            "English": "Ritualist Rune of Major Restoration Magic",
+            "Spanish": "Runa de Ritualista (Magia de restauración de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -2715,12 +2310,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CkC",
+        "Identifier": "AwAg2AAjACHoKQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Scythe Mastery"
+            "English": "Dervish Rune of Major Scythe Mastery",
+            "Spanish": "Runa para Derviche (Dominio de la guadaña de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -2747,12 +2343,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6B8C",
+        "Identifier": "AwAg2AAjACHoHwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Shadow Arts"
+            "English": "Assassin Rune of Major Shadow Arts",
+            "Spanish": "Runa de Asesino (Artes sombrías de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -2779,12 +2376,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6A4C",
+        "Identifier": "AwAg2AAjACHoDgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Smiting Prayers"
+            "English": "Monk Rune of Major Smiting Prayers",
+            "Spanish": "Runa de Monje (Plegarias de ataque de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -2811,12 +2409,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AYC",
+        "Identifier": "AwAg2AAjACHoBgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Soul Reaping"
+            "English": "Necromancer Rune of Major Soul Reaping",
+            "Spanish": "Runa de Nigromante (Cosecha de almas de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -2843,12 +2442,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CQC",
+        "Identifier": "AwAg2AAjACHoJAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Spawning Power"
+            "English": "Ritualist Rune of Major Spawning Power",
+            "Spanish": "Runa de Ritualista (Engendramiento de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -2875,12 +2475,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CUC",
+        "Identifier": "AwAg2AAjACHoJQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Spear Mastery"
+            "English": "Paragon Rune of Major Spear Mastery",
+            "Spanish": "Runa de Paragón (Dominio de la lanza de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -2907,12 +2508,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BEC",
+        "Identifier": "AwAg2AAjACHoEQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Strength"
+            "English": "Warrior Rune of Major Strength",
+            "Spanish": "Runa de Guerrero (Fuerza de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -2939,12 +2541,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BQC",
+        "Identifier": "AwAg2AAjACHoFAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Swordsmanship"
+            "English": "Warrior Rune of Major Swordsmanship",
+            "Spanish": "Runa de Guerrero (Esgrima de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -2971,12 +2574,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BUC",
+        "Identifier": "AwAg2AAjACHoFQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Tactics"
+            "English": "Warrior Rune of Major Tactics",
+            "Spanish": "Runa de Guerrero (Táctica de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3003,12 +2607,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AsC",
+        "Identifier": "AwAg2AAjACHoCwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Water Magic"
+            "English": "Elementalist Rune of Major Water Magic",
+            "Spanish": "Runa de Elementalista (Magia de agua de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -3035,12 +2640,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6CoC",
+        "Identifier": "AwAg2AAjACHoGAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Major Wind Prayers"
+            "English": "Ranger Rune of Major Wilderness Survival",
+            "Spanish": "Runa de Guardabosques (Supervivencia naturaleza de grado mayor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ranger",
+        "Rarity": "Purple",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 24,
+                "Arg2": 2,
+                "Arg": 6146,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 35,
+                "Arg": 35,
+                "ModifierValueArg": "Fixed",
+                "Min": 35,
+                "Max": 35
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2AAjACHoKgI=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Dervish Rune of Major Wind Prayers",
+            "Spanish": "Runa para Derviche (Plegarias de viento de grado mayor)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -3067,12 +2706,37 @@
         ]
     },
     {
+        "Identifier": "AwAkCAD8",
+        "Descriptions": {
+            "English": "Reduces physical damage by 1 (Non-stacking)"
+        },
+        "Names": {
+            "English": "Warrior Rune of Minor Absorption",
+            "Spanish": "Runa de Guerrero (absorción de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Warrior",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 9224,
+                "Arg1": 0,
+                "Arg2": 252,
+                "Arg": 252,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
         "Identifier": "AwAh6AgB",
-                "Descriptions": {
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Air Magic"
+            "English": "Elementalist Rune of Minor Air Magic",
+            "Spanish": "Runa de Elementalista (Magia de aire de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -3091,11 +2755,12 @@
     },
     {
         "Identifier": "AwAh6BIB",
-                "Descriptions": {
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Axe Mastery"
+            "English": "Warrior Rune of Minor Axe Mastery",
+            "Spanish": "Runa de Guerrero (Dominio del hacha de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3114,12 +2779,12 @@
     },
     {
         "Identifier": "AwAh6BYB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Beast Mastery"
+            "English": "Ranger Rune of Minor Beast Mastery",
+            "Spanish": "Runa de Guardabosques (Dominio de bestias de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -3137,13 +2802,61 @@
         ]
     },
     {
-        "Identifier": "AwAh6CYB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6AQB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Command"
+            "English": "Necromancer Rune of Minor Blood Magic",
+            "Spanish": "Runa de Nigromante (Magia de sangre de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Necromancer",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 4,
+                "Arg2": 1,
+                "Arg": 1025,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CIB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Ritualist Rune of Minor Channeling Magic",
+            "Spanish": "Runa de Ritualista (Magia de canalización de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ritualist",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 34,
+                "Arg2": 1,
+                "Arg": 8705,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CYB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Paragon Rune of Minor Command",
+            "Spanish": "Runa de Paragón (Mando de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -3162,12 +2875,12 @@
     },
     {
         "Identifier": "AwAh6CAB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Communing"
+            "English": "Ritualist Rune of Minor Communing",
+            "Spanish": "Runa de Ritualista (Comunión de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -3185,13 +2898,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6AcB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6CMB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Curses"
+            "English": "Assassin Rune of Minor Critical Strikes",
+            "Spanish": "Runa de Asesino (Impactos críticos de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Assassin",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 35,
+                "Arg2": 1,
+                "Arg": 8961,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6AcB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Necromancer Rune of Minor Curses",
+            "Spanish": "Runa de Nigromante (Maldiciones de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -3210,12 +2947,12 @@
     },
     {
         "Identifier": "AwAh6B0B",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Dagger Mastery"
+            "English": "Assassin Rune of Minor Dagger Mastery",
+            "Spanish": "Runa de Asesino (Dominio de la daga de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -3234,12 +2971,12 @@
     },
     {
         "Identifier": "AwAh6B4B",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Deadly Arts"
+            "English": "Assassin Rune of Minor Deadly Arts",
+            "Spanish": "Runa de Asesino (Artes mortales de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -3258,12 +2995,12 @@
     },
     {
         "Identifier": "AwAh6AUB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Death Magic"
+            "English": "Necromancer Rune of Minor Death Magic",
+            "Spanish": "Runa de Nigromante (Magia de muerte de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -3282,12 +3019,12 @@
     },
     {
         "Identifier": "AwAh6BAB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Divine Favor"
+            "English": "Monk Rune of Minor Divine Favor",
+            "Spanish": "Runa de Monje (Favor divino de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -3306,12 +3043,12 @@
     },
     {
         "Identifier": "AwAh6AIB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Domination Magic"
+            "English": "Mesmer Rune of Minor Domination Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de dominación de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -3330,12 +3067,12 @@
     },
     {
         "Identifier": "AwAh6AkB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Earth Magic"
+            "English": "Elementalist Rune of Minor Earth Magic",
+            "Spanish": "Runa de Elementalista (Magia de tierra de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -3354,12 +3091,12 @@
     },
     {
         "Identifier": "AwAh6CsB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Earth Prayers"
+            "English": "Dervish Rune of Minor Earth Prayers",
+            "Spanish": "Runa para Derviche (Plegarias de tierra de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -3377,13 +3114,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6BcB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6AwB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Expertise"
+            "English": "Elementalist Rune of Minor Energy Storage",
+            "Spanish": "Runa de Elementalista (Almacenamiento energía de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Elementalist",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 12,
+                "Arg2": 1,
+                "Arg": 3073,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6BcB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Ranger Rune of Minor Expertise",
+            "Spanish": "Runa de Guardabosques (Pericia de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -3401,13 +3162,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6AoB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6AAB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Fire Magic"
+            "English": "Mesmer Rune of Minor Fast Casting",
+            "Spanish": "Runa de Hipnotizador (Lanzar conjuros rápido de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Mesmer",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6AoB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Elementalist Rune of Minor Fire Magic",
+            "Spanish": "Runa de Elementalista (Magia de fuego de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -3426,12 +3211,12 @@
     },
     {
         "Identifier": "AwAh6BMB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Hammer Mastery"
+            "English": "Warrior Rune of Minor Hammer Mastery",
+            "Spanish": "Runa de Guerrero (Dominio del martillo de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3449,13 +3234,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6AEB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6A0B",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Illusion Magic"
+            "English": "Monk Rune of Minor Healing Prayers",
+            "Spanish": "Runa de Monje (Plegarias curativas de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Monk",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 13,
+                "Arg2": 1,
+                "Arg": 3329,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6AEB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Mesmer Rune of Minor Illusion Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de ilusión de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -3474,12 +3283,12 @@
     },
     {
         "Identifier": "AwAh6AMB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Inspiration Magic"
+            "English": "Mesmer Rune of Minor Inspiration Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de inspiración de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -3497,13 +3306,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6BkB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6CgB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Marksmanship"
+            "English": "Paragon Rune of Minor Leadership",
+            "Spanish": "Runa de Paragón (Liderazgo de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Paragon",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 40,
+                "Arg2": 1,
+                "Arg": 10241,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6BkB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Ranger Rune of Minor Marksmanship",
+            "Spanish": "Runa de Guardabosques (Puntería de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -3522,12 +3355,12 @@
     },
     {
         "Identifier": "AwAh6CcB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Motivation"
+            "English": "Paragon Rune of Minor Motivation",
+            "Spanish": "Runa de Paragón (Motivación de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -3545,13 +3378,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6A8B",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6CwB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Protection Prayers"
+            "English": "Dervish Rune of Minor Mysticism",
+            "Spanish": "Runa para Derviche (Misticismo de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Dervish",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 44,
+                "Arg2": 1,
+                "Arg": 11265,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6A8B",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Monk Rune of Minor Protection Prayers",
+            "Spanish": "Runa de Monje (Plegarias de protección de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -3570,12 +3427,12 @@
     },
     {
         "Identifier": "AwAh6CEB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Restoration Magic"
+            "English": "Ritualist Rune of Minor Restoration Magic",
+            "Spanish": "Runa de Ritualista (Magia de restauración de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -3594,12 +3451,12 @@
     },
     {
         "Identifier": "AwAh6CkB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Scythe Mastery"
+            "English": "Dervish Rune of Minor Scythe Mastery",
+            "Spanish": "Runa para Derviche (Dominio de la guadaña de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -3618,12 +3475,12 @@
     },
     {
         "Identifier": "AwAh6B8B",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Shadow Arts"
+            "English": "Assassin Rune of Minor Shadow Arts",
+            "Spanish": "Runa de Asesino (Artes sombrías de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -3642,12 +3499,12 @@
     },
     {
         "Identifier": "AwAh6A4B",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Smiting Prayers"
+            "English": "Monk Rune of Minor Smiting Prayers",
+            "Spanish": "Runa de Monje (Plegarias de ataque de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -3666,12 +3523,12 @@
     },
     {
         "Identifier": "AwAh6AYB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Soul Reaping"
+            "English": "Necromancer Rune of Minor Soul Reaping",
+            "Spanish": "Runa de Nigromante (Cosecha de almas de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -3690,12 +3547,12 @@
     },
     {
         "Identifier": "AwAh6CQB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Spawning Power"
+            "English": "Ritualist Rune of Minor Spawning Power",
+            "Spanish": "Runa de Ritualista (Engendramiento de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -3714,12 +3571,12 @@
     },
     {
         "Identifier": "AwAh6CUB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Spear Mastery"
+            "English": "Paragon Rune of Minor Spear Mastery",
+            "Spanish": "Runa de Paragón (Dominio de la lanza de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -3738,12 +3595,12 @@
     },
     {
         "Identifier": "AwAh6BEB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Strength"
+            "English": "Warrior Rune of Minor Strength",
+            "Spanish": "Runa de Guerrero (Fuerza de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3762,12 +3619,12 @@
     },
     {
         "Identifier": "AwAh6BQB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Swordsmanship"
+            "English": "Warrior Rune of Minor Swordsmanship",
+            "Spanish": "Runa de Guerrero (Esgrima de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3786,12 +3643,12 @@
     },
     {
         "Identifier": "AwAh6BUB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Tactics"
+            "English": "Warrior Rune of Minor Tactics",
+            "Spanish": "Runa de Guerrero (Táctica de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3810,12 +3667,12 @@
     },
     {
         "Identifier": "AwAh6AsB",
-                "Descriptions": {
-            
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Water Magic"
+            "English": "Elementalist Rune of Minor Water Magic",
+            "Spanish": "Runa de Elementalista (Magia de agua de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -3833,13 +3690,37 @@
         ]
     },
     {
-        "Identifier": "AwAh6CoB",
-                "Descriptions": {
-            
+        "Identifier": "AwAh6BgB",
+        "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Minor Wind Prayers"
+            "English": "Ranger Rune of Minor Wilderness Survival",
+            "Spanish": "Runa de Guardabosques (Supervivencia naturaleza de grado menor)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ranger",
+        "Rarity": "Blue",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 24,
+                "Arg2": 1,
+                "Arg": 6145,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAh6CoB",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
+        },
+        "Names": {
+            "English": "Dervish Rune of Minor Wind Prayers",
+            "Spanish": "Runa para Derviche (Plegarias de viento de grado menor)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -3857,22 +3738,23 @@
         ]
     },
     {
-        "Identifier": "AwAkCAIW",
-                "Descriptions": {
-            "English": "Reduces Disease duration on you by 20% (Non-stacking)\nReduces Poison duration on you by 20% (Non-stacking)"
+        "Identifier": "AwAkCAD-",
+        "Descriptions": {
+            "English": "Reduces physical damage by 3 (Non-stacking)"
         },
         "Names": {
-            "English": "Rune of Purity"
+            "English": "Warrior Rune of Superior Absorption",
+            "Spanish": "Runa de Guerrero (absorción de grado excepcional)"
         },
         "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Purple",
+        "Profession": "Warrior",
+        "Rarity": "Gold",
         "Modifiers": [
             {
                 "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 22,
-                "Arg": 534,
+                "Arg1": 0,
+                "Arg2": 254,
+                "Arg": 254,
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
@@ -3880,58 +3762,13 @@
         ]
     },
     {
-        "Identifier": "AwAkCAIT",
-                "Descriptions": {
-            "English": "Reduces Dazed duration on you by 20% (Non-stacking)\nReduces Deep Wound duration on you by 20% (Non-stacking)"
-        },
-        "Names": {
-            "English": "Rune of Recovery"
-        },
-        "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 19,
-                "Arg": 531,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAkCAIU",
-                "Descriptions": {
-            "English": "Reduces Bleeding duration on you by 20% (Non-stacking)\nReduces Crippled duration on you by 20% (Non-stacking)"
-        },
-        "Names": {
-            "English": "Rune of Restoration"
-        },
-        "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Purple",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 20,
-                "Arg": 532,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAh6AgD",
+        "Identifier": "AwAg2ABLACHoCAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Air Magic"
+            "English": "Elementalist Rune of Superior Air Magic",
+            "Spanish": "Runa de Elementalista (Magia de aire de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -3958,12 +3795,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BID",
+        "Identifier": "AwAg2ABLACHoEgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Axe Mastery"
+            "English": "Warrior Rune of Superior Axe Mastery",
+            "Spanish": "Runa de Guerrero (Dominio del hacha de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -3990,12 +3828,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BYD",
+        "Identifier": "AwAg2ABLACHoFgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Beast Mastery"
+            "English": "Ranger Rune of Superior Beast Mastery",
+            "Spanish": "Runa de Guardabosques (Dominio de bestias de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -4022,12 +3861,79 @@
         ]
     },
     {
-        "Identifier": "AwAh6CYD",
+        "Identifier": "AwAg2ABLACHoBAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Command"
+            "English": "Necromancer Rune of Superior Blood Magic",
+            "Spanish": "Runa de Nigromante (Magia de sangre de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Necromancer",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 4,
+                "Arg2": 3,
+                "Arg": 1027,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoIgM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ritualist Rune of Superior Channeling Magic",
+            "Spanish": "Runa de Ritualista (Magia de canalización de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ritualist",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 34,
+                "Arg2": 3,
+                "Arg": 8707,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoJgM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Paragon Rune of Superior Command",
+            "Spanish": "Runa de Paragón (Mando de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -4054,12 +3960,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CAD",
+        "Identifier": "AwAg2ABLACHoIAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Communing"
+            "English": "Ritualist Rune of Superior Communing",
+            "Spanish": "Runa de Ritualista (Comunión de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -4086,12 +3993,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6AcD",
+        "Identifier": "AwAg2ABLACHoIwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Curses"
+            "English": "Assassin Rune of Superior Critical Strikes",
+            "Spanish": "Runa de Asesino (Impactos críticos de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Assassin",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 35,
+                "Arg2": 3,
+                "Arg": 8963,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoBwM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Necromancer Rune of Superior Curses",
+            "Spanish": "Runa de Nigromante (Maldiciones de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -4118,12 +4059,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6B0D",
+        "Identifier": "AwAg2ABLACHoHQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Dagger Mastery"
+            "English": "Assassin Rune of Superior Dagger Mastery",
+            "Spanish": "Runa de Asesino (Dominio de la daga de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -4150,12 +4092,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6B4D",
+        "Identifier": "AwAg2ABLACHoHgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Deadly Arts"
+            "English": "Assassin Rune of Superior Deadly Arts",
+            "Spanish": "Runa de Asesino (Artes mortales de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -4182,12 +4125,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AUD",
+        "Identifier": "AwAg2ABLACHoBQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Death Magic"
+            "English": "Necromancer Rune of Superior Death Magic",
+            "Spanish": "Runa de Nigromante (Magia de muerte de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -4214,12 +4158,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BAD",
+        "Identifier": "AwAg2ABLACHoEAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Divine Favor"
+            "English": "Monk Rune of Superior Divine Favor",
+            "Spanish": "Runa de Monje (Favor divino de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -4246,12 +4191,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AID",
+        "Identifier": "AwAg2ABLACHoAgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Domination Magic"
+            "English": "Mesmer Rune of Superior Domination Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de dominación de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -4278,12 +4224,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AkD",
+        "Identifier": "AwAg2ABLACHoCQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Earth Magic"
+            "English": "Elementalist Rune of Superior Earth Magic",
+            "Spanish": "Runa de Elementalista (Magia de tierra de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -4310,12 +4257,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CsD",
+        "Identifier": "AwAg2ABLACHoKwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Earth Prayers"
+            "English": "Dervish Rune of Superior Earth Prayers",
+            "Spanish": "Runa para Derviche (Plegarias de tierra de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -4342,12 +4290,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6BcD",
+        "Identifier": "AwAg2ABLACHoDAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Expertise"
+            "English": "Elementalist Rune of Superior Energy Storage",
+            "Spanish": "Runa de Elementalista (Almacenamiento energía de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Elementalist",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 12,
+                "Arg2": 3,
+                "Arg": 3075,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoFwM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ranger Rune of Superior Expertise",
+            "Spanish": "Runa de Guardabosques (Pericia de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -4374,12 +4356,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6AoD",
+        "Identifier": "AwAg2ABLACHoAAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Fire Magic"
+            "English": "Mesmer Rune of Superior Fast Casting",
+            "Spanish": "Runa de Hipnotizador (Lanzar conjuros rápido de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Mesmer",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 0,
+                "Arg2": 3,
+                "Arg": 3,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoCgM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Elementalist Rune of Superior Fire Magic",
+            "Spanish": "Runa de Elementalista (Magia de fuego de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -4406,12 +4422,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BMD",
+        "Identifier": "AwAg2ABLACHoEwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Hammer Mastery"
+            "English": "Warrior Rune of Superior Hammer Mastery",
+            "Spanish": "Runa de Guerrero (Dominio del martillo de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -4438,12 +4455,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6AED",
+        "Identifier": "AwAg2ABLACHoDQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Illusion Magic"
+            "English": "Monk Rune of Superior Healing Prayers",
+            "Spanish": "Runa de Monje (Plegarias curativas de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Monk",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 13,
+                "Arg2": 3,
+                "Arg": 3331,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoAQM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Mesmer Rune of Superior Illusion Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de ilusión de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -4470,12 +4521,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AMD",
+        "Identifier": "AwAg2ABLACHoAwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Inspiration Magic"
+            "English": "Mesmer Rune of Superior Inspiration Magic",
+            "Spanish": "Runa de Hipnotizador (Magia de inspiración de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Mesmer",
@@ -4502,12 +4554,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6BkD",
+        "Identifier": "AwAg2ABLACHoKAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Marksmanship"
+            "English": "Paragon Rune of Superior Leadership",
+            "Spanish": "Runa de Paragón (Liderazgo de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Paragon",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 40,
+                "Arg2": 3,
+                "Arg": 10243,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoGQM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Ranger Rune of Superior Marksmanship",
+            "Spanish": "Runa de Guardabosques (Puntería de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Ranger",
@@ -4534,12 +4620,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CcD",
+        "Identifier": "AwAg2ABLACHoJwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Motivation"
+            "English": "Paragon Rune of Superior Motivation",
+            "Spanish": "Runa de Paragón (Motivación de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -4566,12 +4653,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6A8D",
+        "Identifier": "AwAg2ABLACHoLAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Protection Prayers"
+            "English": "Dervish Rune of Superior Mysticism",
+            "Spanish": "Runa para Derviche (Misticismo de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Dervish",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 44,
+                "Arg2": 3,
+                "Arg": 11267,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoDwM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Monk Rune of Superior Protection Prayers",
+            "Spanish": "Runa de Monje (Plegarias de protección de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -4598,12 +4719,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CED",
+        "Identifier": "AwAg2ABLACHoIQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Restoration Magic"
+            "English": "Ritualist Rune of Superior Restoration Magic",
+            "Spanish": "Runa de Ritualista (Magia de restauración de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -4630,12 +4752,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CkD",
+        "Identifier": "AwAg2ABLACHoKQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Scythe Mastery"
+            "English": "Dervish Rune of Superior Scythe Mastery",
+            "Spanish": "Runa para Derviche (Dominio de la guadaña de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -4662,12 +4785,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6B8D",
+        "Identifier": "AwAg2ABLACHoHwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Shadow Arts"
+            "English": "Assassin Rune of Superior Shadow Arts",
+            "Spanish": "Runa de Asesino (Artes sombrías de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Assassin",
@@ -4694,12 +4818,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6A4D",
+        "Identifier": "AwAg2ABLACHoDgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Smiting Prayers"
+            "English": "Monk Rune of Superior Smiting Prayers",
+            "Spanish": "Runa de Monje (Plegarias de ataque de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Monk",
@@ -4726,12 +4851,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AYD",
+        "Identifier": "AwAg2ABLACHoBgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Soul Reaping"
+            "English": "Necromancer Rune of Superior Soul Reaping",
+            "Spanish": "Runa de Nigromante (Cosecha de almas de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Necromancer",
@@ -4758,12 +4884,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CQD",
+        "Identifier": "AwAg2ABLACHoJAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Spawning Power"
+            "English": "Ritualist Rune of Superior Spawning Power",
+            "Spanish": "Runa de Ritualista (Engendramiento de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Ritualist",
@@ -4790,12 +4917,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6CUD",
+        "Identifier": "AwAg2ABLACHoJQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Spear Mastery"
+            "English": "Paragon Rune of Superior Spear Mastery",
+            "Spanish": "Runa de Paragón (Dominio de la lanza de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Paragon",
@@ -4822,12 +4950,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BED",
+        "Identifier": "AwAg2ABLACHoEQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Strength"
+            "English": "Warrior Rune of Superior Strength",
+            "Spanish": "Runa de Guerrero (Fuerza de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -4854,12 +4983,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BQD",
+        "Identifier": "AwAg2ABLACHoFAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Swordsmanship"
+            "English": "Warrior Rune of Superior Swordsmanship",
+            "Spanish": "Runa de Guerrero (Esgrima de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -4886,12 +5016,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6BUD",
+        "Identifier": "AwAg2ABLACHoFQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Tactics"
+            "English": "Warrior Rune of Superior Tactics",
+            "Spanish": "Runa de Guerrero (Táctica de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Warrior",
@@ -4918,12 +5049,13 @@
         ]
     },
     {
-        "Identifier": "AwAh6AsD",
+        "Identifier": "AwAg2ABLACHoCwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Water Magic"
+            "English": "Elementalist Rune of Superior Water Magic",
+            "Spanish": "Runa de Elementalista (Magia de agua de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Elementalist",
@@ -4950,12 +5082,46 @@
         ]
     },
     {
-        "Identifier": "AwAh6CoD",
+        "Identifier": "AwAg2ABLACHoGAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
         "Names": {
-            "English": "Rune of Superior Wind Prayers"
+            "English": "Ranger Rune of Superior Wilderness Survival",
+            "Spanish": "Runa de Guardabosques (Supervivencia naturaleza de grado excepcional)"
+        },
+        "ModType": "Suffix",
+        "Profession": "Ranger",
+        "Rarity": "Gold",
+        "Modifiers": [
+            {
+                "Identifier": 8680,
+                "Arg1": 24,
+                "Arg2": 3,
+                "Arg": 6147,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 8408,
+                "Arg1": 0,
+                "Arg2": 75,
+                "Arg": 75,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
+        "Identifier": "AwAg2ABLACHoKgM=",
+        "Descriptions": {
+            "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
+        },
+        "Names": {
+            "English": "Dervish Rune of Superior Wind Prayers",
+            "Spanish": "Runa para Derviche (Plegarias de viento de grado excepcional)"
         },
         "ModType": "Suffix",
         "Profession": "Dervish",
@@ -4978,29 +5144,6 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 75,
                 "Max": 75
-            }
-        ]
-    },
-    {
-        "Identifier": "AwAkCAIS",
-                "Descriptions": {
-            "English": "Health +10"
-        },
-        "Names": {
-            "English": "Rune of Vitae"
-        },
-        "ModType": "Suffix",
-        "Profession": "_None",
-        "Rarity": "Blue",
-        "Modifiers": [
-            {
-                "Identifier": 9224,
-                "Arg1": 2,
-                "Arg2": 18,
-                "Arg": 530,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
             }
         ]
     }

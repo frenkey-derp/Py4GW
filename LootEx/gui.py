@@ -244,20 +244,29 @@ def draw_window():
             settings.current.window_size[0], settings.current.window_size[1]
         )
         PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
-
-    if PyImGui.begin_with_close("Loot Ex", settings.current.window_visible, window_flags) and settings.current.loot_profile:
+        
+    expanded, open = PyImGui.begin_with_close("Loot Ex", settings.current.window_visible, window_flags)
+    if open and settings.current.loot_profile:
         window_flags = (
             PyImGui.WindowFlags.NoMove if PyImGui.is_mouse_down(
                 0) else PyImGui.WindowFlags.NoFlag
         )
 
         if PyImGui.button("Test"):
-            script_directory = os.path.dirname(os.path.abspath(__file__))
-            path = os.path.join(script_directory, "data", "runes.json")
+            mods = utility.Util.GetMods(5578)
+            for mod in mods:
+                ConsoleLog(
+                    "LootEx",
+                    f"Mod: {mod.full_name} - {mod.identifier}",
+                    Console.MessageType.Info,
+                )
             
-            with open(path, "w") as file:
-                json.dump([rune.to_json() for rune in data.Runes], file, indent=4)
-                                
+            for item in data.Items:
+                if item.model_id > 1000000:
+                    data.Items.remove(item)
+            
+            data.SaveItems()
+            pass         
 
         profile_names = [
             profile.name for profile in settings.current.loot_profiles]
@@ -305,12 +314,42 @@ def draw_window():
         if PyImGui.button((IconsFontAwesome5.ICON_PLAY_CIRCLE if settings.current.automatic_inventory_handling else
                            IconsFontAwesome5.ICON_PAUSE_CIRCLE)):
             settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
+            settings.current.save()
             ActionQueueManager().ResetQueue("SALVAGE")
             ActionQueueManager().ResetQueue("IDENTIFY")
 
         PyImGui.pop_style_color(1)
         ImGui.show_tooltip(
             ("Disable" if settings.current.automatic_inventory_handling else "Enable") + " Inventory Handling")
+
+        PyImGui.same_line(0, 5)
+        btnColor = Utils.RGBToColor(
+            0, 255, 0, 255) if settings.current.collect_items else Utils.RGBToColor(255, 255, 255, 125)
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.Text, Utils.ColorToTuple(btnColor))
+
+        if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE + IconsFontAwesome5.ICON_USER_SHIELD):
+            settings.current.collect_items = not settings.current.collect_items
+            settings.current.save()
+            
+        PyImGui.pop_style_color(1)
+        ImGui.show_tooltip("Collect Items")
+        
+        
+        PyImGui.same_line(0, 5)
+        btnColor = Utils.RGBToColor(
+            0, 255, 0, 255) if settings.current.collect_runes else Utils.RGBToColor(255, 255, 255, 125)
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.Text, Utils.ColorToTuple(btnColor))
+
+        if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE + IconsFontAwesome5.ICON_SHIELD_ALT):
+            settings.current.collect_runes = not settings.current.collect_runes
+            settings.current.save()
+        
+        PyImGui.pop_style_color(1)
+        ImGui.show_tooltip("Collect Runes")
+
+
 
         if PyImGui.begin_tab_bar("LootExTabBar"):
             draw_general_settings()
@@ -337,12 +376,15 @@ def draw_window():
 
         PyImGui.end()
 
-    collapsed = PyImGui.is_window_collapsed()
-
+    collapsed = not expanded
     if collapsed != settings.current.window_collapsed:
         settings.current.window_collapsed = collapsed
         settings.current.save()
-
+    if open != settings.current.window_visible:
+        settings.current.window_visible = open
+        settings.current.manual_window_visible = open
+        settings.current.save()
+        
     first_draw = False
 
 
@@ -1464,8 +1506,7 @@ def draw_runes():
                                 settings.current.loot_profile.save()
 
                             PyImGui.pop_style_color(3)
-                            ImGui.show_tooltip(
-                                f"Rune: {rune.full_name}\nStruct: {rune.identifier}")
+                            draw_rune_tooltip(rune)
 
                         PyImGui.end_child()
 
@@ -1652,6 +1693,51 @@ def draw_weapon_mod_tooltip(mod: models.WeaponMod):
             PyImGui.table_next_column()
             for item_type in mod.target_types:
                 PyImGui.text(f"{item_type.name}")        
+
+        PyImGui.end_table()
+
+        PyImGui.pop_style_color(1)
+        # PyImGui.end_child()
+        PyImGui.end_tooltip()
+
+def draw_rune_tooltip(mod: models.Rune):
+    if PyImGui.is_item_hovered():
+        PyImGui.begin_tooltip()
+
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.Text,
+            Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 255)),
+        )
+        PyImGui.text(f"{mod.name}")
+        PyImGui.text(f"{mod.description}")
+
+        PyImGui.separator()
+
+        # PyImGui.begin_child(
+        #     f"WeaponModTooltip{mod.identifier}",
+        #     (400, 0),
+        #     True,
+        #     PyImGui.WindowFlags.NoBackground,
+        # )
+        if PyImGui.begin_table(mod.identifier, 2, PyImGui.TableFlags.Borders):
+            PyImGui.table_setup_column("Property", PyImGui.TableColumnFlags.WidthFixed, 150)
+            PyImGui.table_setup_column("Value", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_headers_row()
+
+            PyImGui.table_next_row()
+            
+            PyImGui.table_next_column()
+            PyImGui.text(f"Id (internal)")
+
+            PyImGui.table_next_column()
+            PyImGui.text(f"{mod.identifier}")
+            
+            PyImGui.table_next_column()
+            PyImGui.text(f"Mod Type")
+
+            PyImGui.table_next_column()
+            PyImGui.text(f"{mod.mod_type.name}")
+     
 
         PyImGui.end_table()
 

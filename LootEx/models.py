@@ -264,6 +264,7 @@ class Rune(ItemMod):
         if self.mod_type == ModType.Suffix:
             # regex to remove "*. Rune" 
             modified_name = re.sub(r"^\w+\s+Rune\s+", "", modified_name)
+            modified_name = re.sub(r"Rune\s+", "", modified_name)
                 
         elif self.mod_type == ModType.Prefix:                
             # regex to remove " Insignia.*"
@@ -275,26 +276,28 @@ class Rune(ItemMod):
 
     def is_item_modifier(self, modifiers) -> bool:
         for mod in self.modifiers:
-            modifier = next((m for m in modifiers if m.GetIdentifier() == mod.identifier), None)
+            matched = False
 
-            if modifier and hasattr(modifier, 'GetIdentifier') and  modifier.GetIdentifier() == mod.identifier:
-                arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
-                arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
+            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:
+                if modifier and hasattr(modifier, 'GetIdentifier') and  modifier.GetIdentifier() == mod.identifier:
+                    arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
+                    arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
 
-                if mod.modifier_value_arg == ModifierValueArg.Arg1:
-                    if arg1 < mod.min or arg1 > mod.max or arg2 != mod.arg2:
-                        return False
-                
-                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
-                    if arg2 < mod.min or arg2 > mod.max or arg1 != mod.arg1:
-                        return False
+                    if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                        if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                            matched = True
                     
-                elif mod.modifier_value_arg == ModifierValueArg.Fixed:
-                    if arg1 != mod.arg1 or arg2 != mod.arg2:
-                        return False
-            else:
+                    elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                        if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                            matched = True
+
+                    elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                        if arg1 == mod.arg1 and arg2 == mod.arg2:
+                            matched = True
+            
+            if not matched:
                 return False
-                                               
+        
         return True
     
     def to_json(self) -> dict:
@@ -353,24 +356,31 @@ class WeaponMod(ItemMod):
             
     def is_item_modifier(self, modifiers, target_item_type : Optional[ItemType] = None) -> bool:
         for mod in self.modifiers:
-            modifier = next((m for m in modifiers if m.GetIdentifier() == mod.identifier), None)
+            matched = False
 
-            if modifier and hasattr(modifier, 'GetIdentifier') and  modifier.GetIdentifier() == mod.identifier:
-                arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
-                arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
+            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:
+                if modifier and hasattr(modifier, 'GetIdentifier') and  modifier.GetIdentifier() == mod.identifier:
+                    arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
+                    arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
 
-                if mod.modifier_value_arg == ModifierValueArg.Arg1:
-                    if arg1 < mod.min or arg1 > mod.max or arg2 != mod.arg2:
-                        return False
-                
-                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
-                    if arg2 < mod.min or arg2 > mod.max or arg1 != mod.arg1:
-                        return False
-            else:
+                    if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                        if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                            matched = True
+                    
+                    elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                        if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                            matched = True
+
+                    elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                        if arg1 == mod.arg1 and arg2 == mod.arg2:
+                            matched = True
+            
+            if not matched:
                 return False
 
-        return target_item_type in self.target_types if self.target_types and target_item_type else True
-            
+        from LootEx import utility
+        return target_item_type is None or any(utility.Util.IsMatchingItemType(target_item_type, item_type) for item_type in self.target_types)
+        
 
     def has_item_type(self, item_type: ItemType) -> bool:
         if not self.target_types:

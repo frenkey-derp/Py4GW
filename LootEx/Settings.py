@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -37,6 +38,10 @@ class Settings:
         self.parent_frame_id: Optional[int] = None
                 
         self.language : ServerLanguage = ServerLanguage.English
+        
+        self.collect_runes: bool = False
+        self.collect_items: bool = False
+        self.last_xunlai_check : datetime.datetime = datetime.datetime.min
 
     def set_language(self, lang = ServerLanguage.English):
         self.language = lang

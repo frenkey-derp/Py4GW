@@ -30,6 +30,7 @@ settings.current.load()
 inventory_frame_hash = 291586130
 collector = data_collector.DataCollector()
 
+
 def configure():
     if not settings.current.window_visible is True:
         settings.current.window_visible = True
@@ -37,11 +38,16 @@ def configure():
 
 
 def main():
-    if (throttle_timer.IsExpired()):
-        throttle_timer.Reset()
-
-    if not utility.Util.IsMapReady():
+    if not Routines.Checks.Map.MapValid():
+        data_collector.DataCollector.item_mods = {}
+        data_collector.DataCollector.item_ids = []
         return
+
+    language = utility.Util.get_server_language()
+    if (language != settings.current.language):
+        settings.current.language = language
+        data.UpdateLanguage(language)
+        settings.current.save()
 
     if UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
         settings.current.parent_frame_id = UIManager.GetFrameIDByHash(
@@ -65,7 +71,11 @@ def main():
         gui.draw_window()
 
     settings.current.window_visible = False
-    
+
+    # if (throttle_timer.IsExpired()):
+    #     throttle_timer.Reset()
+    # else:
+    #     return
 
     if not loot_check.trader_queue.action_queue.is_empty():
         loot_check.LootCheck.process_trader_queue()
@@ -74,7 +84,7 @@ def main():
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():
             return
-        
+
         collector.run()
 
         loot_handling_timer.Reset()
