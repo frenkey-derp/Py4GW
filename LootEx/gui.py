@@ -252,7 +252,23 @@ def draw_window():
                 0) else PyImGui.WindowFlags.NoFlag
         )
 
-        if PyImGui.button("Test"):        
+        if PyImGui.button("Test", 300, 50):     
+            player_id = Player.GetAgentID()
+            owner_id = Agent.GetOwnerID(player_id)
+            
+            def filter(agent_id):
+                return Agent.IsSpawned(agent_id) and Agent.IsAlive(agent_id) and Agent.GetOwnerID(agent_id) == owner_id
+
+            distance = Range.Earshot.value            
+            spirit_array = AgentArray.GetSpiritPetArray()
+            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)
+            spirit_array = AgentArray.Filter.ByCondition(spirit_array, filter)
+
+            for spirit in spirit_array:
+                Agent.RequestName(spirit)
+                ConsoleLog("Test", f"Spirit in range: {Agent.GetName(spirit)}", Console.MessageType.Info)
+
+            ConsoleLog("Test", f"Spirits in range: {len(spirit_array)} | Spirit Array: {spirit_array}", Console.MessageType.Info)
             pass      
 
         profile_names = [

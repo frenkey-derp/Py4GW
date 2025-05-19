@@ -38,11 +38,7 @@ class CustomSkillClass:
                 self.IsMoving = False
                 self.IsAttacking = False
                 self.IsHoldingItem = False
-                self.HasControlledSpiritsOrMinionsInEarshot = False
-                self.HasControlledSpiritsInCompass = False
-                self.HasControlledSpiritsInEarshot = False
                 self.RequiresSpiritInEarshot = False
-                self.OverrideEffect = False
                 self.SharedEffects = []
                 
                 # Targeting Rules
@@ -7750,7 +7746,6 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Spirit.value
         skill.Nature = SkillNature.Neutral.value
         skill.Conditions.IsOutOfCombat = False
-        skill.Conditions.HasControlledSpiritsInEarshot = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8094,7 +8089,6 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.IsOutOfCombat = True
-        skill.Conditions.HasControlledSpiritsInEarshot = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9648,7 +9642,6 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Spell.value
         skill.TargetAllegiance = Skilltarget.Spirit.value
         skill.Nature = SkillNature.Neutral.value
-        skill.Conditions.HasControlledSpiritsInCompass = True
         skill.Conditions.LessLife = 0.75
         skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
@@ -9658,7 +9651,6 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Spell.value
         skill.TargetAllegiance = Skilltarget.Spirit.value
         skill.Nature = SkillNature.Neutral.value
-        skill.Conditions.HasControlledSpiritsInCompass = True
         skill.Conditions.LessLife = 0.75
         skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill

@@ -145,8 +145,6 @@ class CombatClass:
         self.weakness = Skill.GetID("Weakness")
         self.comfort_animal = Skill.GetID("Comfort_Animal")
         self.heal_as_one = Skill.GetID("Heal_as_One")
-        self.incoming = Skill.GetID("Incoming")       
-        self.fall_back = Skill.GetID("Fall_Back")   
         self.blood_is_power = Skill.GetID("Blood_is_Power")
         self.heroic_refrain = Skill.GetID("Heroic_Refrain")
         
@@ -487,12 +485,6 @@ class CombatClass:
                 hasLowEnergy = energy < Conditions.LessEnergy
                 ConsoleLog("COMBAT", "Blood Is Power: "+ RawAgentArray().get_name(vTarget) + " ID: " + str(vTarget) + " Energy: " + str(energy), Console.MessageType.Info)
                 return hasLowEnergy and not hasBloodIsPower
-
-        
-            if (self.skills[slot].skill_id == self.incoming or self.skills[slot].skill_id == self.fall_back):
-                hasFallBack = self.HasEffect(Player.GetAgentID(), self.fall_back)
-                hasIncoming = self.HasEffect(Player.GetAgentID(), self.incoming)
-                return not hasFallBack and not hasIncoming
         
             if (self.skills[slot].skill_id == self.essence_strike):
                 energy = self.GetEnergyValues(Player.GetAgentID()) < Conditions.LessEnergy
@@ -605,9 +597,6 @@ class CombatClass:
         feature_count += (1 if Conditions.LessEnergy > 0 else 0)
         feature_count += (1 if Conditions.Overcast > 0 else 0)
         feature_count += (1 if Conditions.IsPartyWide else 0)
-        feature_count += (1 if Conditions.HasControlledSpiritsInCompass else 0)
-        feature_count += (1 if Conditions.HasControlledSpiritsOrMinionsInEarshot else 0)
-        feature_count += (1 if Conditions.HasControlledSpiritsInEarshot else 0)
         feature_count += (1 if Conditions.RequiresSpiritInEarshot else 0)
         
         if Conditions.IsAlive:
@@ -764,7 +753,7 @@ class CombatClass:
                     
         if Conditions.IsPartyWide:
             area = Range.SafeCompass.value if Conditions.PartyWideArea == 0 else Conditions.PartyWideArea
-            less_life = Conditions.LessLife
+            less_life = Conditions.LessSLife
             
             allies_array = GetAllAlliesArray(area)
             total_group_life = 0.0
@@ -775,47 +764,7 @@ class CombatClass:
             
             if total_group_life < less_life:
                 number_of_features += 1
-                    
-        if Conditions.HasControlledSpiritsOrMinionsInEarshot:
-            def _IsControlled(agent_id):
-                return Agent.GetOwnerID(agent_id) == Agent.GetOwnerID(Player.GetAgentID())
-            
-            distance = Range.Compass.value
-            spirit_array = AgentArray.GetSpiritPetArray()
-            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)            
-            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: _IsControlled(agent_id))
-
-            minion_array = AgentArray.GetMinionArray()
-            minion_array = AgentArray.Filter.ByDistance(minion_array, Player.GetXY(), distance)
-            minion_array = AgentArray.Filter.ByCondition(minion_array, lambda agent_id: _IsControlled(agent_id))
-
-            if(len(spirit_array) > 0 or len(minion_array) > 0):
-                number_of_features += 1
-        
-        if Conditions.HasControlledSpiritsInCompass:
-            def _IsControlled(agent_id):
-                return Agent.GetOwnerID(agent_id) == Agent.GetOwnerID(Player.GetAgentID())
-            
-            distance = Range.Compass.value
-            spirit_array = AgentArray.GetSpiritPetArray()
-            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)            
-            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: _IsControlled(agent_id))
-            
-            if(len(spirit_array) > 0):
-                number_of_features += 1
-        
-        if Conditions.HasControlledSpiritsInEarshot:
-            def _IsControlled(agent_id):
-                return Agent.GetOwnerID(agent_id) == Agent.GetOwnerID(Player.GetAgentID())
-            
-            distance = Range.Earshot.value            
-            spirit_array = AgentArray.GetSpiritPetArray()
-            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)
-            spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: _IsControlled(agent_id))
-
-            if(len(spirit_array) > 0):
-                number_of_features += 1
-        
+                                    
         if Conditions.RequiresSpiritInEarshot:            
             distance = Range.Earshot.value
             spirit_array = AgentArray.GetSpiritPetArray()

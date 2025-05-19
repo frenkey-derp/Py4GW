@@ -341,8 +341,12 @@ class DataCollector:
 
         server_language = self.get_server_language()
         
-        if server_language not in DataCollector.item_ids:
+        
+        if server_language and server_language and DataCollector.item_ids and server_language not in DataCollector.item_ids:
             DataCollector.item_ids[server_language] = []
+        
+        if not server_language or not DataCollector.item_ids:
+            return
         
         if settings.current.collect_runes:
             if DataCollector.checked_runes != server_language:
@@ -376,7 +380,7 @@ class DataCollector:
                     if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                         continue
                     
-                    if Item.GetItemType(item_id)[0] != enums.ItemType.Chestpiece:
+                    if GlobalCache Item.GetItemType(item_id)[0] != enums.ItemType.Chestpiece:
                         continue
 
                     self.check_and_add_item(item_id)
