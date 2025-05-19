@@ -27,7 +27,7 @@ save_runes: bool = False
 
 class DataCollector:
     item_mods: dict[int, list] = {}
-    item_ids: list[int] = []
+    item_ids: dict[ServerLanguage, list[int]] = {}
     first_check: bool = True
     checked_runes: ServerLanguage = ServerLanguage.Unknown
     xunlai_checked: bool = False
@@ -38,6 +38,8 @@ class DataCollector:
             item.model_id: item for item in data.Items}
         self.runes: dict[str, models.Rune] = {
             rune.identifier: rune for rune in data.Runes}
+        
+        
 
     def get_mods(self, item_id: int):
         """Get the mods of an item."""
@@ -84,17 +86,19 @@ class DataCollector:
 
         """Check if the item is already in the data collector and add it if not."""
         if self.contains_item(model_id):
-            # has_all_names = all(name in self.data[model_id].names for name in ServerLanguage)
-            has_all_names = True
-            if has_all_names:
+            server_language = self.get_server_language()
+            
+            if self.data[model_id].names.get(server_language) is not None:
                 return False
-
+            
+            Item.RequestName(item_id)
             self.add_name_if_ready(item_id, model_id)
             return True
-        else:
+        else:            
             if model_id in queued_items:
                 return False
 
+            Item.RequestName(item_id)
             self.add_item(item_id, model_id)
 
             item_collection_node.add_action(
@@ -103,7 +107,6 @@ class DataCollector:
 
             return True
 
-    # TODO: Add non perfect mods to be extracted, also make sure to handle multiple names like fortitude and hale. While Hale is a prefix, fortitude is a suffix
     def format_item_name(self, item_id: int) -> str:
         name = Item.GetName(item_id)
         qty = Item.Properties.GetQuantity(item_id)
@@ -112,10 +115,10 @@ class DataCollector:
         # Strip upgrade suffixes and prefixes
         mods = self.get_mods(item_id)
         if mods:
-            # ConsoleLog("LootEx", f"Mods: {mods}")
             for mod in mods:
-                # ConsoleLog("LootEx", f"Removing Mod: {mod.name}")
-                name = name.replace(mod.name, "")
+                ConsoleLog(
+                    "LootEx", f"Removing Mod: {mod.applied_name} ({item_id})", Console.MessageType.Debug)
+                name = name.replace(mod.applied_name, "")
 
         return (name if name else "Unknown Item").strip()
 
@@ -152,7 +155,7 @@ class DataCollector:
             # ConsoleLog(
             #     "LootEx", f"Added item: {self.data[model_id].name} ({model_id})")
 
-            english_name = self.data[model_id].names[ServerLanguage.English]
+            english_name = self.data[model_id].names.get(ServerLanguage.English, None)
 
             if english_name is not None and Item.Properties.GetQuantity(item_id) == 1:
                 self.data[
@@ -181,7 +184,7 @@ class DataCollector:
                     wiki_url = self.data[model_id].wiki_url,
                 )
                 
-                data.Items.append(self.items[model_id])
+                # data.Items.append(self.items[model_id])
             else:
                 for item in data.Items:
                     if item.model_id == model_id:
@@ -306,11 +309,13 @@ class DataCollector:
 
             if save_items:
                 save_items = False
-                data.SaveItems()
+                self.save_test_item()
+
                 saved = True
 
             if save_runes:
                 save_runes = False
+                
                 data.SaveRunes()
                 saved = True
 
@@ -334,10 +339,13 @@ class DataCollector:
         else:
             return
 
+        server_language = self.get_server_language()
+        
+        if server_language not in DataCollector.item_ids:
+            DataCollector.item_ids[server_language] = []
+        
         if settings.current.collect_runes:
-            server_language = self.get_server_language()
             if DataCollector.checked_runes != server_language:
-                DataCollector.item_ids = []
                 queued_runes = {}
                 rune_collection_node.clear()
 
@@ -347,7 +355,7 @@ class DataCollector:
                         ConsoleLog(
                             "LootEx", f"Rune language changed to {server_language.name}")
 
-                    if item_id == 0 or item_id in DataCollector.item_ids:
+                    if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                         continue
 
                     self.rune_check_and_add_item(item_id)
@@ -357,22 +365,26 @@ class DataCollector:
             
             bags = range(Bags.Backpack, Bags.EquippedItems +
                          1) if not xunlai_checked else range(Bags.Backpack, Bags.EquippedItems + 1)
-            # bags = range(Bags.EquippedItems, Bags.EquippedItems + 1)
+            bags = range(Bags.EquippedItems, Bags.EquippedItems + 1)
             DataCollector.first_check = False
 
             for bag_id in bags:
                 bag_to_check = ItemArray.CreateBagList(bag_id)
                 item_array = ItemArray.GetItemArray(bag_to_check)
 
-                for item_id in item_array:
-                    if item_id == 0 or item_id in DataCollector.item_ids:
+                for item_id in item_array:                    
+                    if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
+                        continue
+                    
+                    if Item.GetItemType(item_id)[0] != enums.ItemType.Chestpiece:
                         continue
 
                     self.check_and_add_item(item_id)
             
+            return
             items = AgentArray.GetItemArray()
             for item_id in items:
-                if item_id == 0 or item_id in DataCollector.item_ids:
+                if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                     continue
 
                 self.check_and_add_item(item_id)
@@ -380,3 +392,25 @@ class DataCollector:
             if not xunlai_checked:
                 settings.current.last_xunlai_check = datetime.datetime.now()
                 settings.current.save()
+
+    def load_test_item(self):
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        data_directory = os.path.join(file_directory, "data")
+        path = os.path.join(data_directory, "item_test.json")
+
+        if not os.path.exists(path):
+            return
+
+        with open(path, 'r', encoding='utf-8') as file:
+            items = json.load(file)
+
+            for item in items:
+                self.data[item["ModelID"]] = models.Item.from_json(item)
+
+    def save_test_item(self):
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        data_directory = os.path.join(file_directory, "data")
+        path = os.path.join(data_directory, "item_test.json")
+
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump([item.to_json() for _, item in self.data.items()], file, ensure_ascii=False, indent=4)

@@ -1,5 +1,19 @@
 [
     {
+        "ModelID": 19818,
+        "Names": {
+            "English": "67 Necromancer Tomes"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_67_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
+    },
+    {
         "ModelID": 22765,
         "Names": {
             "English": "Aatxe Mini"
@@ -84,6 +98,20 @@
         "Profession": null
     },
     {
+        "ModelID": 356,
+        "Names": {
+            "English": "Accursed Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
+    },
+    {
         "ModelID": 21280,
         "Names": {
             "English": "Aegis of Aaaaarrrrrrggghhh"
@@ -94,6 +122,22 @@
             "Tactics"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Aegis_of_Aaaaarrrrrrggghhh",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 21265,
+        "Names": {
+            "English": "Aegis of Terror"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Aegis_of_Terror",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -202,6 +246,22 @@
         "Profession": null
     },
     {
+        "ModelID": 2423,
+        "Names": {
+            "English": "Amethyst Aegis"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Amethyst_Aegis",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 27036,
         "Names": {
             "English": "Amphibian Tongue"
@@ -266,6 +326,164 @@
         "DropInfo": "Foes The Desolation",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 17570,
+        "Names": {
+            "English": "Ancient Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Ancient_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 38023,
+        "Names": {
+            "English": "Anniversary Daggers \"Vengeance\""
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "Leadership"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Daggers_\"Vengeance\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38022,
+        "Names": {
+            "English": "Anniversary Flatbow \"Oracle\""
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "SpawningPower"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Flatbow_\"Oracle\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38024,
+        "Names": {
+            "English": "Anniversary Hammer \"Verdict\""
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Hammer_\"Verdict\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38026,
+        "Names": {
+            "English": "Anniversary Scythe \"Sufferer\""
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "SoulReaping"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Scythe_\"Sufferer\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38027,
+        "Names": {
+            "English": "Anniversary Shield \"Curtain\""
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "FastCasting"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Shield_\"Curtain\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38025,
+        "Names": {
+            "English": "Anniversary Shortbow \"Whisper\""
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "CriticalStrikes"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Shortbow_\"Whisper\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38028,
+        "Names": {
+            "English": "Anniversary Spear \"Arbalest\""
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Spear_\"Arbalest\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38029,
+        "Names": {
+            "English": "Anniversary Staff \"Unveil\""
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "Mysticism"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Staff_\"Unveil\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38030,
+        "Names": {
+            "English": "Anniversary Sword \"Prominence\""
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Expertise"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Sword_\"Prominence\"",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -342,6 +560,78 @@
         "Profession": null
     },
     {
+        "ModelID": 445,
+        "Names": {
+            "English": "Ascalon Flatbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ascalon_Flatbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 23378,
+        "Names": {
+            "English": "Ascalon Handwraps"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 23379,
+        "Names": {
+            "English": "Ascalon Pants"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 23376,
+        "Names": {
+            "English": "Ascalon Sandals"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 23377,
+        "Names": {
+            "English": "Ascalon Vestments"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
         "ModelID": 5966,
         "Names": {
             "English": "Ascalonian Key"
@@ -398,6 +688,70 @@
         "Profession": null
     },
     {
+        "ModelID": 25052,
+        "Names": {
+            "English": "Asuran Blood Focus"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "BloodMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Blood_Focus",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 25074,
+        "Names": {
+            "English": "Asuran Blood Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "BloodMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Blood_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 25070,
+        "Names": {
+            "English": "Asuran Domination Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Domination_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 25097,
+        "Names": {
+            "English": "Asuran Domination Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Domination_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 24753,
         "Names": {
             "English": "Asuran Longbow"
@@ -408,6 +762,22 @@
             "Marksmanship"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Longbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 25046,
+        "Names": {
+            "English": "Asuran Shortbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Shortbow",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -488,6 +858,20 @@
         "Profession": null
     },
     {
+        "ModelID": 1,
+        "Names": {
+            "English": "Axe Fiend Armor"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Axe_Fiend_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
         "ModelID": 905,
         "Names": {
             "English": "Axe Grip"
@@ -566,6 +950,38 @@
         "DropInfo": "Dropped by Plague Worm, Worm Queen in Lakeside County - Ascalon (pre-Searing)",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 37889,
+        "Names": {
+            "English": "Balthazar's Hammer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Hammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1344,
+        "Names": {
+            "English": "Barbed Axe"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Barbed_Axe",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -842,6 +1258,76 @@
         "Profession": null
     },
     {
+        "ModelID": 25771,
+        "Names": {
+            "English": "Blindfold"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Blindfold_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 25768,
+        "Names": {
+            "English": "Blindfold"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Blindfold_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
+    },
+    {
+        "ModelID": 25774,
+        "Names": {
+            "English": "Blindfold"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Blindfold_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 25773,
+        "Names": {
+            "English": "Blindfold"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Blindfold_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
+    },
+    {
+        "ModelID": 25770,
+        "Names": {
+            "English": "Blindfold"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Blindfold_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
         "ModelID": 27067,
         "Names": {
             "English": "Blob Of Ooze"
@@ -870,6 +1356,22 @@
         "Profession": null
     },
     {
+        "ModelID": 735,
+        "Names": {
+            "English": "Bo Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bo_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 443,
         "Names": {
             "English": "Bog Skale Fin"
@@ -878,6 +1380,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 26984,
+        "Names": {
+            "English": "Bogroot Focus"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "ChannelingMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bogroot_Focus",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -1332,6 +1850,22 @@
         "Profession": null
     },
     {
+        "ModelID": 11754,
+        "Names": {
+            "English": "Bone Idol"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "Curses"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Idol",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 123,
         "Names": {
             "English": "BoneDragonStaff AirMagic"
@@ -1500,6 +2034,36 @@
         "Profession": null
     },
     {
+        "ModelID": 17737,
+        "Names": {
+            "English": "Brawler's Insignia"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Brawler's_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
+    },
+    {
+        "ModelID": 8537,
+        "Names": {
+            "English": "Brightclaw"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "SpawningPower"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Brightclaw",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 27982,
         "Names": {
             "English": "Brood Claws"
@@ -1598,6 +2162,22 @@
         "Profession": null
     },
     {
+        "ModelID": 253,
+        "Names": {
+            "English": "Cane"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
         "ModelID": 23647,
         "Names": {
             "English": "Canthan Gloves"
@@ -1624,6 +2204,48 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 10770,
+        "Names": {
+            "English": "Canthan Raiment"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Canthan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 23585,
+        "Names": {
+            "English": "Canthan Scar Pattern"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Canthan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
+    },
+    {
+        "ModelID": 23584,
+        "Names": {
+            "English": "Canthan Scar Pattern"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Canthan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
     },
     {
         "ModelID": 23645,
@@ -2278,6 +2900,54 @@
         "Profession": null
     },
     {
+        "ModelID": 12084,
+        "Names": {
+            "English": "Channeling Focus"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "ChannelingMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Focus",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1299,
+        "Names": {
+            "English": "Channeling Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "ChannelingMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 111,
+        "Names": {
+            "English": "Chaos Axe"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Chaos_Axe",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 25987,
         "Names": {
             "English": "Chaos Gloves"
@@ -2290,6 +2960,104 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": "Elementalist"
+    },
+    {
+        "ModelID": 25989,
+        "Names": {
+            "English": "Chaos Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Chaos_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 25991,
+        "Names": {
+            "English": "Chaos Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Chaos_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
+    },
+    {
+        "ModelID": 25990,
+        "Names": {
+            "English": "Chaos Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Chaos_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
+        "ModelID": 25984,
+        "Names": {
+            "English": "Chaos Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Chaos_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
+    },
+    {
+        "ModelID": 25988,
+        "Names": {
+            "English": "Chaos Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Chaos_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 25985,
+        "Names": {
+            "English": "Chaos Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Chaos_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 16453,
+        "Names": {
+            "English": "Charr Bag"
+        },
+        "ItemType": "Bag",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Charr_Bag",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
     },
     {
         "ModelID": 27341,
@@ -2314,6 +3082,20 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 18721,
+        "Names": {
+            "English": "Charr Salvage Kit"
+        },
+        "ItemType": "Kit",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Charr_Salvage_Kit",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -2468,6 +3250,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2268,
+        "Names": {
+            "English": "Colossal Scimitar"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Colossal_Scimitar",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -2630,6 +3428,36 @@
         "Profession": null
     },
     {
+        "ModelID": 1517,
+        "Names": {
+            "English": "Crenellated Spear"
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Crenellated_Spear",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2367,
+        "Names": {
+            "English": "Crystal Flame Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "EnergyStorage"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Crystal_Flame_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Elementalist"
+    },
+    {
         "ModelID": 495,
         "Names": {
             "English": "Curved Mintaur Horn"
@@ -2638,6 +3466,22 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 18853,
+        "Names": {
+            "English": "Daedal Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Motivation"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Daedal_Shield",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -2760,6 +3604,116 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 37849,
+        "Names": {
+            "English": "Decade Bow \"Falling Star\""
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Bow_\"Falling_Star\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 38057,
+        "Names": {
+            "English": "Decade Dagger \"Dragon's Restraint\""
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Dagger_\"Dragon's_Restraint\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 37850,
+        "Names": {
+            "English": "Decade Daggers \"High Noon\""
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Daggers_\"High_Noon\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 37855,
+        "Names": {
+            "English": "Decade Scythe \"Funeral Fang\""
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Scythe_\"Funeral_Fang\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 37857,
+        "Names": {
+            "English": "Decade Spear \"Mist Piercer\""
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [
+            "SpearMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Spear_\"Mist_Piercer\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 37860,
+        "Names": {
+            "English": "Decade Sword \"Distant Horizon\""
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Sword_\"Distant_Horizon\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 106,
+        "Names": {
+            "English": "Decayed Orr Armor"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Decayed_Orr_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
     },
     {
         "ModelID": 504,
@@ -3070,6 +4024,22 @@
         "Profession": null
     },
     {
+        "ModelID": 2220,
+        "Names": {
+            "English": "Dirks"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dirks",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 29543,
         "Names": {
             "English": "Disco Ball"
@@ -3078,6 +4048,20 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 35634,
+        "Names": {
+            "English": "Divine Halo"
+        },
+        "ItemType": "Costume_Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Halo",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -3098,6 +4082,86 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": "Monk"
+    },
+    {
+        "ModelID": 27758,
+        "Names": {
+            "English": "Divine Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1946,
+        "Names": {
+            "English": "Divine Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "HealingPrayers"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 1944,
+        "Names": {
+            "English": "Divine Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 1978,
+        "Names": {
+            "English": "Draconic Scythe"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Draconic_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2077,
+        "Names": {
+            "English": "Draconic Spear"
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [
+            "SpearMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Draconic_Spear",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
     },
     {
         "ModelID": 985,
@@ -3144,6 +4208,36 @@
         "Profession": null
     },
     {
+        "ModelID": 23203,
+        "Names": {
+            "English": "Dragon Scalp Design"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Dragon_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 6378,
+        "Names": {
+            "English": "Dragon Sword"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dragon_Sword",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 17060,
         "Names": {
             "English": "Drake Kabob"
@@ -3156,6 +4250,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 25951,
+        "Names": {
+            "English": "Dread Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Dread_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
     },
     {
         "ModelID": 32517,
@@ -3200,6 +4308,22 @@
         "Profession": null
     },
     {
+        "ModelID": 27404,
+        "Names": {
+            "English": "Droknar's Domination Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Domination_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 27413,
         "Names": {
             "English": "Droknar's Earth Scepter"
@@ -3210,6 +4334,38 @@
             "EarthMagic"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Earth_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 27436,
+        "Names": {
+            "English": "Droknar's Fast Casting Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "FastCasting"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Fast_Casting_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 27453,
+        "Names": {
+            "English": "Droknar's Spawning Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "SpawningPower"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Spawning_Staff",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -3266,6 +4422,20 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1482,
+        "Names": {
+            "English": "Duskblade Scythe"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Duskblade_Scythe",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -4282,6 +5452,132 @@
         "Profession": null
     },
     {
+        "ModelID": 23445,
+        "Names": {
+            "English": "Elite Canthan Guise"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Elite_Canthan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
+    },
+    {
+        "ModelID": 23046,
+        "Names": {
+            "English": "Elite Enchanter Attire"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 22984,
+        "Names": {
+            "English": "Elite Enchanter Footwear"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 23108,
+        "Names": {
+            "English": "Elite Enchanter Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 23281,
+        "Names": {
+            "English": "Elite Enchanter Hose"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 23039,
+        "Names": {
+            "English": "Elite Studded Leather Boots"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Elite_Studded_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
+        "ModelID": 23336,
+        "Names": {
+            "English": "Elite Studded Leather Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Elite_Studded_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
+        "ModelID": 23101,
+        "Names": {
+            "English": "Elite Studded Leather Vest"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Elite_Studded_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
+        "ModelID": 17734,
+        "Names": {
+            "English": "Elite Sunspear Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Elite_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
+    },
+    {
         "ModelID": 21227,
         "Names": {
             "English": "Elixir Of Valor"
@@ -4290,6 +5586,52 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 17836,
+        "Names": {
+            "English": "Elonian Armguards"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Elonian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Paragon"
+    },
+    {
+        "ModelID": 1375,
+        "Names": {
+            "English": "Elonian Daggers"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1376,
+        "Names": {
+            "English": "Elonian Daggers"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -4324,6 +5666,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 17834,
+        "Names": {
+            "English": "Elonian Sandals"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Elonian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Paragon"
     },
     {
         "ModelID": 947,
@@ -4412,6 +5768,22 @@
         "Profession": null
     },
     {
+        "ModelID": 5831,
+        "Names": {
+            "English": "Entschlossenheits- Befähigung"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Entschlossenheits-_Befähigung",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 36677,
         "Names": {
             "English": "Envoy Scythe"
@@ -4470,6 +5842,22 @@
         "Profession": null
     },
     {
+        "ModelID": 861,
+        "Names": {
+            "English": "Eternal Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Command"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Eternal_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 35128,
         "Names": {
             "English": "Evennia Mini"
@@ -4510,6 +5898,36 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 15206,
+        "Names": {
+            "English": "Exalted Aegis"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Exalted_Aegis",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 17782,
+        "Names": {
+            "English": "Exalted Elonian Crest"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Exalted_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Paragon"
     },
     {
         "ModelID": 2991,
@@ -4626,6 +6044,38 @@
         "Profession": null
     },
     {
+        "ModelID": 400,
+        "Names": {
+            "English": "Fellblade"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Fellblade",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 27001,
+        "Names": {
+            "English": "Fendi's Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "SoulReaping"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Fendi's_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 15478,
         "Names": {
             "English": "Festival Prize"
@@ -4648,6 +6098,22 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 37853,
+        "Names": {
+            "English": "Feuerwerker- [Mesmer]-Befähigung"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Feuerwerker-_[Mesmer]-Befähigung",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -4768,6 +6234,22 @@
         "Profession": null
     },
     {
+        "ModelID": 132,
+        "Names": {
+            "English": "Flatbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Flatbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 27062,
         "Names": {
             "English": "Flesh Reaver Morsel"
@@ -4862,6 +6344,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 19210,
+        "Names": {
+            "English": "Forgotten Flatbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Forgotten_Flatbow",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -5444,6 +6942,20 @@
         "Profession": null
     },
     {
+        "ModelID": 35847,
+        "Names": {
+            "English": "Furrocious Ears"
+        },
+        "ItemType": "Costume_Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Furrocious_Ears",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 5901,
         "Names": {
             "English": "Galigord's Stone Staff"
@@ -5558,6 +7070,20 @@
         "Profession": null
     },
     {
+        "ModelID": 37758,
+        "Names": {
+            "English": "Ghoulish Accessory Token"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ghoulish_Accessory_Token",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 1590,
         "Names": {
             "English": "Giant Tusk"
@@ -5664,6 +7190,54 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1713,
+        "Names": {
+            "English": "Gloom Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Gloom_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2295,
+        "Names": {
+            "English": "Gloom Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Gloom_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2296,
+        "Names": {
+            "English": "Gloom Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Gloom_Shield",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -5796,6 +7370,22 @@
         "Profession": null
     },
     {
+        "ModelID": 793,
+        "Names": {
+            "English": "Gothic Sword"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Gothic_Sword",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 24861,
         "Names": {
             "English": "Grail Of Might"
@@ -5860,6 +7450,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2415,
+        "Names": {
+            "English": "Great Conch"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Great_Conch",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -5964,6 +7570,22 @@
         "Profession": null
     },
     {
+        "ModelID": 11781,
+        "Names": {
+            "English": "Hallowed Idol"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "SmitingPrayers"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hallowed_Idol",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 907,
         "Names": {
             "English": "Hammer Grip"
@@ -6042,6 +7664,34 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1656,
+        "Names": {
+            "English": "Heket Armor"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1655,
+        "Names": {
+            "English": "Heket Garment"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Garment",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -6276,6 +7926,20 @@
         "Profession": null
     },
     {
+        "ModelID": 32899,
+        "Names": {
+            "English": "Ice Shard Crest"
+        },
+        "ItemType": "Costume_Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ice_Shard_Crest",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 490,
         "Names": {
             "English": "Icy Hump"
@@ -6458,6 +8122,20 @@
         "Profession": null
     },
     {
+        "ModelID": 23504,
+        "Names": {
+            "English": "Imperial Shoes"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Imperial_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
+    },
+    {
         "ModelID": 27034,
         "Names": {
             "English": "Incubus Wing"
@@ -6470,6 +8148,38 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 149,
+        "Names": {
+            "English": "Inscribed Chakram"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Inscribed_Chakram",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 1783,
+        "Names": {
+            "English": "Inscribed Chakram"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Inscribed_Chakram",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
     },
     {
         "ModelID": 19196,
@@ -6668,6 +8378,76 @@
         "Profession": null
     },
     {
+        "ModelID": 15680,
+        "Names": {
+            "English": "Istani Attire"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 17513,
+        "Names": {
+            "English": "Istani Cuirass"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 15679,
+        "Names": {
+            "English": "Istani Footwear"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 15681,
+        "Names": {
+            "English": "Istani Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 15683,
+        "Names": {
+            "English": "Istani Hose"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
         "ModelID": 15557,
         "Names": {
             "English": "Istani Key"
@@ -6676,6 +8456,64 @@
         "DropInfo": "Foes Istan",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 15682,
+        "Names": {
+            "English": "Istani Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 17691,
+        "Names": {
+            "English": "Istani Shoes"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
+    },
+    {
+        "ModelID": 17693,
+        "Names": {
+            "English": "Istani Vambraces"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Istani_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Dervish"
+    },
+    {
+        "ModelID": 136,
+        "Names": {
+            "English": "Ivory Bow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ivory_Bow",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -6938,6 +8776,22 @@
         "Profession": null
     },
     {
+        "ModelID": 742,
+        "Names": {
+            "English": "Katana"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Katana",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 847,
         "Names": {
             "English": "Keen Oni Talon"
@@ -7136,6 +8990,20 @@
         "Profession": null
     },
     {
+        "ModelID": 1335,
+        "Names": {
+            "English": "Kournan Tunic"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Tunic",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 32520,
         "Names": {
             "English": "Krait Neoss Mini"
@@ -7194,6 +9062,20 @@
         "Profession": null
     },
     {
+        "ModelID": 369,
+        "Names": {
+            "English": "Krytan Boots"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
         "ModelID": 35124,
         "Names": {
             "English": "Krytan Brandy"
@@ -7206,6 +9088,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 1616,
+        "Names": {
+            "English": "Krytan Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
     },
     {
         "ModelID": 5964,
@@ -7222,6 +9118,20 @@
         "Profession": null
     },
     {
+        "ModelID": 2454,
+        "Names": {
+            "English": "Krytan Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
         "ModelID": 35125,
         "Names": {
             "English": "Krytan Lokum"
@@ -7234,6 +9144,48 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 23424,
+        "Names": {
+            "English": "Krytan Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
+        "ModelID": 23426,
+        "Names": {
+            "English": "Krytan Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
+        "ModelID": 23425,
+        "Names": {
+            "English": "Krytan Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
     },
     {
         "ModelID": 604,
@@ -7264,6 +9216,34 @@
         "Profession": null
     },
     {
+        "ModelID": 23693,
+        "Names": {
+            "English": "Kurzick Sandals"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Kurzick_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
+        "ModelID": 23694,
+        "Names": {
+            "English": "Kurzick Vestments"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Kurzick_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
         "ModelID": 12389,
         "Names": {
             "English": "Kuunavang Mini"
@@ -7290,6 +9270,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 23320,
+        "Names": {
+            "English": "Labyrinthine Leg Design"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Labyrinthine_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
     },
     {
         "ModelID": 31223,
@@ -7414,6 +9408,20 @@
         "DropInfo": "Foes All Regions Hard Mode",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2979,
+        "Names": {
+            "English": "Long Sword"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Long_Sword",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -7770,6 +9778,20 @@
         "Profession": null
     },
     {
+        "ModelID": 1664,
+        "Names": {
+            "English": "Malodorous Mass"
+        },
+        "ItemType": "CC_Shards",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Malodorous_Mass",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 1668,
         "Names": {
             "English": "Mandragor Husk"
@@ -7938,6 +9960,22 @@
         "Profession": null
     },
     {
+        "ModelID": 772,
+        "Names": {
+            "English": "Marble Hammer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Marble_Hammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 21128,
         "Names": {
             "English": "Margonite Gemstone"
@@ -8078,6 +10116,20 @@
         "Profession": null
     },
     {
+        "ModelID": 899,
+        "Names": {
+            "English": "Mesmer Rune of Minor Illusion Magic"
+        },
+        "ItemType": "Rune_Mod",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Rune_of_Minor_Illusion_Magic",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
         "ModelID": 21797,
         "Names": {
             "English": "Mesmer Tome"
@@ -8090,6 +10142,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 3,
+        "Names": {
+            "English": "Mind Spark Garb"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mind_Spark_Garb",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
     },
     {
         "ModelID": 5961,
@@ -8456,6 +10522,22 @@
         "Profession": null
     },
     {
+        "ModelID": 26990,
+        "Names": {
+            "English": "Murakai's Reaver"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Murakai's_Reaver",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 30616,
         "Names": {
             "English": "Mursaat Mini"
@@ -8534,6 +10616,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 8635,
+        "Names": {
+            "English": "Mönch-Rune d. überlegenen Heilgebete"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mönch-Rune_d._überlegenen_Heilgebete",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -8694,6 +10792,34 @@
         "Profession": null
     },
     {
+        "ModelID": 19961,
+        "Names": {
+            "English": "Obsidian Bangles"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 19858,
+        "Names": {
+            "English": "Obsidian Boots"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
+    },
+    {
         "ModelID": 472,
         "Names": {
             "English": "Obsidian Burrower Jaw"
@@ -8706,6 +10832,36 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 1900,
+        "Names": {
+            "English": "Obsidian Edge"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Obsidian_Edge",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 19860,
+        "Names": {
+            "English": "Obsidian Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
     },
     {
         "ModelID": 5971,
@@ -8734,6 +10890,48 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": "Elementalist"
+    },
+    {
+        "ModelID": 19861,
+        "Names": {
+            "English": "Obsidian Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
+    },
+    {
+        "ModelID": 19962,
+        "Names": {
+            "English": "Obsidian Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 19960,
+        "Names": {
+            "English": "Obsidian Raiment"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
     },
     {
         "ModelID": 19868,
@@ -8778,6 +10976,34 @@
         "Profession": "Elementalist"
     },
     {
+        "ModelID": 19959,
+        "Names": {
+            "English": "Obsidian Shoes"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 19859,
+        "Names": {
+            "English": "Obsidian Tunic"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Necromancer"
+    },
+    {
         "ModelID": 817,
         "Names": {
             "English": "Oni Claw"
@@ -8790,6 +11016,22 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 766,
+        "Names": {
+            "English": "Oni Daggers"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Oni_Daggers",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
     },
     {
         "ModelID": 15516,
@@ -8832,6 +11074,22 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 2393,
+        "Names": {
+            "English": "Onyx Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Onyx_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
     },
     {
         "ModelID": 34396,
@@ -9022,6 +11280,22 @@
         "Profession": null
     },
     {
+        "ModelID": 28216,
+        "Names": {
+            "English": "Paragon-Rune d. kleineren Speerbeherrschung"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Motivation"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon-Rune_d._kleineren_Speerbeherrschung",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 36683,
         "Names": {
             "English": "Party Beacon"
@@ -9176,6 +11450,22 @@
         "Profession": null
     },
     {
+        "ModelID": 121,
+        "Names": {
+            "English": "Piercing Axe"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Piercing_Axe",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 21806,
         "Names": {
             "English": "Pig Mini"
@@ -9228,6 +11518,22 @@
             "DaggerMastery"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Plagueborn_Daggers",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1033,
+        "Names": {
+            "English": "Plagueborn Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "IllusionMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Plagueborn_Scepter",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -9296,6 +11602,22 @@
         "Profession": null
     },
     {
+        "ModelID": 2223,
+        "Names": {
+            "English": "Platinum Sickles"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Platinum_Sickles",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 2311,
         "Names": {
             "English": "Platinum Wand"
@@ -9310,6 +11632,22 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": "Elementalist"
+    },
+    {
+        "ModelID": 2309,
+        "Names": {
+            "English": "Platinum Wand"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Platinum_Wand",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
     },
     {
         "ModelID": 21439,
@@ -9704,6 +12042,194 @@
         "Profession": null
     },
     {
+        "ModelID": 19115,
+        "Names": {
+            "English": "PvP Channeling Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "ChannelingMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Channeling_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 16323,
+        "Names": {
+            "English": "PvP Duelist Helm"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 16171,
+        "Names": {
+            "English": "PvP Enchanter Attire"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 16277,
+        "Names": {
+            "English": "PvP Imposing Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 17115,
+        "Names": {
+            "English": "PvP Inscribed Chakram"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Inscribed_Chakram",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 17566,
+        "Names": {
+            "English": "PvP Inscribed Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Inscribed_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 19051,
+        "Names": {
+            "English": "PvP Krytan Boots"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 19052,
+        "Names": {
+            "English": "PvP Krytan Cuirass"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 19053,
+        "Names": {
+            "English": "PvP Krytan Gauntlets"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 19054,
+        "Names": {
+            "English": "PvP Krytan Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
+    },
+    {
+        "ModelID": 16144,
+        "Names": {
+            "English": "PvP Rogue Footwear"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 16254,
+        "Names": {
+            "English": "PvP Rogue Gloves"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
+        "ModelID": 17087,
+        "Names": {
+            "English": "PvP Rogue Hose"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
         "ModelID": 27039,
         "Names": {
             "English": "Quetzal Crest"
@@ -9730,6 +12256,22 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 1294,
+        "Names": {
+            "English": "Radiant Flame Aura of Superior Fire Magic"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Radiant_Flame_Aura_of_Superior_Fire_Magic",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
     },
     {
         "ModelID": 21489,
@@ -9872,6 +12414,22 @@
         "Profession": null
     },
     {
+        "ModelID": 327,
+        "Names": {
+            "English": "Reinforced Buckler"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Reinforced_Buckler",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 36651,
         "Names": {
             "English": "Rift Warden Mini"
@@ -9880,6 +12438,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 12515,
+        "Names": {
+            "English": "Ritualist Cane"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "ChannelingMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Cane",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -9912,6 +12486,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 23761,
+        "Names": {
+            "English": "Ritualisten-Rune d. überlegenen Kanalisierungsmagie"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Ritualisten-Rune_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Warrior"
     },
     {
         "ModelID": 1629,
@@ -10056,6 +12644,38 @@
         "Profession": null
     },
     {
+        "ModelID": 2306,
+        "Names": {
+            "English": "Runic Blade"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Runic_Blade",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1567,
+        "Names": {
+            "English": "Runic Blade"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Runic_Blade",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 34213,
         "Names": {
             "English": "Sack Of Random Junk"
@@ -10178,6 +12798,22 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1442,
+        "Names": {
+            "English": "Scarabshell Aegis"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Command"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Scarabshell_Aegis",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -10464,6 +13100,54 @@
         "Profession": null
     },
     {
+        "ModelID": 2078,
+        "Names": {
+            "English": "Serrated Spear"
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [
+            "SpearMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Serrated_Spear",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 417,
+        "Names": {
+            "English": "Shadow Blade"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shadow_Blade",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 392,
+        "Names": {
+            "English": "Shadow Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "ChannelingMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shadow_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 520,
         "Names": {
             "English": "Shadowy Crest"
@@ -10550,6 +13234,22 @@
         "Profession": null
     },
     {
+        "ModelID": 21283,
+        "Names": {
+            "English": "Shaunur's Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shaunur's_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 15554,
         "Names": {
             "English": "Shield Handle"
@@ -10562,6 +13262,36 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 1888,
+        "Names": {
+            "English": "Shield of the Lion"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shield_of_the_Lion",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 11311,
+        "Names": {
+            "English": "Shing Jea Bangles"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
     },
     {
         "ModelID": 7186,
@@ -10592,6 +13322,20 @@
         "Profession": "Assassin"
     },
     {
+        "ModelID": 11196,
+        "Names": {
+            "English": "Shing Jea Headwrap"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
         "ModelID": 6537,
         "Names": {
             "English": "Shing Jea Key"
@@ -10620,6 +13364,20 @@
         "Profession": "Assassin"
     },
     {
+        "ModelID": 11313,
+        "Names": {
+            "English": "Shing Jea Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
         "ModelID": 7116,
         "Names": {
             "English": "Shing Jea Mask"
@@ -10634,6 +13392,20 @@
         "Profession": "Assassin"
     },
     {
+        "ModelID": 23576,
+        "Names": {
+            "English": "Shing Jea Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Shing_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    },
+    {
         "ModelID": 7184,
         "Names": {
             "English": "Shing Jea Shoes"
@@ -10646,6 +13418,34 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": "Assassin"
+    },
+    {
+        "ModelID": 11309,
+        "Names": {
+            "English": "Shing Jea Shoes"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ritualist"
+    },
+    {
+        "ModelID": 34161,
+        "Names": {
+            "English": "Shining Blade Cowl"
+        },
+        "ItemType": "Costume_Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Cowl",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
     },
     {
         "ModelID": 35127,
@@ -10676,6 +13476,20 @@
         "Profession": null
     },
     {
+        "ModelID": 34160,
+        "Names": {
+            "English": "Shining Blade Uniform"
+        },
+        "ItemType": "Costume",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Uniform",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 744,
         "Names": {
             "English": "Shinobi Blade"
@@ -10700,6 +13514,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 8687,
+        "Names": {
+            "English": "Shiro's Blades"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shiro's_Blades",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -10776,6 +13606,22 @@
         "Profession": null
     },
     {
+        "ModelID": 712,
+        "Names": {
+            "English": "Shortbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shortbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 446,
         "Names": {
             "English": "Shriveled Eye"
@@ -10844,6 +13690,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 31164,
+        "Names": {
+            "English": "Simple Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Simple_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
     },
     {
         "ModelID": 480,
@@ -11098,6 +13958,38 @@
         "Profession": null
     },
     {
+        "ModelID": 12406,
+        "Names": {
+            "English": "Smiting Rod"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "SmitingPrayers"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Rod",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 386,
+        "Names": {
+            "English": "Smiting Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "SmitingPrayers"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Monk"
+    },
+    {
         "ModelID": 6376,
         "Names": {
             "English": "Snowman Summoner"
@@ -11198,6 +14090,22 @@
         "Profession": null
     },
     {
+        "ModelID": 723,
+        "Names": {
+            "English": "Spiked Club"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Club",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 434,
         "Names": {
             "English": "Spiked Crest"
@@ -11220,6 +14128,22 @@
         "DropInfo": "Wintersday & Chest of Wintersday Past",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1374,
+        "Names": {
+            "English": "Spiked Recurve Bow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Recurve_Bow",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -11258,6 +14182,22 @@
         "Profession": null
     },
     {
+        "ModelID": 2405,
+        "Names": {
+            "English": "Spiked Targe"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Targe",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 956,
         "Names": {
             "English": "Spiritwood Plank"
@@ -11266,6 +14206,38 @@
         "DropInfo": "Rare Material",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 714,
+        "Names": {
+            "English": "Split Chakrams"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Split_Chakrams",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2219,
+        "Names": {
+            "English": "Split Chakrams"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Split_Chakrams",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -11326,6 +14298,20 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
+    },
+    {
+        "ModelID": 603,
+        "Names": {
+            "English": "Stalwart Insignia"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Stalwart_Insignia",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Elementalist"
     },
     {
         "ModelID": 25896,
@@ -11526,6 +14512,22 @@
         "Profession": null
     },
     {
+        "ModelID": 145,
+        "Names": {
+            "English": "Storm Bow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Storm_Bow",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 477,
         "Names": {
             "English": "Stormy Eye"
@@ -11568,6 +14570,38 @@
         "Profession": null
     },
     {
+        "ModelID": 1353,
+        "Names": {
+            "English": "Stygian Reaver"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Stygian_Reaver",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 21273,
+        "Names": {
+            "English": "Stygian Scythe"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Stygian_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 21812,
         "Names": {
             "English": "Sugary Blue Drink"
@@ -11590,6 +14624,66 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 17817,
+        "Names": {
+            "English": "Sunspear Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Paragon"
+    },
+    {
+        "ModelID": 17815,
+        "Names": {
+            "English": "Sunspear Raiment"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Paragon"
+    },
+    {
+        "ModelID": 1271,
+        "Names": {
+            "English": "Suntouched Scythe"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Suntouched_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 1272,
+        "Names": {
+            "English": "Suntouched Spear"
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [
+            "SpearMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Suntouched_Spear",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -11660,6 +14754,36 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 343,
+        "Names": {
+            "English": "Tall Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Tall_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 2817,
+        "Names": {
+            "English": "Tall Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Tall_Shield",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -11750,6 +14874,22 @@
         "Profession": null
     },
     {
+        "ModelID": 727,
+        "Names": {
+            "English": "Tetsubo Hammer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Tetsubo_Hammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 22766,
         "Names": {
             "English": "Thorn Wolf Mini"
@@ -11772,6 +14912,22 @@
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 24659,
+        "Names": {
+            "English": "Thunderfist's Brass Knuckles"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Thunderfist's_Brass_Knuckles",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -11828,6 +14984,22 @@
         "DropInfo": "Dropped in Domain of Anguish (DOA)",
         "Attributes": [],
         "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 21295,
+        "Names": {
+            "English": "Tormented Flatbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Flatbow",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -12050,6 +15222,34 @@
         "Profession": null
     },
     {
+        "ModelID": 17150,
+        "Names": {
+            "English": "Vabbian Leggings"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Vabbian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
+    },
+    {
+        "ModelID": 19821,
+        "Names": {
+            "English": "Vabbian Mask"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Vabbian_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Assassin"
+    },
+    {
         "ModelID": 27071,
         "Names": {
             "English": "Vaettir Essence"
@@ -12222,6 +15422,36 @@
         "Profession": null
     },
     {
+        "ModelID": 12170,
+        "Names": {
+            "English": "Wailing Wand"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "Curses"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Wailing_Wand",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 5,
+        "Names": {
+            "English": "Waldläufer-Rune d. kleineren Fachkenntnis"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Waldläufer-Rune_d._kleineren_Fachkenntnis",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Ranger"
+    },
+    {
         "ModelID": 15552,
         "Names": {
             "English": "Wand"
@@ -12230,6 +15460,22 @@
         "DropInfo": "No data added yet",
         "Attributes": [],
         "WikiURL": "https://wiki.guildwars.com/wiki/Wand_Wrapping_of_the_Warrior",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
+        "ModelID": 220,
+        "Names": {
+            "English": "War Hammer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/War_Hammer",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
@@ -12812,6 +16058,22 @@
         "Profession": null
     },
     {
+        "ModelID": 966,
+        "Names": {
+            "English": "Zodiac Longbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Zodiac_Longbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 22374,
         "Names": {
             "English": "xxx Hammer of Kathandrax"
@@ -12838,3267 +16100,5 @@
         "RareMaterials": [],
         "IsNickItem": false,
         "Profession": null
-    },
-    {
-        "ModelID": 37853,
-        "Names": {
-            "English": "Feuerwerker- [Mesmer]-Befähigung"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Feuerwerker-_[Mesmer]-Befähigung",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23761,
-        "Names": {
-            "English": "Ritualisten-Rune d. überlegenen Kanalisierungsmagie"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Ritualisten-Rune_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 25046,
-        "Names": {
-            "English": "Asuran Shortbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Shortbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 966,
-        "Names": {
-            "English": "Zodiac Longbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Zodiac_Longbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1900,
-        "Names": {
-            "English": "Obsidian Edge"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Obsidian_Edge",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1713,
-        "Names": {
-            "English": "Gloom Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Gloom_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 25771,
-        "Names": {
-            "English": "Blindfold"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Blindfold_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 111,
-        "Names": {
-            "English": "Chaos Axe"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Chaos_Axe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1978,
-        "Names": {
-            "English": "Draconic Scythe"
-        },
-        "ItemType": "Scythe",
-        "DropInfo": "",
-        "Attributes": [
-            "ScytheMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Draconic_Scythe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37857,
-        "Names": {
-            "English": "Decade Spear \"Mist Piercer\""
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Spear_\"Mist_Piercer\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 24659,
-        "Names": {
-            "English": "Thunderfist's Brass Knuckles"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Thunderfist's_Brass_Knuckles",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1888,
-        "Names": {
-            "English": "Shield of the Lion"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Strength"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shield_of_the_Lion",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2078,
-        "Names": {
-            "English": "Serrated Spear"
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Serrated_Spear",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2268,
-        "Names": {
-            "English": "Colossal Scimitar"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Colossal_Scimitar",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 27758,
-        "Names": {
-            "English": "Divine Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37889,
-        "Names": {
-            "English": "Balthazar's Hammer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Balthazar's_Hammer",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37860,
-        "Names": {
-            "English": "Decade Sword \"Distant Horizon\""
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Sword_\"Distant_Horizon\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38028,
-        "Names": {
-            "English": "Anniversary Spear \"Arbalest\""
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "Strength"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Spear_\"Arbalest\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37850,
-        "Names": {
-            "English": "Decade Daggers \"High Noon\""
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Daggers_\"High_Noon\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37855,
-        "Names": {
-            "English": "Decade Scythe \"Funeral Fang\""
-        },
-        "ItemType": "Scythe",
-        "DropInfo": "",
-        "Attributes": [
-            "ScytheMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Scythe_\"Funeral_Fang\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2295,
-        "Names": {
-            "English": "Gloom Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Strength"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Gloom_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 17513,
-        "Names": {
-            "English": "Istani Cuirass"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 17570,
-        "Names": {
-            "English": "Ancient Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Ancient_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 25989,
-        "Names": {
-            "English": "Chaos Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_Chaos_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 35634,
-        "Names": {
-            "English": "Divine Halo"
-        },
-        "ItemType": "Costume_Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Halo",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1344,
-        "Names": {
-            "English": "Barbed Axe"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Barbed_Axe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1656,
-        "Names": {
-            "English": "Heket Armor"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 220,
-        "Names": {
-            "English": "War Hammer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/War_Hammer",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1374,
-        "Names": {
-            "English": "Spiked Recurve Bow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Recurve_Bow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1664,
-        "Names": {
-            "English": "Malodorous Mass"
-        },
-        "ItemType": "CC_Shards",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Malodorous_Mass",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1655,
-        "Names": {
-            "English": "Heket Garment"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Garment",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1335,
-        "Names": {
-            "English": "Kournan Tunic"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Tunic",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1375,
-        "Names": {
-            "English": "Elonian Daggers"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1376,
-        "Names": {
-            "English": "Elonian Daggers"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37758,
-        "Names": {
-            "English": "Ghoulish Accessory Token"
-        },
-        "ItemType": "Trophy",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ghoulish_Accessory_Token",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2423,
-        "Names": {
-            "English": "Amethyst Aegis"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Amethyst_Aegis",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1272,
-        "Names": {
-            "English": "Suntouched Spear"
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Suntouched_Spear",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 793,
-        "Names": {
-            "English": "Gothic Sword"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Gothic_Sword",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2077,
-        "Names": {
-            "English": "Draconic Spear"
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Draconic_Spear",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 327,
-        "Names": {
-            "English": "Reinforced Buckler"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Reinforced_Buckler",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38023,
-        "Names": {
-            "English": "Anniversary Daggers \"Vengeance\""
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "Leadership"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Daggers_\"Vengeance\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2405,
-        "Names": {
-            "English": "Spiked Targe"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Targe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 26990,
-        "Names": {
-            "English": "Murakai's Reaver"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Murakai's_Reaver",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1442,
-        "Names": {
-            "English": "Scarabshell Aegis"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Command"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Scarabshell_Aegis",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1353,
-        "Names": {
-            "English": "Stygian Reaver"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Stygian_Reaver",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38057,
-        "Names": {
-            "English": "Decade Dagger \"Dragon's Restraint\""
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Dagger_\"Dragon's_Restraint\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 17815,
-        "Names": {
-            "English": "Sunspear Raiment"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Sunspear_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Paragon"
-    },
-    {
-        "ModelID": 17817,
-        "Names": {
-            "English": "Sunspear Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Sunspear_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Paragon"
-    },
-    {
-        "ModelID": 17782,
-        "Names": {
-            "English": "Exalted Elonian Crest"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Exalted_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Paragon"
-    },
-    {
-        "ModelID": 17834,
-        "Names": {
-            "English": "Elonian Sandals"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Elonian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Paragon"
-    },
-    {
-        "ModelID": 17836,
-        "Names": {
-            "English": "Elonian Armguards"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Elonian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Paragon"
-    },
-    {
-        "ModelID": 15206,
-        "Names": {
-            "English": "Exalted Aegis"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Exalted_Aegis",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 417,
-        "Names": {
-            "English": "Shadow Blade"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shadow_Blade",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 714,
-        "Names": {
-            "English": "Split Chakrams"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Split_Chakrams",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2223,
-        "Names": {
-            "English": "Platinum Sickles"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Platinum_Sickles",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 25052,
-        "Names": {
-            "English": "Asuran Blood Focus"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Blood_Focus",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 27001,
-        "Names": {
-            "English": "Fendi's Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "SoulReaping"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fendi's_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 12170,
-        "Names": {
-            "English": "Wailing Wand"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "Curses"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Wailing_Wand",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23585,
-        "Names": {
-            "English": "Canthan Scar Pattern"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Canthan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 12515,
-        "Names": {
-            "English": "Ritualist Cane"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "ChannelingMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Cane",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 6378,
-        "Names": {
-            "English": "Dragon Sword"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dragon_Sword",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 25074,
-        "Names": {
-            "English": "Asuran Blood Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Blood_Scepter",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23584,
-        "Names": {
-            "English": "Canthan Scar Pattern"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Canthan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 12084,
-        "Names": {
-            "English": "Channeling Focus"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "ChannelingMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Focus",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38026,
-        "Names": {
-            "English": "Anniversary Scythe \"Sufferer\""
-        },
-        "ItemType": "Scythe",
-        "DropInfo": "",
-        "Attributes": [
-            "SoulReaping"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Scythe_\"Sufferer\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 11754,
-        "Names": {
-            "English": "Bone Idol"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "Curses"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Idol",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 19859,
-        "Names": {
-            "English": "Obsidian Tunic"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 19861,
-        "Names": {
-            "English": "Obsidian Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 25768,
-        "Names": {
-            "English": "Blindfold"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Blindfold_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 19858,
-        "Names": {
-            "English": "Obsidian Boots"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 19860,
-        "Names": {
-            "English": "Obsidian Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 712,
-        "Names": {
-            "English": "Shortbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shortbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 723,
-        "Names": {
-            "English": "Spiked Club"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Club",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 727,
-        "Names": {
-            "English": "Tetsubo Hammer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Tetsubo_Hammer",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 772,
-        "Names": {
-            "English": "Marble Hammer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Marble_Hammer",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 132,
-        "Names": {
-            "English": "Flatbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Flatbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1299,
-        "Names": {
-            "English": "Channeling Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "ChannelingMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 26984,
-        "Names": {
-            "English": "Bogroot Focus"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "ChannelingMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bogroot_Focus",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 11309,
-        "Names": {
-            "English": "Shing Jea Shoes"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 11311,
-        "Names": {
-            "English": "Shing Jea Bangles"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 11313,
-        "Names": {
-            "English": "Shing Jea Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 10770,
-        "Names": {
-            "English": "Canthan Raiment"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Canthan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 11196,
-        "Names": {
-            "English": "Shing Jea Headwrap"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Shing_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 2979,
-        "Names": {
-            "English": "Long Sword"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Long_Sword",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 766,
-        "Names": {
-            "English": "Oni Daggers"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Oni_Daggers",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 27453,
-        "Names": {
-            "English": "Droknar's Spawning Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "SpawningPower"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Spawning_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38022,
-        "Names": {
-            "English": "Anniversary Flatbow \"Oracle\""
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "SpawningPower"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Flatbow_\"Oracle\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 19960,
-        "Names": {
-            "English": "Obsidian Raiment"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 19962,
-        "Names": {
-            "English": "Obsidian Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 25774,
-        "Names": {
-            "English": "Blindfold"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Blindfold_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 19959,
-        "Names": {
-            "English": "Obsidian Shoes"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 19961,
-        "Names": {
-            "English": "Obsidian Bangles"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_Obsidian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ritualist"
-    },
-    {
-        "ModelID": 35847,
-        "Names": {
-            "English": "Furrocious Ears"
-        },
-        "ItemType": "Costume_Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Furrocious_Ears",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 28216,
-        "Names": {
-            "English": "Paragon-Rune d. kleineren Speerbeherrschung"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Motivation"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon-Rune_d._kleineren_Speerbeherrschung",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 17737,
-        "Names": {
-            "English": "Brawler's Insignia"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Brawler's_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 2306,
-        "Names": {
-            "English": "Runic Blade"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Runic_Blade",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 25773,
-        "Names": {
-            "English": "Blindfold"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Blindfold_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 17691,
-        "Names": {
-            "English": "Istani Shoes"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 17693,
-        "Names": {
-            "English": "Istani Vambraces"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 21273,
-        "Names": {
-            "English": "Stygian Scythe"
-        },
-        "ItemType": "Scythe",
-        "DropInfo": "",
-        "Attributes": [
-            "ScytheMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Stygian_Scythe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1946,
-        "Names": {
-            "English": "Divine Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "HealingPrayers"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 38029,
-        "Names": {
-            "English": "Anniversary Staff \"Unveil\""
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "Mysticism"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Staff_\"Unveil\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 25951,
-        "Names": {
-            "English": "Dread Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Dread_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 2415,
-        "Names": {
-            "English": "Great Conch"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Great_Conch",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1271,
-        "Names": {
-            "English": "Suntouched Scythe"
-        },
-        "ItemType": "Scythe",
-        "DropInfo": "",
-        "Attributes": [
-            "ScytheMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Suntouched_Scythe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2296,
-        "Names": {
-            "English": "Gloom Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Gloom_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 17734,
-        "Names": {
-            "English": "Elite Sunspear Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Elite_Sunspear_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 25991,
-        "Names": {
-            "English": "Chaos Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dervish_Chaos_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Dervish"
-    },
-    {
-        "ModelID": 23424,
-        "Names": {
-            "English": "Krytan Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 23039,
-        "Names": {
-            "English": "Elite Studded Leather Boots"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Elite_Studded_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 23336,
-        "Names": {
-            "English": "Elite Studded Leather Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Elite_Studded_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 23426,
-        "Names": {
-            "English": "Krytan Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 445,
-        "Names": {
-            "English": "Ascalon Flatbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ascalon_Flatbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2220,
-        "Names": {
-            "English": "Dirks"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dirks",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 21295,
-        "Names": {
-            "English": "Tormented Flatbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Flatbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1482,
-        "Names": {
-            "English": "Duskblade Scythe"
-        },
-        "ItemType": "Scythe",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Duskblade_Scythe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 37849,
-        "Names": {
-            "English": "Decade Bow \"Falling Star\""
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Bow_\"Falling_Star\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 19210,
-        "Names": {
-            "English": "Forgotten Flatbow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Forgotten_Flatbow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38030,
-        "Names": {
-            "English": "Anniversary Sword \"Prominence\""
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Expertise"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Sword_\"Prominence\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23101,
-        "Names": {
-            "English": "Elite Studded Leather Vest"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Elite_Studded_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 23425,
-        "Names": {
-            "English": "Krytan Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 25990,
-        "Names": {
-            "English": "Chaos Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Chaos_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 19818,
-        "Names": {
-            "English": "67 Necromancer Tomes"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_67_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 18853,
-        "Names": {
-            "English": "Daedal Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Motivation"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Daedal_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 356,
-        "Names": {
-            "English": "Accursed Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Necromancer"
-    },
-    {
-        "ModelID": 1033,
-        "Names": {
-            "English": "Plagueborn Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Plagueborn_Scepter",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 343,
-        "Names": {
-            "English": "Tall Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Tactics"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Tall_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23504,
-        "Names": {
-            "English": "Imperial Shoes"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Imperial_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 17150,
-        "Names": {
-            "English": "Vabbian Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Vabbian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 25984,
-        "Names": {
-            "English": "Chaos Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Chaos_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 23445,
-        "Names": {
-            "English": "Elite Canthan Guise"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Elite_Canthan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 19821,
-        "Names": {
-            "English": "Vabbian Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Assassin_Vabbian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Assassin"
-    },
-    {
-        "ModelID": 38025,
-        "Names": {
-            "English": "Anniversary Shortbow \"Whisper\""
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "CriticalStrikes"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Shortbow_\"Whisper\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 8687,
-        "Names": {
-            "English": "Shiro's Blades"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shiro's_Blades",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1517,
-        "Names": {
-            "English": "Crenellated Spear"
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Crenellated_Spear",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2219,
-        "Names": {
-            "English": "Split Chakrams"
-        },
-        "ItemType": "Daggers",
-        "DropInfo": "",
-        "Attributes": [
-            "DaggerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Split_Chakrams",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 32899,
-        "Names": {
-            "English": "Ice Shard Crest"
-        },
-        "ItemType": "Costume_Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ice_Shard_Crest",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 8635,
-        "Names": {
-            "English": "Mönch-Rune d. überlegenen Heilgebete"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mönch-Rune_d._überlegenen_Heilgebete",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23203,
-        "Names": {
-            "English": "Dragon Scalp Design"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Dragon_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 400,
-        "Names": {
-            "English": "Fellblade"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fellblade",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1567,
-        "Names": {
-            "English": "Runic Blade"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Runic_Blade",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 742,
-        "Names": {
-            "English": "Katana"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Katana",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1944,
-        "Names": {
-            "English": "Divine Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 861,
-        "Names": {
-            "English": "Eternal Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Command"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Eternal_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 8537,
-        "Names": {
-            "English": "Brightclaw"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "SpawningPower"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Brightclaw",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23377,
-        "Names": {
-            "English": "Ascalon Vestments"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 2393,
-        "Names": {
-            "English": "Onyx Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Onyx_Scepter",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 21283,
-        "Names": {
-            "English": "Shaunur's Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shaunur's_Scepter",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 145,
-        "Names": {
-            "English": "Storm Bow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Storm_Bow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 21265,
-        "Names": {
-            "English": "Aegis of Terror"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Strength"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Aegis_of_Terror",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23378,
-        "Names": {
-            "English": "Ascalon Handwraps"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 23379,
-        "Names": {
-            "English": "Ascalon Pants"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 23376,
-        "Names": {
-            "English": "Ascalon Sandals"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Ascalon_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 38024,
-        "Names": {
-            "English": "Anniversary Hammer \"Verdict\""
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Hammer_\"Verdict\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 12406,
-        "Names": {
-            "English": "Smiting Rod"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "SmitingPrayers"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Rod",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 11781,
-        "Names": {
-            "English": "Hallowed Idol"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "SmitingPrayers"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Hallowed_Idol",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23694,
-        "Names": {
-            "English": "Kurzick Vestments"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Kurzick_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 23320,
-        "Names": {
-            "English": "Labyrinthine Leg Design"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Labyrinthine_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 25770,
-        "Names": {
-            "English": "Blindfold"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Blindfold_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 23693,
-        "Names": {
-            "English": "Kurzick Sandals"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Kurzick_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 25988,
-        "Names": {
-            "English": "Chaos Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Monk_Chaos_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 27436,
-        "Names": {
-            "English": "Droknar's Fast Casting Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "FastCasting"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Fast_Casting_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 136,
-        "Names": {
-            "English": "Ivory Bow"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ivory_Bow",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2309,
-        "Names": {
-            "English": "Platinum Wand"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Platinum_Wand",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 149,
-        "Names": {
-            "English": "Inscribed Chakram"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Inscribed_Chakram",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 25070,
-        "Names": {
-            "English": "Asuran Domination Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Domination_Scepter",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 25097,
-        "Names": {
-            "English": "Asuran Domination Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Asuran_Domination_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 38027,
-        "Names": {
-            "English": "Anniversary Shield \"Curtain\""
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "FastCasting"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Anniversary_Shield_\"Curtain\"",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 23108,
-        "Names": {
-            "English": "Elite Enchanter Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 23576,
-        "Names": {
-            "English": "Shing Jea Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Shing_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 22984,
-        "Names": {
-            "English": "Elite Enchanter Footwear"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 23046,
-        "Names": {
-            "English": "Elite Enchanter Attire"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 25985,
-        "Names": {
-            "English": "Chaos Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Chaos_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 23281,
-        "Names": {
-            "English": "Elite Enchanter Hose"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Elite_Enchanter_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 27404,
-        "Names": {
-            "English": "Droknar's Domination Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Domination_Scepter",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1783,
-        "Names": {
-            "English": "Inscribed Chakram"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Inscribed_Chakram",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 603,
-        "Names": {
-            "English": "Stalwart Insignia"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Stalwart_Insignia",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Elementalist"
-    },
-    {
-        "ModelID": 5,
-        "Names": {
-            "English": "Waldläufer-Rune d. kleineren Fachkenntnis"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Waldläufer-Rune_d._kleineren_Fachkenntnis",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 5831,
-        "Names": {
-            "English": "Entschlossenheits- Befähigung"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Entschlossenheits-_Befähigung",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 1,
-        "Names": {
-            "English": "Axe Fiend Armor"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Axe_Fiend_Armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 18721,
-        "Names": {
-            "English": "Charr Salvage Kit"
-        },
-        "ItemType": "Kit",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Charr_Salvage_Kit",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 16453,
-        "Names": {
-            "English": "Charr Bag"
-        },
-        "ItemType": "Bag",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Charr_Bag",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 3,
-        "Names": {
-            "English": "Mind Spark Garb"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mind_Spark_Garb",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 121,
-        "Names": {
-            "English": "Piercing Axe"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Piercing_Axe",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 369,
-        "Names": {
-            "English": "Krytan Boots"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 31164,
-        "Names": {
-            "English": "Simple Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Simple_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 253,
-        "Names": {
-            "English": "Cane"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 2817,
-        "Names": {
-            "English": "Tall Shield"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Tall_Shield",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2454,
-        "Names": {
-            "English": "Krytan Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 1616,
-        "Names": {
-            "English": "Krytan Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Krytan_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 34160,
-        "Names": {
-            "English": "Shining Blade Uniform"
-        },
-        "ItemType": "Costume",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Uniform",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 34161,
-        "Names": {
-            "English": "Shining Blade Cowl"
-        },
-        "ItemType": "Costume_Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Cowl",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 19115,
-        "Names": {
-            "English": "PvP Channeling Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "ChannelingMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Channeling_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 17115,
-        "Names": {
-            "English": "PvP Inscribed Chakram"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Inscribed_Chakram",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 19052,
-        "Names": {
-            "English": "PvP Krytan Cuirass"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 19054,
-        "Names": {
-            "English": "PvP Krytan Leggings"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 16323,
-        "Names": {
-            "English": "PvP Duelist Helm"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 19051,
-        "Names": {
-            "English": "PvP Krytan Boots"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 19053,
-        "Names": {
-            "English": "PvP Krytan Gauntlets"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Warrior_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Warrior"
-    },
-    {
-        "ModelID": 15680,
-        "Names": {
-            "English": "Istani Attire"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 15683,
-        "Names": {
-            "English": "Istani Hose"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 15682,
-        "Names": {
-            "English": "Istani Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 15679,
-        "Names": {
-            "English": "Istani Footwear"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 15681,
-        "Names": {
-            "English": "Istani Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Istani_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 1294,
-        "Names": {
-            "English": "Radiant Flame Aura of Superior Fire Magic"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Radiant_Flame_Aura_of_Superior_Fire_Magic",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 899,
-        "Names": {
-            "English": "Mesmer Rune of Minor Illusion Magic"
-        },
-        "ItemType": "Rune_Mod",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Rune_of_Minor_Illusion_Magic",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 106,
-        "Names": {
-            "English": "Decayed Orr Armor"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Decayed_Orr_Armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Ranger"
-    },
-    {
-        "ModelID": 392,
-        "Names": {
-            "English": "Shadow Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "ChannelingMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shadow_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 2367,
-        "Names": {
-            "English": "Crystal Flame Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "EnergyStorage"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Crystal_Flame_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Elementalist"
-    },
-    {
-        "ModelID": 386,
-        "Names": {
-            "English": "Smiting Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "SmitingPrayers"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Monk"
-    },
-    {
-        "ModelID": 735,
-        "Names": {
-            "English": "Bo Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bo_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 17566,
-        "Names": {
-            "English": "PvP Inscribed Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/PvP_Inscribed_Staff",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": null
-    },
-    {
-        "ModelID": 16171,
-        "Names": {
-            "English": "PvP Enchanter Attire"
-        },
-        "ItemType": "Chestpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 17087,
-        "Names": {
-            "English": "PvP Rogue Hose"
-        },
-        "ItemType": "Leggings",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 16277,
-        "Names": {
-            "English": "PvP Imposing Mask"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 16144,
-        "Names": {
-            "English": "PvP Rogue Footwear"
-        },
-        "ItemType": "Boots",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
-    },
-    {
-        "ModelID": 16254,
-        "Names": {
-            "English": "PvP Rogue Gloves"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_PvP_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "IsNickItem": false,
-        "Profession": "Mesmer"
     }
 ]

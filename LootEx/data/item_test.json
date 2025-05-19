@@ -1,0 +1,18 @@
+[
+    {
+        "ModelID": 16171,
+        "Names": {
+            "Italian": "Abbigliamento da Incantatore da PvP",
+            "Spanish": "Atuendo de encantador PvP",
+            "Polish": "Odzienie zaklinacza PvP"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": "Mesmer"
+    }
+]

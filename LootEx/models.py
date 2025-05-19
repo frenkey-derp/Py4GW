@@ -124,6 +124,7 @@ class ItemMod():
         self.full_name : str = self.get_full_name()
         self.description: str  = self.get_description()
         self.identifier : str = self.generate_binary_identifier()
+        self.applied_name : str = self.get_applied_name()
                 
     def generate_binary_identifier(self) -> str:
         # Start with mod_type (1 byte)
@@ -165,6 +166,12 @@ class ItemMod():
         self.name : str = self.get_name(language)   
         self.full_name : str = self.get_full_name(language) 
         self.description: str  = self.get_description(language)
+        self.applied_name : str = self.get_applied_name(language)
+    
+    
+    def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
+        name = self.get_name(language)
+        return name
     
     def get_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
@@ -249,30 +256,61 @@ class Rune(ItemMod):
     
     profession: Profession = Profession._None
     rarity: Rarity = Rarity.White
-
-    def __post_init__(self):
-        ItemMod.__post_init__(self)
-        self.name = self.get_name()
         
-    def get_name(self, language: Optional[ServerLanguage] = None) -> str:
+    def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
             language = settings.current.language
                                 
-        modified_name = self.names.get(
+        name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))
         
+        rune_patterns : dict[ServerLanguage, str] = {
+            ServerLanguage.English:             r'\b\w+\s+Rune\b|\bRune\b',
+            ServerLanguage.German:              r'\b\w+-Rune\b|\bRune\b',
+            ServerLanguage.Spanish:             r'Runa de \w+',
+            ServerLanguage.French:              r'Rune d\'\w+',
+            ServerLanguage.Italian:             r'Runa dell\'\w+',
+            ServerLanguage.Polish:              r'Runa \w+',
+            ServerLanguage.Russian:             r'\b\w+\s+Rune\b|\bRune\b',
+            ServerLanguage.Japanese:            r'メスマー ルーン\s*\(?',
+            ServerLanguage.Korean:              r'메스머 룬\s*\(?',
+            ServerLanguage.TraditionalChinese:  r'幻術師符文',
+            ServerLanguage.BorkBorkBork:        r'\b\w+\s+Roone-a\b|\bRoone-a\b'
+        }
+
+        insignia_patterns : dict[ServerLanguage, str] = {
+            ServerLanguage.English:            r"Insignia.*",
+            ServerLanguage.German:             r"\[.*?\]-Befähigung",
+            ServerLanguage.Spanish:            r"Insignia \[.*?\]",
+            ServerLanguage.French:             r"Insigne \[.*?\]",
+            ServerLanguage.Italian:            r"Insegne \[.*?\]",
+            ServerLanguage.Polish:             r".* Symbol",
+            ServerLanguage.TraditionalChinese: r"휘장.*",
+            ServerLanguage.Japanese:           r"徽記.*",
+            ServerLanguage.Korean:             r"휘장.*",
+            ServerLanguage.Russian:            r"Insignia.*",
+            ServerLanguage.BorkBorkBork:       r"Inseegneea.*",
+        }
+        
+        modified_name = name
+        
         if self.mod_type == ModType.Suffix:
-            # regex to remove "*. Rune" 
-            modified_name = re.sub(r"^\w+\s+Rune\s+", "", modified_name)
-            modified_name = re.sub(r"Rune\s+", "", modified_name)
-                
-        elif self.mod_type == ModType.Prefix:                
-            # regex to remove " Insignia.*"
-            pattern = r' Insignia.*'
-            modified_name = re.sub(pattern, '', modified_name)
+            pattern = rune_patterns.get(language, None)
             
+            if pattern:
+                # regex to remove everything before and the word "Rune"
+                modified_name = re.sub(pattern, '', name)
+                
+        elif self.mod_type == ModType.Prefix:         
+            pattern = insignia_patterns.get(language, None)
+            
+            if pattern:
+                modified_name = re.sub(pattern, '', name).strip()
+                if language is ServerLanguage.German:
+                    modified_name += "-"
+
         return modified_name.strip()
-    
+
 
     def is_item_modifier(self, modifiers) -> bool:
         for mod in self.modifiers:

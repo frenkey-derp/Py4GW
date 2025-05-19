@@ -252,21 +252,8 @@ def draw_window():
                 0) else PyImGui.WindowFlags.NoFlag
         )
 
-        if PyImGui.button("Test"):
-            mods = utility.Util.GetMods(5578)
-            for mod in mods:
-                ConsoleLog(
-                    "LootEx",
-                    f"Mod: {mod.full_name} - {mod.identifier}",
-                    Console.MessageType.Info,
-                )
-            
-            for item in data.Items:
-                if item.model_id > 1000000:
-                    data.Items.remove(item)
-            
-            data.SaveItems()
-            pass         
+        if PyImGui.button("Test"):        
+            pass      
 
         profile_names = [
             profile.name for profile in settings.current.loot_profiles]
