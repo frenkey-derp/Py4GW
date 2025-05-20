@@ -1,18 +1,18 @@
 [
     {
-        "ModelID": 16171,
+        "ModelID": 17108,
         "Names": {
-            "Italian": "Abbigliamento da Incantatore da PvP",
-            "Spanish": "Atuendo de encantador PvP",
-            "Polish": "Odzienie zaklinacza PvP"
+            "German": "PvP-Axt"
         },
-        "ItemType": "Chestpiece",
+        "ItemType": "Axe",
         "DropInfo": "",
-        "Attributes": [],
+        "Attributes": [
+            "AxeMastery"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
-        "Profession": "Mesmer"
+        "Profession": null
     }
 ]

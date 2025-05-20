@@ -1343,7 +1343,7 @@ def draw_weapon_mods():
 
                 # Mod name
                 PyImGui.table_next_column()
-                PyImGui.text_wrapped(mod.name)
+                PyImGui.text_wrapped(mod.applied_name)
                 draw_weapon_mod_tooltip(mod)
                 # ImGui.show_tooltip(
                 #     f"Mod: {mod.name}\nIdentifier: {mod.identifier}"

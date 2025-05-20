@@ -8,11 +8,12 @@ from LootEx.item_configuration import ItemConfiguration
 import importlib
 
 from LootEx.models import ModifierInfo, Rune, WeaponMod
-from Py4GWCoreLib import Item, Party, UIManager
+from Py4GWCoreLib import GlobalCache, Item, Party, UIManager
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, NumberPreference, Rarity, DyeColor, ServerLanguage
 
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 importlib.reload(item_configuration)
 importlib.reload(data)
 

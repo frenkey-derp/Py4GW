@@ -4,6 +4,15 @@ import PyAgent
 import PyPlayer
 from .model_data import ModelData
 
+class AgentName:
+    def __init__(self, agent_id, timeout):
+        self.agent_id = agent_id
+        self.timeout = timeout
+        self.name = None
+
+    def get_name(self):
+        return self.name
+
 class ItemOwnerCache:
     _instance = None
 

@@ -5,8 +5,7 @@
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Aptitude not Attitude\"",
-            "German": "Experten-"
+            "English": "\"Aptitude not Attitude\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -183,8 +182,7 @@
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
         "Names": {
-            "English": "\"Don't Think Twice\"",
-            "German": "Schnelligkeits- "
+            "English": "\"Don't Think Twice\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1333,8 +1331,7 @@
             "English": "Halves casting time of spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "Adept",
-            "German": "Experten-"
+            "English": "Adept"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1382,8 +1379,7 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "Axe Mastery +1",
-            "German": "d. Axtbeherrschung"
+            "English": "Axe Mastery +1"
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1407,8 +1403,7 @@
             "English": "Lengthens Bleeding duration on foes by 33%"
         },
         "Names": {
-            "English": "Barbed",
-            "German": "Stachel- "
+            "English": "Barbed"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1509,8 +1504,7 @@
             "English": "Lengthens Crippled duration on foes by 33%"
         },
         "Names": {
-            "English": "Crippling",
-            "German": "Verkrüppelungs- "
+            "English": "Crippling"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1539,8 +1533,7 @@
             "English": "Lengthens Deep Wound duration on foes by 33%"
         },
         "Names": {
-            "English": "Cruel",
-            "German": "Grausamkeits-"
+            "English": "Cruel"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1641,8 +1634,7 @@
             "English": "Armor +{arg2}"
         },
         "Names": {
-            "English": "Defensive",
-            "German": "d. Verteidigung"
+            "English": "Defensive"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1738,8 +1730,7 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Ebon",
-            "German": "Ebon- "
+            "English": "Ebon"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1763,8 +1754,7 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Fiery",
-            "German": "Hitze- "
+            "English": "Fiery"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1812,8 +1802,7 @@
             "English": "Double Adrenaline on hit (Chance: +{arg2}%)"
         },
         "Names": {
-            "English": "Furious",
-            "German": "Zorn-"
+            "English": "Furious"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1842,8 +1831,7 @@
             "English": "+{arg1} Health"
         },
         "Names": {
-            "English": "Hale",
-            "German": "d. Tapferkeit"
+            "English": "Hale"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1915,8 +1903,7 @@
             "English": "Lengthens Weakness duration on foes by 33%"
         },
         "Names": {
-            "English": "Heavy",
-            "German": "Schwergewichts-"
+            "English": "Heavy"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1943,8 +1930,7 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Icy",
-            "German": "Eis- "
+            "English": "Icy"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -1992,8 +1978,7 @@
             "English": "Energy +{arg2}"
         },
         "Names": {
-            "English": "Insightful",
-            "German": "Einblick- "
+            "English": "Insightful"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2041,8 +2026,7 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "Marksmanship +1",
-            "German": "d. Treffsicherheit"
+            "English": "Marksmanship +1"
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -2066,8 +2050,7 @@
             "English": "Lengthens Poison duration on foes by 33%"
         },
         "Names": {
-            "English": "Poisonous",
-            "German": "Gift- "
+            "English": "Poisonous"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2168,8 +2151,7 @@
             "English": "Changes Damage to {arg1}"
         },
         "Names": {
-            "English": "Shocking",
-            "German": "Schock- "
+            "English": "Shocking"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2193,8 +2175,7 @@
             "English": "Lengthens Dazed duration on foes by 33%"
         },
         "Names": {
-            "English": "Silencing",
-            "German": "Dämpfungs- "
+            "English": "Silencing"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2316,8 +2297,7 @@
             "English": "Armor penetration +20% (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "Sundering",
-            "German": "Trenn- "
+            "English": "Sundering"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2341,8 +2321,7 @@
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
         "Names": {
-            "English": "Swift",
-            "German": "Schnelligkeits- "
+            "English": "Swift"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2426,8 +2405,7 @@
             "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
         },
         "Names": {
-            "English": "Vampiric",
-            "German": "Vampir- "
+            "English": "Vampiric"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2519,8 +2497,7 @@
             "English": "Zeal +{arg2[9496]}\nEnergy regeneration -{arg2[8392]}"
         },
         "Names": {
-            "English": "Zealous",
-            "German": "Eifer- "
+            "English": "Zealous"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2634,8 +2611,7 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Axe Mastery",
-            "German": "d. Axtbeherrschung"
+            "English": "of Axe Mastery"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -2877,8 +2853,7 @@
             "English": "Armor +{arg2}"
         },
         "Names": {
-            "English": "of Defense",
-            "German": "d. Verteidigung"
+            "English": "of Defense"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -2940,8 +2915,7 @@
             "English": "+{arg1} Health while Enchanted"
         },
         "Names": {
-            "English": "of Devotion",
-            "German": "d. Hingabe"
+            "English": "of Devotion"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3113,8 +3087,7 @@
             "English": "+{arg2}% Enchantment Duration"
         },
         "Names": {
-            "English": "of Enchanting",
-            "German": "d. Verzauberung"
+            "English": "of Enchanting"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3139,8 +3112,7 @@
             "English": "+{arg1} Health while in a Stance"
         },
         "Names": {
-            "English": "of Endurance",
-            "German": "d. Ausdauer"
+            "English": "of Endurance"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3190,8 +3162,7 @@
             "English": "+{arg1} Health"
         },
         "Names": {
-            "English": "of Fortitude",
-            "German": "d. Tapferkeit"
+            "English": "of Fortitude"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3351,8 +3322,7 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Marksmanship",
-            "German": "d. Treffsicherheit"
+            "English": "of Marksmanship"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3376,8 +3346,7 @@
             "English": "Item's attribute +1 (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "of Mastery",
-            "German": "d. Beherrschung"
+            "English": "of Mastery"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3595,8 +3564,7 @@
             "English": "+{arg2} Armor vs Physical"
         },
         "Names": {
-            "English": "of Shelter",
-            "German": "d. Zuflucht"
+            "English": "of Shelter"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3876,8 +3844,7 @@
             "English": "+{arg1} Health while Hexed"
         },
         "Names": {
-            "English": "of Valor",
-            "German": "d. Wertschätzung"
+            "English": "of Valor"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3903,8 +3870,7 @@
             "English": "+{arg2} Armor vs Elemental"
         },
         "Names": {
-            "English": "of Warding",
-            "German": "d. Abwehr"
+            "English": "of Warding"
         },
         "ModType": "Suffix",
         "TargetTypes": [

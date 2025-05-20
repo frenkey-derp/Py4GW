@@ -2,11 +2,12 @@ import datetime
 import json
 import os
 from LootEx import data, enum, models, settings, utility
-from Py4GWCoreLib import AgentArray, Inventory, Item, ItemArray, Map, Routines, UIManager
+from Py4GWCoreLib import AgentArray, GlobalCache, Inventory, Item, ItemArray, Map, Routines, UIManager
 from Py4GWCoreLib import enums
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog, ThrottledTimer
 from Py4GWCoreLib.enums import Attribute, Bags, Console, FlagPreference, ItemType, NumberPreference, Profession, ServerLanguage
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 
 import importlib
 importlib.reload(settings)
@@ -21,6 +22,7 @@ global_timer = ThrottledTimer(2500)
 save_timer = ThrottledTimer(2500)
 save_items: bool = False
 save_runes: bool = False
+save_weapon_mods: bool = False
 
 # TODO: Add either a dictionary for item names per language or check if the game is set to english
 
@@ -38,8 +40,6 @@ class DataCollector:
             item.model_id: item for item in data.Items}
         self.runes: dict[str, models.Rune] = {
             rune.identifier: rune for rune in data.Runes}
-        
-        
 
     def get_mods(self, item_id: int):
         """Get the mods of an item."""
@@ -87,14 +87,14 @@ class DataCollector:
         """Check if the item is already in the data collector and add it if not."""
         if self.contains_item(model_id):
             server_language = self.get_server_language()
-            
+
             if self.data[model_id].names.get(server_language) is not None:
                 return False
-            
+
             Item.RequestName(item_id)
             self.add_name_if_ready(item_id, model_id)
             return True
-        else:            
+        else:
             if model_id in queued_items:
                 return False
 
@@ -108,17 +108,41 @@ class DataCollector:
             return True
 
     def format_item_name(self, item_id: int) -> str:
+        global save_weapon_mods
         name = Item.GetName(item_id)
         qty = Item.Properties.GetQuantity(item_id)
+
+        core_name = "PvP-Axt"
+
+        upgrade_ame = name.replace(core_name, '').strip()
 
         name = name.replace(str(qty), "xxx")
         # Strip upgrade suffixes and prefixes
         mods = self.get_mods(item_id)
         if mods:
             for mod in mods:
-                ConsoleLog(
-                    "LootEx", f"Removing Mod: {mod.applied_name} ({item_id})", Console.MessageType.Debug)
+                # ConsoleLog(
+                #     "LootEx", f"Removing Mod: {mod.applied_name} ({item_id})", Console.MessageType.Debug)
                 name = name.replace(mod.applied_name, "")
+
+                server_language = self.get_server_language()
+
+                if (upgrade_ame != ""):
+                    index = data.Weapon_Mods.index(mod)
+
+                    if index == -1:
+                        ConsoleLog(
+                            "LootEx", f"Mod not found in weapon mods: {mod.applied_name} ({item_id})", Console.MessageType.Warning)
+                        return name
+
+                    if not data.Weapon_Mods[index].names:
+                        data.Weapon_Mods[index].names = {}
+
+                    data.Weapon_Mods[index].names[server_language] = upgrade_ame
+                    data.Weapon_Mods[index].update_language(server_language)
+                    save_weapon_mods = True
+                    ConsoleLog(
+                        "LootEx", f"Set Mod name for: {upgrade_ame} ({item_id})", Console.MessageType.Debug)
 
         return (name if name else "Unknown Item").strip()
 
@@ -155,7 +179,8 @@ class DataCollector:
             # ConsoleLog(
             #     "LootEx", f"Added item: {self.data[model_id].name} ({model_id})")
 
-            english_name = self.data[model_id].names.get(ServerLanguage.English, None)
+            english_name = self.data[model_id].names.get(
+                ServerLanguage.English, None)
 
             if english_name is not None and Item.Properties.GetQuantity(item_id) == 1:
                 self.data[
@@ -179,11 +204,11 @@ class DataCollector:
                     model_id=model_id,
                     item_type=self.data[model_id].item_type,
                     profession=self.data[model_id].profession,
-                    names = self.data[model_id].names,
-                    attributes = self.data[model_id].attributes,
-                    wiki_url = self.data[model_id].wiki_url,
+                    names=self.data[model_id].names,
+                    attributes=self.data[model_id].attributes,
+                    wiki_url=self.data[model_id].wiki_url,
                 )
-                
+
                 # data.Items.append(self.items[model_id])
             else:
                 for item in data.Items:
@@ -191,11 +216,11 @@ class DataCollector:
                         for lang in self.data[model_id].names:
                             if lang not in item.names:
                                 item.names[lang] = self.data[model_id].names[lang]
-                                
+
                         for attr in self.data[model_id].attributes:
                             if attr not in item.attributes:
                                 item.attributes.append(attr)
-                        
+
                         item.wiki_url = self.data[model_id].wiki_url
                         break
 
@@ -301,7 +326,7 @@ class DataCollector:
     # endregion
 
     def run(self):
-        global save_items, save_runes, queued_runes
+        global save_items, save_runes, queued_runes, save_weapon_mods
 
         if save_timer.IsExpired():
             save_timer.Reset()
@@ -310,13 +335,20 @@ class DataCollector:
             if save_items:
                 save_items = False
                 self.save_test_item()
+                # data.SaveItems()
 
                 saved = True
 
             if save_runes:
                 save_runes = False
-                
+
                 data.SaveRunes()
+                saved = True
+
+            if save_weapon_mods:
+                save_weapon_mods = False
+
+                data.SaveWeaponMods()
                 saved = True
 
             if saved:
@@ -340,14 +372,15 @@ class DataCollector:
             return
 
         server_language = self.get_server_language()
-        
-        
-        if server_language and server_language and DataCollector.item_ids and server_language not in DataCollector.item_ids:
+
+        if server_language and server_language not in DataCollector.item_ids:
             DataCollector.item_ids[server_language] = []
-        
-        if not server_language or not DataCollector.item_ids:
+
+        if server_language is None or DataCollector.item_ids is None:
+            ConsoleLog(
+                "LootEx", f"Server language not set: {server_language}", Console.MessageType.Warning)
             return
-        
+
         if settings.current.collect_runes:
             if DataCollector.checked_runes != server_language:
                 queued_runes = {}
@@ -365,34 +398,42 @@ class DataCollector:
                     self.rune_check_and_add_item(item_id)
 
         if settings.current.collect_items:
-            xunlai_checked = (datetime.datetime.now() - settings.current.last_xunlai_check).total_seconds() < 300
-            
+            xunlai_checked = (datetime.datetime.now(
+            ) - settings.current.last_xunlai_check).total_seconds() < 300
+
             bags = range(Bags.Backpack, Bags.EquippedItems +
                          1) if not xunlai_checked else range(Bags.Backpack, Bags.EquippedItems + 1)
             bags = range(Bags.EquippedItems, Bags.EquippedItems + 1)
             DataCollector.first_check = False
 
+            DataCollector.item_ids[server_language] = []
+            self.data = {}
+            
             for bag_id in bags:
                 bag_to_check = ItemArray.CreateBagList(bag_id)
                 item_array = ItemArray.GetItemArray(bag_to_check)
 
-                for item_id in item_array:                    
+                for item_id in item_array:                            
+                    slot = Item.GetSlot(item_id)
+                                
                     if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                         continue
                     
-                    if GlobalCache Item.GetItemType(item_id)[0] != enums.ItemType.Chestpiece:
+                    if slot != 0:
                         continue
 
+
+                    # ConsoleLog(
+                    #     "LootEx", f"Checking item: {item_id}  ({slot}|{bag_id})", Console.MessageType.Debug)
                     self.check_and_add_item(item_id)
-            
-            return
+
             items = AgentArray.GetItemArray()
             for item_id in items:
                 if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                     continue
 
                 self.check_and_add_item(item_id)
-                
+
             if not xunlai_checked:
                 settings.current.last_xunlai_check = datetime.datetime.now()
                 settings.current.save()
@@ -417,4 +458,5 @@ class DataCollector:
         path = os.path.join(data_directory, "item_test.json")
 
         with open(path, 'w', encoding='utf-8') as file:
-            json.dump([item.to_json() for _, item in self.data.items()], file, ensure_ascii=False, indent=4)
+            json.dump([item.to_json() for _, item in self.data.items()],
+                      file, ensure_ascii=False, indent=4)
