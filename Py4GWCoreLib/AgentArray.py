@@ -53,6 +53,7 @@ class AgentArray:
     @staticmethod
     def GetItemArray():
         """Purpose: Retrieve the agent array pre-filtered by items."""
+        """
         item_owner_cache = ItemOwnerCache()
         loot_array = Player.player_instance().GetItemArray()
         if not loot_array:
@@ -65,6 +66,9 @@ class AgentArray:
             cached_owner_id = item_owner_cache.check_and_cache(item_data.item_id, current_owner_id)
         
         return loot_array
+        """
+        return Player.player_instance().GetItemArray()
+        
     @staticmethod
     def IsAgentIDValid(agent_id):
         """Purpose: Check if the agent ID is valid."""
@@ -311,18 +315,18 @@ class AgentArray:
 
             closest_agent_id = min(largest_cluster, key=distance_to_center)
 
-            return center_of_mass, closest_agent_id
+            return closest_agent_id
 
 class RawAgentArray:
     _instance = None
 
-    def __new__(cls, throttle: int = 50):
+    def __new__(cls, throttle: int = 35):
         if cls._instance is None:
             cls._instance = super(RawAgentArray, cls).__new__(cls)
             cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, throttle: int = 50):
+    def __init__(self, throttle: int = 35):
         from .Py4GWcorelib import ThrottledTimer
         if self._initialized:
             self.throttle = throttle
@@ -345,13 +349,14 @@ class RawAgentArray:
         self.current_map_id = 0
 
         # === Name handling ===
-        self.agent_name_map = {}        # id -> name
-        self.name_requested = set()     # id of agents currently waiting for name
+        self.agent_name_map: dict[int, Tuple[str, float]] = {}  # id -> (name, timestamp)
+        self.name_requested: set[int] = set()                   # agents whose names are being requested
+        self.name_timeout_ms = 2_500                           # refresh name every 10s
+
 
         # === Throttling ===
         self.throttle = throttle
         self.update_throttle = ThrottledTimer(self.throttle)
-        self.name_update_throttle = ThrottledTimer(750)
 
         self._initialized = True
         self.map_valid = False
@@ -359,6 +364,7 @@ class RawAgentArray:
     def update(self):
         from .Routines import Routines
         from .Map import Map
+        import time
 
         # === Check map validity ===
         self.map_valid = Routines.Checks.Map.MapValid()
@@ -377,26 +383,22 @@ class RawAgentArray:
 
         # === Step 2: Resolve names for requested agents ===
         """
+        now = time.time() * 1000
+
         for agent_id in list(self.name_requested):
             if Agent.IsNameReady(agent_id):
                 name = Agent.GetName(agent_id)
                 if name in ("Timeout", "Unknown"):
                     name = ""
-                self.agent_name_map[agent_id] = name
+                self.agent_name_map[agent_id] = (name, now)
                 self.name_requested.discard(agent_id)
-        """
 
+        """
         # === Step 3: Refresh or create agents ===
         self.agent_array = []
         for agent_id in current_agent_ids:
             if agent_id not in self.agent_cache:
                 self.agent_cache[agent_id] = Agent.agent_instance(agent_id)
-                # Immediately request name
-                """
-                if agent_id not in self.agent_name_map and agent_id not in self.name_requested:
-                    Agent.RequestName(agent_id)
-                    self.name_requested.add(agent_id)
-                """
             else:
                 self.agent_cache[agent_id].GetContext()
             agent = self.agent_cache[agent_id]
@@ -517,14 +519,40 @@ class RawAgentArray:
         self.update()
         return self.gadget_array
 
-    def get_agent(self, agent_id: int):
+    def get_agent(self, agent_id: int) -> PyAgent.PyAgent:
         self.update()
-        return self.agent_dict.get(agent_id)
+        return self.agent_dict.get(agent_id) or PyAgent.PyAgent(agent_id)
 
     
-    def get_name(self, agent_id: int):
-        self.update()
-        name = self.agent_name_map.get(agent_id)
-        if name is None:
+    def get_name(self, agent_id: int) -> str:
+        return ""
+    
+        """
+        from .Agent import Agent
+        import time
+
+        now = time.time() * 1000  # current time in milliseconds
+
+        # Name is cached and fresh
+        if agent_id in self.agent_name_map:
+            name, timestamp = self.agent_name_map[agent_id]
+            if now - timestamp < self.name_timeout_ms:
+                return name
+            else:
+                # Expired: re-request if not already doing so
+                if agent_id not in self.name_requested:
+                    
+                    Agent.RequestName(agent_id)
+                    self.name_requested.add(agent_id)
+                return name
+
+        # Name is not cached
+        if agent_id in self.name_requested:
             return ""
-        return name
+
+        # Name was never requested or removed: request it now
+        
+        #Agent.RequestName(agent_id)
+        self.name_requested.add(agent_id)
+        return ""
+        """

@@ -40,7 +40,7 @@ class CustomSkillClass:
                 self.IsHoldingItem = False
                 self.RequiresSpiritInEarshot = False
                 self.SharedEffects = []
-                
+            
                 # Targeting Rules
                 self.TargetingStrict = True
                 self.SelfFirst = False
@@ -58,6 +58,14 @@ class CustomSkillClass:
                 self.PartyWideArea = 0
                 self.UniqueProperty = False
                 self.IsOutOfCombat = False
+                
+                #combat field checks
+                self.EnemiesInRange = 0
+                self.EnemiesInRangeArea = Range.Area.value
+                
+                self.AlliesInRange = 0
+                self.AlliesInRangeArea = Range.Area.value
+
 
     class CustomSkill:
         def __init__(self):
@@ -189,8 +197,8 @@ class CustomSkillClass:
         skill.SkillID = Skill.GetID("Defy_Pain")
         skill.SkillType = SkillType.Skill.value
         skill.TargetAllegiance = Skilltarget.Self.value
-        skill.Nature = SkillNature.Buff.value
-        skill.Conditions.LessLife = 0.5
+        skill.Nature = SkillNature.CustomA.value
+        skill.Conditions.LessLife = 0.3
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -219,8 +227,8 @@ class CustomSkillClass:
         skill.SkillID = Skill.GetID("Endure_Pain")
         skill.SkillType = SkillType.Skill.value
         skill.TargetAllegiance = Skilltarget.Self.value
-        skill.Nature = SkillNature.Buff.value
-        skill.Conditions.LessLife = 0.5
+        skill.Nature = SkillNature.CustomA.value
+        skill.Conditions.LessLife = 0.4
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -1422,7 +1430,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ritual.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
-        skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -2676,7 +2684,7 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Vigorous_Spirit")
         skill.SkillType = SkillType.Enchantment.value
-        skill.TargetAllegiance = Skilltarget.Ally.value
+        skill.TargetAllegiance = Skilltarget.AllyMartialMelee.value
         skill.Nature = SkillNature.Buff.value
         self.skill_data[skill.SkillID] = skill
 
@@ -2878,8 +2886,8 @@ class CustomSkillClass:
         skill.SkillID = Skill.GetID("Protective_Spirit")
         skill.SkillType = SkillType.Enchantment.value
         skill.TargetAllegiance = Skilltarget.Ally.value
-        skill.Nature = SkillNature.Buff.value
-        skill.Conditions.LessLife = 0.55
+        skill.Nature = SkillNature.CustomA.value
+        skill.Conditions.LessLife = 0.65
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -2974,7 +2982,7 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Vital_Blessing")
         skill.SkillType = SkillType.Enchantment.value
-        skill.TargetAllegiance = Skilltarget.Ally.value
+        skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.IsOutOfCombat = True
         self.skill_data[skill.SkillID] = skill
@@ -4420,6 +4428,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Signet.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.IsOutOfCombat = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -4764,7 +4773,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Signet.value
         skill.TargetAllegiance = Skilltarget.Enemy.value
         skill.Nature = SkillNature.Offensive.value
-        skill.Conditions.UniqueProperty = True
+        #skill.Conditions.UniqueProperty = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -5955,6 +5964,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -5962,6 +5973,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -5969,6 +5982,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -5976,6 +5991,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.AlliesInRange = 3
+        skill.Conditions.AlliesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -5983,6 +6000,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
         #ELEMENTALIST FIRE MAGIC
 
@@ -6042,7 +6061,7 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Fire_Storm")
         skill.SkillType = SkillType.Spell.value
-        skill.TargetAllegiance = Skilltarget.Enemy.value
+        skill.TargetAllegiance = Skilltarget.EnemyClustered.value
         skill.Nature = SkillNature.Offensive.value
         self.skill_data[skill.SkillID] = skill
 
@@ -6219,6 +6238,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Offensive.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         #ELEMENTALIST WATER MAGIC
@@ -6417,6 +6438,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -7883,8 +7906,8 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = Skill.GetID("Vital_Weapon")
         skill.SkillType = SkillType.WeaponSpell.value
-        skill.TargetAllegiance = Skilltarget.Ally.value
-        skill.Nature = SkillNature.Buff.value
+        skill.TargetAllegiance = Skilltarget.AllyCaster.value
+        skill.Nature = SkillNature.CustomC.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -7957,7 +7980,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ritual.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
-        skill.OutOfCombat = False
+        skill.Conditions.IsOutOfCombat = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -7983,6 +8006,8 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Ally.value
         skill.Nature = SkillNature.Healing.value
         skill.Conditions.HasWeaponSpell = True
+        skill.Conditions.HasCondition = True
+        skill.Conditions.IsOutOfCombat = True
         skill.Conditions.LessLife = 0.8
         self.skill_data[skill.SkillID] = skill
 
@@ -8028,8 +8053,8 @@ class CustomSkillClass:
         skill.SkillID = Skill.GetID("Rejuvenation")
         skill.SkillType = SkillType.Ritual.value
         skill.TargetAllegiance = Skilltarget.Self.value
-        skill.Nature = SkillNature.Healing.value
-        skill.Conditions.IsOutOfCombat = True
+        skill.Nature = SkillNature.CustomC.value
+        skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -8147,6 +8172,7 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.Ally.value
         skill.Nature = SkillNature.Healing.value
         skill.Conditions.HasWeaponSpell = True
+        skill.Conditions.IsOutOfCombat = True
         skill.Conditions.LessLife = 0.7
         self.skill_data[skill.SkillID] = skill
 
@@ -9102,7 +9128,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Enchantment.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
-        skill.Conditions.IsOutOfCombat = True
+        skill.Conditions.IsOutOfCombat = False
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9503,7 +9529,9 @@ class CustomSkillClass:
         skill.SkillID = Skill.GetID("Time_Ward")
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
-        skill.Nature = SkillNature.Interrupt.value
+        skill.Nature = SkillNature.CustomC.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9586,6 +9614,7 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Enchantment.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.LessEnergy = 0.5
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9730,7 +9759,7 @@ class CustomSkillClass:
         skill.TargetAllegiance = Skilltarget.AllyMartialMelee.value
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.TargetingStrict = True
-        skill.Conditions.LessLife = 0.75
+        skill.Conditions.LessLife = 0.8
         skill.Conditions.IsPartyWide = True
         skill.Conditions.PartyWideArea = Range.SafeCompass.value
         self.skill_data[skill.SkillID] = skill
@@ -9814,6 +9843,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Offensive.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9977,6 +10008,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9984,6 +10017,8 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
@@ -9991,6 +10026,17 @@ class CustomSkillClass:
         skill.SkillType = SkillType.Ward.value
         skill.TargetAllegiance = Skilltarget.Self.value
         skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
+        self.skill_data[skill.SkillID] = skill
+        
+        skill = self.CustomSkill()
+        skill.SkillID = Skill.GetID("Ebon_Battle_Standard_of_Power")
+        skill.SkillType = SkillType.Ward.value
+        skill.TargetAllegiance = Skilltarget.Self.value
+        skill.Nature = SkillNature.Buff.value
+        skill.Conditions.EnemiesInRange = 3
+        skill.Conditions.EnemiesInRangeArea = Range.Area.value
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()
