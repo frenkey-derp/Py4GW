@@ -14,6 +14,8 @@ from .InventoryCache import InventoryCache
 from .MerchantCache import TradingCache
 from .PartyCache import PartyCache
 from .QuestCache import QuestCache
+from .SkillCache import SkillCache
+from .SkillbarCache import SkillbarCache
 
 
 class GlobalCache:
@@ -42,10 +44,14 @@ class GlobalCache:
         self.Trading = TradingCache(self._ActionQueueManager)
         self.Party = PartyCache(self._ActionQueueManager)
         self.Quest = QuestCache(self._ActionQueueManager)
+        self.Skill = SkillCache()
+        self.SkillBar = SkillbarCache(self._ActionQueueManager)
+        
       
     def _reset(self):
         self.Agent._reset_cache()
         self.Effects._reset_cache()
+        self._RawAgentArray.reset()
         self.Item._reset_cache()
         self._TrottleTimers.Reset()
         
@@ -53,30 +59,30 @@ class GlobalCache:
         if self._TrottleTimers._50ms.IsExpired():
             self._TrottleTimers._50ms.Reset()
             self.Map._update_cache()
-            if not self.Map.IsMapReady():
+            
+            if self.Map.IsMapLoading():
                 self._reset()
                 return
             
             self.Party._update_cache()
             self.Player._update_cache()
+            
             if not self.Party.IsPartyLoaded():
                 self._reset()
                 return
+            
                 
             self._RawAgentArray.update()
             self.Agent._update_cache()
             self.AgentArray._update_cache()
             self.Camera._update_cache()
+            self.SkillBar._update_cache()
             
             if self._TrottleTimers._100ms.IsExpired():
                 self._TrottleTimers._100ms.Reset()
                 self._RawItemCache.update()
                 self.Item._update_cache()
-                
-              
-            
-            
-        
+                  
 
     class TrottleTimers:
         def __init__(self):

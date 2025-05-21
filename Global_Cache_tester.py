@@ -5,8 +5,7 @@ MODULE_NAME = "global cache"
 
 
 def main():
-    global global_cache
-    GLOBAL_CACHE._update_cache()
+    global hovered_item_id
      
     if PyImGui.begin(MODULE_NAME):
         if PyImGui.collapsing_header("Player"):
