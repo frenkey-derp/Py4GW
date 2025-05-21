@@ -3,7 +3,7 @@ import PyItem
 
 from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
 from Py4GWCoreLib import Routines
-from typing import Dict, Lists
+from typing import Dict, List
 import time
 from enum import Enum
 

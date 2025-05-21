@@ -7,11 +7,14 @@ from Py4GWCoreLib import enums
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog, ThrottledTimer
 from Py4GWCoreLib.enums import Attribute, Bags, Console, FlagPreference, ItemType, NumberPreference, Profession, ServerLanguage
-from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+
 
 import importlib
 importlib.reload(settings)
 importlib.reload(models)
+importlib.reload(GlobalCache)
+
+GLOBAL_CACHE = GlobalCache.GLOBAL_CACHE
 
 item_collection_node = ActionQueueNode(5)
 rune_collection_node = ActionQueueNode(5)
@@ -61,28 +64,32 @@ class DataCollector:
         return model_id in self.data
 
     def add_item(self, item_id: int, model_id: int) -> bool:
+        
+        ConsoleLog("LootEx", f"Item.GetItemType: {Item.GetItemType(item_id)}")
+        ConsoleLog("LootEx", f"GLOBAL_CACHE.Item.GetItemType: {GLOBAL_CACHE.Item.GetItemType(item_id)}")
+        
         """Add an item to the data collector."""
-        item_type = ItemType[Item.GetItemType(item_id)[1]]
+        item_type = ItemType[GLOBAL_CACHE.Item.GetItemType(item_id)[1]]
 
         # ConsoleLog("LootEx", f"Adding item: {model_id} ({item_type})")
-        profession = Item.Properties.GetProfession(item_id)
+        profession = GLOBAL_CACHE.Item.Properties.GetProfession(item_id)
         self.data[model_id] = models.Item(model_id=model_id, item_type=item_type, profession=Profession(
             profession) if profession < 11 and profession > -1 else Profession._None)
         return True
 
     def add_rune_item(self, item_id: int) -> bool:
         """Add an item to the data collector."""
-        item_type = ItemType[Item.GetItemType(item_id)[1]]
+        item_type = ItemType[GLOBAL_CACHE.Item.GetItemType(item_id)[1]]
 
         ConsoleLog("LootEx", f"Adding item: {item_id} ({item_type})")
-        profession = Item.Properties.GetProfession(item_id)
+        profession = GLOBAL_CACHE.Item.Properties.GetProfession(item_id)
         self.data[item_id] = models.Item(model_id=item_id, item_type=item_type, profession=Profession(
             profession) if profession < 11 and profession > -1 else Profession._None)
 
         return True
 
     def check_and_add_item(self, item_id: int) -> bool:
-        model_id = Item.GetModelID(item_id)
+        model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
 
         """Check if the item is already in the data collector and add it if not."""
         if self.contains_item(model_id):
@@ -91,14 +98,14 @@ class DataCollector:
             if self.data[model_id].names.get(server_language) is not None:
                 return False
 
-            Item.RequestName(item_id)
+            GLOBAL_CACHE.Item.RequestName(item_id)
             self.add_name_if_ready(item_id, model_id)
             return True
         else:
             if model_id in queued_items:
                 return False
 
-            Item.RequestName(item_id)
+            GLOBAL_CACHE.Item.RequestName(item_id)
             self.add_item(item_id, model_id)
 
             item_collection_node.add_action(
@@ -109,9 +116,8 @@ class DataCollector:
 
     def format_item_name(self, item_id: int) -> str:
         global save_weapon_mods
-        name = Item.GetName(item_id)
-        qty = Item.Properties.GetQuantity(item_id)
-
+        name = GLOBAL_CACHE.Item.GetName(item_id)
+        qty = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
         core_name = "PvP-Axt"
 
         upgrade_ame = name.replace(core_name, '').strip()
@@ -148,19 +154,19 @@ class DataCollector:
 
     def add_name_if_ready(self, item_id: int, model_id: int) -> bool:
         def retry_name_request():
-            Item.RequestName(item_id)
+            GLOBAL_CACHE.Item.RequestName(item_id)
 
             item_collection_node.add_action(
                 self.add_name_if_ready, item_id, model_id)
             queued_items[model_id] = True
 
         """Add the name of the item if it's ready."""
-        if Item.IsNameReady(item_id):
+        if GLOBAL_CACHE.Item.IsNameReady(item_id):
             server_language = self.get_server_language()
             # ConsoleLog(
-            #     "LootEx", f"Creating item name for: {Item.GetName(item_id)} ({model_id})")
+            #     "LootEx", f"Creating item name for: {GLOBAL_CACHE.Item.GetName(item_id)} ({model_id})")
             self.data[model_id].names[server_language] = self.format_item_name(
-                item_id) if self.data[model_id].item_type != ItemType.Rune_Mod else Item.GetName(item_id)
+                item_id) if self.data[model_id].item_type != ItemType.Rune_Mod else GLOBAL_CACHE.Item.GetName(item_id)
             ConsoleLog(
                 "LootEx", f"Added name: {self.data[model_id].names[server_language]} ({model_id})")
 
@@ -182,7 +188,7 @@ class DataCollector:
             english_name = self.data[model_id].names.get(
                 ServerLanguage.English, None)
 
-            if english_name is not None and Item.Properties.GetQuantity(item_id) == 1:
+            if english_name is not None and GLOBAL_CACHE.Item.Properties.GetQuantity(item_id) == 1:
                 self.data[
                     model_id].wiki_url = f"https://wiki.guildwars.com/wiki/{english_name.replace(' ', '_')}"
                 profession = self.data[model_id].profession if self.data[model_id].profession else Profession._None
@@ -252,7 +258,7 @@ class DataCollector:
         if item_id in queued_runes:
             return False
 
-        item_type = ItemType[Item.GetItemType(item_id)[1]]
+        item_type = ItemType[GLOBAL_CACHE.Item.GetItemType(item_id)[1]]
         if item_type != ItemType.Rune_Mod:
             return False
 
@@ -271,7 +277,7 @@ class DataCollector:
 
         else:
             if not server_language in mod.names or mod.names[server_language] is None:
-                Item.RequestName(item_id)
+                GLOBAL_CACHE.Item.RequestName(item_id)
 
                 rune_collection_node.add_action(
                     self.rune_add_name_if_ready, item_id)
@@ -283,14 +289,14 @@ class DataCollector:
         global save_runes
 
         def retry_rune_add_name_if_ready():
-            Item.RequestName(item_id)
+            GLOBAL_CACHE.Item.RequestName(item_id)
 
             rune_collection_node.add_action(
                 self.rune_add_name_if_ready, item_id)
             queued_runes[item_id] = True
 
         """Add the name of the item if it's ready."""
-        if Item.IsNameReady(item_id):
+        if GLOBAL_CACHE.Item.IsNameReady(item_id):
             server_language = self.get_server_language()
 
             mods = self.get_mods(item_id)
@@ -302,14 +308,14 @@ class DataCollector:
                         "LootEx", f"Mod not found in runes: {mods[0].name} ({item_id})")
                     return False
 
-                data.Runes[mod_index].names[server_language] = Item.GetName(
+                data.Runes[mod_index].names[server_language] = GLOBAL_CACHE.Item.GetName(
                     item_id)
                 save_runes = True
                 ConsoleLog(
                     "LootEx", f"Creating item name for: {mods[0].names[server_language]} ({item_id})")
             else:
                 ConsoleLog(
-                    "LootEx", f"Item '{Item.GetName(item_id)}' has {len(mods)} mods", Console.MessageType.Warning)
+                    "LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' has {len(mods)} mods", Console.MessageType.Warning)
 
             if item_id in queued_items:
                 del queued_items[item_id]
@@ -406,24 +412,27 @@ class DataCollector:
             bags = range(Bags.EquippedItems, Bags.EquippedItems + 1)
             DataCollector.first_check = False
 
+            GLOBAL_CACHE.ItemArray.GetRawItemArray([Bags.NoBag, Bags.EquippedItems])  
+
             DataCollector.item_ids[server_language] = []
             self.data = {}
+            manual_item_id = 5020               
+            self.check_and_add_item(manual_item_id)
+            
             
             for bag_id in bags:
-                bag_to_check = ItemArray.CreateBagList(bag_id)
-                item_array = ItemArray.GetItemArray(bag_to_check)
+                item_array = GLOBAL_CACHE.ItemArray.GetItemArray([bag_id])
 
                 for item_id in item_array:                            
-                    slot = Item.GetSlot(item_id)
-                                
+                    slot = GLOBAL_CACHE.Item.GetSlot(item_id)
+                                                    
                     if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                         continue
                     
                     if slot != 0:
                         continue
 
-
-                    # ConsoleLog(
+                    # ConsoleLog(s
                     #     "LootEx", f"Checking item: {item_id}  ({slot}|{bag_id})", Console.MessageType.Debug)
                     self.check_and_add_item(item_id)
 
@@ -432,7 +441,7 @@ class DataCollector:
                 if item_id == 0 or item_id in DataCollector.item_ids[server_language]:
                     continue
 
-                self.check_and_add_item(item_id)
+                # self.check_and_add_item(item_id)
 
             if not xunlai_checked:
                 settings.current.last_xunlai_check = datetime.datetime.now()

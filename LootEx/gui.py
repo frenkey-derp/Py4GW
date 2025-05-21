@@ -1,6 +1,7 @@
 from LootEx import *
-from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum
+from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache
 from LootEx import models
+from LootEx.cache import FRENKEY_CACHE
 from LootEx.data_collector import DataCollector
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
@@ -15,6 +16,7 @@ importlib.reload(models)
 importlib.reload(loot_check)
 importlib.reload(item_configuration)
 importlib.reload(utility)
+importlib.reload(cache)
 
 
 class SelectableItem:
@@ -253,22 +255,11 @@ def draw_window():
         )
 
         if PyImGui.button("Test", 300, 50):     
-            player_id = Player.GetAgentID()
-            owner_id = Agent.GetOwnerID(player_id)
+            item_id = 5020
+            cache = FRENKEY_CACHE()
             
-            def filter(agent_id):
-                return Agent.IsSpawned(agent_id) and Agent.IsAlive(agent_id) and Agent.GetOwnerID(agent_id) == owner_id
-
-            distance = Range.Earshot.value            
-            spirit_array = AgentArray.GetSpiritPetArray()
-            spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), distance)
-            spirit_array = AgentArray.Filter.ByCondition(spirit_array, filter)
-
-            for spirit in spirit_array:
-                Agent.RequestName(spirit)
-                ConsoleLog("Test", f"Spirit in range: {Agent.GetName(spirit)}", Console.MessageType.Info)
-
-            ConsoleLog("Test", f"Spirits in range: {len(spirit_array)} | Spirit Array: {spirit_array}", Console.MessageType.Info)
+            for i in range(5):
+                ConsoleLog("FRENKEY_CACHE", f"{cache.Item.GetItemType(item_id)}")
             pass      
 
         profile_names = [

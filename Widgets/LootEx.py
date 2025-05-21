@@ -40,7 +40,7 @@ def configure():
 def main():
     if not Routines.Checks.Map.MapValid():
         data_collector.DataCollector.item_mods = {}
-        data_collector.DataCollector.item_ids = []
+        data_collector.DataCollector.item_ids = {}
         return
 
     language = utility.Util.get_server_language()

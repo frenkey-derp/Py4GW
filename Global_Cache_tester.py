@@ -66,7 +66,7 @@ def main():
                 PyImGui.text(f"Effect ID: {effect_id} - {skill_id} - {skill_name} - {duration} - {attribute_level} - {time_remaining}")
 
         if PyImGui.collapsing_header("Items"):
-            item_array = GLOBAL_CACHE.ItemArray.GetRawItemArray([1,2,3,4])
+            item_array = GLOBAL_CACHE.ItemArray.GetRawItemArray([1,2,3,4])  
             for item in item_array:
                 item_id = item.item_id
                 item_name = GLOBAL_CACHE.Item.GetName(item_id)

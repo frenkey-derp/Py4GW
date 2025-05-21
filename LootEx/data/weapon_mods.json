@@ -5,8 +5,7 @@
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Aptitude not Attitude\"",
-            "German": "Experten-"
+            "English": "\"Aptitude not Attitude\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -27,7 +26,7 @@
     {
         "Identifier": "AQAhyAAK",
         "Descriptions": {
-            "English": "Armor +{arg2} (while Hexed)"
+            "English": "Armor +{arg2}   (while Hexed)"
         },
         "Names": {
             "English": "\"Be Just and Fear Not\""

@@ -1,15 +1,29 @@
 [
     {
+        "ModelID": 15541,
+        "Names": {
+            "English": "Inscription: \"Through Thick and Thin\""
+        },
+        "ItemType": "Rune_Mod",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Inscription:_\"Through_Thick_and_Thin\"",
+        "Materials": [],
+        "RareMaterials": [],
+        "IsNickItem": false,
+        "Profession": null
+    },
+    {
         "ModelID": 17108,
         "Names": {
-            "German": "PvP-Axt"
+            "English": "Unknown Item"
         },
         "ItemType": "Axe",
         "DropInfo": "",
         "Attributes": [
             "AxeMastery"
         ],
-        "WikiURL": "",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Unknown_Item",
         "Materials": [],
         "RareMaterials": [],
         "IsNickItem": false,
