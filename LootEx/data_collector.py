@@ -4,11 +4,10 @@ import os
 import re
 from typing import Any, Callable, Optional
 from LootEx import data, enum, models, settings, utility
-from Py4GWCoreLib import AgentArray, GlobalCache, Inventory, Item, ItemArray, Map, Routines, UIManager
-from Py4GWCoreLib import enums
+from Py4GWCoreLib import AgentArray, GlobalCache, Item, Routines, UIManager
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog, ThrottledTimer
-from Py4GWCoreLib.enums import Attribute, Bags, Console, FlagPreference, ItemType, NumberPreference, Profession, ServerLanguage
+from Py4GWCoreLib.enums import Bags, Console, ItemType, NumberPreference, Profession, ServerLanguage
 
 
 import importlib
@@ -422,10 +421,12 @@ class DataCollector:
             if self.action_queue.ProcessQueue():
                 return
 
-            bags = range(Bags.Backpack, Bags.EquippedItems + 1)
-
+            bags = []
+            for bag_id in range(Bags.Backpack, Bags.EquippedItems + 1):
+                bags.append(Bags(bag_id))
+            
             for bag_id in bags:
-                item_array = GLOBAL_CACHE.ItemArray.GetItemArray([bag_id])
+                item_array = GLOBAL_CACHE.ItemArray.GetItemArray(bags)
 
                 for item_id in item_array:
                     if self.is_complete(item_id):
@@ -981,6 +982,10 @@ class DataCollector:
             # manual_item_id = 16837
             # self.check_and_add_item(manual_item_id)
 
+            bags = []
+            for bag_id in range(Bags.Backpack, Bags.EquippedItems + 1):
+                bags.append(Bags(bag_id))
+                
             for bag_id in bags:
                 item_array = GLOBAL_CACHE.ItemArray.GetItemArray([bag_id])
 

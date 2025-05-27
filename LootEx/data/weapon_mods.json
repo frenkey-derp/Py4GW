@@ -63,7 +63,17 @@
             "English": "Damage +{arg2[8760]}%\nEnergy -{arg2[8376]}"
         },
         "Names": {
-            "English": "\"Brawn over Brains\""
+            "English": "\"Brawn over Brains\"",
+            "German": "\"Körper über Geist\"",
+            "Korean": "힘보다는 머리",
+            "French": "\"Tout en muscles\"",
+            "Italian": "\"Più Muscoli che Cervello\"",
+            "Spanish": "\"Más vale maña que fuerza\"",
+            "TraditionalChinese": "\"有勇無謀\"",
+            "Japanese": "ブローン オーバー ブレイン",
+            "Polish": "\"Siła ponad umysł\"",
+            "Russian": "\"Сила есть - ума не надо\"",
+            "BorkBorkBork": "\"Braevn oofer Braeeens\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -96,7 +106,17 @@
             "English": "Reduces Disease duration on you by 20%"
         },
         "Names": {
-            "English": "\"Cast Out the Unclean\""
+            "English": "\"Cast Out the Unclean\"",
+            "German": "\"Gute Besserung!\"",
+            "Korean": "불결한 건 가랏!",
+            "French": "\"Au rebut les impurs\"",
+            "Italian": "\"Esorcizza l'Eresia\"",
+            "Spanish": "\"Desterremos a los impuros\"",
+            "TraditionalChinese": "\"驅除不潔\"",
+            "Japanese": "キャスト アウト ザ アンクリーン",
+            "Polish": "\"Wyrzuć nieczystych\"",
+            "Russian": "\"Изгнать нечистых\"",
+            "BorkBorkBork": "\"Caest Oooot zee Uncleun\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -108,30 +128,6 @@
                 "Arg1": 5,
                 "Arg2": 0,
                 "Arg": 1280,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
-    {
-        "Identifier": "AQAkeAHj",
-        "Descriptions": {
-            "English": "Reduces Disease duration on you by 20%\n[Old School] Shield, Staff or Offhand"
-        },
-        "Names": {
-            "English": "Reduces Disease duration on you by 20%"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "Modifiers": [
-            {
-                "Identifier": 9336,
-                "Arg1": 1,
-                "Arg2": 227,
-                "Arg": 483,
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
@@ -1577,7 +1573,17 @@
             "English": "Damage +{arg2[8760]}%\nArmor -{arg2[8216]} (while attacking)"
         },
         "Names": {
-            "English": "\"To the Pain!\""
+            "English": "\"To the Pain!\"",
+            "German": "\"Fühlt den Schmerz!\"",
+            "Korean": "오직 공격뿐!",
+            "French": "\"Vive la douleur !\"",
+            "Italian": "\"Patisci!\"",
+            "Spanish": "\"¡A que duele!\"",
+            "TraditionalChinese": "\"受死吧！\"",
+            "Japanese": "トゥ ザ ペイン！",
+            "Polish": "\"Niech żyje ból!\"",
+            "Russian": "\"Боль!\"",
+            "BorkBorkBork": "\"Tu zee Paeeen!\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -2566,6 +2572,30 @@
         ]
     },
     {
+        "Identifier": "AQAkeAHj",
+        "Descriptions": {
+            "English": "Reduces Disease duration on you by 20%\n[Old School] Shield, Staff or Offhand"
+        },
+        "Names": {
+            "English": "Reduces Disease duration on you by 20%"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "Modifiers": [
+            {
+                "Identifier": 9336,
+                "Arg1": 1,
+                "Arg2": 227,
+                "Arg": 483,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    {
         "Identifier": "AQAkGCEU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
@@ -3208,7 +3238,17 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Channeling Magic"
+            "English": "of Channeling Magic",
+            "German": "d. Kanalisierungsmagie",
+            "Korean": "스태프손잡이(마력 증폭)",
+            "French": "(Magie de la canalisation)",
+            "Italian": "del bastone Magia di Incanalamento",
+            "Spanish": "(Magia de canalización)",
+            "TraditionalChinese": "導引魔法",
+            "Japanese": "(チャネリング)",
+            "Polish": "(Magia Połączeń)",
+            "Russian": "of Channeling Magic",
+            "BorkBorkBork": "ooff Chunneleeng Maegeec"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3732,12 +3772,22 @@
         ]
     },
     {
-        "Identifier": "AQAkGAoU",
+        "Identifier": "AwAkGAoU",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Fire Magic"
+            "English": "of Fire Magic",
+            "German": "d. Feuermagie",
+            "Korean": "스태프손잡이(불)",
+            "French": "(Magie du feu)",
+            "Italian": "del Fuoco",
+            "Spanish": "(Magia de fuego)",
+            "TraditionalChinese": "火系魔法",
+            "Japanese": "(ファイア)",
+            "Polish": "(Magia Ognia)",
+            "Russian": "of Fire Magic",
+            "BorkBorkBork": "ooff Fure-a Maegeec"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -4821,7 +4871,17 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Paragon"
+            "English": "of the Paragon",
+            "German": "d. des Paragons",
+            "Korean": "스태프손잡이(파라곤)",
+            "French": "(le Parangon)",
+            "Italian": "del bastone il campione",
+            "Spanish": "(el paragón)",
+            "TraditionalChinese": "the",
+            "Japanese": "(パラゴン)",
+            "Polish": "(Patrona)",
+            "Russian": "of парагон",
+            "BorkBorkBork": "ooff zee Paeraegun"
         },
         "ModType": "Suffix",
         "TargetTypes": [

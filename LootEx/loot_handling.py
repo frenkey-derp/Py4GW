@@ -8,6 +8,7 @@ importlib.reload(settings)
 
 # self.skillbar_action_queue = ActionQueueNode(100)
 
+
 def HandleInventoryLoot() -> int:
     if not ActionQueueManager().IsEmpty("MERCHANT"):
         ActionQueueManager().ProcessQueue("MERCHANT")
@@ -116,14 +117,14 @@ def GetItemAction(item_id: int) -> ItemAction:
 def HasModToKeep(item_id: int) -> bool:
     mods = utility.Util.GetMods(item_id)
     _, item_type = GLOBAL_CACHE.Item.GetItemType(item_id)
-    
+
     if settings.current.loot_profile is not None and settings.current.loot_profile.weapon_mods is not None:
-        
+
         for mod in mods:
-            if mod.identifier in settings.current.loot_profile.weapon_mods:                
+            if mod.identifier in settings.current.loot_profile.weapon_mods:
                 if settings.current.loot_profile.weapon_mods[mod.identifier].get(item_type, False):
                     return True
-                
+
     return False
 
 
@@ -161,7 +162,8 @@ def CompactInventory() -> bool:
     item_array = sorted(
         ItemArray.GetItemArray(bags_to_check),
         key=lambda item_id: (
-            item_typeOrder.index(int(GLOBAL_CACHE.Item.GetItemType(item_id)[0])),
+            item_typeOrder.index(
+                int(GLOBAL_CACHE.Item.GetItemType(item_id)[0])),
             -GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0],
             GLOBAL_CACHE.Item.GetModelID(item_id),
             -GLOBAL_CACHE.Item.Properties.GetQuantity(item_id),
@@ -249,7 +251,7 @@ def IdentifyItem(item_id) -> bool:
 def HasItemToSalvage() -> tuple[bool, int]:
     if settings.current.loot_profile is None:
         return False, -1
-    
+
     for bag_id in range(Bags.Backpack, Bags.Bag2 + 1):
         bag_to_check = ItemArray.CreateBagList(bag_id)
         item_array = ItemArray.GetItemArray(bag_to_check)
@@ -269,13 +271,13 @@ def HasItemToSalvage() -> tuple[bool, int]:
 
             if HasModToKeep(item_id):
                 continue
-            
+
             if utility.Util.has_missing_mods(item_id):
                 continue
-            
+
             if utility.Util.is_missing_item(item_id):
                 continue
-            
+
             value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
             if value > settings.current.loot_profile.sell_threshold:
                 continue
@@ -284,7 +286,7 @@ def HasItemToSalvage() -> tuple[bool, int]:
                 continue
 
             if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
-                continue            
+                continue
 
             # ConsoleLog("LootEx", "Item to salvage: " + GLOBAL_CACHE.Item.GetName(item_id) +
             #            " (Id: " + str(item_id) + ")", Console.MessageType.Info)
@@ -407,17 +409,21 @@ def SetupItemsToBuy() -> bool:
 def HasItemToSell() -> tuple[bool, int]:
     if settings.current.loot_profile is None:
         return False, -1
+    
+    return False, -1
 
     for bag_id in range(Bags.Backpack, Bags.Bag2 + 1):
         bag_to_check = ItemArray.CreateBagList(bag_id)
         item_array = GLOBAL_CACHE.ItemArray.GetItemArray(bag_to_check)
 
         for item_id in item_array:
-            item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id))
-        
+            id, name = GLOBAL_CACHE.Item.GetItemType(item_id)
+                        
+            item_type = ItemType(id)
+
             if not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id):
                 continue
-            
+
             if not utility.Util.IsWeaponType(item_type) and not utility.Util.IsArmorType(item_type) and item_type != ItemType.Trophy:
                 continue
 
@@ -429,13 +435,13 @@ def HasItemToSell() -> tuple[bool, int]:
 
             if HasModToKeep(item_id):
                 continue
-            
+
             if utility.Util.has_missing_mods(item_id):
                 continue
-            
+
             if utility.Util.is_missing_item(item_id):
                 continue
-            
+
             value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
             if value <= 0:
                 continue
@@ -445,6 +451,7 @@ def HasItemToSell() -> tuple[bool, int]:
             return True, item_id
 
     return False, -1
+
 
 def SellItem(item_id: int) -> bool:
     if item_id == 0:
@@ -462,5 +469,5 @@ def SellItem(item_id: int) -> bool:
     ConsoleLog("LootEx", "Sell item: " + GLOBAL_CACHE.Item.GetName(item_id) +
                " (Id: " + str(item_id) + ") for " + str(value) + " coins", Console.MessageType.Info)
     Trading.Merchant.SellItem(item_id, value)
-    
+
     return True

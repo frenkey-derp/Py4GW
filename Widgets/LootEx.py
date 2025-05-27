@@ -76,24 +76,24 @@ def main():
     #     throttle_timer.Reset()
     # else:
     #     return
-
     if not loot_check.trader_queue.action_queue.is_empty():
         loot_check.LootCheck.process_trader_queue()
         return
 
+
+    collector.run_v2()
+        
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():
             return
 
-        collector.run()
-
         loot_handling_timer.Reset()
 
-        # throttle_time = loot_handling.HandleInventoryLoot()
+        throttle_time = loot_handling.HandleInventoryLoot()
 
-        # if throttle_time > 0:
-        #     loot_handling_timer.SetThrottleTime(throttle_time)
-        #     return
+        if throttle_time > 0:
+            loot_handling_timer.SetThrottleTime(throttle_time)
+            return
 
 
 # if __name__ == "__main__":
