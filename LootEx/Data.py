@@ -247,7 +247,7 @@ Item_Attributes: dict[ItemType, list[Attribute]] = {
     ItemType.Staff: Caster_Attributes,
 }
 
-Items: list[models.Item] = []
+Items: dict[int, models.Item] = {}
 Items_By_Type: dict[ItemType, list[models.Item]] = {}
 
 Runes : list[models.Rune] = []
@@ -261,7 +261,7 @@ Weapon_Mods : list[models.WeaponMod] = []
 def UpdateLanguage(server_language : ServerLanguage):
     global Items, Runes, Weapon_Mods
     
-    for item in Items:
+    for item in Items.values():
         item.update_language(server_language)
         
     for rune in Runes:
@@ -320,7 +320,7 @@ def SaveWeaponMods():
     data_directory = os.path.join(file_directory, "data")
     path = os.path.join(data_directory, "weapon_mods.json")
 
-    ConsoleLog("LootEx", f"Saving weapon mods to {path}...", Console.MessageType.Debug)
+    # ConsoleLog("LootEx", f"Saving weapon mods to {path}...", Console.MessageType.Debug)
 
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
@@ -401,12 +401,11 @@ def LoadItems():
     with open(path, 'r', encoding='utf-8') as file:
         items = json.load(file)
         
-        for value in items:
-            Items.append(models.Item.from_json(value))
-        
-    Items = sorted(Items, key=lambda x: (x.name))  
+        for value in items.values():
+            item = models.Item.from_json(value)
+            Items[item.model_id] = item
 
-    for item in Items:
+    for item in Items.values():
         if item.item_type not in Items_By_Type:
             Items_By_Type[item.item_type] = []
 
@@ -426,5 +425,8 @@ def SaveItems():
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
 
+    ##Sort items by model_id before saving
+    Items = dict(sorted(Items.items(), key=lambda item: item[0]))
+    
     with open(path, 'w', encoding='utf-8') as file:
-        json.dump([item.to_json() for item in Items], file, indent=4, ensure_ascii=False)
+        json.dump({item.model_id: item.to_json() for item in Items.values()}, file, indent=4, ensure_ascii=False)

@@ -1,13 +1,12 @@
 from LootEx.item_actions import InventoryAction, ItemActions, ItemAction
 from Py4GWCoreLib import *
-from LootEx import settings
+from LootEx import settings, utility
 from LootEx.loot_profile import LootProfile
 
 import importlib
 importlib.reload(settings)
 
 # self.skillbar_action_queue = ActionQueueNode(100)
-
 
 def HandleInventoryLoot() -> int:
     if not ActionQueueManager().IsEmpty("MERCHANT"):
@@ -25,6 +24,7 @@ def HandleInventoryLoot() -> int:
 
     if hasItemToIdentify:
         ActionQueueManager().ResetQueue("SALVAGE")
+        ActionQueueManager().ResetQueue("MERCHANT")
         ActionQueueManager().AddAction("IDENTIFY", IdentifyItem, item_id)
         return 300
 
@@ -34,12 +34,20 @@ def HandleInventoryLoot() -> int:
 
     hasItemToSalvage, item_id = HasItemToSalvage()
     if hasItemToSalvage:
-        quantity = Item.Properties.GetQuantity(item_id)
+        quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
         ActionQueueManager().ResetQueue("IDENTIFY")
+        ActionQueueManager().ResetQueue("MERCHANT")
 
         for _ in range(quantity):
             ActionQueueManager().AddAction("SALVAGE", SalvageItem, item_id)
             ActionQueueManager().AddAction("SALVAGE", Inventory.AcceptSalvageMaterialsWindow)
+
+    hasItemToSell, item_id = HasItemToSell()
+    if hasItemToSell:
+        ActionQueueManager().ResetQueue("IDENTIFY")
+        ActionQueueManager().ResetQueue("SALVAGE")
+        ActionQueueManager().AddAction("MERCHANT", SellItem, item_id)
+        return 300
 
     if CompactInventory():
         return 50
@@ -80,7 +88,7 @@ def CreateItemActions() -> list[InventoryAction]:
 
 
 def GetItemAction(item_id: int) -> ItemAction:
-    if not Item.Usage.IsIdentified(item_id) and not Item.Usage.IsIDKit(item_id):
+    if not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id) and not GLOBAL_CACHE.Item.Usage.IsIDKit(item_id):
         return ItemAction.IDENTIFY
 
     profile = settings.current.loot_profile
@@ -89,7 +97,7 @@ def GetItemAction(item_id: int) -> ItemAction:
     if profile is None:
         return ItemAction.NONE
 
-    model_id = ModelID(Item.GetModelID(item_id))
+    model_id = ModelID(GLOBAL_CACHE.Item.GetModelID(item_id))
 
     # if profile.Items[model_id.name] is not None:
     #     action = profile.Items[model_id.name].ItemActions.GetAction(instance_type)
@@ -105,6 +113,20 @@ def GetItemAction(item_id: int) -> ItemAction:
     return ItemAction.NONE
 
 
+def HasModToKeep(item_id: int) -> bool:
+    mods = utility.Util.GetMods(item_id)
+    _, item_type = GLOBAL_CACHE.Item.GetItemType(item_id)
+    
+    if settings.current.loot_profile is not None and settings.current.loot_profile.weapon_mods is not None:
+        
+        for mod in mods:
+            if mod.identifier in settings.current.loot_profile.weapon_mods:                
+                if settings.current.loot_profile.weapon_mods[mod.identifier].get(item_type, False):
+                    return True
+                
+    return False
+
+
 class ItemMoveAction:
     def __init__(self, item_id: int, source_bag: Bags, target_bag: Bags, source_slot: int, target_slot: int):
 
@@ -113,7 +135,7 @@ class ItemMoveAction:
         self.source_bag = source_bag
         self.source_slot = source_slot
         self.target_slot = target_slot
-        self.quantity = Item.Properties.GetQuantity(item_id)
+        self.quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
 
     def execute(self):
         # Settings.Current.WriteLog("Moving item: " + Item.GetName(self.item_id) + " (Id: "+ str(self.item_id) + ") from [Bag: " + self.source_bag.name + " | Slot: " + str(self.source_slot) + "] to " + "[Bag: " + self.target_bag.name + " | Slot: " + str(self.target_slot) + "]", Console.MessageType.Info)
@@ -139,10 +161,10 @@ def CompactInventory() -> bool:
     item_array = sorted(
         ItemArray.GetItemArray(bags_to_check),
         key=lambda item_id: (
-            item_typeOrder.index(int(Item.GetItemType(item_id)[0])),
-            -Item.Rarity.GetRarity(item_id)[0],
-            Item.GetModelID(item_id),
-            -Item.Properties.GetQuantity(item_id),
+            item_typeOrder.index(int(GLOBAL_CACHE.Item.GetItemType(item_id)[0])),
+            -GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0],
+            GLOBAL_CACHE.Item.GetModelID(item_id),
+            -GLOBAL_CACHE.Item.Properties.GetQuantity(item_id),
             item_id
         )
     )
@@ -199,11 +221,11 @@ def HasItemToIdentify() -> tuple[bool, int]:
         item_array = ItemArray.GetItemArray(bag_to_check)
 
         for item_id in item_array:
-            if Item.Usage.IsIdentified(item_id) or Item.Usage.IsIDKit(item_id):
+            if GLOBAL_CACHE.Item.Usage.IsIdentified(item_id) or GLOBAL_CACHE.Item.Usage.IsIDKit(item_id):
                 continue
 
-            ConsoleLog("LootEx", "Item to identify: " + Item.GetName(item_id) +
-                       " (Id: " + str(item_id), Console.MessageType.Info)
+            # ConsoleLog("LootEx", "Item to identify: " + GLOBAL_CACHE.Item.GetName(item_id) +
+            #            " (Id: " + str(item_id), Console.MessageType.Info)
             return True, item_id
 
     return False, -1
@@ -217,7 +239,7 @@ def IdentifyItem(item_id) -> bool:
 
     if item_id != -1:
         ConsoleLog("LootEx", "Identify item: " +
-                   Item.GetName(item_id), Console.MessageType.Info)
+                   GLOBAL_CACHE.Item.GetName(item_id), Console.MessageType.Info)
         Inventory.IdentifyItem(item_id, id_kit)
         return True
 
@@ -225,35 +247,47 @@ def IdentifyItem(item_id) -> bool:
 
 
 def HasItemToSalvage() -> tuple[bool, int]:
+    if settings.current.loot_profile is None:
+        return False, -1
+    
     for bag_id in range(Bags.Backpack, Bags.Bag2 + 1):
         bag_to_check = ItemArray.CreateBagList(bag_id)
         item_array = ItemArray.GetItemArray(bag_to_check)
 
         for item_id in item_array:
-            if not Item.Usage.IsSalvageable(item_id):
+            if not GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id):
                 continue
 
-            if Item.Usage.IsSalvageKit(item_id):
+            if GLOBAL_CACHE.Item.Usage.IsSalvageKit(item_id):
                 continue
 
-            if not Item.Usage.IsIdentified(item_id):
+            if not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id):
                 continue
 
-            if Item.GetItemType(item_id)[0] == ItemType.Materials_Zcoins:
+            if GLOBAL_CACHE.Item.GetItemType(item_id)[0] == ItemType.Materials_Zcoins:
                 continue
 
-            value = Item.Properties.GetValue(item_id)
-            if value > 125:
+            if HasModToKeep(item_id):
+                continue
+            
+            if utility.Util.has_missing_mods(item_id):
+                continue
+            
+            if utility.Util.is_missing_item(item_id):
+                continue
+            
+            value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
+            if value > settings.current.loot_profile.sell_threshold:
                 continue
 
-            if Item.GetItemType(item_id)[0] == ItemType.Salvage and not Item.Rarity.IsWhite(item_id):
+            if GLOBAL_CACHE.Item.GetItemType(item_id)[0] == ItemType.Salvage and not GLOBAL_CACHE.Item.Rarity.IsWhite(item_id):
                 continue
 
-            if Item.Properties.IsCustomized(item_id):
-                continue
+            if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
+                continue            
 
-            ConsoleLog("LootEx", "Item to salvage: " + Item.GetName(item_id) +
-                       " (Id: " + str(item_id) + ")", Console.MessageType.Info)
+            # ConsoleLog("LootEx", "Item to salvage: " + GLOBAL_CACHE.Item.GetName(item_id) +
+            #            " (Id: " + str(item_id) + ")", Console.MessageType.Info)
             return True, item_id
     return False, -1
 
@@ -303,13 +337,13 @@ def SetupItemsToBuy() -> bool:
         if idtificationKits_to_buy > 0:
             merchant_item_list = Trading.Merchant.GetOfferedItems()
             merchant_item_list = ItemArray.Filter.ByCondition(
-                merchant_item_list, lambda item_id: Item.GetModelID(item_id) == ModelID.Superior_Identification_Kit)
+                merchant_item_list, lambda item_id: GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Superior_Identification_Kit)
 
             if len(merchant_item_list) > 0:
                 for i in range(idtificationKits_to_buy):
                     item_id = merchant_item_list[0]
                     # value reported is sell value not buy value
-                    value = Item.Properties.GetValue(item_id) * 2
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
 
                     if value < coins:
                         ActionQueueManager().AddAction("MERCHANT", BuyItem, item_id, value)
@@ -321,13 +355,13 @@ def SetupItemsToBuy() -> bool:
         if salvageKits_to_buy > 0:
             merchant_item_list = Trading.Merchant.GetOfferedItems()
             merchant_item_list = ItemArray.Filter.ByCondition(
-                merchant_item_list, lambda item_id: Item.GetModelID(item_id) == ModelID.Salvage_Kit)
+                merchant_item_list, lambda item_id: GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Salvage_Kit)
 
             if len(merchant_item_list) > 0:
                 for i in range(salvageKits_to_buy):
                     item_id = merchant_item_list[0]
                     # value reported is sell value not buy value
-                    value = Item.Properties.GetValue(item_id) * 2
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
                     if value < coins:
                         ActionQueueManager().AddAction("MERCHANT", BuyItem, item_id, value)
                         coins -= value
@@ -339,13 +373,13 @@ def SetupItemsToBuy() -> bool:
         if expertSalvageKits_to_buy > 0:
             merchant_item_list = Trading.Merchant.GetOfferedItems()
             merchant_item_list = ItemArray.Filter.ByCondition(
-                merchant_item_list, lambda item_id: Item.GetModelID(item_id) == ModelID.Expert_Salvage_Kit)
+                merchant_item_list, lambda item_id: GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Expert_Salvage_Kit)
 
             if len(merchant_item_list) > 0:
                 for i in range(expertSalvageKits_to_buy):
                     item_id = merchant_item_list[0]
                     # value reported is sell value not buy value
-                    value = Item.Properties.GetValue(item_id) * 2
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
                     if value < coins:
                         ActionQueueManager().AddAction("MERCHANT", BuyItem, item_id, value)
                         coins -= value
@@ -356,15 +390,77 @@ def SetupItemsToBuy() -> bool:
         if lockpicks_to_buy > 0:
             merchant_item_list = Trading.Merchant.GetOfferedItems()
             merchant_item_list = ItemArray.Filter.ByCondition(
-                merchant_item_list, lambda item_id: Item.GetModelID(item_id) == ModelID.Lockpick)
+                merchant_item_list, lambda item_id: GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Lockpick)
 
             if len(merchant_item_list) > 0:
                 for i in range(lockpicks_to_buy):
                     item_id = merchant_item_list[0]
                     # value reported is sell value not buy value
-                    value = Item.Properties.GetValue(item_id) * 2
+                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
                     if value < coins:
                         ActionQueueManager().AddAction("MERCHANT", BuyItem, item_id, value)
                         coins -= value
 
     return not ActionQueueManager().IsEmpty("MERCHANT")
+
+
+def HasItemToSell() -> tuple[bool, int]:
+    if settings.current.loot_profile is None:
+        return False, -1
+
+    for bag_id in range(Bags.Backpack, Bags.Bag2 + 1):
+        bag_to_check = ItemArray.CreateBagList(bag_id)
+        item_array = GLOBAL_CACHE.ItemArray.GetItemArray(bag_to_check)
+
+        for item_id in item_array:
+            item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id))
+        
+            if not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id):
+                continue
+            
+            if not utility.Util.IsWeaponType(item_type) and not utility.Util.IsArmorType(item_type) and item_type != ItemType.Trophy:
+                continue
+
+            if item_type == ItemType.Materials_Zcoins:
+                continue
+
+            if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
+                continue
+
+            if HasModToKeep(item_id):
+                continue
+            
+            if utility.Util.has_missing_mods(item_id):
+                continue
+            
+            if utility.Util.is_missing_item(item_id):
+                continue
+            
+            value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
+            if value <= 0:
+                continue
+
+            ConsoleLog("LootEx", "Item to sell: " + GLOBAL_CACHE.Item.GetName(item_id) +
+                       " (Id: " + str(item_id) + ")", Console.MessageType.Info)
+            return True, item_id
+
+    return False, -1
+
+def SellItem(item_id: int) -> bool:
+    if item_id == 0:
+        return False
+
+    if Inventory.GetFreeSlotCount() == 0:
+        return False
+
+    coins = Inventory.GetGoldOnCharacter()
+    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
+
+    if 100000 < (coins + value):
+        return False
+
+    ConsoleLog("LootEx", "Sell item: " + GLOBAL_CACHE.Item.GetName(item_id) +
+               " (Id: " + str(item_id) + ") for " + str(value) + " coins", Console.MessageType.Info)
+    Trading.Merchant.SellItem(item_id, value)
+    
+    return True

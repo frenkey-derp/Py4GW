@@ -56,11 +56,11 @@ class Util:
         item_type = ItemType[Item.GetItemType(item_id)[1]]
         mods = []
 
-        is_rune = item_type == ItemType.Rune_Mod and Item.Customization.Modifiers.GetModifierValues(
+        is_rune = item_type == ItemType.Rune_Mod and GLOBAL_CACHE.Item.Customization.Modifiers.GetModifierValues(
             item_id, ModifierIdentifier.TargetItemType)[0] == 0
 
         # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
-        modifiers = Item.Customization.Modifiers.GetModifiers(item_id)
+        modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(item_id)
 
         if Util.IsArmorType(item_type) or is_rune:
             matching_runes = [
@@ -163,7 +163,7 @@ class Util:
             (as an `Attribute` object) and the requirement level (as an integer) 
             if the item has a requirement. Returns `None` if no requirements are found.
         """
-        _, attribute_id, requirement = Item.Customization.Modifiers.GetModifierValues(
+        _, attribute_id, requirement = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifierValues(
             item_id, ModifierIdentifier.Requirement)
 
         if attribute_id == None or requirement == None:
@@ -289,7 +289,7 @@ class Util:
     @staticmethod
     def GetDataItem(model_id: int) -> Optional[models.Item]:
         dataitem = next(
-            (data_item for data_item in data.Items if model_id == data_item.model_id), None)
+            (data_item for data_item in data.Items.values() if model_id == data_item.model_id), None)
         return dataitem
 
     @staticmethod
@@ -468,3 +468,93 @@ class Util:
         preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
         server_language = ServerLanguage(preference)
         return server_language
+    
+    
+    @staticmethod
+    def is_inscription_item(item_name : str) -> bool:
+        """
+        Check if the item is an inscription item based on its name.
+
+        Args:
+            item_name (str): The name of the item.
+
+        Returns:
+            bool: True if the item is an inscription item, False otherwise.
+        """
+        patterns = {
+            ServerLanguage.English: "Inscription: ",
+            ServerLanguage.German: "Inschrift: ",
+            ServerLanguage.French: "Inscription : ",
+            ServerLanguage.Spanish: "Incripción: ",
+            ServerLanguage.Italian: "Iscrizione: ",
+            ServerLanguage.TraditionalChinese: "鑄印：",
+            ServerLanguage.Japanese: "刻印：",
+            ServerLanguage.Polish: "Inskrypcja: ",
+            ServerLanguage.Russian: "Надпись: ",
+            ServerLanguage.BorkBorkBork: "Inscreepshun: "
+        }
+            
+        server_language = Util.get_server_language()
+        pattern = patterns.get(server_language, "Inscription: ")
+        return item_name.startswith(pattern) if pattern else False
+    
+    @staticmethod
+    def is_inscription_model_item(model_id : int) -> bool:
+        """
+        Check if the item is an inscription item based on its model ID.
+
+        Args:
+            model_id (int): The model ID of the item.
+
+        Returns:
+            bool: True if the item is an inscription item, False otherwise.
+        """
+        model_ids = [
+            15540,
+            15541,
+            15542,
+            19122,
+            19123,
+            17059,
+        ]
+
+        return model_id in model_ids
+    
+    @staticmethod
+    def is_missing_item(item_id: int) -> bool:
+        model_id = Item.GetModelID(item_id)
+        
+        return data.Items.get(model_id) is None
+    
+    @staticmethod
+    def has_missing_mods(item_id : int) -> bool:
+        mods = Util.GetMods(item_id)
+        
+        if not mods or len(mods) == 0:
+            return False
+        
+        for mod in mods:
+            if mod.names is None or len(mod.names) == 0:
+                return True
+            
+            for lang in ServerLanguage:
+                if lang not in mod.names or mod.names[lang] is None or mod.names[lang] == "":
+                    return True
+        
+        return False
+    
+    @staticmethod
+    def get_target_item_type_from_mod(item_id: int) -> Optional[ItemType]:
+        """
+        Get the target item type from a rune mod item.
+
+        Args:
+            item_id (int): The unique identifier of the rune mod item.
+
+        Returns:
+            Optional[ItemType]: The target item type if found, otherwise None.
+        """
+        _, value, _ = Item.Customization.Modifiers.GetModifierValues(
+            item_id, ModifierIdentifier.TargetItemType)
+        
+        return ItemType(value) if value else None

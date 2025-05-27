@@ -21,7 +21,7 @@ class LootProfile:
         self.salvage_kits: int = 2
         self.expert_salvage_kits: int = 1
         self.lockpicks: int = 10
-        self.sell_threshold: int = 0
+        self.sell_threshold: int = 200
 
         # Collection of LootFilters
         self.filters: list[loot_filter.LootFilter] = []
@@ -39,6 +39,7 @@ class LootProfile:
             "salvage_kits": self.salvage_kits,
             "expert_salvage_kits": self.expert_salvage_kits,
             "lockpicks": self.lockpicks,
+            "sell_threshold": self.sell_threshold,
             "filters": [LootFilter.to_dict(filter) for filter in self.filters],
             "runes": self.runes,
             "weapon_mods": {
@@ -72,6 +73,8 @@ class LootProfile:
                 self.expert_salvage_kits = profile_dict.get(
                     "expert_salvage_kits", self.expert_salvage_kits)
                 self.lockpicks = profile_dict.get("lockpicks", self.lockpicks)
+                self.sell_threshold = profile_dict.get(
+                    "sell_threshold", self.sell_threshold)
                 self.filters = [LootFilter.from_dict(
                     filter) for filter in profile_dict.get("filters", [])]
                 self.runes = profile_dict.get("runes", self.runes)

@@ -43,6 +43,7 @@ class Item():
     rare_materials: list[int] = field(default_factory=list)
     is_nick_item: bool = False
     profession : Optional[Profession] = Profession._None
+    is_incomplete: Optional[bool] = None
 
     def __post_init__(self):
         self.name : str = self.get_name()
@@ -220,7 +221,7 @@ class ItemMod():
 
         def get_formatted_value(mod: ModifierInfo, arg_type: str) -> str:
             if arg_type == "arg1":
-                if mod.identifier in (9240, 10408):
+                if mod.identifier in (9240, 10408, 8680):
                     return format_enum_name(Attribute(mod.arg1).name)
                 if mod.identifier in (9400, 41240):
                     return format_enum_name(DamageType(mod.arg1).name)
@@ -417,7 +418,7 @@ class WeaponMod(ItemMod):
                 return False
 
         from LootEx import utility
-        return target_item_type is None or any(utility.Util.IsMatchingItemType(target_item_type, item_type) for item_type in self.target_types)
+        return target_item_type is None or target_item_type is ItemType.Rune_Mod or  any(utility.Util.IsMatchingItemType(target_item_type, item_type) for item_type in self.target_types)
         
 
     def has_item_type(self, item_type: ItemType) -> bool:

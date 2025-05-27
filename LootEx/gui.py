@@ -1,8 +1,6 @@
 from LootEx import *
 from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache
 from LootEx import models
-from LootEx.cache import FRENKEY_CACHE
-from LootEx.data_collector import DataCollector
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -46,7 +44,7 @@ class SelectableItem:
 selected_loot_items: list[SelectableItem] = []
 loot_items_selection_dragging: bool = False
 filtered_loot_items: list[SelectableItem] = [
-    SelectableItem(item) for item in data.Items
+    SelectableItem(item) for item in data.Items.values()
 ]
 selected_condition: Optional[ConfigurationCondition] = None
 filter_name: str = ""
@@ -247,20 +245,35 @@ def draw_window():
         )
         PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
         
-    expanded, open = PyImGui.begin_with_close("Loot Ex", settings.current.window_visible, window_flags)
-    if open and settings.current.loot_profile:
+    expanded, gui_open = PyImGui.begin_with_close("Loot Ex", settings.current.window_visible, window_flags)
+    if gui_open and settings.current.loot_profile:
         window_flags = (
             PyImGui.WindowFlags.NoMove if PyImGui.is_mouse_down(
                 0) else PyImGui.WindowFlags.NoFlag
         )
 
-        if PyImGui.button("Test", 300, 50):     
-            item_id = 5020
-            cache = FRENKEY_CACHE()
+        if PyImGui.button("Test", 300, 50): 
+            clipboard_text = "```\n"
             
-            for i in range(5):
-                ConsoleLog("FRENKEY_CACHE", f"{cache.Item.GetItemType(item_id)}")
-            pass      
+            ## sort weapon mods by mod_type then by name
+            mods = sorted(data.Weapon_Mods, key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
+            
+            for mod in mods:
+                english = mod.names.get(ServerLanguage.English, None)
+
+                # check if the mod has a value for each language but Unknown in names
+                has_all_languages = all(
+                    mod.names.get(lang) is not None or lang == ServerLanguage.Unknown
+                    for lang in ServerLanguage
+                )
+                
+                if not has_all_languages and english:
+                    clipboard_text += f"\n{english}"
+                        
+            clipboard_text += "```"
+            PyImGui.set_clipboard_text(clipboard_text)     
+
+            pass
 
         profile_names = [
             profile.name for profile in settings.current.loot_profiles]
@@ -375,8 +388,8 @@ def draw_window():
         settings.current.window_collapsed = collapsed
         settings.current.save()
     if open != settings.current.window_visible:
-        settings.current.window_visible = open
-        settings.current.manual_window_visible = open
+        settings.current.window_visible = gui_open
+        settings.current.manual_window_visible = gui_open
         settings.current.save()
         
     first_draw = False
@@ -832,7 +845,7 @@ def draw_loot_items():
                 inherent_names.append(mod.name)
 
         filtered_loot_items = [
-        SelectableItem(item) for item in data.Items
+        SelectableItem(item) for item in data.Items.values()
     ]
 
     if PyImGui.begin_tab_item("Item Actions") and settings.current.loot_profile:
@@ -857,7 +870,7 @@ def draw_loot_items():
             if search is not None and search != item_search:
                 item_search = search
                 filtered_loot_items = [
-                    SelectableItem(item) for item in data.Items
+                    SelectableItem(item) for item in data.Items.values()
                     if item and item.name and (item.name.lower().find(item_search.lower()) != -1 or str(item.model_id).find(item_search.lower()) != -1)
                 ]
 
@@ -1196,6 +1209,7 @@ def draw_loot_items():
                                 item.item_info.model_id, None)
                             settings.current.loot_profile.save()
 
+                PyImGui.end_child()
             else:
                 PyImGui.text("No Item Selected")
 
@@ -1297,6 +1311,7 @@ def draw_weapon_mods():
                     weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
                 )
 
+            server_language = utility.Util.get_server_language()
             for mod in filtered_weapon_mods:
                 if not mod or not mod.identifier:
                     continue
@@ -1334,7 +1349,13 @@ def draw_weapon_mods():
 
                 # Mod name
                 PyImGui.table_next_column()
+                color = utility.Util.GetRarityColor(Rarity.Green)["text"] if not server_language in mod.names else utility.Util.GetRarityColor(Rarity.White)["text"]
+                # PyImGui.push_style_color(
+                #     PyImGui.ImGuiCol.Text,
+                #     Utils.ColorToTuple(color),
+                # )
                 PyImGui.text_wrapped(mod.applied_name)
+                # PyImGui.pop_style_color(1)
                 draw_weapon_mod_tooltip(mod)
                 # ImGui.show_tooltip(
                 #     f"Mod: {mod.name}\nIdentifier: {mod.identifier}"
