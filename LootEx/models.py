@@ -79,7 +79,6 @@ class Item():
     rare_materials: list[int] = field(default_factory=list)
     nick_index: Optional[int] = None
     profession : Optional[Profession] = None
-    is_incomplete: Optional[bool] = None
     contains_amount: bool = False    
     
     @property
@@ -111,6 +110,48 @@ class Item():
         self.names[language] = name        
         self.name = self.get_name(language)        
     
+    def update(self, item: "Item"):
+        if item.model_id != self.model_id:
+            ConsoleLog("LootEx", f"Cannot update item with different model ID: {item.model_id} != {self.model_id}", Console.MessageType.Error)
+            return
+        
+        self.item_type = item.item_type
+        self.name = item.name
+        
+        for lang, name in item.names.items():
+            if lang not in self.names or not self.names[lang]:
+                self.names[lang] = name
+                
+        if item.drop_info:            
+            self.drop_info = item.drop_info
+        
+        if item.attributes:
+            for attribute in item.attributes:
+                if attribute not in self.attributes:
+                    self.attributes.append(attribute)
+                    
+        if item.wiki_url:
+            self.wiki_url = item.wiki_url
+        
+        if item.materials:
+            for material in item.materials:
+                if material not in self.materials:
+                    self.materials.append(material)
+        
+        if item.rare_materials:
+            for rare_material in item.rare_materials:
+                if rare_material not in self.rare_materials:
+                    self.rare_materials.append(rare_material)
+        
+        if item.nick_index is not None:
+            self.nick_index = item.nick_index
+        
+        if item.profession is not None:
+            if self.profession is None or self.profession == Profession._None:
+                self.profession = item.profession
+                
+        self.update_language(settings.current.language)
+                
     def to_json(self) -> dict:
         return {
             "ModelID": self.model_id,
@@ -444,6 +485,22 @@ class WeaponMod(ItemMod):
 
     ## extracted weapon mods share the same modelid, thus we need to check the item type it belongs to through ModifierIdentifier.ItemType which gives us a ModTargetType
 
+    def generate_binary_identifier(self) -> str:
+        # Start with mod_type (1 byte)
+        data = bytearray()
+        data.append(self.mod_type.value)
+
+        # Append each modifier's identifier (3 bytes) and arg (2 bytes)
+        for mod in sorted(self.modifiers, key=lambda m: m.identifier):
+            data.extend(mod.identifier.to_bytes(3, byteorder='big'))
+            data.extend(mod.arg.to_bytes(2, byteorder='big'))
+            
+            for target_type in self.target_types:
+                data.extend(target_type.value.to_bytes(1, byteorder='big'))
+
+        # Encode as base64 for safe printable format
+        return base64.urlsafe_b64encode(data).decode('ascii')
+    
     def __post_init__(self):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False

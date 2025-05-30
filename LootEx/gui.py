@@ -212,6 +212,27 @@ def _draw_xunlai_storage_button(width):
     ImGui.show_tooltip("Open Xunlai Storage")
 
 
+def draw_data_collector_tab():
+    if PyImGui.begin_tab_item("Data Collector"):
+        tab_size = PyImGui.get_content_region_avail()
+
+        if PyImGui.begin_child("DataCollectorChild", (tab_size[0], tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
+            PyImGui.text("Data Collector")
+            PyImGui.separator()
+
+            if PyImGui.button("Merge Diffs into Data", 200, 50):
+                ConsoleLog(
+                    "LootEx",
+                    "Merging diffs into data...",
+                    Console.MessageType.Info,
+                )
+                
+                data.MergeDiffItems()
+
+            PyImGui.end_child()
+
+        PyImGui.end_tab_item()
+
 def draw_window():
     global first_draw, show_add_profile_popup, show_delete_profile_popup, on_screen, window_flags
 
@@ -260,6 +281,20 @@ def draw_window():
 
         if PyImGui.button("Test", 300, 50): 
             clipboard_text = "```\n"
+            
+            mods_dict = {}
+            
+            for mod in data.Weapon_Mods:
+                if not mod.identifier in mods_dict:
+                    mods_dict[mod.identifier] = mod
+                else:
+                    ConsoleLog(
+                        "LootEx",
+                        f"Duplicate weapon mod identifier found: {mod.identifier} | {mod.name}",
+                        Console.MessageType.Warning,
+                    )
+                    
+            data.SaveWeaponMods(True)        
             
             ## sort weapon mods by mod_type then by name
             mods = sorted(data.Weapon_Mods, key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
@@ -426,6 +461,7 @@ def draw_window():
             draw_loot_items()
             draw_weapon_mods()
             draw_runes()
+            draw_data_collector_tab()
 
         PyImGui.end_tab_bar()
 
@@ -433,20 +469,20 @@ def draw_window():
         size = PyImGui.get_window_size()
 
         if settings.current.window_position != (pos[0], pos[1]):
-            ConsoleLog(
-                "LootEx",
-                f"Window position changed to ({pos[0]}, {pos[1]})",
-                Console.MessageType.Debug,
-            )
+            # ConsoleLog(
+            #     "LootEx",
+            #     f"Window position changed to ({pos[0]}, {pos[1]})",
+            #     Console.MessageType.Debug,
+            # )
             settings.current.window_position = (pos[0], pos[1])
             settings.current.save()
 
         if settings.current.window_size != (size[0], size[1]):
-            ConsoleLog(
-                "LootEx",
-                f"Window size changed to ({size[0]}, {size[1]})",
-                Console.MessageType.Debug,
-            )
+            # ConsoleLog(
+            #     "LootEx",
+            #     f"Window size changed to ({size[0]}, {size[1]})",
+            #     Console.MessageType.Debug,
+            # )
             settings.current.window_size = (size[0], size[1])
             settings.current.save()
 

@@ -1,0 +1,285 @@
+{
+    "330": {
+        "ModelID": 330,
+        "Names": {
+            "English": "Crude Shield",
+            "German": "Derbschild",
+            "Korean": "조잡한 방패",
+            "French": "Bouclier rudimentaire",
+            "Italian": "Scudo Grezzo",
+            "Spanish": "Escudo primitivo",
+            "TraditionalChinese": "粗暴之盾",
+            "Japanese": "クルード シールド",
+            "Polish": "Bluźniercza Tarcza",
+            "Russian": "Crude Shield",
+            "BorkBorkBork": "Croode-a Sheeeld"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Crude_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "962": {
+        "ModelID": 962,
+        "Names": {
+            "English": "Outcast Staff",
+            "German": "Geächteten-Stab",
+            "Korean": "추방자 스태프",
+            "French": "Bâton de paria",
+            "Italian": "Bastone dell'Emarginato",
+            "Spanish": "Báculo de desterrado",
+            "TraditionalChinese": "流放者法杖",
+            "Japanese": "アウトキャスト スタッフ",
+            "Polish": "Kostur Banity",
+            "Russian": "Outcast Staff",
+            "BorkBorkBork": "Ooootcaest Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "IllusionMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Outcast_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1044": {
+        "ModelID": 1044,
+        "Names": {
+            "English": "Feathered Flatbow",
+            "German": "Feder-Flachbogen",
+            "Korean": "깃털장식 평궁",
+            "French": "Arc plat à plumes",
+            "Italian": "Arco Piatto Piumato",
+            "Spanish": "Arco simple con plumas",
+            "TraditionalChinese": "羽飾平底弓",
+            "Japanese": "フェザー フラットボウ",
+            "Polish": "Pierzasty Płaski Łuk",
+            "Russian": "Feathered Flatbow",
+            "BorkBorkBork": "Feaezeered Flaetboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Feathered_Flatbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1195": {
+        "ModelID": 1195,
+        "Names": {
+            "English": "Fiery Gladius",
+            "German": "Hitze- Gladius",
+            "Korean": "화염의 글라디우스",
+            "French": "Glaive incendiaire",
+            "Spanish": "Gladius con daño ardiente",
+            "TraditionalChinese": "火焰 羅馬戰劍",
+            "Japanese": "ファイア グラディウス",
+            "Polish": "Gladius Ognia",
+            "Russian": "Fiery Gladius",
+            "BorkBorkBork": "Feeery Glaedeeoos"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Fiery_Gladius",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1234": {
+        "ModelID": 1234,
+        "Names": {
+            "English": "Hypnotic Scepter",
+            "German": "Hypnotik-Zepter",
+            "Korean": "최면의 홀",
+            "French": "Sceptre hypnotique",
+            "Italian": "Scettro Ipnotico",
+            "Spanish": "Cetro hipnótico",
+            "TraditionalChinese": "催眠權杖",
+            "Japanese": "ヒプナティック セプター",
+            "Polish": "Hipnotyczne Berło",
+            "Russian": "Hypnotic Scepter",
+            "BorkBorkBork": "Hypnuteec Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "IllusionMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hypnotic_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Mesmer"
+    },
+    "1480": {
+        "ModelID": 1480,
+        "Names": {
+            "English": "Briarwood Scythe",
+            "German": "Dornenholz-Sense",
+            "Korean": "찔레나무 사이드",
+            "French": "Faux de bruyère",
+            "Italian": "Falce di Erica",
+            "Spanish": "Guadaña de brezo",
+            "TraditionalChinese": "薔木鐮刀",
+            "Japanese": "ブライアウッド サイズ",
+            "Polish": "Korzenna Kosa",
+            "Russian": "Briarwood Scythe",
+            "BorkBorkBork": "Breeaervuud Scyzee"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Briarwood_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1540": {
+        "ModelID": 1540,
+        "Names": {
+            "English": "Lotus Shield",
+            "German": "Lotusschild",
+            "Korean": "연꽃 방패",
+            "French": "Bouclier du lotus",
+            "Italian": "Scudo di Loto",
+            "Spanish": "Escudo de loto",
+            "TraditionalChinese": "蓮盾",
+            "Japanese": "ロータス シールド",
+            "Polish": "Tarcza Lotosu",
+            "Russian": "Lotus Shield",
+            "BorkBorkBork": "Lutoos Sheeeld"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lotus_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1582": {
+        "ModelID": 1582,
+        "Names": {
+            "English": "Kournan Pendant"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Pendant",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": 116,
+        "Profession": null
+    },
+    "1686": {
+        "ModelID": 1686,
+        "Names": {
+            "English": "Mandragor Root"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mandragor_Root",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1692": {
+        "ModelID": 1692,
+        "Names": {
+            "English": "Half-Digested Armor",
+            "German": "Halbgegessene Rüstung",
+            "Korean": "반쯤 손상된 갑옷",
+            "French": "Armure dégurgitée",
+            "Italian": "Armatura Digerita Parzialmente",
+            "Spanish": "Armadura medio digerida",
+            "TraditionalChinese": "未消化的盔甲",
+            "Japanese": "半分消化された防具",
+            "Polish": "Niestrawiona Zbroja",
+            "Russian": "Half-Digested Armor",
+            "BorkBorkBork": "Haelff-Deegested Aermur"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Half-Digested_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "17207": {
+        "ModelID": 17207,
+        "Names": {
+            "English": "Sunspear Mask",
+            "German": "Sonnenspeer-Maske",
+            "Korean": "선스피어 마스크",
+            "French": "Masque de Lancier",
+            "Italian": "Maschera della Lancia del Sole",
+            "Spanish": "Máscara de Lancero",
+            "TraditionalChinese": "日戟面罩",
+            "Japanese": "サンスピア マスク",
+            "Polish": "Maska Słonecznych Włóczni",
+            "Russian": "Sunspear Mask",
+            "BorkBorkBork": "Soonspeaer Maesk"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Mesmer"
+    },
+    "27382": {
+        "ModelID": 27382,
+        "Names": {
+            "English": "Droknar's Domination Focus",
+            "German": "Droknars Beherrschungsfokus",
+            "Korean": "드록나 지배 포커스",
+            "French": "Focus de domination de Droknar",
+            "Italian": "Focus di Droknar del Dominio",
+            "Spanish": "Foco de dominación de Droknar",
+            "TraditionalChinese": "卓克納支配聚能器",
+            "Japanese": "ドロクナー ドミネーション フォーカス",
+            "Polish": "Fokus Dominacji Droknara",
+            "Russian": "Droknar's Domination Focus",
+            "BorkBorkBork": "Druknaer's Dumeenaeshun Fucoos"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Domination_Focus",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    }
+}

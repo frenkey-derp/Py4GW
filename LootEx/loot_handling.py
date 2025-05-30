@@ -8,8 +8,16 @@ importlib.reload(settings)
 
 # self.skillbar_action_queue = ActionQueueNode(100)
 
+salvaged = False
+deposited = False
 
 def HandleInventoryLoot() -> int:
+    if Map.IsOutpost():
+        if (DepositMaterials()):
+            return 50            
+
+    return 250
+
     if not ActionQueueManager().IsEmpty("MERCHANT"):
         ActionQueueManager().ProcessQueue("MERCHANT")
         return 300
@@ -54,6 +62,45 @@ def HandleInventoryLoot() -> int:
         return 50
 
     return 50
+
+
+def DepositMaterials() -> bool:
+    global deposited
+    
+    if not deposited:
+        items = GLOBAL_CACHE.ItemArray.GetRawItemArray(
+            [Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2])
+
+        items = ItemArray.Filter.ByCondition(
+            items, lambda item: GLOBAL_CACHE.Item.GetItemType(item.item_id)[0] == ItemType.Materials_Zcoins.value)
+        
+        material_storage = GLOBAL_CACHE.ItemArray.GetRawItemArray(
+            [Bags.MaterialStorage])
+        
+        model_ids = [i.model_id for i in items]
+        
+        ## filter the material_storage items to only include those which share the same model_id as the items in the inventory
+        material_storage = ItemArray.Filter.ByCondition(
+            material_storage, 
+            lambda item: item.model_id in model_ids
+        )
+        
+        deposited = True
+        
+        for material in material_storage:        
+            item = next(
+                (item for item in items if item.model_id == material.model_id), None)
+            
+            if item is not None:
+                move_amount = min(250 - material.quantity, item.quantity)
+                
+                if move_amount <= 0:
+                    continue
+                
+                Inventory.MoveItem(item.item_id, Bags.MaterialStorage, material.slot, move_amount)
+                # return True
+                
+    return False
 
 
 def ProcessInventoryActions() -> bool:
@@ -409,7 +456,7 @@ def SetupItemsToBuy() -> bool:
 def HasItemToSell() -> tuple[bool, int]:
     if settings.current.loot_profile is None:
         return False, -1
-    
+
     return False, -1
 
     for bag_id in range(Bags.Backpack, Bags.Bag2 + 1):
@@ -418,7 +465,7 @@ def HasItemToSell() -> tuple[bool, int]:
 
         for item_id in item_array:
             id, name = GLOBAL_CACHE.Item.GetItemType(item_id)
-                        
+
             item_type = ItemType(id)
 
             if not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id):

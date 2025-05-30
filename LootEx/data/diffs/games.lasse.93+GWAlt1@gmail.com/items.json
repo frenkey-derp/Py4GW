@@ -1,0 +1,599 @@
+{
+    "130": {
+        "ModelID": 130,
+        "Names": {
+            "English": "War Axe",
+            "German": "Kriegsaxt",
+            "Korean": "워액스",
+            "French": "Hache de guerre",
+            "Italian": "Ascia da Guerra",
+            "Spanish": "Hacha de guerra",
+            "TraditionalChinese": "戰斧",
+            "Japanese": "ウォー アックス",
+            "Polish": "Sieczny Topór",
+            "Russian": "War Axe",
+            "BorkBorkBork": "Vaer Aexe-a"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/War_Axe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "185": {
+        "ModelID": 185,
+        "Names": {
+            "English": "Frost Artifact",
+            "German": "Frostartefakt",
+            "Korean": "서리의 유물",
+            "French": "Artefact de givre",
+            "Italian": "Manufatto della Brina",
+            "Spanish": "Artefacto de escarcha",
+            "TraditionalChinese": "冰凍神器",
+            "Japanese": "フロスト アーティファクト",
+            "Polish": "Lodowy Artefakt",
+            "Russian": "Frost Artifact",
+            "BorkBorkBork": "Frust Aerteeffaect"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Frost_Artifact",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "214": {
+        "ModelID": 214,
+        "Names": {
+            "English": "Ram's Hammer",
+            "German": "Rammhammer",
+            "Korean": "피스톤 해머",
+            "French": "Marteau bélier",
+            "Italian": "Martello dell'Ariete",
+            "Spanish": "Martillo de carnero",
+            "TraditionalChinese": "攻城鎚",
+            "Japanese": "ラムズ ハンマー",
+            "Polish": "Barani Łeb",
+            "Russian": "Ram's Hammer",
+            "BorkBorkBork": "Raem's Haemmer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ram's_Hammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "216": {
+        "ModelID": 216,
+        "Names": {
+            "English": "Break Hammer",
+            "German": "Bruchhammer",
+            "Korean": "파괴의 해머",
+            "French": "Marteau briseur",
+            "Italian": "Martello Dirompente",
+            "Spanish": "Martillo rompedor",
+            "TraditionalChinese": "破滅之鎚",
+            "Japanese": "ブレイク ハンマー",
+            "Polish": "Łamacz Kości",
+            "Russian": "Break Hammer",
+            "BorkBorkBork": "Breaek Haemmer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Break_Hammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "909": {
+        "ModelID": 909,
+        "Names": {
+            "English": "Sword Pommel",
+            "German": "Schwertknauf",
+            "Korean": "칼머리",
+            "French": "Pommeau d'épée",
+            "Italian": "Pomolo della spada",
+            "Spanish": "Pomo de espada",
+            "TraditionalChinese": "劍柄首",
+            "Japanese": "ソードの柄頭",
+            "Polish": "Głowica Miecza",
+            "Russian": "Sword Pommel",
+            "BorkBorkBork": "Svurd Pummel"
+        },
+        "ItemType": "Rune_Mod",
+        "DropInfo": "No data added yet",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Sword_Pommel",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1213": {
+        "ModelID": 1213,
+        "Names": {
+            "English": "Bone Idol",
+            "German": "Knochengötzenbild",
+            "Korean": "뼈 신상",
+            "French": "Idole d'os",
+            "Italian": "Idolo d'Ossa",
+            "Spanish": "Ídolo de hueso",
+            "TraditionalChinese": "骨製法器",
+            "Japanese": "ボーン アイドル",
+            "Polish": "Kościany Totem",
+            "Russian": "Bone Idol",
+            "BorkBorkBork": "Bune-a Idul"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "SoulReaping"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Idol",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "1220": {
+        "ModelID": 1220,
+        "Names": {
+            "English": "Frost Artifact",
+            "German": "Frostartefakt",
+            "Korean": "서리의 유물",
+            "French": "Artefact de givre",
+            "Italian": "Manufatto della Brina",
+            "Spanish": "Artefacto de escarcha",
+            "TraditionalChinese": "冰凍神器",
+            "Japanese": "フロスト アーティファクト",
+            "Polish": "Lodowy Artefakt",
+            "Russian": "Frost Artifact",
+            "BorkBorkBork": "Frust Aerteeffaect"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Frost_Artifact",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1271": {
+        "ModelID": 1271,
+        "Names": {
+            "English": "Suntouched Scythe",
+            "German": "Sonnige Sense",
+            "Polish": "Słoneczna Kosa",
+            "Russian": "Suntouched Scythe",
+            "BorkBorkBork": "Soontuooched Scyzee",
+            "Korean": "냉기의 세스타",
+            "French": "Ceste farouche",
+            "Italian": "Scudiscio Macabro",
+            "TraditionalChinese": "邪魔法器",
+            "Japanese": "グリム セスタ",
+            "Spanish": "Guadaña dorada"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery",
+            "BloodMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Suntouched_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1365": {
+        "ModelID": 1365,
+        "Names": {
+            "English": "Caged Shortbow",
+            "German": "Dornen-Kurzbogen",
+            "Korean": "사냥용 단궁",
+            "French": "Arc court charpente",
+            "Italian": "Arco Corto Ingabbiato",
+            "Spanish": "Arco corto de jaula",
+            "TraditionalChinese": "牢籠短弓",
+            "Japanese": "ケイジ ショートボウ",
+            "Polish": "Klatkowy Krótki Łuk",
+            "Russian": "Caged Shortbow",
+            "BorkBorkBork": "Caeged Shurtboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Caged_Shortbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1479": {
+        "ModelID": 1479,
+        "Names": {
+            "English": "Embossed Scythe",
+            "German": "Geprägte Sense",
+            "Korean": "양각무늬 사이드",
+            "French": "Faux estampée",
+            "Italian": "Falce Goffrata",
+            "Spanish": "Guadaña grabada",
+            "TraditionalChinese": "雕花鐮刀",
+            "Japanese": "エンボス サイズ",
+            "Polish": "Tłoczona Kosa",
+            "Russian": "Embossed Scythe",
+            "BorkBorkBork": "Imbussed Scyzee"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Embossed_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1582": {
+        "ModelID": 1582,
+        "Names": {
+            "English": "Kournan Pendant"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Pendant",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": 116,
+        "Profession": null
+    },
+    "1641": {
+        "ModelID": 1641,
+        "Names": {
+            "English": "Blood Spore Scepter",
+            "German": "Blutsporen-Zepter",
+            "Korean": "피의 홀",
+            "French": "Sceptre des spores sanguinaires",
+            "Italian": "Scettro di Spora Insanguinata",
+            "Spanish": "Cetro de espora sangrienta",
+            "TraditionalChinese": "血孢權杖",
+            "Japanese": "ブラッド スポア セプター",
+            "Polish": "Berło Krwawego Zarodnika",
+            "Russian": "Blood Spore Scepter",
+            "BorkBorkBork": "Bluud Spure-a Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "BloodMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Blood_Spore_Scepter",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "1686": {
+        "ModelID": 1686,
+        "Names": {
+            "English": "Mandragor Root"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mandragor_Root",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1692": {
+        "ModelID": 1692,
+        "Names": {
+            "English": "Half-Digested Armor",
+            "German": "Halbgegessene Rüstung",
+            "Korean": "반쯤 손상된 갑옷",
+            "French": "Armure dégurgitée",
+            "Italian": "Armatura Digerita Parzialmente",
+            "Spanish": "Armadura medio digerida",
+            "TraditionalChinese": "未消化的盔甲",
+            "Japanese": "半分消化された防具",
+            "Polish": "Niestrawiona Zbroja",
+            "Russian": "Half-Digested Armor",
+            "BorkBorkBork": "Haelff-Deegested Aermur"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Half-Digested_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1914": {
+        "ModelID": 1914,
+        "Names": {
+            "English": "Hypnotic Staff",
+            "German": "Hypnotik-Stab",
+            "Korean": "최면의 스태프",
+            "French": "Bâton hypnotique",
+            "Italian": "Bastone Ipnotico",
+            "Spanish": "Báculo hipnótico",
+            "TraditionalChinese": "催眠法杖",
+            "Japanese": "ヒプナティック スタッフ",
+            "Polish": "Hipnotyczny Kostur",
+            "Russian": "Hypnotic Staff",
+            "BorkBorkBork": "Hypnuteec Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "IllusionMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hypnotic_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Mesmer"
+    },
+    "5819": {
+        "ModelID": 5819,
+        "Names": {
+            "English": "Monastery Credit"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "No data added yet",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Monastery_Credit",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "5975": {
+        "ModelID": 5975,
+        "Names": {
+            "English": "Scroll of Rampagers Insight",
+            "German": "Schriftrolle über den Einblick des Randalierers",
+            "Korean": "야성의 각성 주문서",
+            "French": "Parchemin de la Clairvoyance du saccageur",
+            "Italian": "Pergamena dell'Intuito dello Scalmanato",
+            "Spanish": "Pergamino de la perspicacia del hostigador",
+            "TraditionalChinese": "狂暴者的洞察卷軸",
+            "Japanese": "スクロール：乱暴者の洞察",
+            "Polish": "Zwój Intuicji Piekielnika",
+            "Russian": "Scroll of Rampager's Insight",
+            "BorkBorkBork": "Scrull ooff Raempaeger's Inseeght"
+        },
+        "ItemType": "Scroll",
+        "DropInfo": "Bosses NM & HM",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Rampagers_Insight",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "17294": {
+        "ModelID": 17294,
+        "Names": {
+            "English": "Sunspear Scar Pattern",
+            "German": "Sonnenspeer-Narbenmuster",
+            "Korean": "선스피어 타투",
+            "French": "Motif de cicatrice de Lancier",
+            "Italian": "Scarificazione della Lancia del Sole",
+            "Spanish": "Cicatriz de los Lanceros",
+            "TraditionalChinese": "日戟疤痕",
+            "Japanese": "サンスピア スカー パターン",
+            "Polish": "Blizny Słonecznych Włóczni - głowa",
+            "Russian": "Sunspear Scar Pattern",
+            "BorkBorkBork": "Soonspeaer Scaer Paettern"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Sunspear_Scar_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "17298": {
+        "ModelID": 17298,
+        "Names": {
+            "English": "Sunspear Boots",
+            "German": "Sonnenspeer-Stiefel",
+            "Korean": "선스피어 부츠",
+            "French": "Bottes de Lancier",
+            "Italian": "Stivali della Lancia del Sole",
+            "Spanish": "Par de botas de los Lanceros",
+            "TraditionalChinese": "日戟長靴",
+            "Japanese": "サンスピア ブーツ",
+            "Polish": "Buty Słonecznych Włóczni",
+            "Russian": "Sunspear Boots",
+            "BorkBorkBork": "Soonspeaer Buuts"
+        },
+        "ItemType": "Boots",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "17299": {
+        "ModelID": 17299,
+        "Names": {
+            "English": "Sunspear Tunic",
+            "German": "Sonnenspeer-Tunika",
+            "Korean": "선스피어 재킷",
+            "French": "Tunique de Lancier",
+            "Italian": "Tunica della Lancia del Sole",
+            "Spanish": "Túnica de los Lanceros",
+            "TraditionalChinese": "日戟罩衫",
+            "Japanese": "サンスピア ベスト",
+            "Polish": "Tunika Słonecznych Włóczni",
+            "Russian": "Sunspear Tunic",
+            "BorkBorkBork": "Soonspeaer Tooneec"
+        },
+        "ItemType": "Chestpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "17300": {
+        "ModelID": 17300,
+        "Names": {
+            "English": "Sunspear Gloves",
+            "German": "Sonnenspeer-Handschuhe",
+            "Korean": "선스피어 글러브",
+            "French": "Gants de Lancier",
+            "Italian": "Guanti della Lancia del Sole",
+            "Spanish": "Par de guantes de los Lanceros",
+            "TraditionalChinese": "日戟手套",
+            "Japanese": "サンスピア グローブ",
+            "Polish": "Rękawice Słonecznych Włóczni",
+            "Russian": "Sunspear Gloves",
+            "BorkBorkBork": "Soonspeaer Glufes"
+        },
+        "ItemType": "Gloves",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "17301": {
+        "ModelID": 17301,
+        "Names": {
+            "English": "Sunspear Leggings",
+            "German": "Sonnenspeer-Beinkleid",
+            "Korean": "선스피어 팬츠",
+            "French": "Bas de Lancier",
+            "Italian": "Gambali della Lancia del Sole",
+            "Spanish": "Mallas de los Lanceros",
+            "TraditionalChinese": "日戟護腿",
+            "Japanese": "サンスピア ゲートル",
+            "Polish": "Legginsy Słonecznych Włóczni",
+            "Russian": "Sunspear Leggings",
+            "BorkBorkBork": "Soonspeaer Leggeengs"
+        },
+        "ItemType": "Leggings",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Necromancer_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "26955": {
+        "ModelID": 26955,
+        "Names": {
+            "English": "Myish's Scythe",
+            "German": "Myishs Sense",
+            "Korean": "마이쉬의 사이드",
+            "French": "Faux de Myish",
+            "Italian": "Falce di Myish",
+            "Spanish": "Guadaña de Myish",
+            "TraditionalChinese": "蜜希的鐮刀",
+            "Japanese": "ミーシュ サイズ",
+            "Polish": "Kosa Myishy",
+            "Russian": "Myish's Scythe",
+            "BorkBorkBork": "Myeesh's Scyzee"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [
+            "ScytheMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Myish's_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "27454": {
+        "ModelID": 27454,
+        "Names": {
+            "English": "Droknar's Restoration Staff",
+            "German": "Droknars Wiederherstellungsstab",
+            "Korean": "드록나 회복 스태프",
+            "French": "Bâton de rétablissement de Droknar",
+            "Italian": "Bastone di Droknar del Ripristino",
+            "Spanish": "Báculo de regeneración de Droknar",
+            "TraditionalChinese": "卓克納復原法杖",
+            "Japanese": "ドロクナー レストレーション スタッフ",
+            "Polish": "Kostur Odnowy Droknara",
+            "Russian": "Droknar's Restoration Staff",
+            "BorkBorkBork": "Druknaer's Resturaeshun Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "RestorationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Restoration_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "27976": {
+        "ModelID": 27976,
+        "Names": {
+            "English": "Encrypted Charr Battle Plans",
+            "German": "Verschlüsselte Charr-Schlachtpläne",
+            "Korean": "암호화된 차르 전투 계획서",
+            "French": "Plans de bataille encodés des Charrs",
+            "Italian": "Piani di Battaglia Cifrati dei Charr",
+            "Spanish": "Planes de batalla Charr codificados",
+            "TraditionalChinese": "未解碼夏爾戰略",
+            "Japanese": "暗号化されたチャールの攻撃計画書",
+            "Polish": "Zaszyfrowane Wojenne Plany Popielców",
+            "Russian": "Зашифрованные военные планы Charr",
+            "BorkBorkBork": "Incrypted Chaerr Baettle-a Pluns"
+        },
+        "ItemType": "Storybook",
+        "DropInfo": "No data added yet",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Encrypted_Charr_Battle_Plans",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    }
+}

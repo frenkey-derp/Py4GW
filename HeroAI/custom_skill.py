@@ -3459,7 +3459,7 @@ class CustomSkillClass:
         skill.Conditions.LessEnergy = 0.4
         skill.Conditions.SacrificeHealth = 0.5
         skill.Conditions.TargetingStrict = True
-        skill.Conditions.UniqueProperty = True
+        # skill.Conditions.UniqueProperty = True
         self.skill_data[skill.SkillID] = skill
 
         skill = self.CustomSkill()

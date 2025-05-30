@@ -45,13 +45,42 @@ class DataCollector:
     CharacterInventory = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Equipment_Pack.value), Bag_enum.Equipped_Items.value)
     
     def __init__(self):
+        self.modified_items: dict[int, models.Item] = {}
+        self.modified_weapon_mods: dict[str, models.WeaponMod] = {}
+        self.modified_runes: dict[str, models.Rune] = {}
+        
         self.cache: dict[int, dict] = {}
         self.queue: dict[int, bool] = {}
         self.action_queue = ActionQueueNode(5)
         self.server_language = self.get_server_language()        
 
+        self.load_account_files()
         self.clear()
 
+    def load_account_files(self):            
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        account_directory = os.path.join(file_directory, "data", "diffs", GLOBAL_CACHE.Player.GetAccountEmail())            
+        account_items_file = os.path.join(account_directory, "items.json")
+        account_weapon_mods_file = os.path.join(account_directory, "weapon_mods.json")
+        
+        if os.path.exists(account_items_file):
+            with open(account_items_file, 'r', encoding='utf-8') as file:
+                items = json.load(file)
+
+                for value in items.values():
+                    item = models.Item.from_json(value)
+                    if item.model_id not in self.modified_items:
+                        self.modified_items[item.model_id] = item
+                        
+        if os.path.exists(account_weapon_mods_file):
+            with open(account_weapon_mods_file, 'r', encoding='utf-8') as file:
+                weapon_mods = json.load(file)
+
+                for value in weapon_mods.values():
+                    mod = models.WeaponMod.from_json(value)
+                    if mod.identifier not in self.modified_weapon_mods:
+                        self.modified_weapon_mods[mod.identifier] = mod
+                        
     def clear(self):
         self.name_requested = {}
         self.cache = {}
@@ -495,6 +524,7 @@ class DataCollector:
                         data.Weapon_Mods[index].set_name(
                             mod_name, self.server_language)
                         save_weapon_mods = True
+                        self.modified_weapon_mods[mod.identifier] = data.Weapon_Mods[index]
                         continue
 
                     if mod.mod_type == enum.ModType.Suffix:
@@ -503,6 +533,7 @@ class DataCollector:
                         data.Weapon_Mods[index].set_name(
                             mod_name, self.server_language)
                         save_weapon_mods = True
+                        self.modified_weapon_mods[mod.identifier] = data.Weapon_Mods[index]
                         continue
 
     def create_item_name(self, item_id: int) -> Optional[str]:
@@ -575,10 +606,12 @@ class DataCollector:
                     data.Items[model_id].set_name(
                         item_name, self.server_language)
                     save_items = True
+                    self.modified_items[model_id] = data.Items[model_id]
 
                 if data.Items[model_id].contains_amount and self.get_quantity(item_id) == 1:
                     data.Items[model_id].set_name(
-                        item_name, self.server_language)
+                        item_name, self.server_language)                    
+                    self.modified_items[model_id] = data.Items[model_id]
                     save_items = True
 
             else:
@@ -600,6 +633,7 @@ class DataCollector:
 
                     if (attribute is not None and attribute not in data.Items[model_id].attributes):
                         data.Items[model_id].attributes.append(attribute)
+                        self.modified_items[model_id] = data.Items[model_id]
                         save_items = True
 
             wiki_url = self.get_wiki_url(item_id)
@@ -607,6 +641,8 @@ class DataCollector:
             data.Items[model_id].wiki_url = wiki_url
 
             if save_items:
+                self.modified_items[model_id] = data.Items[model_id]
+
                 ConsoleLog(
                     "LootEx", f"Collected item: {data.Items[model_id].names.get(self.server_language, 'Unknown')} ({model_id})", Console.MessageType.Debug)
                 return
@@ -659,21 +695,17 @@ class DataCollector:
 
             if save_items:
                 save_items = False
-                # self.save_test_item()
-                data.SaveItems(True)
-
+                data.SaveItems(shared_file=False, items=self.modified_items)
                 saved = True
 
             if save_runes:
                 save_runes = False
-
-                data.SaveRunes()
+                data.SaveRunes(items=self.modified_runes)
                 saved = True
 
             if save_weapon_mods:
                 save_weapon_mods = False
-
-                data.SaveWeaponMods(True)
+                data.SaveWeaponMods(items=self.modified_weapon_mods)
                 saved = True
 
             if saved:

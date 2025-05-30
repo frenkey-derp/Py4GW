@@ -1,0 +1,298 @@
+{
+    "144": {
+        "ModelID": 144,
+        "Names": {
+            "English": "Shortbow",
+            "German": "Kurzbogen",
+            "Korean": "단궁",
+            "French": "Arc court",
+            "Italian": "Arco Corto",
+            "Spanish": "Arco corto",
+            "TraditionalChinese": "短弓",
+            "Japanese": "ショートボウ",
+            "Polish": "Krótki Łuk",
+            "Russian": "Shortbow",
+            "BorkBorkBork": "Shurtboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shortbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "202": {
+        "ModelID": 202,
+        "Names": {
+            "English": "Ball Hammer",
+            "German": "Wurfhammer",
+            "Korean": "볼해머",
+            "French": "Marteau boule",
+            "Italian": "Martello a Palla",
+            "Spanish": "Maza",
+            "TraditionalChinese": "圓鎚",
+            "Japanese": "ボール ハンマー",
+            "Polish": "Kulowy Młot",
+            "Russian": "Ball Hammer",
+            "BorkBorkBork": "Baell Haemmer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ball_Hammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "419": {
+        "ModelID": 419,
+        "Names": {
+            "English": "Spatha",
+            "German": "Spatha",
+            "Korean": "스파타",
+            "French": "Spathe",
+            "Italian": "Daga",
+            "Spanish": "Spatha",
+            "TraditionalChinese": "細身騎劍",
+            "Japanese": "スパタ",
+            "Polish": "Spatha",
+            "Russian": "Spatha",
+            "BorkBorkBork": "Spaetha"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Spatha",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "421": {
+        "ModelID": 421,
+        "Names": {
+            "English": "Wingblade Sword",
+            "German": "Flügelklingenschwert",
+            "Korean": "윙블레이드",
+            "French": "Epée ailée",
+            "Italian": "Lama Alata",
+            "Spanish": "Espada alada",
+            "TraditionalChinese": "翼刃劍",
+            "Japanese": "ウイングブレード ソード",
+            "Polish": "Skrzydlaty Miecz",
+            "Russian": "Wingblade Sword",
+            "BorkBorkBork": "Veengblaede-a Svurd"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Wingblade_Sword",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1283": {
+        "ModelID": 1283,
+        "Names": {
+            "English": "Bone Staff",
+            "German": "Knochen-Stab",
+            "Korean": "해골 스태프",
+            "French": "Bâton d'os",
+            "Italian": "Bastone d'Ossa",
+            "Spanish": "Báculo de hueso",
+            "TraditionalChinese": "骸骨法杖",
+            "Japanese": "ボーン スタッフ",
+            "Polish": "Kościany Kostur",
+            "Russian": "Bone Staff",
+            "BorkBorkBork": "Bune-a Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DeathMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "1365": {
+        "ModelID": 1365,
+        "Names": {
+            "English": "Caged Shortbow",
+            "German": "Dornen-Kurzbogen",
+            "Korean": "사냥용 단궁",
+            "French": "Arc court charpente",
+            "Italian": "Arco Corto Ingabbiato",
+            "Spanish": "Arco corto de jaula",
+            "TraditionalChinese": "牢籠短弓",
+            "Japanese": "ケイジ ショートボウ",
+            "Polish": "Klatkowy Krótki Łuk",
+            "Russian": "Caged Shortbow",
+            "BorkBorkBork": "Caeged Shurtboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Caged_Shortbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1400": {
+        "ModelID": 1400,
+        "Names": {
+            "English": "Boneclaw Staff",
+            "German": "Knochenkrallen-Stab",
+            "Korean": "갈퀴달린 스태프",
+            "French": "Bâton de Griffe d'os",
+            "Italian": "Bastone con Artiglio d'Ossa",
+            "Spanish": "Báculo de garra",
+            "TraditionalChinese": "骨爪法杖",
+            "Japanese": "ボーンクロウ スタッフ",
+            "Polish": "Kostur Kościanego Szponu",
+            "Russian": "Boneclaw Staff",
+            "BorkBorkBork": "Buneclaev Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DeathMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Boneclaw_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "1453": {
+        "ModelID": 1453,
+        "Names": {
+            "English": "Whalekin Wand",
+            "German": "Wal-Zauberstab",
+            "Korean": "고래 지팡이",
+            "French": "Baguette cétacée",
+            "Italian": "Bacchetta Cetacea",
+            "Spanish": "Varita de ballena",
+            "TraditionalChinese": "鯨皮魔杖",
+            "Japanese": "ホエールキン ワンド",
+            "Polish": "Wielorybia Różdżka",
+            "Russian": "Whalekin Wand",
+            "BorkBorkBork": "Vhaelekeen Vund"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Whalekin_Wand",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1519": {
+        "ModelID": 1519,
+        "Names": {
+            "English": "Clouded Spear",
+            "German": "Beschlagener Speer",
+            "Korean": "구름문양 창",
+            "French": "Javelot obscur",
+            "Italian": "Lancia Coperta",
+            "Spanish": "Lanza oscura",
+            "TraditionalChinese": "暗影矛",
+            "Japanese": "クラウド スピア",
+            "Polish": "Chmurna Włócznia",
+            "Russian": "Clouded Spear",
+            "BorkBorkBork": "Cluooded Speaer"
+        },
+        "ItemType": "Spear",
+        "DropInfo": "",
+        "Attributes": [
+            "SpearMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Clouded_Spear",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1582": {
+        "ModelID": 1582,
+        "Names": {
+            "English": "Kournan Pendant"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Pendant",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": 116,
+        "Profession": null
+    },
+    "1686": {
+        "ModelID": 1686,
+        "Names": {
+            "English": "Mandragor Root",
+            "German": "Alraunenwurzel",
+            "Korean": "맨드라고라 뿌리",
+            "French": "Racine de mandragore",
+            "Italian": "Radice di Mandragora",
+            "Spanish": "Raíz de mandrágora",
+            "TraditionalChinese": "曼陀羅根",
+            "Japanese": "マンドレイクの根",
+            "Polish": "Korzeń Mandragory",
+            "Russian": "Mandragor Root",
+            "BorkBorkBork": "Mundraegur Ruut"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mandragor_Root",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1692": {
+        "ModelID": 1692,
+        "Names": {
+            "English": "Half-Digested Armor",
+            "German": "Halbgegessene Rüstung",
+            "Korean": "반쯤 손상된 갑옷",
+            "French": "Armure dégurgitée",
+            "Italian": "Armatura Digerita Parzialmente",
+            "Spanish": "Armadura medio digerida",
+            "TraditionalChinese": "未消化的盔甲",
+            "Japanese": "半分消化された防具",
+            "Polish": "Niestrawiona Zbroja",
+            "Russian": "Half-Digested Armor",
+            "BorkBorkBork": "Haelff-Deegested Aermur"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Half-Digested_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    }
+}

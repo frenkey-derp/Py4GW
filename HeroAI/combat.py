@@ -1,6 +1,7 @@
 import Py4GW
 from Py4GWCoreLib import GLOBAL_CACHE, SpiritModelID, Timer, Routines, Range, Allegiance, AgentArray
 from Py4GWCoreLib import Weapon
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from .custom_skill import CustomSkillClass
 from .targeting import TargetLowestAlly, TargetLowestAllyEnergy, TargetClusteredEnemy, TargetLowestAllyCaster, TargetLowestAllyMartial, TargetLowestAllyMelee, TargetLowestAllyRanged, GetAllAlliesArray
 from .targeting import GetEnemyAttacking, GetEnemyCasting, GetEnemyCastingSpell, GetEnemyInjured, GetEnemyConditioned
@@ -155,6 +156,7 @@ class CombatClass:
         self.comfort_animal = GLOBAL_CACHE.Skill.GetID("Comfort_Animal")
         self.heal_as_one = GLOBAL_CACHE.Skill.GetID("Heal_as_One")
         self.heroic_refrain = GLOBAL_CACHE.Skill.GetID("Heroic_Refrain")
+        self.blood_is_power = GLOBAL_CACHE.Skill.GetID("Blood_is_Power")
         
     def Update(self, cached_data):
         self.in_aggro = cached_data.in_aggro
@@ -837,8 +839,10 @@ class CombatClass:
                     player_data = self.shared_memory_handler.get_player(i)
                     if player_data and player_data["IsActive"] and player_data["PlayerID"] == vTarget:
                         if player_data["Energy"] < Conditions.LessEnergy:
+                            ConsoleLog("COMBAT", f"Energy of {player_data['PlayerID']} is {player_data["Energy"]} which is less than {Conditions.LessEnergy}", Py4GW.Console.MessageType.Info)
                             number_of_features += 1
             else:
+                ConsoleLog("COMBAT", f"Energy of {vTarget} can't be checked.", Py4GW.Console.MessageType.Info)
                 number_of_features += 1 #henchmen, allies, pets or something else thats not reporting energy
 
         if Conditions.Overcast != 0:

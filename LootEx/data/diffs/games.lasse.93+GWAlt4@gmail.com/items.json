@@ -1,0 +1,568 @@
+{
+    "134": {
+        "ModelID": 134,
+        "Names": {
+            "English": "Half Moon",
+            "German": "Halbmond",
+            "Korean": "반월궁",
+            "French": "Demi-lune",
+            "Italian": "Mezzaluna",
+            "Spanish": "Media luna",
+            "TraditionalChinese": "半月弓",
+            "Japanese": "ハーフ ムーン",
+            "Polish": "Półksiężyc",
+            "Russian": "Half Moon",
+            "BorkBorkBork": "Haelff Muun"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Half_Moon",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "138": {
+        "ModelID": 138,
+        "Names": {
+            "English": "Feathered Longbow",
+            "German": "Feder-Langbogen",
+            "Korean": "깃털장식 장궁",
+            "French": "Arc long à plumes",
+            "Italian": "Arco Lungo Piumato",
+            "Spanish": "Arco largo con plumas",
+            "TraditionalChinese": "長弓",
+            "Japanese": "フェザー ロングボウ",
+            "Polish": "Długi Pierzasty Łuk",
+            "Russian": "Feathered Longbow",
+            "BorkBorkBork": "Feaezeered Lungboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Feathered_Longbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "147": {
+        "ModelID": 147,
+        "Names": {
+            "English": "Inscribed Chakram",
+            "German": "Graviertes Tschakra",
+            "Korean": "문자가 새겨진 챠크람",
+            "French": "Chakram gravé",
+            "Italian": "Chakram Inciso",
+            "Spanish": "Chakram con grabados",
+            "TraditionalChinese": "雕刻的圓月輪",
+            "Japanese": "インスクライブ チャクラム",
+            "Polish": "Grawerowany Czakram",
+            "Russian": "Inscribed Chakram",
+            "BorkBorkBork": "Inscreebed Chaekraem"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Inscribed_Chakram",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Mesmer"
+    },
+    "177": {
+        "ModelID": 177,
+        "Names": {
+            "English": "Earth Scroll",
+            "German": "Erd-Schriftrolle",
+            "Korean": "대지의 스크롤",
+            "French": "Parchemin de la terre",
+            "Italian": "Pergamena della Terra",
+            "Spanish": "Pergamino terrestre",
+            "TraditionalChinese": "地卷軸",
+            "Japanese": "アース スクロール",
+            "Polish": "Ziemny Zwój",
+            "Russian": "Earth Scroll",
+            "BorkBorkBork": "Iaert Scrull"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "EarthMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Scroll",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "201": {
+        "ModelID": 201,
+        "Names": {
+            "English": "Foehammer",
+            "German": "Feindhammer",
+            "Korean": "포해머",
+            "French": "Marteau antagoniste",
+            "Italian": "Martello del Nemico",
+            "Spanish": "Derribaenemigos",
+            "TraditionalChinese": "破敵鎚",
+            "Japanese": "フォーハンマー",
+            "Polish": "Wrogobójca",
+            "Russian": "Foehammer",
+            "BorkBorkBork": "Fuehaemmer"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Foehammer",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "731": {
+        "ModelID": 731,
+        "Names": {
+            "English": "Harmonic Rod",
+            "German": "Harmonischer Stecken",
+            "Korean": "조화의 막대",
+            "French": "Badine d'harmonie",
+            "Italian": "Verga Armonica",
+            "Spanish": "Vara de armonía",
+            "TraditionalChinese": "和諧手杖",
+            "Japanese": "ハーモニック ロッド",
+            "Polish": "Harmoniczne Berło",
+            "Russian": "Harmonic Rod",
+            "BorkBorkBork": "Haermuneec Rud"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "Communing"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Harmonic_Rod",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Ritualist"
+    },
+    "1044": {
+        "ModelID": 1044,
+        "Names": {
+            "English": "Feathered Flatbow",
+            "German": "Feder-Flachbogen",
+            "Korean": "깃털장식 평궁",
+            "French": "Arc plat à plumes",
+            "Italian": "Arco Piatto Piumato",
+            "Spanish": "Arco simple con plumas",
+            "TraditionalChinese": "羽飾平底弓",
+            "Japanese": "フェザー フラットボウ",
+            "Polish": "Pierzasty Płaski Łuk",
+            "Russian": "Feathered Flatbow",
+            "BorkBorkBork": "Feaezeered Flaetboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Feathered_Flatbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1048": {
+        "ModelID": 1048,
+        "Names": {
+            "English": "Wooden Longbow",
+            "German": "Holz-Langbogen",
+            "Korean": "나무 장궁",
+            "French": "Arc long de bois",
+            "Italian": "Arco Lungo di Legno",
+            "Spanish": "Arco largo de madera",
+            "TraditionalChinese": "木質長弓",
+            "Japanese": "ウッド ロングボウ",
+            "Polish": "Drewniany Długi Łuk",
+            "Russian": "Wooden Longbow",
+            "BorkBorkBork": "Vuudee Lungboo"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Wooden_Longbow",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1209": {
+        "ModelID": 1209,
+        "Names": {
+            "English": "Jeweled Chalice",
+            "German": "Juwelenkelch",
+            "Korean": "보석이 박힌 잔",
+            "French": "Calice serti de joyaux",
+            "Italian": "Calice con Gioielli",
+            "Spanish": "Cáliz enjoyado",
+            "TraditionalChinese": "寶石聖杯",
+            "Japanese": "ジュエル カリス",
+            "Polish": "Zdobiony Kielich",
+            "Russian": "Jeweled Chalice",
+            "BorkBorkBork": "Jooeled Chaeleece-a"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "InspirationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chalice",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Mesmer"
+    },
+    "1349": {
+        "ModelID": 1349,
+        "Names": {
+            "English": "Hooked Axe",
+            "German": "Hakenaxt",
+            "Korean": "갈고리 도끼",
+            "French": "Hache à crochet",
+            "Italian": "Falce Ricurva",
+            "Spanish": "Hacha curvada",
+            "TraditionalChinese": "鉤斧",
+            "Japanese": "フック アックス",
+            "Polish": "Hakowy Topór",
+            "Russian": "Hooked Axe",
+            "BorkBorkBork": "Huuked Aexe-a"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hooked_Axe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1480": {
+        "ModelID": 1480,
+        "Names": {
+            "English": "Briarwood Scythe",
+            "German": "Dornenholz-Sense",
+            "Korean": "찔레나무 사이드",
+            "French": "Faux de bruyère",
+            "Italian": "Falce di Erica",
+            "Spanish": "Guadaña de brezo",
+            "TraditionalChinese": "薔木鐮刀",
+            "Japanese": "ブライアウッド サイズ",
+            "Polish": "Korzenna Kosa",
+            "Russian": "Briarwood Scythe",
+            "BorkBorkBork": "Breeaervuud Scyzee"
+        },
+        "ItemType": "Scythe",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Briarwood_Scythe",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1540": {
+        "ModelID": 1540,
+        "Names": {
+            "English": "Lotus Shield",
+            "German": "Lotusschild",
+            "Korean": "연꽃 방패",
+            "French": "Bouclier du lotus",
+            "Italian": "Scudo di Loto",
+            "Spanish": "Escudo de loto",
+            "TraditionalChinese": "蓮盾",
+            "Japanese": "ロータス シールド",
+            "Polish": "Tarcza Lotosu",
+            "Russian": "Lotus Shield",
+            "BorkBorkBork": "Lutoos Sheeeld"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lotus_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1551": {
+        "ModelID": 1551,
+        "Names": {
+            "English": "Elonian Blade",
+            "German": "Elona-Klinge",
+            "Korean": "엘로나 검",
+            "French": "Lame élonienne",
+            "Italian": "Lama Eloniana",
+            "Spanish": "Espada de Elona",
+            "TraditionalChinese": "伊洛那之刃",
+            "Japanese": "イロナ ブレード",
+            "Polish": "Elońskie Ostrze",
+            "Russian": "Elonian Blade",
+            "BorkBorkBork": "Iluneeun Blaede-a"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Blade",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1582": {
+        "ModelID": 1582,
+        "Names": {
+            "English": "Kournan Pendant"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Pendant",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": 116,
+        "Profession": null
+    },
+    "1686": {
+        "ModelID": 1686,
+        "Names": {
+            "English": "Mandragor Root"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mandragor_Root",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1692": {
+        "ModelID": 1692,
+        "Names": {
+            "English": "Half-Digested Armor",
+            "German": "Halbgegessene Rüstung",
+            "Korean": "반쯤 손상된 갑옷",
+            "French": "Armure dégurgitée",
+            "Italian": "Armatura Digerita Parzialmente",
+            "Spanish": "Armadura medio digerida",
+            "TraditionalChinese": "未消化的盔甲",
+            "Japanese": "半分消化された防具",
+            "Polish": "Niestrawiona Zbroja",
+            "Russian": "Half-Digested Armor",
+            "BorkBorkBork": "Haelff-Deegested Aermur"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Half-Digested_Armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "2040": {
+        "ModelID": 2040,
+        "Names": {
+            "English": "Savage Daggers",
+            "German": "Reißzahn-Dolche",
+            "Korean": "투박한 단검",
+            "French": "Dagues de sauvagerie",
+            "Italian": "Pugnali Selvaggi",
+            "Spanish": "Dagas salvajes",
+            "TraditionalChinese": "野蠻匕首",
+            "Japanese": "サヴェージ ダガー",
+            "Polish": "Dzikie Sztylety",
+            "Russian": "Savage Daggers",
+            "BorkBorkBork": "Saefaege-a Daeggers"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Savage_Daggers",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "2198": {
+        "ModelID": 2198,
+        "Names": {
+            "English": "Militia Shield",
+            "German": "Miliz-Schild",
+            "Korean": "병사의 방패",
+            "French": "Bouclier de milicien",
+            "Italian": "Scudo della Milizia",
+            "Spanish": "Escudo de la milicia",
+            "TraditionalChinese": "民兵之盾",
+            "Japanese": "ミリティア シールド",
+            "Polish": "Tarcza Milicji",
+            "Russian": "Militia Shield",
+            "BorkBorkBork": "Meeleeteea Sheeeld"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Militia_Shield",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "2251": {
+        "ModelID": 2251,
+        "Names": {
+            "English": "Forked Sword",
+            "German": "Gabelschwert",
+            "Korean": "포크 소드",
+            "French": "Epée fourchue",
+            "Italian": "Spada Forcuta",
+            "Spanish": "Espada horcada",
+            "TraditionalChinese": "叉型劍",
+            "Japanese": "フォークド ソード",
+            "Polish": "Rozdwojony Miecz",
+            "Russian": "Forked Sword",
+            "BorkBorkBork": "Furked Svurd"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Forked_Sword",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "2255": {
+        "ModelID": 2255,
+        "Names": {
+            "English": "Short Sword",
+            "German": "Kurzschwert",
+            "Korean": "단검",
+            "French": "Epée courte",
+            "Italian": "Spada Corta",
+            "Spanish": "Espada corta",
+            "TraditionalChinese": "短劍",
+            "Japanese": "ショート ソード",
+            "Polish": "Krótki Miecz",
+            "Russian": "Short Sword",
+            "BorkBorkBork": "Shurt Svurd"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Short_Sword",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "5975": {
+        "ModelID": 5975,
+        "Names": {
+            "English": "Scroll of Rampagers Insight",
+            "German": "Schriftrolle über den Einblick des Randalierers",
+            "Korean": "야성의 각성 주문서",
+            "French": "Parchemin de la Clairvoyance du saccageur",
+            "Italian": "Pergamena dell'Intuito dello Scalmanato",
+            "Spanish": "Pergamino de la perspicacia del hostigador",
+            "TraditionalChinese": "狂暴者的洞察卷軸",
+            "Japanese": "スクロール：乱暴者の洞察",
+            "Polish": "Zwój Intuicji Piekielnika",
+            "Russian": "Scroll of Rampager's Insight",
+            "BorkBorkBork": "Scrull ooff Raempaeger's Inseeght"
+        },
+        "ItemType": "Scroll",
+        "DropInfo": "Bosses NM & HM",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Rampagers_Insight",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "17207": {
+        "ModelID": 17207,
+        "Names": {
+            "English": "Sunspear Mask",
+            "German": "Sonnenspeer-Maske",
+            "Korean": "선스피어 마스크",
+            "French": "Masque de Lancier",
+            "Italian": "Maschera della Lancia del Sole",
+            "Spanish": "Máscara de Lancero",
+            "TraditionalChinese": "日戟面罩",
+            "Japanese": "サンスピア マスク",
+            "Polish": "Maska Słonecznych Włóczni",
+            "Russian": "Sunspear Mask",
+            "BorkBorkBork": "Soonspeaer Maesk"
+        },
+        "ItemType": "Headpiece",
+        "DropInfo": "",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Sunspear_armor",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Mesmer"
+    },
+    "27382": {
+        "ModelID": 27382,
+        "Names": {
+            "English": "Droknar's Domination Focus",
+            "German": "Droknars Beherrschungsfokus",
+            "Korean": "드록나 지배 포커스",
+            "French": "Focus de domination de Droknar",
+            "Italian": "Focus di Droknar del Dominio",
+            "Spanish": "Foco de dominación de Droknar",
+            "TraditionalChinese": "卓克納支配聚能器",
+            "Japanese": "ドロクナー ドミネーション フォーカス",
+            "Polish": "Fokus Dominacji Droknara",
+            "Russian": "Droknar's Domination Focus",
+            "BorkBorkBork": "Druknaer's Dumeenaeshun Fucoos"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DominationMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknar's_Domination_Focus",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    }
+}
