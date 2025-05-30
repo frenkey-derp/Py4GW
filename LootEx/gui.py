@@ -219,6 +219,29 @@ def draw_data_collector_tab():
         if PyImGui.begin_child("DataCollectorChild", (tab_size[0], tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
             PyImGui.text("Data Collector")
             PyImGui.separator()
+            
+            if PyImGui.begin_table("DataCollectorTable", 2, PyImGui.TableFlags.ScrollY, 250, 100):
+                PyImGui.table_setup_column("Data")
+                PyImGui.table_setup_column("Amount")
+                
+                # PyImGui.table_headers_row()
+                PyImGui.table_next_row()
+                
+                PyImGui.table_next_column()
+                PyImGui.text(f"Items")
+                PyImGui.table_next_column()
+                PyImGui.text(f"{len(data.Items)}")
+                            
+                PyImGui.table_next_column()
+                PyImGui.text(f"Weapon Mods")
+                PyImGui.table_next_column()
+                PyImGui.text(f"{len(data.Weapon_Mods)}")
+                            
+                PyImGui.table_next_column()
+                PyImGui.text(f"Runes")
+                PyImGui.table_next_column()
+                PyImGui.text(f"{len(data.Runes)}")                
+            PyImGui.end_table()
 
             if PyImGui.button("Merge Diffs into Data", 200, 50):
                 ConsoleLog(
@@ -228,8 +251,12 @@ def draw_data_collector_tab():
                 )
                 
                 data.MergeDiffItems()
+                
+            ImGui.show_tooltip("Merge all diff files into the data files.")
+            
+               
 
-            PyImGui.end_child()
+        PyImGui.end_child()
 
         PyImGui.end_tab_item()
 

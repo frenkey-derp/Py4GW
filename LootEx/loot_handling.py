@@ -10,6 +10,8 @@ importlib.reload(settings)
 
 salvaged = False
 deposited = False
+capacity_checked = False
+material_capacity = 2500
 
 def HandleInventoryLoot() -> int:
     if Map.IsOutpost():
@@ -65,9 +67,11 @@ def HandleInventoryLoot() -> int:
 
 
 def DepositMaterials() -> bool:
-    global deposited
+    global deposited, capacity_checked, material_capacity
     
     if not deposited:
+        ConsoleLog("LootEx", "Depositing materials into material storage", Console.MessageType.Info)
+        
         items = GLOBAL_CACHE.ItemArray.GetRawItemArray(
             [Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2])
 
@@ -92,14 +96,40 @@ def DepositMaterials() -> bool:
                 (item for item in items if item.model_id == material.model_id), None)
             
             if item is not None:
-                move_amount = min(250 - material.quantity, item.quantity)
+                move_amount = min(material_capacity - material.quantity, item.quantity)
                 
                 if move_amount <= 0:
                     continue
                 
                 Inventory.MoveItem(item.item_id, Bags.MaterialStorage, material.slot, move_amount)
-                # return True
                 
+        return True
+                
+    elif not capacity_checked:
+        ConsoleLog("LootEx", "Checking material storage capacity", Console.MessageType.Info)
+        
+        material_storage = GLOBAL_CACHE.ItemArray.GetRawItemArray(
+            [Bags.MaterialStorage])
+        
+        max_quantity = max([item.quantity for item in material_storage])
+        
+        ## calculate the estimated capacity based on the max quantity by rounding it up to the nearest 250 if it is not already a multiple of 250
+        
+        estimated_capacity = (max_quantity // 250) * 250
+        if max_quantity % 250 != 0:
+            ## if it is not a multiple of 250, add 250 to the estimated capacity
+            ## this ensures that the material storage capacity is always a multiple of 250
+            estimated_capacity += 250
+        ConsoleLog("LootEx", f"Estimated material storage capacity: {estimated_capacity}", Console.MessageType.Info)
+
+        
+        if estimated_capacity != material_capacity:
+            material_capacity = estimated_capacity
+            ConsoleLog("LootEx", f"Material storage capacity set to {material_capacity}", Console.MessageType.Info)
+                 
+        capacity_checked = True
+        
+                        
     return False
 
 
