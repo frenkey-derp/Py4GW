@@ -1,15 +1,18 @@
-from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector, data, utility
+from LootEx import settings, loot_check, loot_handling, loot_profile, data_collector, data, utility, messaging
 from Py4GWCoreLib import *
 from LootEx import gui
 
 # Reload imports
 import importlib
+
+from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 importlib.reload(gui)
 importlib.reload(loot_profile)
 importlib.reload(settings)
 importlib.reload(loot_handling)
 importlib.reload(data_collector)
 importlib.reload(loot_check)
+importlib.reload(messaging)
 
 MODULE_NAME = "LootEx"
 loot_handling_timer = ThrottledTimer(50)
@@ -28,8 +31,8 @@ settings.current.data_collection_path = os.path.join(
 settings.current.load()
 
 inventory_frame_hash = 291586130
-collector = data_collector.DataCollector()
-
+sharedMemoryManager = Py4GWSharedMemoryManager()
+current_account = Player.GetAccountEmail()
 
 def configure():
     if not settings.current.window_visible is True:
@@ -39,8 +42,11 @@ def configure():
 
 def main():
     if not Routines.Checks.Map.MapValid():
+        return    
+    
+    if messaging.HandleMessages():
         return
-
+    
     language = utility.Util.get_server_language()
     if (language != settings.current.language):
         settings.current.language = language
@@ -79,7 +85,7 @@ def main():
         return
 
 
-    collector.run_v2()
+    data_collector.instance.run_v2()
         
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():

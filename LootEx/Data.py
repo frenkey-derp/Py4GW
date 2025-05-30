@@ -282,6 +282,24 @@ def __init__(self):
 
 
 @staticmethod
+def Reload():
+    global Runes, Weapon_Mods, Items, Runes_by_Profession, Items_By_Type
+    
+    Runes.clear()
+    Runes_by_Profession.clear()
+    # Load the runes
+    LoadRunes()
+
+    Weapon_Mods.clear()
+    # Load the weapon mods
+    LoadWeaponMods()
+
+    Items.clear()
+    Items_By_Type.clear()
+    # Load the items
+    LoadItems()
+    
+@staticmethod
 def Load():
     # Load the runes
     LoadRunes()
@@ -549,5 +567,8 @@ def MergeDiffItems():
                     else:
                         # If the item already exists, we can update it
                         Items[item.model_id].update(item)
+        
+            # Delete the diff file after merging
+            os.remove(file_path)
     
     SaveItems(shared_file=True, items=Items)

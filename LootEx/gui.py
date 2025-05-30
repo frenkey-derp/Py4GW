@@ -2,6 +2,7 @@ from datetime import timedelta
 from LootEx import *
 from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache
 from LootEx import models
+from LootEx import messaging
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -9,6 +10,8 @@ from Py4GWCoreLib import *
 
 
 import importlib
+
+from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 importlib.reload(settings)
 importlib.reload(data)
 importlib.reload(models)
@@ -40,7 +43,6 @@ class SelectableItem:
 
     def __repr__(self):
         return self.__str__()
-
 
 selected_loot_items: list[SelectableItem] = []
 loot_items_selection_dragging: bool = False
@@ -83,6 +85,8 @@ weapon_types  = [
 prefix_names = ["Any"]
 suffix_names = ["Any"]
 inherent_names = ["Any"]
+
+sharedMemoryManager = Py4GWSharedMemoryManager()
 
 
 def draw_inventory_controls():
@@ -139,16 +143,27 @@ def _draw_inventory_toggle_button(width):
                              Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
 
     if PyImGui.button(IconsFontAwesome5.ICON_CHECK, width, width):
-        settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
-        ActionQueueManager().ResetQueue("SALVAGE")
-        ActionQueueManager().ResetQueue("IDENTIFY")
+        imgui_io = PyImGui.get_io()
+        
+        if imgui_io.key_ctrl:
+            if settings.current.automatic_inventory_handling:                
+                messaging.SendStopLootHandling(imgui_io.key_shift)
+            else:
+                messaging.SendStartLootHandling(imgui_io.key_shift)
+                
+        else:
+            settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
+            ActionQueueManager().ResetQueue("SALVAGE")
+            ActionQueueManager().ResetQueue("IDENTIFY")
 
     PyImGui.pop_style_var(1)
     PyImGui.pop_style_color(4)
 
     ImGui.show_tooltip(
         ("Disable" if settings.current.automatic_inventory_handling else "Enable") +
-        " Inventory Handling"
+        " Inventory Handling"+
+        "\nHold Ctrl to send message to all accounts" +
+        "\nHold Shift to send message to all accounts excluding yourself"
     )
 
 
@@ -170,14 +185,23 @@ def _draw_manual_window_toggle_button(width):
                              Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
 
     if PyImGui.button(IconsFontAwesome5.ICON_COG, width, width):
-        settings.current.manual_window_visible = not settings.current.manual_window_visible
-        settings.current.save()
+        imgui_io = PyImGui.get_io()
+        if imgui_io.key_ctrl:
+            if settings.current.manual_window_visible:
+                messaging.SendHideLootExWindow(imgui_io.key_shift)
+            else:
+                messaging.SendShowLootExWindow(imgui_io.key_shift)
+        else:
+            settings.current.manual_window_visible = not settings.current.manual_window_visible
+            settings.current.save()
 
     PyImGui.pop_style_var(1)
     PyImGui.pop_style_color(4)
 
     ImGui.show_tooltip(
-        ("Hide" if settings.current.manual_window_visible else "Show") + " Window")
+        ("Hide" if settings.current.manual_window_visible else "Show") + " Window" +
+        "\nHold Ctrl to send message to all accounts" +
+        "\nHold Shift to send message to all accounts excluding yourself")
 
 
 def _draw_xunlai_storage_button(width):
@@ -204,12 +228,19 @@ def _draw_xunlai_storage_button(width):
             # Inventory.close_storage()
             pass
         else:
-            Inventory.OpenXunlaiWindow()
+            imgui_io = PyImGui.get_io()
+            
+            if imgui_io.key_ctrl:
+                messaging.SendOpenXunlai(imgui_io.key_shift)
+            else:
+                Inventory.OpenXunlaiWindow()
 
     PyImGui.pop_style_var(1)
     PyImGui.pop_style_color(4)
 
-    ImGui.show_tooltip("Open Xunlai Storage")
+    ImGui.show_tooltip("Open Xunlai Storage"+
+        "\nHold Ctrl to send message to all accounts" +
+        "\nHold Shift to send message to all accounts excluding yourself")
 
 
 def draw_data_collector_tab():
@@ -250,8 +281,20 @@ def draw_data_collector_tab():
                     Console.MessageType.Info,
                 )
                 
-                data.MergeDiffItems()
+                current_account = Player.GetAccountEmail()
                 
+                for acc in sharedMemoryManager.GetAllAccountData():
+                    if acc.AccountEmail == current_account:
+                        continue
+                    
+                    ConsoleLog(
+                        "LootEx",
+                        f"Send Message to {acc.AccountEmail}",
+                        Console.MessageType.Info,
+                    )
+                    
+                messaging.SendMergingMessage()
+                                
             ImGui.show_tooltip("Merge all diff files into the data files.")
             
                

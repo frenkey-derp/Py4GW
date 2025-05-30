@@ -1,6 +1,18 @@
 
 from enum import IntEnum
 
+class MessageActions(IntEnum):
+    None_ = 0
+    PauseDataCollection = 1
+    ResumeDataCollection = 2
+    StartDataCollection = 3
+    ReloadData = 4
+    StartLootHandling = 5
+    StopLootHandling = 6
+    ShowLootExWindow = 7
+    HideLootExWindow = 8
+    OpenXunlai = 9    
+
 class WeaponType(IntEnum):
     Axe = 1
     Sword = 2

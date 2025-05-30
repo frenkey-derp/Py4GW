@@ -65,6 +65,27 @@ def HandleInventoryLoot() -> int:
 
     return 50
 
+def StopLootHandling():
+    global salvaged, deposited, capacity_checked, material_capacity
+
+    ConsoleLog("LootEx", "Stopping loot handling", Console.MessageType.Info)
+    
+    ActionQueueManager().ResetQueue("IDENTIFY")
+    ActionQueueManager().ResetQueue("SALVAGE")
+    ActionQueueManager().ResetQueue("MERCHANT")
+
+    settings.current.automatic_inventory_handling = False
+    
+    return True
+
+def StartLootHandling() -> bool:
+    global salvaged, deposited, capacity_checked, material_capacity
+
+    ConsoleLog("LootEx", "Starting loot handling", Console.MessageType.Info)
+    settings.current.automatic_inventory_handling = True
+
+    return True
+
 
 def DepositMaterials() -> bool:
     global deposited, capacity_checked, material_capacity

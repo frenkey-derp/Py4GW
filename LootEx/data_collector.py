@@ -67,6 +67,9 @@ class DataCollector:
             with open(account_items_file, 'r', encoding='utf-8') as file:
                 items = json.load(file)
 
+                if self.modified_items:
+                    self.modified_items.clear()
+                
                 for value in items.values():
                     item = models.Item.from_json(value)
                     if item.model_id not in self.modified_items:
@@ -75,8 +78,11 @@ class DataCollector:
         if os.path.exists(account_weapon_mods_file):
             with open(account_weapon_mods_file, 'r', encoding='utf-8') as file:
                 weapon_mods = json.load(file)
-
-                for value in weapon_mods.values():
+                
+                if self.modified_weapon_mods:
+                    self.modified_weapon_mods.clear()
+                
+                for value in weapon_mods:
                     mod = models.WeaponMod.from_json(value)
                     if mod.identifier not in self.modified_weapon_mods:
                         self.modified_weapon_mods[mod.identifier] = mod
@@ -757,3 +763,30 @@ class DataCollector:
                         self.queue[item_id] = True
                         self.action_queue.add_action(
                             self.check, item_id)
+
+    def stop_collection(self):
+        global save_items, save_runes, save_weapon_mods
+        
+        """Stop the data collection. And save any pending changes."""
+        settings.current.collect_items = False
+        save_items = False
+        save_runes = False
+        save_weapon_mods = False
+        
+        ConsoleLog("LootEx", "Data collection stopped.")
+        data.SaveItems(shared_file=False, items=self.modified_items)
+        data.SaveWeaponMods(shared_file=False, items=self.modified_weapon_mods)
+        
+        
+    def start_collection(self):
+        """Start the data collection."""
+        
+        self.clear()
+        
+        self.load_account_files()
+        
+        settings.current.collect_items = True
+        
+        ConsoleLog("LootEx", "Data collection started.")
+        
+instance = DataCollector()
