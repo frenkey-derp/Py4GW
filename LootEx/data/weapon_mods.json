@@ -15,12 +15,13 @@
             "Japanese": "アプティテュード ノット アティテュード",
             "BorkBorkBork": "\"Aepteetoode-a nut Aetteetoode-a\"",
             "Polish": "\"Talent a nie nastawienie\"",
-            "Russian": "\"Главное - способности, а не отношение к делу\""
+            "Russian": "\"Главное -способности, а не отношение к делу\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -45,6 +46,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8648,
@@ -72,13 +74,14 @@
             "TraditionalChinese": "\"有勇無謀\"",
             "Japanese": "ブローン オーバー ブレイン",
             "Polish": "\"Siła ponad umysł\"",
-            "Russian": "\"Сила есть - ума не надо\"",
+            "Russian": "\"Сила есть -ума не надо\"",
             "BorkBorkBork": "\"Braevn oofer Braeeens\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8376,
@@ -122,6 +125,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -156,6 +160,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8872,
@@ -190,6 +195,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8856,
@@ -224,6 +230,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8712,
@@ -258,6 +265,7 @@
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8984,
@@ -282,6 +290,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8632,
@@ -300,12 +309,23 @@
             "English": "Armor +{arg2} (while Enchanted)"
         },
         "Names": {
-            "English": "\"Faith is My Shield\""
+            "English": "\"Faith is My Shield\"",
+            "German": "\"Der Glaube ist mein Schild!\"",
+            "French": "\"La foi est mon bouclier\"",
+            "Korean": "신념은 나의 방패다",
+            "Italian": "\"La Fede è il Mio Scudo\"",
+            "Spanish": "\"La fe es mi escudo\"",
+            "TraditionalChinese": "\"信念是盾\"",
+            "Polish": "\"Wiara jest mą tarczą\"",
+            "Russian": "\"Вера послужит мне щитом\"",
+            "BorkBorkBork": "\"Faeeet is My Sheeeld\"",
+            "Japanese": "フェイス イズ マイ シールド"
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8600,
@@ -340,6 +360,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -374,6 +395,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10280,
@@ -408,6 +430,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8808,
@@ -442,6 +465,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8616,
@@ -476,6 +500,7 @@
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8968,
@@ -510,6 +535,7 @@
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8952,
@@ -544,6 +570,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -565,7 +592,7 @@
             "English": "\"I am Sorrow.\"",
             "BorkBorkBork": "\"I aem Surroo.\"",
             "Polish": "\"Jestem smutkiem.\"",
-            "Russian": "\"Я - воплощение скорби\"",
+            "Russian": "\"Я -воплощение скорби\"",
             "German": "\"Ich bin es Leid\"",
             "TraditionalChinese": "\"倍感憂傷\"",
             "Spanish": "\"Un mar de lágrimas\"",
@@ -578,6 +605,7 @@
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9000,
@@ -612,6 +640,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -646,6 +675,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8456,
@@ -679,6 +709,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8584,
@@ -713,6 +744,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -737,6 +769,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9128,
@@ -761,6 +794,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8456,
@@ -804,6 +838,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -838,6 +873,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -871,6 +907,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8312,
@@ -895,6 +932,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8488,
@@ -920,12 +958,16 @@
             "Italian": "\"Padrone in Casa Mia\"",
             "Spanish": "\"Amo de mi reino\"",
             "TraditionalChinese": "\"這是我的地盤！\"",
-            "Japanese": "マスター オブ マイ ドメイン"
+            "Japanese": "マスター オブ マイ ドメイン",
+            "Polish": "\"Pan mego królestwa\"",
+            "Russian": "\"Я сам себе хозяин\"",
+            "BorkBorkBork": "\"Maester ooff My Dumaeeen\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10296,
@@ -960,6 +1002,7 @@
         "TargetTypes": [
             "EquippableItem"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9736,
@@ -984,6 +1027,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8568,
@@ -1018,6 +1062,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1036,12 +1081,23 @@
             "English": "Received physical damage -{arg2} (while Hexed)"
         },
         "Names": {
-            "English": "\"Nothing to Fear\""
+            "English": "\"Nothing to Fear\"",
+            "German": "\"Nichts zu befürchten\"",
+            "French": "\"Rien à craindre\"",
+            "Korean": "두려울 건 없다",
+            "Italian": "\"Niente Paura\"",
+            "Spanish": "\"Nada que temer\"",
+            "TraditionalChinese": "\"無畏無懼\"",
+            "Polish": "\"Nieulękły\"",
+            "Russian": "\"Нечего бояться\"",
+            "BorkBorkBork": "\"Nutheeng tu Feaer\"",
+            "Japanese": "ナッシング トゥ フィアー"
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8344,
@@ -1076,6 +1132,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1110,6 +1167,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1144,6 +1202,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1178,6 +1237,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8360,
@@ -1212,6 +1272,7 @@
         "TargetTypes": [
             "SpellcastingWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -1245,6 +1306,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9128,
@@ -1263,12 +1325,23 @@
             "English": "Received physical damage -{arg2} (while Enchanted)"
         },
         "Names": {
-            "English": "\"Sheltered by Faith\""
+            "English": "\"Sheltered by Faith\"",
+            "German": "\"Vertrauen ist gut\"",
+            "French": "\"Protégé par la Foi\"",
+            "Korean": "신념의 보호",
+            "Italian": "\"Rifugio della Speranza\"",
+            "Spanish": "\"Fe ciega\"",
+            "TraditionalChinese": "\"信念守護\"",
+            "Polish": "\"Chroniony przez wiarę\"",
+            "Russian": "\"Под защитой веры\"",
+            "BorkBorkBork": "\"Sheltered by Faeeet\"",
+            "Japanese": "シェルター バイ フェイス"
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8328,
@@ -1303,6 +1376,7 @@
         "TargetTypes": [
             "EquippableItem"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9720,
@@ -1337,6 +1411,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1371,6 +1446,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1405,6 +1481,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8824,
@@ -1439,6 +1516,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1463,6 +1541,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8536,
@@ -1497,6 +1576,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10328,
@@ -1515,12 +1595,23 @@
             "English": "Armor +{arg2} (vs. Slashing damage)"
         },
         "Names": {
-            "English": "\"The Riddle of Steel\""
+            "English": "\"The Riddle of Steel\"",
+            "German": "\"Hieb-und stahlfest\"",
+            "Japanese": "ザ リドル オブ スチール",
+            "Korean": "강철의 수수께끼",
+            "French": "\"L'énigme de l'acier\"",
+            "Italian": "\"Enigma d'Acciaio\"",
+            "Spanish": "\"El enigma de acero\"",
+            "TraditionalChinese": "\"鋼鐵之謎\"",
+            "Polish": "\"Zagadka stali\"",
+            "Russian": "\"Стальной щит\"",
+            "BorkBorkBork": "\"Zee Reeddle-a ooff Steel\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1555,6 +1646,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 41240,
@@ -1589,6 +1681,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8760,
@@ -1632,6 +1725,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8792,
@@ -1656,6 +1750,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8840,
@@ -1690,6 +1785,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -1714,6 +1810,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1732,13 +1829,13 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "Axe Mastery +1",
-            "German": "d. Axtbeherrschung"
+            "English": "Axe Mastery +1"
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "Axe"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1758,7 +1855,7 @@
         },
         "Names": {
             "English": "Barbed",
-            "German": "Stachel- ",
+            "German": "Stachel-",
             "BorkBorkBork": "Baerbed",
             "Russian": "Barbed",
             "Polish": "Kolców",
@@ -1778,6 +1875,7 @@
             "Bow",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -1802,6 +1900,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1826,6 +1925,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1850,6 +1950,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1869,7 +1970,7 @@
         },
         "Names": {
             "English": "Crippling",
-            "German": "Verkrüppelungs- ",
+            "German": "Verkrüppelungs-",
             "Korean": "치명적인",
             "French": "d'infirmité",
             "Italian": "Azzoppante",
@@ -1877,7 +1978,7 @@
             "TraditionalChinese": "致殘",
             "Japanese": "クリップル",
             "Polish": "Kaleczenia",
-            "BorkBorkBork": "Crippling PvP Axe",
+            "BorkBorkBork": "Creeppleeng",
             "Russian": "Crippling"
         },
         "ModType": "Prefix",
@@ -1889,6 +1990,7 @@
             "Bow",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -1928,6 +2030,7 @@
             "Scythe",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -1952,6 +2055,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -1976,6 +2080,7 @@
         "TargetTypes": [
             "Daggers"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2000,6 +2105,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2034,6 +2140,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8456,
@@ -2058,6 +2165,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2082,6 +2190,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2106,6 +2215,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2125,7 +2235,7 @@
         },
         "Names": {
             "English": "Ebon",
-            "German": "Ebon- ",
+            "German": "Ebon-",
             "Korean": "흑단",
             "French": "terrestre",
             "Italian": "per danno d'ebano",
@@ -2140,6 +2250,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -2159,7 +2270,7 @@
         },
         "Names": {
             "English": "Fiery",
-            "German": "Hitze- ",
+            "German": "Hitze-",
             "Korean": "화염의",
             "French": "incendiaire",
             "Spanish": "con daño ardiente",
@@ -2173,6 +2284,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -2197,6 +2309,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2236,6 +2349,7 @@
             "Scythe",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9144,
@@ -2270,6 +2384,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9032,
@@ -2294,6 +2409,7 @@
         "TargetTypes": [
             "Hammer"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2318,6 +2434,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2336,7 +2453,7 @@
             "English": "Lengthens Weakness duration on foes by 33%"
         },
         "Names": {
-            "English": "Heavy PvP Axe",
+            "English": "Heavy",
             "German": "Schwergewichts-",
             "Korean": "무거운",
             "French": "de poids",
@@ -2355,6 +2472,7 @@
             "Scythe",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -2374,7 +2492,7 @@
         },
         "Names": {
             "English": "Icy",
-            "German": "Eis- ",
+            "German": "Eis-",
             "Korean": "냉기",
             "French": "polaire",
             "Italian": "per danno da ghiaccio",
@@ -2389,6 +2507,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -2413,6 +2532,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2432,7 +2552,7 @@
         },
         "Names": {
             "English": "Insightful",
-            "German": "Einblick- ",
+            "German": "Einblick-",
             "Korean": "통찰력의",
             "French": "de vision",
             "Italian": "dell'Astuzia",
@@ -2447,6 +2567,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8920,
@@ -2471,6 +2592,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2489,13 +2611,13 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "Marksmanship +1",
-            "German": "d. Treffsicherheit"
+            "English": "Marksmanship +1"
         },
         "ModType": "Inherent",
         "TargetTypes": [
             "Bow"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2515,7 +2637,7 @@
         },
         "Names": {
             "English": "Poisonous",
-            "German": "Gift- ",
+            "German": "Gift-",
             "Korean": "맹독의",
             "French": "de poison",
             "Italian": "del Veleno",
@@ -2535,6 +2657,7 @@
             "Bow",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -2559,6 +2682,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2583,6 +2707,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9336,
@@ -2607,6 +2732,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2631,6 +2757,7 @@
         "TargetTypes": [
             "Scythe"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2650,7 +2777,7 @@
         },
         "Names": {
             "English": "Shocking",
-            "German": "Schock- ",
+            "German": "Schock-",
             "Korean": "충격의",
             "French": "de foudre",
             "Italian": "per danno da shock",
@@ -2665,6 +2792,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9400,
@@ -2684,7 +2812,7 @@
         },
         "Names": {
             "English": "Silencing",
-            "German": "Dämpfungs- ",
+            "German": "Dämpfungs-",
             "Korean": "침묵의",
             "French": "de silence",
             "Italian": "del Silenzio",
@@ -2701,6 +2829,7 @@
             "Bow",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9320,
@@ -2725,6 +2854,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2749,6 +2879,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2773,6 +2904,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2797,6 +2929,7 @@
         "TargetTypes": [
             "Spear"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2816,7 +2949,7 @@
         },
         "Names": {
             "English": "Sundering",
-            "German": "Trenn- ",
+            "German": "Trenn-",
             "French": "de fractionnement",
             "Korean": "날카로운",
             "Italian": "della Separazione",
@@ -2831,6 +2964,7 @@
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9208,
@@ -2865,6 +2999,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8712,
@@ -2889,6 +3024,7 @@
         "TargetTypes": [
             "Sword"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -2908,11 +3044,11 @@
         },
         "Names": {
             "English": "Vampiric",
-            "German": "Vampir- Dolchangel",
+            "German": "Vampir-",
             "Korean": "흡혈의 단검자루",
-            "French": "Soie de dague vampirique",
-            "Italian": "Codolo per Pugnale del Vampiro",
-            "Spanish": "Afilador de dagas de vampiro",
+            "French": "vampirique",
+            "Italian": "del Vampiro",
+            "Spanish": "de vampiro",
             "TraditionalChinese": "吸血鬼 匕首刃",
             "Japanese": "ヴァンピリック ダガーのグリップ",
             "Polish": "Wampiryzmu",
@@ -2926,6 +3062,7 @@
             "Daggers",
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9512,
@@ -2954,7 +3091,16 @@
         },
         "Names": {
             "English": "Vampiric",
-            "German": "Vampir- "
+            "German": "Vampir-",
+            "Korean": "흡혈의 단검자루",
+            "French": "vampirique",
+            "Italian": "del Vampiro",
+            "Spanish": "de vampiro",
+            "TraditionalChinese": "吸血鬼 匕首刃",
+            "Japanese": "ヴァンピリック ダガーのグリップ",
+            "Polish": "Wampiryzmu",
+            "Russian": "Vampiric",
+            "BorkBorkBork": "Faempureec"
         },
         "ModType": "Prefix",
         "TargetTypes": [
@@ -2962,6 +3108,7 @@
             "Bow",
             "Scythe"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9512,
@@ -2995,6 +3142,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8760,
@@ -3028,6 +3176,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3047,21 +3196,22 @@
         },
         "Names": {
             "English": "Zealous",
-            "German": "Eifer- Dolchangel",
+            "German": "Eifer-",
             "BorkBorkBork": "Zeaeluoos",
             "Russian": "Zealous",
             "Polish": "Fanatyzmu",
-            "Japanese": "ゼラス ダガーのグリップ",
-            "TraditionalChinese": "熱望 匕首刃",
-            "Spanish": "Afilador de dagas de afán",
-            "Italian": "Codolo per Pugnale Zelante",
-            "French": "Soie de dague de zèle",
-            "Korean": "광신도의 단검자루"
+            "Japanese": "ゼラス",
+            "TraditionalChinese": "熱望",
+            "Spanish": "de afán",
+            "Italian": "Zelante",
+            "French": "de zèle",
+            "Korean": "광신도의"
         },
         "ModType": "Prefix",
         "TargetTypes": [
             "MartialWeapon"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9496,
@@ -3095,6 +3245,7 @@
         "TargetTypes": [
             "Weapon"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8760,
@@ -3128,6 +3279,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3155,13 +3307,14 @@
             "Spanish": "(de aptitud)",
             "Italian": "della Perspicacia",
             "French": "(d'aptitude)",
-            "Korean": "포커스장식(총명)",
+            "Korean": "(총명)",
             "German": "d. Begabung"
         },
         "ModType": "Suffix",
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10248,
@@ -3196,6 +3349,7 @@
         "TargetTypes": [
             "Axe"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3220,6 +3374,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3240,7 +3395,7 @@
         "Names": {
             "English": "of Channeling Magic",
             "German": "d. Kanalisierungsmagie",
-            "Korean": "스태프손잡이(마력 증폭)",
+            "Korean": "(마력 증폭)",
             "French": "(Magie de la canalisation)",
             "Italian": "del bastone Magia di Incanalamento",
             "Spanish": "(Magia de canalización)",
@@ -3254,6 +3409,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3282,6 +3438,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3315,6 +3472,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3339,6 +3497,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3360,9 +3519,9 @@
             "English": "of Dagger Mastery",
             "BorkBorkBork": "ooff Daegger Maestery",
             "German": "d. Dolchbeherrschung",
-            "Korean": "단검손자루(단검술)",
+            "Korean": "(단검술)",
             "French": "(Maîtrise de la dague)",
-            "Italian": "Impugnatura per Pugnale Abilità con il Pugnale",
+            "Italian": "Abilità con il Pugnale",
             "Spanish": "(Dominio de la daga)",
             "TraditionalChinese": "匕首精通",
             "Japanese": "(ダガー マスタリー)",
@@ -3373,6 +3532,7 @@
         "TargetTypes": [
             "Daggers"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3397,6 +3557,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3415,7 +3576,17 @@
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Deathbane"
+            "English": "of Deathbane",
+            "German": "d. Todesfluches",
+            "Korean": "(언데드 상대 무기)",
+            "French": "(anti-mort)",
+            "Italian": "del Flagello Mortale",
+            "Spanish": "(matamuertos)",
+            "TraditionalChinese": "不死族剋星",
+            "Japanese": "(デスベイン)",
+            "Polish": "(Zabijania Nieumarłych)",
+            "Russian": "of Deathbane",
+            "BorkBorkBork": "ooff Deaethbune-a"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3425,6 +3596,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3456,19 +3628,20 @@
             "German": "d. Verteidigung",
             "BorkBorkBork": "ooff Deffense-a",
             "Russian": "of Defense",
-            "Polish": "z Hebanu",
+            "Polish": "(Obrony)",
             "Japanese": "(ディフェンス)",
             "TraditionalChinese": "防衛",
             "Spanish": "(de protección)",
-            "Italian": "Impugnatura per Pugnale di Difesa",
+            "Italian": "di Difesa",
             "French": "(de Défense)",
-            "Korean": "단검손자루(방어)"
+            "Korean": "(방어)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
             "MartialWeapon",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8456,
@@ -3497,6 +3670,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3542,6 +3716,7 @@
             "Staff",
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9064,
@@ -3566,6 +3741,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3590,6 +3766,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3618,6 +3795,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3655,6 +3833,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3688,6 +3867,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3714,15 +3894,16 @@
             "Japanese": "(エンチャント)",
             "TraditionalChinese": "附魔",
             "Spanish": "(de encantamientos)",
-            "Italian": "Impugnatura per Pugnale dell'Incantesimo",
+            "Italian": "dell'Incantesimo",
             "French": "(d'Enchantement)",
-            "Korean": "단검손자루(강화)"
+            "Korean": "(강화)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
             "MartialWeapon",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8888,
@@ -3759,6 +3940,7 @@
             "Staff",
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9096,
@@ -3779,7 +3961,7 @@
         "Names": {
             "English": "of Fire Magic",
             "German": "d. Feuermagie",
-            "Korean": "스태프손잡이(불)",
+            "Korean": "(불)",
             "French": "(Magie du feu)",
             "Italian": "del Fuoco",
             "Spanish": "(Magia de fuego)",
@@ -3793,6 +3975,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3812,16 +3995,16 @@
         },
         "Names": {
             "English": "of Fortitude",
-            "German": "Rüstigkeits-",
+            "German": "d. Tapferkeit",
             "BorkBorkBork": "ooff Furteetoode-a",
             "Russian": "of Fortitude",
-            "Japanese": "ヘイル",
-            "TraditionalChinese": "健壯",
-            "Spanish": "de robustez",
-            "Italian": "del Vigore",
-            "French": "de vigueur",
-            "Korean": "단단한",
-            "Polish": "(Wytrwałości)"
+            "Polish": "(Wytrwałości)",
+            "French": "(de Courage)",
+            "Korean": "(견고)",
+            "Italian": "del Coraggio",
+            "Spanish": "(con poder)",
+            "TraditionalChinese": "堅忍",
+            "Japanese": "(フォーティチュード)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -3830,6 +4013,7 @@
             "Shield",
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9032,
@@ -3858,6 +4042,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -3901,6 +4086,7 @@
         "TargetTypes": [
             "Hammer"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3925,6 +4111,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3949,6 +4136,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -3973,6 +4161,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4007,6 +4196,7 @@
         "TargetTypes": [
             "Bow"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4032,12 +4222,16 @@
             "Italian": "della Destrezza da Difesa",
             "Spanish": "(de maestría)",
             "TraditionalChinese": "支配",
-            "Japanese": "(マスタリー)"
+            "Japanese": "(マスタリー)",
+            "BorkBorkBork": "ooff Maestery",
+            "Polish": "(Mistrzostwa)",
+            "Russian": "of Mastery"
         },
         "ModType": "Suffix",
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10296,
@@ -4065,13 +4259,14 @@
             "Spanish": "(de memoria)",
             "Italian": "della Memoria",
             "French": "(de mémoire)",
-            "Korean": "지팡이자루(기억)",
+            "Korean": "(기억)",
             "German": "d. Erinnerung"
         },
         "ModType": "Suffix",
         "TargetTypes": [
             "Wand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10280,
@@ -4100,6 +4295,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4133,6 +4329,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4161,6 +4358,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4204,6 +4402,7 @@
         "TargetTypes": [
             "Wand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9128,
@@ -4228,6 +4427,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4262,6 +4462,7 @@
         "TargetTypes": [
             "Scythe"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4297,6 +4498,7 @@
             "MartialWeapon",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8536,
@@ -4325,6 +4527,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4358,6 +4561,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4382,6 +4586,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4406,6 +4611,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4440,6 +4646,7 @@
         "TargetTypes": [
             "Spear"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4474,6 +4681,7 @@
         "TargetTypes": [
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8712,
@@ -4508,6 +4716,7 @@
         "TargetTypes": [
             "Sword"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4536,6 +4745,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4573,6 +4783,7 @@
             "Sword",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 32896,
@@ -4618,6 +4829,7 @@
             "Staff",
             "Offhand"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9080,
@@ -4653,6 +4865,7 @@
             "MartialWeapon",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 8488,
@@ -4677,6 +4890,7 @@
         "TargetTypes": [
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 9240,
@@ -4703,6 +4917,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4729,6 +4944,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4755,6 +4971,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4778,7 +4995,7 @@
             "Polish": "(Mesmera)",
             "Russian": "of месмер",
             "German": "d. des Mesmers",
-            "TraditionalChinese": "the Mesmer 斧把手",
+            "TraditionalChinese": "the Mesmer",
             "Spanish": "(el hipnotizador)",
             "French": "(l'Envoûteur)",
             "Italian": "il mesmerista",
@@ -4791,6 +5008,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4817,6 +5035,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4840,7 +5059,7 @@
             "Polish": "(Nekromanty)",
             "Russian": "of некромант",
             "German": "d. des Nekromanten",
-            "TraditionalChinese": "the Necromancer 弓柄",
+            "TraditionalChinese": "the Necromancer",
             "Spanish": "(el nigromante)",
             "French": "(le Nécromant)",
             "Italian": "il negromante",
@@ -4853,6 +5072,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4873,11 +5093,11 @@
         "Names": {
             "English": "of the Paragon",
             "German": "d. des Paragons",
-            "Korean": "스태프손잡이(파라곤)",
+            "Korean": "(파라곤)",
             "French": "(le Parangon)",
             "Italian": "del bastone il campione",
             "Spanish": "(el paragón)",
-            "TraditionalChinese": "the",
+            "TraditionalChinese": "the Paragon",
             "Japanese": "(パラゴン)",
             "Polish": "(Patrona)",
             "Russian": "of парагон",
@@ -4889,6 +5109,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4915,6 +5136,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4938,7 +5160,7 @@
             "Polish": "(Rytualisty)",
             "Russian": "of ритуалист",
             "German": "d. des Ritualisten",
-            "TraditionalChinese": "the Ritualist 弓柄",
+            "TraditionalChinese": "the Ritualist",
             "Spanish": "(el ritualista)",
             "French": "(le Ritualiste)",
             "Italian": "il ritualista",
@@ -4951,6 +5173,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -4974,7 +5197,7 @@
             "Polish": "(Wojownika)",
             "Russian": "of воин",
             "German": "d. des Kriegers",
-            "TraditionalChinese": "the Warrior 魔杖把手",
+            "TraditionalChinese": "the Warrior",
             "Spanish": "(el guerrero)",
             "French": "(le Guerrier)",
             "Italian": "il guerriero",
@@ -4987,6 +5210,7 @@
             "Wand",
             "Staff"
         ],
+        "UpgradeExists": true,
         "Modifiers": [
             {
                 "Identifier": 10408,
@@ -5011,6 +5235,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5035,6 +5260,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5059,6 +5285,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5083,6 +5310,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5107,6 +5335,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5131,6 +5360,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5155,6 +5385,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5179,6 +5410,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5203,6 +5435,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5227,6 +5460,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,
@@ -5251,6 +5485,7 @@
         "TargetTypes": [
             "OffhandOrShield"
         ],
+        "UpgradeExists": false,
         "Modifiers": [
             {
                 "Identifier": 8520,

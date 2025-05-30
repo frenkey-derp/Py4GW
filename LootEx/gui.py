@@ -1,3 +1,4 @@
+from datetime import timedelta
 from LootEx import *
 from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache
 from LootEx import models
@@ -235,6 +236,11 @@ def draw_window():
         settings.current.window_position = (
             screen_width / 2, screen_height / 2)
         settings.current.window_size = (screen_width / 2, screen_height / 2)
+        ConsoleLog(
+            "LootEx",
+            "Window position or size is out of bounds, resetting to center.",
+            Console.MessageType.Warning,
+        )
         settings.current.save()
 
         PyImGui.set_next_window_pos(
@@ -259,6 +265,9 @@ def draw_window():
             mods = sorted(data.Weapon_Mods, key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
             
             for mod in mods:
+                if not mod.upgrade_exists:
+                    continue
+                
                 english = mod.names.get(ServerLanguage.English, None)
 
                 # check if the mod has a value for each language but Unknown in names
@@ -272,7 +281,60 @@ def draw_window():
                         
             clipboard_text += "```"
             PyImGui.set_clipboard_text(clipboard_text)     
+            
+            file_directory = os.path.dirname(os.path.abspath(__file__))
+            data_directory = os.path.join(file_directory, "data")
+            path = os.path.join(data_directory, "nick_cycle.json")
+            nick_items = models.NickItemEntry.load_from_file(path)
+            
+            # index = 0
+            # for nick_item in nick_items:
+                
+            #     # get all items that match the nick_item.Item
+            #     items = [item for item in data.Items.values() if item.get_name(ServerLanguage.English) == nick_item.Item]
+                
+            #     #if we found more than one item, log a warning
+            #     if len(items) > 1:
+            #         ConsoleLog(
+            #             "LootEx",
+            #             f"Found multiple items for '{nick_item.Item}': {[item.get_name(ServerLanguage.English) for item in items]}",
+            #             Console.MessageType.Warning,
+            #         )	
+                    
+            #     elif len(items) <= 0:
+            #         ConsoleLog(
+            #             "LootEx",
+            #             f"Item '{nick_item.Item}' not found in data.Items",
+            #             Console.MessageType.Error,
+            #         )
+                    
+            #     else:
+            #         item = items[0]
+            #         item.nick_index = index
+            #         nick_item.ModelId = item.model_id
+                
+            #     index += 1
+                
+            # data.SaveItems(True)
 
+            
+            # for i in range(771):
+            #     for nick_item in nick_items:
+            #         previousCycleDate = nick_item.Week - timedelta(weeks=137 * i)
+                    
+            #         if previousCycleDate.month == 4 and previousCycleDate.year == 2009:
+            #             ConsoleLog(
+            #                 "LootEx",
+            #                 f"Nick Item {nick_item.Item} is a cycle starter date of {previousCycleDate}.",
+            #                 Console.MessageType.Error,
+            #             )
+            
+            
+            ConsoleLog(
+                "LootEx",
+                f"{len(data.Items)} Items collected.",
+                Console.MessageType.Info,
+            )
             pass
 
         profile_names = [
@@ -371,10 +433,20 @@ def draw_window():
         size = PyImGui.get_window_size()
 
         if settings.current.window_position != (pos[0], pos[1]):
+            ConsoleLog(
+                "LootEx",
+                f"Window position changed to ({pos[0]}, {pos[1]})",
+                Console.MessageType.Debug,
+            )
             settings.current.window_position = (pos[0], pos[1])
             settings.current.save()
 
         if settings.current.window_size != (size[0], size[1]):
+            ConsoleLog(
+                "LootEx",
+                f"Window size changed to ({size[0]}, {size[1]})",
+                Console.MessageType.Debug,
+            )
             settings.current.window_size = (size[0], size[1])
             settings.current.save()
 
@@ -384,10 +456,12 @@ def draw_window():
         PyImGui.end()
 
     collapsed = not expanded
+    
     if collapsed != settings.current.window_collapsed:
         settings.current.window_collapsed = collapsed
         settings.current.save()
-    if open != settings.current.window_visible:
+        
+    if gui_open != settings.current.window_visible:
         settings.current.window_visible = gui_open
         settings.current.manual_window_visible = gui_open
         settings.current.save()
@@ -1752,6 +1826,12 @@ def draw_rune_tooltip(mod: models.Rune):
 
             PyImGui.table_next_column()
             PyImGui.text(f"{mod.mod_type.name}")
+            
+            PyImGui.table_next_column()
+            PyImGui.text(f"Applied")
+
+            PyImGui.table_next_column()
+            PyImGui.text(f"{mod.applied_name}")
      
 
         PyImGui.end_table()

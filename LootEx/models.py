@@ -1,7 +1,9 @@
+from datetime import date, datetime
+import json
 import re
 import base64
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import ClassVar, List, Optional
 from LootEx import settings
 from LootEx.enum import EnemyType, ModType, ModifierValueArg
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
@@ -22,6 +24,40 @@ class IntRange:
         if isinstance(other, IntRange):
             return self.min == other.min and self.max == other.max
         return False
+    
+@dataclass
+class NickItemEntry:
+    Week: date
+    Item: str
+    Index: int = -1
+    ModelId: int = -1
+
+    @staticmethod
+    def load_from_file(path: str) -> List['NickItemEntry']:
+        with open(path, 'r', encoding='utf-8') as file:
+            raw_data = json.load(file)
+            return [
+                NickItemEntry(
+                    Week=datetime.strptime(entry['Week'], "%m/%d/%y").date(),
+                    Item=entry['Item'],
+                    Index=entry['Index'] if 'Index' in entry else -1,
+                    ModelId=entry['ModelId'] if 'ModelId' in entry else -1
+                )
+                for entry in raw_data
+            ]
+
+    def to_dict(self) -> dict:
+        return {
+            "Week": self.Week.strftime("%m/%d/%y"),
+            "Item": self.Item,
+            "ModelId": self.ModelId,
+            "Index": self.Index
+        }
+
+    @staticmethod
+    def save_to_file(path: str, entries: List['NickItemEntry']):
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump([entry.to_dict() for entry in entries], file, indent=4, ensure_ascii=False)
 
 class ModifierValueRange():
     def __init__(self, modifier_value_arg : ModifierValueArg, min: int = 0, max: Optional[int] = None):
@@ -33,7 +69,7 @@ class ModifierValueRange():
 @dataclass
 class Item():
     model_id: int
-    item_type: ItemType
+    item_type: ItemType = ItemType.Unknown
     name : str = ""
     names: dict[ServerLanguage, str] = field(default_factory=dict)
     drop_info: str = ""
@@ -41,15 +77,23 @@ class Item():
     wiki_url: str = ""
     materials: list[int] = field(default_factory=list)
     rare_materials: list[int] = field(default_factory=list)
-    is_nick_item: bool = False
-    profession : Optional[Profession] = Profession._None
+    nick_index: Optional[int] = None
+    profession : Optional[Profession] = None
     is_incomplete: Optional[bool] = None
-
+    contains_amount: bool = False    
+    
+    @property
+    def is_nick_item(self) -> bool:
+        return self.nick_index is not None
+    
     def __post_init__(self):
         self.name : str = self.get_name()
 
     def update_language(self, language: ServerLanguage):
-        self.name : str = self.get_name(language)        
+        self.name : str = self.get_name(language)      
+        
+    def has_name(self, language: ServerLanguage) -> bool:        
+        return language in self.names  
         
     def get_name(self, language : Optional[ServerLanguage] = None) -> str:
         if language is None:
@@ -57,7 +101,15 @@ class Item():
         
         name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))
+        
+        pattern = r"^\s*\d+\s+|(\d+個)$"        
+        self.contains_amount = re.search(pattern, name) is not None
+        
         return name
+    
+    def set_name(self, name: str, language: ServerLanguage = ServerLanguage.English):
+        self.names[language] = name        
+        self.name = self.get_name(language)        
     
     def to_json(self) -> dict:
         return {
@@ -65,11 +117,11 @@ class Item():
             "Names": {lang.name: name for lang, name in self.names.items()},
             "ItemType": self.item_type.name,
             "DropInfo": self.drop_info,
-            "Attributes": [attribute.name for attribute in self.attributes],
+            "Attributes": [attribute.name for attribute in self.attributes] if self.attributes else [],
             "WikiURL": self.wiki_url,
             "Materials": self.materials,
             "RareMaterials": self.rare_materials,
-            "IsNickItem": self.is_nick_item,
+            "NickIndex": self.nick_index,
             "Profession": self.profession.name if self.profession and self.profession != Profession._None else None
         }
 
@@ -81,13 +133,12 @@ class Item():
                    name in json["Names"].items()},
             item_type=ItemType[json["ItemType"]],
             drop_info=json["DropInfo"],
-            attributes=[Attribute[attribute]
-                        for attribute in json["Attributes"]],
+            attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
             wiki_url=json["WikiURL"],
-            materials=json["Materials"],
-            rare_materials=json["RareMaterials"],
-            is_nick_item=json["IsNickItem"],
-            profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else Profession._None
+            materials=json["Materials"] if "Materials" in json else [],
+            rare_materials=json["RareMaterials"] if "RareMaterials" in json else [],
+            nick_index=json["NickIndex"] if "NickIndex" in json else None,
+            profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else None
         )
 
 @dataclass
@@ -119,6 +170,7 @@ class ItemMod():
     names: dict[ServerLanguage, str] = field(default_factory=dict)
     mod_type: ModType = ModType.None_    
     modifiers: list[ModifierInfo] = field(default_factory=list)
+    upgrade_exists: bool = True
 
     def __post_init__(self):
         self.name : str = self.get_name()
@@ -126,6 +178,10 @@ class ItemMod():
         self.description: str  = self.get_description()
         self.identifier : str = self.generate_binary_identifier()
         self.applied_name : str = self.get_applied_name()
+        
+    def set_name(self, name: str, language: ServerLanguage = ServerLanguage.English):
+        self.names[language] = name        
+        self.name = self.get_name(language)   
                 
     def generate_binary_identifier(self) -> str:
         # Start with mod_type (1 byte)
@@ -266,31 +322,31 @@ class Rune(ItemMod):
             language, self.names.get(ServerLanguage.English, ""))
         
         rune_patterns : dict[ServerLanguage, str] = {
-            ServerLanguage.English:             r'\b\w+\s+Rune\b|\bRune\b',
-            ServerLanguage.German:              r'\b\w+-Rune\b|\bRune\b',
-            ServerLanguage.Spanish:             r'Runa de \w+',
-            ServerLanguage.French:              r'Rune d\'\w+',
-            ServerLanguage.Italian:             r'Runa dell\'\w+',
-            ServerLanguage.Polish:              r'Runa \w+',
-            ServerLanguage.Russian:             r'\b\w+\s+Rune\b|\bRune\b',
-            ServerLanguage.Japanese:            r'メスマー ルーン\s*\(?',
-            ServerLanguage.Korean:              r'메스머 룬\s*\(?',
-            ServerLanguage.TraditionalChinese:  r'幻術師符文',
-            ServerLanguage.BorkBorkBork:        r'\b\w+\s+Roone-a\b|\bRoone-a\b'
+            ServerLanguage.English:             r".*Rune (?=of)",
+            ServerLanguage.Spanish:            r".*(?=\()",
+            ServerLanguage.Italian:            r"Runa.*(Guerriero|Mistico|Esploratore|Negromante|Ipnotizzatore|Elementalista|Assassino|Ritualista|Paragon|Derviscio)|(Runa)",
+            ServerLanguage.German:             r".*Rune (?=d\.)",
+            ServerLanguage.Korean:             r".*(?=\()",
+            ServerLanguage.French:             r".*(?=\()",
+            ServerLanguage.TraditionalChinese: r"(符文)|(\S+符文)",
+            ServerLanguage.Japanese:           r".*(?=\()",
+            ServerLanguage.Polish:             r".*(?=\()",
+            ServerLanguage.Russian:            r".*Rune (?=of)",
+            ServerLanguage.BorkBorkBork:       r".*Roone.*(?=ooff)"
         }
 
         insignia_patterns : dict[ServerLanguage, str] = {
-            ServerLanguage.English:            r"Insignia.*",
-            ServerLanguage.German:             r"\[.*?\]-Befähigung",
-            ServerLanguage.Spanish:            r"Insignia \[.*?\]",
-            ServerLanguage.French:             r"Insigne \[.*?\]",
-            ServerLanguage.Italian:            r"Insegne \[.*?\]",
-            ServerLanguage.Polish:             r".* Symbol",
-            ServerLanguage.TraditionalChinese: r"휘장.*",
-            ServerLanguage.Japanese:           r"徽記.*",
-            ServerLanguage.Korean:             r"휘장.*",
-            ServerLanguage.Russian:            r"Insignia.*",
-            ServerLanguage.BorkBorkBork:       r"Inseegneea.*",
+            ServerLanguage.English:           r"Insignia.*]|Insignia",
+            ServerLanguage.Spanish:           r"Insignia.*]|Insignia",
+            ServerLanguage.Italian:           r"Insegne.*]|Insegne",
+            ServerLanguage.German:            r"\[.*|Befähigung",
+            ServerLanguage.Korean:            r"휘장.*|휘장",
+            ServerLanguage.French:            r"Insigne.*]|Insigne",
+            ServerLanguage.TraditionalChinese:r"徽記.*|徽記",
+            ServerLanguage.Japanese:          r"記章.*|記章",
+            ServerLanguage.Polish:            r".*Symbol|Symbol",
+            ServerLanguage.Russian:           r"Insignia.*]|Insignia",
+            ServerLanguage.BorkBorkBork:      r"Inseegneea.*]|Inseegneea",
         }
         
         modified_name = name
@@ -299,7 +355,6 @@ class Rune(ItemMod):
             pattern = rune_patterns.get(language, None)
             
             if pattern:
-                # regex to remove everything before and the word "Rune"
                 modified_name = re.sub(pattern, '', name)
                 
         elif self.mod_type == ModType.Prefix:         
@@ -307,8 +362,6 @@ class Rune(ItemMod):
             
             if pattern:
                 modified_name = re.sub(pattern, '', name).strip()
-                if language is ServerLanguage.German:
-                    modified_name += "-"
 
         return modified_name.strip()
 
@@ -347,6 +400,7 @@ class Rune(ItemMod):
             'ModType': self.mod_type.name,
             'Profession': self.profession.name,
             'Rarity': self.rarity.name,
+            'UpgradeExists': self.upgrade_exists,
             'Modifiers': [
                 {
                     'Identifier': modifier.identifier,
@@ -368,6 +422,7 @@ class Rune(ItemMod):
             mod_type=ModType[json["ModType"]],
             profession=Profession[json["Profession"]],
             rarity=Rarity[json["Rarity"]],
+            upgrade_exists=json.get("UpgradeExists", True),
             modifiers=[
                 ModifierInfo(
                     identifier=modifier["Identifier"],
@@ -392,7 +447,7 @@ class WeaponMod(ItemMod):
     def __post_init__(self):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
-            
+                
     def is_item_modifier(self, modifiers, target_item_type : Optional[ItemType] = None) -> bool:
         for mod in self.modifiers:
             matched = False
@@ -434,7 +489,7 @@ class WeaponMod(ItemMod):
             # If no target types are specified, return True
             return True
                     
-        return False    
+        return False       
 
     def to_json(self) -> dict:
         return {
@@ -442,7 +497,8 @@ class WeaponMod(ItemMod):
             'Descriptions': {lang.name: name for lang, name in self.descriptions.items()},
             'Names': {lang.name: name for lang, name in self.names.items()},
             'ModType': self.mod_type.name,
-            'TargetTypes': [target_type.name for target_type in self.target_types],                
+            'TargetTypes': [target_type.name for target_type in self.target_types],      
+            'UpgradeExists': self.upgrade_exists,          
             'Modifiers': [
                 {
                     'Identifier': modifier.identifier,
@@ -463,6 +519,7 @@ class WeaponMod(ItemMod):
             names={ServerLanguage[lang]: name for lang, name in json["Names"].items()},
             mod_type=ModType[json["ModType"]],
             target_types=[ItemType[target_type] for target_type in json["TargetTypes"]] if "TargetTypes" in json else [],
+            upgrade_exists=json["UpgradeExists"],
             modifiers=[
                 ModifierInfo(
                     identifier=modifier["Identifier"],

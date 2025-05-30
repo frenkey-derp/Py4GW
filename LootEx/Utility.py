@@ -71,6 +71,9 @@ class Util:
             matching_mods = [
                 weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(modifiers, item_type)]
             mods.extend(matching_mods)
+            
+        else:
+            return []
 
         mods.sort(key=lambda x: x.mod_type, reverse=True)
 

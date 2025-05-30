@@ -1,8 +1,11 @@
+import datetime
 import json
 import os
+from typing import ClassVar
 from LootEx import models
 from LootEx.enum import ModType
 from Py4GWCoreLib import UIManager
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, NumberPreference, ServerLanguage
 from Py4GWCoreLib.enums import ItemType, Rarity, Profession
@@ -258,6 +261,8 @@ Runes_by_Profession: dict[Profession, list[models.Rune]] = {}
 # We need to iterate from the mod with the most modifiers to the least modifiers, specialized to less specialized
 Weapon_Mods : list[models.WeaponMod] = []
 
+Nick_Cycle_Start_Date = datetime.datetime(2009, 4, 20)
+    
 def UpdateLanguage(server_language : ServerLanguage):
     global Items, Runes, Weapon_Mods
     
@@ -308,19 +313,34 @@ def LoadWeaponMods():
             mod = models.WeaponMod.from_json(value)
             if not mod in Weapon_Mods:
                 Weapon_Mods.append(mod)
+                
+    account_file = os.path.join(file_directory, "data", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
+    if os.path.exists(account_file):
+        with open(account_file, 'r', encoding='utf-8') as file:
+            weapon_mods = json.load(file)
+            
+            for value in weapon_mods:
+                mod = models.WeaponMod.from_json(value)
+                if not mod in Weapon_Mods:
+                    Weapon_Mods.append(mod)
 
     Weapon_Mods = sorted(Weapon_Mods, key=lambda x: x.name)
 
 @staticmethod
-def SaveWeaponMods():
+def SaveWeaponMods(shared_file: bool = False):
     global Weapon_Mods
 
     #Save weapon mods to data/weapon_mods.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
     data_directory = os.path.join(file_directory, "data")
+    
+    if not shared_file:
+        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        data_directory = os.path.join(file_directory, "data", account_name)
+        
     path = os.path.join(data_directory, "weapon_mods.json")
 
-    # ConsoleLog("LootEx", f"Saving weapon mods to {path}...", Console.MessageType.Debug)
+    ConsoleLog("LootEx", f"Saving weapon mods to {path}...", Console.MessageType.Debug)
 
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
@@ -351,6 +371,16 @@ def LoadRunes():
         
         for value in runes:          
             Runes.append(models.Rune.from_json(value))
+            
+    account_file = os.path.join(file_directory, "data", GLOBAL_CACHE.Player.GetAccountEmail(), "runes.json")
+    if os.path.exists(account_file):
+        with open(account_file, 'r', encoding='utf-8') as file:
+            runes = json.load(file)
+            
+            for value in runes:
+                rune = models.Rune.from_json(value)
+                if rune not in Runes:
+                    Runes.append(rune)
     
     Runes = sorted(Runes, key=lambda x: x.name)
 
@@ -364,12 +394,17 @@ def LoadRunes():
         Runes_by_Profession[profession].sort(key=lambda x: (x.mod_type, x.rarity.value, x.name))  
 
 @staticmethod
-def SaveRunes():
+def SaveRunes(shared_file: bool = False):
     global Runes
 
     #Save runes to data/runes.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
     data_directory = os.path.join(file_directory, "data")
+    
+    if not shared_file:
+        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        data_directory = os.path.join(file_directory, "data", account_name)
+        
     path = os.path.join(data_directory, "runes.json")
 
     ConsoleLog("LootEx", f"Saving runes to {path}...", Console.MessageType.Debug)
@@ -405,6 +440,16 @@ def LoadItems():
             item = models.Item.from_json(value)
             Items[item.model_id] = item
 
+    account_file = os.path.join(file_directory, "data", GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
+    if os.path.exists(account_file):
+        with open(account_file, 'r', encoding='utf-8') as file:
+            items = json.load(file)
+            
+            for value in items.values():
+                item = models.Item.from_json(value)
+                if item.model_id not in Items:
+                    Items[item.model_id] = item
+
     for item in Items.values():
         if item.item_type not in Items_By_Type:
             Items_By_Type[item.item_type] = []
@@ -412,12 +457,17 @@ def LoadItems():
         Items_By_Type[item.item_type].append(item)
         
 @staticmethod
-def SaveItems():
+def SaveItems(shared_file: bool = False):
     global Items
 
     #Save items to data/items.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
     data_directory = os.path.join(file_directory, "data")
+    
+    if not shared_file:
+        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        data_directory = os.path.join(file_directory, "data", account_name)
+        
     path = os.path.join(data_directory, "items.json")
 
     ConsoleLog("LootEx", f"Saving items to {path}...", Console.MessageType.Debug)

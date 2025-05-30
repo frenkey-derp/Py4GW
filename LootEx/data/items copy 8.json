@@ -145,22 +145,12 @@
     "34": {
         "ModelID": 34,
         "Names": {
-            "English": "Belt Pouch",
-            "German": "Gürteltasche",
-            "Korean": "주머니 벨트",
-            "French": "Giberne",
-            "Italian": "Marsupio",
-            "Spanish": "Cinturón",
-            "TraditionalChinese": "腰袋",
-            "Japanese": "ベルト ポーチ",
-            "Polish": "Sakwa",
-            "Russian": "Belt Pouch",
-            "BorkBorkBork": "Belt Puooch"
+            "English": "Belt Pouch"
         },
-        "ItemType": "Bag",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Belt_Pouch",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -181,14 +171,14 @@
             "Russian": "Abbot's Robes",
             "BorkBorkBork": "Aebbut's Rubes"
         },
-        "ItemType": "Bag",
+        "ItemType": "Salvage",
         "DropInfo": "",
         "Attributes": [],
         "WikiURL": "https://wiki.guildwars.com/wiki/Abbot's_Robes",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
-        "Profession": null
+        "Profession": "Monk"
     },
     "70": {
         "ModelID": 70,
@@ -291,32 +281,6 @@
             "AxeMastery"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Piercing_Axe",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": null
-    },
-    "122": {
-        "ModelID": 122,
-        "Names": {
-            "English": "Cleaver",
-            "German": "Henkersbeil",
-            "Korean": "클레버",
-            "French": "Fendoir",
-            "Italian": "Mannaia",
-            "Spanish": "Destriparratas",
-            "TraditionalChinese": "切割斧",
-            "Japanese": "クリーヴァー",
-            "Polish": "Tasak",
-            "Russian": "Cleaver",
-            "BorkBorkBork": "Cleaefer"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Cleaver",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -730,7 +694,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Charr_Hide",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 14,
+        "NickIndex": null,
         "Profession": null
     },
     "234": {
@@ -754,7 +718,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Maguuma_Spider_Web",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 90,
+        "NickIndex": null,
         "Profession": null
     },
     "251": {
@@ -1236,32 +1200,6 @@
         "NickIndex": null,
         "Profession": null
     },
-    "419": {
-        "ModelID": 419,
-        "Names": {
-            "English": "Spatha",
-            "German": "Spatha",
-            "Korean": "스파타",
-            "French": "Spathe",
-            "Italian": "Daga",
-            "Spanish": "Spatha",
-            "TraditionalChinese": "細身騎劍",
-            "Japanese": "スパタ",
-            "Polish": "Spatha",
-            "Russian": "Spatha",
-            "BorkBorkBork": "Spaetha"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Spatha",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": null
-    },
     "422": {
         "ModelID": 422,
         "Names": {
@@ -1297,7 +1235,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Charr_Carving",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 136,
+        "NickIndex": null,
         "Profession": null
     },
     "424": {
@@ -1311,7 +1249,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 56,
+        "NickIndex": null,
         "Profession": null
     },
     "425": {
@@ -1451,7 +1389,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 65,
+        "NickIndex": null,
         "Profession": null
     },
     "435": {
@@ -1465,7 +1403,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 58,
+        "NickIndex": null,
         "Profession": null
     },
     "436": {
@@ -1479,7 +1417,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 96,
+        "NickIndex": null,
         "Profession": null
     },
     "439": {
@@ -1493,7 +1431,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 48,
+        "NickIndex": null,
         "Profession": null
     },
     "440": {
@@ -1507,7 +1445,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 70,
+        "NickIndex": null,
         "Profession": null
     },
     "441": {
@@ -1521,7 +1459,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 124,
+        "NickIndex": null,
         "Profession": null
     },
     "442": {
@@ -1535,7 +1473,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 82,
+        "NickIndex": null,
         "Profession": null
     },
     "443": {
@@ -1549,7 +1487,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 130,
+        "NickIndex": null,
         "Profession": null
     },
     "444": {
@@ -1563,7 +1501,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 33,
+        "NickIndex": null,
         "Profession": null
     },
     "445": {
@@ -1603,7 +1541,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 55,
+        "NickIndex": null,
         "Profession": null
     },
     "447": {
@@ -1659,7 +1597,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 78,
+        "NickIndex": null,
         "Profession": null
     },
     "451": {
@@ -1687,7 +1625,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 26,
+        "NickIndex": null,
         "Profession": null
     },
     "453": {
@@ -1715,7 +1653,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 42,
+        "NickIndex": null,
         "Profession": null
     },
     "455": {
@@ -1729,7 +1667,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 37,
+        "NickIndex": null,
         "Profession": null
     },
     "457": {
@@ -1743,7 +1681,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 72,
+        "NickIndex": null,
         "Profession": null
     },
     "459": {
@@ -1757,7 +1695,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 84,
+        "NickIndex": null,
         "Profession": null
     },
     "460": {
@@ -1799,7 +1737,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 28,
+        "NickIndex": null,
         "Profession": null
     },
     "463": {
@@ -1847,7 +1785,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Ancient_Eye",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 132,
+        "NickIndex": null,
         "Profession": null
     },
     "465": {
@@ -1861,7 +1799,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 68,
+        "NickIndex": null,
         "Profession": null
     },
     "466": {
@@ -1875,7 +1813,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 73,
+        "NickIndex": null,
         "Profession": null
     },
     "467": {
@@ -1889,7 +1827,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 16,
+        "NickIndex": null,
         "Profession": null
     },
     "468": {
@@ -1903,7 +1841,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 105,
+        "NickIndex": null,
         "Profession": null
     },
     "469": {
@@ -1927,7 +1865,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Mossy_Mandible",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 86,
+        "NickIndex": null,
         "Profession": null
     },
     "471": {
@@ -1941,7 +1879,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 30,
+        "NickIndex": null,
         "Profession": null
     },
     "472": {
@@ -1983,7 +1921,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 45,
+        "NickIndex": null,
         "Profession": null
     },
     "475": {
@@ -2025,7 +1963,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 62,
+        "NickIndex": null,
         "Profession": null
     },
     "478": {
@@ -2053,7 +1991,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 24,
+        "NickIndex": null,
         "Profession": null
     },
     "480": {
@@ -2067,7 +2005,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 117,
+        "NickIndex": null,
         "Profession": null
     },
     "482": {
@@ -2081,7 +2019,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 128,
+        "NickIndex": null,
         "Profession": null
     },
     "483": {
@@ -2109,7 +2047,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 110,
+        "NickIndex": null,
         "Profession": null
     },
     "485": {
@@ -2137,7 +2075,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 99,
+        "NickIndex": null,
         "Profession": null
     },
     "487": {
@@ -2165,7 +2103,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 23,
+        "NickIndex": null,
         "Profession": null
     },
     "489": {
@@ -2179,7 +2117,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 80,
+        "NickIndex": null,
         "Profession": null
     },
     "490": {
@@ -2193,7 +2131,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 92,
+        "NickIndex": null,
         "Profession": null
     },
     "492": {
@@ -2221,7 +2159,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 38,
+        "NickIndex": null,
         "Profession": null
     },
     "494": {
@@ -2235,7 +2173,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 43,
+        "NickIndex": null,
         "Profession": null
     },
     "495": {
@@ -2263,7 +2201,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 5,
+        "NickIndex": null,
         "Profession": null
     },
     "497": {
@@ -2277,7 +2215,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 104,
+        "NickIndex": null,
         "Profession": null
     },
     "498": {
@@ -2291,7 +2229,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 1,
+        "NickIndex": null,
         "Profession": null
     },
     "499": {
@@ -2305,7 +2243,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 52,
+        "NickIndex": null,
         "Profession": null
     },
     "500": {
@@ -2319,7 +2257,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 114,
+        "NickIndex": null,
         "Profession": null
     },
     "502": {
@@ -2333,7 +2271,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 119,
+        "NickIndex": null,
         "Profession": null
     },
     "503": {
@@ -2361,7 +2299,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 97,
+        "NickIndex": null,
         "Profession": null
     },
     "505": {
@@ -2445,7 +2383,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 7,
+        "NickIndex": null,
         "Profession": null
     },
     "514": {
@@ -2509,10 +2447,10 @@
         "Names": {
             "English": "Dark Remains"
         },
-        "ItemType": "Trophy",
+        "ItemType": "Unknown",
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dark_Remains",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -2529,7 +2467,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 13,
+        "NickIndex": null,
         "Profession": null
     },
     "525": {
@@ -2571,7 +2509,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 87,
+        "NickIndex": null,
         "Profession": null
     },
     "556": {
@@ -2774,16 +2712,7 @@
         "ModelID": 712,
         "Names": {
             "English": "Shortbow",
-            "German": "Kurzbogen",
-            "Korean": "단궁",
-            "French": "Arc court",
-            "Italian": "Arco Corto",
-            "Spanish": "Arco corto",
-            "TraditionalChinese": "短弓",
-            "Japanese": "ショートボウ",
-            "Polish": "Krótki Łuk",
-            "Russian": "Shortbow",
-            "BorkBorkBork": "Shurtboo"
+            "German": "Kurzbogen"
         },
         "ItemType": "Bow",
         "DropInfo": "",
@@ -3143,15 +3072,7 @@
         "Names": {
             "English": "Paper Fan",
             "German": "Papierfächer",
-            "French": "Eventail en papier",
-            "TraditionalChinese": "紙扇",
-            "Korean": "종이 부채",
-            "Italian": "Ventaglio di Carta",
-            "Spanish": "Abanico de papel",
-            "Japanese": "ペーパー ファン",
-            "Polish": "Papierowy Wachlarz",
-            "Russian": "Paper Fan",
-            "BorkBorkBork": "Paeper Fun"
+            "French": "Eventail en papier"
         },
         "ItemType": "Offhand",
         "DropInfo": "",
@@ -3341,7 +3262,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Plague_Idol",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 4,
+        "NickIndex": null,
         "Profession": null
     },
     "806": {
@@ -3365,7 +3286,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Copper_Chrimson_Skull_Coin",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 85,
+        "NickIndex": null,
         "Profession": null
     },
     "807": {
@@ -3389,7 +3310,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Gold_Crimson_Skull_Coin",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 35,
+        "NickIndex": null,
         "Profession": null
     },
     "808": {
@@ -3427,7 +3348,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 36,
+        "NickIndex": null,
         "Profession": null
     },
     "810": {
@@ -3455,7 +3376,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 17,
+        "NickIndex": null,
         "Profession": null
     },
     "813": {
@@ -3469,7 +3390,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 40,
+        "NickIndex": null,
         "Profession": null
     },
     "814": {
@@ -3483,7 +3404,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 74,
+        "NickIndex": null,
         "Profession": null
     },
     "815": {
@@ -3497,7 +3418,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 8,
+        "NickIndex": null,
         "Profession": null
     },
     "816": {
@@ -3539,7 +3460,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 118,
+        "NickIndex": null,
         "Profession": null
     },
     "819": {
@@ -3553,7 +3474,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 66,
+        "NickIndex": null,
         "Profession": null
     },
     "820": {
@@ -3567,7 +3488,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 32,
+        "NickIndex": null,
         "Profession": null
     },
     "822": {
@@ -3609,7 +3530,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 91,
+        "NickIndex": null,
         "Profession": null
     },
     "826": {
@@ -3647,7 +3568,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 71,
+        "NickIndex": null,
         "Profession": null
     },
     "829": {
@@ -3689,7 +3610,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 60,
+        "NickIndex": null,
         "Profession": null
     },
     "833": {
@@ -3765,7 +3686,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 122,
+        "NickIndex": null,
         "Profession": null
     },
     "837": {
@@ -3841,7 +3762,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Stolen_Supplies",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 106,
+        "NickIndex": null,
         "Profession": null
     },
     "841": {
@@ -3855,7 +3776,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 94,
+        "NickIndex": null,
         "Profession": null
     },
     "842": {
@@ -3869,7 +3790,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 79,
+        "NickIndex": null,
         "Profession": null
     },
     "843": {
@@ -3883,7 +3804,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 129,
+        "NickIndex": null,
         "Profession": null
     },
     "844": {
@@ -3897,7 +3818,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 111,
+        "NickIndex": null,
         "Profession": null
     },
     "846": {
@@ -3925,7 +3846,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 57,
+        "NickIndex": null,
         "Profession": null
     },
     "848": {
@@ -3939,7 +3860,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 12,
+        "NickIndex": null,
         "Profession": null
     },
     "849": {
@@ -3953,7 +3874,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 101,
+        "NickIndex": null,
         "Profession": null
     },
     "850": {
@@ -3995,7 +3916,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 64,
+        "NickIndex": null,
         "Profession": null
     },
     "853": {
@@ -4009,7 +3930,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 108,
+        "NickIndex": null,
         "Profession": null
     },
     "854": {
@@ -4037,7 +3958,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 44,
+        "NickIndex": null,
         "Profession": null
     },
     "856": {
@@ -4061,7 +3982,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Ancient_Kappa_Shell",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 125,
+        "NickIndex": null,
         "Profession": null
     },
     "861": {
@@ -4196,22 +4117,12 @@
     "896": {
         "ModelID": 896,
         "Names": {
-            "English": "Staff Head",
-            "German": "Stabkopf",
-            "Korean": "스태프머리",
-            "French": "Pommeau de bâton",
-            "Italian": "Testa del bastone",
-            "Spanish": "Puño de báculo",
-            "TraditionalChinese": "法杖頭",
-            "Japanese": "スタッフの頭部",
-            "Polish": "Głowica Kostura",
-            "Russian": "Staff Head",
-            "BorkBorkBork": "Staeffff Heaed"
+            "English": "Staff Head"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Staff_Head",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -4350,10 +4261,10 @@
         "Names": {
             "English": "Hunters Ale"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Anniversary Celebration",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Hunters_Ale",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -4476,7 +4387,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Bolt_of_Linen",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 135,
+        "NickIndex": null,
         "Profession": null
     },
     "927": {
@@ -4788,7 +4699,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Tempered_Glass_Vial",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 98,
+        "NickIndex": null,
         "Profession": null
     },
     "940": {
@@ -4832,7 +4743,9 @@
         },
         "ItemType": "Materials_Zcoins",
         "DropInfo": "Rare Material",
-        "Attributes": [],
+        "Attributes": [
+            "Tactics"
+        ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Fur_Square",
         "Materials": [],
         "RareMaterials": [],
@@ -4884,7 +4797,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Leather_Square",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 88,
+        "NickIndex": null,
         "Profession": null
     },
     "944": {
@@ -4904,11 +4817,13 @@
         },
         "ItemType": "Materials_Zcoins",
         "DropInfo": "Rare Material",
-        "Attributes": [],
+        "Attributes": [
+            "Strength"
+        ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Vial_of_Ink",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 115,
+        "NickIndex": null,
         "Profession": null
     },
     "945": {
@@ -4928,7 +4843,9 @@
         },
         "ItemType": "Materials_Zcoins",
         "DropInfo": "Rare Material",
-        "Attributes": [],
+        "Attributes": [
+            "Tactics"
+        ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Obsidian_Shard",
         "Materials": [],
         "RareMaterials": [],
@@ -4952,7 +4869,9 @@
         },
         "ItemType": "Materials_Zcoins",
         "DropInfo": "Common Material",
-        "Attributes": [],
+        "Attributes": [
+            "Strength"
+        ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Wood_Plank",
         "Materials": [],
         "RareMaterials": [],
@@ -5074,11 +4993,13 @@
         },
         "ItemType": "Materials_Zcoins",
         "DropInfo": "Rare Material",
-        "Attributes": [],
+        "Attributes": [
+            "Tactics"
+        ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Roll_of_Parchment",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 20,
+        "NickIndex": null,
         "Profession": null
     },
     "952": {
@@ -5198,7 +5119,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Spiritwood_Plank",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 61,
+        "NickIndex": null,
         "Profession": null
     },
     "966": {
@@ -5264,7 +5185,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 25,
+        "NickIndex": null,
         "Profession": null
     },
     "1033": {
@@ -5454,7 +5375,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "BloodMagic"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -5494,7 +5417,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "DeathMagic"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -5621,30 +5546,6 @@
         "NickIndex": null,
         "Profession": "Ranger"
     },
-    "1153": {
-        "ModelID": 1153,
-        "Names": {
-            "English": "Naga Trappings",
-            "German": "Naga-Rüstzeug",
-            "Korean": "나가 로브",
-            "French": "Ornements de Naga",
-            "Italian": "Bardature Naga",
-            "Spanish": "Arreos de naga",
-            "TraditionalChinese": "納迦飾裝",
-            "Japanese": "ナーガの衣服",
-            "Polish": "Ubiór Nag",
-            "Russian": "Naga Trappings",
-            "BorkBorkBork": "Naega Traeppeengs"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Naga_Trappings",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": "Ritualist"
-    },
     "1175": {
         "ModelID": 1175,
         "Names": {
@@ -5674,15 +5575,7 @@
         "Names": {
             "English": "Air Staff",
             "German": "Luft-Stab",
-            "French": "Bâton de l'air",
-            "TraditionalChinese": "風之法杖",
-            "Korean": "바람의 스태프",
-            "Italian": "Bastone dell'Aria",
-            "Spanish": "Báculo de aire",
-            "Japanese": "エアー スタッフ",
-            "Polish": "Powietrzny Kostur",
-            "Russian": "Air Staff",
-            "BorkBorkBork": "Aeur Staeffff"
+            "French": "Bâton de l'air"
         },
         "ItemType": "Staff",
         "DropInfo": "",
@@ -6254,15 +6147,7 @@
         "Names": {
             "English": "Blazing Wing Wand",
             "German": "Lodernder Flügel-Zauberstab",
-            "French": "Baguette de l'aile éclatante",
-            "TraditionalChinese": "熾烈之翼",
-            "Korean": "불타는 날개 막대",
-            "Italian": "Bacchetta con Ala Ardente",
-            "Spanish": "Varita de ala llameante",
-            "Japanese": "ブレイズ ウイング ワンド",
-            "Polish": "Różdżka Płonącego Skrzydła",
-            "Russian": "Blazing Wing Wand",
-            "BorkBorkBork": "Blaezeeng Veeng Vund"
+            "French": "Baguette de l'aile éclatante"
         },
         "ItemType": "Wand",
         "DropInfo": "",
@@ -6655,15 +6540,7 @@
         "Names": {
             "English": "Copper Shilling",
             "German": "Kupferschilling",
-            "French": "Shilling de cuivre",
-            "TraditionalChinese": "銅先令",
-            "Korean": "구리 주화",
-            "Italian": "Scellino di Rame",
-            "Spanish": "Chelín de cobre",
-            "Japanese": "銅貨",
-            "Polish": "Miedziany Szyling",
-            "Russian": "Copper Shilling",
-            "BorkBorkBork": "Cupper Sheelleeng"
+            "French": "Shilling de cuivre"
         },
         "ItemType": "Trophy",
         "DropInfo": "Dropped by data to be added",
@@ -6671,7 +6548,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Copper_Shilling",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 133,
+        "NickIndex": null,
         "Profession": null
     },
     "1578": {
@@ -6685,7 +6562,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 54,
+        "NickIndex": null,
         "Profession": null
     },
     "1579": {
@@ -6699,7 +6576,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 39,
+        "NickIndex": null,
         "Profession": null
     },
     "1580": {
@@ -6713,7 +6590,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 81,
+        "NickIndex": null,
         "Profession": null
     },
     "1581": {
@@ -6727,7 +6604,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 2,
+        "NickIndex": null,
         "Profession": null
     },
     "1582": {
@@ -6741,7 +6618,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 116,
+        "NickIndex": null,
         "Profession": null
     },
     "1583": {
@@ -6755,7 +6632,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 123,
+        "NickIndex": null,
         "Profession": null
     },
     "1584": {
@@ -6769,7 +6646,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 93,
+        "NickIndex": null,
         "Profession": null
     },
     "1587": {
@@ -6783,7 +6660,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 121,
+        "NickIndex": null,
         "Profession": null
     },
     "1588": {
@@ -6893,7 +6770,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 9,
+        "NickIndex": null,
         "Profession": null
     },
     "1603": {
@@ -6949,7 +6826,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 89,
+        "NickIndex": null,
         "Profession": null
     },
     "1610": {
@@ -6963,7 +6840,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 63,
+        "NickIndex": null,
         "Profession": null
     },
     "1616": {
@@ -7011,7 +6888,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Insect_Carapace",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 95,
+        "NickIndex": null,
         "Profession": null
     },
     "1619": {
@@ -7035,13 +6912,27 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Sentient_Lodestone",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 29,
+        "NickIndex": null,
         "Profession": "Elementalist"
     },
     "1620": {
         "ModelID": 1620,
         "Names": {
             "English": "Immolated Djinn Essence"
+        },
+        "ItemType": "Unknown",
+        "DropInfo": "Dropped by data to be added",
+        "Attributes": [],
+        "WikiURL": "",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1629": {
+        "ModelID": 1629,
+        "Names": {
+            "English": "Roaring Ether Claw"
         },
         "ItemType": "Unknown",
         "DropInfo": "Dropped by data to be added",
@@ -7145,7 +7036,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Luminous_Stone",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 51,
+        "NickIndex": null,
         "Profession": null
     },
     "1662": {
@@ -7169,7 +7060,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Roaring_Ether_Heart",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 109,
+        "NickIndex": null,
         "Profession": null
     },
     "1663": {
@@ -7193,7 +7084,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Pillaged_Goods",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 34,
+        "NickIndex": null,
         "Profession": null
     },
     "1664": {
@@ -7245,7 +7136,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 75,
+        "NickIndex": null,
         "Profession": null
     },
     "1675": {
@@ -7259,7 +7150,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 50,
+        "NickIndex": null,
         "Profession": null
     },
     "1679": {
@@ -7283,7 +7174,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Roaring_Ether_Claw",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 21,
+        "NickIndex": null,
         "Profession": null
     },
     "1680": {
@@ -7331,7 +7222,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Geode",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 126,
+        "NickIndex": null,
         "Profession": null
     },
     "1682": {
@@ -7527,34 +7418,10 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
-        "WikiURL": "",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": null
-    },
-    "1765": {
-        "ModelID": 1765,
-        "Names": {
-            "English": "Sturdy Recurve Bow",
-            "German": "Robuster Recurvebogen",
-            "Korean": "흡혈의 튼튼한 곡궁",
-            "French": "Arc recourbé robuste",
-            "Italian": "Arco Ricurvo Resistente",
-            "Spanish": "Arco recurvado resistente",
-            "TraditionalChinese": "吸血鬼 堅固反曲弓",
-            "Japanese": "ヴァンピリック スターディ リカーブ ボウ",
-            "Polish": "Wytrzymały Łuk Refleksyjny",
-            "Russian": "Sturdy Recurve Bow",
-            "BorkBorkBork": "Stoordy Recoorfe-a Boo"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
         "Attributes": [
-            "Marksmanship"
+            "SoulReaping"
         ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Sturdy_Recurve_Bow",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -7567,7 +7434,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "AirMagic"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -7581,7 +7450,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "EarthMagic"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -7672,7 +7543,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "DivineFavor"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -7705,32 +7578,6 @@
         "NickIndex": null,
         "Profession": "Mesmer"
     },
-    "1827": {
-        "ModelID": 1827,
-        "Names": {
-            "English": "Writhing Focus",
-            "German": "Krümmender Fokus",
-            "Korean": "고뇌의 포커스",
-            "French": "Focus ondulant",
-            "Italian": "Focus della Convulsione",
-            "Spanish": "Foco de retorsión",
-            "TraditionalChinese": "扭曲聚能器",
-            "Japanese": "ライズ フォーカス",
-            "Polish": "Wijący się Fokus",
-            "Russian": "Writhing Focus",
-            "BorkBorkBork": "Vreetheeng Fucoos"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "RestorationMagic"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Writhing_Focus",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": "Ritualist"
-    },
     "1870": {
         "ModelID": 1870,
         "Names": {
@@ -7738,7 +7585,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "HealingPrayers"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -7752,7 +7601,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "ProtectionPrayers"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -7791,7 +7642,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "Communing"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -7805,7 +7658,9 @@
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
-        "Attributes": [],
+        "Attributes": [
+            "SpawningPower"
+        ],
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
@@ -9055,32 +8910,6 @@
         "NickIndex": null,
         "Profession": null
     },
-    "2125": {
-        "ModelID": 2125,
-        "Names": {
-            "English": "Stoneblade",
-            "German": "Steinklinge",
-            "Korean": "석검",
-            "French": "Lame de pierre",
-            "Italian": "Lama di Pietra",
-            "Spanish": "Espada de piedra",
-            "TraditionalChinese": "石刃",
-            "Japanese": "ストーンブレード",
-            "Polish": "Kamienne Ostrze",
-            "Russian": "Stoneblade",
-            "BorkBorkBork": "Stuneblaede-a"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Stoneblade",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": null
-    },
     "2219": {
         "ModelID": 2219,
         "Names": {
@@ -9196,31 +9025,6 @@
             "DaggerMastery"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Stilletos",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": null
-    },
-    "2233": {
-        "ModelID": 2233,
-        "Names": {
-            "English": "Righteous Maul",
-            "German": "Gerechter Schlägel",
-            "Korean": "정의의 마울",
-            "French": "Maillet du juste",
-            "Spanish": "Almádena justiciera",
-            "TraditionalChinese": "正義巨鎚",
-            "Japanese": "ライチェアス モール",
-            "Polish": "Młot Sprawiedliwych",
-            "Russian": "Righteous Maul",
-            "BorkBorkBork": "Reeghteuoos Mool"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Righteous_Maul",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -9401,15 +9205,7 @@
         "Names": {
             "English": "Platinum Wand",
             "German": "Platin-Zauberstab",
-            "French": "Baguette de platine",
-            "TraditionalChinese": "白金杖",
-            "Korean": "백금 지팡이",
-            "Italian": "Bacchetta di Platino",
-            "Spanish": "Varita de platino",
-            "Japanese": "プラチナ ワンド",
-            "Polish": "Platynowa Różdżka",
-            "Russian": "Platinum Wand",
-            "BorkBorkBork": "Plaeteenoom Vund"
+            "French": "Baguette de platine"
         },
         "ItemType": "Wand",
         "DropInfo": "",
@@ -9813,16 +9609,7 @@
         "ModelID": 2979,
         "Names": {
             "English": "Long Sword",
-            "German": "Langschwert",
-            "Korean": "롱소드",
-            "French": "Epée longue",
-            "Italian": "Spada Lunga",
-            "Spanish": "Espada larga",
-            "TraditionalChinese": "長劍",
-            "Japanese": "ロング ソード",
-            "Polish": "Długi Miecz",
-            "Russian": "Long Sword",
-            "BorkBorkBork": "Lung Svurd"
+            "German": "Langschwert"
         },
         "ItemType": "Sword",
         "DropInfo": "",
@@ -9940,7 +9727,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Red_Iris_Flower",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 0,
+        "NickIndex": null,
         "Profession": null
     },
     "3256": {
@@ -10010,7 +9797,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 102,
+        "NickIndex": null,
         "Profession": null
     },
     "5594": {
@@ -10210,15 +9997,7 @@
         "Names": {
             "English": "Galigord's Stone Staff",
             "German": "Galigords Stein-Stab",
-            "French": "Bâton de pierre de Galigord",
-            "TraditionalChinese": "加里格德的石質法杖",
-            "Korean": "갈리고드 돌 스태프",
-            "Italian": "Bastone di Pietra di Galigord",
-            "Spanish": "Báculo de piedra de Galigord",
-            "Japanese": "ガリゴード ストーン スタッフ",
-            "Polish": "Kamienny Kostur Galigorda",
-            "Russian": "Galigord's Stone Staff",
-            "BorkBorkBork": "Gaeleegurd's Stune-a Staeffff"
+            "French": "Bâton de pierre de Galigord"
         },
         "ItemType": "Staff",
         "DropInfo": "",
@@ -10362,10 +10141,10 @@
         "Names": {
             "English": "Scroll of Rampagers Insight"
         },
-        "ItemType": "Scroll",
+        "ItemType": "Unknown",
         "DropInfo": "Bosses NM & HM",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Rampagers_Insight",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -10376,10 +10155,10 @@
         "Names": {
             "English": "Scroll of Hunters Insight"
         },
-        "ItemType": "Scroll",
+        "ItemType": "Unknown",
         "DropInfo": "Bosses NM & HM",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Scroll_of_Hunters_Insight",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -10454,22 +10233,12 @@
     "6323": {
         "ModelID": 6323,
         "Names": {
-            "English": "Dagger Tang",
-            "German": "Dolchangel",
-            "Korean": "단검자루",
-            "French": "Soie de dague",
-            "Italian": "Codolo per Pugnale",
-            "Spanish": "Afilador de dagas",
-            "TraditionalChinese": "匕首刃",
-            "Japanese": "ダガーのグリップ",
-            "Polish": "Uchwyt Sztyletu",
-            "Russian": "Dagger Tang",
-            "BorkBorkBork": "Daegger Tung"
+            "English": "Dagger Tang"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dagger_Tang",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -10644,7 +10413,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Chunk",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 47,
+        "NickIndex": null,
         "Profession": null
     },
     "6533": {
@@ -10668,7 +10437,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Jadeite_Shard",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 53,
+        "NickIndex": null,
         "Profession": null
     },
     "6534": {
@@ -10960,16 +10729,7 @@
         "ModelID": 10770,
         "Names": {
             "English": "Canthan Raiment",
-            "German": "Cantha-Gewand",
-            "Korean": "엔보이 칸타 슬리브리스",
-            "French": "Vêtement canthien",
-            "Italian": "Veste di Cantha",
-            "Spanish": "Ropaje de Cantha",
-            "TraditionalChinese": "凱珊外衣",
-            "Japanese": "キャンサ レイメント",
-            "Polish": "Kintajskie szaty",
-            "Russian": "Canthan Raiment",
-            "BorkBorkBork": "Cunthun Raeeement"
+            "German": "Cantha-Gewand"
         },
         "ItemType": "Chestpiece",
         "DropInfo": "",
@@ -10984,16 +10744,7 @@
         "ModelID": 11196,
         "Names": {
             "English": "Shing Jea Headwrap",
-            "German": "Shing Jea-Kopfbandage",
-            "Korean": "커뮤너 싱지 터번",
-            "French": "Bandes de Shing Jea",
-            "Italian": "Benda di Shing Jea",
-            "Spanish": "Turbante de Shing Jea",
-            "TraditionalChinese": "星岬頭巾",
-            "Japanese": "シン ジェ ヘッドアクセサリー",
-            "Polish": "Opaska z Shing Jea",
-            "Russian": "Shing Jea Headwrap",
-            "BorkBorkBork": "Sheeng Jea Heaedvraep"
+            "German": "Shing Jea-Kopfbandage"
         },
         "ItemType": "Headpiece",
         "DropInfo": "",
@@ -11008,16 +10759,7 @@
         "ModelID": 11309,
         "Names": {
             "English": "Shing Jea Shoes",
-            "German": "Shing Jea-Schuhe",
-            "Korean": "엔보이 싱지 부츠",
-            "French": "Chaussures de Shing Jea",
-            "Italian": "Scarpe di Shing Jea",
-            "Spanish": "Par de zapatos de Shing Jea",
-            "TraditionalChinese": "星岬長靴",
-            "Japanese": "シン ジェ シューズ",
-            "Polish": "Buty z Shing Jea",
-            "Russian": "Shing Jea Shoes",
-            "BorkBorkBork": "Sheeng Jea Shues"
+            "German": "Shing Jea-Schuhe"
         },
         "ItemType": "Boots",
         "DropInfo": "",
@@ -11032,16 +10774,7 @@
         "ModelID": 11311,
         "Names": {
             "English": "Shing Jea Bangles",
-            "German": "Shing-Jea-Armreifen",
-            "Korean": "엔보이 싱지 글러브",
-            "French": "Bracelets de Shing Jea",
-            "Italian": "Bracciali di Shing Jea",
-            "Spanish": "Ajorca de Shing Jea",
-            "TraditionalChinese": "星岬手鐲",
-            "Japanese": "シン ジェ バングル",
-            "Polish": "Bransolety z Shing Jea",
-            "Russian": "Shing Jea Bangles",
-            "BorkBorkBork": "Sheeng Jea Bungles"
+            "German": "Shing-Jea-Armreifen"
         },
         "ItemType": "Gloves",
         "DropInfo": "",
@@ -11056,16 +10789,7 @@
         "ModelID": 11313,
         "Names": {
             "English": "Shing Jea Leggings",
-            "German": "Shing-Jea-Beinkleid",
-            "Korean": "엔보이 싱지 스커트",
-            "French": "Bas de Shing Jea",
-            "Italian": "Gambali di Shing Jea",
-            "Spanish": "Mallas de Shing Jea",
-            "TraditionalChinese": "星岬護腿",
-            "Japanese": "シン ジェ ゲートル",
-            "Polish": "Leginsy z Shing Jea",
-            "Russian": "Shing Jea Leggings",
-            "BorkBorkBork": "Sheeng Jea Leggeengs"
+            "German": "Shing-Jea-Beinkleid"
         },
         "ItemType": "Leggings",
         "DropInfo": "",
@@ -11147,16 +10871,7 @@
         "ModelID": 12084,
         "Names": {
             "English": "Channeling Focus",
-            "German": "Kanalisierungs-Fokus",
-            "Korean": "마력 증폭 포커스",
-            "French": "Focus de canalisation",
-            "Italian": "Focus di Incanalamento",
-            "Spanish": "Foco de canalización",
-            "TraditionalChinese": "導引聚能器",
-            "Japanese": "チャネリング フォーカス",
-            "Polish": "Fokus Połączeń",
-            "Russian": "Channeling Focus",
-            "BorkBorkBork": "Chunneleeng Fucoos"
+            "German": "Kanalisierungs-Fokus"
         },
         "ItemType": "Offhand",
         "DropInfo": "",
@@ -11228,16 +10943,7 @@
         "ModelID": 12515,
         "Names": {
             "English": "Ritualist Cane",
-            "German": "Ritualisten-Stock",
-            "Korean": "리추얼리스트 지팡이",
-            "French": "Canne de Ritualiste",
-            "Italian": "Canna del Ritualista",
-            "Spanish": "Bastón de Ritualista",
-            "TraditionalChinese": "祭祀者藤杖",
-            "Japanese": "リチュアリスト ステッキ",
-            "Polish": "Laska Rytualisty",
-            "Russian": "Ritualist Cane",
-            "BorkBorkBork": "Reetooaeleest Cune-a"
+            "German": "Ritualisten-Stock"
         },
         "ItemType": "Wand",
         "DropInfo": "",
@@ -11450,16 +11156,7 @@
         "ModelID": 15064,
         "Names": {
             "English": "Totem Axe",
-            "German": "Totem-Axt",
-            "Korean": "신앙의 도끼",
-            "French": "Hache totem",
-            "Italian": "Ascia Totem",
-            "Spanish": "Hacha tótem",
-            "TraditionalChinese": "圖騰斧",
-            "Japanese": "トーテム アックス",
-            "Polish": "Topór totemowy",
-            "Russian": "Totem Axe",
-            "BorkBorkBork": "Tutem Aexe-a"
+            "German": "Totem-Axt"
         },
         "ItemType": "Axe",
         "DropInfo": "No data added yet",
@@ -11713,22 +11410,12 @@
     "15544": {
         "ModelID": 15544,
         "Names": {
-            "English": "Spearhead",
-            "German": "Speerspitze",
-            "Korean": "흡혈의 창촉",
-            "French": "Tête de javelot",
-            "Italian": "Punta per Lancia",
-            "Spanish": "Punta de lanza",
-            "TraditionalChinese": "吸血鬼 矛頭",
-            "Japanese": "ヴァンピリック スピアヘッド",
-            "Polish": "Grot Włóczni",
-            "Russian": "Spearhead",
-            "BorkBorkBork": "Speaerheaed"
+            "English": "Spearhead"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Spearhead",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -12387,7 +12074,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 46,
+        "NickIndex": null,
         "Profession": null
     },
     "17061": {
@@ -12401,7 +12088,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 69,
+        "NickIndex": null,
         "Profession": null
     },
     "17062": {
@@ -12415,7 +12102,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 107,
+        "NickIndex": null,
         "Profession": null
     },
     "17081": {
@@ -12550,16 +12237,7 @@
         "ModelID": 17341,
         "Names": {
             "English": "Stone's Eye",
-            "German": "Steinauge",
-            "TraditionalChinese": "岩石之眼",
-            "Korean": "어스 아이",
-            "French": "Oeil de pierre",
-            "Italian": "Occhio della pietra",
-            "Spanish": "Ojo de la piedra",
-            "Japanese": "ストーン アイ",
-            "Polish": "Kamienne oko",
-            "Russian": "Stone's Eye",
-            "BorkBorkBork": "Stune-a's Iye-a"
+            "German": "Steinauge"
         },
         "ItemType": "Headpiece",
         "DropInfo": "",
@@ -12749,54 +12427,6 @@
         "DropInfo": "",
         "Attributes": [],
         "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Exalted_Elonian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": "Paragon"
-    },
-    "17785": {
-        "ModelID": 17785,
-        "Names": {
-            "English": "Spear Elonian Crest",
-            "German": "Speer-Elona-Haube",
-            "Korean": "스피어 엘로나 티아라",
-            "French": "Ecu de javelot élonien",
-            "Italian": "Cimiero Eloniano della Lancia",
-            "Spanish": "Lanza exaltada de Elona",
-            "TraditionalChinese": "持矛者標記",
-            "Japanese": "スピア イロナ クレスト",
-            "Polish": "Eloński hełm włóczni",
-            "Russian": "Spear Elonian Crest",
-            "BorkBorkBork": "Speaer Iluneeun Crest"
-        },
-        "ItemType": "Headpiece",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Spear_Elonian_armor",
-        "Materials": [],
-        "RareMaterials": [],
-        "NickIndex": null,
-        "Profession": "Paragon"
-    },
-    "17800": {
-        "ModelID": 17800,
-        "Names": {
-            "English": "Istani Armguards",
-            "German": "Istan-Armschienen",
-            "Korean": "이스탄 글러브",
-            "French": "Garde-bras istanis",
-            "Italian": "Parabraccia Istani",
-            "Spanish": "Guardabrazos de Istan",
-            "TraditionalChinese": "艾斯坦護手",
-            "Japanese": "イスタン アームガード",
-            "Polish": "Istańskie karwasze",
-            "Russian": "Istani Armguards",
-            "BorkBorkBork": "Istunee Aermgooaerds"
-        },
-        "ItemType": "Gloves",
-        "DropInfo": "",
-        "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Istani_armor",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -13263,7 +12893,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 6,
+        "NickIndex": null,
         "Profession": null
     },
     "19171": {
@@ -13305,7 +12935,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 76,
+        "NickIndex": null,
         "Profession": null
     },
     "19174": {
@@ -13419,7 +13049,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 83,
+        "NickIndex": null,
         "Profession": null
     },
     "19187": {
@@ -13433,7 +13063,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 15,
+        "NickIndex": null,
         "Profession": null
     },
     "19188": {
@@ -13457,7 +13087,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Sapphire_Djinn_Essence",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 31,
+        "NickIndex": null,
         "Profession": null
     },
     "19189": {
@@ -13481,7 +13111,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Water_Djinn_Essence",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 100,
+        "NickIndex": null,
         "Profession": null
     },
     "19190": {
@@ -13561,7 +13191,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Branch_of_Juni_Berries",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 22,
+        "NickIndex": null,
         "Profession": null
     },
     "19195": {
@@ -13637,7 +13267,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Sentient_Spore",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 131,
+        "NickIndex": null,
         "Profession": null
     },
     "19199": {
@@ -13661,7 +13291,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Tongue",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 113,
+        "NickIndex": null,
         "Profession": null
     },
     "19210": {
@@ -13825,15 +13455,7 @@
         "Names": {
             "English": "Obsidian Shoes",
             "German": "Obsidian-Schuhe",
-            "French": "Chaussures d'obsidienne",
-            "TraditionalChinese": "黑曜石長靴",
-            "Korean": "옵시디언 슈즈",
-            "Italian": "Calzature d'Ossidiana",
-            "Spanish": "Par de zapatos de obsidiana",
-            "Japanese": "オブシディアン シューズ",
-            "Polish": "Obsydianowe buty",
-            "Russian": "Obsidian Shoes",
-            "BorkBorkBork": "Oobseedeeun Shues"
+            "French": "Chaussures d'obsidienne"
         },
         "ItemType": "Boots",
         "DropInfo": "",
@@ -13849,15 +13471,7 @@
         "Names": {
             "English": "Obsidian Robes",
             "German": "Obsidian-Robe",
-            "French": "Robe d'obsidienne",
-            "TraditionalChinese": "黑曜石長袍",
-            "Korean": "옵시디언 튜닉",
-            "Italian": "Toga d'Ossidiana",
-            "Spanish": "Ropones de obsidiana",
-            "Japanese": "オブシディアン ローブ",
-            "Polish": "Obsydianowe szaty",
-            "Russian": "Obsidian Robes",
-            "BorkBorkBork": "Oobseedeeun Rubes"
+            "French": "Robe d'obsidienne"
         },
         "ItemType": "Chestpiece",
         "DropInfo": "",
@@ -13873,15 +13487,7 @@
         "Names": {
             "English": "Obsidian Leggings",
             "German": "Obsidian-Beinkleid",
-            "French": "Bas d'obsidienne",
-            "TraditionalChinese": "黑曜石護腿",
-            "Korean": "옵시디언 호즈",
-            "Italian": "Gambali d'Ossidiana",
-            "Spanish": "Malla de obsidiana",
-            "Japanese": "オブシディアン ゲートル",
-            "Polish": "Obsydianowe legginsy",
-            "Russian": "Obsidian Leggings",
-            "BorkBorkBork": "Oobseedeeun Leggeengs"
+            "French": "Bas d'obsidienne"
         },
         "ItemType": "Leggings",
         "DropInfo": "",
@@ -13896,16 +13502,7 @@
         "ModelID": 19959,
         "Names": {
             "English": "Obsidian Shoes",
-            "German": "Obsidian-Schuhe",
-            "Korean": "옵시디언 부츠",
-            "French": "Chaussures d'obsidienne",
-            "Italian": "Calzature d'Ossidiana",
-            "Spanish": "Par de zapatos de obsidiana",
-            "TraditionalChinese": "黑曜石長靴",
-            "Japanese": "オブシディアン シューズ",
-            "Polish": "Obsydianowe buty",
-            "Russian": "Obsidian Shoes",
-            "BorkBorkBork": "Oobseedeeun Shues"
+            "German": "Obsidian-Schuhe"
         },
         "ItemType": "Boots",
         "DropInfo": "",
@@ -13920,16 +13517,7 @@
         "ModelID": 19960,
         "Names": {
             "English": "Obsidian Raiment",
-            "German": "Obsidian-Gewand",
-            "Korean": "옵시디언 슬리브리스",
-            "French": "Vêtements d'obsidienne",
-            "Italian": "Veste d'Ossidiana",
-            "Spanish": "Ropaje de obsidiana",
-            "TraditionalChinese": "黑曜石外衣",
-            "Japanese": "オブシディアン レイメント",
-            "Polish": "Obsydianowe szaty",
-            "Russian": "Obsidian Raiment",
-            "BorkBorkBork": "Oobseedeeun Raeeement"
+            "German": "Obsidian-Gewand"
         },
         "ItemType": "Chestpiece",
         "DropInfo": "",
@@ -13944,16 +13532,7 @@
         "ModelID": 19961,
         "Names": {
             "English": "Obsidian Bangles",
-            "German": "Obsidian-Armreifen",
-            "Korean": "옵시디언 글러브",
-            "French": "Bracelets d'obsidienne",
-            "Italian": "Bracciali d'Ossidiana",
-            "Spanish": "Ajorca de obsidiana",
-            "TraditionalChinese": "黑曜石手鐲",
-            "Japanese": "オブシディアン アームガード",
-            "Polish": "Obsydianowe bransolety",
-            "Russian": "Obsidian Bangles",
-            "BorkBorkBork": "Oobseedeeun Bungles"
+            "German": "Obsidian-Armreifen"
         },
         "ItemType": "Gloves",
         "DropInfo": "",
@@ -13968,16 +13547,7 @@
         "ModelID": 19962,
         "Names": {
             "English": "Obsidian Leggings",
-            "German": "Obsidian-Beinkleid",
-            "Korean": "옵시디언 스커트",
-            "French": "Bas d'obsidienne",
-            "Italian": "Gambali d'Ossidiana",
-            "Spanish": "Malla de obsidiana",
-            "TraditionalChinese": "黑曜石護腿",
-            "Japanese": "オブシディアン ゲートル",
-            "Polish": "Obsydianowe legginsy",
-            "Russian": "Obsidian Leggings",
-            "BorkBorkBork": "Oobseedeeun Leggeengs"
+            "German": "Obsidian-Beinkleid"
         },
         "ItemType": "Leggings",
         "DropInfo": "",
@@ -15090,10 +14660,10 @@
         "Names": {
             "English": "Shamrock Ale"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Lucky Treats Week",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shamrock_Ale",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -16057,16 +15627,7 @@
         "ModelID": 23642,
         "Names": {
             "English": "Everlasting Aura",
-            "German": "Unvergängliche Aura",
-            "TraditionalChinese": "亙古光環",
-            "Korean": "이터널 오라",
-            "French": "Aura éternelle",
-            "Italian": "Aura Eterna",
-            "Spanish": "Aura eterna",
-            "Japanese": "エバーラスティング オーラ",
-            "Polish": "Wiekuista aura",
-            "Russian": "Everlasting Aura",
-            "BorkBorkBork": "Iferlaesteeng Oora"
+            "German": "Unvergängliche Aura"
         },
         "ItemType": "Headpiece",
         "DropInfo": "",
@@ -16081,16 +15642,7 @@
         "ModelID": 23643,
         "Names": {
             "English": "Flame Aura",
-            "German": "Flammen-Aura",
-            "TraditionalChinese": "火法師光環",
-            "Korean": "피닉스 오라",
-            "French": "Aura de flamme",
-            "Italian": "Aura della Fiamma",
-            "Spanish": "Aura de llama",
-            "Japanese": "フレイム オーラ",
-            "Polish": "Płomienna aura",
-            "Russian": "Flame Aura",
-            "BorkBorkBork": "Flaeme-a Oora"
+            "German": "Flammen-Aura"
         },
         "ItemType": "Headpiece",
         "DropInfo": "",
@@ -16106,15 +15658,7 @@
         "Names": {
             "English": "Canthan Shoes",
             "German": "Cantha-Schuhe",
-            "French": "Chaussures canthiennes",
-            "TraditionalChinese": "凱珊長靴",
-            "Korean": "제피르 칸타 부츠",
-            "Italian": "Stivali di Cantha",
-            "Spanish": "Par de zapatos de Cantha",
-            "Japanese": "キャンサ ブーツ",
-            "Polish": "Kintajskie buty",
-            "Russian": "Canthan Shoes",
-            "BorkBorkBork": "Cunthun Shues"
+            "French": "Chaussures canthiennes"
         },
         "ItemType": "Boots",
         "DropInfo": "",
@@ -16130,15 +15674,7 @@
         "Names": {
             "English": "Canthan Gloves",
             "German": "Cantha-Handschuhe",
-            "French": "Gants canthiens",
-            "TraditionalChinese": "凱珊手套",
-            "Korean": "제피르 칸타 글러브",
-            "Italian": "Guanti di Cantha",
-            "Spanish": "Par de guantes de Cantha",
-            "Japanese": "キャンサ グローブ",
-            "Polish": "Kintajskie rękawice",
-            "Russian": "Canthan Gloves",
-            "BorkBorkBork": "Cunthun Glufes"
+            "French": "Gants canthiens"
         },
         "ItemType": "Gloves",
         "DropInfo": "",
@@ -16990,16 +16526,7 @@
         "ModelID": 25774,
         "Names": {
             "English": "Blindfold",
-            "German": "Augenbinde",
-            "Korean": "눈가리개",
-            "French": "Bandeau",
-            "Italian": "Benda",
-            "Spanish": "Venda",
-            "TraditionalChinese": "眼罩",
-            "Japanese": "アイマスク",
-            "Polish": "Opaska na Oczy",
-            "Russian": "Blindfold",
-            "BorkBorkBork": "Bleendffuld"
+            "German": "Augenbinde"
         },
         "ItemType": "Headpiece",
         "DropInfo": "",
@@ -17149,15 +16676,7 @@
         "Names": {
             "English": "Chaos Gloves",
             "German": "Chaos-Handschuhe",
-            "French": "Gants du chaos",
-            "TraditionalChinese": "混沌手套",
-            "Korean": "카오스 글러브",
-            "Italian": "Guanti del Caos",
-            "Spanish": "Par de guantes del caos",
-            "Japanese": "カオス グローブ",
-            "Polish": "Rękawice Chaosu",
-            "Russian": "Chaos Gloves",
-            "BorkBorkBork": "Chaeus Glufes"
+            "French": "Gants du chaos"
         },
         "ItemType": "Gloves",
         "DropInfo": "",
@@ -17308,7 +16827,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Herring",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 11,
+        "NickIndex": null,
         "Profession": null
     },
     "26603": {
@@ -17425,16 +16944,7 @@
         "ModelID": 26984,
         "Names": {
             "English": "Bogroot Focus",
-            "German": "Sumpfwurzel-Fokus",
-            "Korean": "수렁식물 포커스",
-            "French": "Focus de Bogroot",
-            "Italian": "Focus Palustre",
-            "Spanish": "Foco de Raizdeciénaga",
-            "TraditionalChinese": "泥塘聚能器",
-            "Japanese": "ボグルート フォーカス",
-            "Polish": "Fokus Bagiennego Korzenia",
-            "Russian": "Bogroot Focus",
-            "BorkBorkBork": "Bugruut Fucoos"
+            "German": "Sumpfwurzel-Fokus"
         },
         "ItemType": "Offhand",
         "DropInfo": "",
@@ -17552,7 +17062,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Saurian_Bone",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 49,
+        "NickIndex": null,
         "Profession": null
     },
     "27036": {
@@ -17566,7 +17076,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 103,
+        "NickIndex": null,
         "Profession": null
     },
     "27037": {
@@ -17580,7 +17090,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 77,
+        "NickIndex": null,
         "Profession": null
     },
     "27038": {
@@ -17608,7 +17118,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 3,
+        "NickIndex": null,
         "Profession": null
     },
     "27040": {
@@ -17622,7 +17132,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 41,
+        "NickIndex": null,
         "Profession": null
     },
     "27041": {
@@ -17650,7 +17160,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 134,
+        "NickIndex": null,
         "Profession": null
     },
     "27043": {
@@ -17664,7 +17174,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 18,
+        "NickIndex": null,
         "Profession": null
     },
     "27044": {
@@ -17692,7 +17202,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 112,
+        "NickIndex": null,
         "Profession": null
     },
     "27046": {
@@ -17716,7 +17226,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Berserker_Horn",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 67,
+        "NickIndex": null,
         "Profession": null
     },
     "27047": {
@@ -17772,7 +17282,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 59,
+        "NickIndex": null,
         "Profession": null
     },
     "27051": {
@@ -17796,7 +17306,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Fibrous_Mandragor_Root",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 127,
+        "NickIndex": null,
         "Profession": null
     },
     "27052": {
@@ -17820,7 +17330,7 @@
         "WikiURL": "https://wiki.guildwars.com/wiki/Superb_Charr_Carving",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 19,
+        "NickIndex": null,
         "Profession": null
     },
     "27053": {
@@ -17834,7 +17344,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 10,
+        "NickIndex": null,
         "Profession": null
     },
     "27054": {
@@ -17988,7 +17498,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 27,
+        "NickIndex": null,
         "Profession": null
     },
     "27070": {
@@ -18092,15 +17602,7 @@
         "Names": {
             "English": "Droknar's Earth Scepter",
             "German": "Droknars Erdzepter",
-            "French": "Sceptre de la terre de Droknar",
-            "TraditionalChinese": "卓克納地魔法權杖",
-            "Korean": "드록나 대지 지팡이",
-            "Italian": "Scettro di Droknar della Terra",
-            "Spanish": "Cetro de tierra de Droknar",
-            "Japanese": "ドロクナー アース セプター",
-            "Polish": "Berło Ziemi Droknara",
-            "Russian": "Droknar's Earth Scepter",
-            "BorkBorkBork": "Druknaer's Iaert Scepter"
+            "French": "Sceptre de la terre de Droknar"
         },
         "ItemType": "Wand",
         "DropInfo": "",
@@ -18143,16 +17645,7 @@
         "ModelID": 27453,
         "Names": {
             "English": "Droknar's Spawning Staff",
-            "German": "Droknars Herbeirufstab",
-            "Korean": "드록나 생성 스태프",
-            "French": "Bâton de l'invocation de Droknar",
-            "Italian": "Bastone di Droknar Sacrificale",
-            "Spanish": "Báculo de engendramiento de Droknar",
-            "TraditionalChinese": "卓克納召喚法杖",
-            "Japanese": "ドロクナー スポーン スタッフ",
-            "Polish": "Kostur Przywoływania Droknara",
-            "Russian": "Droknar's Spawning Staff",
-            "BorkBorkBork": "Druknaer's Spaevneeng Staeffff"
+            "German": "Droknars Herbeirufstab"
         },
         "ItemType": "Staff",
         "DropInfo": "",
@@ -18214,7 +17707,7 @@
         "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
-        "NickIndex": 120,
+        "NickIndex": null,
         "Profession": null
     },
     "27758": {
@@ -20466,22 +19959,12 @@
     "31221": {
         "ModelID": 31221,
         "Names": {
-            "English": "Small Equipment Pack",
-            "German": "Kleines Ausrüstungspack",
-            "Korean": "소형 장비 가방",
-            "French": "Petit sac",
-            "Italian": "Sacco per l'equipaggiamento piccolo",
-            "Spanish": "Pack de equipamiento pequeño",
-            "TraditionalChinese": "Small Equipment Pack",
-            "Japanese": "装備品パック (小)",
-            "Polish": "Mały plecak na ekwipunek",
-            "Russian": "Small Equipment Pack",
-            "BorkBorkBork": "Smaell Iqooeepment Paeck"
+            "English": "Small Equipment Pack"
         },
-        "ItemType": "Bag",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "https://wiki.guildwars.com/wiki/Small_Equipment_Pack",
+        "WikiURL": "",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -22374,15 +21857,7 @@
         "Names": {
             "English": "Focus of Purity",
             "German": "Fokus der Reinheit",
-            "French": "Focus de la Pureté",
-            "TraditionalChinese": "Ministry of Purity Focus",
-            "Korean": "정화의 포커스",
-            "Italian": "Focus della Purezza",
-            "Spanish": "Foco de pureza",
-            "Japanese": "ピュリティ フォーカス",
-            "Polish": "Fokus Czystości",
-            "Russian": "Focus of Purity",
-            "BorkBorkBork": "Fucoos ooff Pooreety"
+            "French": "Focus de la Pureté"
         },
         "ItemType": "Offhand",
         "DropInfo": "",
@@ -22400,15 +21875,7 @@
         "Names": {
             "English": "Fan of Purity",
             "German": "Fächer der Reinheit",
-            "French": "Eventail de la Pureté",
-            "TraditionalChinese": "Ministry of Purity Fan",
-            "Korean": "정화의 부채",
-            "Italian": "Ventaglio della Purezza",
-            "Spanish": "Abanico de pureza",
-            "Japanese": "ピュリティ ファン",
-            "Polish": "Wachlarz Czystości",
-            "Russian": "Fan of Purity",
-            "BorkBorkBork": "Fun ooff Pooreety"
+            "French": "Eventail de la Pureté"
         },
         "ItemType": "Wand",
         "DropInfo": "",
@@ -22833,16 +22300,7 @@
         "ModelID": 38022,
         "Names": {
             "English": "Anniversary Flatbow \"Oracle\"",
-            "German": "Jubiläums-Flachbogen \"Orakel\"",
-            "Korean": "15주년 평궁 \"오라클\"",
-            "French": "Arc plat d'anniversaire \"Oracle\"",
-            "Italian": "Arco piatto dell'anniversario \"Oracolo\"",
-            "Spanish": "Arco simple de aniversario \"Oráculo\"",
-            "TraditionalChinese": "Anniversary Flatbow \"Oracle\"",
-            "Japanese": "Anniversary Flatbow \"Oracle\"",
-            "Polish": "Długi łuk z okazji rocznicy „Wyrocznia\"",
-            "Russian": "Юбилейный лук \"Оракул\"",
-            "BorkBorkBork": "Unneefersaery Flaetboo \"Ooraecle-a\""
+            "German": "Jubiläums-Flachbogen \"Orakel\""
         },
         "ItemType": "Bow",
         "DropInfo": "",
