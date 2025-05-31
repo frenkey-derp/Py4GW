@@ -18,7 +18,38 @@ importlib.reload(item_configuration)
 importlib.reload(data)
 
 
-class Util:
+class Util:    
+    merchant_threshold = 10
+    merchantwindow_coords : list[tuple[int, int, int, int]] = []
+    
+    @staticmethod
+    def IsMerchantWindowOpen() -> bool:        
+        return len(Util.merchantwindow_coords) == Util.merchant_threshold and all(coord == Util.merchantwindow_coords[0] for coord in Util.merchantwindow_coords)
+
+    @staticmethod
+    def UpdateMerchantWindowOpen():
+        id = UIManager.GetFrameIDByHash(3613855137)
+        
+        if not UIManager.FrameExists(id):
+            return
+        
+        if not UIManager.IsVisible(id):
+            return
+        
+        left, top, right, bottom = UIManager.GetFrameCoords(id)
+        Util.merchantwindow_coords.append((left, top, right, bottom))
+        
+        if len(Util.merchantwindow_coords) > Util.merchant_threshold:
+            Util.merchantwindow_coords.pop(0)
+        
+        if len(Util.merchantwindow_coords) < Util.merchant_threshold:
+            return
+            
+        if right > 10000:
+            Util.merchantwindow_coords.clear()
+            return
+
+
     @staticmethod
     def get_mod_mask(identifier: int, arg1: int, arg2: int) -> str:
         """
@@ -69,7 +100,7 @@ class Util:
 
         elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
             matching_mods = [
-                weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(modifiers, item_type)]
+                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(modifiers, item_type)]
             mods.extend(matching_mods)
             
         else:
@@ -98,7 +129,7 @@ class Util:
             target_item_type = ItemType(value) if value else None
 
             for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(
                     mod, target_item_type)), None)
 
                 if matching_mod is not None:
@@ -128,7 +159,7 @@ class Util:
             target_item_type = ItemType(value) if value else None
 
             for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods if weapon_mod.is_item_modifier(
+                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(
                     mod, target_item_type)), None)
                 return matching_mod
         else:
@@ -415,7 +446,7 @@ class Util:
         """
         if not WeaponMod._mod_identifier_lookup or refresh:
             WeaponMod._mod_identifier_lookup = {
-                mod.identifier: mod.full_name for mod in data.Weapon_Mods
+                mod.identifier: mod.full_name for mod in data.Weapon_Mods.values()
             }
 
         return WeaponMod._mod_identifier_lookup.get(mod_identifier, "Unknown Weapon Mod")

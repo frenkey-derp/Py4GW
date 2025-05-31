@@ -259,7 +259,7 @@ Runes_by_Profession: dict[Profession, list[models.Rune]] = {}
 # Change to be a dictionary of dictionaries per identifier so we can handle mods like "Fortitude" (Suffix) and "Hale" (Prefix) which share the same identifier
 # We should also be able to get mods with non perfect stats like a +29 health Fortitude mod
 # We need to iterate from the mod with the most modifiers to the least modifiers, specialized to less specialized
-Weapon_Mods: list[models.WeaponMod] = []
+Weapon_Mods: dict[str, models.WeaponMod] = {}
 
 Nick_Cycle_Start_Date = datetime.datetime(2009, 4, 20)
 
@@ -273,7 +273,7 @@ def UpdateLanguage(server_language: ServerLanguage):
     for rune in Runes:
         rune.update_language(server_language)
 
-    for weapon_mod in Weapon_Mods:
+    for weapon_mod in Weapon_Mods.values():
         weapon_mod.update_language(server_language)
 
 
@@ -332,23 +332,27 @@ def LoadWeaponMods():
     with open(path, 'r', encoding='utf-8') as file:
         weapon_mods = json.load(file)
 
-        for value in weapon_mods:
-            mod = models.WeaponMod.from_json(value)
-            if not mod in Weapon_Mods:
-                Weapon_Mods.append(mod)
+        if weapon_mods:  
+            for value in weapon_mods.values():
+                mod = models.WeaponMod.from_json(value)
+                
+                if not mod.identifier in Weapon_Mods:
+                    Weapon_Mods[mod.identifier] = mod
 
     account_file = os.path.join(
         file_directory, "data", "diffs", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
     if os.path.exists(account_file):
         with open(account_file, 'r', encoding='utf-8') as file:
             weapon_mods = json.load(file)
+            
+            if weapon_mods:               
+                for value in weapon_mods.values():
+                    mod = models.WeaponMod.from_json(value)
+                    if not mod.identifier in Weapon_Mods:
+                        Weapon_Mods[mod.identifier] = mod
 
-            for value in weapon_mods:
-                mod = models.WeaponMod.from_json(value)
-                if not mod in Weapon_Mods:
-                    Weapon_Mods.append(mod)
-
-    Weapon_Mods = sorted(Weapon_Mods, key=lambda x: x.name)
+    # sort the weapon mods by mod.mod_type, then by name
+    Weapon_Mods = dict(sorted(Weapon_Mods.items(), key=lambda item: (item[1].mod_type, item[1].name)))
 
 
 @staticmethod
@@ -366,8 +370,6 @@ def SaveWeaponMods(shared_file: bool = False, items: Optional[dict[str, models.W
 
     path = os.path.join(data_directory, "weapon_mods.json")
 
-    ConsoleLog(
-        "LootEx", f"Saving weapon mods to {path}...", Console.MessageType.Debug)
 
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
@@ -376,15 +378,18 @@ def SaveWeaponMods(shared_file: bool = False, items: Optional[dict[str, models.W
         if items is not None:
             items = dict(sorted(items.items(), key=lambda item: item[0]))
     else:
-        # convert Weapon_Mods to a dictionary with the mod identifier as key
-        items = {mod.identifier: mod for mod in Weapon_Mods}
+        items = Weapon_Mods
 
     if items is None:
+        ConsoleLog(
+            "LootEx", "No weapon mods to save.", Console.MessageType.Warning)
         return
-
+    
     with open(path, 'w', encoding='utf-8') as file:
-        json.dump([mod.to_json() for mod in items.values()],
-                  file, indent=4, ensure_ascii=False)
+        ConsoleLog(
+            "LootEx", f"Saving weapon mods ...", Console.MessageType.Debug)
+        json.dump({mod.identifier: mod.to_json()
+                  for mod in items.values()}, file, indent=4, ensure_ascii=False)
 
 
 @staticmethod
@@ -397,7 +402,7 @@ def LoadRunes():
     path = os.path.join(data_directory, "runes.json")
 
     ConsoleLog(
-        "LootEx", f"Loading runes from {path}...", Console.MessageType.Debug)
+        "LootEx", f"Loading runes ...", Console.MessageType.Debug)
 
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
@@ -452,13 +457,14 @@ def SaveRunes(shared_file: bool = False, items: Optional[dict[str, models.Rune]]
 
     path = os.path.join(data_directory, "runes.json")
 
-    ConsoleLog(
-        "LootEx", f"Saving runes to {path}...", Console.MessageType.Debug)
 
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
 
     with open(path, 'w', encoding='utf-8') as file:
+        ConsoleLog(
+            "LootEx", f"Saving runes ...", Console.MessageType.Debug)
+        
         json.dump([rune.to_json() for rune in Runes],
                   file, indent=4, ensure_ascii=False)
 
@@ -473,7 +479,7 @@ def LoadItems():
     path = os.path.join(data_directory, "items.json")
 
     ConsoleLog(
-        "LootEx", f"Loading items from {path}...", Console.MessageType.Debug)
+        "LootEx", f"Loading items...", Console.MessageType.Debug)
 
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
@@ -538,10 +544,10 @@ def SaveItems(shared_file: bool = False, items: Optional[dict[int, models.Item]]
     if items is None:
         return
 
-    ConsoleLog(
-        "LootEx", f"Saving items to {path}...", Console.MessageType.Debug)
 
     with open(path, 'w', encoding='utf-8') as file:
+        ConsoleLog(
+            "LootEx", f"Saving items ...", Console.MessageType.Debug)
         json.dump({item.model_id: item.to_json()
                   for item in items.values()}, file, indent=4, ensure_ascii=False)
 
@@ -556,8 +562,11 @@ def MergeDiffItems():
     for dir_name in dirs:
         file_path = os.path.join(diffs_directory, dir_name, "items.json")
         
-        if os.path.exists(file_path):
+        if os.path.exists(file_path):            
             with open(file_path, 'r', encoding='utf-8') as file:
+                ConsoleLog(
+                    "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
+                
                 items = json.load(file)
 
                 for value in items.values():
@@ -572,3 +581,30 @@ def MergeDiffItems():
             os.remove(file_path)
     
     SaveItems(shared_file=True, items=Items)
+    
+    
+    for dir_name in dirs:
+        file_path = os.path.join(diffs_directory, dir_name, "weapon_mods.json")
+        
+        if os.path.exists(file_path):            
+            with open(file_path, 'r', encoding='utf-8') as file:
+                ConsoleLog(
+                    "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
+                
+                mods = json.load(file)
+
+                for value in mods.values():
+                    mod = models.WeaponMod.from_json(value)
+                    
+                    # if mod.identifier not in Weapon_Mods:
+                    #     Weapon_Mods[mod.identifier] = mod
+                    # else:
+                    #     # If the item already exists, we can update it
+                    #     Weapon_Mods[mod.identifier].update(mod)
+        
+            # Delete the diff file after merging
+            os.remove(file_path)
+    
+    SaveItems(shared_file=True, items=Items)
+    
+    

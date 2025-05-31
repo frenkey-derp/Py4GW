@@ -101,6 +101,10 @@ class Item():
         name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))
         
+        if not name:
+            # Get the first available name if the requested language is not found
+            name = next(iter(self.names.values()), "") + " (No English Name)"
+                
         pattern = r"^\s*\d+\s+|(\d+個)$"        
         self.contains_amount = re.search(pattern, name) is not None
         

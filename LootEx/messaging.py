@@ -20,7 +20,7 @@ start : datetime.datetime = datetime.datetime.now()
 is_collecting = False
 
 def SendMergingMessage():
-    global start, is_collecting
+    global is_collecting
     
     for acc in sharedMemoryManager.GetAllAccountData():
         if acc.AccountEmail == current_account:
@@ -28,7 +28,6 @@ def SendMergingMessage():
     
         sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
         
-    start = datetime.datetime.now()
     MergeWhenCollectionPaused()
         
 def MergeWhenCollectionPaused():    
@@ -91,6 +90,24 @@ def SendOpenXunlai(exclude_self: bool = False):
             continue
     
         sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.OpenXunlai, 0, 0))
+
+def SendStartDataCollection(exclude_self: bool = False):
+    global is_collecting
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartDataCollection, 0, 0))
+    
+def SendPauseDataCollection(exclude_self: bool = False):
+    global is_collecting
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
 
 def HandleMessages():
     action_node.ProcessQueue()    

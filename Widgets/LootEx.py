@@ -15,6 +15,7 @@ importlib.reload(loot_check)
 importlib.reload(messaging)
 
 MODULE_NAME = "LootEx"
+merchant_window_timer = ThrottledTimer(75)
 loot_handling_timer = ThrottledTimer(50)
 throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -85,8 +86,13 @@ def main():
         return
 
 
-    data_collector.instance.run_v2()
-        
+    data_collector.instance.run_v2()      
+    
+    if merchant_window_timer.IsExpired():
+        merchant_window_timer.Reset()
+                      
+        utility.Util.UpdateMerchantWindowOpen()
+    
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():
             return

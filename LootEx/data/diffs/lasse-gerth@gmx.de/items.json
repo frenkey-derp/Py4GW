@@ -1,0 +1,96 @@
+{
+    "615": {
+        "ModelID": 615,
+        "Names": {
+            "English": "Water Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Water_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1235": {
+        "ModelID": 1235,
+        "Names": {
+            "English": "Truncheon"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "BloodMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Truncheon",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "1248": {
+        "ModelID": 1248,
+        "Names": {
+            "English": "Water Spirit Rod"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Water_Spirit_Rod",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1281": {
+        "ModelID": 1281,
+        "Names": {
+            "English": "Accursed Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "Curses"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
+    "1561": {
+        "ModelID": 1561,
+        "Names": {
+            "English": "Briar Blade"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Briar_Blade",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "15553": {
+        "ModelID": 15553,
+        "Names": {
+            "English": "Scythe Grip"
+        },
+        "ItemType": "Rune_Mod",
+        "DropInfo": "No data added yet",
+        "Attributes": [],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Scythe_Grip",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    }
+}

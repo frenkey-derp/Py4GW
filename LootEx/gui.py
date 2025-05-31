@@ -1,8 +1,10 @@
 from datetime import timedelta
+import webbrowser
 from LootEx import *
 from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache
 from LootEx import models
 from LootEx import messaging
+from LootEx import data_collector
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -55,7 +57,7 @@ condition_name: str = ""
 item_search: str = ""
 new_profile_name: str = ""
 mod_search: str = ""
-filtered_weapon_mods: list[models.WeaponMod] = data.Weapon_Mods
+filtered_weapon_mods: dict[str, models.WeaponMod] = data.Weapon_Mods
 scroll_bar_visible: bool = False
 trader_type: str = ""
 entered_price_threshold: int = 1000
@@ -116,6 +118,7 @@ def draw_inventory_controls():
         PyImGui.pop_style_color(1)
 
         _draw_inventory_toggle_button(width)
+        _draw_date_collection_toggle_button(width)
         _draw_manual_window_toggle_button(width)
         _draw_xunlai_storage_button(width)
 
@@ -148,13 +151,14 @@ def _draw_inventory_toggle_button(width):
         if imgui_io.key_ctrl:
             if settings.current.automatic_inventory_handling:                
                 messaging.SendStopLootHandling(imgui_io.key_shift)
+                settings.current.save()
             else:
                 messaging.SendStartLootHandling(imgui_io.key_shift)
+                settings.current.save()
                 
         else:
             settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
-            ActionQueueManager().ResetQueue("SALVAGE")
-            ActionQueueManager().ResetQueue("IDENTIFY")
+            settings.current.save()
 
     PyImGui.pop_style_var(1)
     PyImGui.pop_style_color(4)
@@ -162,6 +166,53 @@ def _draw_inventory_toggle_button(width):
     ImGui.show_tooltip(
         ("Disable" if settings.current.automatic_inventory_handling else "Enable") +
         " Inventory Handling"+
+        "\nHold Ctrl to send message to all accounts" +
+        "\nHold Shift to send message to all accounts excluding yourself"
+    )
+
+
+def _draw_date_collection_toggle_button(width):
+    PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
+    PyImGui.push_style_color(
+        PyImGui.ImGuiCol.Text,
+        Utils.ColorToTuple(
+            Utils.RGBToColor(0, 255, 0, 255)
+            if settings.current.collect_items
+            else Utils.RGBToColor(255, 255, 255, 125)
+        ),
+    )
+    PyImGui.push_style_color(PyImGui.ImGuiCol.Button,
+                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
+    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(
+        Utils.RGBToColor(0, 0, 0, 125)))
+    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive,
+                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
+
+    if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE, width, width):
+        imgui_io = PyImGui.get_io()
+        
+        if imgui_io.key_ctrl:
+            if settings.current.collect_items:
+                messaging.SendPauseDataCollection(imgui_io.key_shift)
+                settings.current.save()
+            else:
+                messaging.SendStartDataCollection(imgui_io.key_shift)
+                settings.current.save()
+                
+        else:
+            if settings.current.collect_items:
+                data_collector.instance.stop_collection()
+                settings.current.save()
+            else:
+                data_collector.instance.start_collection()
+                settings.current.save()
+
+    PyImGui.pop_style_var(1)
+    PyImGui.pop_style_color(4)
+
+    ImGui.show_tooltip(
+        ("Disable" if settings.current.collect_items else "Enable") +
+        " Item Data Collection"+
         "\nHold Ctrl to send message to all accounts" +
         "\nHold Shift to send message to all accounts excluding yourself"
     )
@@ -189,8 +240,10 @@ def _draw_manual_window_toggle_button(width):
         if imgui_io.key_ctrl:
             if settings.current.manual_window_visible:
                 messaging.SendHideLootExWindow(imgui_io.key_shift)
+                settings.current.save()
             else:
                 messaging.SendShowLootExWindow(imgui_io.key_shift)
+                settings.current.save()
         else:
             settings.current.manual_window_visible = not settings.current.manual_window_visible
             settings.current.save()
@@ -281,22 +334,67 @@ def draw_data_collector_tab():
                     Console.MessageType.Info,
                 )
                 
-                current_account = Player.GetAccountEmail()
-                
-                for acc in sharedMemoryManager.GetAllAccountData():
-                    if acc.AccountEmail == current_account:
-                        continue
-                    
-                    ConsoleLog(
-                        "LootEx",
-                        f"Send Message to {acc.AccountEmail}",
-                        Console.MessageType.Info,
-                    )
-                    
                 messaging.SendMergingMessage()
                                 
             ImGui.show_tooltip("Merge all diff files into the data files.")
             
+            PyImGui.same_line(0, 5)
+            
+            if PyImGui.button("Test", 300, 50): 
+                clipboard_text = "```\n"
+                
+                mods_dict = {}
+                
+                for mod in data.Weapon_Mods.values():
+                    if not mod.identifier in mods_dict:
+                        mods_dict[mod.identifier] = mod
+                    else:
+                        ConsoleLog(
+                            "LootEx",
+                            f"Duplicate weapon mod identifier found: {mod.identifier} | {mod.name}",
+                            Console.MessageType.Warning,
+                        )
+                        
+                data.SaveWeaponMods(True)        
+                
+                ## sort weapon mods by mod_type then by name
+                mods = sorted(data.Weapon_Mods.values(), key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
+                
+                for mod in mods:
+                    if not mod.upgrade_exists:
+                        continue
+                    
+                    english = mod.names.get(ServerLanguage.English, None)
+
+                    # check if the mod has a value for each language but Unknown in names
+                    has_all_languages = all(
+                        mod.names.get(lang) is not None or lang == ServerLanguage.Unknown
+                        for lang in ServerLanguage
+                    )
+                    
+                    if not has_all_languages and english:
+                        clipboard_text += f"\n{english}"
+                            
+                clipboard_text += "```"
+                PyImGui.set_clipboard_text(clipboard_text)     
+                
+                clipboard_text = ""
+                mods = utility.Util.GetMods(636)
+                for mod in mods:
+                    ConsoleLog(
+                        "LootEx",
+                        f"Mod: {mod.name} | Type: {mod.mod_type} | Identifier: {mod.identifier}",
+                        Console.MessageType.Debug,
+                    )
+                
+                PyImGui.set_clipboard_text(clipboard_text)     
+                
+                ConsoleLog(
+                    "LootEx",
+                    f"{len(data.Items)} Items collected.",
+                    Console.MessageType.Info,
+                )
+                pass  
                
 
         PyImGui.end_child()
@@ -304,9 +402,10 @@ def draw_data_collector_tab():
         PyImGui.end_tab_item()
 
 def draw_window():
-    global first_draw, show_add_profile_popup, show_delete_profile_popup, on_screen, window_flags
+    global first_draw, filtered_weapon_mods, show_add_profile_popup, show_delete_profile_popup, on_screen, window_flags
 
     if first_draw:
+        filtered_weapon_mods = data.Weapon_Mods
         PyImGui.set_next_window_size(
             settings.current.window_size[0], settings.current.window_size[1]
         )
@@ -349,99 +448,7 @@ def draw_window():
                 0) else PyImGui.WindowFlags.NoFlag
         )
 
-        if PyImGui.button("Test", 300, 50): 
-            clipboard_text = "```\n"
-            
-            mods_dict = {}
-            
-            for mod in data.Weapon_Mods:
-                if not mod.identifier in mods_dict:
-                    mods_dict[mod.identifier] = mod
-                else:
-                    ConsoleLog(
-                        "LootEx",
-                        f"Duplicate weapon mod identifier found: {mod.identifier} | {mod.name}",
-                        Console.MessageType.Warning,
-                    )
-                    
-            data.SaveWeaponMods(True)        
-            
-            ## sort weapon mods by mod_type then by name
-            mods = sorted(data.Weapon_Mods, key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
-            
-            for mod in mods:
-                if not mod.upgrade_exists:
-                    continue
-                
-                english = mod.names.get(ServerLanguage.English, None)
-
-                # check if the mod has a value for each language but Unknown in names
-                has_all_languages = all(
-                    mod.names.get(lang) is not None or lang == ServerLanguage.Unknown
-                    for lang in ServerLanguage
-                )
-                
-                if not has_all_languages and english:
-                    clipboard_text += f"\n{english}"
-                        
-            clipboard_text += "```"
-            PyImGui.set_clipboard_text(clipboard_text)     
-            
-            file_directory = os.path.dirname(os.path.abspath(__file__))
-            data_directory = os.path.join(file_directory, "data")
-            path = os.path.join(data_directory, "nick_cycle.json")
-            nick_items = models.NickItemEntry.load_from_file(path)
-            
-            # index = 0
-            # for nick_item in nick_items:
-                
-            #     # get all items that match the nick_item.Item
-            #     items = [item for item in data.Items.values() if item.get_name(ServerLanguage.English) == nick_item.Item]
-                
-            #     #if we found more than one item, log a warning
-            #     if len(items) > 1:
-            #         ConsoleLog(
-            #             "LootEx",
-            #             f"Found multiple items for '{nick_item.Item}': {[item.get_name(ServerLanguage.English) for item in items]}",
-            #             Console.MessageType.Warning,
-            #         )	
-                    
-            #     elif len(items) <= 0:
-            #         ConsoleLog(
-            #             "LootEx",
-            #             f"Item '{nick_item.Item}' not found in data.Items",
-            #             Console.MessageType.Error,
-            #         )
-                    
-            #     else:
-            #         item = items[0]
-            #         item.nick_index = index
-            #         nick_item.ModelId = item.model_id
-                
-            #     index += 1
-                
-            # data.SaveItems(True)
-
-            
-            # for i in range(771):
-            #     for nick_item in nick_items:
-            #         previousCycleDate = nick_item.Week - timedelta(weeks=137 * i)
-                    
-            #         if previousCycleDate.month == 4 and previousCycleDate.year == 2009:
-            #             ConsoleLog(
-            #                 "LootEx",
-            #                 f"Nick Item {nick_item.Item} is a cycle starter date of {previousCycleDate}.",
-            #                 Console.MessageType.Error,
-            #             )
-            
-            
-            ConsoleLog(
-                "LootEx",
-                f"{len(data.Items)} Items collected.",
-                Console.MessageType.Info,
-            )
-            pass
-
+        
         profile_names = [
             profile.name for profile in settings.current.loot_profiles]
         selected_index = PyImGui.combo(
@@ -1014,7 +1021,7 @@ def draw_loot_items():
     global first_draw, selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging
 
     if first_draw :                
-        for mod in data.Weapon_Mods:
+        for mod in data.Weapon_Mods.values():
             if mod.mod_type == enum.ModType.Prefix:
                 prefix_names.append(mod.name)
 
@@ -1097,9 +1104,17 @@ def draw_loot_items():
                         remaining_size = PyImGui.get_content_region_avail()
                         PyImGui.same_line(remaining_size[0] - 30, 0)
 
-                        if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, 0, 0):
+                        if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, 0, 0) and selected_loot_item.item_info.wiki_url:
                             Player.SendChatCommand(
                                 "wiki " + selected_loot_item.item_info.name)
+                            
+                            # start the url in the default browser
+                            webbrowser.open(selected_loot_item.item_info.wiki_url)
+                        
+                        ImGui.show_tooltip(
+                            "Open the wiki page for this item.\n" +
+                            "If the item is not found, it will search for the item name in the wiki." if selected_loot_item.item_info.wiki_url else "This item does not have a wiki page set yet."
+                        )
 
                         PyImGui.text("Model ID: " +
                                      str(selected_loot_item.item_info.model_id))
@@ -1236,7 +1251,7 @@ def draw_loot_items():
                                                 modname = prefix_names[mod]
                                                 if modname != None and modname != "Any":
                                                     # Get the mod struct from data.WeaponMods
-                                                    for weapon_mod in data.Weapon_Mods:
+                                                    for weapon_mod in data.Weapon_Mods.values():
                                                         if weapon_mod.name == modname:
                                                             condition.prefix_mod = weapon_mod.identifier
                                                             settings.current.loot_profile.save()
@@ -1255,7 +1270,7 @@ def draw_loot_items():
                                                 modname = suffix_names[mod]
                                                 if modname != None and modname != "Any":
                                                     # Get the mod struct from data.WeaponMods
-                                                    for weapon_mod in data.Weapon_Mods:
+                                                    for weapon_mod in data.Weapon_Mods.values():
                                                         if weapon_mod.name == modname:
                                                             condition.suffix_mod = weapon_mod.identifier
                                                             settings.current.loot_profile.save()
@@ -1275,7 +1290,7 @@ def draw_loot_items():
                                                 modname = inherent_names[mod]
                                                 if modname != None and modname != "Any":
                                                     # Get the mod struct from data.WeaponMods
-                                                    for weapon_mod in data.Weapon_Mods:
+                                                    for weapon_mod in data.Weapon_Mods.values():
                                                         if weapon_mod.name == modname:
                                                             condition.inherent_mod = weapon_mod.identifier
                                                             settings.current.loot_profile.save()
@@ -1421,12 +1436,11 @@ def draw_weapon_mods():
 
         if search_input is not None and search_input != mod_search:
             mod_search = search_input
-            filtered_weapon_mods  = []
+            filtered_weapon_mods  = {}
 
-            for mod in data.Weapon_Mods:
+            for mod in data.Weapon_Mods.values():
                 if mod and mod.name and (mod.name.lower().find(mod_search.lower()) != -1 or mod.description.lower().find(mod_search.lower()) != -1 or str(mod.identifier).find(mod_search.lower()) != -1):
-                    filtered_weapon_mods.append(mod)
-
+                    filtered_weapon_mods[mod.identifier] = mod
 
         # Table headers
         PyImGui.push_style_var(ImGui.ImGuiStyleVar.ChildBorderSize, 0)
@@ -1440,7 +1454,7 @@ def draw_weapon_mods():
             PyImGui.begin_table(
                 "Weapon Mods Table",
                 len(weapon_types) + 4,
-                PyImGui.TableFlags.ScrollY,
+                PyImGui.TableFlags.NoFlag,
             )
             PyImGui.table_setup_column(
                 "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
@@ -1448,7 +1462,7 @@ def draw_weapon_mods():
                 "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
             
             PyImGui.table_setup_column(
-                "Description", PyImGui.TableColumnFlags.WidthStretch)
+                "Description", PyImGui.TableColumnFlags.WidthFixed, 250)
 
             PyImGui.table_setup_column(
                 "Inscription", PyImGui.TableColumnFlags.WidthFixed, 50
@@ -1472,7 +1486,7 @@ def draw_weapon_mods():
             PyImGui.begin_table(
                 "Weapon Mods Table",
                 len(weapon_types) + 4,
-                PyImGui.TableFlags.RowBg | PyImGui.TableFlags.BordersInnerH,
+                PyImGui.TableFlags.RowBg | PyImGui.TableFlags.BordersInnerH | PyImGui.TableFlags.ScrollY,
             )
             PyImGui.table_setup_column(
                 "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
@@ -1480,7 +1494,7 @@ def draw_weapon_mods():
                 "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
             
             PyImGui.table_setup_column(
-                "Description", PyImGui.TableColumnFlags.WidthStretch)
+                "Description", PyImGui.TableColumnFlags.WidthFixed, 250)
 
             PyImGui.table_setup_column(
                 "Inscription", PyImGui.TableColumnFlags.WidthFixed, 50
@@ -1492,7 +1506,7 @@ def draw_weapon_mods():
                 )
 
             server_language = utility.Util.get_server_language()
-            for mod in filtered_weapon_mods:
+            for mod in filtered_weapon_mods.values():
                 if not mod or not mod.identifier:
                     continue
 
@@ -1542,7 +1556,7 @@ def draw_weapon_mods():
                 # )
                 
                 # Mod name
-                PyImGui.table_next_column()
+                PyImGui.table_next_column()                
                 PyImGui.text_wrapped(mod.description)
                 draw_weapon_mod_tooltip(mod)
                 # ImGui.show_tooltip(
@@ -1696,8 +1710,13 @@ def draw_runes():
                                     rune.identifier]
                             )
 
-                            if rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.identifier] != rune_selected:
-                                settings.current.loot_profile.runes[rune.identifier] = rune_selected
+                            if rune.identifier not in settings.current.loot_profile.runes or settings.current.loot_profile.runes[rune.identifier] != rune_selected:
+                                if rune_selected:
+                                    settings.current.loot_profile.runes[rune.identifier] = True
+                                    
+                                elif rune.identifier in settings.current.loot_profile.runes:
+                                    del settings.current.loot_profile.runes[rune.identifier]
+                                
                                 settings.current.loot_profile.save()
 
                             PyImGui.pop_style_color(3)
@@ -1984,6 +2003,7 @@ def draw_selectable_item(item: SelectableItem):
         if item.item_info.attributes
         else []
     )
+    
     item_name = (
         item.item_info.name
         if not item.item_info.attributes
