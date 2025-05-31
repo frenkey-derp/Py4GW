@@ -7,6 +7,8 @@ from Py4GWCoreLib.enums import SharedCommandType
 
 import importlib
 
+from Py4GW_widget_manager import WidgetHandler
+
 importlib.reload(enum)
 importlib.reload(data)
 importlib.reload(settings)
@@ -19,8 +21,19 @@ action_node = ActionQueueNode(150)
 start : datetime.datetime = datetime.datetime.now()
 is_collecting = False
 
+def ResetMessages():
+    ConsoleLog("LootEx", "Resetting messages...")
+    messages = sharedMemoryManager.GetAllMessages()
+    messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
+    
+    for index, message in messages:
+        receiverEmail = message.ReceiverEmail
+        sharedMemoryManager.MarkMessageAsFinished(receiverEmail, index)
+
 def SendMergingMessage():
     global is_collecting
+    
+    ResetMessages()
     
     for acc in sharedMemoryManager.GetAllAccountData():
         if acc.AccountEmail == current_account:
@@ -108,6 +121,10 @@ def SendPauseDataCollection(exclude_self: bool = False):
             continue
     
         sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
+
+def ReloadWidgets():    
+    widgetHandler = WidgetHandler()
+    widgetHandler.discover_widgets()
 
 def HandleMessages():
     action_node.ProcessQueue()    

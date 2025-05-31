@@ -573,6 +573,19 @@ class WeaponMod(ItemMod):
             ]
         }
     
+    def update(self, item_mod: 'WeaponMod'):
+        if item_mod.mod_type != self.mod_type:
+            ConsoleLog("LootEx", f"Cannot update weapon mod with different mod type: {item_mod.mod_type} != {self.mod_type}", Console.MessageType.Error)
+            return
+                
+        for lang, name in item_mod.names.items():
+            if lang not in self.names or not self.names[lang] or self.names[lang] == "" or self.names[lang] != name:
+                self.names[lang] = name
+                
+        for lang, description in item_mod.descriptions.items():
+            if lang not in self.descriptions or not self.descriptions[lang] or self.descriptions[lang] == "" or self.descriptions[lang] != description:
+                self.descriptions[lang] = description
+    
     @staticmethod
     def from_json(json: dict) -> 'WeaponMod':
         return WeaponMod(            

@@ -5302,7 +5302,17 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Monk"
+            "English": "of the Monk",
+            "German": "d. des Mönchs",
+            "Korean": "(몽크)",
+            "French": "(le Moine)",
+            "Italian": "della Falce il monaco",
+            "Spanish": "(el monje)",
+            "TraditionalChinese": "the Monk",
+            "Japanese": "(モンク)",
+            "Polish": "(Mnicha)",
+            "Russian": "of монах",
+            "BorkBorkBork": "ooff zee Munk"
         },
         "ModType": "Suffix",
         "TargetTypes": [

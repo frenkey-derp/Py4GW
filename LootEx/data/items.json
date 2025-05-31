@@ -3188,6 +3188,32 @@
         "NickIndex": null,
         "Profession": "Elementalist"
     },
+    "615": {
+        "ModelID": 615,
+        "Names": {
+            "English": "Water Staff",
+            "German": "Wasserstab",
+            "Korean": "물의 스태프",
+            "French": "Bâton d'eau",
+            "Italian": "Bastone dell'Acqua",
+            "Spanish": "Báculo de agua",
+            "TraditionalChinese": "水之法杖",
+            "Japanese": "ウォーター スタッフ",
+            "Polish": "Wodny Kostur",
+            "Russian": "Water Staff",
+            "BorkBorkBork": "Vaeter Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Water_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
     "622": {
         "ModelID": 622,
         "Names": {
@@ -6576,6 +6602,32 @@
         "NickIndex": null,
         "Profession": "Mesmer"
     },
+    "1235": {
+        "ModelID": 1235,
+        "Names": {
+            "English": "Truncheon",
+            "German": "Knüppel",
+            "Korean": "곤봉",
+            "French": "Jonc",
+            "Italian": "Mazza",
+            "Spanish": "Porra",
+            "TraditionalChinese": "戰儀杖",
+            "Japanese": "クラブ",
+            "Polish": "Pałka",
+            "Russian": "Truncheon",
+            "BorkBorkBork": "Trooncheun"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "BloodMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Truncheon",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
+    },
     "1246": {
         "ModelID": 1246,
         "Names": {
@@ -6597,6 +6649,32 @@
             "FireMagic"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Dragon's_Breath_Wand",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1248": {
+        "ModelID": 1248,
+        "Names": {
+            "English": "Water Spirit Rod",
+            "German": "Wassergeiststecken",
+            "Korean": "물의 영혼 막대",
+            "French": "Badine d'esprit aquatique",
+            "Italian": "Verga dello Spirito d'Acqua",
+            "Spanish": "Vara espiritual de agua",
+            "TraditionalChinese": "水靈手杖",
+            "Japanese": "ウォーター スピリット ロッド",
+            "Polish": "Berło Wodnego Ducha",
+            "Russian": "Water Spirit Rod",
+            "BorkBorkBork": "Vaeter Spureet Rud"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "WaterMagic"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Water_Spirit_Rod",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -6654,6 +6732,32 @@
         "RareMaterials": [],
         "NickIndex": null,
         "Profession": null
+    },
+    "1281": {
+        "ModelID": 1281,
+        "Names": {
+            "English": "Accursed Staff",
+            "German": "Verfluchter Stab",
+            "Korean": "저주의 스태프",
+            "French": "Bâton maudit",
+            "Italian": "Bastone Maledetto",
+            "Spanish": "Báculo maldito",
+            "TraditionalChinese": "詛咒法杖",
+            "Japanese": "アカースト スタッフ",
+            "Polish": "Przeklęty Kostur",
+            "Russian": "Accursed Staff",
+            "BorkBorkBork": "Aeccoorsed Staeffff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "Curses"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Staff",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": "Necromancer"
     },
     "1283": {
         "ModelID": 1283,
@@ -7868,6 +7972,32 @@
             "Swordsmanship"
         ],
         "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Blade",
+        "Materials": [],
+        "RareMaterials": [],
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1561": {
+        "ModelID": 1561,
+        "Names": {
+            "English": "Briar Blade",
+            "German": "Dornen-Klinge",
+            "Korean": "찔레가시 검",
+            "French": "Lame de bruyère",
+            "Italian": "Lama di Erica",
+            "Spanish": "Espada de brezo",
+            "TraditionalChinese": "薔薇之刃",
+            "Japanese": "ブライア ブレード",
+            "Polish": "Korzenne Ostrze",
+            "Russian": "Briar Blade",
+            "BorkBorkBork": "Breeaer Blaede-a"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "WikiURL": "https://wiki.guildwars.com/wiki/Briar_Blade",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -13321,12 +13451,22 @@
     "15553": {
         "ModelID": 15553,
         "Names": {
-            "English": "Scythe Grip"
+            "English": "Scythe Grip",
+            "BorkBorkBork": "Scyzee Greep",
+            "German": "Sensengriff",
+            "French": "Poignée de faux",
+            "Italian": "Impugnatura",
+            "Spanish": "Empuñadura de guadaña",
+            "TraditionalChinese": "鐮刀把",
+            "Japanese": "サイズのグリップ",
+            "Polish": "Drzewce Kosy",
+            "Russian": "Scythe Grip",
+            "Korean": "사이드손잡이"
         },
-        "ItemType": "Unknown",
+        "ItemType": "Rune_Mod",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Scythe_Grip",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,

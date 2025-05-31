@@ -2,7 +2,6 @@ from LootEx.item_actions import InventoryAction, ItemActions, ItemAction
 from Py4GWCoreLib import *
 from LootEx import data_collector, models, settings, utility
 from LootEx.loot_profile import LootProfile
-import PyItem
 
 import importlib
 
@@ -432,15 +431,15 @@ def IdentifyItem(item_id) -> bool:
 
 def CanProcessItem(item_id: int) -> bool:
     if not data_collector.instance.is_item_collected(item_id):
-        ConsoleLog("LootEx", f"Item {item_id} is not collected yet, skipping processing.", Console.MessageType.Warning)
+        ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is not collected yet, skipping processing.", Console.MessageType.Warning)
         return False
     
     if data_collector.instance.has_uncollected_mods(item_id):
-        ConsoleLog("LootEx", f"Item {item_id} has uncollected mods, skipping processing.", Console.MessageType.Warning)
+        ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} has uncollected mods, skipping processing.", Console.MessageType.Warning)
         return False
     
     if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
-        ConsoleLog("LootEx", f"Item {item_id} is customized, skipping processing.", Console.MessageType.Warning)
+        ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is customized, skipping processing.", Console.MessageType.Warning)
         return False
     
     ## Add here checks from the loot profile

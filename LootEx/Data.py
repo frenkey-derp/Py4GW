@@ -348,15 +348,19 @@ def LoadWeaponMods():
             if weapon_mods:               
                 for value in weapon_mods.values():
                     mod = models.WeaponMod.from_json(value)
+                    
                     if not mod.identifier in Weapon_Mods:
                         Weapon_Mods[mod.identifier] = mod
+                    else:
+                        # If the mod already exists, we can update it
+                        Weapon_Mods[mod.identifier].update(mod)
 
     # sort the weapon mods by mod.mod_type, then by name
     Weapon_Mods = dict(sorted(Weapon_Mods.items(), key=lambda item: (item[1].mod_type, item[1].name)))
 
 
 @staticmethod
-def SaveWeaponMods(shared_file: bool = False, items: Optional[dict[str, models.WeaponMod]] = None):
+def SaveWeaponMods(shared_file: bool = False, mods: Optional[dict[str, models.WeaponMod]] = None):
     global Weapon_Mods
 
     # Save weapon mods to data/weapon_mods.json
@@ -375,12 +379,12 @@ def SaveWeaponMods(shared_file: bool = False, items: Optional[dict[str, models.W
         os.makedirs(data_directory)
 
     if not shared_file:
-        if items is not None:
-            items = dict(sorted(items.items(), key=lambda item: item[0]))
+        if mods is not None:
+            mods = dict(sorted(mods.items(), key=lambda item: item[0]))
     else:
-        items = Weapon_Mods
+        mods = Weapon_Mods
 
-    if items is None:
+    if mods is None:
         ConsoleLog(
             "LootEx", "No weapon mods to save.", Console.MessageType.Warning)
         return
@@ -389,7 +393,7 @@ def SaveWeaponMods(shared_file: bool = False, items: Optional[dict[str, models.W
         ConsoleLog(
             "LootEx", f"Saving weapon mods ...", Console.MessageType.Debug)
         json.dump({mod.identifier: mod.to_json()
-                  for mod in items.values()}, file, indent=4, ensure_ascii=False)
+                  for mod in mods.values()}, file, indent=4, ensure_ascii=False)
 
 
 @staticmethod
@@ -596,15 +600,15 @@ def MergeDiffItems():
                 for value in mods.values():
                     mod = models.WeaponMod.from_json(value)
                     
-                    # if mod.identifier not in Weapon_Mods:
-                    #     Weapon_Mods[mod.identifier] = mod
-                    # else:
-                    #     # If the item already exists, we can update it
-                    #     Weapon_Mods[mod.identifier].update(mod)
+                    if mod.identifier not in Weapon_Mods:
+                        Weapon_Mods[mod.identifier] = mod
+                    else:
+                        # If the item already exists, we can update it
+                        Weapon_Mods[mod.identifier].update(mod)
         
             # Delete the diff file after merging
             os.remove(file_path)
     
-    SaveItems(shared_file=True, items=Items)
+    SaveWeaponMods(shared_file=True, mods=Weapon_Mods)
     
     

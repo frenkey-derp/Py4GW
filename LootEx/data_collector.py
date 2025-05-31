@@ -4,7 +4,6 @@ import os
 import re
 from typing import Any, Callable, Optional, OrderedDict
 
-from PyInventory import Bag
 from LootEx import data, enum, models, settings, utility
 from Py4GWCoreLib import AgentArray, GlobalCache, Item, Routines, UIManager
 from Py4GWCoreLib.Merchant import Trading
@@ -86,7 +85,7 @@ class DataCollector:
                 if self.modified_weapon_mods:
                     self.modified_weapon_mods.clear()
                 
-                for value in weapon_mods:
+                for value in weapon_mods.values():
                     mod = models.WeaponMod.from_json(value)
                     if mod.identifier not in self.modified_weapon_mods:
                         self.modified_weapon_mods[mod.identifier] = mod
@@ -359,6 +358,14 @@ class DataCollector:
                         # If the mod is inherent, we don't need to cleanup the item name as its not affected by the mod
                         continue
 
+                    if mod.mod_type == enum.ModType.Prefix:
+                        if not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
+                            continue
+                        
+                    if mod.mod_type == enum.ModType.Suffix:
+                        if not GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item_id):
+                            continue
+
                     if mod.names is None or self.server_language not in mod.names or mod.names[self.server_language] is None:
                         return False
 
@@ -429,6 +436,14 @@ class DataCollector:
                     if mod.mod_type == enum.ModType.Inherent:
                         # If the mod is inherent, we don't need to cleanup the item name as its not affected by the mod
                         continue
+                    
+                    if mod.mod_type == enum.ModType.Prefix:
+                        if not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
+                            continue
+                        
+                    if mod.mod_type == enum.ModType.Suffix:
+                        if not GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item_id):
+                            continue
 
                     # ConsoleLog(
                     #     "LootEx", f"Cleaning up item name for mod: {mod.applied_name} on item {item_name} ({self.get_model_id(item_id)})", Console.MessageType.Debug)
@@ -547,13 +562,13 @@ class DataCollector:
                     patterns = {
                         ServerLanguage.English: r"^.*?(?= of)",
                         ServerLanguage.German: r"^.*(?= d\.)",
-                        ServerLanguage.French: r"^.*?(?= \()",
-                        ServerLanguage.Spanish: r"^.*?(?= \()",
+                        ServerLanguage.French: r"^.*?(?=\()",
+                        ServerLanguage.Spanish: r"^.*?(?=\()",
                         ServerLanguage.Italian: r"^.*(?= del)",
                         ServerLanguage.TraditionalChinese: r" .*$",
-                        ServerLanguage.Japanese: r"^.*?(?= \()",
-                        ServerLanguage.Korean: r"^.*?(?= \()",
-                        ServerLanguage.Polish: r"^.*?(?= \()",
+                        ServerLanguage.Japanese: r"^.*?(?=\()",
+                        ServerLanguage.Korean: r"^.*?(?=\()",
+                        ServerLanguage.Polish: r"^.*?(?=\()",
                         ServerLanguage.Russian: r"^.*?(?= of)",
                         ServerLanguage.BorkBorkBork: r"^.*?(?= ooff)",
                     }
@@ -802,7 +817,7 @@ class DataCollector:
 
             if save_weapon_mods:
                 save_weapon_mods = False
-                data.SaveWeaponMods(items=self.modified_weapon_mods)
+                data.SaveWeaponMods(mods=self.modified_weapon_mods)
                 saved = True
 
             if saved:
@@ -873,7 +888,7 @@ class DataCollector:
         
         ConsoleLog("LootEx", "Data collection stopped.")
         data.SaveItems(shared_file=False, items=self.modified_items)
-        data.SaveWeaponMods(shared_file=False, items=self.modified_weapon_mods)
+        data.SaveWeaponMods(shared_file=False, mods=self.modified_weapon_mods)
         
         
     def start_collection(self):

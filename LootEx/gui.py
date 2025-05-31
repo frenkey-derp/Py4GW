@@ -389,6 +389,8 @@ def draw_data_collector_tab():
                 
                 PyImGui.set_clipboard_text(clipboard_text)     
                 
+                messaging.ReloadWidgets()
+                
                 ConsoleLog(
                     "LootEx",
                     f"{len(data.Items)} Items collected.",
