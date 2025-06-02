@@ -1,13 +1,14 @@
 from datetime import timedelta
 import webbrowser
 from LootEx import *
-from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache
+from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache, ui_manager_extensions, loot_handling
 from LootEx import models
 from LootEx import messaging
 from LootEx import data_collector
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
+from LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
 
@@ -21,6 +22,8 @@ importlib.reload(loot_check)
 importlib.reload(item_configuration)
 importlib.reload(utility)
 importlib.reload(cache)
+importlib.reload(ui_manager_extensions)
+importlib.reload(loot_handling)
 
 
 class SelectableItem:
@@ -68,7 +71,6 @@ show_delete_profile_popup: bool = False
 first_draw: bool = True
 inventory_frame_hash: int = 291586130
 on_screen: bool = True
-fullscreen_frame_id: int = UIManager.GetFrameIDByHash(140452905)
 window_flags: int = PyImGui.WindowFlags.NoFlag
 weapon_types  = [
     ItemType.Axe,    
@@ -89,7 +91,6 @@ suffix_names = ["Any"]
 inherent_names = ["Any"]
 
 sharedMemoryManager = Py4GWSharedMemoryManager()
-
 
 def draw_inventory_controls():
     coords = settings.current.inventory_frame_coords
@@ -342,21 +343,7 @@ def draw_data_collector_tab():
             
             if PyImGui.button("Test", 300, 50): 
                 clipboard_text = "```\n"
-                
-                mods_dict = {}
-                
-                for mod in data.Weapon_Mods.values():
-                    if not mod.identifier in mods_dict:
-                        mods_dict[mod.identifier] = mod
-                    else:
-                        ConsoleLog(
-                            "LootEx",
-                            f"Duplicate weapon mod identifier found: {mod.identifier} | {mod.name}",
-                            Console.MessageType.Warning,
-                        )
-                        
-                data.SaveWeaponMods(True)        
-                
+                   
                 ## sort weapon mods by mod_type then by name
                 mods = sorted(data.Weapon_Mods.values(), key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
                 
@@ -376,32 +363,29 @@ def draw_data_collector_tab():
                         clipboard_text += f"\n{english}"
                             
                 clipboard_text += "```"
-                PyImGui.set_clipboard_text(clipboard_text)     
+                PyImGui.set_clipboard_text(clipboard_text)                                      
                 
-                clipboard_text = ""
-                mods = utility.Util.GetMods(636)
-                for mod in mods:
-                    ConsoleLog(
-                        "LootEx",
-                        f"Mod: {mod.name} | Type: {mod.mod_type} | Identifier: {mod.identifier}",
-                        Console.MessageType.Debug,
-                    )
-                
-                PyImGui.set_clipboard_text(clipboard_text)     
-                
-                messaging.ReloadWidgets()
+                # ConsoleLog(
+                #     "LootEx",
+                #     f"{len(data.Items)} Items collected.",
+                #     Console.MessageType.Info,
+                # )
+                # loot_handling.SalvageItem(110, enum.SalvageOption.Suffix)
                 
                 ConsoleLog(
                     "LootEx",
-                    f"{len(data.Items)} Items collected.",
+                   f"{len(utility.Util.GetMods(112))} Mods.",
                     Console.MessageType.Info,
                 )
+                               
+                
                 pass  
                
 
         PyImGui.end_child()
 
         PyImGui.end_tab_item()
+
 
 def draw_window():
     global first_draw, filtered_weapon_mods, show_add_profile_popup, show_delete_profile_popup, on_screen, window_flags
@@ -1022,7 +1006,12 @@ def draw_add_loot_filter_popup():
 def draw_loot_items():
     global first_draw, selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging
 
-    if first_draw :                
+    if first_draw :   
+        ConsoleLog(
+            "LootEx",
+            "Loading Loot Items...",
+            Console.MessageType.Info,
+        )             
         for mod in data.Weapon_Mods.values():
             if mod.mod_type == enum.ModType.Prefix:
                 prefix_names.append(mod.name)
@@ -1066,7 +1055,11 @@ def draw_loot_items():
             if PyImGui.begin_child("selectable_items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 for item in filtered_loot_items:
                     if item:
-                        draw_selectable_item(item)
+                        if PyImGui.is_rect_visible(1, 20):
+                            draw_selectable_item(item)
+                        else:
+                            PyImGui.dummy(0, 20)
+                            
 
             PyImGui.end_child()
 
@@ -1682,6 +1675,7 @@ def draw_runes():
 
             if PyImGui.begin_tab_bar("RunesTabBar"):
                 for profession, runes in data.Runes_by_Profession.items():
+                
                     if not runes:
                         continue
 
@@ -1694,6 +1688,12 @@ def draw_runes():
                         for rune in runes:
                             if not rune or not rune.identifier:
                                 continue
+                            
+                            if not PyImGui.is_rect_visible(0, 20):
+                                PyImGui.dummy(0, 20)
+                                continue
+                            
+                            
 
                             color = utility.Util.GetRarityColor(
                                 rune.rarity.value)
@@ -1711,8 +1711,11 @@ def draw_runes():
                                 rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
                                     rune.identifier]
                             )
+                            
+                            is_selected = rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.identifier]
+                            
 
-                            if rune.identifier not in settings.current.loot_profile.runes or settings.current.loot_profile.runes[rune.identifier] != rune_selected:
+                            if is_selected != rune_selected:
                                 if rune_selected:
                                     settings.current.loot_profile.runes[rune.identifier] = True
                                     
@@ -1734,7 +1737,6 @@ def draw_runes():
 
         draw_price_check_popup()
         PyImGui.end_tab_item()
-
 
 def draw_price_check_popup():
     global show_price_check_popup, entered_price_threshold
@@ -1783,7 +1785,6 @@ def draw_price_check_popup():
             PyImGui.close_current_popup()
             show_price_check_popup = False
 
-
 def draw_item_type_selectable(item_type, is_selected) -> tuple[bool, bool]:
     """
     Draws a selectable checkbox for an item type in the GUI.
@@ -1811,7 +1812,6 @@ def draw_item_type_selectable(item_type, is_selected) -> tuple[bool, bool]:
     PyImGui.pop_style_color(1)
 
     return is_selected != is_now_selected, is_now_selected
-
 
 def draw_vertical_centered_text(text: str, same_line_spacing: Optional[float] = None, desired_height: int = 24) -> float:
     """
@@ -1863,7 +1863,6 @@ def draw_vertical_centered_text(text: str, same_line_spacing: Optional[float] = 
         PyImGui.set_cursor_pos_x(same_line_spacing)
 
     return textSize[0]
-
 
 def draw_weapon_mod_tooltip(mod: models.WeaponMod):
     if PyImGui.is_item_hovered():

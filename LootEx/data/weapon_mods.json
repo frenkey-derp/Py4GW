@@ -763,7 +763,17 @@
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Let the Memory Live Again\""
+            "English": "\"Let the Memory Live Again\"",
+            "German": "\"Auf die Erinnerung!\"",
+            "Korean": "기억이여, 되살아나라",
+            "French": "\"Vers l'infini et au-delà\"",
+            "Italian": "\"Facciamo Rivivere i Ricordi\"",
+            "Spanish": "\"Que vuelvan los recuerdos\"",
+            "TraditionalChinese": "\"記憶復甦\"",
+            "Japanese": "レット ザ メモリー リブ アゲイン",
+            "Polish": "\"Niech pamięć ponownie ożyje\"",
+            "Russian": "\"Пусть оживут воспоминания\"",
+            "BorkBorkBork": "\"Let zee Memury Leefe-a Aegaeeen\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1300,7 +1310,17 @@
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Serenity Now\""
+            "English": "\"Serenity Now\"",
+            "German": "\"Auf die Gelassenheit\"",
+            "Korean": "평정을 찾아라",
+            "French": "\"Un peu de sérénité\"",
+            "Italian": "\"Serenità Immediata\"",
+            "Spanish": "\"Calma ahora\"",
+            "TraditionalChinese": "\"平靜\"",
+            "Japanese": "セレニティ ナウ",
+            "Polish": "\"Niech nastanie spokój\"",
+            "Russian": "\"Спокойствие, только спокойствие!\"",
+            "BorkBorkBork": "\"Sereneety Noo\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1744,7 +1764,17 @@
             "English": "Damage +{arg2}% (while Health is below +{arg1}%)"
         },
         "Names": {
-            "English": "\"Vengeance is Mine\""
+            "English": "\"Vengeance is Mine\"",
+            "German": "\"Die Rache ist mein\"",
+            "Korean": "복수는 나의 것",
+            "French": "\"La vengeance sera mienne\"",
+            "Italian": "\"La Vendetta è Mia\"",
+            "Spanish": "\"La venganza será mía\"",
+            "TraditionalChinese": "\"我要報仇\"",
+            "Japanese": "ヴェンジャンス イズ マイン",
+            "Polish": "\"Zemsta należy do mnie\"",
+            "Russian": "\"Аз воздам\"",
+            "BorkBorkBork": "\"Fengeunce-a is Meene-a\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1757,9 +1787,9 @@
                 "Arg1": 50,
                 "Arg2": 20,
                 "Arg": 12820,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 50
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
             }
         ]
     },
@@ -3021,6 +3051,7 @@
             "Japanese": "ファイア",
             "Polish": "Ognia",
             "Russian": "Fiery",
+            "Italian": "per danno da fuoco",
             "BorkBorkBork": "Feeery"
         },
         "ModType": "Prefix",

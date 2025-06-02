@@ -262,6 +262,7 @@ Runes_by_Profession: dict[Profession, list[models.Rune]] = {}
 Weapon_Mods: dict[str, models.WeaponMod] = {}
 
 Nick_Cycle_Start_Date = datetime.datetime(2009, 4, 20)
+Nick_Cycle_Count = 137
 
 
 def UpdateLanguage(server_language: ServerLanguage):

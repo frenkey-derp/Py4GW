@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional, Tuple
-from LootEx import data, item_configuration
+from LootEx import data, item_configuration, enum
 from LootEx import models
 from LootEx.enum import ModifierIdentifier, ModifierValueArg
 from LootEx.item_actions import ItemAction
@@ -16,39 +16,13 @@ from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, NumberPreference
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 importlib.reload(item_configuration)
 importlib.reload(data)
+importlib.reload(enum)
 
 
 class Util:    
     merchant_threshold = 10
     merchantwindow_coords : list[tuple[int, int, int, int]] = []
     
-    @staticmethod
-    def IsMerchantWindowOpen() -> bool:        
-        return len(Util.merchantwindow_coords) == Util.merchant_threshold and all(coord == Util.merchantwindow_coords[0] for coord in Util.merchantwindow_coords)
-
-    @staticmethod
-    def UpdateMerchantWindowOpen():
-        id = UIManager.GetFrameIDByHash(3613855137)
-        
-        if not UIManager.FrameExists(id):
-            return
-        
-        if not UIManager.IsVisible(id):
-            return
-        
-        left, top, right, bottom = UIManager.GetFrameCoords(id)
-        Util.merchantwindow_coords.append((left, top, right, bottom))
-        
-        if len(Util.merchantwindow_coords) > Util.merchant_threshold:
-            Util.merchantwindow_coords.pop(0)
-        
-        if len(Util.merchantwindow_coords) < Util.merchant_threshold:
-            return
-            
-        if right > 10000:
-            Util.merchantwindow_coords.clear()
-            return
-
 
     @staticmethod
     def get_mod_mask(identifier: int, arg1: int, arg2: int) -> str:
@@ -80,6 +54,29 @@ class Util:
         result[2] = identifier_bytes[0]  # Byte 2
         result[3] = identifier_bytes[1]  # Byte 3
         return bytes(result).hex().upper()
+
+    @staticmethod
+    def GetSalvageOptionFromModType(mod_type: enum.ModType) -> enum.SalvageOption:
+        """
+        Get the salvage option based on the mod type.
+
+        Args:
+            mod_type (enum.ModType): The type of the mod.
+
+        Returns:
+            enum.SalvageOption: The corresponding salvage option.
+        """
+        if mod_type == enum.ModType.Inherent:
+            return enum.SalvageOption.Inherent
+        
+        elif mod_type == enum.ModType.Prefix:
+            return enum.SalvageOption.Prefix
+        
+        elif mod_type == enum.ModType.Suffix:
+            return enum.SalvageOption.Suffix
+        
+        else:
+            return enum.SalvageOption.None_
 
     # TODO: Add handling for non max mods
     @staticmethod
@@ -343,7 +340,7 @@ class Util:
         return Util.IsArmorType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
-    def IsWeaponType(itemtype: ItemType) -> bool:
+    def IsWeaponType(itemtype: ItemType) -> bool:                
         return itemtype in {
             ItemType.Axe,
             ItemType.Bow,

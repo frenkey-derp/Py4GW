@@ -3360,7 +3360,8 @@
             "French": "Marteau Tetsubo",
             "Spanish": "Martillo Tetsubo",
             "TraditionalChinese": "狼牙鎚",
-            "Japanese": "テツボウ ハンマー"
+            "Japanese": "テツボウ ハンマー",
+            "Italian": "Tetsubo"
         },
         "ItemType": "Hammer",
         "DropInfo": "",
@@ -4754,12 +4755,13 @@
     "895": {
         "ModelID": 895,
         "Names": {
-            "English": "Hammer Haft"
+            "English": "Hammer Haft",
+            "German": "Hammerstiel"
         },
-        "ItemType": "Unknown",
+        "ItemType": "Rune_Mod",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "WikiURL": "",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hammer_Haft",
         "Materials": [],
         "RareMaterials": [],
         "NickIndex": null,
@@ -6459,7 +6461,8 @@
             "Japanese": "ファイア グラディウス",
             "Polish": "Gladius Ognia",
             "Russian": "Fiery Gladius",
-            "BorkBorkBork": "Feeery Glaedeeoos"
+            "BorkBorkBork": "Feeery Glaedeeoos",
+            "Italian": "Gladio per danno da fuoco"
         },
         "ItemType": "Sword",
         "DropInfo": "",

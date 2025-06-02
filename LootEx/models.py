@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import json
 import re
 import base64
@@ -87,6 +87,25 @@ class Item():
     
     def __post_init__(self):
         self.name : str = self.get_name()
+        self.next_nick_week: Optional[date] = self.get_next_nick_date()
+
+    def get_next_nick_date(self) -> Optional[date]:
+        if self.nick_index is None:
+            return None
+        
+        from LootEx import data
+        start_date = data.Nick_Cycle_Start_Date
+        
+        today = date.today()
+        monday_of_current_week = today - timedelta(days=today.weekday())
+        dt = datetime.combine(monday_of_current_week, datetime.min.time())
+                
+        for i in range(0, 100):
+            nick_date = start_date + timedelta(weeks=self.nick_index + (i * data.Nick_Cycle_Count))                     
+            
+            if nick_date >= dt:
+                return date(nick_date.year, nick_date.month, nick_date.day)
+        
 
     def update_language(self, language: ServerLanguage):
         self.name : str = self.get_name(language)      

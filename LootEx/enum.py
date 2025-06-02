@@ -12,6 +12,22 @@ class MessageActions(IntEnum):
     ShowLootExWindow = 7
     HideLootExWindow = 8
     OpenXunlai = 9    
+    
+class SalvageOption(IntEnum):
+    None_ = 0
+    Prefix = 1
+    Suffix = 2
+    Inherent = 3
+    CraftingMaterials = 4
+    LesserCraftingMaterials = 5
+    RareCraftingMaterials = 6
+    
+class SalvageKitOption(IntEnum):
+    None_ = 0
+    Lesser = 1
+    LesserOrExpert = 2
+    Expert = 3
+    Perfect = 4
 
 class WeaponType(IntEnum):
     Axe = 1

@@ -142,6 +142,18 @@ class DataCollector:
         for mod in mods:
             if not mod.upgrade_exists:
                 continue
+            
+            # if mod.mod_type == enum.ModType.Inherent:
+            #     if not GLOBAL_CACHE.Item.Customization.IsInscribable(item_id):
+            #         continue
+                
+            if mod.mod_type == enum.ModType.Prefix:
+                if not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
+                    continue
+                
+            if mod.mod_type == enum.ModType.Suffix:
+                if not GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item_id):
+                    continue
 
             if mod.names is None or len(mod.names) == 0:
                 return True        
@@ -176,6 +188,8 @@ class DataCollector:
                 continue
             
             if server_language not in item.names or item.names[server_language] is None:
+                # ConsoleLog(
+                #     "LootEx", f"{server_language} | {item.name} | {item.names}", Console.MessageType.Warning)
                 return False
 
         if item.contains_amount:
@@ -319,7 +333,7 @@ class DataCollector:
 
                 if mod.names is None or len(mod.names) == 0:
                     # ConsoleLog(
-                    #     "LootEx", f"Mod names are empty for mod {mod.applied_name} ({mod.mod_id}) in item {item_id} ({model_id})", Console.MessageType.Warning)
+                    #     "LootEx", f"Mod names are empty for mod {mod.applied_name} ({mod.identifier}) in item {item_id} ({model_id})", Console.MessageType.Warning)
                     return False
 
                 if self.server_language not in mod.names or mod.names[self.server_language] is None:
@@ -367,6 +381,7 @@ class DataCollector:
                             continue
 
                     if mod.names is None or self.server_language not in mod.names or mod.names[self.server_language] is None:
+                        ConsoleLog("LootEx", f"Mod name not found for {mod.applied_name} ({mod.identifier}) on item {self.get_item_name(item_id)} {item_id} ({self.get_model_id(item_id)})", Console.MessageType.Warning)
                         return False
 
         return True

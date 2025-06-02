@@ -9,7 +9,9 @@ class ItemAction(IntEnum):
     SELL = 3
     STASH = 4
     SALVAGE_RARE_MATERIALS = 5
-    DESTROY = 6
+    SALVAGE_MODS = 6
+    DESTROY = 7
+    COLLECT_DATA = 8
 
 
 class ItemActions:

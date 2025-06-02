@@ -53,6 +53,8 @@ class LootProfile:
             settings.current.profiles_path, f"{self.name}.json")
 
         with open(file_path, 'w') as file:
+            ConsoleLog(
+                "LootEx", f"Saving profile to '{file_path}'...", Console.MessageType.Debug)
             json.dump(profile_dict, file, indent=4)
 
     def load(self):

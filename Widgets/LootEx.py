@@ -15,7 +15,6 @@ importlib.reload(loot_check)
 importlib.reload(messaging)
 
 MODULE_NAME = "LootEx"
-merchant_window_timer = ThrottledTimer(75)
 loot_handling_timer = ThrottledTimer(50)
 throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -42,11 +41,18 @@ def configure():
 
 
 def main():
-    if not Routines.Checks.Map.MapValid():
-        return    
+    global inventory_frame_hash
     
+    if not Routines.Checks.Map.MapValid():
+        settings.current.inventory_frame_exists = False
+        settings.current.parent_frame_id = None
+        return           
+
     if messaging.HandleMessages():
         return
+    
+    if settings.current.parent_frame_id is None or settings.current.parent_frame_id == 0:
+        settings.current.parent_frame_id = UIManager.GetFrameIDByHash(inventory_frame_hash)
     
     language = utility.Util.get_server_language()
     if (language != settings.current.language):
@@ -55,16 +61,13 @@ def main():
         settings.current.save()
 
     if UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
-        settings.current.parent_frame_id = UIManager.GetFrameIDByHash(
-            inventory_frame_hash)
-
         if settings.current.parent_frame_id != 0:
             settings.current.inventory_frame_exists = UIManager.FrameExists(
                 settings.current.parent_frame_id)
         else:
             settings.current.inventory_frame_exists = False
     else:
-        settings.current.parent_frame_id = 0
+        settings.current.parent_frame_id = None
         settings.current.inventory_frame_exists = False
 
     if settings.current.inventory_frame_exists and settings.current.parent_frame_id != None:
@@ -87,23 +90,14 @@ def main():
 
 
     data_collector.instance.run_v2()      
-    
-    if merchant_window_timer.IsExpired():
-        merchant_window_timer.Reset()
-                      
-        utility.Util.UpdateMerchantWindowOpen()
+                         
     
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():
             return
 
         loot_handling_timer.Reset()
-
-        throttle_time = loot_handling.HandleInventoryLoot()
-
-        if throttle_time > 0:
-            loot_handling_timer.SetThrottleTime(throttle_time)
-            return
+        loot_handling.Run()
 
 
 # if __name__ == "__main__":
