@@ -27,6 +27,7 @@ queued_items : dict[int, datetime] = {}
 
 salvage_requires_confirmation = False
 
+#TODO: Add files containing rune and material prices which will be used to determine if we should salvage or not.
 
 #region Reworked
 def IdentifyItems() -> bool:    
@@ -491,6 +492,7 @@ def CompactInventory() -> bool:
     return False
 #endregion
 
+#TODO: If multiple mods are present which we want to keep, we should prioritize them based on a score or just not salvage them.
 
 def ProcessQueues() -> tuple[bool, int]:
     if not indentify_action_queue.is_empty():

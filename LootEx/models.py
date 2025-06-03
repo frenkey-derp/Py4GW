@@ -5,7 +5,7 @@ import base64
 from dataclasses import dataclass, field
 from typing import ClassVar, List, Optional
 from LootEx import settings
-from LootEx.enum import EnemyType, ModType, ModifierValueArg
+from LootEx.enum import Campaign, EnemyType, ModType, ModifierValueArg
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, Profession, Rarity, ServerLanguage
 
@@ -66,6 +66,30 @@ class ModifierValueRange():
         self.max: int = max if max is not None else min
     pass
 
+class AquisitionInfo():
+    def __init__(self):
+        self.campaign: Campaign = Campaign.None_
+        self.map: str = ""
+        self.map_id: int = -1
+        self.sources: List[str] = []
+        
+    def to_dict(self) -> dict:
+        return {
+            "Campaign": self.campaign.name,
+            "Map": self.map,
+            "MapID": self.map_id,
+            "Sources": self.sources
+        }
+            
+    @staticmethod
+    def from_dict(data: dict) -> 'AquisitionInfo':
+        info = AquisitionInfo()
+        info.campaign = Campaign[data["Campaign"]] if "Campaign" in data else Campaign.None_
+        info.map = data.get("Map", "")
+        info.map_id = data.get("MapID", -1)
+        info.sources = data.get("Sources", [])
+        return info
+        
 @dataclass
 class Item():
     model_id: int
@@ -80,6 +104,7 @@ class Item():
     nick_index: Optional[int] = None
     profession : Optional[Profession] = None
     contains_amount: bool = False    
+    inventory_icon: Optional[str] = None
     
     @property
     def is_nick_item(self) -> bool:
@@ -176,14 +201,29 @@ class Item():
         self.update_language(settings.current.language)
                 
     def to_json(self) -> dict:
+        def get_wiki_url():
+            if self.wiki_url:
+                return self.wiki_url
+            
+            english_name = self.names.get(ServerLanguage.English, "")
+            if not english_name:
+                return None
+            
+            # Generate a wiki URL based on the English name
+            base_url = "https://wiki.guildwars.com/wiki/"
+            formatted_name = re.sub(r'\s+', '_', english_name.strip())
+            return f"{base_url}{formatted_name}"
+        
         return {
             "ModelID": self.model_id,
+            "Name" : self.names.get(ServerLanguage.English, self.name),
             "Names": {lang.name: name for lang, name in self.names.items()},
             "ItemType": self.item_type.name,
             "DropInfo": self.drop_info,
             "Attributes": [attribute.name for attribute in self.attributes] if self.attributes else [],
-            "WikiURL": self.wiki_url,
+            "WikiURL": self.wiki_url or get_wiki_url(),
             "Materials": self.materials,
+            "InventoryIcon": self.inventory_icon,
             "RareMaterials": self.rare_materials,
             "NickIndex": self.nick_index,
             "Profession": self.profession.name if self.profession and self.profession != Profession._None else None
@@ -197,6 +237,7 @@ class Item():
                    name in json["Names"].items()},
             item_type=ItemType[json["ItemType"]],
             drop_info=json["DropInfo"],
+            inventory_icon=json.get("InventoryIcon", None),
             attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
             wiki_url=json["WikiURL"],
             materials=json["Materials"] if "Materials" in json else [],

@@ -1,10 +1,11 @@
 from datetime import timedelta
 import webbrowser
 from LootEx import *
-from LootEx import settings, item_actions, data ,loot_check, item_configuration,utility, enum, cache, ui_manager_extensions, loot_handling
+from LootEx import settings, item_actions, data, loot_check, item_configuration, utility, enum, cache, ui_manager_extensions, loot_handling, wiki_scraper
 from LootEx import models
 from LootEx import messaging
 from LootEx import data_collector
+from LootEx import wiki_scraper
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -24,6 +25,7 @@ importlib.reload(utility)
 importlib.reload(cache)
 importlib.reload(ui_manager_extensions)
 importlib.reload(loot_handling)
+importlib.reload(wiki_scraper)
 
 
 class SelectableItem:
@@ -49,6 +51,22 @@ class SelectableItem:
     def __repr__(self):
         return self.__str__()
 
+
+class SelectableWrapper:
+    """
+    Represents a selectable wrapper for an object, allowing it to be selected and hovered over in a GUI.
+    Attributes:
+        object (object): The object to be wrapped.
+        is_selected (bool): Indicates whether the object is currently selected. Defaults to False.
+        is_hovered (bool): Indicates whether the object is currently being hovered over. Defaults to False.
+    """
+
+    def __init__(self, object, is_selected: bool = False):
+        self.object = object
+        self.is_selected: bool = is_selected
+        self.is_hovered: bool = False
+
+
 selected_loot_items: list[SelectableItem] = []
 loot_items_selection_dragging: bool = False
 filtered_loot_items: list[SelectableItem] = [
@@ -60,7 +78,7 @@ condition_name: str = ""
 item_search: str = ""
 new_profile_name: str = ""
 mod_search: str = ""
-filtered_weapon_mods: dict[str, models.WeaponMod] = data.Weapon_Mods
+filtered_weapon_mods: list[SelectableWrapper] = []
 scroll_bar_visible: bool = False
 trader_type: str = ""
 entered_price_threshold: int = 1000
@@ -72,25 +90,27 @@ first_draw: bool = True
 inventory_frame_hash: int = 291586130
 on_screen: bool = True
 window_flags: int = PyImGui.WindowFlags.NoFlag
-weapon_types  = [
-    ItemType.Axe,    
+weapon_types = [
+    ItemType.Axe,
     ItemType.Sword,
     ItemType.Spear,
-    ItemType.Wand ,
+    ItemType.Wand,
     ItemType.Daggers,
-    ItemType.Hammer ,
-    ItemType.Scythe ,
-    ItemType.Bow ,
-    ItemType.Staff ,
-    ItemType.Offhand ,
-    ItemType.Shield ,
+    ItemType.Hammer,
+    ItemType.Scythe,
+    ItemType.Bow,
+    ItemType.Staff,
+    ItemType.Offhand,
+    ItemType.Shield,
 ]
 
 prefix_names = ["Any"]
 suffix_names = ["Any"]
 inherent_names = ["Any"]
 
+mod_heights: dict[str, float] = {}
 sharedMemoryManager = Py4GWSharedMemoryManager()
+
 
 def draw_inventory_controls():
     coords = settings.current.inventory_frame_coords
@@ -148,15 +168,15 @@ def _draw_inventory_toggle_button(width):
 
     if PyImGui.button(IconsFontAwesome5.ICON_CHECK, width, width):
         imgui_io = PyImGui.get_io()
-        
+
         if imgui_io.key_ctrl:
-            if settings.current.automatic_inventory_handling:                
+            if settings.current.automatic_inventory_handling:
                 messaging.SendStopLootHandling(imgui_io.key_shift)
                 settings.current.save()
             else:
                 messaging.SendStartLootHandling(imgui_io.key_shift)
                 settings.current.save()
-                
+
         else:
             settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
             settings.current.save()
@@ -166,7 +186,7 @@ def _draw_inventory_toggle_button(width):
 
     ImGui.show_tooltip(
         ("Disable" if settings.current.automatic_inventory_handling else "Enable") +
-        " Inventory Handling"+
+        " Inventory Handling" +
         "\nHold Ctrl to send message to all accounts" +
         "\nHold Shift to send message to all accounts excluding yourself"
     )
@@ -191,7 +211,7 @@ def _draw_date_collection_toggle_button(width):
 
     if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE, width, width):
         imgui_io = PyImGui.get_io()
-        
+
         if imgui_io.key_ctrl:
             if settings.current.collect_items:
                 messaging.SendPauseDataCollection(imgui_io.key_shift)
@@ -199,7 +219,7 @@ def _draw_date_collection_toggle_button(width):
             else:
                 messaging.SendStartDataCollection(imgui_io.key_shift)
                 settings.current.save()
-                
+
         else:
             if settings.current.collect_items:
                 data_collector.instance.stop_collection()
@@ -213,7 +233,7 @@ def _draw_date_collection_toggle_button(width):
 
     ImGui.show_tooltip(
         ("Disable" if settings.current.collect_items else "Enable") +
-        " Item Data Collection"+
+        " Item Data Collection" +
         "\nHold Ctrl to send message to all accounts" +
         "\nHold Shift to send message to all accounts excluding yourself"
     )
@@ -283,7 +303,7 @@ def _draw_xunlai_storage_button(width):
             pass
         else:
             imgui_io = PyImGui.get_io()
-            
+
             if imgui_io.key_ctrl:
                 messaging.SendOpenXunlai(imgui_io.key_shift)
             else:
@@ -292,9 +312,9 @@ def _draw_xunlai_storage_button(width):
     PyImGui.pop_style_var(1)
     PyImGui.pop_style_color(4)
 
-    ImGui.show_tooltip("Open Xunlai Storage"+
-        "\nHold Ctrl to send message to all accounts" +
-        "\nHold Shift to send message to all accounts excluding yourself")
+    ImGui.show_tooltip("Open Xunlai Storage" +
+                       "\nHold Ctrl to send message to all accounts" +
+                       "\nHold Shift to send message to all accounts excluding yourself")
 
 
 def draw_data_collector_tab():
@@ -304,28 +324,28 @@ def draw_data_collector_tab():
         if PyImGui.begin_child("DataCollectorChild", (tab_size[0], tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
             PyImGui.text("Data Collector")
             PyImGui.separator()
-            
+
             if PyImGui.begin_table("DataCollectorTable", 2, PyImGui.TableFlags.ScrollY, 250, 100):
                 PyImGui.table_setup_column("Data")
                 PyImGui.table_setup_column("Amount")
-                
+
                 # PyImGui.table_headers_row()
                 PyImGui.table_next_row()
-                
+
                 PyImGui.table_next_column()
                 PyImGui.text(f"Items")
                 PyImGui.table_next_column()
                 PyImGui.text(f"{len(data.Items)}")
-                            
+
                 PyImGui.table_next_column()
                 PyImGui.text(f"Weapon Mods")
                 PyImGui.table_next_column()
                 PyImGui.text(f"{len(data.Weapon_Mods)}")
-                            
+
                 PyImGui.table_next_column()
                 PyImGui.text(f"Runes")
                 PyImGui.table_next_column()
-                PyImGui.text(f"{len(data.Runes)}")                
+                PyImGui.text(f"{len(data.Runes)}")
             PyImGui.end_table()
 
             if PyImGui.button("Merge Diffs into Data", 200, 50):
@@ -334,53 +354,45 @@ def draw_data_collector_tab():
                     "Merging diffs into data...",
                     Console.MessageType.Info,
                 )
-                
+
                 messaging.SendMergingMessage()
-                                
+
             ImGui.show_tooltip("Merge all diff files into the data files.")
-            
+
             PyImGui.same_line(0, 5)
-            
-            if PyImGui.button("Test", 300, 50): 
+
+            if PyImGui.button("Test", 300, 50):
                 clipboard_text = "```\n"
-                   
-                ## sort weapon mods by mod_type then by name
-                mods = sorted(data.Weapon_Mods.values(), key=lambda x: (x.mod_type, x.names.get(ServerLanguage.English, "")))
-                
+
+                # sort weapon mods by mod_type then by name
+                mods = sorted(data.Weapon_Mods.values(), key=lambda x: (
+                    x.mod_type, x.names.get(ServerLanguage.English, "")))
+
                 for mod in mods:
                     if not mod.upgrade_exists:
                         continue
-                    
+
                     english = mod.names.get(ServerLanguage.English, None)
 
                     # check if the mod has a value for each language but Unknown in names
                     has_all_languages = all(
-                        mod.names.get(lang) is not None or lang == ServerLanguage.Unknown
+                        mod.names.get(
+                            lang) is not None or lang == ServerLanguage.Unknown
                         for lang in ServerLanguage
                     )
-                    
+
                     if not has_all_languages and english:
                         clipboard_text += f"\n{english}"
-                            
+
                 clipboard_text += "```"
-                PyImGui.set_clipboard_text(clipboard_text)                                      
-                
-                # ConsoleLog(
-                #     "LootEx",
-                #     f"{len(data.Items)} Items collected.",
-                #     Console.MessageType.Info,
-                # )
-                # loot_handling.SalvageItem(110, enum.SalvageOption.Suffix)
-                
-                ConsoleLog(
-                    "LootEx",
-                   f"{len(utility.Util.GetMods(112))} Mods.",
-                    Console.MessageType.Info,
-                )
-                               
-                
-                pass  
-               
+                PyImGui.set_clipboard_text(clipboard_text)
+
+                scrape_data = wiki_scraper.ScrapedData()
+                scrape_data.wiki_url="https://wiki.guildwars.com/wiki/Decayed_Orr_Armor"
+                wiki_scraper.WikiScraper.scrape_wiki_page(scrape_data)
+                # data.SaveItems(True)
+
+                pass
 
         PyImGui.end_child()
 
@@ -391,7 +403,6 @@ def draw_window():
     global first_draw, filtered_weapon_mods, show_add_profile_popup, show_delete_profile_popup, on_screen, window_flags
 
     if first_draw:
-        filtered_weapon_mods = data.Weapon_Mods
         PyImGui.set_next_window_size(
             settings.current.window_size[0], settings.current.window_size[1]
         )
@@ -426,15 +437,15 @@ def draw_window():
             settings.current.window_size[0], settings.current.window_size[1]
         )
         PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
-        
-    expanded, gui_open = PyImGui.begin_with_close("Loot Ex", settings.current.window_visible, window_flags)
+
+    expanded, gui_open = PyImGui.begin_with_close(
+        "Loot Ex", settings.current.window_visible, window_flags)
     if gui_open and settings.current.loot_profile:
         window_flags = (
             PyImGui.WindowFlags.NoMove if PyImGui.is_mouse_down(
                 0) else PyImGui.WindowFlags.NoFlag
         )
 
-        
         profile_names = [
             profile.name for profile in settings.current.loot_profiles]
         selected_index = PyImGui.combo(
@@ -498,11 +509,10 @@ def draw_window():
         if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE + IconsFontAwesome5.ICON_USER_SHIELD):
             settings.current.collect_items = not settings.current.collect_items
             settings.current.save()
-            
+
         PyImGui.pop_style_color(1)
         ImGui.show_tooltip("Collect Items")
-        
-        
+
         PyImGui.same_line(0, 5)
         btnColor = Utils.RGBToColor(
             0, 255, 0, 255) if settings.current.collect_runes else Utils.RGBToColor(255, 255, 255, 125)
@@ -512,11 +522,9 @@ def draw_window():
         if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE + IconsFontAwesome5.ICON_SHIELD_ALT):
             settings.current.collect_runes = not settings.current.collect_runes
             settings.current.save()
-        
+
         PyImGui.pop_style_color(1)
         ImGui.show_tooltip("Collect Runes")
-
-
 
         if PyImGui.begin_tab_bar("LootExTabBar"):
             draw_general_settings()
@@ -546,6 +554,7 @@ def draw_window():
             #     f"Window size changed to ({size[0]}, {size[1]})",
             #     Console.MessageType.Debug,
             # )
+            mod_heights.clear()
             settings.current.window_size = (size[0], size[1])
             settings.current.save()
 
@@ -555,16 +564,16 @@ def draw_window():
         PyImGui.end()
 
     collapsed = not expanded
-    
+
     if collapsed != settings.current.window_collapsed:
         settings.current.window_collapsed = collapsed
         settings.current.save()
-        
+
     if gui_open != settings.current.window_visible:
         settings.current.window_visible = gui_open
         settings.current.manual_window_visible = gui_open
         settings.current.save()
-        
+
     first_draw = False
 
 
@@ -1006,12 +1015,12 @@ def draw_add_loot_filter_popup():
 def draw_loot_items():
     global first_draw, selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging
 
-    if first_draw :   
+    if first_draw:
         ConsoleLog(
             "LootEx",
             "Loading Loot Items...",
             Console.MessageType.Info,
-        )             
+        )
         for mod in data.Weapon_Mods.values():
             if mod.mod_type == enum.ModType.Prefix:
                 prefix_names.append(mod.name)
@@ -1019,12 +1028,12 @@ def draw_loot_items():
             elif mod.mod_type == enum.ModType.Suffix:
                 suffix_names.append(mod.name)
 
-            elif mod.mod_type == enum.ModType.Inherent: 
+            elif mod.mod_type == enum.ModType.Inherent:
                 inherent_names.append(mod.name)
 
         filtered_loot_items = [
-        SelectableItem(item) for item in data.Items.values()
-    ]
+            SelectableItem(item) for item in data.Items.values()
+        ]
 
     if PyImGui.begin_tab_item("Item Actions") and settings.current.loot_profile:
         # Get size of the tab
@@ -1059,7 +1068,6 @@ def draw_loot_items():
                             draw_selectable_item(item)
                         else:
                             PyImGui.dummy(0, 20)
-                            
 
             PyImGui.end_child()
 
@@ -1102,10 +1110,11 @@ def draw_loot_items():
                         if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, 0, 0) and selected_loot_item.item_info.wiki_url:
                             Player.SendChatCommand(
                                 "wiki " + selected_loot_item.item_info.name)
-                            
+
                             # start the url in the default browser
-                            webbrowser.open(selected_loot_item.item_info.wiki_url)
-                        
+                            webbrowser.open(
+                                selected_loot_item.item_info.wiki_url)
+
                         ImGui.show_tooltip(
                             "Open the wiki page for this item.\n" +
                             "If the item is not found, it will search for the item name in the wiki." if selected_loot_item.item_info.wiki_url else "This item does not have a wiki page set yet."
@@ -1150,7 +1159,8 @@ def draw_loot_items():
                                     # Get the action names, replace underscores with spaces, split at space, all lowercase and first letter to upper case
                                     action_names = [
                                         utility.Util.GetActionName(action) for action in item_actions.ItemAction]
-                                    actions = [action for action in item_actions.ItemAction]
+                                    actions = [
+                                        action for action in item_actions.ItemAction]
                                     explorable = PyImGui.combo("Explorable", action_names.index(
                                         utility.Util.GetActionName(condition.item_actions.explorable)), action_names)
 
@@ -1167,7 +1177,8 @@ def draw_loot_items():
 
                                     if loot_item:
                                         label_spacing = 120
-                                        item_data = utility.Util.GetDataItem(loot_item.model_id)
+                                        item_data = utility.Util.GetDataItem(
+                                            loot_item.model_id)
                                         item_type = item_data.item_type if item_data else None
 
                                         if (utility.Util.IsArmor(loot_item)):
@@ -1391,7 +1402,7 @@ def draw_loot_items():
                             settings.current.loot_profile.items[item.item_info.model_id] = ItemConfiguration(
                                 item.item_info.model_id)
                             settings.current.loot_profile.save()
-                            
+
                 if PyImGui.button(IconsFontAwesome5.ICON_TRASH + " Delete All Rules", 0, 25):
                     for item in selected_loot_items:
                         if item and item.item_info.model_id and item.item_info.model_id in settings.current.loot_profile.items:
@@ -1408,8 +1419,41 @@ def draw_loot_items():
         PyImGui.end_tab_item()
 
 
+def _calc_mod_description_height(mod, tab_width: float) -> float:
+    base_height = 48
+    weapon_types_height = 32
+    text_size_x, text_size_y = PyImGui.calc_text_size(mod.description)
+
+    lines_of_text = math.ceil(text_size_x / (tab_width - 60))
+    required_text_height = (lines_of_text * text_size_y)
+
+    height = base_height + required_text_height + weapon_types_height
+    return height
+
+
+def mouse_within_rect(mouse_x, mouse_y, x, y, width, height):
+    return (x <= mouse_x <= x + width) and (y <= mouse_y <= y + height)
+
+
+def filter_weapon_mods():
+    global mod_search, filtered_weapon_mods, mod_heights
+
+    if mod_search == "":
+        filtered_weapon_mods = [SelectableWrapper(
+            v) for k, v in data.Weapon_Mods.items() if v]
+
+    else:
+        filtered_weapon_mods = []
+        for mod in data.Weapon_Mods.values():
+            if mod and mod.name and (mod.name.lower().find(mod_search.lower()) != -1 or mod.description.lower().find(mod_search.lower()) != -1 or str(mod.identifier).find(mod_search.lower()) != -1):
+                filtered_weapon_mods.append(SelectableWrapper(mod))
+
+
 def draw_weapon_mods():
-    global mod_search, filtered_weapon_mods, scroll_bar_visible
+    global mod_search, filtered_weapon_mods, scroll_bar_visible, mod_heights, first_draw
+
+    if first_draw:
+        filter_weapon_mods()
 
     tab_name = "Weapon Mods"
     if PyImGui.begin_tab_item(tab_name) and settings.current.loot_profile:
@@ -1431,223 +1475,374 @@ def draw_weapon_mods():
 
         if search_input is not None and search_input != mod_search:
             mod_search = search_input
-            filtered_weapon_mods  = {}
+            filter_weapon_mods()
 
-            for mod in data.Weapon_Mods.values():
-                if mod and mod.name and (mod.name.lower().find(mod_search.lower()) != -1 or mod.description.lower().find(mod_search.lower()) != -1 or str(mod.identifier).find(mod_search.lower()) != -1):
-                    filtered_weapon_mods[mod.identifier] = mod
+        selection_width = tab_size[0]  # max(255, tab_size[0] * 0.3)
+        edit_width = tab_size[0] - selection_width - 20
 
-        # Table headers
-        PyImGui.push_style_var(ImGui.ImGuiStyleVar.ChildBorderSize, 0)
-        PyImGui.push_style_var2(ImGui.ImGuiStyleVar.CellPadding, 2, 2)
-        if PyImGui.begin_child(
-            f"{tab_name}TableHeaders#1",
-            (tab_size[0] - 20 if scroll_bar_visible else 0, 20),
-            True,
-            PyImGui.WindowFlags.NoBackground,
-        ):
-            PyImGui.begin_table(
-                "Weapon Mods Table",
-                len(weapon_types) + 4,
-                PyImGui.TableFlags.NoFlag,
-            )
-            PyImGui.table_setup_column(
-                "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
-            PyImGui.table_setup_column(
-                "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
-            
-            PyImGui.table_setup_column(
-                "Description", PyImGui.TableColumnFlags.WidthFixed, 250)
+        PyImGui.begin_child(
+            "ModSelectionsChild", (selection_width, 0), True, PyImGui.WindowFlags.NoFlag)
+        first_mod = False
+        last_mod = False
+        selected_weapon_mod = None
 
-            PyImGui.table_setup_column(
-                "Inscription", PyImGui.TableColumnFlags.WidthFixed, 50
-            )
+        for selectable in filtered_weapon_mods:
+            m: models.WeaponMod = selectable.object
+            selected_weapon_mod = m if selectable.is_selected else selected_weapon_mod
 
-            for weapon_type in weapon_types:
-                PyImGui.table_setup_column(
-                    weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
-                )
+            if not m.identifier in mod_heights:
+                mod_heights[m.identifier] = _calc_mod_description_height(
+                    m, selection_width)
 
-            PyImGui.table_headers_row()
-            PyImGui.end_table()
+            first_mod = PyImGui.is_rect_visible(
+                1, mod_heights[m.identifier]) if not first_mod else first_mod
 
-        PyImGui.end_child()
+            if not first_mod or last_mod:
+                PyImGui.dummy(0, int(mod_heights[m.identifier]))
+                continue
 
-        # Table content
-        scroll_bar_visible = False
-        if PyImGui.begin_child(
-            f"{tab_name}#1", (0, 0), True, PyImGui.WindowFlags.NoBackground
-        ):
-            PyImGui.begin_table(
-                "Weapon Mods Table",
-                len(weapon_types) + 4,
-                PyImGui.TableFlags.RowBg | PyImGui.TableFlags.BordersInnerH | PyImGui.TableFlags.ScrollY,
-            )
-            PyImGui.table_setup_column(
-                "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
-            PyImGui.table_setup_column(
-                "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
-            
-            PyImGui.table_setup_column(
-                "Description", PyImGui.TableColumnFlags.WidthFixed, 250)
+            last_mod = (first_mod and not PyImGui.is_rect_visible(
+                1, mod_heights[m.identifier])) if not last_mod else last_mod
 
-            PyImGui.table_setup_column(
-                "Inscription", PyImGui.TableColumnFlags.WidthFixed, 50
-            )
-        
-            for weapon_type in weapon_types:
-                PyImGui.table_setup_column(
-                    weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
-                )
+            is_in_profile = settings.current.loot_profile.contains_weapon_mod(
+                m.identifier) if settings.current.loot_profile else None
 
-            server_language = utility.Util.get_server_language()
-            for mod in filtered_weapon_mods.values():
-                if not mod or not mod.identifier:
-                    continue
+            def get_frame_color():
+                base_color = (255, 255, 255, 255) if not is_in_profile else (
+                    255, 204, 85, 255)
+                return Utils.RGBToColor(base_color[0], base_color[1], base_color[2], 150)
 
-                keep = settings.current.loot_profile.weapon_mods.get(
-                    mod.identifier, None) if settings.current.loot_profile else None
-                
-                if keep:
-                    color = utility.Util.GetRarityColor(Rarity.Gold)["text"]
-                    PyImGui.push_style_color(
-                        PyImGui.ImGuiCol.Text,
-                        Utils.ColorToTuple(color),
-                    )
-                                    
-                PyImGui.table_next_row()
-                # Mod texture
-                PyImGui.table_next_column()
+            if is_in_profile:
+                color = Utils.RGBToColor(255, 204, 85, 255)
                 PyImGui.push_style_color(
-                    PyImGui.ImGuiCol.Button, Utils.ColorToTuple(
-                        Utils.RGBToColor(255, 255, 255, 0))
+                    PyImGui.ImGuiCol.Text,
+                    Utils.ColorToTuple(color),
                 )
+
+            color = get_frame_color()
+            PyImGui.push_style_color(
+                PyImGui.ImGuiCol.Border,
+                Utils.ColorToTuple(color),
+            )
+
+            if selectable.is_hovered:
+                color = Utils.RGBToColor(255, 255, 255, 15)
                 PyImGui.push_style_color(
-                    PyImGui.ImGuiCol.ButtonHovered,
-                    Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 0)),
+                    PyImGui.ImGuiCol.ChildBg,
+                    Utils.ColorToTuple(color),
                 )
-                PyImGui.push_style_color(
-                    PyImGui.ImGuiCol.ButtonActive,
-                    Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 0)),
-                )
-                PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 5, 8)
-                PyImGui.button(
-                    IconsFontAwesome5.ICON_SHIELD_ALT + f"##{mod.identifier}")
-                PyImGui.pop_style_color(3)
-                PyImGui.pop_style_var(1)
 
-                # Mod name
-                PyImGui.table_next_column()
-                color = utility.Util.GetRarityColor(Rarity.Green)["text"] if not server_language in mod.names else utility.Util.GetRarityColor(Rarity.White)["text"]
-                # PyImGui.push_style_color(
-                #     PyImGui.ImGuiCol.Text,
-                #     Utils.ColorToTuple(color),
-                # )
-                PyImGui.text_wrapped(mod.applied_name)
-                # PyImGui.pop_style_color(1)
-                draw_weapon_mod_tooltip(mod)
-                # ImGui.show_tooltip(
-                #     f"Mod: {mod.name}\nIdentifier: {mod.identifier}"
-                # )
-                
-                # Mod name
-                PyImGui.table_next_column()                
-                PyImGui.text_wrapped(mod.description)
-                draw_weapon_mod_tooltip(mod)
-                # ImGui.show_tooltip(
-                #     f"Mod: {mod.description}\nIdentifier: {mod.identifier}"
-                # )
-                if keep:
-                    PyImGui.pop_style_color(1)
+            PyImGui.begin_child(
+                id=f"ModSelectable{m.identifier}", size=(0.0, mod_heights[m.identifier]), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
 
-                PyImGui.table_next_column()
-                inscription = "Inscription"
+            draw_vertical_centered_text(
+                IconsFontAwesome5.ICON_SHIELD_ALT, 35, 24)
+            draw_vertical_centered_text(m.applied_name, None, 24)
 
-                if mod.is_inscription:
-                    unique_id = f"##{mod.identifier}{inscription}"
-                    PyImGui.push_style_var2(
-                        ImGui.ImGuiStyleVar.FramePadding, 0, 8)
+            if is_in_profile:
+                PyImGui.pop_style_color(1)
 
-                    is_selected = (
-                        mod.identifier in settings.current.loot_profile.weapon_mods
-                        and inscription
-                        in settings.current.loot_profile.weapon_mods[mod.identifier]
-                        and settings.current.loot_profile.weapon_mods[mod.identifier][inscription]
-                    )
-                    mod_selected = PyImGui.checkbox(unique_id, is_selected)
+            PyImGui.pop_style_color(1)
 
-                    PyImGui.pop_style_var(1)
-                    ImGui.show_tooltip(
-                        f"{'Keep' if is_selected else 'Ignore'} {mod.name}"
-                    )
+            if selectable.is_hovered:
+                PyImGui.pop_style_color(1)
 
-                    if is_selected != mod_selected:
-                        if mod_selected:
-                            if mod.identifier not in settings.current.loot_profile.weapon_mods:
-                                settings.current.loot_profile.weapon_mods[mod.identifier] = {
-                                }
-                            settings.current.loot_profile.weapon_mods[mod.identifier][
-                                inscription
-                            ] = True
+            PyImGui.separator()
+
+            # PyImGui.dummy(0, 0)
+            # PyImGui.same_line(0, 28)
+
+            PyImGui.push_style_color(
+                PyImGui.ImGuiCol.Text,
+                (1, 1, 1, 0.75),
+            )
+            PyImGui.text_wrapped(m.description)
+            PyImGui.pop_style_color(1)
+
+            is_tooltip_visible = False
+            if settings.current.loot_profile:
+                for weapon_type in ItemType:
+                    if not m.has_item_type(weapon_type) or weapon_type >= ItemType.Weapon:
+                        continue
+
+                    is_selected = m.identifier in settings.current.loot_profile.weapon_mods and weapon_type.name in settings.current.loot_profile.weapon_mods[
+                        m.identifier] and settings.current.loot_profile.weapon_mods[m.identifier][weapon_type.name] or False
+
+                    selected = toggle_button(
+                        label = f"{utility.Util.reformat_string(weapon_type.name)}##{m.identifier}{weapon_type.name}", v = is_selected, width= 100, height= 20,
+                        default_color=Utils.ColorToTuple(Utils.RGBToColor(255, 204, 85, 155)),
+                        hover_color=Utils.ColorToTuple(Utils.RGBToColor(255, 204, 85, 180)),
+                        active_color=Utils.ColorToTuple(Utils.RGBToColor(2255, 204, 85, 180))
+                        )
+                    if selected != is_selected:
+                        if not settings.current.loot_profile.weapon_mods.get(m.identifier, None):
+                            settings.current.loot_profile.weapon_mods[m.identifier] = {
+                            }
+
+                        if PyImGui.get_io().key_ctrl:
+                            for weapon_type in ItemType:
+                                settings.current.loot_profile.weapon_mods[
+                                    m.identifier][weapon_type.name] = selected
                         else:
-                            settings.current.loot_profile.weapon_mods[mod.identifier].pop(
-                                inscription, None
-                            )
-                            if not settings.current.loot_profile.weapon_mods[mod.identifier]:
-                                settings.current.loot_profile.weapon_mods.pop(
-                                    mod.identifier, None)
+                            settings.current.loot_profile.weapon_mods[m.identifier][weapon_type.name] = selected
 
                         settings.current.loot_profile.save()
+                        filter_weapon_mods()
 
-                    
-                # Weapon type checkboxes
-                for weapon_type in weapon_types:
-                    PyImGui.table_next_column()
+                    is_tooltip_visible = is_tooltip_visible or PyImGui.is_item_hovered()
 
-                    if not mod.is_inscription:
-                        hasWeaponType = mod.has_item_type(weapon_type)
+                    ImGui.show_tooltip(
+                        f"Toggle {utility.Util.reformat_string(weapon_type.name)} for this mod.\n" +
+                        "If selected, the mod will be picked up and stored when found." +
+                        "\nHold CTRL to toggle all weapon types at once."
+                    )
 
-                        if hasWeaponType:
-                            unique_id = f"##{mod.identifier}{weapon_type}"
-                            PyImGui.push_style_var2(
-                                ImGui.ImGuiStyleVar.FramePadding, 0, 8)
+                    PyImGui.same_line(0, 5)
 
-                            is_selected = (
-                                mod.identifier in settings.current.loot_profile.weapon_mods
-                                and weapon_type.name
-                                in settings.current.loot_profile.weapon_mods[mod.identifier]
-                                and settings.current.loot_profile.weapon_mods[mod.identifier][weapon_type.name]
-                            )
-                            mod_selected = PyImGui.checkbox(unique_id, is_selected)
+            PyImGui.end_child()
+            selectable.is_hovered = PyImGui.is_item_hovered()
 
-                            PyImGui.pop_style_var(1)
-                            ImGui.show_tooltip(
-                                f"{'Keep' if is_selected else 'Ignore'} {mod.name} for {weapon_type.name}"
-                            )
+            if PyImGui.is_item_clicked(0) and settings.current.loot_profile:
+                selectable.is_selected = not selectable.is_selected
+                for s in filtered_weapon_mods:
+                    if s != selectable:
+                        s.is_selected = False
 
-                            if is_selected != mod_selected:
-                                if mod_selected:
-                                    if mod.identifier not in settings.current.loot_profile.weapon_mods:
-                                        settings.current.loot_profile.weapon_mods[mod.identifier] = {
-                                        }
-                                    settings.current.loot_profile.weapon_mods[mod.identifier][
-                                        weapon_type.name
-                                    ] = True
-                                else:
-                                    settings.current.loot_profile.weapon_mods[mod.identifier].pop(
-                                        weapon_type.name, None
-                                    )
-                                    if not settings.current.loot_profile.weapon_mods[mod.identifier]:
-                                        settings.current.loot_profile.weapon_mods.pop(
-                                            mod.identifier, None)
+            if is_in_profile:
+                PyImGui.pop_style_color(2)
 
-                                settings.current.loot_profile.save()
+            if not is_tooltip_visible:
+                draw_weapon_mod_tooltip(m)
 
-                scroll_bar_visible = scroll_bar_visible or PyImGui.get_scroll_max_y() > 0
-
-        PyImGui.pop_style_var(2)
-        PyImGui.end_table()
         PyImGui.end_child()
+
+        # PyImGui.same_line(0, 5)
+
+        # PyImGui.begin_child(
+        #     "ModEditChild", (edit_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag)
+
+        # PyImGui.text("Mod Details")
+        # PyImGui.separator()
+
+        # PyImGui.text("Selected Mod: " + (selected_weapon_mod.name if selected_weapon_mod else "None"))
+
+        # PyImGui.end_child()
+
+        if False:
+            # Table headers
+            PyImGui.push_style_var(ImGui.ImGuiStyleVar.ChildBorderSize, 0)
+            PyImGui.push_style_var2(ImGui.ImGuiStyleVar.CellPadding, 2, 2)
+            if PyImGui.begin_child(
+                f"{tab_name}TableHeaders#1",
+                (tab_size[0] - 20 if scroll_bar_visible else 0, 20),
+                True,
+                PyImGui.WindowFlags.NoBackground,
+            ):
+                PyImGui.begin_table(
+                    "Weapon Mods Table",
+                    len(weapon_types) + 4,
+                    PyImGui.TableFlags.NoFlag,
+                )
+                PyImGui.table_setup_column(
+                    "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
+                PyImGui.table_setup_column(
+                    "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
+
+                PyImGui.table_setup_column(
+                    "Description", PyImGui.TableColumnFlags.WidthFixed, 250)
+
+                PyImGui.table_setup_column(
+                    "Inscription", PyImGui.TableColumnFlags.WidthFixed, 50
+                )
+
+                for weapon_type in weapon_types:
+                    PyImGui.table_setup_column(
+                        weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
+                    )
+
+                PyImGui.table_headers_row()
+                PyImGui.end_table()
+
+            PyImGui.end_child()
+
+            # Table content
+            scroll_bar_visible = False
+            if PyImGui.begin_child(
+                f"{tab_name}#1", (0, 0), True, PyImGui.WindowFlags.NoBackground
+            ):
+                PyImGui.begin_table(
+                    "Weapon Mods Table",
+                    len(weapon_types) + 4,
+                    PyImGui.TableFlags.RowBg | PyImGui.TableFlags.BordersInnerH | PyImGui.TableFlags.ScrollY,
+                )
+                PyImGui.table_setup_column(
+                    "##Texture", PyImGui.TableColumnFlags.WidthFixed, 50)
+                PyImGui.table_setup_column(
+                    "Name", PyImGui.TableColumnFlags.WidthFixed, 150)
+
+                PyImGui.table_setup_column(
+                    "Description", PyImGui.TableColumnFlags.WidthFixed, 250)
+
+                PyImGui.table_setup_column(
+                    "Inscription", PyImGui.TableColumnFlags.WidthFixed, 50
+                )
+
+                for weapon_type in weapon_types:
+                    PyImGui.table_setup_column(
+                        weapon_type.name, PyImGui.TableColumnFlags.WidthFixed, 50
+                    )
+
+                server_language = utility.Util.get_server_language()
+                for mod in filtered_weapon_mods.values():
+                    if not mod or not mod.identifier:
+                        continue
+
+                    keep = settings.current.loot_profile.weapon_mods.get(
+                        mod.identifier, None) if settings.current.loot_profile else None
+
+                    if keep:
+                        color = utility.Util.GetRarityColor(Rarity.Gold)[
+                            "text"]
+                        PyImGui.push_style_color(
+                            PyImGui.ImGuiCol.Text,
+                            Utils.ColorToTuple(color),
+                        )
+
+                    PyImGui.table_next_row()
+                    # Mod texture
+                    PyImGui.table_next_column()
+                    PyImGui.push_style_color(
+                        PyImGui.ImGuiCol.Button, Utils.ColorToTuple(
+                            Utils.RGBToColor(255, 255, 255, 0))
+                    )
+                    PyImGui.push_style_color(
+                        PyImGui.ImGuiCol.ButtonHovered,
+                        Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 0)),
+                    )
+                    PyImGui.push_style_color(
+                        PyImGui.ImGuiCol.ButtonActive,
+                        Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 0)),
+                    )
+                    PyImGui.push_style_var2(
+                        ImGui.ImGuiStyleVar.FramePadding, 5, 8)
+                    PyImGui.button(
+                        IconsFontAwesome5.ICON_SHIELD_ALT + f"##{mod.identifier}")
+                    PyImGui.pop_style_color(3)
+                    PyImGui.pop_style_var(1)
+
+                    # Mod name
+                    PyImGui.table_next_column()
+                    color = utility.Util.GetRarityColor(Rarity.Green)[
+                        "text"] if not server_language in mod.names else utility.Util.GetRarityColor(Rarity.White)["text"]
+                    # PyImGui.push_style_color(
+                    #     PyImGui.ImGuiCol.Text,
+                    #     Utils.ColorToTuple(color),
+                    # )
+                    PyImGui.text_wrapped(mod.applied_name)
+                    # PyImGui.pop_style_color(1)
+                    draw_weapon_mod_tooltip(mod)
+                    # ImGui.show_tooltip(
+                    #     f"Mod: {mod.name}\nIdentifier: {mod.identifier}"
+                    # )
+
+                    # Mod name
+                    PyImGui.table_next_column()
+                    PyImGui.text_wrapped(mod.description)
+                    draw_weapon_mod_tooltip(mod)
+                    # ImGui.show_tooltip(
+                    #     f"Mod: {mod.description}\nIdentifier: {mod.identifier}"
+                    # )
+                    if keep:
+                        PyImGui.pop_style_color(1)
+
+                    PyImGui.table_next_column()
+                    inscription = "Inscription"
+
+                    if mod.is_inscription:
+                        unique_id = f"##{mod.identifier}{inscription}"
+                        PyImGui.push_style_var2(
+                            ImGui.ImGuiStyleVar.FramePadding, 0, 8)
+
+                        is_selected = (
+                            mod.identifier in settings.current.loot_profile.weapon_mods
+                            and inscription
+                            in settings.current.loot_profile.weapon_mods[mod.identifier]
+                            and settings.current.loot_profile.weapon_mods[mod.identifier][inscription]
+                        )
+                        mod_selected = PyImGui.checkbox(unique_id, is_selected)
+
+                        PyImGui.pop_style_var(1)
+                        ImGui.show_tooltip(
+                            f"{'Keep' if is_selected else 'Ignore'} {mod.name}"
+                        )
+
+                        if is_selected != mod_selected:
+                            if mod_selected:
+                                if mod.identifier not in settings.current.loot_profile.weapon_mods:
+                                    settings.current.loot_profile.weapon_mods[mod.identifier] = {
+                                    }
+                                settings.current.loot_profile.weapon_mods[mod.identifier][
+                                    inscription
+                                ] = True
+                            else:
+                                settings.current.loot_profile.weapon_mods[mod.identifier].pop(
+                                    inscription, None
+                                )
+                                if not settings.current.loot_profile.weapon_mods[mod.identifier]:
+                                    settings.current.loot_profile.weapon_mods.pop(
+                                        mod.identifier, None)
+
+                            settings.current.loot_profile.save()
+
+                    # Weapon type checkboxes
+                    for weapon_type in weapon_types:
+                        PyImGui.table_next_column()
+
+                        if not mod.is_inscription:
+                            hasWeaponType = mod.has_item_type(weapon_type)
+
+                            if hasWeaponType:
+                                unique_id = f"##{mod.identifier}{weapon_type}"
+                                PyImGui.push_style_var2(
+                                    ImGui.ImGuiStyleVar.FramePadding, 0, 8)
+
+                                is_selected = (
+                                    mod.identifier in settings.current.loot_profile.weapon_mods
+                                    and weapon_type.name
+                                    in settings.current.loot_profile.weapon_mods[mod.identifier]
+                                    and settings.current.loot_profile.weapon_mods[mod.identifier][weapon_type.name]
+                                )
+                                mod_selected = PyImGui.checkbox(
+                                    unique_id, is_selected)
+
+                                PyImGui.pop_style_var(1)
+                                ImGui.show_tooltip(
+                                    f"{'Keep' if is_selected else 'Ignore'} {mod.name} for {weapon_type.name}"
+                                )
+
+                                if is_selected != mod_selected:
+                                    if mod_selected:
+                                        if mod.identifier not in settings.current.loot_profile.weapon_mods:
+                                            settings.current.loot_profile.weapon_mods[mod.identifier] = {
+                                            }
+                                        settings.current.loot_profile.weapon_mods[mod.identifier][
+                                            weapon_type.name
+                                        ] = True
+                                    else:
+                                        settings.current.loot_profile.weapon_mods[mod.identifier].pop(
+                                            weapon_type.name, None
+                                        )
+                                        if not settings.current.loot_profile.weapon_mods[mod.identifier]:
+                                            settings.current.loot_profile.weapon_mods.pop(
+                                                mod.identifier, None)
+
+                                    settings.current.loot_profile.save()
+
+                    scroll_bar_visible = scroll_bar_visible or PyImGui.get_scroll_max_y() > 0
+
+            PyImGui.pop_style_var(2)
+            PyImGui.end_table()
+            PyImGui.end_child()
 
         PyImGui.end_tab_item()
 
@@ -1675,7 +1870,7 @@ def draw_runes():
 
             if PyImGui.begin_tab_bar("RunesTabBar"):
                 for profession, runes in data.Runes_by_Profession.items():
-                
+
                     if not runes:
                         continue
 
@@ -1688,12 +1883,10 @@ def draw_runes():
                         for rune in runes:
                             if not rune or not rune.identifier:
                                 continue
-                            
+
                             if not PyImGui.is_rect_visible(0, 20):
                                 PyImGui.dummy(0, 20)
                                 continue
-                            
-                            
 
                             color = utility.Util.GetRarityColor(
                                 rune.rarity.value)
@@ -1711,17 +1904,17 @@ def draw_runes():
                                 rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
                                     rune.identifier]
                             )
-                            
-                            is_selected = rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.identifier]
-                            
+
+                            is_selected = rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[
+                                rune.identifier]
 
                             if is_selected != rune_selected:
                                 if rune_selected:
                                     settings.current.loot_profile.runes[rune.identifier] = True
-                                    
+
                                 elif rune.identifier in settings.current.loot_profile.runes:
                                     del settings.current.loot_profile.runes[rune.identifier]
-                                
+
                                 settings.current.loot_profile.save()
 
                             PyImGui.pop_style_color(3)
@@ -1737,6 +1930,7 @@ def draw_runes():
 
         draw_price_check_popup()
         PyImGui.end_tab_item()
+
 
 def draw_price_check_popup():
     global show_price_check_popup, entered_price_threshold
@@ -1785,6 +1979,7 @@ def draw_price_check_popup():
             PyImGui.close_current_popup()
             show_price_check_popup = False
 
+
 def draw_item_type_selectable(item_type, is_selected) -> tuple[bool, bool]:
     """
     Draws a selectable checkbox for an item type in the GUI.
@@ -1812,6 +2007,7 @@ def draw_item_type_selectable(item_type, is_selected) -> tuple[bool, bool]:
     PyImGui.pop_style_color(1)
 
     return is_selected != is_now_selected, is_now_selected
+
 
 def draw_vertical_centered_text(text: str, same_line_spacing: Optional[float] = None, desired_height: int = 24) -> float:
     """
@@ -1864,6 +2060,7 @@ def draw_vertical_centered_text(text: str, same_line_spacing: Optional[float] = 
 
     return textSize[0]
 
+
 def draw_weapon_mod_tooltip(mod: models.WeaponMod):
     if PyImGui.is_item_hovered():
         PyImGui.begin_tooltip()
@@ -1884,36 +2081,39 @@ def draw_weapon_mod_tooltip(mod: models.WeaponMod):
         #     PyImGui.WindowFlags.NoBackground,
         # )
         if PyImGui.begin_table(mod.identifier, 2, PyImGui.TableFlags.Borders):
-            PyImGui.table_setup_column("Property", PyImGui.TableColumnFlags.WidthFixed, 150)
-            PyImGui.table_setup_column("Value", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column(
+                "Property", PyImGui.TableColumnFlags.WidthFixed, 150)
+            PyImGui.table_setup_column(
+                "Value", PyImGui.TableColumnFlags.WidthStretch)
             PyImGui.table_headers_row()
 
             PyImGui.table_next_row()
-            
+
             PyImGui.table_next_column()
             PyImGui.text(f"Id (internal)")
 
             PyImGui.table_next_column()
             PyImGui.text(f"{mod.identifier}")
-            
+
             PyImGui.table_next_column()
             PyImGui.text(f"Mod Type")
 
             PyImGui.table_next_column()
             PyImGui.text(f"{mod.mod_type.name}")
 
-            PyImGui.table_next_column()        
+            PyImGui.table_next_column()
             PyImGui.text(f"Applied to Item Types")
 
             PyImGui.table_next_column()
             for item_type in mod.target_types:
-                PyImGui.text(f"{item_type.name}")        
+                PyImGui.text(f"{item_type.name}")
 
         PyImGui.end_table()
 
         PyImGui.pop_style_color(1)
         # PyImGui.end_child()
         PyImGui.end_tooltip()
+
 
 def draw_rune_tooltip(mod: models.Rune):
     if PyImGui.is_item_hovered():
@@ -1935,36 +2135,38 @@ def draw_rune_tooltip(mod: models.Rune):
         #     PyImGui.WindowFlags.NoBackground,
         # )
         if PyImGui.begin_table(mod.identifier, 2, PyImGui.TableFlags.Borders):
-            PyImGui.table_setup_column("Property", PyImGui.TableColumnFlags.WidthFixed, 150)
-            PyImGui.table_setup_column("Value", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column(
+                "Property", PyImGui.TableColumnFlags.WidthFixed, 150)
+            PyImGui.table_setup_column(
+                "Value", PyImGui.TableColumnFlags.WidthStretch)
             PyImGui.table_headers_row()
 
             PyImGui.table_next_row()
-            
+
             PyImGui.table_next_column()
             PyImGui.text(f"Id (internal)")
 
             PyImGui.table_next_column()
             PyImGui.text(f"{mod.identifier}")
-            
+
             PyImGui.table_next_column()
             PyImGui.text(f"Mod Type")
 
             PyImGui.table_next_column()
             PyImGui.text(f"{mod.mod_type.name}")
-            
+
             PyImGui.table_next_column()
             PyImGui.text(f"Applied")
 
             PyImGui.table_next_column()
             PyImGui.text(f"{mod.applied_name}")
-     
 
         PyImGui.end_table()
 
         PyImGui.pop_style_color(1)
         # PyImGui.end_child()
         PyImGui.end_tooltip()
+
 
 def draw_selectable_item(item: SelectableItem):
     """
@@ -2004,7 +2206,7 @@ def draw_selectable_item(item: SelectableItem):
         if item.item_info.attributes
         else []
     )
-    
+
     item_name = (
         item.item_info.name
         if not item.item_info.attributes
@@ -2064,3 +2266,49 @@ def draw_selectable_item(item: SelectableItem):
                 other_item.is_selected = False
 
             item.is_selected = True
+
+# region general ui elements
+
+
+@staticmethod
+def toggle_button(label: str, v: bool, width=0, height=0,
+                  default_color: tuple[float, float, float, float] = (
+                      0.153, 0.318, 0.929, 1.0),
+                  hover_color: tuple[float, float, float,
+                                     float] = (0.6, 0.6, 0.9, 1.0),
+                  active_color: tuple[float, float,
+                                      float, float] = (0.6, 0.6, 0.6, 1.0)
+                  ) -> bool:
+    """
+    Purpose: Create a toggle button that changes its state and color based on the current state.
+    Args:
+        label (str): The label of the button.
+        v (bool): The current toggle state (True for on, False for off).
+    Returns: bool: The new state of the button after being clicked.
+    """
+    clicked = False
+
+    if v:
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.Button, default_color)
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.ButtonHovered, hover_color)
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.ButtonActive, active_color)
+        if width != 0 and height != 0:
+            clicked = PyImGui.button(label, width, height)
+        else:
+            clicked = PyImGui.button(label)
+        PyImGui.pop_style_color(3)
+    else:
+        if width != 0 and height != 0:
+            clicked = PyImGui.button(label, width, height)
+        else:
+            clicked = PyImGui.button(label)
+
+    if clicked:
+        v = not v
+
+    return v
+
+# endregion

@@ -2,6 +2,8 @@ import datetime
 import json
 import os
 import re
+import time
+import random
 from typing import Any, Callable, Optional, OrderedDict
 
 from LootEx import data, enum, models, settings, utility
@@ -892,6 +894,7 @@ class DataCollector:
                         self.action_queue.add_action(
                             self.check, item_id)
 
+
     def stop_collection(self):
         global save_items, save_runes, save_weapon_mods
         
@@ -904,7 +907,6 @@ class DataCollector:
         ConsoleLog("LootEx", "Data collection stopped.")
         data.SaveItems(shared_file=False, items=self.modified_items)
         data.SaveWeaponMods(shared_file=False, mods=self.modified_weapon_mods)
-        
         
     def start_collection(self):
         """Start the data collection."""

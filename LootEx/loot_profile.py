@@ -103,3 +103,7 @@ class LootProfile:
         else:
             ConsoleLog(
                 "LootEx", f"Profile file {file_path} not found.", Console.MessageType.Warning)
+            
+    def contains_weapon_mod(self, mod_name: str) -> bool:
+        """Check if the profile contains a specific weapon mod."""
+        return mod_name in self.weapon_mods and any(self.weapon_mods[mod_name].values())

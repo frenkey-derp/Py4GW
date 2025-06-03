@@ -59,8 +59,8 @@ class Settings:
             "window_collapsed": self.window_collapsed,
             "manual_window_visible": self.manual_window_visible,
         }
-        ConsoleLog(
-            "LootEx", f"Saving settings to '{self.settings_file_path}'...", Console.MessageType.Debug)
+        # ConsoleLog(
+        #     "LootEx", f"Saving settings to '{self.settings_file_path}'...", Console.MessageType.Debug)
         if self.settings_file_path == "":
             return
         

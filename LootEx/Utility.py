@@ -1,3 +1,4 @@
+import re
 from typing import Dict, List, Optional, Tuple
 from LootEx import data, item_configuration, enum
 from LootEx import models
@@ -589,3 +590,19 @@ class Util:
             item_id, ModifierIdentifier.TargetItemType)
         
         return ItemType(value) if value else None
+    
+    @staticmethod
+    def reformat_string(item_name: str) -> str:
+        # split on uppercase letters
+        item_name = re.sub(r"([a-z])([A-Z])", r"\1 \2", item_name)
+
+        # replace underscores with spaces
+        item_name = item_name.replace("_", " ")
+
+        # replace multiple spaces with a single space
+        item_name = re.sub(r"\s+", " ", item_name)
+
+        # strip leading and trailing spaces
+        item_name = item_name.strip()
+
+        return item_name

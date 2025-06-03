@@ -1,6 +1,14 @@
 
 from enum import IntEnum
 
+class Campaign(IntEnum):
+    None_ = 0
+    Core = 1
+    Prophecies = 2
+    Factions = 3
+    Nightfall = 4
+    EyeOfTheNorth = 5
+
 class MessageActions(IntEnum):
     None_ = 0
     PauseDataCollection = 1

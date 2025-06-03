@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 from typing import ClassVar, Optional
-from LootEx import models
+from LootEx import models, utility
 from LootEx.enum import ModType
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -613,3 +613,34 @@ def MergeDiffItems():
     SaveWeaponMods(shared_file=True, mods=Weapon_Mods)
     
     
+@staticmethod
+def GetScraperFile():
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "scraper.json")
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+    scrapedata = {}
+    
+    for item in Items.values():
+        if item.contains_amount:
+            continue
+        
+        if item.wiki_url is None or item.wiki_url == "" and ServerLanguage.English in item.names:
+            item.wiki_url = f"https://wiki.guildwars.com/wiki/{item.names[ServerLanguage.English].replace(' ', '_')}"
+            
+        if item.wiki_url is None or item.wiki_url == "":
+            continue
+        
+        if utility.Util.IsArmorType(item.item_type) or utility.Util.IsWeaponType(item.item_type):
+            scrapedata[item.model_id] = {
+            "ModelID": item.model_id,
+            "Name": item.name,
+            "WikiURL": item.wiki_url
+        }
+    
+    with open(path, 'w', encoding='utf-8') as file:
+        json.dump(scrapedata, file, indent=4, ensure_ascii=False)
+
+    return path
