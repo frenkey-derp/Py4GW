@@ -1,18 +1,7 @@
 from enum import IntEnum
 from PyMap import InstanceType
 
-
-class ItemAction(IntEnum):
-    NONE = 0
-    IDENTIFY = 1
-    SALVAGE = 2
-    SELL = 3
-    STASH = 4
-    SALVAGE_RARE_MATERIALS = 5
-    SALVAGE_MODS = 6
-    DESTROY = 7
-    COLLECT_DATA = 8
-
+from LootEx.enum import ItemAction
 
 class ItemActions:
     def __init__(self, explorable: ItemAction = ItemAction.NONE, outpost: ItemAction = ItemAction.NONE):
@@ -42,16 +31,6 @@ class ItemActions:
         return ItemActions(explorable, outpost)
 
 
-class LootAction(IntEnum):
-    NONE = 0
-    LOOT = 1
-    IGNORE = 2
-    LOOT_IF_STACKABLE = 3
-
-
-class LootItemMode(IntEnum):
-    MODEL_ID = 0
-    ITEM_TYPE = 1
 
 
 class InventoryAction:

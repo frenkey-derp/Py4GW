@@ -239,6 +239,13 @@ class DataCollector:
             return True
 
         model_id = self.get_model_id(item_id)
+        item_type = self.get_item_type(item_id)
+        mods = self.get_mods(item_id)
+        
+        if item_type == ItemType.Rune_Mod and any(mod.identifier in data.Runes for mod in mods):
+            # If the item is a rune, we don't need to check for completion as runes are handled separately and are already collected
+            self.cache[item_id]["completed"] = True
+            return True
 
         if model_id not in data.Items:
             # ConsoleLog(
@@ -263,7 +270,6 @@ class DataCollector:
             return False
 
         model_id = self.get_model_id(item_id)
-        item_type = self.get_item_type(item_id)
         profession = self.get_profession(item_id)
         rarity = GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)
         is_inscribeable = GLOBAL_CACHE.Item.Customization.IsInscribable(
@@ -298,7 +304,6 @@ class DataCollector:
                     #     "LootEx", f"Item {item_id} ({model_id}) is missing attribute: {attribute.name}", Console.MessageType.Warning)
                     return False
 
-        mods = self.get_mods(item_id)
         if len(mods) == 0:
             self.cache[item_id]["completed"] = True
             return True
@@ -875,7 +880,7 @@ class DataCollector:
                         # ConsoleLog(
                         #     "LootEx", f"Item {item_id} ({model_id}) is ignored, skipping.", Console.MessageType.Debug)
                         continue
-                    
+                                        
                     if self.is_complete(item_id):
                         continue
                     

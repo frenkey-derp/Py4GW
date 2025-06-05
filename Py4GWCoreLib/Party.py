@@ -28,6 +28,10 @@ class Party:
         Returns: int: The agent ID of the party leader.
         """
         players = Party.GetPlayers()
+        
+        if not players:
+            return 0
+        
         leader =  players[0]
         return Party.Players.GetAgentIDByLoginNumber(leader.login_number)
 

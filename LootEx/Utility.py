@@ -1,6 +1,9 @@
 from datetime import timedelta
 import re
 from typing import Dict, List, Optional, Tuple
+from Py4GWCoreLib import enums
+
+import PyInventory
 from LootEx import data, item_configuration, enum
 from LootEx import models
 from LootEx.enum import ModifierIdentifier, ModifierValueArg
@@ -11,9 +14,11 @@ import importlib
 
 from LootEx.models import ModifierInfo, Rune, WeaponMod
 from Py4GWCoreLib import GlobalCache, Item, Party, UIManager
+import Py4GWCoreLib
+from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
-from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, NumberPreference, Rarity, DyeColor, ServerLanguage
+from Py4GWCoreLib.enums import Attribute, Bags, DamageType, ItemType, ModelID, NumberPreference, Profession, Rarity, DyeColor, ServerLanguage
 
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 importlib.reload(item_configuration)
@@ -285,6 +290,30 @@ class Util:
 
         # Split the name by underscores
         name = name.replace("_", " ")
+
+        return name
+
+    @staticmethod
+    def GetProfessionName(profession: Profession) -> str:
+        """
+        Get the name of the profession based on its enum value.
+
+        Args:
+            profession (enum.Profession): The profession enum value.
+
+        Returns:
+            str: The name of the profession.
+        """
+        name = profession.name
+
+        # Split the name at underscores
+        parts = name.split("_")
+
+        # Capitalize the first letter of each part
+        parts = [part.capitalize() for part in parts]
+
+        # Join the parts back together with spaces
+        name = ' '.join(parts)
 
         return name
 
@@ -657,3 +686,62 @@ class Util:
             bool: True if the item is a common material, False otherwise.
         """
         return model_id in data.Common_Materials
+    
+    @staticmethod
+    def is_color(item_id: int) -> bool:
+        """
+        Check if the item with the given model ID is a color.
+
+        Args:
+            item_id (int): The model ID of the item.
+
+        Returns:
+            bool: True if the item is a color, False otherwise.
+        """
+        return GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Vial_Of_Dye
+    
+    @staticmethod
+    def get_color(item_id: int) -> DyeColor:
+        """
+        Get the dye color associated with the item.
+
+        Args:
+            item_id (int): The model ID of the item.
+
+        Returns:
+            DyeColor: The dye color of the item.
+        """
+        
+        if GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Vial_Of_Dye:
+            dye_info = GLOBAL_CACHE.Item.Customization.GetDyeInfo(item_id)
+            
+            if dye_info is not None:
+                color_id = dye_info.dye1.ToInt() if dye_info.dye1 else -1
+                color = DyeColor(color_id) if color_id != -1 else None 
+                return color if color is not None else DyeColor.NoColor
+        
+        return DyeColor.NoColor
+    
+    @staticmethod
+    def GetZeroFilledBags(start_bag : Py4GWCoreLib.Bag, end_bag : Py4GWCoreLib.Bag) -> tuple[list[int], dict[Py4GWCoreLib.Bag, int]]:  
+        inventory = []      
+        bag_sizes = {}
+        
+        bags = GLOBAL_CACHE.Item.raw_item_array.get_bags(list(range(start_bag.value, end_bag.value + 1)))
+        for bag in bags:
+            size = bag.GetSize()            
+            bag_enum = Py4GWCoreLib.Bag(bag.id)
+                        
+            if bag_enum is None:
+                continue
+            
+            bag_sizes[bag_enum] = size
+            slots = [0] * size
+            
+            for item in bag.GetItems():
+                if 0 <= item.slot < size:
+                    slots[item.slot] = item.item_id
+            
+            inventory.extend(slots)
+            
+        return inventory, bag_sizes

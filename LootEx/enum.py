@@ -1,4 +1,3 @@
-
 from enum import IntEnum
 from Py4GWCoreLib.enums import ModelID
 
@@ -44,11 +43,70 @@ RARE_MATERIALS: list[int] = [
     ModelID.Jadeite_Shard
 ]
 
+class ItemCategory(IntEnum):
+    None_ = 0
+    Sweet = 1
+    Party = 2
+    Alcohol = 3
+    DeathPenaltyRemoval = 4
+    Scroll = 5
+    Tome = 6
+    Key = 7
+    Material = 8
+    Trophy = 9
+    RewardTrophy = 10
+    QuestItem = 11
+    RareWeapon = 12
+    
+    
+class ItemSubCategory(IntEnum):
+    None_ = 0
+    Points_1 = 1
+    Points_2 = 2
+    Points_3 = 3
+    Points_50 = 4
+    LuckyPoint = 5
+    CommonXPScroll = 6
+    RareXPScroll = 7
+    PassageScroll = 8
+    NormalTome = 9
+    EliteTome = 10
+    CoreKey = 11
+    PropheciesKey = 12
+    FactionsKey = 13
+    NightfallKey = 14
+    CommonMaterial = 15
+    RareMaterial = 16
+    
+
 class MaterialType(IntEnum):
     None_ = 0
     Common = 1
     Rare = 2
 
+class ItemAction(IntEnum):
+    NONE = 0
+    IDENTIFY = 1
+    SALVAGE = 2
+    SELL_TO_MERCHANT = 3
+    STASH = 4
+    SALVAGE_RARE_MATERIALS = 5
+    SALVAGE_MODS = 6
+    DESTROY = 7
+    COLLECT_DATA = 8
+    SELL_TO_TRADER = 9
+    
+class LootAction(IntEnum):
+    NONE = 0
+    LOOT = 1
+    IGNORE = 2
+    LOOT_IF_STACKABLE = 3
+
+
+class LootItemMode(IntEnum):
+    MODEL_ID = 0
+    ITEM_TYPE = 1
+    
 class Campaign(IntEnum):
     None_ = 0
     Core = 1

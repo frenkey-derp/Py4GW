@@ -16,6 +16,7 @@ class ConfigurationCondition:
         self.suffix_mod: Optional[str] = None
         self.inherent_mod: Optional[str] = None
         self.old_school_only: bool = False
+        self.threshold: Optional[int] = None
 
         self.rarities: dict[Rarity, bool] = {
             rarity: False for rarity in Rarity}
@@ -45,6 +46,7 @@ class ItemConfiguration:
                     "suffix_mod": condition.suffix_mod,
                     "inherent_mod": condition.inherent_mod,
                     "old_school_only": condition.old_school_only,
+                    "threshold": condition.threshold,
                     "rarities": {
                         rarity.name: value for rarity, value in condition.rarities.items()
                     },
@@ -67,46 +69,61 @@ class ItemConfiguration:
         item = ItemConfiguration(model_id)
         item.conditions = []
 
-        for condition_data in data["conditions"]:
-            condition = ConfigurationCondition(condition_data["name"])
-            condition.item_type = (
-                ItemType[condition_data["item_type"]]
-                if condition_data["item_type"] in ItemType.__members__
+        for condition_data in data.get("conditions", []):
+            name = condition_data.get("name", None)
+            
+            if not name:
+                raise ValueError("Condition name is required")
+            
+            condition = ConfigurationCondition(name)
+            
+            item_type = condition_data.get("item_type", None)
+            item_type = (
+                ItemType[item_type]
+                if item_type in ItemType.__members__
                 else None
             )
-            condition.damage_range = (
+            
+            condition.item_type = item_type
+            
+            damage_range = condition_data.get("damage_range", None)
+            damage_range = (
                 models.IntRange(
                     condition_data["damage_range"][0], condition_data["damage_range"][1]
                 )
                 if condition_data["damage_range"]
                 else None
             )
-            condition.prefix_mod = condition_data["prefix_mod"]
-            condition.suffix_mod = condition_data["suffix_mod"]
-            condition.inherent_mod = condition_data["inherent_mod"]
-            condition.old_school_only = condition_data["old_school_only"]
-            condition.rarities = {
+            
+            condition.damage_range = damage_range
+            condition.prefix_mod = condition_data.get("prefix_mod", None)
+            condition.suffix_mod = condition_data.get("suffix_mod", None)
+            condition.inherent_mod = condition_data.get("inherent_mod", None)
+            condition.old_school_only = condition_data.get("old_school_only", False)
+            condition.threshold = condition_data.get("threshold", None)
+            
+            rarities = condition_data.get("rarities", {})
+            rarities = {
                 Rarity[rarity]: value
-                for rarity, value in condition_data["rarities"].items()
+                for rarity, value in rarities.items()
                 if rarity in Rarity.__members__
-            }
-            condition.item_actions = ItemActions.from_dict(
-                condition_data["item_actions"]
-            )
+            } if rarities else {}
+            
+            condition.rarities = rarities
+            condition.item_actions = ItemActions.from_dict(condition_data.get("item_actions", {}))
 
-            condition.requirements = (
+            requirements = condition_data.get("requirements", {})
+            requirements = (
                 {
                     Attribute[attribute]: models.IntRange(
                         requirement[0], requirement[1])
-                    for attribute, requirement in condition_data[
-                        "requirements"
-                    ].items()
+                    for attribute, requirement in requirements.items()
                     if attribute in Attribute.__members__
                 }
-                if condition_data["requirements"]
+                if requirements
                 else None
             )
-
+            condition.requirements = requirements
             item.conditions.append(condition)
 
         return item

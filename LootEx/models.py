@@ -10,6 +10,9 @@ from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierValu
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
 
+import importlib
+importlib.reload(enum)
+
 class IntRange:
     def __init__(self, min: int = 0, max: Optional[int] = None):
         self.min: int = min
@@ -237,6 +240,8 @@ class Item():
     profession : Optional[Profession] = None
     contains_amount: bool = False    
     inventory_icon: Optional[str] = None
+    category: enum.ItemCategory = enum.ItemCategory.None_
+    sub_category: enum.ItemSubCategory = enum.ItemSubCategory.None_
     
     @property
     def is_nick_item(self) -> bool:
@@ -348,7 +353,9 @@ class Item():
             "WikiURL": self.wiki_url or get_wiki_url(),
             "InventoryIcon": self.inventory_icon,
             "NickIndex": self.nick_index,
-            "Profession": self.profession.name if self.profession and self.profession != Profession._None else None
+            "Profession": self.profession.name if self.profession and self.profession != Profession._None else None,
+            "Category": self.category.name if self.category else None,
+            "SubCategory": self.sub_category.name if self.sub_category else None
         }
 
     @staticmethod
@@ -365,7 +372,9 @@ class Item():
             common_salvage=SalvageInfoCollection.from_dict(json.get("CommonSalvage", {})),
             rare_salvage=SalvageInfoCollection.from_dict(json.get("RareSalvage", {})), 
             nick_index=json["NickIndex"] if "NickIndex" in json else None,
-            profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else None
+            profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else None,
+            category=enum.ItemCategory[json["Category"]] if "Category" in json and json["Category"] else enum.ItemCategory.None_,
+            sub_category=enum.ItemSubCategory[json["SubCategory"]] if "SubCategory" in json and json["SubCategory"] else enum.ItemSubCategory.None_
         )
 
 @dataclass
@@ -402,7 +411,10 @@ class Material(Item):
             profession=item.profession,
             vendor_value=json.get("VendorValue", 0),
             vendor_updated=datetime.fromisoformat(json["VendorUpdated"]) if "VendorUpdated" in json else datetime.min,
-            material_type=material_type
+            material_type=material_type,
+            inventory_icon=item.inventory_icon,
+            category=item.category,
+            sub_category=item.sub_category
         )
     
     @staticmethod
@@ -420,7 +432,10 @@ class Material(Item):
             profession=item.profession,
             vendor_value=0,
             vendor_updated=datetime.min,
-            material_type=MaterialType.Common if item.model_id in enum.COMMON_MATERIALS else MaterialType.Rare
+            material_type=MaterialType.Common if item.model_id in enum.COMMON_MATERIALS else MaterialType.Rare,
+            inventory_icon=item.inventory_icon,
+            category=item.category,
+            sub_category=item.sub_category
         )
 
 @dataclass

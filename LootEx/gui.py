@@ -16,6 +16,7 @@ from Py4GWCoreLib import *
 import importlib
 
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
+from Widgets import LootManager
 importlib.reload(settings)
 importlib.reload(data)
 importlib.reload(models)
@@ -110,10 +111,113 @@ inherent_names = ["Any"]
 
 mod_heights: dict[str, float] = {}
 sharedMemoryManager = Py4GWSharedMemoryManager()
+filter_popup = False
 
+class ItemFilter:
+    def __init__(self, name: str, lambda_function: Callable):
+        self.name: str = name
+        self.lambda_function: Callable = lambda_function
+        pass
+    
+    def match(self, item: models.Item) -> bool:
+        """
+        Checks if the item matches the filter criteria.
+        
+        Args:
+            item (models.Item): The item to check against the filter.
+        
+        Returns:
+            bool: True if the item matches the filter, False otherwise.
+        """
+        
+        return self.lambda_function(item)
+    
+selected_filter: Optional[ItemFilter] = None
+filters : list[ItemFilter] = [
+    ItemFilter("All Items", lambda item: True),
+    ItemFilter("Weapons", lambda item: item.item_type in weapon_types),
+    ItemFilter("Armor", lambda item: item.item_type in [
+        ItemType.Chestpiece,
+        ItemType.Headpiece,
+        ItemType.Leggings,
+        ItemType.Boots,
+        ItemType.Gloves,
+    ]),
+    ItemFilter("Upgrades", lambda item: item.item_type == ItemType.Rune_Mod),
+    ItemFilter("Consumables", lambda item: item.category == enum.ItemCategory.Alcohol or
+                                            item.category == enum.ItemCategory.Sweet or
+                                            item.category == enum.ItemCategory.Party or
+                                            item.category == enum.ItemCategory.DeathPenaltyRemoval),
+    ItemFilter("Alcohol", lambda item: item.category == enum.ItemCategory.Alcohol),
+    ItemFilter("Sweets", lambda item: item.category == enum.ItemCategory.Sweet),
+    ItemFilter("Party", lambda item: item.category == enum.ItemCategory.Party),
+    ItemFilter("Death Penalty Removal", lambda item: item.category == enum.ItemCategory.DeathPenaltyRemoval),
+    ItemFilter("Scrolls", lambda item: item.category == enum.ItemCategory.Scroll),
+    ItemFilter("Tomes", lambda item: item.category == enum.ItemCategory.Tome),
+    ItemFilter("Keys", lambda item: item.category == enum.ItemCategory.Key),
+    ItemFilter("Materials", lambda item: item.category == enum.ItemCategory.Material),
+    ItemFilter("Trophies", lambda item: item.category == enum.ItemCategory.Trophy),
+    ItemFilter("Reward Trophies", lambda item: item.category == enum.ItemCategory.RewardTrophy),
+    ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem),    
+]
 
-def draw_inventory_controls():
-    coords = settings.current.inventory_frame_coords
+def draw_vault_controls():    
+    if not UIManager.IsWindowVisible(WindowID.WindowID_VaultBox):
+        ConsoleLog(
+            "LootEx",
+            "Vault controls not drawn because the Vault Box window is not visible.",
+            Console.MessageType.Warning,
+        )
+        return
+    
+    coords = settings.FrameCoords(UIManager.GetFrameIDByHash(2315448754))  # "Xunlai Window" frame hash
+
+    if coords is None:
+        ConsoleLog(
+            "LootEx",
+            "Vault controls not drawn because the Xunlai Window frame coordinates are None.",
+            Console.MessageType.Warning,
+        )
+        return
+    
+    width = 30
+    PyImGui.set_next_window_pos(coords.right - (width) - 20, coords.top + 50)
+    PyImGui.set_next_window_size(width, 0)
+    PyImGui.push_style_color(PyImGui.ImGuiCol.WindowBg,
+                                Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 125)))
+    PyImGui.push_style_var2(ImGui.ImGuiStyleVar.WindowPadding, 0, 0)    
+    if PyImGui.begin(
+        "Loot Ex Vault Controls",
+        PyImGui.WindowFlags.NoTitleBar
+        | PyImGui.WindowFlags.NoResize
+        | PyImGui.WindowFlags.NoBackground
+        | PyImGui.WindowFlags.AlwaysAutoResize
+        | PyImGui.WindowFlags.NoCollapse
+        | PyImGui.WindowFlags.NoMove
+        | PyImGui.WindowFlags.NoSavedSettings,
+    ):
+        PyImGui.pop_style_var(1)
+        PyImGui.pop_style_color(1)
+
+        if _draw_transparent_button(IconsFontAwesome5.ICON_TH, True, width, width):
+            imgui_io = PyImGui.get_io()
+            if imgui_io.key_ctrl:
+                # messaging.SendOpenXunlai(imgui_io.key_shift)
+                pass
+            else:
+                loot_handling.CondenseStacks(Bag.Storage_1, Bag.Storage_14)
+
+        ImGui.show_tooltip("Condense items to full stacks" +
+                           "\nHold Ctrl to send message to all accounts" +
+                           "\nHold Shift to send message to all accounts excluding yourself")
+
+        PyImGui.end()
+
+def draw_inventory_controls():    
+    if not UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+        return
+    
+    coords = settings.FrameCoords(UIManager.GetFrameIDByHash(inventory_frame_hash))
 
     if coords is None:
         return
@@ -149,13 +253,23 @@ def draw_inventory_controls():
         settings.current.window_visible = settings.current.manual_window_visible
 
 
-def _draw_inventory_toggle_button(width):
+def _draw_transparent_button(text : str, enabled : bool, width: float, height : float) -> bool:
+    """
+    Draws a transparent button with the specified icon and width.
+    
+    Args:
+        icon (str): The icon to display on the button.
+        width (int): The width of the button.
+    
+    Returns:
+        bool: True if the button was clicked, False otherwise.
+    """
     PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
     PyImGui.push_style_color(
         PyImGui.ImGuiCol.Text,
         Utils.ColorToTuple(
-            Utils.RGBToColor(0, 255, 0, 255)
-            if settings.current.automatic_inventory_handling
+            Utils.RGBToColor(255, 255, 255, 255)
+            if enabled
             else Utils.RGBToColor(255, 255, 255, 125)
         ),
     )
@@ -166,7 +280,16 @@ def _draw_inventory_toggle_button(width):
     PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive,
                              Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
 
-    if PyImGui.button(IconsFontAwesome5.ICON_CHECK, width, width):
+    clicked = PyImGui.button(text, width, height)
+
+    PyImGui.pop_style_var(1)
+    PyImGui.pop_style_color(4)
+
+    return clicked
+    
+
+def _draw_inventory_toggle_button(width):
+    if _draw_transparent_button(IconsFontAwesome5.ICON_CHECK, settings.current.automatic_inventory_handling, width, width):
         imgui_io = PyImGui.get_io()
 
         if imgui_io.key_ctrl:
@@ -181,35 +304,16 @@ def _draw_inventory_toggle_button(width):
             settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
             settings.current.save()
 
-    PyImGui.pop_style_var(1)
-    PyImGui.pop_style_color(4)
-
-    ImGui.show_tooltip(
-        ("Disable" if settings.current.automatic_inventory_handling else "Enable") +
-        " Inventory Handling" +
-        "\nHold Ctrl to send message to all accounts" +
-        "\nHold Shift to send message to all accounts excluding yourself"
-    )
+    # ImGui.show_tooltip(
+    #     ("Disable" if settings.current.automatic_inventory_handling else "Enable") +
+    #     " Inventory Handling" +
+    #     "\nHold Ctrl to send message to all accounts" +
+    #     "\nHold Shift to send message to all accounts excluding yourself"
+    # )
 
 
 def _draw_date_collection_toggle_button(width):
-    PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
-    PyImGui.push_style_color(
-        PyImGui.ImGuiCol.Text,
-        Utils.ColorToTuple(
-            Utils.RGBToColor(0, 255, 0, 255)
-            if settings.current.collect_items
-            else Utils.RGBToColor(255, 255, 255, 125)
-        ),
-    )
-    PyImGui.push_style_color(PyImGui.ImGuiCol.Button,
-                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
-    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(
-        Utils.RGBToColor(0, 0, 0, 125)))
-    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive,
-                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
-
-    if PyImGui.button(IconsFontAwesome5.ICON_LANGUAGE, width, width):
+    if _draw_transparent_button(IconsFontAwesome5.ICON_LANGUAGE, settings.current.collect_items, width, width):
         imgui_io = PyImGui.get_io()
 
         if imgui_io.key_ctrl:
@@ -228,9 +332,6 @@ def _draw_date_collection_toggle_button(width):
                 data_collector.instance.start_collection()
                 settings.current.save()
 
-    PyImGui.pop_style_var(1)
-    PyImGui.pop_style_color(4)
-
     ImGui.show_tooltip(
         ("Disable" if settings.current.collect_items else "Enable") +
         " Item Data Collection" +
@@ -240,23 +341,7 @@ def _draw_date_collection_toggle_button(width):
 
 
 def _draw_manual_window_toggle_button(width):
-    PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
-    PyImGui.push_style_color(
-        PyImGui.ImGuiCol.Text,
-        Utils.ColorToTuple(
-            Utils.RGBToColor(255, 255, 255, 255)
-            if settings.current.manual_window_visible
-            else Utils.RGBToColor(255, 255, 255, 125)
-        ),
-    )
-    PyImGui.push_style_color(PyImGui.ImGuiCol.Button,
-                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
-    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(
-        Utils.RGBToColor(0, 0, 0, 125)))
-    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive,
-                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
-
-    if PyImGui.button(IconsFontAwesome5.ICON_COG, width, width):
+    if _draw_transparent_button(IconsFontAwesome5.ICON_COG, settings.current.manual_window_visible, width, width):
         imgui_io = PyImGui.get_io()
         if imgui_io.key_ctrl:
             if settings.current.manual_window_visible:
@@ -269,9 +354,6 @@ def _draw_manual_window_toggle_button(width):
             settings.current.manual_window_visible = not settings.current.manual_window_visible
             settings.current.save()
 
-    PyImGui.pop_style_var(1)
-    PyImGui.pop_style_color(4)
-
     ImGui.show_tooltip(
         ("Hide" if settings.current.manual_window_visible else "Show") + " Window" +
         "\nHold Ctrl to send message to all accounts" +
@@ -280,23 +362,9 @@ def _draw_manual_window_toggle_button(width):
 
 def _draw_xunlai_storage_button(width):
     xunlai_open = Inventory.IsStorageOpen()
-    PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
-    PyImGui.push_style_color(
-        PyImGui.ImGuiCol.Text,
-        Utils.ColorToTuple(
-            Utils.RGBToColor(255, 255, 255, 255) if xunlai_open else Utils.RGBToColor(
-                255, 255, 255, 125)
-        ),
-    )
-    PyImGui.push_style_color(PyImGui.ImGuiCol.Button,
-                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
-    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(
-        Utils.RGBToColor(0, 0, 0, 125)))
-    PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive,
-                             Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0)))
 
-    if PyImGui.button(
-        IconsFontAwesome5.ICON_BOX_OPEN if xunlai_open else IconsFontAwesome5.ICON_BOX, width, width
+    if _draw_transparent_button(
+        IconsFontAwesome5.ICON_BOX_OPEN if xunlai_open else IconsFontAwesome5.ICON_BOX, xunlai_open, width, width
     ):
         if xunlai_open:
             # Inventory.close_storage()
@@ -308,9 +376,6 @@ def _draw_xunlai_storage_button(width):
                 messaging.SendOpenXunlai(imgui_io.key_shift)
             else:
                 Inventory.OpenXunlaiWindow()
-
-    PyImGui.pop_style_var(1)
-    PyImGui.pop_style_color(4)
 
     ImGui.show_tooltip("Open Xunlai Storage" +
                        "\nHold Ctrl to send message to all accounts" +
@@ -387,29 +452,17 @@ def draw_data_collector_tab():
 
                 clipboard_text += "```"
                 PyImGui.set_clipboard_text(clipboard_text)
-
-
-                # for item in data.Items.values():
-                #     if item.names.get(ServerLanguage.English, None) is None:
-                #         continue
-                    
-                #     if item.name.endswith(" Key"):
-                #         item.item_type = models.ItemType.Key
-                    
-                #     if item.name.endswith(" Summoning Stone"):
-                #         item.item_type = models.ItemType.Usable
-                    
-                #     if item.item_type == models.ItemType.Unknown:
-                #         ConsoleLog(
-                #             "LootEx",
-                #             f"Item {item.name} ({item.model_id}) has an unknown item type.",
-                #             Console.MessageType.Warning,
-                #         )
-                                        
-                # data.SaveItems(True)
-                # wiki_scraper.WikiScraper.scrape_multiple_entries(data.Items)
                 
-                # wiki_scraper.WikiScraper.scrape_info_from_wiki(data.Items[454])
+                # Load items modelid_drop_data
+                file_directory = os.path.dirname(os.path.abspath(__file__))
+                data_directory = os.path.join(file_directory, "data")
+                path = os.path.join(data_directory, "modelid_drop_data.json")
+               
+                            
+                            
+                
+                    
+            ImGui.show_tooltip("Copy all weapon mods that have an upgrade to the clipboard.")
             
 
         PyImGui.end_child()
@@ -1075,9 +1128,35 @@ def draw_add_loot_filter_popup():
             PyImGui.close_current_popup()
             show_add_filter_popup = False
 
+def draw_filter_popup():
+    global item_search, filtered_loot_items, filter_popup, filters, selected_filter
+
+    if filter_popup:
+        PyImGui.open_popup("Filter Loot Items")
+
+    if PyImGui.begin_popup("Filter Loot Items"):
+        
+        remaining_size = PyImGui.get_content_region_avail()
+        
+        for filter in filters:
+            if filter:
+                if PyImGui.selectable(filter.name, selected_filter == filter, PyImGui.SelectableFlags.NoFlag, (remaining_size[0], 0)):
+                    selected_filter = filter
+                    filter_items(item_search)
+                    
+                    filter_popup = False
+                    PyImGui.close_current_popup()
+    
+        PyImGui.end_popup()
+    
+    if PyImGui.is_mouse_clicked(0) and not PyImGui.is_item_hovered():
+        if filter_popup:
+            PyImGui.close_current_popup()
+            filter_popup = False        
+    
 
 def draw_loot_items():
-    global first_draw, selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging
+    global first_draw, selected_loot_items, filtered_loot_items, item_search, condition_name, selected_condition, loot_items_selection_dragging, filter_popup
 
     if first_draw:
         ConsoleLog(
@@ -1107,10 +1186,18 @@ def draw_loot_items():
         if PyImGui.begin_child("loot_items_selection_child", (tab_size[0] * 0.3, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
             child_size = PyImGui.get_content_region_avail()
 
-            PyImGui.push_item_width(child_size[0])
+            PyImGui.push_item_width(child_size[0] - 35)
             search = PyImGui.input_text("##search_item", item_search)
+            search_active = PyImGui.is_item_active()
 
-            if (search is None or search == "") and not PyImGui.is_item_active():
+            PyImGui.same_line(0, 5)
+            if PyImGui.button(IconsFontAwesome5.ICON_FILTER):
+                filter_popup = not filter_popup
+                if filter_popup:
+                    PyImGui.open_popup("Filter Loot Items")
+                pass
+            
+            if (search is None or search == "") and not search_active:
                 PyImGui.same_line(5, 0)
                 PyImGui.push_style_color(PyImGui.ImGuiCol.Text, Utils.ColorToTuple(
                     Utils.RGBToColor(255, 255, 255, 125)))
@@ -1119,12 +1206,9 @@ def draw_loot_items():
                 PyImGui.pop_style_color(1)
 
             if search is not None and search != item_search:
-                item_search = search
-                filtered_loot_items = [
-                    SelectableItem(item) for item in data.Items.values()
-                    if item and item.name and (item.name.lower().find(item_search.lower()) != -1 or str(item.model_id).find(item_search.lower()) != -1)
-                ]
+                filter_items(search)
 
+            
             if PyImGui.begin_child("selectable_items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 for item in filtered_loot_items:
                     if item:
@@ -1213,7 +1297,7 @@ def draw_loot_items():
 
                         if PyImGui.begin_tab_bar("item_conditions") and loot_item:
                             for condition in loot_item.conditions:
-                                if PyImGui.begin_tab_item(condition.name) and condition:
+                                if PyImGui.begin_tab_item(condition.name) and condition and selected_loot_item:
                                     if selected_condition != condition:
                                         selected_condition = condition
                                         condition_name = condition.name
@@ -1496,8 +1580,17 @@ def draw_loot_items():
 
         PyImGui.end_child()
 
+        draw_filter_popup()
         PyImGui.end_tab_item()
 
+def filter_items(search):
+    global item_search, filtered_loot_items
+    item_search = search
+    
+    filtered_loot_items = [
+                    SelectableItem(item) for item in data.Items.values()
+                    if item and item.name and (item.name.lower().find(item_search.lower()) != -1 or str(item.model_id).find(item_search.lower()) != -1) and (selected_filter is None or selected_filter.match(item))
+                ]
 
 def _calc_mod_description_height(mod, tab_width: float) -> float:
     base_height = 48
@@ -2301,15 +2394,24 @@ def draw_selectable_item(item: SelectableItem):
         if item.item_info.attributes
         else []
     )
+    
+    profession = utility.Util.GetProfessionName(item.item_info.profession) if item.item_info.profession else ""
 
-    item_name = (
-        item.item_info.name
-        if not item.item_info.attributes
-        else f"{item.item_info.name} ({''.join(attributes).removesuffix(',')})"
-        if len(item.item_info.attributes) > 1
-        else f"{item.item_info.name} ({utility.Util.GetAttributeName(item.item_info.attributes[0])})"
-    )
+    item_name = item.item_info.name
+    
+        
+    if item.item_info.attributes and len(item.item_info.attributes) > 0:
+        item_name = (
+            f"{item_name} ({''.join(attributes).removesuffix(',')})"
+            if len(item.item_info.attributes) > 1
+            else f"{item_name} ({utility.Util.GetAttributeName(item.item_info.attributes[0])})"
+        )
+    elif item.item_info.attributes and len(item.item_info.attributes) == 1:
+        item_name = f"{item_name} ({utility.Util.GetAttributeName(item.item_info.attributes[0])})"
 
+    elif profession:
+        item_name = f"{item_name} ({profession})"
+        
     # Determine text color based on whether the item has settings
     has_settings = item.item_info.model_id in settings.current.loot_profile.items
     text_color = (

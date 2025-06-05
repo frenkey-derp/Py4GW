@@ -44,8 +44,6 @@ def main():
     global inventory_frame_hash
     
     if not Routines.Checks.Map.MapValid():
-        settings.current.inventory_frame_exists = False
-        settings.current.parent_frame_id = None
         return           
 
     if messaging.HandleMessages():
@@ -59,26 +57,25 @@ def main():
         settings.current.language = language
         data.UpdateLanguage(language)
         settings.current.save()
-
-    if UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
-        if settings.current.parent_frame_id != 0:
-            settings.current.inventory_frame_exists = UIManager.FrameExists(
-                settings.current.parent_frame_id)
-        else:
-            settings.current.inventory_frame_exists = False
-    else:
-        settings.current.parent_frame_id = None
-        settings.current.inventory_frame_exists = False
-
-    if settings.current.inventory_frame_exists and settings.current.parent_frame_id != None:
-        settings.current.inventory_frame_coords = settings.FrameCoords(
-            settings.current.parent_frame_id)
-        gui.draw_inventory_controls()
+        
+    gui.draw_vault_controls()        
+    gui.draw_inventory_controls()
 
     if settings.current.window_visible:
         gui.draw_window()
 
     settings.current.window_visible = False
+    
+    if GLOBAL_CACHE.Player.GetAccountEmail() == "lasse-gerth@gmx.de":
+        game_option = GLOBAL_CACHE.ShMem.GetHeroAIOptions(GLOBAL_CACHE.Player.GetAccountEmail())
+        if game_option is not None:      
+            game_option.Following = False
+            game_option.Avoidance = False
+            game_option.Looting = False
+            game_option.Targeting = False
+            game_option.Combat = False
+            
+            GLOBAL_CACHE.ShMem.SetHeroAIOptions(GLOBAL_CACHE.Player.GetAccountEmail(), game_option)
 
     # if (throttle_timer.IsExpired()):
     #     throttle_timer.Reset()
