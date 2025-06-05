@@ -1019,7 +1019,7 @@
                 "Arg1": 0,
                 "Arg2": 30,
                 "Arg": 30,
-                "ModifierValueArg": "Arg2",
+                "ModifierValueArg": "None_",
                 "Min": 0,
                 "Max": 100
             }
@@ -1403,7 +1403,7 @@
                 "Arg1": 0,
                 "Arg2": 47,
                 "Arg": 47,
-                "ModifierValueArg": "Arg2",
+                "ModifierValueArg": "None_",
                 "Min": 0,
                 "Max": 100
             }

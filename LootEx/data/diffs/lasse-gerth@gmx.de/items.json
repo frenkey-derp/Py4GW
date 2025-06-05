@@ -1,0 +1,44 @@
+{
+    "19131": {
+        "ModelID": 19131,
+        "Name": "Insignia",
+        "Names": {
+            "English": "Insignia"
+        },
+        "ItemType": "Rune_Mod",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Insignia",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    },
+    "26724": {
+        "ModelID": 26724,
+        "Name": "Droknars Key",
+        "Names": {
+            "English": "Droknars Key",
+            "German": "Droknars Schlüssel",
+            "French": "Clé de Droknar",
+            "Korean": "드록나 열쇠",
+            "Italian": "Chiave di Droknar",
+            "Spanish": "Llave de Droknar",
+            "TraditionalChinese": "卓克納鑰匙",
+            "Polish": "Droknarski Klucz",
+            "Russian": "Droknar's Key",
+            "BorkBorkBork": "Druknaer's Key",
+            "Japanese": "ドロクナーのカギ"
+        },
+        "ItemType": "Trophy",
+        "DropInfo": "No data added yet",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Droknars_Key",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    }
+}

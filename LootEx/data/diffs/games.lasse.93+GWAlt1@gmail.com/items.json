@@ -1,0 +1,56 @@
+{
+    "1191": {
+        "ModelID": 1191,
+        "Name": "Earth Staff",
+        "Names": {
+            "English": "Earth Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "EarthMagic"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Staff",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1296": {
+        "ModelID": 1296,
+        "Name": "Winged Staff",
+        "Names": {
+            "English": "Winged Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "SmitingPrayers"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Winged_Staff",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Monk"
+    },
+    "2082": {
+        "ModelID": 2082,
+        "Name": "Fox's Greed",
+        "Names": {
+            "English": "Fox's Greed"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "SpawningPower"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Fox's_Greed",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    }
+}

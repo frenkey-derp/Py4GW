@@ -1,3 +1,4 @@
+from datetime import timedelta
 import re
 from typing import Dict, List, Optional, Tuple
 from LootEx import data, item_configuration, enum
@@ -81,7 +82,7 @@ class Util:
 
     # TODO: Add handling for non max mods
     @staticmethod
-    def GetMods(item_id: int):
+    def GetMods(item_id: int, max_mods: bool = False) -> list[WeaponMod | Rune]:
         item_type = ItemType[Item.GetItemType(item_id)[1]]
         mods = []
 
@@ -93,12 +94,12 @@ class Util:
 
         if Util.IsArmorType(item_type) or is_rune:
             matching_runes = [
-                rune for rune in data.Runes if rune.is_item_modifier(modifiers)]
+                rune for rune in data.Runes.values() if rune.is_item_modifier(modifiers)]
             mods.extend(matching_runes)
 
         elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
             matching_mods = [
-                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(modifiers, item_type)]
+                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(modifiers, item_type, max_mods=max_mods)]
             mods.extend(matching_mods)
             
         else:
@@ -132,7 +133,7 @@ class Util:
 
                 if matching_mod is not None:
                     matching_mod = next(
-                        (weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
+                        (weapon_mod for weapon_mod in data.Runes.values() if weapon_mod.is_item_modifier(mod)), None)
 
                 return matching_mod
         else:
@@ -179,7 +180,7 @@ class Util:
         if (item_type == ItemType.Rune_Mod):
             for mod in Item.Customization.Modifiers.GetModifiers(item_id):
                 matching_mod = next(
-                    (weapon_mod for weapon_mod in data.Runes if weapon_mod.is_item_modifier(mod)), None)
+                    (weapon_mod for weapon_mod in data.Runes.values() if weapon_mod.is_item_modifier(mod)), None)
                 return matching_mod
         else:
             return None
@@ -606,3 +607,53 @@ class Util:
         item_name = item_name.strip()
 
         return item_name
+    
+    @staticmethod
+    def format_currency(value: int) -> str:
+        platinum = value // 1000
+        gold = value % 1000
+
+        parts = []
+        if platinum > 0:
+            parts.append(f"{platinum} platinum")
+        if gold > 0 or platinum == 0:
+            parts.append(f"{gold} gold")
+
+        return " ".join(parts)
+
+    @staticmethod
+    def format_time_ago(delta : timedelta) -> str:
+        """
+        Format a timedelta into a human-readable string indicating how long ago it was.
+
+        Args:
+            delta (timedelta): The time difference to format.
+
+        Returns:
+            str: A formatted string representing the time difference.
+        """
+        seconds = int(delta.total_seconds())
+        if seconds < 60:
+            return f"{seconds} seconds ago"
+        elif seconds < 3600:
+            minutes = seconds // 60
+            return f"{minutes} minutes ago"
+        elif seconds < 86400:
+            hours = seconds // 3600
+            return f"{hours} hours ago"
+        else:
+            days = seconds // 86400
+            return f"{days} days ago"
+    
+    @staticmethod
+    def is_common_material(model_id: int) -> bool:
+        """
+        Check if the item with the given model ID is a common material.
+
+        Args:
+            model_id (int): The model ID of the item.
+
+        Returns:
+            bool: True if the item is a common material, False otherwise.
+        """
+        return model_id in data.Common_Materials

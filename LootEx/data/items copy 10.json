@@ -570,39 +570,9 @@
         "Attributes": [
             "AxeMastery"
         ],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            },
-            "Granite Slab" : {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 955,
-                "MaterialName": "Granite Slab"
-            },
-            "Wood Plank": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 946,
-                "MaterialName": "Wood Plank"
-            }
-        },
-        "RareSalvage": {
-            "Steel Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 949,
-                "MaterialName": "Steel Ingot"
-            }
-        },
-        "WikiURL": "https://wiki.guildwars.com/wiki/Cleaver_(Tyrian)",
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Cleaver",
         "InventoryIcon": "",
         "NickIndex": null,
         "Profession": null
@@ -2495,50 +2465,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/6/62/Fellblade.png",
         "NickIndex": null,
         "Profession": null
-    },    
-    "407": {
-        "ModelID": 407,
-        "Name": "Forked Sword",
-        "Names": {
-            "English": "Forked Sword",
-            "German": "Gabelschwert",
-            "Korean": "포크 소드",
-            "French": "Epée fourchue",
-            "Italian": "Spada Forcuta",
-            "Spanish": "Espada horcada",
-            "TraditionalChinese": "叉型劍",
-            "Japanese": "フォークド ソード",
-            "Polish": "Rozdwojony Miecz",
-            "Russian": "Forked Sword",
-            "BorkBorkBork": "Furked Svurd"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            }
-        },
-        "RareSalvage": {
-            "Steel Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 949,
-                "MaterialName": "Steel Ingot"
-            }
-        },
-        "WikiURL": "https://wiki.guildwars.com/wiki/Forked_Sword",
-        "InventoryIcon": "https://wiki.guildwars.com/images/4/47/Forked_Sword.png",
-        "NickIndex": null,
-        "Profession": null
     },
     "408": {
         "ModelID": 408,
@@ -2963,32 +2889,17 @@
     },
     "429": {
         "ModelID": 429,
-        "Name": "Skale Fin",
+        "Name": "Skale Fin PreSearing",
         "Names": {
-            "English": "Skale Fin"
+            "English": "Skale Fin PreSearing"
         },
-        "ItemType": "Trophy",
-        "DropInfo": "Presearing",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
-        "CommonSalvage": {
-            "Scale": {
-                "Amount": 1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 953,
-                "MaterialName": "Scale"
-            },
-            "Tanned Hide Square": {
-                "Amount": 1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 940,
-                "MaterialName": "Tanned Hide Square"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Skale_Fin",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/8f/Skale_Fin.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Skale_Fin_PreSearing",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -4481,25 +4392,17 @@
     },
     "495": {
         "ModelID": 495,
-        "Name": "Curved Minotaur Horn",
+        "Name": "Curved Mintaur Horn",
         "Names": {
-            "English": "Curved Minotaur Horn"
+            "English": "Curved Mintaur Horn"
         },
-        "ItemType": "Trophy",
+        "ItemType": "Unknown",
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
-        "CommonSalvage": {
-            "Bone": {
-                "Amount": 2,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 921,
-                "MaterialName": "Bone"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Curved_Minotaur_Horn",
-        "InventoryIcon": "https://wiki.guildwars.com/images/9/9a/Minotaur_Horn.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Curved_Mintaur_Horn",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -4705,25 +4608,17 @@
     },
     "505": {
         "ModelID": 505,
-        "Name": "Igneous Spider Leg",
+        "Name": "Igneous Spider Leg 2",
         "Names": {
-            "English": "Igneous Spider Leg"
+            "English": "Igneous Spider Leg 2"
         },
-        "ItemType": "Trophy",
+        "ItemType": "Unknown",
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
-        "CommonSalvage": {
-            "Chitin Fragment": {
-                "Amount": -1,
-                "MinAmount": 6,
-                "MaxAmount": 8,
-                "MaterialModelID": 954,
-                "MaterialName": "Chitin Fragment"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Igneous_Spider_Leg",
-        "InventoryIcon": "https://wiki.guildwars.com/images/0/08/Igneous_Spider_Leg.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Igneous_Spider_Leg_2",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -6665,7 +6560,7 @@
         "Names": {
             "English": "Bone Charm"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -7068,25 +6963,17 @@
     },
     "831": {
         "ModelID": 831,
-        "Name": "Oni Talon",
+        "Name": "Oni Taloon",
         "Names": {
-            "English": "Oni Talon"
+            "English": "Oni Taloon"
         },
-        "ItemType": "Trophy",
+        "ItemType": "Unknown",
         "DropInfo": "Dropped by data to be added",
         "Attributes": [],
-        "CommonSalvage": {
-            "Bone": {
-                "Amount": 1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 921,
-                "MaterialName": "Bone"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Oni_Talon",
-        "InventoryIcon": "https://wiki.guildwars.com/images/c/cf/Oni_Talon.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Oni_Taloon",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -7957,7 +7844,7 @@
         "Names": {
             "English": "Axe Haft"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -8042,7 +7929,7 @@
         "Names": {
             "English": "Sword Hilt"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -8126,7 +8013,7 @@
         "Names": {
             "English": "Hammer Grip"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -9913,7 +9800,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -9987,7 +9874,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -11615,33 +11502,10 @@
         "Attributes": [
             "DaggerMastery"
         ],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            },
-            "Wood Plank": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 946,
-                "MaterialName": "Wood Plank"
-            }
-        },
-        "RareSalvage": {
-            "Steel Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 949,
-                "MaterialName": "Steel Ingot"
-            }
-        },
-        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers_(common)",
-        "InventoryIcon": "https://wiki.guildwars.com/images/e/e5/Elonian_Daggers_%28common%29.png",
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
+        "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": null
     },
@@ -11666,33 +11530,10 @@
         "Attributes": [
             "DaggerMastery"
         ],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            },
-            "Wood Plank": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 946,
-                "MaterialName": "Wood Plank"
-            }
-        },
-        "RareSalvage": {
-            "Steel Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 949,
-                "MaterialName": "Steel Ingot"
-            }
-        },
-        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers_(uncommon)",
-        "InventoryIcon": "https://wiki.guildwars.com/images/9/9b/Elonian_Daggers_%28uncommon%29.png",
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
+        "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": null
     },
@@ -11717,33 +11558,10 @@
         "Attributes": [
             "DaggerMastery"
         ],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            },
-            "Wood Plank": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 946,
-                "MaterialName": "Wood Plank"
-            }
-        },
-        "RareSalvage": {
-            "Steel Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 949,
-                "MaterialName": "Steel Ingot"
-            }
-        },
-        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers_(rare)",
-        "InventoryIcon": "https://wiki.guildwars.com/images/6/65/Elonian_Daggers_%28rare%29.png",
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers",
+        "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": null
     },
@@ -14941,7 +14759,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15023,7 +14841,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15054,7 +14872,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15213,7 +15031,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15316,7 +15134,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15347,7 +15165,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15420,7 +15238,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -15451,7 +15269,7 @@
         "Names": {
             "English": "Celestial Compass"
         },
-        "ItemType": "Offhand",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {
@@ -17548,97 +17366,65 @@
     },
     "2113": {
         "ModelID": 2113,
-        "Name": "Kilnn Testibrie's Cuisse",
+        "Name": "Kilhn Testibries Cuisse",
         "Names": {
-            "English": "Kilnn Testibrie's Cuisse"
+            "English": "Kilhn Testibries Cuisse"
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Kilnn_Testibrie%27s_Cuisse",
-        "InventoryIcon": "https://wiki.guildwars.com/images/b/bc/Kilnn_Testibrie%27s_Cuisse.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kilhn_Testibries_Cuisse",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "2114": {
         "ModelID": 2114,
-        "Name": "Kilnn Testibrie's Greaves",
+        "Name": "Kilhn Testibries Greaves",
         "Names": {
-            "English": "Kilnn Testibrie's Greaves"
+            "English": "Kilhn Testibries Greaves"
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "CommonSalvage": {
-            "Tanned Hide Square": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 940,
-                "MaterialName": "Tanned Hide Square"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Kilnn_Testibrie%27s_Greaves",
-        "InventoryIcon": "https://wiki.guildwars.com/images/c/cb/Kilnn_Testibrie%27s_Greaves.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kilhn_Testibries_Greaves",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "2115": {
         "ModelID": 2115,
-        "Name": "Kilnn Testibrie's Crest",
+        "Name": "Kilhn Testibries Crest",
         "Names": {
-            "English": "Kilnn Testibrie's Crest"
+            "English": "Kilhn Testibries Crest"
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "CommonSalvage": {
-            "Tanned Hide Square": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 940,
-                "MaterialName": "Tanned Hide Square"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Kilnn_Testibrie%27s_Crest",
-        "InventoryIcon": "https://wiki.guildwars.com/images/2/25/Kilnn_Testibrie%27s_Crest.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kilhn_Testibries_Crest",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "2116": {
         "ModelID": 2116,
-        "Name": "Kilnn Testibrie's Pauldron",
+        "Name": "Kilhn Testibries Pauldron",
         "Names": {
-            "English": "Kilnn Testibrie's Pauldron"
+            "English": "Kilhn Testibries Pauldron"
         },
         "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            }
-        },
+        "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Kilnn_Testibrie%27s_Pauldron",
-        "InventoryIcon": "https://wiki.guildwars.com/images/2/2e/Kilnn_Testibrie%27s_Pauldron.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kilhn_Testibries_Pauldron",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -17735,32 +17521,9 @@
         "Attributes": [
             "AxeMastery"
         ],
-        "CommonSalvage": {
-            "Iron Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 948,
-                "MaterialName": "Iron Ingot"
-            },
-            "Wood Plank": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 946,
-                "MaterialName": "Wood Plank"
-            }
-        },
-        "RareSalvage": {
-            "Steel Ingot": {
-                "Amount": -1,
-                "MinAmount": -1,
-                "MaxAmount": -1,
-                "MaterialModelID": 949,
-                "MaterialName": "Steel Ingot"
-            }
-        },
-        "WikiURL": "https://wiki.guildwars.com/wiki/Cleaver_(Canthan)",
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Cleaver",
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": null
@@ -18973,16 +18736,16 @@
     },
     "2593": {
         "ModelID": 2593,
-        "Name": "Bogroot Growths Boss Key",
+        "Name": "Bogroots Boss Key",
         "Names": {
-            "English": "Bogroot Growths Boss Key"
+            "English": "Bogroots Boss Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bogroot_Growths_Boss_Key",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bogroots_Boss_Key",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -19193,33 +18956,33 @@
     },
     "3256": {
         "ModelID": 3256,
-        "Name": "Passage Scroll to Urgoz's Warren",
+        "Name": "Passage Scroll Urgoz",
         "Names": {
-            "English": "Passage Scroll to Urgoz's Warren"
+            "English": "Passage Scroll Urgoz"
         },
-        "ItemType": "Scroll",
+        "ItemType": "Unknown",
         "DropInfo": "Bosses HM & Foes Urgoz",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_to_Urgoz%27s_Warren",
-        "InventoryIcon": "https://wiki.guildwars.com/images/0/0f/Passage_Scroll_to_Urgoz%27s_Warren.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_Urgoz",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "3746": {
         "ModelID": 3746,
-        "Name": "Passage Scroll to the Underworld",
+        "Name": "Passage Scroll Uw",
         "Names": {
-            "English": "Passage Scroll to the Underworld"
+            "English": "Passage Scroll Uw"
         },
-        "ItemType": "Scroll",
+        "ItemType": "Unknown",
         "DropInfo": "Bosses HM & Foes The Uw",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_to_the_Underworld",
-        "InventoryIcon": "https://wiki.guildwars.com/images/3/3e/Passage_Scroll_to_the_Underworld.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_Uw",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -19245,7 +19008,7 @@
         "Names": {
             "English": "Sinister Automatonic Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19261,7 +19024,7 @@
         "Names": {
             "English": "Dwarven Ale"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Irontoe's Chest",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19421,7 +19184,7 @@
         "Names": {
             "English": "Phantom Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes The Underworld",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19517,7 +19280,7 @@
         "Names": {
             "English": "Elonian Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Crystal Desert",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19533,7 +19296,7 @@
         "Names": {
             "English": "Miners Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Sorrows Furnace",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19549,7 +19312,7 @@
         "Names": {
             "English": "Shiverpeak Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Southern Shiverpeaks",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19565,7 +19328,7 @@
         "Names": {
             "English": "Darkstone Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Ring of Fire Island Chain",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19581,7 +19344,7 @@
         "Names": {
             "English": "Krytan Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Kryta",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19597,7 +19360,7 @@
         "Names": {
             "English": "Maguuma Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Maguuma Jungle",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19613,7 +19376,7 @@
         "Names": {
             "English": "Ascalonian Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Ascalon",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19629,7 +19392,7 @@
         "Names": {
             "English": "Steel Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Northern Silverpeaks",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19645,7 +19408,7 @@
         "Names": {
             "English": "Obsidian Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Fissure of Woe",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19829,7 +19592,7 @@
         "Names": {
             "English": "Spiked Eggnog"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Wintersday & Chest of Wintersday Past",
         "Attributes": [],
         "CommonSalvage": {},
@@ -19919,7 +19682,7 @@
         "Names": {
             "English": "Eggnog"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Wintersday & Chest of Wintersday Past",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20021,7 +19784,7 @@
         "Names": {
             "English": "Forbidden Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Raisu Palace",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20037,7 +19800,7 @@
         "Names": {
             "English": "Kurzick Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Echovald Forest",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20053,7 +19816,7 @@
         "Names": {
             "English": "Stoneroot Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Urgoz Warren",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20069,7 +19832,7 @@
         "Names": {
             "English": "Shing Jea Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Shing Jea Island",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20085,7 +19848,7 @@
         "Names": {
             "English": "Luxon Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Jade Sea",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20101,7 +19864,7 @@
         "Names": {
             "English": "Deep Jade Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes The Deep",
         "Attributes": [],
         "CommonSalvage": {},
@@ -20117,7 +19880,7 @@
         "Names": {
             "English": "Canthan Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Kaineng City",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21073,7 +20836,7 @@
         "Names": {
             "English": "Bottle of Rice Wine"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Jarimiya the Unmerciful",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21105,7 +20868,7 @@
         "Names": {
             "English": "Red Bean Cake"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Anniversary Celebration & Dragon Festival",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21289,7 +21052,7 @@
         "Names": {
             "English": "Scythe Snathe"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21435,7 +21198,7 @@
         "Names": {
             "English": "Spear Grip"
         },
-        "ItemType": "Rune_Mod",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21451,7 +21214,7 @@
         "Names": {
             "English": "Ancient Elonian Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes The Desolation",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21467,7 +21230,7 @@
         "Names": {
             "English": "Istani Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Istan",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21483,7 +21246,7 @@
         "Names": {
             "English": "Vabbian Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Vabbi",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21499,7 +21262,7 @@
         "Names": {
             "English": "Kournan Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Kourna",
         "Attributes": [],
         "CommonSalvage": {},
@@ -21515,7 +21278,7 @@
         "Names": {
             "English": "Margonite Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Realm of Terror",
         "Attributes": [],
         "CommonSalvage": {},
@@ -22059,7 +21822,7 @@
         "Names": {
             "English": "Drake Kabob"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -22075,7 +21838,7 @@
         "Names": {
             "English": "Bowl of Skalefin Soup"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -22091,7 +21854,7 @@
         "Names": {
             "English": "Pahnai Salad"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -22881,7 +22644,7 @@
         "Names": {
             "English": "Refined Jelly"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -23185,7 +22948,7 @@
         "Names": {
             "English": "Mandragor Root Cake"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -23217,7 +22980,7 @@
         "Names": {
             "English": "Bottle of Juniberry Gin"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -23233,7 +22996,7 @@
         "Names": {
             "English": "Bottle of Vabbian Wine"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Jarimiya the Unmerciful",
         "Attributes": [],
         "CommonSalvage": {},
@@ -23249,7 +23012,7 @@
         "Names": {
             "English": "Demonic Key"
         },
-        "ItemType": "Key",
+        "ItemType": "Unknown",
         "DropInfo": "Foes Domain of Anguish",
         "Attributes": [],
         "CommonSalvage": {},
@@ -24269,13 +24032,29 @@
         "NickIndex": null,
         "Profession": null
     },
+    "21154": {
+        "ModelID": 21154,
+        "Name": "Merchant Summon",
+        "Names": {
+            "English": "Merchant Summon"
+        },
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Merchant_Summon",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    },
     "21227": {
         "ModelID": 21227,
         "Name": "Elixir of Valor",
         "Names": {
             "English": "Elixir of Valor"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -25356,7 +25135,7 @@
         "Names": {
             "English": "Beetle Juice Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -25458,25 +25237,25 @@
     },
     "22279": {
         "ModelID": 22279,
-        "Name": "Passage Scroll to the Deep",
+        "Name": "Passage Scroll Deep",
         "Names": {
-            "English": "Passage Scroll to the Deep"
+            "English": "Passage Scroll Deep"
         },
-        "ItemType": "Scroll",
+        "ItemType": "Unknown",
         "DropInfo": "Bosses HM & Foes The Deep",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_to_the_Deep",
-        "InventoryIcon": "https://wiki.guildwars.com/images/3/39/Passage_Scroll_to_the_Deep.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_Deep",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "22280": {
         "ModelID": 22280,
-        "Name": "Passage Scroll to the Fissure of Woe",
+        "Name": "Passage Scroll Fow",
         "Names": {
-            "English": "Passage Scroll to the Fissure of Woe",
+            "English": "Passage Scroll Fow",
             "German": "Zugangsschriftrolle zum Riss des Kummers",
             "French": "Parchemin de Passage pour la Fissure du Malheur",
             "Korean": "재앙의 균열 통행증",
@@ -25493,7 +25272,7 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_to_the_Fissure_of_Woe",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Passage_Scroll_Fow",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -25999,16 +25778,16 @@
     },
     "23242": {
         "ModelID": 23242,
-        "Name": "Everlasting Transmogrifier Tonic",
+        "Name": "El Transmogrifier Tonic",
         "Names": {
-            "English": "Everlasting Transmogrifier Tonic"
+            "English": "El Transmogrifier Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Transmogrifier_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Transmogrifier_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -27044,7 +26823,7 @@
         "Names": {
             "English": "Aged Dwarven Ale"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Irontoe's Chest",
         "Attributes": [],
         "CommonSalvage": {},
@@ -28038,7 +27817,7 @@
             "BorkBorkBork": "Druknaer's Key",
             "Japanese": "ドロクナーのカギ"
         },
-        "ItemType": "Key",
+        "ItemType": "Trophy",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -30003,16 +29782,16 @@
     },
     "29241": {
         "ModelID": 29241,
-        "Name": "Everlasting Yuletide Tonic",
+        "Name": "El Yuletide Tonic",
         "Names": {
-            "English": "Everlasting Yuletide Tonic"
+            "English": "El Yuletide Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "Wintersday & Chest of Wintersday Past",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Yuletide_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Yuletide_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -30211,9 +29990,9 @@
     },
     "29424": {
         "ModelID": 29424,
-        "Name": "Lunar Fortune [Year of the Pig]",
+        "Name": "Lunar Fortune 2007 Pig",
         "Names": {
-            "English": "Lunar Fortune [Year of the Pig]",
+            "English": "Lunar Fortune 2007 Pig",
             "German": "Überraschungskeks [Jahr des Schweins]",
             "French": "Fortune lunaire [Année du cochon]",
             "Korean": "설 복주머니 [돼지해]",
@@ -30226,148 +30005,148 @@
             "Japanese": "おみくじ [ブタ年]"
         },
         "ItemType": "Usable",
-        "DropInfo": "Year of the Pig (2007)",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2007_Pig",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29425": {
         "ModelID": 29425,
-        "Name": "Lunar Fortune [Year of the Rat]",
+        "Name": "Lunar Fortune 2008 Rat",
         "Names": {
-            "English": "Lunar Fortune [Year of the Rat]"
+            "English": "Lunar Fortune 2008 Rat"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Rat (2008)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2008_Rat",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29426": {
         "ModelID": 29426,
-        "Name": "Lunar Fortune [Year of the Ox]",
+        "Name": "Lunar Fortune 2009 Ox",
         "Names": {
-            "English": "Lunar Fortune [Year of the Ox]"
+            "English": "Lunar Fortune 2009 Ox"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Ox (2009)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2009_Ox",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29427": {
         "ModelID": 29427,
-        "Name": "Lunar Fortune [Year of the Tiger]",
+        "Name": "Lunar Fortune 2010 Tiger",
         "Names": {
-            "English": "Lunar Fortune [Year of the Tiger]"
+            "English": "Lunar Fortune 2010 Tiger"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Tiger (2010)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2010_Tiger",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29428": {
         "ModelID": 29428,
-        "Name": "Lunar Fortune [Year of the Rabbit]",
+        "Name": "Lunar Fortune 2011 Rabbit",
         "Names": {
-            "English": "Lunar Fortune [Year of the Rabbit]"
+            "English": "Lunar Fortune 2011 Rabbit"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Rabbit (2011)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2011_Rabbit",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29429": {
         "ModelID": 29429,
-        "Name": "Lunar Fortune [Year of the Dragon]",
+        "Name": "Lunar Fortune 2012 Dragon",
         "Names": {
-            "English": "Lunar Fortune [Year of the Dragon]"
+            "English": "Lunar Fortune 2012 Dragon"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Dragon (2012)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2012_Dragon",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29430": {
         "ModelID": 29430,
-        "Name": "Lunar Fortune [Year of the Snake]",
+        "Name": "Lunar Fortune 2013 Snake",
         "Names": {
-            "English": "Lunar Fortune [Year of the Snake]"
+            "English": "Lunar Fortune 2013 Snake"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Snake (2013)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2013_Snake",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29431": {
         "ModelID": 29431,
-        "Name": "Lunar Fortune [Year of the Horse]",
+        "Name": "Lunar Fortune 2014 Horse",
         "Names": {
-            "English": "Lunar Fortune [Year of the Horse]"
+            "English": "Lunar Fortune 2014 Horse"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Horse (2014)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2014_Horse",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29432": {
         "ModelID": 29432,
-        "Name": "Lunar Fortune [Year of the Sheep]",
+        "Name": "Lunar Fortune 2015 Sheep",
         "Names": {
-            "English": "Lunar Fortune [Year of the Sheep]"
+            "English": "Lunar Fortune 2015 Sheep"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Sheep (2015)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2015_Sheep",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29433": {
         "ModelID": 29433,
-        "Name": "Lunar Fortune [Year of the Monkey]",
+        "Name": "Lunar Fortune 2016 Monkey",
         "Names": {
-            "English": "Lunar Fortune [Year of the Monkey]",
+            "English": "Lunar Fortune 2016 Monkey",
             "German": "Überraschungskeks [Jahr des Affen]",
             "French": "Fortune lunaire [Année du singe]",
             "Korean": "설 복주머니 [원숭이해]",
@@ -30380,44 +30159,44 @@
             "Japanese": "おみくじ [サル年] 250個"
         },
         "ItemType": "Usable",
-        "DropInfo": "Year of the Monkey (2016)",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2016_Monkey",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29434": {
         "ModelID": 29434,
-        "Name": "Lunar Fortune [Year of the Rooster]",
+        "Name": "Lunar Fortune 2017 Rooster",
         "Names": {
-            "English": "Lunar Fortune [Year of the Rooster]"
+            "English": "Lunar Fortune 2017 Rooster"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Rooster (2017)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2017_Rooster",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "29435": {
         "ModelID": 29435,
-        "Name": "Lunar Fortune [Year of the Dog]",
+        "Name": "Lunar Fortune 2018 Dog",
         "Names": {
-            "English": "Lunar Fortune [Year of the Dog]"
+            "English": "Lunar Fortune 2018 Dog"
         },
-        "ItemType": "Present",
-        "DropInfo": "Year of the Dog (2018)",
+        "ItemType": "Unknown",
+        "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune",
-        "InventoryIcon": "https://wiki.guildwars.com/images/8/80/Lunar_Fortune.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Lunar_Fortune_2018_Dog",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -30475,7 +30254,7 @@
         "Names": {
             "English": "Oath of Purity"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -30503,9 +30282,9 @@
     },
     "30209": {
         "ModelID": 30209,
-        "Name": "Tengu Support Flare",
+        "Name": "Tengu Summon",
         "Names": {
-            "English": "Tengu Support Flare",
+            "English": "Tengu Summon",
             "German": "Tengu-Unterstützungsleuchtfeuer",
             "French": "Fusée d'appui tengu",
             "Korean": "텐구 지원 폭죽",
@@ -30522,40 +30301,40 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Tengu_Support_Flare",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Tengu_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30210": {
         "ModelID": 30210,
-        "Name": "Imperial Guard Reinforcement Order",
+        "Name": "Imperial Guard Summon",
         "Names": {
-            "English": "Imperial Guard Reinforcement Order"
+            "English": "Imperial Guard Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Imperial_Guard_Reinforcement_Order",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Imperial_Guard_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30211": {
         "ModelID": 30211,
-        "Name": "Seal of the Dragon Empire",
+        "Name": "Seal of The Dragon Empire",
         "Names": {
-            "English": "Seal of the Dragon Empire"
+            "English": "Seal of The Dragon Empire"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Seal_of_the_Dragon_Empire",
-        "InventoryIcon": "https://wiki.guildwars.com/images/4/45/Seal_of_the_Dragon_Empire.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Seal_of_The_Dragon_Empire",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -30903,7 +30682,7 @@
         "Names": {
             "English": "Abyssal Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -30915,16 +30694,16 @@
     },
     "30625": {
         "ModelID": 30625,
-        "Name": "Everlasting Abyssal Tonic",
+        "Name": "El Abyssal Tonic",
         "Names": {
-            "English": "Everlasting Abyssal Tonic"
+            "English": "El Abyssal Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Abyssal_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Abyssal_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -30935,7 +30714,7 @@
         "Names": {
             "English": "Cerebral Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -30947,16 +30726,16 @@
     },
     "30627": {
         "ModelID": 30627,
-        "Name": "Everlasting Cerebral Tonic",
+        "Name": "El Cerebral Tonic",
         "Names": {
-            "English": "Everlasting Cerebral Tonic"
+            "English": "El Cerebral Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Cerebral_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Cerebral_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -30967,7 +30746,7 @@
         "Names": {
             "English": "Macabre Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -30979,16 +30758,16 @@
     },
     "30629": {
         "ModelID": 30629,
-        "Name": "Everlasting Macabre Tonic",
+        "Name": "El Macabre Tonic",
         "Names": {
-            "English": "Everlasting Macabre Tonic"
+            "English": "El Macabre Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Macabre_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Macabre_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -30999,7 +30778,7 @@
         "Names": {
             "English": "Trapdoor Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31011,16 +30790,16 @@
     },
     "30631": {
         "ModelID": 30631,
-        "Name": "Everlasting Trapdoor Tonic",
+        "Name": "El Trapdoor Tonic",
         "Names": {
-            "English": "Everlasting Trapdoor Tonic"
+            "English": "El Trapdoor Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Trapdoor_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Trapdoor_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31031,7 +30810,7 @@
         "Names": {
             "English": "Searing Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31043,16 +30822,16 @@
     },
     "30633": {
         "ModelID": 30633,
-        "Name": "Everlasting Searing Tonic",
+        "Name": "El Searing Tonic",
         "Names": {
-            "English": "Everlasting Searing Tonic"
+            "English": "El Searing Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Searing_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Searing_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31063,7 +30842,7 @@
         "Names": {
             "English": "Autmatonic Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31075,16 +30854,16 @@
     },
     "30635": {
         "ModelID": 30635,
-        "Name": "Everlasting Automatonic Tonic",
+        "Name": "El Automatonic Tonic",
         "Names": {
-            "English": "Everlasting Automatonic Tonic"
+            "English": "El Automatonic Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Automatonic_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Automatonic_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31095,7 +30874,7 @@
         "Names": {
             "English": "Skeletonic Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31107,16 +30886,16 @@
     },
     "30637": {
         "ModelID": 30637,
-        "Name": "Everlasting Skeletonic Tonic",
+        "Name": "El Skeletonic Tonic",
         "Names": {
-            "English": "Everlasting Skeletonic Tonic"
+            "English": "El Skeletonic Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Skeletonic_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Skeletonic_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31127,7 +30906,7 @@
         "Names": {
             "English": "Boreal Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31139,9 +30918,9 @@
     },
     "30639": {
         "ModelID": 30639,
-        "Name": "Everlasting Boreal Tonic",
+        "Name": "El Boreal Tonic",
         "Names": {
-            "English": "Everlasting Boreal Tonic",
+            "English": "El Boreal Tonic",
             "German": "Unvergänglicher Borealtrank",
             "French": "Tonique boréal éternel",
             "Korean": "영속의 보레알 물약",
@@ -31158,7 +30937,7 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Boreal_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Boreal_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31169,7 +30948,7 @@
         "Names": {
             "English": "Gelatinous Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31181,9 +30960,9 @@
     },
     "30641": {
         "ModelID": 30641,
-        "Name": "Everlasting Gelatinous Tonic",
+        "Name": "El Gelatinous Tonic",
         "Names": {
-            "English": "Everlasting Gelatinous Tonic",
+            "English": "El Gelatinous Tonic",
             "German": "Unvergänglicher Gallerttrank",
             "French": "Tonique gélatineux éternel",
             "Korean": "영속의 진흙괴물 물약",
@@ -31200,7 +30979,7 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Gelatinous_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Gelatinous_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31211,7 +30990,7 @@
         "Names": {
             "English": "Phantasmal Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31223,16 +31002,16 @@
     },
     "30643": {
         "ModelID": 30643,
-        "Name": "Everlasting Phantasmal Tonic",
+        "Name": "El Phantasmal Tonic",
         "Names": {
-            "English": "Everlasting Phantasmal Tonic"
+            "English": "El Phantasmal Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Phantasmal_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Phantasmal_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31243,7 +31022,7 @@
         "Names": {
             "English": "Abominable Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31255,16 +31034,16 @@
     },
     "30647": {
         "ModelID": 30647,
-        "Name": "Everlasting Abominable Tonic",
+        "Name": "El Abominable Tonic",
         "Names": {
-            "English": "Everlasting Abominable Tonic"
+            "English": "El Abominable Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Abominable_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Abominable_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31275,7 +31054,7 @@
         "Names": {
             "English": "Frosty Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31303,32 +31082,32 @@
     },
     "30827": {
         "ModelID": 30827,
-        "Name": "Everlasting Sinister Automatonic Tonic",
+        "Name": "El Sinister Automatonic Tonic",
         "Names": {
-            "English": "Everlasting Sinister Automatonic Tonic"
+            "English": "El Sinister Automatonic Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Sinister_Automatonic_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Sinister_Automatonic_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30846": {
         "ModelID": 30846,
-        "Name": "Automaton Summoning Stone",
+        "Name": "Automaton Summon",
         "Names": {
-            "English": "Automaton Summoning Stone"
+            "English": "Automaton Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Automaton_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Automaton_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31387,128 +31166,128 @@
     },
     "30959": {
         "ModelID": 30959,
-        "Name": "Chitinous Summoning Stone",
+        "Name": "Chitinous Summon",
         "Names": {
-            "English": "Chitinous Summoning Stone"
+            "English": "Chitinous Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Chitinous_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Chitinous_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30960": {
         "ModelID": 30960,
-        "Name": "Mystical Summoning Stone",
+        "Name": "Mystical Summon",
         "Names": {
-            "English": "Mystical Summoning Stone"
+            "English": "Mystical Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mystical_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mystical_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30961": {
         "ModelID": 30961,
-        "Name": "Amber Summoning Stone",
+        "Name": "Amber Summon",
         "Names": {
-            "English": "Amber Summoning Stone"
+            "English": "Amber Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30962": {
         "ModelID": 30962,
-        "Name": "Arctic Summoning Stone",
+        "Name": "Artic Summon",
         "Names": {
-            "English": "Arctic Summoning Stone"
+            "English": "Artic Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Arctic_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Artic_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30963": {
         "ModelID": 30963,
-        "Name": "Demonic Summoning Stone",
+        "Name": "Demonic Summon",
         "Names": {
-            "English": "Demonic Summoning Stone"
+            "English": "Demonic Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Demonic_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Demonic_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30964": {
         "ModelID": 30964,
-        "Name": "Gelatinous Summoning Stone",
+        "Name": "Gelatinous Summon",
         "Names": {
-            "English": "Gelatinous Summoning Stone"
+            "English": "Gelatinous Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Gelatinous_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Gelatinous_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30965": {
         "ModelID": 30965,
-        "Name": "Fossilized Summoning Stone",
+        "Name": "Fossilized Summon",
         "Names": {
-            "English": "Fossilized Summoning Stone"
+            "English": "Fossilized Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fossilized_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Fossilized_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "30966": {
         "ModelID": 30966,
-        "Name": "Jadeite Summoning Stone",
+        "Name": "Jadeite Summon",
         "Names": {
-            "English": "Jadeite Summoning Stone"
+            "English": "Jadeite Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Jadeite_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Jadeite_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31519,7 +31298,7 @@
         "Names": {
             "English": "Mischievous Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31531,9 +31310,9 @@
     },
     "31021": {
         "ModelID": 31021,
-        "Name": "Everlasting Mischievous Tonic",
+        "Name": "El Mischievous Tonic",
         "Names": {
-            "English": "Everlasting Mischievous Tonic",
+            "English": "El Mischievous Tonic",
             "German": "Unvergänglicher Schabernack-Trank",
             "Korean": "영속의 그렌치 물약",
             "French": "Tonique malveillant éternel",
@@ -31550,39 +31329,39 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Mischievous_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Mischievous_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "31022": {
         "ModelID": 31022,
-        "Name": "Mischievous Summoning Stone",
+        "Name": "Mischievous Summon",
         "Names": {
-            "English": "Mischievous Summoning Stone"
+            "English": "Mischievous Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mischievous_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mischievous_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "31023": {
         "ModelID": 31023,
-        "Name": "Frosty Summoning Stone",
+        "Name": "Frosty Summon",
         "Names": {
-            "English": "Frosty Summoning Stone"
+            "English": "Frosty Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Frosty_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Frosty_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31593,7 +31372,7 @@
         "Names": {
             "English": "Mysterious Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31609,7 +31388,7 @@
         "Names": {
             "English": "Cottontail Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31621,16 +31400,16 @@
     },
     "31143": {
         "ModelID": 31143,
-        "Name": "Everlasting Cottontail Tonic",
+        "Name": "El Cottontail Tonic",
         "Names": {
-            "English": "Everlasting Cottontail Tonic"
+            "English": "El Cottontail Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Cottontail_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Cottontail_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31641,7 +31420,7 @@
         "Names": {
             "English": "Zaishen Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31669,25 +31448,25 @@
     },
     "31146": {
         "ModelID": 31146,
-        "Name": "Keg of Aged Hunter's Ale",
+        "Name": "Keg of Aged Hunters Ale",
         "Names": {
-            "English": "Keg of Aged Hunter's Ale"
+            "English": "Keg of Aged Hunters Ale"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Keg_of_Aged_Hunter%27s_Ale",
-        "InventoryIcon": "https://wiki.guildwars.com/images/0/0f/Keg_of_Aged_Hunter%27s_Ale.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Keg_of_Aged_Hunters_Ale",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "31147": {
         "ModelID": 31147,
-        "Name": "Everlasting Crate of Fireworks",
+        "Name": "El Crate of Fireworks",
         "Names": {
-            "English": "Everlasting Crate of Fireworks",
+            "English": "El Crate of Fireworks",
             "German": "Unvergängliche Feuerwerkkiste",
             "French": "Caisse de feux d'artifice éternelle",
             "Korean": "영속의 불꽃놀이 상자",
@@ -31704,7 +31483,7 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Crate_of_Fireworks",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Crate_of_Fireworks",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31757,7 +31536,7 @@
         "Names": {
             "English": "Jar of Honey"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31773,7 +31552,7 @@
         "Names": {
             "English": "Blue Rock Candy"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31789,7 +31568,7 @@
         "Names": {
             "English": "Green Rock Candy"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31805,7 +31584,7 @@
         "Names": {
             "English": "Red Rock Candy"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -31843,32 +31622,32 @@
     },
     "31155": {
         "ModelID": 31155,
-        "Name": "Mysterious Summoning Stone",
+        "Name": "Mysterious Summon",
         "Names": {
-            "English": "Mysterious Summoning Stone"
+            "English": "Mysterious Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Mysterious_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Mysterious_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "31156": {
         "ModelID": 31156,
-        "Name": "Zaishen Summoning Stone",
+        "Name": "Zaishen Summon",
         "Names": {
-            "English": "Zaishen Summoning Stone"
+            "English": "Zaishen Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Zaishen_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Zaishen_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -31949,9 +31728,9 @@
     },
     "31173": {
         "ModelID": 31173,
-        "Name": "Everlasting Unseen Tonic",
+        "Name": "El Unseen Tonic",
         "Names": {
-            "English": "Everlasting Unseen Tonic",
+            "English": "El Unseen Tonic",
             "German": "UnvergänglicherTrank der Unsichtbaren",
             "Korean": "영속의 머사트 물약",
             "French": "Tonique des Invisibles éternel",
@@ -31968,7 +31747,7 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Unseen_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Unseen_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -32441,16 +32220,16 @@
     },
     "32557": {
         "ModelID": 32557,
-        "Name": "Ghastly Summoning Stone",
+        "Name": "Ghastly Summon",
         "Names": {
-            "English": "Ghastly Summoning Stone"
+            "English": "Ghastly Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ghastly_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Ghastly_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -32505,16 +32284,16 @@
     },
     "32850": {
         "ModelID": 32850,
-        "Name": "Everlasting Henchman Tonic",
+        "Name": "El Henchman Tonic",
         "Names": {
-            "English": "Everlasting Henchman Tonic"
+            "English": "El Henchman Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Henchman_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Henchman_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -32547,16 +32326,16 @@
     },
     "34156": {
         "ModelID": 34156,
-        "Name": "Everlasting Reindeer Tonic",
+        "Name": "El Reindeer Tonic",
         "Names": {
-            "English": "Everlasting Reindeer Tonic"
+            "English": "El Reindeer Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Reindeer_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Reindeer_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -32615,16 +32394,16 @@
     },
     "34176": {
         "ModelID": 34176,
-        "Name": "Celestial Summoning Stone",
+        "Name": "Celestial Summon",
         "Names": {
-            "English": "Celestial Summoning Stone"
+            "English": "Celestial Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Celestial_Summoning_Stone",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Celestial_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -33021,7 +32800,7 @@
         "Names": {
             "English": "Krytan Lokum"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -33033,33 +32812,33 @@
     },
     "35126": {
         "ModelID": 35126,
-        "Name": "Shining Blade War Horn",
+        "Name": "Shining Blade Summon",
         "Names": {
-            "English": "Shining Blade War Horn"
+            "English": "Shining Blade Summon"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_War_Horn",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Summon",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "35127": {
         "ModelID": 35127,
-        "Name": "Shining Blade Rations",
+        "Name": "Shining Blade Ration",
         "Names": {
-            "English": "Shining Blade Rations"
+            "English": "Shining Blade Ration"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Rations",
-        "InventoryIcon": "https://wiki.guildwars.com/images/7/77/Shining_Blade_Rations.png",
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shining_Blade_Ration",
+        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
@@ -33225,73 +33004,73 @@
     },
     "36425": {
         "ModelID": 36425,
-        "Name": "Everlasting Koss Tonic",
+        "Name": "El Koss Tonic",
         "Names": {
-            "English": "Everlasting Koss Tonic"
+            "English": "El Koss Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Koss_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Koss_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36426": {
         "ModelID": 36426,
-        "Name": "Everlasting Dunkoro Tonic",
+        "Name": "El Dunkoro Tonic",
         "Names": {
-            "English": "Everlasting Dunkoro Tonic"
+            "English": "El Dunkoro Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Dunkoro_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Dunkoro_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36427": {
         "ModelID": 36427,
-        "Name": "Everlasting Melonni Tonic",
+        "Name": "El Melonni Tonic",
         "Names": {
-            "English": "Everlasting Melonni Tonic"
+            "English": "El Melonni Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Melonni_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Melonni_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36428": {
         "ModelID": 36428,
-        "Name": "Everlasting Acolyte Jin Tonic",
+        "Name": "El Acolyte Jin Tonic",
         "Names": {
-            "English": "Everlasting Acolyte Jin Tonic"
+            "English": "El Acolyte Jin Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Acolyte_Jin_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Acolyte_Jin_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36429": {
         "ModelID": 36429,
-        "Name": "Everlasting Acolyte Sousuke Tonic",
+        "Name": "El Acolyte Sousuke Tonic",
         "Names": {
-            "English": "Everlasting Acolyte Sousuke Tonic",
+            "English": "El Acolyte Sousuke Tonic",
             "German": "Unvergänglicher Akolyth Sousuke-Trank",
             "French": "Tonique éternel de l'Acolyte Sousuke",
             "Korean": "영속의 소스케 물약",
@@ -33308,80 +33087,80 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Acolyte_Sousuke_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Acolyte_Sousuke_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36430": {
         "ModelID": 36430,
-        "Name": "Everlasting Tahlkora Tonic",
+        "Name": "El Tahlkora Tonic",
         "Names": {
-            "English": "Everlasting Tahlkora Tonic"
+            "English": "El Tahlkora Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Tahlkora_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Tahlkora_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36431": {
         "ModelID": 36431,
-        "Name": "Everlasting Zhed Shadowhoof Tonic",
+        "Name": "El Zhed Shadowhoof Tonic",
         "Names": {
-            "English": "Everlasting Zhed Shadowhoof Tonic"
+            "English": "El Zhed Shadowhoof Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Zhed_Shadowhoof_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Zhed_Shadowhoof_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36432": {
         "ModelID": 36432,
-        "Name": "Everlasting Magrid The Sly Tonic",
+        "Name": "El Magrid The Sly Tonic",
         "Names": {
-            "English": "Everlasting Magrid The Sly Tonic"
+            "English": "El Magrid The Sly Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Magrid_The_Sly_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Magrid_The_Sly_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36433": {
         "ModelID": 36433,
-        "Name": "Everlasting Master of Whispers Tonic",
+        "Name": "El Master of Whispers Tonic",
         "Names": {
-            "English": "Everlasting Master of Whispers Tonic"
+            "English": "El Master of Whispers Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Master_of_Whispers_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Master_of_Whispers_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36434": {
         "ModelID": 36434,
-        "Name": "Everlasting Goren Tonic",
+        "Name": "El Goren Tonic",
         "Names": {
-            "English": "Everlasting Goren Tonic",
+            "English": "El Goren Tonic",
             "German": "Unvergänglicher Goren-Trank",
             "French": "Tonique éternel de Goren",
             "Korean": "영속의 고렌 물약",
@@ -33398,352 +33177,352 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Goren_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Goren_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36435": {
         "ModelID": 36435,
-        "Name": "Everlasting Norgu Tonic",
+        "Name": "El Norgu Tonic",
         "Names": {
-            "English": "Everlasting Norgu Tonic"
+            "English": "El Norgu Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Norgu_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Norgu_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36436": {
         "ModelID": 36436,
-        "Name": "Everlasting Morgahn Tonic",
+        "Name": "El Morgahn Tonic",
         "Names": {
-            "English": "Everlasting Morgahn Tonic"
+            "English": "El Morgahn Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Morgahn_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Morgahn_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36437": {
         "ModelID": 36437,
-        "Name": "Everlasting Razah Tonic",
+        "Name": "El Razah Tonic",
         "Names": {
-            "English": "Everlasting Razah Tonic"
+            "English": "El Razah Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Razah_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Razah_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36438": {
         "ModelID": 36438,
-        "Name": "Everlasting Olias Tonic",
+        "Name": "El Olias Tonic",
         "Names": {
-            "English": "Everlasting Olias Tonic"
+            "English": "El Olias Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Olias_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Olias_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36439": {
         "ModelID": 36439,
-        "Name": "Everlasting Zenmai Tonic",
+        "Name": "El Zenmai Tonic",
         "Names": {
-            "English": "Everlasting Zenmai Tonic"
+            "English": "El Zenmai Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Zenmai_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Zenmai_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36440": {
         "ModelID": 36440,
-        "Name": "Everlasting Ogden Stonehealer Tonic",
+        "Name": "El Ogden Stonehealer Tonic",
         "Names": {
-            "English": "Everlasting Ogden Stonehealer Tonic"
+            "English": "El Ogden Stonehealer Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Ogden_Stonehealer_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Ogden_Stonehealer_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36441": {
         "ModelID": 36441,
-        "Name": "Everlasting Vekk Tonic",
+        "Name": "El Vekk Tonic",
         "Names": {
-            "English": "Everlasting Vekk Tonic"
+            "English": "El Vekk Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Vekk_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Vekk_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36442": {
         "ModelID": 36442,
-        "Name": "Everlasting Gwen Tonic",
+        "Name": "El Gwen Tonic",
         "Names": {
-            "English": "Everlasting Gwen Tonic"
+            "English": "El Gwen Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Gwen_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Gwen_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36443": {
         "ModelID": 36443,
-        "Name": "Everlasting Xandra Tonic",
+        "Name": "El Xandra Tonic",
         "Names": {
-            "English": "Everlasting Xandra Tonic"
+            "English": "El Xandra Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Xandra_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Xandra_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36444": {
         "ModelID": 36444,
-        "Name": "Everlasting Kahmu Tonic",
+        "Name": "El Kahmu Tonic",
         "Names": {
-            "English": "Everlasting Kahmu Tonic"
+            "English": "El Kahmu Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Kahmu_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Kahmu_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36446": {
         "ModelID": 36446,
-        "Name": "Everlasting Pyre Fiercehot Tonic",
+        "Name": "El Pyre Fiercehot Tonic",
         "Names": {
-            "English": "Everlasting Pyre Fiercehot Tonic"
+            "English": "El Pyre Fiercehot Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Pyre_Fiercehot_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Pyre_Fiercehot_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36447": {
         "ModelID": 36447,
-        "Name": "Everlasting Anton Tonic",
+        "Name": "El Anton Tonic",
         "Names": {
-            "English": "Everlasting Anton Tonic"
+            "English": "El Anton Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Anton_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Anton_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36448": {
         "ModelID": 36448,
-        "Name": "Everlasting Hayda Tonic",
+        "Name": "El Hayda Tonic",
         "Names": {
-            "English": "Everlasting Hayda Tonic"
+            "English": "El Hayda Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Hayda_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Hayda_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36449": {
         "ModelID": 36449,
-        "Name": "Everlasting Livia Tonic",
+        "Name": "El Livia Tonic",
         "Names": {
-            "English": "Everlasting Livia Tonic"
+            "English": "El Livia Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Livia_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Livia_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36450": {
         "ModelID": 36450,
-        "Name": "Everlasting Keiran Thackeray Tonic",
+        "Name": "El Keiran Thackeray Tonic",
         "Names": {
-            "English": "Everlasting Keiran Thackeray Tonic"
+            "English": "El Keiran Thackeray Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Keiran_Thackeray_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Keiran_Thackeray_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36451": {
         "ModelID": 36451,
-        "Name": "Everlasting Miku Tonic",
+        "Name": "El Miku Tonic",
         "Names": {
-            "English": "Everlasting Miku Tonic"
+            "English": "El Miku Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Miku_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Miku_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36452": {
         "ModelID": 36452,
-        "Name": "Everlasting Mox Tonic",
+        "Name": "El Mox Tonic",
         "Names": {
-            "English": "Everlasting Mox Tonic"
+            "English": "El Mox Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Mox_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Mox_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36453": {
         "ModelID": 36453,
-        "Name": "Everlasting Shiro Tonic",
+        "Name": "El Shiro Tonic",
         "Names": {
-            "English": "Everlasting Shiro Tonic"
+            "English": "El Shiro Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Shiro_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Shiro_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36455": {
         "ModelID": 36455,
-        "Name": "Everlasting Jora Tonic",
+        "Name": "El Jora Tonic",
         "Names": {
-            "English": "Everlasting Jora Tonic"
+            "English": "El Jora Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Jora_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Jora_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36456": {
         "ModelID": 36456,
-        "Name": "Everlasting Margonite Tonic",
+        "Name": "El Margonite Tonic",
         "Names": {
-            "English": "Everlasting Margonite Tonic"
+            "English": "El Margonite Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Margonite_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Margonite_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36457": {
         "ModelID": 36457,
-        "Name": "Everlasting Destroyer Tonic",
+        "Name": "El Destroyer Tonic",
         "Names": {
-            "English": "Everlasting Destroyer Tonic"
+            "English": "El Destroyer Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Destroyer_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Destroyer_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36458": {
         "ModelID": 36458,
-        "Name": "Everlasting Queen Salma Tonic",
+        "Name": "El Queen Salma Tonic",
         "Names": {
-            "English": "Everlasting Queen Salma Tonic",
+            "English": "El Queen Salma Tonic",
             "German": "Unvergänglicher Königin Salma-Trank",
             "Korean": "영속의 샐마 여왕 물약",
             "French": "Tonique éternel de la Reine Salma",
@@ -33760,39 +33539,39 @@
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Queen_Salma_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Queen_Salma_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36460": {
         "ModelID": 36460,
-        "Name": "Everlasting Slightly Mad King Tonic",
+        "Name": "El Slightly Mad King Tonic",
         "Names": {
-            "English": "Everlasting Slightly Mad King Tonic"
+            "English": "El Slightly Mad King Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Slightly_Mad_King_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Slightly_Mad_King_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36461": {
         "ModelID": 36461,
-        "Name": "Everlasting Kuunavang Tonic",
+        "Name": "El Kuunavang Tonic",
         "Names": {
-            "English": "Everlasting Kuunavang Tonic"
+            "English": "El Kuunavang Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Kuunavang_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Kuunavang_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -33863,112 +33642,112 @@
     },
     "36652": {
         "ModelID": 36652,
-        "Name": "Everlasting Guild Lord Tonic",
+        "Name": "El Guild Lord Tonic",
         "Names": {
-            "English": "Everlasting Guild Lord Tonic"
+            "English": "El Guild Lord Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Guild_Lord_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Guild_Lord_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36658": {
         "ModelID": 36658,
-        "Name": "Everlasting Avatar of Balthazar Tonic",
+        "Name": "El Avatar of Balthazar Tonic",
         "Names": {
-            "English": "Everlasting Avatar of Balthazar Tonic"
+            "English": "El Avatar of Balthazar Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Avatar_of_Balthazar_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Avatar_of_Balthazar_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36659": {
         "ModelID": 36659,
-        "Name": "Everlasting Priest of Balthazar Tonic",
+        "Name": "El Priest of Balthazar Tonic",
         "Names": {
-            "English": "Everlasting Priest of Balthazar Tonic"
+            "English": "El Priest of Balthazar Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Priest_of_Balthazar_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Priest_of_Balthazar_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36660": {
         "ModelID": 36660,
-        "Name": "Everlasting Ghostly Hero Tonic",
+        "Name": "El Ghostly Hero Tonic",
         "Names": {
-            "English": "Everlasting Ghostly Hero Tonic"
+            "English": "El Ghostly Hero Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Ghostly_Hero_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Ghostly_Hero_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36661": {
         "ModelID": 36661,
-        "Name": "Everlasting Balthazars Champion Tonic",
+        "Name": "El Balthazars Champion Tonic",
         "Names": {
-            "English": "Everlasting Balthazars Champion Tonic"
+            "English": "El Balthazars Champion Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Balthazars_Champion_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Balthazars_Champion_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36663": {
         "ModelID": 36663,
-        "Name": "Everlasting Ghostly Priest Tonic",
+        "Name": "El Ghostly Priest Tonic",
         "Names": {
-            "English": "Everlasting Ghostly Priest Tonic"
+            "English": "El Ghostly Priest Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Ghostly_Priest_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Ghostly_Priest_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
     },
     "36664": {
         "ModelID": 36664,
-        "Name": "Everlasting Flame Sentinel Tonic",
+        "Name": "El Flame Sentinel Tonic",
         "Names": {
-            "English": "Everlasting Flame Sentinel Tonic"
+            "English": "El Flame Sentinel Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
         "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Everlasting__Flame_Sentinel_Tonic",
+        "WikiURL": "https://wiki.guildwars.com/wiki/El_Flame_Sentinel_Tonic",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null
@@ -34351,7 +34130,7 @@
         "Names": {
             "English": "Spooky Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -34367,7 +34146,7 @@
         "Names": {
             "English": "Minutely Mad King Tonic"
         },
-        "ItemType": "Usable",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},

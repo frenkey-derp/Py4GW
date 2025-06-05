@@ -5,9 +5,10 @@ import base64
 from dataclasses import dataclass, field
 from typing import ClassVar, List, Optional
 from LootEx import settings
-from LootEx.enum import Campaign, EnemyType, ModType, ModifierValueArg
+from LootEx import enum
+from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierValueArg
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, Profession, Rarity, ServerLanguage
+from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
 
 class IntRange:
     def __init__(self, min: int = 0, max: Optional[int] = None):
@@ -66,6 +67,137 @@ class ModifierValueRange():
         self.max: int = max if max is not None else min
     pass
 
+class SalvageInfoCollection(dict[str, 'SalvageInfo']):
+    """
+    A collection of SalvageInfo objects indexed by material name.
+    
+    This class extends the built-in dict to provide a more specific type for
+    collections of SalvageInfo objects.
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+    def to_dict(self) -> dict:
+        return {material_name: salvage_info.to_dict() for material_name, salvage_info in self.items()}
+    
+    @staticmethod
+    def from_dict(data: dict) -> 'SalvageInfoCollection':
+        """
+        Create a SalvageInfoCollection from a dictionary.
+        
+        Args:
+            data (dict): A dictionary where keys are material names and values are SalvageInfo dictionaries.
+        
+        Returns:
+            SalvageInfoCollection: An instance of SalvageInfoCollection populated with the data.
+        """
+        collection = SalvageInfoCollection()
+        
+        for material_name, salvage_info_data in data.items():
+            collection[material_name] = SalvageInfo.from_dict(salvage_info_data)
+            
+        return collection
+    
+    def get_average_value(self, is_highly_salvageable : bool = False) -> float:
+        """
+        Calculate the average value of all salvage materials in the collection.
+        
+        Returns:
+            int: The total average value of all materials.
+        """
+        total_value = 0
+        
+        for salvage_info in self.values():
+            total_value += salvage_info.get_average_value(is_highly_salvageable)
+            
+        return (total_value / len(self) if self else 0)
+
+@dataclass
+class SalvageInfo():
+    amount: int = -1
+    min_amount: int = -1
+    max_amount: int = -1
+    material_model_id: int = -1
+    material_name: str = "" 
+    summary: str = ""
+    average_amount: float = 0
+    
+    def __post_init__(self):
+        self.generate_summary()
+        
+    def get_average_amount(self, is_highly_salvageable : bool = False) -> float:
+        amount = 0
+        
+        if self.amount != -1:
+            amount = self.amount
+        
+        elif self.min_amount != -1 and self.max_amount != -1:
+            amount = (self.min_amount + self.max_amount) / 2.0
+        
+        else:
+            from LootEx import data
+            material = data.Materials.get(self.material_model_id, None)
+            
+            if material is None:
+                return 0
+            
+            if material.material_type is MaterialType.Common:
+                amount = 8
+            
+            elif material.material_type is MaterialType.Rare:
+                amount = 0.1
+            
+        return amount * (3 if is_highly_salvageable else 1) if amount > 0 else 0
+    
+    def get_average_value(self, is_highly_salvageable : bool = False) -> int:
+        from LootEx import data
+        material = data.Materials.get(self.material_model_id, None)
+    
+        if material is None:
+            return 0
+        
+        if material.material_type is MaterialType.Common:           
+            return int(self.get_average_amount(is_highly_salvageable) * material.vendor_value) if material.vendor_value > 0 else 0
+        
+        elif material.material_type is MaterialType.Rare:
+            return int(self.get_average_amount(is_highly_salvageable) * material.vendor_value) if material.vendor_value > 0 else 0
+        
+        return 0
+        
+
+    def generate_summary(self):
+        amount = f"{self.amount}" if self.amount != -1 else f"{self.min_amount} - {self.max_amount}" if self.min_amount != -1 and self.max_amount != -1 else None
+        self.summary = f"{amount} {self.material_name}" if amount else self.material_name
+        
+    
+    def to_dict(self) -> dict:
+        return {
+            "Amount": self.amount,
+            "MinAmount": self.min_amount,
+            "MaxAmount": self.max_amount,
+            "MaterialModelID": self.material_model_id,
+            "MaterialName": self.material_name
+        }
+        
+    def __str__(self) -> str:            
+        return f"SalvageInfo(Amount={self.amount}, MinAmount={self.min_amount}, MaxAmount={self.max_amount}, MaterialModelID={self.material_model_id}, MaterialName='{self.material_name}')"
+    
+    def __repr__(self) -> str:
+        return f"SalvageInfo(amount={self.amount}, min_amount={self.min_amount}, max_amount={self.max_amount}, material_model_id={self.material_model_id}, material_name='{self.material_name}')"
+    
+    @staticmethod
+    def from_dict(data: dict) -> 'SalvageInfo':
+        info = SalvageInfo()
+        info.amount = data.get("Amount", -1)
+        info.min_amount = data.get("MinAmount", -1)
+        info.max_amount = data.get("MaxAmount", -1)
+        info.material_model_id = data.get("MaterialModelID", -1)
+        info.material_name = data.get("MaterialName", "")
+        info.generate_summary()
+        
+        return info 
+
 class AquisitionInfo():
     def __init__(self):
         self.campaign: Campaign = Campaign.None_
@@ -99,8 +231,8 @@ class Item():
     drop_info: str = ""
     attributes: list[Attribute] = field(default_factory=list)
     wiki_url: str = ""
-    materials: list[int] = field(default_factory=list)
-    rare_materials: list[int] = field(default_factory=list)
+    common_salvage: SalvageInfoCollection = field(default_factory=SalvageInfoCollection)
+    rare_salvage: SalvageInfoCollection = field(default_factory=SalvageInfoCollection)
     nick_index: Optional[int] = None
     profession : Optional[Profession] = None
     contains_amount: bool = False    
@@ -180,17 +312,7 @@ class Item():
                     
         if item.wiki_url:
             self.wiki_url = item.wiki_url
-        
-        if item.materials:
-            for material in item.materials:
-                if material not in self.materials:
-                    self.materials.append(material)
-        
-        if item.rare_materials:
-            for rare_material in item.rare_materials:
-                if rare_material not in self.rare_materials:
-                    self.rare_materials.append(rare_material)
-        
+                
         if item.nick_index is not None:
             self.nick_index = item.nick_index
         
@@ -221,10 +343,10 @@ class Item():
             "ItemType": self.item_type.name,
             "DropInfo": self.drop_info,
             "Attributes": [attribute.name for attribute in self.attributes] if self.attributes else [],
+            "CommonSalvage": self.common_salvage.to_dict() if self.common_salvage else {},
+            "RareSalvage": self.rare_salvage.to_dict() if self.rare_salvage else {},
             "WikiURL": self.wiki_url or get_wiki_url(),
-            "Materials": self.materials,
             "InventoryIcon": self.inventory_icon,
-            "RareMaterials": self.rare_materials,
             "NickIndex": self.nick_index,
             "Profession": self.profession.name if self.profession and self.profession != Profession._None else None
         }
@@ -240,10 +362,65 @@ class Item():
             inventory_icon=json.get("InventoryIcon", None),
             attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
             wiki_url=json["WikiURL"],
-            materials=json["Materials"] if "Materials" in json else [],
-            rare_materials=json["RareMaterials"] if "RareMaterials" in json else [],
+            common_salvage=SalvageInfoCollection.from_dict(json.get("CommonSalvage", {})),
+            rare_salvage=SalvageInfoCollection.from_dict(json.get("RareSalvage", {})), 
             nick_index=json["NickIndex"] if "NickIndex" in json else None,
             profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else None
+        )
+
+@dataclass
+class Material(Item):    
+    vendor_updated: datetime = datetime.min
+    vendor_value: int = 0
+    material_type: MaterialType = MaterialType.Common
+    
+    def to_json(self):
+        dict = super().to_json()
+        dict["VendorValue"] = self.vendor_value
+        dict["VendorUpdated"] = self.vendor_updated.isoformat() if self.vendor_updated else None
+        dict["MaterialType"] = self.material_type.name
+        return dict
+    
+    @staticmethod
+    def from_json(json: dict) -> 'Material':
+        item = Item.from_json(json)
+        material_type = MaterialType[json.get("MaterialType", "None_")]
+        if material_type is MaterialType.None_:
+            material_type=MaterialType.Common if item.model_id in enum.COMMON_MATERIALS else MaterialType.Rare
+            
+        
+        return Material(
+            model_id=item.model_id,
+            names=item.names,
+            item_type=item.item_type,
+            drop_info=item.drop_info,
+            attributes=item.attributes,
+            wiki_url=item.wiki_url,
+            common_salvage=item.common_salvage,
+            rare_salvage=item.rare_salvage,
+            nick_index=item.nick_index,
+            profession=item.profession,
+            vendor_value=json.get("VendorValue", 0),
+            vendor_updated=datetime.fromisoformat(json["VendorUpdated"]) if "VendorUpdated" in json else datetime.min,
+            material_type=material_type
+        )
+    
+    @staticmethod
+    def from_item(item: Item) -> 'Material':
+        return Material(
+            model_id=item.model_id,
+            names=item.names,
+            item_type=item.item_type,
+            drop_info=item.drop_info,
+            attributes=item.attributes,
+            wiki_url=item.wiki_url,
+            common_salvage=item.common_salvage,
+            rare_salvage=item.rare_salvage,
+            nick_index=item.nick_index,
+            profession=item.profession,
+            vendor_value=0,
+            vendor_updated=datetime.min,
+            material_type=MaterialType.Common if item.model_id in enum.COMMON_MATERIALS else MaterialType.Rare
         )
 
 @dataclass
@@ -416,6 +593,8 @@ class ItemMod():
 class Rune(ItemMod):
     _rune_identifier_lookup: dict[str, str] = field(default_factory=dict)
     
+    vendor_updated: datetime = datetime.min
+    vendor_value: int = 0
     profession: Profession = Profession._None
     rarity: Rarity = Rarity.White
         
@@ -506,6 +685,8 @@ class Rune(ItemMod):
             'Profession': self.profession.name,
             'Rarity': self.rarity.name,
             'UpgradeExists': self.upgrade_exists,
+            'VendorUpdated': self.vendor_updated.isoformat() if self.vendor_updated else None,
+            'VendorValue': self.vendor_value,
             'Modifiers': [
                 {
                     'Identifier': modifier.identifier,
@@ -521,13 +702,15 @@ class Rune(ItemMod):
     
     @staticmethod
     def from_json(json: dict) -> 'Rune':
-        return Rune(            
+        return Rune(           
             descriptions={ServerLanguage[lang]: name for lang, name in json["Descriptions"].items()},
             names={ServerLanguage[lang]: name for lang, name in json["Names"].items()},
             mod_type=ModType[json["ModType"]],
             profession=Profession[json["Profession"]],
             rarity=Rarity[json["Rarity"]],
             upgrade_exists=json.get("UpgradeExists", True),
+            vendor_updated=datetime.fromisoformat(json["VendorUpdated"]) if "VendorUpdated" in json else datetime.min,
+            vendor_value=json.get("VendorValue", 0),
             modifiers=[
                 ModifierInfo(
                     identifier=modifier["Identifier"],
@@ -569,7 +752,7 @@ class WeaponMod(ItemMod):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
                 
-    def is_item_modifier(self, modifiers, target_item_type : Optional[ItemType] = None) -> bool:
+    def is_item_modifier(self, modifiers, target_item_type : Optional[ItemType] = None, max_mods : bool = False) -> bool:
         for mod in self.modifiers:
             matched = False
 
@@ -580,22 +763,24 @@ class WeaponMod(ItemMod):
 
                     if mod.modifier_value_arg == ModifierValueArg.Arg1:
                         if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
-                            matched = True
+                            matched = arg1 == mod.max if max_mods else True
                     
                     elif mod.modifier_value_arg == ModifierValueArg.Arg2:
                         if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
-                            matched = True
+                            matched = arg2 == mod.max if max_mods else True
 
                     elif mod.modifier_value_arg == ModifierValueArg.Fixed:
                         if arg1 == mod.arg1 and arg2 == mod.arg2:
                             matched = True
+                            
+                    elif mod.modifier_value_arg == ModifierValueArg.None_:
+                        matched = True
             
             if not matched:
                 return False
 
         from LootEx import utility
-        return target_item_type is None or target_item_type is ItemType.Rune_Mod or  any(utility.Util.IsMatchingItemType(target_item_type, item_type) for item_type in self.target_types)
-        
+        return target_item_type is None or target_item_type is ItemType.Rune_Mod or any(utility.Util.IsMatchingItemType(target_item_type, item_type) for item_type in self.target_types)       
 
     def has_item_type(self, item_type: ItemType) -> bool:
         if not self.target_types:

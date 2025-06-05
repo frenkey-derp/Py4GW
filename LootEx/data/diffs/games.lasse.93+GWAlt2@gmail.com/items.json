@@ -1,0 +1,20 @@
+{
+    "1364": {
+        "ModelID": 1364,
+        "Name": "Dragon Hornbow",
+        "Names": {
+            "English": "Dragon Hornbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dragon_Hornbow",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    }
+}

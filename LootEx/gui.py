@@ -320,8 +320,9 @@ def _draw_xunlai_storage_button(width):
 def draw_data_collector_tab():
     if PyImGui.begin_tab_item("Data Collector"):
         tab_size = PyImGui.get_content_region_avail()
-
-        if PyImGui.begin_child("DataCollectorChild", (tab_size[0], tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
+        child_width = (tab_size[0] - 10) / 2
+        
+        if PyImGui.begin_child("DataCollectorChild", (child_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
             PyImGui.text("Data Collector")
             PyImGui.separator()
 
@@ -387,13 +388,76 @@ def draw_data_collector_tab():
                 clipboard_text += "```"
                 PyImGui.set_clipboard_text(clipboard_text)
 
-                scrape_data = wiki_scraper.ScrapedData()
-                scrape_data.wiki_url="https://wiki.guildwars.com/wiki/Decayed_Orr_Armor"
-                wiki_scraper.WikiScraper.scrape_wiki_page(scrape_data)
+
+                # for item in data.Items.values():
+                #     if item.names.get(ServerLanguage.English, None) is None:
+                #         continue
+                    
+                #     if item.name.endswith(" Key"):
+                #         item.item_type = models.ItemType.Key
+                    
+                #     if item.name.endswith(" Summoning Stone"):
+                #         item.item_type = models.ItemType.Usable
+                    
+                #     if item.item_type == models.ItemType.Unknown:
+                #         ConsoleLog(
+                #             "LootEx",
+                #             f"Item {item.name} ({item.model_id}) has an unknown item type.",
+                #             Console.MessageType.Warning,
+                #         )
+                                        
                 # data.SaveItems(True)
+                # wiki_scraper.WikiScraper.scrape_multiple_entries(data.Items)
+                
+                # wiki_scraper.WikiScraper.scrape_info_from_wiki(data.Items[454])
+            
 
-                pass
+        PyImGui.end_child()
+        
+        PyImGui.same_line(0, 5)
+        
+        PyImGui.begin_child("DataCollectorMaterialsChild", (child_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag)
+        
+        remaining_size = PyImGui.get_content_region_avail()
+        if PyImGui.button("Get Material Prices", remaining_size[0], 0):
+            ConsoleLog(
+                "LootEx",
+                "Fetching material prices from the wiki...",
+                Console.MessageType.Info,
+            )
+            
+            loot_check.LootCheck.get_material_prices_from_trader()
+        
+        PyImGui.begin_table("DataCollectorMaterialsTable", 2, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.Borders, 0, 0)
+        PyImGui.table_setup_column("Material")
+        PyImGui.table_setup_column("Price")
+        PyImGui.table_headers_row()
+        
+        PyImGui.table_next_row()
+        for material in data.Materials.values():
+            PyImGui.table_next_column()
+            PyImGui.text(material.name)
+            PyImGui.table_next_column()
+            if material.vendor_value is not None:
+                PyImGui.text(utility.Util.format_currency(material.vendor_value))
+            else:
+                PyImGui.text("N/A")
+            ImGui.show_tooltip("Last Checked: " + utility.Util.format_time_ago(datetime.now() - material.vendor_updated) if material.vendor_updated else "Never Updated")
 
+        # for material in data.Rare_Materials.values():
+        #     PyImGui.table_next_row()
+        #     PyImGui.table_next_column()
+        #     PyImGui.text(material.name)
+        #     PyImGui.table_next_column()
+        #     if material.vendor_value is not None:
+        #         PyImGui.text(utility.Util.format_currency(material.vendor_value))
+        #     else:
+        #         PyImGui.text("N/A")
+        #     ImGui.show_tooltip("Last Checked: " + utility.Util.format_time_ago(datetime.now() - material.vendor_updated) if material.vendor_updated else "Never Updated")
+                
+        PyImGui.end_table()
+        
+        
         PyImGui.end_child()
 
         PyImGui.end_tab_item()
@@ -872,7 +936,7 @@ def draw_loot_filters():
                     PyImGui.table_next_column()
 
                     sorted_item_types = sorted(
-                        loot_filter.item_types.keys(), key=lambda x: x.name)
+                        ItemType, key=lambda x: x.name)
 
                     for item_type in sorted_item_types:
                         count += 1
@@ -1083,19 +1147,40 @@ def draw_loot_items():
             if selected_loot_item:
                 has_settings = selected_loot_item.item_info.model_id and selected_loot_item.item_info.model_id in settings.current.loot_profile.items
                 details_height = 130
-
+                posX, posY = PyImGui.get_cursor_screen_pos()
+                
                 if PyImGui.begin_child("item_info", (0, details_height), True, PyImGui.WindowFlags.NoFlag):
+                    
+                
                     if PyImGui.begin_child("item_texture", (details_height, 0), False, PyImGui.WindowFlags.NoFlag):
-                        color = Utils.RGBToColor(64, 64, 64, 255)
-                        PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.Button, Utils.ColorToTuple(color))
-                        PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(color))
-                        PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
-                        PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
-                            selected_loot_item.item_info.model_id), details_height - 20, details_height - 20)
-                        PyImGui.pop_style_color(3)
+                                                                        
+                        remaining_size = PyImGui.get_content_region_avail()
+                        if is_mouse_in_rect((posX + 10, posY + 10, details_height - 20, details_height - 20)):                                
+                            if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, details_height - 20, details_height - 20) and selected_loot_item.item_info.wiki_url:
+                                Player.SendChatCommand(
+                                    "wiki " + selected_loot_item.item_info.name)
+
+                                # start the url in the default browser
+                                webbrowser.open(
+                                    selected_loot_item.item_info.wiki_url)
+
+                            ImGui.show_tooltip(
+                                "Open the wiki page for this item.\n" +
+                                "If the item is not found, it will search for the item name in the wiki." if selected_loot_item.item_info.wiki_url else "This item does not have a wiki page set yet."
+                            )
+                        else:
+                            color = Utils.RGBToColor(64, 64, 64, 255)
+                            PyImGui.push_style_color(
+                                PyImGui.ImGuiCol.Button, Utils.ColorToTuple(color))
+                            PyImGui.push_style_color(
+                                PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(color))
+                            PyImGui.push_style_color(
+                                PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
+                            PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
+                                selected_loot_item.item_info.model_id), details_height - 20, details_height - 20)
+                            PyImGui.pop_style_color(3)
+                        
+                        
                     PyImGui.end_child()
 
                     PyImGui.same_line(0, 5)
@@ -1104,28 +1189,18 @@ def draw_loot_items():
                         PyImGui.text(
                             "Name: " + selected_loot_item.item_info.name)
 
-                        remaining_size = PyImGui.get_content_region_avail()
-                        PyImGui.same_line(remaining_size[0] - 30, 0)
-
-                        if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, 0, 0) and selected_loot_item.item_info.wiki_url:
-                            Player.SendChatCommand(
-                                "wiki " + selected_loot_item.item_info.name)
-
-                            # start the url in the default browser
-                            webbrowser.open(
-                                selected_loot_item.item_info.wiki_url)
-
-                        ImGui.show_tooltip(
-                            "Open the wiki page for this item.\n" +
-                            "If the item is not found, it will search for the item name in the wiki." if selected_loot_item.item_info.wiki_url else "This item does not have a wiki page set yet."
-                        )
-
                         PyImGui.text("Model ID: " +
                                      str(selected_loot_item.item_info.model_id))
                         PyImGui.text(
                             "Type: " + utility.Util.GetItemType(selected_loot_item.item_info.item_type).name)
-                        PyImGui.text_wrapped(
-                            "Drop Info: " + selected_loot_item.item_info.drop_info)
+                        
+                        if selected_loot_item.item_info.common_salvage:
+                            summaries = [salvage_info.summary for salvage_info in selected_loot_item.item_info.common_salvage.values()]                        
+                            PyImGui.text("Salvage: " + ", ".join(summaries))
+                        
+                        if selected_loot_item.item_info.rare_salvage:
+                            summaries = [salvage_info.summary for salvage_info in selected_loot_item.item_info.rare_salvage.values()]   
+                            PyImGui.text("Rare Salvage: " + ", ".join(summaries))
 
                     PyImGui.end_child()
 
@@ -1358,9 +1433,14 @@ def draw_loot_items():
                                     remaining_size = PyImGui.get_content_region_avail()
                                     width = remaining_size[0] / 2
 
-                                    if PyImGui.button(IconsFontAwesome5.ICON_TRASH, width, 25) and len(loot_item.conditions) > 1:
-                                        loot_item.conditions.remove(condition)
-                                        settings.current.loot_profile.save()
+                                    if PyImGui.button(IconsFontAwesome5.ICON_TRASH, width, 25):
+                                        if  len(loot_item.conditions) > 1:
+                                            loot_item.conditions.remove(condition)
+                                            settings.current.loot_profile.save()
+                                        else:
+                                            del settings.current.loot_profile.items[loot_item.model_id]
+                                            selected_loot_item = None
+                                            
                                     ImGui.show_tooltip("Delete Condition")
 
                                     PyImGui.same_line(0, 5)
@@ -1880,7 +1960,7 @@ def draw_runes():
                         continue
 
                     if PyImGui.begin_child("RunesSelection#1", (0, 0), True, PyImGui.WindowFlags.NoBackground):
-                        for rune in runes:
+                        for rune in runes.values():
                             if not rune or not rune.identifier:
                                 continue
 
@@ -1917,8 +1997,11 @@ def draw_runes():
 
                                 settings.current.loot_profile.save()
 
-                            PyImGui.pop_style_color(3)
+                            PyImGui.pop_style_color(3)                            
                             draw_rune_tooltip(rune)
+                            
+                            PyImGui.same_line(0, 5)
+                            PyImGui.text_colored(utility.Util.format_currency(rune.vendor_value), Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 125)))
 
                         PyImGui.end_child()
 
@@ -2158,9 +2241,21 @@ def draw_rune_tooltip(mod: models.Rune):
             PyImGui.table_next_column()
             PyImGui.text(f"Applied")
 
-            PyImGui.table_next_column()
+            PyImGui.table_next_column()            
             PyImGui.text(f"{mod.applied_name}")
-
+            
+            PyImGui.table_next_column()
+            PyImGui.text(f"Vendor Value")
+            
+            PyImGui.table_next_column()
+            PyImGui.text(utility.Util.format_currency(mod.vendor_value))
+                        
+            PyImGui.table_next_column()
+            PyImGui.text(f"Last Checked")
+            PyImGui.table_next_column()
+            time_ago = f"{utility.Util.format_time_ago(datetime.now() - mod.vendor_updated)}\n" if mod.vendor_updated else ""
+            PyImGui.text(f"{time_ago}")
+            
         PyImGui.end_table()
 
         PyImGui.pop_style_color(1)
@@ -2266,6 +2361,22 @@ def draw_selectable_item(item: SelectableItem):
                 other_item.is_selected = False
 
             item.is_selected = True
+
+def is_mouse_in_rect(rect: tuple[float, float, float, float]) -> bool:
+    """
+    Checks if the mouse is within a specified rectangle.
+
+    Args:
+        rect (tuple[float, float, float, float]): The rectangle defined by (x, y, width, height).
+
+    Returns:
+        bool: True if the mouse is within the rectangle, False otherwise.
+    """
+    pyimgui_io = PyImGui.get_io()
+    mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
+    
+    return (rect[0] <= mouse_pos[0] <= rect[0] + rect[2] and
+            rect[1] <= mouse_pos[1] <= rect[1] + rect[3])
 
 # region general ui elements
 

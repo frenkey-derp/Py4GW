@@ -1,5 +1,53 @@
 
 from enum import IntEnum
+from Py4GWCoreLib.enums import ModelID
+
+COMMON_MATERIALS: list[int] = [
+    ModelID.Bone,
+    ModelID.Iron_Ingot,
+    ModelID.Tanned_Hide_Square,
+    ModelID.Scale,
+    ModelID.Chitin_Fragment,
+    ModelID.Bolt_Of_Cloth,
+    ModelID.Wood_Plank,
+    ModelID.Granite_Slab,
+    ModelID.Pile_Of_Glittering_Dust,
+    ModelID.Plant_Fiber,
+    ModelID.Feather,    
+]
+
+RARE_MATERIALS: list[int] = [
+    ModelID.Fur_Square,
+    ModelID.Bolt_Of_Linen,
+    ModelID.Bolt_Of_Damask,
+    ModelID.Bolt_Of_Silk,
+    ModelID.Glob_Of_Ectoplasm,
+    ModelID.Steel_Ingot,
+    ModelID.Deldrimor_Steel_Ingot,
+    ModelID.Monstrous_Claw,
+    ModelID.Monstrous_Eye,
+    ModelID.Monstrous_Fang,
+    ModelID.Ruby,
+    ModelID.Sapphire,
+    ModelID.Diamond,
+    ModelID.Onyx_Gemstone,
+    ModelID.Lump_Of_Charcoal,
+    ModelID.Obsidian_Shard,
+    ModelID.Tempered_Glass_Vial,
+    ModelID.Leather_Square,
+    ModelID.Elonian_Leather_Square,
+    ModelID.Vial_Of_Ink,
+    ModelID.Roll_Of_Parchment,
+    ModelID.Roll_Of_Vellum,
+    ModelID.Spiritwood_Plank,
+    ModelID.Amber_Chunk,
+    ModelID.Jadeite_Shard
+]
+
+class MaterialType(IntEnum):
+    None_ = 0
+    Common = 1
+    Rare = 2
 
 class Campaign(IntEnum):
     None_ = 0

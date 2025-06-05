@@ -1,0 +1,74 @@
+{
+    "407": {
+        "ModelID": 407,
+        "Name": "Forked Sword",
+        "Names": {
+            "English": "Forked Sword"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Forked_Sword",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    },
+    "589": {
+        "ModelID": 589,
+        "Name": "Air Staff",
+        "Names": {
+            "English": "Air Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "AirMagic"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Air_Staff",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Elementalist"
+    },
+    "1594": {
+        "ModelID": 1594,
+        "Name": "Kournan Defender",
+        "Names": {
+            "English": "Kournan Defender"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Strength"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Defender",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null
+    },
+    "1627": {
+        "ModelID": 1627,
+        "Name": "Holy Vial",
+        "Names": {
+            "English": "Holy Vial"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "ProtectionPrayers"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Vial",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Monk"
+    }
+}

@@ -251,10 +251,10 @@ Item_Attributes: dict[ItemType, list[Attribute]] = {
 }
 
 Items: dict[int, models.Item] = {}
-Items_By_Type: dict[ItemType, list[models.Item]] = {}
+Items_By_Type: dict[ItemType, dict[int, models.Item]] = {}
 
-Runes: list[models.Rune] = []
-Runes_by_Profession: dict[Profession, list[models.Rune]] = {}
+Runes: dict[str, models.Rune] = {}
+Runes_by_Profession: dict[Profession, dict[str, models.Rune]] = {}
 
 # Change to be a dictionary of dictionaries per identifier so we can handle mods like "Fortitude" (Suffix) and "Hale" (Prefix) which share the same identifier
 # We should also be able to get mods with non perfect stats like a +29 health Fortitude mod
@@ -264,6 +264,10 @@ Weapon_Mods: dict[str, models.WeaponMod] = {}
 Nick_Cycle_Start_Date = datetime.datetime(2009, 4, 20)
 Nick_Cycle_Count = 137
 
+Materials: dict[int, models.Material] = {}
+Common_Materials: dict[int, models.Material] = {}
+Rare_Materials: dict[int, models.Material] = {}
+
 
 def UpdateLanguage(server_language: ServerLanguage):
     global Items, Runes, Weapon_Mods
@@ -271,7 +275,7 @@ def UpdateLanguage(server_language: ServerLanguage):
     for item in Items.values():
         item.update_language(server_language)
 
-    for rune in Runes:
+    for rune in Runes.values():
         rune.update_language(server_language)
 
     for weapon_mod in Weapon_Mods.values():
@@ -310,7 +314,62 @@ def Load():
 
     # Load the items
     LoadItems()
+    
+    #Load the materials
+    LoadMaterials()
 
+
+@staticmethod
+def LoadMaterials():
+    global Materials, Common_Materials, Rare_Materials
+
+    # Load materials from data/materials.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "materials.json")
+
+    ConsoleLog(
+        "LootEx", f"Loading materials...", Console.MessageType.Debug)
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    if not os.path.exists(path):
+        with open(path, 'w', encoding='utf-8') as file:
+            file.write('{}')
+
+    with open(path, 'r', encoding='utf-8') as file:
+        materials = json.load(file)
+
+        for value in materials.values():
+            material = models.Material.from_json(value)
+            Materials[material.model_id] = material
+
+    Materials = dict(sorted(Materials.items(), key=lambda item: (item[1].name)))
+    
+    Common_Materials = {
+        model_id: material for model_id, material in Materials.items() if material.material_type == models.MaterialType.Common}
+    
+    Rare_Materials = {
+        model_id: material for model_id, material in Materials.items() if material.material_type == models.MaterialType.Rare}
+    
+@staticmethod
+def SaveMaterials():
+    global Materials
+
+    # Save materials to data/materials.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "materials.json")
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    with open(path, 'w', encoding='utf-8') as file:
+        ConsoleLog(
+            "LootEx", f"Saving materials ...", Console.MessageType.Debug)
+        json.dump({material.model_id: material.to_json()
+                  for material in Materials.values()}, file, indent=4, ensure_ascii=False)
 
 @staticmethod
 def LoadWeaponMods():
@@ -419,47 +478,29 @@ def LoadRunes():
     with open(path, 'r', encoding='utf-8') as file:
         runes = json.load(file)
 
-        for value in runes:
+        for value in runes.values():
             rune = models.Rune.from_json(value)
-            Runes.append(rune)
+            Runes[rune.identifier] = rune
+    
+    Runes = dict(sorted(Runes.items(), key=lambda item: (item[1].profession, item[1].mod_type, item[1].rarity.value, item[1].name)))
 
-    account_file = os.path.join(
-        file_directory, "data", "diffs", GLOBAL_CACHE.Player.GetAccountEmail(), "runes.json")
-    if os.path.exists(account_file):
-        with open(account_file, 'r', encoding='utf-8') as file:
-            runes = json.load(file)
-
-            for value in runes:
-                rune = models.Rune.from_json(value)
-                if rune not in Runes:
-                    Runes.append(rune)
-
-    Runes = sorted(Runes, key=lambda x: x.name)
-
-    for rune in Runes:
+    for rune in Runes.values():
         if rune.profession not in Runes_by_Profession:
-            Runes_by_Profession[rune.profession] = []
+            Runes_by_Profession[rune.profession] = {}
 
-        Runes_by_Profession[rune.profession].append(rune)
+        Runes_by_Profession[rune.profession][rune.identifier] = rune
 
     for profession in Runes_by_Profession:
-        Runes_by_Profession[profession].sort(
-            key=lambda x: (x.mod_type, x.rarity.value, x.name))
+        Runes_by_Profession[profession] = dict(sorted(Runes_by_Profession[profession].items(), key=lambda item: (item[1].mod_type, item[1].rarity.value, item[1].name)))
 
 
 @staticmethod
-def SaveRunes(shared_file: bool = False, items: Optional[dict[str, models.Rune]] = None):
+def SaveRunes():
     global Runes
 
     # Save runes to data/runes.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
-    data_directory = os.path.join(file_directory, "data")
-
-    if not shared_file:
-        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-        data_directory = os.path.join(
-            file_directory, "data", "diffs", account_name)
-
+    data_directory = os.path.join(file_directory, "data")    
     path = os.path.join(data_directory, "runes.json")
 
 
@@ -469,9 +510,7 @@ def SaveRunes(shared_file: bool = False, items: Optional[dict[str, models.Rune]]
     with open(path, 'w', encoding='utf-8') as file:
         ConsoleLog(
             "LootEx", f"Saving runes ...", Console.MessageType.Debug)
-        
-        json.dump([rune.to_json() for rune in Runes],
-                  file, indent=4, ensure_ascii=False)
+        json.dump({rune.identifier: rune.to_json() for rune in Runes.values()}, file, indent=4, ensure_ascii=False)
 
 
 @staticmethod
@@ -514,11 +553,13 @@ def LoadItems():
                     # If the item already exists, we can update it
                     Items[item.model_id].update(item)
 
+    Items = dict(sorted(Items.items(), key=lambda item: (item[1].name, item[1].model_id)))
+    
     for item in Items.values():
         if item.item_type not in Items_By_Type:
-            Items_By_Type[item.item_type] = []
+            Items_By_Type[item.item_type] = {}
 
-        Items_By_Type[item.item_type].append(item)
+        Items_By_Type[item.item_type][item.model_id] = item
 
 
 @staticmethod

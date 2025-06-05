@@ -1,12 +1,77 @@
-from LootEx import settings, data, utility
+import datetime
+from LootEx import enum, settings, data, utility, models
+from LootEx.models import Material
 from Py4GWCoreLib import Item, Merchant, Console
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
 
 trader_queue = ActionQueueNode(175)
 checked_items: list[str] = []
 
+import importlib
+importlib.reload(data)
+importlib.reload(models)
+
 
 class LootCheck:
+    @staticmethod 
+    def get_material_prices_from_trader():
+        if not trader_queue.action_queue.is_empty():
+            trader_queue.clear()
+            ConsoleLog(
+                "LootEx", "Trader queue is not empty, skipping item check.", Console.MessageType.Error)
+            return
+
+        checked_items.clear()
+        items = Merchant.Trading.Trader.GetOfferedItems()
+        if items is None:
+            ConsoleLog(
+                "LootEx", "No items found in merchant's inventory.", Console.MessageType.Error)
+            return
+
+        ConsoleLog(
+            "LootEx", f"Checking {len(items)} items from the merchant's inventory for materials...", Console.MessageType.Info)
+        ConsoleLog(
+            "LootEx", f"This will take about {round(len(items) * 175 / 1000)} seconds.", Console.MessageType.Info)
+
+        for item in items:
+            Item.RequestName(item)
+
+            def create_quotes_for_item(item):
+                
+                def request_quote_for_item(item):
+                    Merchant.Trading.Trader.RequestQuote(item)
+
+                def get_quote_for_item(item):
+                    price = Merchant.Trading.Trader.GetQuotedValue()
+
+                    if price is not None:
+                        model_id = GLOBAL_CACHE.Item.GetModelID(item)
+                        
+                        item_data = data.Items.get(model_id)
+                        
+                        if item_data is None:
+                            ConsoleLog(
+                                "LootEx", f"Item with model ID {model_id} not found in items data.", Console.MessageType.Error)
+                            return None
+                        
+                        material = data.Materials.get(model_id, Material.from_item(item_data))
+                        
+                        if material:
+                            material.vendor_value = int(price / (10 if model_id in enum.COMMON_MATERIALS else 1))
+                            material.vendor_updated = datetime.datetime.now()
+                            data.Materials[model_id] = material
+                            
+                            data.SaveMaterials()
+
+                            trader_queue.execute_next()
+                            return price
+
+                trader_queue.add_action(request_quote_for_item, item)
+                trader_queue.add_action(get_quote_for_item, item)
+                
+            create_quotes_for_item(item)
+        
     @staticmethod
     def get_expensive_runes_from_merchant(threshold: int = 1000, profession: int = 0) -> None:
         def format_currency(value: int) -> str:
@@ -74,7 +139,13 @@ class LootCheck:
                     if price is not None:
                         if mod.identifier and settings.current.loot_profile:
                             checked_items.append(mod.identifier)
-
+                            rune = data.Runes.get(mod.identifier)
+                            
+                            if rune:
+                                rune.vendor_value = price
+                                rune.vendor_updated = datetime.datetime.now()
+                                data.SaveRunes()
+                            
                             if price >= threshold:
                                 ConsoleLog(
                                     "LootEx",
@@ -93,7 +164,7 @@ class LootCheck:
             create_quotes_for_item(item)
 
         def check_for_missing_runes():
-            for rune in data.Runes:
+            for rune in data.Runes.values():
                 profession_match = profession is not None and rune.profession == profession
 
                 if rune.identifier not in checked_items and settings.current.loot_profile and profession_match:

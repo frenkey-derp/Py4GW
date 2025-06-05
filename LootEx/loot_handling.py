@@ -18,6 +18,7 @@ deposited = False
 capacity_checked = False
 material_capacity = 2500
 
+deposit_timer = ThrottledTimer(5000)
 inventory_timer = ThrottledTimer(3000)
 compact_inventory_timer = ThrottledTimer(1000)
 indentify_action_queue = ActionQueueNode(250)
@@ -27,7 +28,7 @@ queued_items : dict[int, datetime] = {}
 
 salvage_requires_confirmation = False
 
-#TODO: Add files containing rune and material prices which will be used to determine if we should salvage or not.
+#TODO: Collect salvage data for items, so we can make better decisions on what to salvage and what not to salvage.
 
 #region Reworked
 def IdentifyItems() -> bool:    
@@ -56,7 +57,7 @@ def ShouldIdentifyItem(item_id) -> bool:
         item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
         
         if utility.Util.IsWeaponType(item_type) or utility.Util.IsArmorType(item_type): 
-            rarity = Rarity(GLOBAL_CACHE.Item.Rarity.GetRarity(item_id))
+            rarity = Rarity(GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0])
             value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
                        
             if rarity > Rarity.White or value >= 25:
@@ -67,9 +68,7 @@ def ShouldIdentifyItem(item_id) -> bool:
 def DepositMaterials(force : bool = False) -> bool:
     global deposited, capacity_checked, material_capacity
     
-    if not deposited or force:
-        ConsoleLog("LootEx", "Depositing materials into material storage", Console.MessageType.Info)
-        
+    if not deposited or force:        
         items : list[int] = GLOBAL_CACHE.ItemArray.GetItemArray(
             [Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2])
 
@@ -126,6 +125,8 @@ def DepositMaterials(force : bool = False) -> bool:
             ConsoleLog("LootEx", f"Material storage capacity set to {material_capacity}", Console.MessageType.Info)
                  
         capacity_checked = True
+    else:
+        deposited = False   
         
                         
     return False
@@ -158,11 +159,38 @@ def SalvageItems() -> bool:
             
     return salvaged_items
 
-def ShouldSalvageItem(item_id: int) -> bool:                
-    if GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id) and settings.current.loot_profile:                        
-        if GLOBAL_CACHE.Item.GetItemType(item_id) != ItemType.Materials_Zcoins:                               
-            return GLOBAL_CACHE.Item.Properties.GetValue(item_id) < settings.current.loot_profile.sell_threshold
+def GetSalvageOption(item_id: int) -> Optional[SalvageOption]:
+    model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+    item_info = data.Items.get(model_id, None)
+    
+    if item_info is None:
+        return None
+    
+    if item_info is not None:
+        mods = utility.Util.GetMods(item_id)
+        is_highly_salvageable = any(mod.identifier == "AQAmCAAeKA==" for mod in mods) if mods else False 
+        value = GLOBAL_CACHE.Item.Properties.GetValue(item_id)
+                        
+        common_salvage = (item_info.common_salvage.get_average_value(is_highly_salvageable) if item_info.common_salvage else 0) - 4
+        rare_salvage = ((item_info.rare_salvage.get_average_value(is_highly_salvageable) if item_info.rare_salvage else 0) + common_salvage)  - 12                
+        rare_salvage = rare_salvage / max(1, len(item_info.rare_salvage) + len(item_info.common_salvage))
         
+        multiplier = 1.5
+        if value >= rare_salvage * multiplier and value >= common_salvage * multiplier:
+            return None
+        else:
+            return SalvageOption.LesserCraftingMaterials if common_salvage > rare_salvage else SalvageOption.RareCraftingMaterials
+
+def ShouldSalvageItem(item_id: int) -> bool:                
+    if GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id) and settings.current.loot_profile:                            
+        if GLOBAL_CACHE.Item.GetItemType(item_id) != ItemType.Materials_Zcoins:         
+            salvage_option = GetSalvageOption(item_id)
+            
+            if salvage_option is None:
+                return False
+            
+            return salvage_option is not None
+
     return False
 
 def ShouldExtractMods(item_id: int) -> bool:
@@ -193,6 +221,17 @@ def ShouldStashItem(item_id: int) -> bool:
             weeks_until = (item_data.next_nick_week - date.today()).days // 7
               
             return weeks_until < 10
+        
+    if utility.Util.IsWeaponType(ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])):
+        has_mod_to_keep, mods_to_keep, _ = HasModToKeep(item_id)
+        if has_mod_to_keep and len(mods_to_keep) > 1:
+            return True
+    
+    ##TODO: Rule for runes: If the other rune/insignia is worth above a certain threshold, we should not salvage the item as we will risk losing the rune/insignia. This option should be configurable in the loot profile.
+    if utility.Util.IsArmorType(ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])):
+        has_mod_to_keep, _, runes_to_keep = HasModToKeep(item_id)
+        if has_mod_to_keep and len(runes_to_keep) > 1:
+            return True
         
     return False
 
@@ -262,7 +301,6 @@ def SalvageItem(item_id, option : SalvageOption = SalvageOption.LesserCraftingMa
         return False
     
     if not GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id):
-        ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is not salvageable, skipping.", Console.MessageType.Warning)
         return False
     
     salvage_kit = GetSalvageKit(GetSalvageKitOption(option))
@@ -271,8 +309,6 @@ def SalvageItem(item_id, option : SalvageOption = SalvageOption.LesserCraftingMa
         ConsoleLog("LootEx", "No salvage kit found, cannot salvage item.", Console.MessageType.Warning)
         return False
         
-    ConsoleLog("LootEx", f"Salvaging item: '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} with option {option.name} using kit {GLOBAL_CACHE.Item.GetName(salvage_kit)} {salvage_kit}", Console.MessageType.Info)
-    
     Inventory.SalvageItem(item_id, salvage_kit)
     
     rarity_requires_confirmation = GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] >= Rarity.Blue
@@ -349,6 +385,7 @@ def CanSalvage() -> bool:
     return not salvage_requires_confirmation
     
 def GetItemAction(item_id: int) -> ItemAction:    
+    
     if ShouldCollectData(item_id):
         return ItemAction.COLLECT_DATA
     
@@ -371,7 +408,10 @@ def GetItemAction(item_id: int) -> ItemAction:
 
 def Run():
     if Map.IsOutpost():
-        DepositMaterials()
+        if deposit_timer.IsExpired() or not capacity_checked:
+            deposit_timer.Reset()
+            
+            DepositMaterials()
     
     if data_collector.instance.is_running():
         return
@@ -380,12 +420,10 @@ def Run():
     if not settings.current.automatic_inventory_handling:
         return
     
-
     if IdentifyItems():
         return
     
     if not salvage_action_queue.is_empty():
-        # ConsoleLog("LootEx", "Processing salvage action queue", Console.MessageType.Info)
         salvage_action_queue.ProcessQueue()
         return
     
@@ -394,14 +432,17 @@ def Run():
                 
         for item_id in GLOBAL_CACHE.ItemArray.GetItemArray([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]):
             action = GetItemAction(item_id)
-            
+            # ConsoleLog("LootEx", f"Processing item: '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} with action: {action.name}", Console.MessageType.Debug)        
+                        
             if action == ItemAction.SALVAGE:
                 if CanSalvage():
                     empty_slots = GLOBAL_CACHE.Inventory.GetFreeSlotCount()
                     salvage_kit = GLOBAL_CACHE.Inventory.GetFirstSalvageKit(True)
                     
-                    if empty_slots > 0 and salvage_kit != 0:                
-                        pass
+                    if empty_slots > 0 and salvage_kit != 0:
+                        salvage_option = GetSalvageOption(item_id)
+                        SalvageItem(item_id, salvage_option if salvage_option else SalvageOption.LesserCraftingMaterials)
+                        return
                     
             if action == ItemAction.SALVAGE_MODS:
                 if CanSalvage():
@@ -411,6 +452,7 @@ def Run():
                     if empty_slots > 0 and salvage_kit != 0:
                         ExtractWantedMods(item_id)
                         # ConsoleLog("LootEx", f"Extracting wanted mods from item: '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id}", Console.MessageType.Info)
+                        return
                 
             elif action == ItemAction.SELL:
                 pass
@@ -669,11 +711,13 @@ def HasModToKeep(item_id: int) -> tuple[bool, list[models.WeaponMod], list[model
         for mod in mods:
             if mod.identifier in settings.current.loot_profile.weapon_mods:
                 if settings.current.loot_profile.weapon_mods[mod.identifier].get(item_type, False):
-                    mods_to_keep.append(mod)
+                    if isinstance(mod, models.WeaponMod):
+                        mods_to_keep.append(mod)
             
             if mod.identifier in settings.current.loot_profile.runes:
                 if settings.current.loot_profile.runes[mod.identifier]:
-                    runes_to_keep.append(mod)
+                    if isinstance(mod, models.Rune):
+                        runes_to_keep.append(mod)
         
     return True if runes_to_keep or mods_to_keep else False, mods_to_keep, runes_to_keep
 
@@ -706,10 +750,15 @@ def IdentifyItem(item_id) -> bool:
     return False
 
 def CanProcessItem(item_id: int) -> bool:
- 
     if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
-        ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is customized, skipping processing.", Console.MessageType.Warning)
+        # ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is customized, skipping processing.", Console.MessageType.Warning)
         return False
+    
+    if utility.Util.IsWeaponType(ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])):
+        has_mod_to_keep, mods_to_keep, _ = HasModToKeep(item_id)
+        if has_mod_to_keep and len(mods_to_keep) > 1:
+            # ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} has multiple mods to keep, skipping processing.", Console.MessageType.Warning)
+            return False
     
     ## Add here checks from the loot profile
     

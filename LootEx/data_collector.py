@@ -829,7 +829,7 @@ class DataCollector:
 
             if save_runes:
                 save_runes = False
-                data.SaveRunes(items=self.modified_runes)
+                data.SaveRunes()
                 saved = True
 
             if save_weapon_mods:
