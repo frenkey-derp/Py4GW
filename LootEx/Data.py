@@ -1,14 +1,12 @@
 import datetime
 import json
 import os
-from typing import ClassVar, Optional
+from typing import Optional
 from LootEx import models, utility
-from LootEx.enum import ModType
-from Py4GWCoreLib import UIManager
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, NumberPreference, ServerLanguage
-from Py4GWCoreLib.enums import ItemType, Rarity, Profession
+from Py4GWCoreLib.enums import Attribute, Console, ServerLanguage
+from Py4GWCoreLib.enums import ItemType, Profession
 
 import importlib
 importlib.reload(models)

@@ -1,5 +1,5 @@
-from LootEx.item_actions import ItemAction, ItemActions
-from LootEx import models
+from LootEx import models, enum, utility
+from LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
 import importlib
@@ -8,7 +8,6 @@ importlib.reload(models)
 class ConfigurationCondition:
     def __init__(self, name: str = "New Condition", action: ItemAction = ItemAction.STASH):
         self.name: str = name
-        self.item_type: Optional[ItemType] = None
         self.damage_range: Optional[models.IntRange] = None
         self.requirements: Optional[dict[Attribute, models.IntRange]] = None
 
@@ -82,7 +81,6 @@ class ItemConfiguration:
                 else None
             )
             
-            condition.item_type = item_type
             condition.action = ItemAction[condition_data.get("action", "STASH")]
             
             damage_range = condition_data.get("damage_range", None)
@@ -125,3 +123,48 @@ class ItemConfiguration:
             item.conditions.append(condition)
 
         return item
+
+    def get_action(self, item_id: int) -> enum.ItemAction:        
+        item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
+        
+        #sort the conditions based on their assigned action value 
+        sorted_conditions = sorted(self.conditions, key=lambda c: c.action.value)
+        
+        for condition in sorted_conditions:
+            if utility.Util.IsWeaponType(item_type):
+                mods = utility.Util.GetMods(item_id)
+                
+                has_prefix = condition.prefix_mod is None or any(mod.identifier == condition.prefix_mod for mod in mods)
+                has_suffix = condition.suffix_mod is None or any(mod.identifier == condition.suffix_mod for mod in mods)
+                has_inherent = condition.inherent_mod is None or any(mod.identifier == condition.inherent_mod for mod in mods)
+                
+                if not (has_prefix and has_suffix and has_inherent):
+                    continue
+                
+                if condition.old_school_only and GLOBAL_CACHE.Item.Customization.IsInscribable(item_id):
+                    continue
+                
+                attribute, requirements = utility.Util.GetItemRequirements(item_id)
+                if condition.requirements:
+                    if not condition.requirements.get(attribute, None):
+                        continue
+                    
+                    requirement = condition.requirements[attribute]
+                    if requirement.min > requirements or requirement.max < requirements:
+                        continue
+                
+                min_dmg, max_dmg = utility.Util.GetItemDamage(item_id)
+                if condition.damage_range and (condition.damage_range.min > min_dmg or condition.damage_range.max < max_dmg):
+                    continue
+                
+                rarity = Rarity(GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0])
+                if rarity not in condition.rarities or not condition.rarities[rarity]:
+                    continue
+                
+                return condition.action
+            
+            else:
+                return condition.action
+            
+        return ItemAction.NONE
+        

@@ -1,11 +1,5 @@
-from datetime import timedelta
 import webbrowser
-from LootEx import *
-from LootEx import settings, item_actions, data, loot_check, item_configuration, utility, enum, cache, ui_manager_extensions, loot_handling, wiki_scraper, loot_filter, loot_profile
-from LootEx import models
-from LootEx import messaging
-from LootEx import data_collector
-from LootEx import wiki_scraper
+from LootEx import settings, data, loot_check, item_configuration, utility, enum, cache, ui_manager_extensions, loot_handling, wiki_scraper, loot_filter, loot_profile, models, messaging, data_collector,wiki_scraper
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
@@ -16,7 +10,6 @@ from Py4GWCoreLib import *
 import importlib
 
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
-from Widgets import LootManager
 importlib.reload(settings)
 importlib.reload(data)
 importlib.reload(enum)
@@ -160,16 +153,24 @@ class UI:
 
         self.filter_actions = [
             enum.ItemAction.STASH,
-            enum.ItemAction.SALVAGE,
+            enum.ItemAction.SALVAGE_SMART,
+            enum.ItemAction.SALVAGE_COMMON_MATERIALS,
+            enum.ItemAction.SALVAGE_RARE_MATERIALS,
             enum.ItemAction.SELL_TO_MERCHANT,
             enum.ItemAction.DESTROY,
         ]
+        
         self.filter_action_names = [
-            action.name for action in self.filter_actions]
+            "Stash",
+            "Smart Salvage (Common or Rare Materials)",
+            "Salvage for Common Materials",
+            "Salvage for Rare Materials",
+            "Sell to Merchant",
+            "Destroy",
+            ]
                 
         self.item_actions = [
             enum.ItemAction.STASH,
-            enum.ItemAction.BLACKLIST,
             enum.ItemAction.SELL_TO_MERCHANT,
             enum.ItemAction.SALVAGE,
             enum.ItemAction.SALVAGE_RARE_MATERIALS,
@@ -183,8 +184,8 @@ class UI:
         self.sharedMemoryManager = Py4GWSharedMemoryManager()
         self.filter_popup = False
 
-        self.action_heights: dict[item_actions.ItemAction, float] = {
-                            item_actions.ItemAction.SALVAGE: 250,
+        self.action_heights: dict[enum.ItemAction, float] = {
+                            enum.ItemAction.SALVAGE: 250,
                         }
         self.selected_filter: Optional[ItemFilter] = None
         self.filters : list[ItemFilter] = [
@@ -938,8 +939,13 @@ class UI:
                         for i in range(len(settings.current.loot_profile.filters)):
                             loot_filter = settings.current.loot_profile.filters[i]
                             
-                            if PyImGui.selectable(f"{i+1}. [{loot_filter.action.name}] "+ loot_filter.name, loot_filter == settings.current.selected_loot_filter, PyImGui.SelectableFlags.NoFlag, (selection_size[0] - 47, 0)):
+                            if PyImGui.selectable(f"{i+1}. "+ loot_filter.name, loot_filter == settings.current.selected_loot_filter, PyImGui.SelectableFlags.NoFlag, (selection_size[0] - 47, 0)):
                                 settings.current.selected_loot_filter = loot_filter
+                            
+                            if PyImGui.is_item_hovered():
+                                i = self.filter_actions.index(loot_filter.action) if loot_filter.action in self.filter_actions else 0
+                                name = self.filter_action_names[i]
+                                ImGui.show_tooltip(name)
                             
                             PyImGui.same_line(0, 10)
                             if UI.transparent_button(text=IconsFontAwesome5.ICON_ARROW_UP+ "##" +loot_filter.name, enabled=False, width=button_size[0], height=button_size[1], draw_background=False):
@@ -997,85 +1003,98 @@ class UI:
                     if PyImGui.begin_child("loot_filter_actions", (0, height), True, PyImGui.WindowFlags.NoFlag):
                         if loot_filter.action:
                             PyImGui.push_item_width(remaining_size[0] - 20)
-                            index = PyImGui.combo("#Action", self.filter_action_names.index(
-                                loot_filter.action.name), self.item_action_names)
+                            index = PyImGui.combo("#Action", self.filter_actions.index(
+                                loot_filter.action) if loot_filter.action in self.filter_actions else 0, self.filter_action_names)
                             
-                            selected_action = item_actions.ItemAction[
-                                    self.filter_action_names[index]]
+                            selected_action = self.filter_actions[index]
                             
                             if selected_action != loot_filter.action:
                                 loot_filter.action = selected_action
                                 settings.current.loot_profile.save()
                         
-                        match loot_filter.action:
-                            case item_actions.ItemAction.SALVAGE:
-                                PyImGui.separator()
-                                
-                                PyImGui.push_item_width(100)
-                                value = PyImGui.slider_int(
-                                    "Max Item Value##salvage_threshold", loot_filter.salvage_item_max_vendorvalue, 0, 1500)
-                                ImGui.show_tooltip(
-                                    "Items with a vendor value below this threshold will be salvaged.\n" +
-                                    "This is useful to avoid salvaging items that are worth more than the materials they yield.")
-                                
-                                if value != loot_filter.salvage_item_max_vendorvalue:
-                                    loot_filter.salvage_item_max_vendorvalue = value
-                                    settings.current.loot_profile.save()
-                                                       
-                                PyImGui.text_wrapped(f"Salvage only items which are worth less than {utility.Util.format_currency(loot_filter.salvage_item_max_vendorvalue)} and which salvage for")
-                                
-                                width, height = PyImGui.get_content_region_avail()
-                                width = width - 20
-                                item_width = 200
-                                columns = min(max(1, math.floor(width / item_width)), 10)
-                                rows = math.ceil(len(data.Common_Materials) / columns) + math.ceil(len(data.Rare_Materials) / columns)
-                                                                
-                                self.action_heights[item_actions.ItemAction.SALVAGE] = min(
-                                    max(153, (remaining_size[1] - 20) / 2), 
-                                    (rows * 30) + 123 + 8)
-                                
-                                PyImGui.begin_child("salvage_materials", (0, 0), True, PyImGui.WindowFlags.NoFlag)      
-                                             
-                                             
-                                if PyImGui.is_rect_visible(0, self.action_heights[item_actions.ItemAction.SALVAGE] - 20):
-                                    PyImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)
-                                    
-                                    for material in data.Common_Materials.values():
-                                        PyImGui.table_next_column()
-                                        changed, selected = self.draw_material_selectable(material, loot_filter.materials.get(material.model_id, False))
-                                    
-                                        if changed:
-                                            if not selected:
-                                                if material.model_id in loot_filter.materials:
-                                                    del loot_filter.materials[material.model_id]
-                                            else:
-                                                loot_filter.materials[material.model_id] = selected
+                        
+                        def draw_salvage_options():
+                            if not settings.current.loot_profile:
+                                return
+                            
+                            PyImGui.separator()                            
+                            PyImGui.push_item_width(100)
+                            value = PyImGui.slider_int(
+                                "Max Item Value##salvage_threshold", loot_filter.salvage_item_max_vendorvalue, 0, 1500)
+                            ImGui.show_tooltip(
+                                "Items with a vendor value below this threshold will be salvaged.\n" +
+                                "This is useful to avoid salvaging items that are worth more than the materials they yield.")
+                            
+                            if value != loot_filter.salvage_item_max_vendorvalue:
+                                loot_filter.salvage_item_max_vendorvalue = value
+                                settings.current.loot_profile.save()
+                                                    
+                            PyImGui.text_wrapped(f"Salvage only items which are worth less than {utility.Util.format_currency(loot_filter.salvage_item_max_vendorvalue)} and which salvage for")
+                            
+                            width, height = PyImGui.get_content_region_avail()
+                            width = width - 20
+                            item_width = 200
+                            columns = min(max(1, math.floor(width / item_width)), 10)
+                            rows = math.ceil(len(data.Common_Materials) / columns) + math.ceil(len(data.Rare_Materials) / columns)
+                                                            
+                            self.action_heights[enum.ItemAction.SALVAGE] = min(
+                                max(153, (remaining_size[1] - 20) / 2), 
+                                (rows * 30) + 123 + 8)
+                            self.action_heights[enum.ItemAction.SALVAGE_RARE_MATERIALS] = self.action_heights[enum.ItemAction.SALVAGE]
+                            self.action_heights[enum.ItemAction.SALVAGE_COMMON_MATERIALS] = self.action_heights[enum.ItemAction.SALVAGE]
+                            self.action_heights[enum.ItemAction.SALVAGE_SMART] = self.action_heights[enum.ItemAction.SALVAGE]
+                            
+                            PyImGui.begin_child("salvage_materials", (0, 0), True, PyImGui.WindowFlags.NoFlag)      
                                             
-                                            settings.current.loot_profile.save()
-                                    
-                                    PyImGui.table_next_row()
-                                    for _ in range(columns):
-                                        PyImGui.table_next_column()
-                                        PyImGui.dummy(0, 2)
-                                        PyImGui.separator()
-                                        PyImGui.dummy(0, 2)
-                                    
-                                    for material in data.Rare_Materials.values():
-                                        PyImGui.table_next_column()
-                                        changed, selected = self.draw_material_selectable(material, loot_filter.materials.get(material.model_id, False))
-                                    
-                                        if changed:
-                                            if not selected:
-                                                if material.model_id in loot_filter.materials:
-                                                    del loot_filter.materials[material.model_id]
-                                            else:
-                                                loot_filter.materials[material.model_id] = selected
                                             
-                                            settings.current.loot_profile.save()
-                                    
-                                    PyImGui.end_table()
-                                PyImGui.end_child()
+                            if PyImGui.is_rect_visible(0, self.action_heights[enum.ItemAction.SALVAGE] - 20):
+                                PyImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)
+                                
+                                for material in data.Common_Materials.values():
+                                    PyImGui.table_next_column()
+                                    changed, selected = self.draw_material_selectable(material, loot_filter.materials.get(material.model_id, False))
+                                
+                                    if changed:
+                                        if not selected:
+                                            if material.model_id in loot_filter.materials:
+                                                del loot_filter.materials[material.model_id]
+                                        else:
+                                            loot_filter.materials[material.model_id] = selected
                                         
+                                        settings.current.loot_profile.save()
+                                
+                                PyImGui.table_next_row()
+                                for _ in range(columns):
+                                    PyImGui.table_next_column()
+                                    PyImGui.dummy(0, 2)
+                                    PyImGui.separator()
+                                    PyImGui.dummy(0, 2)
+                                
+                                for material in data.Rare_Materials.values():
+                                    PyImGui.table_next_column()
+                                    changed, selected = self.draw_material_selectable(material, loot_filter.materials.get(material.model_id, False))
+                                
+                                    if changed:
+                                        if not selected:
+                                            if material.model_id in loot_filter.materials:
+                                                del loot_filter.materials[material.model_id]
+                                        else:
+                                            loot_filter.materials[material.model_id] = selected
+                                        
+                                        settings.current.loot_profile.save()
+                                
+                                PyImGui.end_table()
+                            PyImGui.end_child()
+                                
+                        match loot_filter.action:
+                            case enum.ItemAction.SALVAGE_SMART:
+                                draw_salvage_options()                                        
+                                pass
+                            case enum.ItemAction.SALVAGE_COMMON_MATERIALS:
+                                draw_salvage_options()                                        
+                                pass
+                            case enum.ItemAction.SALVAGE_RARE_MATERIALS:
+                                draw_salvage_options()                                        
                                 pass
                             
                             case _:
@@ -2591,7 +2610,6 @@ class UI:
     
             if not has_settings:
                 PyImGui.text(f"Double-click to add the item with action '{enum.ItemAction.STASH.name}' to your loot profile.")
-                PyImGui.text(f"Holding CTRL will set the action to '{enum.ItemAction.BLACKLIST.name}' instead.")
             else:
                 PyImGui.text(f"Double-click to remove the item from your loot profile.")
             
@@ -2605,7 +2623,7 @@ class UI:
             if item.item_info.model_id in settings.current.loot_profile.items:
                 settings.current.loot_profile.remove_item(item.item_info.model_id)
             else:
-                settings.current.loot_profile.add_item(item.item_info.model_id, enum.ItemAction.BLACKLIST if py_io.key_ctrl else enum.ItemAction.STASH)
+                settings.current.loot_profile.add_item(item.item_info.model_id)
 
         elif PyImGui.is_mouse_clicked(0) and item.is_hovered:
             if PyImGui.get_io().key_shift:

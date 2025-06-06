@@ -241,7 +241,7 @@ class Item():
     contains_amount: bool = False    
     inventory_icon: Optional[str] = None
     category: enum.ItemCategory = enum.ItemCategory.None_
-    sub_category: enum.ItemSubCategory = enum.ItemSubCategory.None_
+    sub_category: enum.ItemSubCategory = enum.ItemSubCategory.None_    
     
     @property
     def is_nick_item(self) -> bool:

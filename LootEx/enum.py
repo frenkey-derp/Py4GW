@@ -86,16 +86,17 @@ class MaterialType(IntEnum):
 
 class ItemAction(IntEnum):
     NONE = 0
-    IDENTIFY = 1
-    SALVAGE = 2
-    SELL_TO_MERCHANT = 3
-    STASH = 4
-    SALVAGE_RARE_MATERIALS = 5
-    SALVAGE_MODS = 6
-    DESTROY = 7
-    COLLECT_DATA = 8
-    SELL_TO_TRADER = 9
-    BLACKLIST = 10
+    COLLECT_DATA = 1
+    IDENTIFY = 2
+    STASH = 3
+    SALVAGE_MODS = 4
+    SALVAGE_SMART = 5
+    SALVAGE_RARE_MATERIALS = 6
+    SALVAGE_COMMON_MATERIALS = 7
+    SALVAGE = 8
+    SELL_TO_MERCHANT = 9
+    SELL_TO_TRADER = 10
+    DESTROY = 11
     
 class LootAction(IntEnum):
     NONE = 0

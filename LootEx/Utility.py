@@ -1,24 +1,19 @@
 from datetime import timedelta
 import re
-from typing import Dict, List, Optional, Tuple
-from Py4GWCoreLib import enums
+from typing import List, Optional
 
-import PyInventory
 from LootEx import data, item_configuration, enum
 from LootEx import models
-from LootEx.enum import ModifierIdentifier, ModifierValueArg
-from LootEx.item_actions import ItemAction
+from LootEx.enum import ItemAction, ModifierIdentifier, ModifierValueArg
 from LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
 from LootEx.models import ModifierInfo, Rune, WeaponMod
-from Py4GWCoreLib import GlobalCache, Item, Party, UIManager
+from Py4GWCoreLib import Item, UIManager
 import Py4GWCoreLib
-from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
-from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
-from Py4GWCoreLib.enums import Attribute, Bags, DamageType, ItemType, ModelID, NumberPreference, Profession, Rarity, DyeColor, ServerLanguage
+from Py4GWCoreLib.Py4GWcorelib import Utils
+from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, ModelID, NumberPreference, Profession, Rarity, DyeColor, ServerLanguage
 
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 importlib.reload(item_configuration)
@@ -191,7 +186,7 @@ class Util:
             return None
 
     @staticmethod
-    def GetItemRequirements(item_id: int) -> Optional[tuple[Attribute, int]]:
+    def GetItemRequirements(item_id: int) -> tuple[Attribute, int]:
         """
         Retrieves the attribute and requirement level for a given item.
         Args:
@@ -205,13 +200,13 @@ class Util:
             item_id, ModifierIdentifier.Requirement)
 
         if attribute_id == None or requirement == None:
-            return None
+            return Attribute.None_, 0
 
         attribute = Attribute(attribute_id)
         return attribute, requirement
 
     @staticmethod
-    def GetItemDamage(item_id: int) -> Optional[tuple[int, int]]:
+    def GetItemDamage(item_id: int) -> tuple[int, int]:
         """
         Retrieves the minimum and maximum damage values for a given item.
         This method fetches the damage modifier values associated with the specified
@@ -228,7 +223,7 @@ class Util:
             item_id, ModifierIdentifier.Damage)
 
         if max_damage == None and min_damage == None:
-            return None
+            return -1, -1
 
         return min_damage if min_damage else 0, max_damage if max_damage else 0
 
@@ -745,3 +740,20 @@ class Util:
             inventory.extend(slots)
             
         return inventory, bag_sizes
+    
+    @staticmethod
+    def IsRareWeapon(model_id: int) -> bool:
+        """
+        Check if the item with the given model ID is a rare weapon.
+
+        Args:
+            model_id (int): The model ID of the item.
+
+        Returns:
+            bool: True if the item is a rare weapon, False otherwise.
+        """
+        #TODO: implment the model ids for rare weapons
+        rare_weapon_model_ids = [
+        ]
+        
+        return model_id in rare_weapon_model_ids    

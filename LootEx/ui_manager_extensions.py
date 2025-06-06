@@ -23,10 +23,10 @@ class UIManagerExtensions:
     @staticmethod
     def IsMerchantWindowOpen() -> bool:
         merchant_window_frame_id = UIManager.GetFrameIDByHash(3613855137)
-        merchant_window_frame_inner_id = UIManager.GetChildFrameID(3613855137, [
-                                                                   0])
-        merchant_window_funds_id = UIManager.GetFrameIDByHash(3068881268)
-        merchant_window_buy_button_id = UIManager.GetFrameIDByHash(1532320307)
+        # merchant_window_frame_inner_id = UIManager.GetChildFrameID(3613855137, [
+        #                                                            0])
+        # merchant_window_funds_id = UIManager.GetFrameIDByHash(3068881268)
+        # merchant_window_buy_button_id = UIManager.GetFrameIDByHash(1532320307)
 
         return UIManagerExtensions.IsElementVisible(merchant_window_frame_id)
 
