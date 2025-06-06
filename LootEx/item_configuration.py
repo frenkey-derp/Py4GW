@@ -6,7 +6,7 @@ import importlib
 importlib.reload(models)
 
 class ConfigurationCondition:
-    def __init__(self, name: str = "New Condition"):
+    def __init__(self, name: str = "New Condition", action: ItemAction = ItemAction.STASH):
         self.name: str = name
         self.item_type: Optional[ItemType] = None
         self.damage_range: Optional[models.IntRange] = None
@@ -21,15 +21,13 @@ class ConfigurationCondition:
         self.rarities: dict[Rarity, bool] = {
             rarity: False for rarity in Rarity}
 
-        self.item_actions: ItemActions = ItemActions(ItemAction.STASH, ItemAction.STASH)
+        self.action: ItemAction = action
 
 
 class ItemConfiguration:
-    def __init__(self, model_id: int):
+    def __init__(self, model_id: int, action: ItemAction = ItemAction.STASH):
         self.model_id: int = model_id
-        default_condition = ConfigurationCondition("Default")
-
-        self.conditions: list[ConfigurationCondition] = [default_condition]
+        self.conditions: list[ConfigurationCondition] = [ConfigurationCondition("Default", action)]
 
     @staticmethod
     def to_dict(data) -> dict:
@@ -50,7 +48,7 @@ class ItemConfiguration:
                     "rarities": {
                         rarity.name: value for rarity, value in condition.rarities.items()
                     },
-                    "item_actions": ItemActions.to_dict(condition.item_actions),
+                    "item_acactiontion": condition.action.name,
                     "requirements": {
                         attribute.name: (requirement.min, requirement.max)
                         for attribute, requirement in condition.requirements.items()
@@ -85,6 +83,7 @@ class ItemConfiguration:
             )
             
             condition.item_type = item_type
+            condition.action = ItemAction[condition_data.get("action", "STASH")]
             
             damage_range = condition_data.get("damage_range", None)
             damage_range = (
@@ -110,7 +109,6 @@ class ItemConfiguration:
             } if rarities else {}
             
             condition.rarities = rarities
-            condition.item_actions = ItemActions.from_dict(condition_data.get("item_actions", {}))
 
             requirements = condition_data.get("requirements", {})
             requirements = (

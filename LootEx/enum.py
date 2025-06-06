@@ -95,6 +95,7 @@ class ItemAction(IntEnum):
     DESTROY = 7
     COLLECT_DATA = 8
     SELL_TO_TRADER = 9
+    BLACKLIST = 10
     
 class LootAction(IntEnum):
     NONE = 0

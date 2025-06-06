@@ -20,6 +20,7 @@ throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 data.Load()
+ui = gui.UI()
 
 # Load settings
 settings.current.settings_file_path = os.path.join(
@@ -58,11 +59,11 @@ def main():
         data.UpdateLanguage(language)
         settings.current.save()
         
-    gui.draw_vault_controls()        
-    gui.draw_inventory_controls()
+    ui.draw_vault_controls()        
+    ui.draw_inventory_controls()
 
     if settings.current.window_visible:
-        gui.draw_window()
+        ui.draw_window()
 
     settings.current.window_visible = False
     

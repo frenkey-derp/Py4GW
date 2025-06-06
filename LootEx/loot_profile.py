@@ -22,6 +22,8 @@ class LootProfile:
         self.expert_salvage_kits: int = 1
         self.lockpicks: int = 10
         self.sell_threshold: int = 200
+        self.nick_weeks_to_keep: int = 0
+        self.nick_items_to_keep: int = 0
 
         # Collection of LootFilters
         self.filters: list[loot_filter.LootFilter] = []
@@ -29,6 +31,7 @@ class LootProfile:
         self.runes: dict[str, bool] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
         self.items: dict[int, ItemConfiguration] = {}
+        self.blacklist: dict[int, bool] = {}
 
     def save(self):
         """Save the profile as a JSON file."""
@@ -40,6 +43,9 @@ class LootProfile:
             "expert_salvage_kits": self.expert_salvage_kits,
             "lockpicks": self.lockpicks,
             "sell_threshold": self.sell_threshold,
+            "nick_weeks_to_keep": self.nick_weeks_to_keep,
+            "nick_items_to_keep": self.nick_items_to_keep,
+            "blacklist": self.blacklist,
             "filters": [LootFilter.to_dict(filter) for filter in self.filters],
             "runes": self.runes,
             "weapon_mods": {
@@ -53,8 +59,8 @@ class LootProfile:
             settings.current.profiles_path, f"{self.name}.json")
 
         with open(file_path, 'w') as file:
-            ConsoleLog(
-                "LootEx", f"Saving profile {self.name}...", Console.MessageType.Debug)
+            # ConsoleLog(
+            #     "LootEx", f"Saving profile {self.name}...", Console.MessageType.Debug)
             json.dump(profile_dict, file, indent=4)
 
     def load(self):
@@ -66,6 +72,10 @@ class LootProfile:
             with open(file_path, 'r') as file:
                 profile_dict = json.load(file)
                 self.name = profile_dict.get("name", self.name)
+                self.nick_weeks_to_keep = profile_dict.get(
+                    "nick_weeks_to_keep", self.nick_weeks_to_keep)
+                self.nick_items_to_keep = profile_dict.get(
+                    "nick_items_to_keep", self.nick_items_to_keep)
                 self.dyes = {DyeColor[dye]: value for dye,
                              value in profile_dict.get("dyes", {}).items()}
                 self.identification_kits = profile_dict.get(
@@ -87,6 +97,8 @@ class LootProfile:
                 }
                 self.items = {item_id: ItemConfiguration.from_dict(
                     item) for item_id, item in profile_dict.get("items", {}).items()}
+                self.blacklist = {
+                    int(model_id): True for model_id in profile_dict.get("blacklist", {}).keys()}
 
         except FileNotFoundError:
             ConsoleLog(
@@ -103,7 +115,31 @@ class LootProfile:
         else:
             ConsoleLog(
                 "LootEx", f"Profile file {file_path} not found.", Console.MessageType.Warning)
-            
+
     def contains_weapon_mod(self, mod_name: str) -> bool:
         """Check if the profile contains a specific weapon mod."""
         return mod_name in self.weapon_mods and any(self.weapon_mods[mod_name].values())
+
+    def add_item(self, model_id: int, action: ItemAction = ItemAction.STASH):
+        """Add an item to the profile."""
+        if model_id not in self.items:
+            self.items[model_id] = ItemConfiguration(model_id, action)
+
+    def blacklist_item(self, model_id: int):
+        """Blacklist an item in the profile."""        
+        if model_id not in self.blacklist:
+            self.blacklist[model_id] = True
+
+    def whitelist_item(self, model_id: int):
+        """Remove an item from the blacklist in the profile."""
+        if model_id in self.blacklist:
+            del self.blacklist[model_id]
+
+    def is_blacklisted(self, model_id: int) -> bool:
+        """Check if an item is blacklisted in the profile."""
+        return model_id in self.blacklist
+
+    def remove_item(self, model_id: int):
+        """Remove an item from the profile."""
+        if model_id in self.items:
+            del self.items[model_id]
