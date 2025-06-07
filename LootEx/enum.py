@@ -128,6 +128,8 @@ class MessageActions(IntEnum):
     ShowLootExWindow = 7
     HideLootExWindow = 8
     OpenXunlai = 9    
+    ReloadWidgets = 10
+    Resign = 11
     
 class SalvageOption(IntEnum):
     None_ = 0

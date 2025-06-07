@@ -95,8 +95,12 @@ class LootProfile:
                                is_active in types.items()}
                     for mod_name, types in profile_dict.get("weapon_mods", {}).items()
                 }
-                self.items = {item_id: ItemConfiguration.from_dict(
-                    item) for item_id, item in profile_dict.get("items", {}).items()}
+                
+                configured_items = profile_dict.get("items", {})
+                for item_id, item in configured_items.items():
+                    item_config = ItemConfiguration.from_dict(item)
+                    self.items[int(item_id)] = item_config
+                    
                 self.blacklist = {
                     int(model_id): True for model_id in profile_dict.get("blacklist", {}).keys()}
 

@@ -412,6 +412,7 @@ class DataCollector:
 
         if name is None or name == "" or name == "No Item":
             self.reset_name(item_id)
+            name = ""
 
         return name
 

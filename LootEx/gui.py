@@ -467,11 +467,12 @@ class UI:
                     clipboard_text += "```"
                     PyImGui.set_clipboard_text(clipboard_text)
                     
-                    # Load items modelid_drop_data
-                    file_directory = os.path.dirname(os.path.abspath(__file__))
-                    data_directory = os.path.join(file_directory, "data")
-                    path = os.path.join(data_directory, "modelid_drop_data.json")
-                
+                    for item in data.Items.values():
+                        if utility.Util.IsRareWeapon(item.model_id):
+                            item.category = enum.ItemCategory.RareWeapon
+                    
+                    data.SaveItems(True)
+                    
                                 
                                 
                     
@@ -1385,6 +1386,13 @@ class UI:
 
                                         if loot_item:
                                             label_spacing = 120
+                                            
+                                            if condition.action == enum.ItemAction.STASH:
+                                                keep_amount = PyImGui.slider_int(
+                                                    "Keep in Inventory", condition.keep_in_inventory, 0, 250) 
+                                                if keep_amount != condition.keep_in_inventory:
+                                                    condition.keep_in_inventory = keep_amount
+                                                    settings.current.loot_profile.save()
                                             
                                             if (utility.Util.IsArmor(loot_item)):
                                                 PyImGui.text(
@@ -2621,9 +2629,11 @@ class UI:
             py_io = PyImGui.get_io()
             
             if item.item_info.model_id in settings.current.loot_profile.items:
-                settings.current.loot_profile.remove_item(item.item_info.model_id)
+                settings.current.loot_profile.remove_item(item.item_info.model_id)     
+                settings.current.loot_profile.save()
             else:
-                settings.current.loot_profile.add_item(item.item_info.model_id)
+                settings.current.loot_profile.add_item(item.item_info.model_id)     
+                settings.current.loot_profile.save()
 
         elif PyImGui.is_mouse_clicked(0) and item.is_hovered:
             if PyImGui.get_io().key_shift:

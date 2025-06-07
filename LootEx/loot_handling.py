@@ -1,10 +1,11 @@
 from datetime import date
 from LootEx.enum import SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
-from LootEx import data, data_collector, models, settings, utility, ui_manager_extensions
+from LootEx import data, data_collector, models, settings, utility, ui_manager_extensions, loot_filter
 
 import importlib
 
+importlib.reload(loot_filter)
 importlib.reload(settings)
 importlib.reload(ui_manager_extensions)
 
@@ -15,9 +16,11 @@ deposited = False
 capacity_checked = False
 material_capacity = 2500
 
+salvage_timer = ThrottledTimer(750)
+identification_timer = ThrottledTimer(500)
 merchant_timer = ThrottledTimer(1000)
 deposit_timer = ThrottledTimer(5000)
-inventory_timer = ThrottledTimer(3000)
+inventory_timer = ThrottledTimer(750)
 compact_inventory_timer = ThrottledTimer(250)
 indentify_action_queue = ActionQueueNode(250)
 salvage_action_queue = ActionQueueNode(150)
@@ -46,6 +49,7 @@ def IdentifyItems() -> bool:
             if remaining_uses > 0:
                 remaining_uses -= 1
                 identified_items = True
+                ConsoleLog("LootEx", f"Identifying item: '{utility.Util.GetItemDataName(item_id)}' {item_id} using kit {utility.Util.GetItemDataName(id_kit)} {id_kit}", Console.MessageType.Info)
                 Inventory.IdentifyItem(item_id, id_kit)                   
             
     return identified_items
@@ -162,7 +166,7 @@ def GetSalvageOption(item_id: int, action : ItemAction) -> Optional[SalvageOptio
             case ItemAction.SALVAGE_MODS:
                 return SalvageOption.Inherent            
 
-def ShouldSalvageItem(item_id: int) -> bool:                
+def ShouldSalvageItem(item_id: int) -> tuple[bool, ItemAction]:                
     if GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id) and settings.current.loot_profile:   
         model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
         
@@ -170,14 +174,14 @@ def ShouldSalvageItem(item_id: int) -> bool:
         if item_config:
             action = item_config.get_action(item_id)
 
-            if action is not ItemAction.NONE:
-                return action is ItemAction.SALVAGE or action is ItemAction.SALVAGE_COMMON_MATERIALS or action is ItemAction.SALVAGE_RARE_MATERIALS
+            if action != ItemAction.NONE:
+                return action == ItemAction.SALVAGE or action == ItemAction.SALVAGE_SMART or action == ItemAction.SALVAGE_COMMON_MATERIALS or action == ItemAction.SALVAGE_RARE_MATERIALS or action == ItemAction.SALVAGE_SMART, action
 
         for filter in settings.current.loot_profile.filters:
-            if filter.action == ItemAction.SALVAGE or filter.action == ItemAction.SALVAGE_COMMON_MATERIALS or filter.action == ItemAction.SALVAGE_RARE_MATERIALS:
-               return filter.get_action(item_id) is not ItemAction.NONE
+            if filter.action == ItemAction.SALVAGE or filter.action == ItemAction.SALVAGE_COMMON_MATERIALS or filter.action == ItemAction.SALVAGE_RARE_MATERIALS or filter.action == ItemAction.SALVAGE_SMART:
+                return filter.handles_item_id(item_id), filter.action
    
-    return False
+    return False, ItemAction.NONE
 
 def ShouldExtractMods(item_id: int) -> bool:
     if GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id):
@@ -204,7 +208,6 @@ def ShouldSellItemToMerchant(item_id: int) -> bool:
         ModelID.Identification_Kit,
         ModelID.Superior_Identification_Kit,
         ModelID.Lockpick,
-        ModelID.Vial_Of_Dye,
         ]
     
     if model_id in ignored_model_ids:
@@ -226,11 +229,11 @@ def ShouldSellItemToMerchant(item_id: int) -> bool:
         
         if item_config:
             action = item_config.get_action(item_id)
-            return action is ItemAction.SELL_TO_MERCHANT
+            return action == ItemAction.SELL_TO_MERCHANT
         
         for filter in settings.current.loot_profile.filters:
             if filter.action == ItemAction.SELL_TO_MERCHANT:
-                return filter.get_action(item_id) is not ItemAction.NONE
+                return filter.get_action(item_id) == ItemAction.SELL_TO_MERCHANT
     
     return False
 
@@ -254,10 +257,7 @@ def IsVial_Of_DyeToKeep(item_id : int) -> bool:
 def ShouldStashItem(item_id: int) -> bool:    
     if settings.current.loot_profile is None:
         return False
-    
-    if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
-        return True
-    
+        
     item_data = data.Items.get(GLOBAL_CACHE.Item.GetModelID(item_id), None)
     if item_data is not None:
         if item_data.nick_index and item_data.next_nick_week:
@@ -282,23 +282,21 @@ def ShouldStashItem(item_id: int) -> bool:
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
     item_config = settings.current.loot_profile.items.get(model_id, None)
     if item_config:
-        action = item_config.get_action(item_id)
-
-        if action is not ItemAction.NONE:
-            return action is ItemAction.STASH
+        action = item_config.get_action(item_id)        
+        return action == ItemAction.STASH
 
     for filter in settings.current.loot_profile.filters:
-        return filter.get_action(item_id) is ItemAction.STASH
+        return filter.get_action(item_id) == ItemAction.STASH
         
     return False
 
 def ShouldCollectData(item_id: int) -> bool:
     if not data_collector.instance.is_item_collected(item_id):
-        # ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is not collected yet, skipping processing.", Console.MessageType.Warning)
+        # ConsoleLog("LootEx", f"Item '{utility.Util.GetItemDataName(item_id)}' {item_id} is not collected yet, skipping processing.", Console.MessageType.Warning)
         return True
     
     if data_collector.instance.has_uncollected_mods(item_id):
-        # ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} has uncollected mods, skipping processing.", Console.MessageType.Warning)
+        # ConsoleLog("LootEx", f"Item '{utility.Util.GetItemDataName(item_id)}' {item_id} has uncollected mods, skipping processing.", Console.MessageType.Warning)
         return True
     
     return False
@@ -365,8 +363,10 @@ def SalvageItem(item_id, option : SalvageOption = SalvageOption.LesserCraftingMa
     if salvage_kit == 0:
         ConsoleLog("LootEx", "No salvage kit found, cannot salvage item.", Console.MessageType.Warning)
         return False
-        
+    
+    ConsoleLog("LootEx", f"Salvaging item: '{utility.Util.GetItemDataName(item_id)}' {item_id} using kit {utility.Util.GetItemDataName(salvage_kit)} {salvage_kit}", Console.MessageType.Info)
     Inventory.SalvageItem(item_id, salvage_kit)
+    salvage_timer.Reset()
     
     rarity_requires_confirmation = GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] >= Rarity.Blue
     mods_require_confirmation = len(utility.Util.GetMods(item_id)) > 0 and option is not SalvageOption.LesserCraftingMaterials
@@ -374,7 +374,7 @@ def SalvageItem(item_id, option : SalvageOption = SalvageOption.LesserCraftingMa
     salvage_requires_confirmation = mods_require_confirmation or rarity_requires_confirmation
     
     if salvage_requires_confirmation:
-        ConfirmSalvage(option)
+        ConfirmSalvage(item_id, option)
         
     return True
 
@@ -382,20 +382,22 @@ def ResetSalvageConfirmation():
     global salvage_requires_confirmation
     salvage_requires_confirmation = False
 
-def ConfirmSalvage(option: SalvageOption = SalvageOption.LesserCraftingMaterials) -> bool:    
+def ConfirmSalvage(item_id : int, option: SalvageOption = SalvageOption.LesserCraftingMaterials) -> bool:    
     global salvage_requires_confirmation
     salvage_action_queue.add_action(lambda : True)
-    salvage_action_queue.add_action(_SendConfirmSalvage, option)  
+    salvage_action_queue.add_action(_SendConfirmSalvage, item_id, option)  
     
     # salvage_action_queue.add_action(lambda : True)
     salvage_action_queue.add_action(ResetSalvageConfirmation)  
     
     return True
 
-def _SendConfirmSalvage(option: SalvageOption = SalvageOption.LesserCraftingMaterials) -> bool:
+def _SendConfirmSalvage(item_id : int, option: SalvageOption = SalvageOption.LesserCraftingMaterials) -> bool:
     if option is not SalvageOption.LesserCraftingMaterials:
+        ConsoleLog("LootEx", f"Confirming salvage option: {option.name} for {utility.Util.GetItemDataName(item_id)}", Console.MessageType.Info)
         ui_manager_extensions.UIManagerExtensions.SelectSalvageOptionAndSalvage(option)
     else:
+        ConsoleLog("LootEx", f"Confirming lesser salvage for item: {utility.Util.GetItemDataName(item_id)}", Console.MessageType.Info)
         ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
             
     return True
@@ -425,25 +427,31 @@ def ExtractWantedMods(item_id: int) -> bool:
         mod_to_extract = runes[0]
     
     
-    ConsoleLog("LootEx", f"Extracting '{mod_to_extract.name}' from item: '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} using kit {GLOBAL_CACHE.Item.GetName(salvage_kit)} {salvage_kit}", Console.MessageType.Info)
+    ConsoleLog("LootEx", f"Extracting '{mod_to_extract.name}' from item: '{utility.Util.GetItemDataName(item_id)}' {item_id} using kit {utility.Util.GetItemDataName(salvage_kit)} {salvage_kit}", Console.MessageType.Info)
     Inventory.SalvageItem(item_id, salvage_kit)
     
     salvage_requires_confirmation = True
-    ConfirmSalvage(utility.Util.GetSalvageOptionFromModType(mod_to_extract.mod_type))
+    ConfirmSalvage(item_id, utility.Util.GetSalvageOptionFromModType(mod_to_extract.mod_type))
     
     return True
 
 def CanSalvage() -> bool:
-    return not salvage_requires_confirmation and not salvaged
+    global salvage_requires_confirmation, salvaged, salvage_timer
+    return not salvage_requires_confirmation and not salvaged and salvage_timer.IsExpired()
 
 def StashItem(item_id: int) -> bool:
-    if item_id == 0:
+    if item_id == 0 or not settings.current.loot_profile:
         return False
                 
     stash = GLOBAL_CACHE.Inventory.GetZeroFilledStorageArray()
+    model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
     
     if GLOBAL_CACHE.Item.Customization.IsStackable(item_id):
-        amount = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
+        item_config = settings.current.loot_profile.items.get(model_id, None)
+        config_condition = item_config.get_condition(item_id) if item_config else None
+        keep_amount = config_condition.keep_in_inventory if config_condition else 0
+        
+        amount = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id) - keep_amount
         color = utility.Util.get_color(item_id)
         
         sorted_stash = stash.copy()
@@ -459,7 +467,7 @@ def StashItem(item_id: int) -> bool:
                 continue
             
             slot_model_id = GLOBAL_CACHE.Item.GetModelID(id)
-            if slot_model_id == GLOBAL_CACHE.Item.GetModelID(item_id):
+            if slot_model_id == model_id:
                 slot_quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(id)
                 
                 if slot_quantity == 250:
@@ -468,6 +476,7 @@ def StashItem(item_id: int) -> bool:
                 if slot_model_id == ModelID.Vial_Of_Dye:
                     if utility.Util.get_color(id) == color:
                         move_amount = min(250 - slot_quantity, amount)
+                        ConsoleLog("LootEx", f"Stashing item  {move_amount} '{utility.Util.GetItemDataName(item_id)}' {item_id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
                         Inventory.MoveItem(item_id, storage_index, storage_slot, move_amount)                        
                         amount -= move_amount
                         
@@ -475,7 +484,9 @@ def StashItem(item_id: int) -> bool:
                             break
                 
                 else:
+                    name = utility.Util.GetItemDataName(item_id)
                     move_amount = min(250 - slot_quantity, amount)
+                    ConsoleLog("LootEx", f"Stashing item {move_amount}'{name}' {item_id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
                     Inventory.MoveItem(item_id, storage_index, storage_slot, move_amount)                        
                     amount -= move_amount
                     
@@ -491,7 +502,9 @@ def StashItem(item_id: int) -> bool:
             
             storage_index = Bag.Storage_1.value + math.floor(first_zero_slot / 25)
             storage_slot = first_zero_slot % 25
-            ConsoleLog("LootEx", f"Stashing item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
+            move_amount = min(250, amount)
+            ConsoleLog("LootEx", f"Stashing item {move_amount} '{utility.Util.GetItemDataName(item_id)}' {item_id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
+            Inventory.MoveItem(item_id, storage_index, storage_slot, move_amount)
             
         pass
     
@@ -506,8 +519,8 @@ def StashItem(item_id: int) -> bool:
         storage_index = Bag.Storage_1.value + math.floor(first_zero_slot / 25)        
         storage_slot = first_zero_slot % 25
         
-        ConsoleLog("LootEx", f"Stashing item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)        
-        # Inventory.MoveItem(item_id, storage_index, storage_slot, GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
+        ConsoleLog("LootEx", f"Stashing item '{utility.Util.GetItemDataName(item_id)}' {item_id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)        
+        Inventory.MoveItem(item_id, storage_index, storage_slot, GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
     
     
     return True    
@@ -517,15 +530,18 @@ def ShouldDestroyItem(item_id: int) -> bool:
         return False
     
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+    if settings.current.loot_profile.is_blacklisted(model_id):
+        return False
+    
     item_config = settings.current.loot_profile.items.get(model_id, None)
     
     if item_config:
         action = item_config.get_action(item_id)
-        return action is ItemAction.SELL_TO_MERCHANT
+        return action == ItemAction.DESTROY
     
     for filter in settings.current.loot_profile.filters:
         if filter.action == ItemAction.SELL_TO_MERCHANT:
-            return filter.get_action(item_id) is not ItemAction.NONE
+            return filter.get_action(item_id) == ItemAction.DESTROY
         
     return False
 
@@ -542,8 +558,9 @@ def GetItemAction(item_id: int) -> ItemAction:
     if ShouldExtractMods(item_id):
         return ItemAction.SALVAGE_MODS
     
-    if ShouldSalvageItem(item_id):
-        return ItemAction.SALVAGE
+    should_salvage, action = ShouldSalvageItem(item_id)
+    if should_salvage:
+        return action
     
     if ShouldSellItemToMerchant(item_id):
         return ItemAction.SELL_TO_MERCHANT    
@@ -569,8 +586,11 @@ def Run():
     if not settings.current.automatic_inventory_handling:
         return
     
-    if IdentifyItems():
-        return
+    if identification_timer.IsExpired():
+        identification_timer.Reset()
+        
+        if IdentifyItems():
+            return
     
     if not salvage_action_queue.is_empty():
         salvage_action_queue.ProcessQueue()
@@ -590,16 +610,18 @@ def Run():
         
         merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()
         empty_slots = GLOBAL_CACHE.Inventory.GetFreeSlotCount()
-                
+        salvaged = False
+        
         for item_id in GLOBAL_CACHE.ItemArray.GetItemArray([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]):
             action = GetItemAction(item_id)
-            # ConsoleLog("LootEx", f"Processing item: '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} with action: {action.name}", Console.MessageType.Debug)        
+            # ConsoleLog("LootEx", f"Processing item: '{utility.Util.GetItemDataName(item_id)}' {item_id} with action: {action.name}", Console.MessageType.Debug)        
                         
             if action == ItemAction.SALVAGE_SMART or action == ItemAction.SALVAGE or action == ItemAction.SALVAGE_COMMON_MATERIALS or action == ItemAction.SALVAGE_RARE_MATERIALS:
                 if CanSalvage():                    
                     if empty_slots > 0:
                         salvage_option = GetSalvageOption(item_id, action)
                         
+                        # ConsoleLog("LootEx", f"Salvage option for item {item_id} is {salvage_option.name if salvage_option else 'None'}", Console.MessageType.Debug)
                         if salvage_option is None:
                             continue
                         
@@ -627,22 +649,21 @@ def Run():
                         salvaged = True
                         ExtractWantedMods(item_id)
                 
-            elif action == ItemAction.STASH:
+            if action == ItemAction.STASH:
                 if is_outpost:
                     StashItem(item_id)
                     pass
             
-            elif action == ItemAction.SELL_TO_MERCHANT:
+            if action == ItemAction.SELL_TO_MERCHANT:
                 if merchant_open:
-                    item_data = data.Items.get(GLOBAL_CACHE.Item.GetModelID(item_id), None)
-                    item_name = item_data.name if item_data else "Item Name Unavailable"
-                    ConsoleLog("LootEx", f"Selling item: '{item_name}' {item_id}", Console.MessageType.Info)
-                    # Trading.Merchant.SellItem(item_id, GLOBAL_CACHE.Item.Properties.GetQuantity(item_id) * GLOBAL_CACHE.Item.Properties.GetValue(item_id))
+                    ConsoleLog("LootEx", f"Selling item: '{utility.Util.GetItemDataName(item_id)}' {item_id}", Console.MessageType.Info)
+                    Trading.Merchant.SellItem(item_id, GLOBAL_CACHE.Item.Properties.GetQuantity(item_id) * GLOBAL_CACHE.Item.Properties.GetValue(item_id))
             
-            elif action == ItemAction.DESTROY:
-                Inventory.DestroyItem(item_id)
+            if action == ItemAction.DESTROY:
+                ConsoleLog("LootEx", f"Destroying item: '{utility.Util.GetItemDataName(item_id)}' {item_id}", Console.MessageType.Info)
+                # Inventory.DestroyItem(item_id)
                     
-            elif action == ItemAction.SELL_TO_TRADER:
+            if action == ItemAction.SELL_TO_TRADER:
                 pass
                     
                 
@@ -916,7 +937,7 @@ def StartLootHandling() -> bool:
     return True
 
 def HasModToKeep(item_id: int) -> tuple[bool, list[models.WeaponMod], list[models.Rune]]:
-    mods = utility.Util.GetMods(item_id)
+    mods = utility.Util.GetMods(item_id, True)
     _, item_type = GLOBAL_CACHE.Item.GetItemType(item_id)
     runes_to_keep : list[models.Rune] = []
     mods_to_keep : list[models.WeaponMod] = []
@@ -943,7 +964,7 @@ def CanProcessItem(item_id: int) -> bool:
         return False
     
     if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
-        # ConsoleLog("LootEx", f"Item '{GLOBAL_CACHE.Item.GetName(item_id)}' {item_id} is customized, skipping processing.", Console.MessageType.Warning)
+        # ConsoleLog("LootEx", f"Item '{utility.Util.GetItemDataName(item_id)}' {item_id} is customized, skipping processing.", Console.MessageType.Warning)
         return False
     
     if utility.Util.IsWeaponType(ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])):
@@ -993,7 +1014,7 @@ def HasItemToSalvage() -> tuple[bool, int]:
             mod_names = [mod.name for mod in mods_to_keep] if mods_to_keep else []
             rune_names = [rune.name for rune in runes_to_keep] if runes_to_keep else []
             
-            # ConsoleLog("LootEx", "Item has mods to keep: " + GLOBAL_CACHE.Item.GetName(item_id) +
+            # ConsoleLog("LootEx", "Item has mods to keep: " + utility.Util.GetItemDataName(item_id) +
             #            " (Id: " + str(item_id) + ")" + 
             #               f" | Mods: {', '.join(mod_names)} | Runes: {', '.join(rune_names)}", Console.MessageType.Info)
             continue

@@ -17,7 +17,19 @@ class FrameCoords:
 
 
 class Settings:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Settings, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
     def __init__(self):
+        if self._initialized:
+            return
+        
+        self._initialized = True
         self.profile_combo: int = 0
         self.loot_profile: Optional[LootProfile] = None
         self.loot_profiles: list[LootProfile] = []

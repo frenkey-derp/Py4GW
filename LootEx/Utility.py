@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from LootEx import data, item_configuration, enum
 from LootEx import models
-from LootEx.enum import ItemAction, ModifierIdentifier, ModifierValueArg
+from LootEx.enum import ItemAction, ItemCategory, ModifierIdentifier, ModifierValueArg
 from LootEx.item_configuration import ItemConfiguration
 
 import importlib
@@ -751,9 +751,27 @@ class Util:
 
         Returns:
             bool: True if the item is a rare weapon, False otherwise.
-        """
-        #TODO: implment the model ids for rare weapons
-        rare_weapon_model_ids = [
-        ]
+        """       
+        data_item = data.Items.get(model_id, None)
         
-        return model_id in rare_weapon_model_ids    
+        name = data_item.names.get(ServerLanguage.English, None) if data_item else None
+        if name and name in data.Rare_Weapon_Names:
+            return True
+                
+        return data_item.category == ItemCategory.RareWeapon if data_item else False
+    
+    @staticmethod
+    def GetItemDataName(item_id: int) -> str:
+        """
+        Get the name of the item based on its ID.
+
+        Args:
+            item_id (int): The unique identifier of the item.
+
+        Returns:
+            str: The name of the item, or "Unknown Item" if not found.
+        """
+        model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+        data_item = data.Items.get(model_id, None)
+        
+        return data_item.name if data_item else "Unknown Item"

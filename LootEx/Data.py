@@ -3,6 +3,7 @@ import json
 import os
 from typing import Optional
 from LootEx import models, utility
+from LootEx.enum import ItemCategory
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, ServerLanguage
@@ -265,7 +266,114 @@ Nick_Cycle_Count = 137
 Materials: dict[int, models.Material] = {}
 Common_Materials: dict[int, models.Material] = {}
 Rare_Materials: dict[int, models.Material] = {}
+Rare_Weapon_Names = [
+           # Dungeon & Elite Area weapons
+            "Astral Staff",
+            "Aureate Blade",
+            "Bone Dragon Staff",
+            "Bonecage Scythe",
+            "Ceremonial Spear",
+            "Cerulean Edge",
+            "Chrysocola Staff",
+            "Clockwork Scythe",
+            "Cobalt Staff",
+            "Crab Claw Maul",
+            "Crystal Flame Staff",
+            "Crystalline Sword",
+            "Demon Fangs",
+            "Demoncrest Spear",
+            "Dhuum's Soul Reaper",
+            "Draconic Scythe",
+            "Dryad Bow",
+            "Eaglecrest Axe",
+            "Embercrest Staff",
+            "Emerald Blade",
+            "Emerald Edge",
+            "Exalted Aegis",
+            "Frog Scepter",
+            "Golden Hammer",
+            "Goldhorn Staff",
+            "Icicle Staff",
+            "Insectoid Scythe",
+            "Insectoid Staff",
+            "Legendary Sword",
+            "Moldavite Staff",
+            "Notched Blade",
+            "Obsidian Edge",
+            "Pronged Fan",
+            "Serpentine Scepter",
+            "Signet Shield",
+            "Silverwing Recurve Bow",
+            "Singing Blade",
+            "Steelhead Scythe",
+            "Storm Daggers",
+            "Stygian Reaver",
+            "Suntouched Staff",
+            "Tentacle Scythe",
+            "Topaz Scepter",
+            "Turquoise Staff",
+            "Violet Edge",
+            "Voltaic Spear",
+            "Wingcrest Maul"
+           
+           # Available everywhere
+            "Bear's Sloth",
+            "Fox's Greed",
+            "Hog's Gluttony",
+            "Lion's Pride",
+            "Scorpion's Lust",
+            "Scorpion Bow",
+            "Snake's Envy",
+            "Unicorn's Wrath",
+            "Black Hawk's Lust",
+            "Dragon's Envy",
+            "Peacock's Wrath",
+            "Rhino's Sloth",
+            "Spider's Gluttony",
+            "Tiger's Pride",
+            "Wolf's Greed",
+            "Bonecrusher",
+            "Bronze Guardian",
+            "Death's Head",
+            "Heaven's Arch",
+            "Quicksilver",
+            "Storm Ember",
+            "Ominous Aegis",
 
+            # Only available in Tyria
+            "Bone Idol",
+            "Canthan Targe",
+            "Censor's Icon",
+            "Chimeric Prism",
+            "Ithas Bow",
+            "War Pick",
+
+            # Only available in Cantha
+            "Dragon Fangs",
+            "Spiritbinder",
+            "Japan 1st Anniversary Shield",
+
+            # Only available in Elona
+            "Soulbreaker",
+            "Sunspear (weapon)",
+
+            # Only available in Eye of the North regions
+            "Darksteel Longbow",
+            "Glacial Blade",
+            "Glacial Blades",
+            "Hourglass Staff",
+            "Lesser Etched Sword",
+            "Etched Sword",
+            "Greater Etched Sword",
+            "Arced Blade",
+            "Greater Arced Blade",
+            "Lesser Granite Edge",
+            "Granite Edge",
+            "Greater Granite Edge",
+            "Lesser Stoneblade",
+            "Stoneblade",
+            "Greater Stoneblade" 
+        ]
 
 def UpdateLanguage(server_language: ServerLanguage):
     global Items, Runes, Weapon_Mods
@@ -615,11 +723,17 @@ def MergeDiffItems():
 
                 for value in items.values():
                     item = models.Item.from_json(value)
+                    
                     if item.model_id not in Items:
                         Items[item.model_id] = item
                     else:
                         # If the item already exists, we can update it
                         Items[item.model_id].update(item)
+                    
+                    name = item.names.get(ServerLanguage.English, None)
+                    if name is not None and name != "":
+                        if name in Rare_Weapon_Names:
+                            item.category = ItemCategory.RareWeapon
         
             # Delete the diff file after merging
             os.remove(file_path)

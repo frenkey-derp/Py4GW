@@ -66,17 +66,6 @@ def main():
         ui.draw_window()
 
     settings.current.window_visible = False
-    
-    if GLOBAL_CACHE.Player.GetAccountEmail() == "lasse-gerth@gmx.de":
-        game_option = GLOBAL_CACHE.ShMem.GetHeroAIOptions(GLOBAL_CACHE.Player.GetAccountEmail())
-        if game_option is not None:      
-            game_option.Following = False
-            game_option.Avoidance = False
-            game_option.Looting = False
-            game_option.Targeting = False
-            game_option.Combat = False
-            
-            GLOBAL_CACHE.ShMem.SetHeroAIOptions(GLOBAL_CACHE.Player.GetAccountEmail(), game_option)
 
     # if (throttle_timer.IsExpired()):
     #     throttle_timer.Reset()
@@ -87,9 +76,8 @@ def main():
         return
 
 
-    data_collector.instance.run_v2()      
-                         
-    
+    data_collector.instance.run_v2()                               
+                             
     if (settings.current.automatic_inventory_handling):
         if not loot_handling_timer.IsExpired():
             return

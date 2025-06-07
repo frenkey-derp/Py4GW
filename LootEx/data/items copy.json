@@ -1236,126 +1236,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "151": {
-        "ModelID": 151,
-        "Name": "Jeweled Chakram",
-        "Names": {
-            "English": "Jeweled Chakram",
-            "German": "Juwelentschakra",
-            "Korean": "보석이 박힌 챠크람",
-            "French": "Chakram serti de joyaux",
-            "Italian": "Chakram con Gioielli",
-            "Spanish": "Chakram enjoyado",
-            "TraditionalChinese": "寶石的圓月輪",
-            "Japanese": "ジュエル チャクラム",
-            "Polish": "Zdobiony Czakram",
-            "Russian": "Jeweled Chakram",
-            "BorkBorkBork": "Jooeled Chaekraem"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chakram",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "153": {
-        "ModelID": 153,
-        "Name": "Jeweled Chakram",
-        "Names": {
-            "English": "Jeweled Chakram",
-            "German": "Juwelentschakra",
-            "Korean": "보석이 박힌 챠크람",
-            "French": "Chakram serti de joyaux",
-            "Italian": "Chakram con Gioielli",
-            "Spanish": "Chakram enjoyado",
-            "TraditionalChinese": "寶石的圓月輪",
-            "Japanese": "ジュエル チャクラム",
-            "Polish": "Zdobiony Czakram",
-            "Russian": "Jeweled Chakram",
-            "BorkBorkBork": "Jooeled Chaekraem"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chakram",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "159": {
-        "ModelID": 159,
-        "Name": "Idol",
-        "Names": {
-            "English": "Idol",
-            "German": "Götzenbild",
-            "Korean": "신상",
-            "French": "Idole",
-            "Italian": "Idolo",
-            "Spanish": "Ídolo",
-            "TraditionalChinese": "法器",
-            "Japanese": "アイドル",
-            "Polish": "Totem",
-            "Russian": "Idol",
-            "BorkBorkBork": "Idul"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Idol",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "162": {
-        "ModelID": 162,
-        "Name": "Idol",
-        "Names": {
-            "English": "Idol",
-            "German": "Götzenbild",
-            "Korean": "신상",
-            "French": "Idole",
-            "Italian": "Idolo",
-            "Spanish": "Ídolo",
-            "TraditionalChinese": "法器",
-            "Japanese": "アイドル",
-            "Polish": "Totem",
-            "Russian": "Idol",
-            "BorkBorkBork": "Idul"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Idol",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "163": {
         "ModelID": 163,
         "Name": "Accursed Icon",
@@ -1381,36 +1261,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Icon",
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "165": {
-        "ModelID": 165,
-        "Name": "Accursed Icon",
-        "Names": {
-            "English": "Accursed Icon",
-            "German": "Verfluchtes Götzenbild",
-            "Korean": "저주걸린 신상",
-            "French": "Icône maudite",
-            "Italian": "Icona Maledetta",
-            "Spanish": "Icono maldito",
-            "TraditionalChinese": "詛咒圖像",
-            "Japanese": "アカースド アイコン",
-            "Polish": "Przeklęta Ikona",
-            "Russian": "Accursed Icon",
-            "BorkBorkBork": "Aeccoorsed Icun"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "Curses"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Icon",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": "Necromancer",
         "Category": null,
@@ -1443,36 +1293,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "173": {
-        "ModelID": 173,
-        "Name": "Storm Artifact",
-        "Names": {
-            "English": "Storm Artifact",
-            "German": "Sturmartefakt",
-            "Korean": "폭풍의 유물",
-            "French": "Artefact de tempête",
-            "Italian": "Manufatto della Tempesta",
-            "Spanish": "Artefacto de tormenta",
-            "TraditionalChinese": "暴風神器",
-            "Japanese": "ストーム アーティファクト",
-            "Polish": "Burzowy Artefakt",
-            "Russian": "Storm Artifact",
-            "BorkBorkBork": "Sturm Aerteeffaect"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "AirMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Storm_Artifact",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
         "Category": null,
         "SubCategory": null
     },
@@ -1632,66 +1452,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/c/c9/Frost_Artifact.png",
         "NickIndex": null,
         "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "192": {
-        "ModelID": 192,
-        "Name": "Healing Ankh",
-        "Names": {
-            "English": "Healing Ankh",
-            "German": "Heil-Ankh",
-            "Korean": "치유의 앙크 십자가",
-            "French": "Ankh de guérison",
-            "Italian": "Ankh Curativo",
-            "Spanish": "Ankh de curación",
-            "TraditionalChinese": "癒合十字架",
-            "Japanese": "ヒーリング アンク",
-            "Polish": "Uzdrawiający Ankh",
-            "Russian": "Healing Ankh",
-            "BorkBorkBork": "Heaeleeng Unkh"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "HealingPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Healing_Ankh",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
-    "195": {
-        "ModelID": 195,
-        "Name": "Protective Icon",
-        "Names": {
-            "English": "Protective Icon",
-            "German": "Schutzsymbol",
-            "Korean": "보호의 아이콘",
-            "French": "Icône protectrice",
-            "Italian": "Icona Protettiva",
-            "Spanish": "Icono de protección",
-            "TraditionalChinese": "守護圖像",
-            "Japanese": "プロテクション アイコン",
-            "Polish": "Ochronna Ikona",
-            "Russian": "Protective Icon",
-            "BorkBorkBork": "Prutecteefe-a Icun"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "ProtectionPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Protective_Icon",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
         "Category": null,
         "SubCategory": null
     },
@@ -1902,36 +1662,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Ram's_Hammer",
         "InventoryIcon": "https://wiki.guildwars.com/images/2/28/Ram%27s_Hammer.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "215": {
-        "ModelID": 215,
-        "Name": "War Hammer",
-        "Names": {
-            "English": "War Hammer",
-            "German": "Kriegshammer",
-            "Korean": "워해머",
-            "French": "Marteau de guerre",
-            "Italian": "Martello da Guerra",
-            "Spanish": "Martillo de guerra",
-            "TraditionalChinese": "戰鎚",
-            "Japanese": "ウォー ハンマー",
-            "Polish": "Bojowy Młot",
-            "Russian": "War Hammer",
-            "BorkBorkBork": "Vaer Haemmer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/War_Hammer",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -2168,66 +1898,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "255": {
-        "ModelID": 255,
-        "Name": "Cane",
-        "Names": {
-            "English": "Cane",
-            "German": "Stock",
-            "Korean": "지팡이",
-            "French": "Canne",
-            "Italian": "Canna",
-            "Spanish": "Bastón",
-            "TraditionalChinese": "藤杖",
-            "Japanese": "ステッキ",
-            "Polish": "Laska",
-            "Russian": "Cane",
-            "BorkBorkBork": "Cune-a"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "258": {
-        "ModelID": 258,
-        "Name": "Cane",
-        "Names": {
-            "English": "Cane",
-            "German": "Stock",
-            "Korean": "지팡이",
-            "French": "Canne",
-            "Italian": "Canna",
-            "Spanish": "Bastón",
-            "TraditionalChinese": "藤杖",
-            "Japanese": "ステッキ",
-            "Polish": "Laska",
-            "Russian": "Cane",
-            "BorkBorkBork": "Cune-a"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
-        "Category": null,
-        "SubCategory": null
-    },
     "259": {
         "ModelID": 259,
         "Name": "Truncheon",
@@ -2288,66 +1958,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "262": {
-        "ModelID": 262,
-        "Name": "Truncheon",
-        "Names": {
-            "English": "Truncheon",
-            "German": "Knüppel",
-            "Korean": "곤봉",
-            "French": "Jonc",
-            "Italian": "Mazza",
-            "Spanish": "Porra",
-            "TraditionalChinese": "戰儀杖",
-            "Japanese": "クラブ",
-            "Polish": "Pałka",
-            "Russian": "Truncheon",
-            "BorkBorkBork": "Trooncheun"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Truncheon",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "263": {
-        "ModelID": 263,
-        "Name": "Deadly Cesta",
-        "Names": {
-            "English": "Deadly Cesta",
-            "German": "Tödlicher Cestus",
-            "Korean": "죽음의 세스타",
-            "French": "Ceste mortelle",
-            "Italian": "Scudiscio Mortale",
-            "Spanish": "Cipión mortífero",
-            "TraditionalChinese": "致命短杖",
-            "Japanese": "デッドリー セスタ",
-            "Polish": "Śmiercionośna Cesta",
-            "Russian": "Deadly Cesta",
-            "BorkBorkBork": "Deaedly Cesta"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DeathMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Deadly_Cesta",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "265": {
         "ModelID": 265,
         "Name": "Deadly Cesta",
@@ -2398,156 +2008,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/7/7c/Deadly_Cesta.png",
         "NickIndex": null,
         "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "269": {
-        "ModelID": 269,
-        "Name": "Air Wand",
-        "Names": {
-            "English": "Air Wand",
-            "German": "Luft-Zauberstab",
-            "Korean": "바람의 지팡이",
-            "French": "Baguette d'air",
-            "Italian": "Bacchetta dell'Aria",
-            "Spanish": "Varita de aire",
-            "TraditionalChinese": "風魔杖",
-            "Japanese": "エアー ワンド",
-            "Polish": "Powietrzna Różdżka",
-            "Russian": "Air Wand",
-            "BorkBorkBork": "Aeur Vund"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "AirMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Air_Wand",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "275": {
-        "ModelID": 275,
-        "Name": "Fire Wand",
-        "Names": {
-            "English": "Fire Wand",
-            "German": "Feuer-Zauberstab",
-            "Korean": "불의 지팡이",
-            "French": "Baguette de feu",
-            "Italian": "Bacchetta del Fuoco",
-            "Spanish": "Varita de fuego",
-            "TraditionalChinese": "火魔杖",
-            "Japanese": "ファイア ワンド",
-            "Polish": "Ognista Różdżka",
-            "Russian": "Fire Wand",
-            "BorkBorkBork": "Fure-a Vund"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "FireMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Wand",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "284": {
-        "ModelID": 284,
-        "Name": "Holy Rod",
-        "Names": {
-            "English": "Holy Rod",
-            "German": "Heiliger Stecken",
-            "Korean": "신성의 지팡이",
-            "French": "Badine sacrée",
-            "Italian": "Verga Sacra",
-            "Spanish": "Vara sagrada",
-            "TraditionalChinese": "神聖手杖",
-            "Japanese": "ホーリー ロッド",
-            "Polish": "Święte Berło",
-            "Russian": "Holy Rod",
-            "BorkBorkBork": "Huly Rud"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Rod",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
-    "285": {
-        "ModelID": 285,
-        "Name": "Holy Rod",
-        "Names": {
-            "English": "Holy Rod",
-            "German": "Heiliger Stecken",
-            "Korean": "신성의 지팡이",
-            "French": "Badine sacrée",
-            "Italian": "Verga Sacra",
-            "Spanish": "Vara sagrada",
-            "TraditionalChinese": "神聖手杖",
-            "Japanese": "ホーリー ロッド",
-            "Polish": "Święte Berło",
-            "Russian": "Holy Rod",
-            "BorkBorkBork": "Huly Rud"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Rod",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
-    "290": {
-        "ModelID": 290,
-        "Name": "Smiting Rod",
-        "Names": {
-            "English": "Smiting Rod",
-            "German": "Peinigungs-Stecken",
-            "Korean": "천벌의 지팡이",
-            "French": "Badine de châtiment",
-            "Italian": "Verga Punitiva",
-            "Spanish": "Vara de ataque",
-            "TraditionalChinese": "懲戒手杖",
-            "Japanese": "スマイティング ロッド",
-            "Polish": "Ofensywne Berło",
-            "Russian": "Smiting Rod",
-            "BorkBorkBork": "Smeeteeng Rud"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "SmitingPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Rod",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
         "Category": null,
         "SubCategory": null
     },
@@ -2880,36 +2340,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "353": {
-        "ModelID": 353,
-        "Name": "Jeweled Staff",
-        "Names": {
-            "English": "Jeweled Staff",
-            "German": "Juwelen-Stab",
-            "Korean": "보석이 박힌 스태프",
-            "French": "Bâton serti",
-            "Italian": "Bastone con Gioielli",
-            "Spanish": "Báculo enjoyado",
-            "TraditionalChinese": "寶石法杖",
-            "Japanese": "ジュエル スタッフ",
-            "Polish": "Zdobiony Kostur",
-            "Russian": "Jeweled Staff",
-            "BorkBorkBork": "Jooeled Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
-        "Category": null,
-        "SubCategory": null
-    },
     "356": {
         "ModelID": 356,
         "Name": "Accursed Staff",
@@ -2993,36 +2423,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "360": {
-        "ModelID": 360,
-        "Name": "Bone Staff",
-        "Names": {
-            "English": "Bone Staff",
-            "German": "Knochen-Stab",
-            "Korean": "해골 스태프",
-            "French": "Bâton d'os",
-            "Italian": "Bastone d'Ossa",
-            "Spanish": "Báculo de hueso",
-            "TraditionalChinese": "骸骨法杖",
-            "Japanese": "ボーン スタッフ",
-            "Polish": "Kościany Kostur",
-            "Russian": "Bone Staff",
-            "BorkBorkBork": "Bune-a Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DeathMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "369": {
         "ModelID": 369,
         "Name": "Krytan Boots",
@@ -3048,36 +2448,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/d/dc/Ranger-tango-icon-20.png",
         "NickIndex": null,
         "Profession": "Ranger",
-        "Category": null,
-        "SubCategory": null
-    },
-    "383": {
-        "ModelID": 383,
-        "Name": "Holy Staff",
-        "Names": {
-            "English": "Holy Staff",
-            "German": "Heiliger Stab",
-            "Korean": "성스런 스태프",
-            "French": "Bâton sacré",
-            "Italian": "Bastone Sacro",
-            "Spanish": "Báculo divino",
-            "TraditionalChinese": "神聖法杖",
-            "Japanese": "ホーリー スタッフ",
-            "Polish": "Święty Kostur",
-            "Russian": "Holy Staff",
-            "BorkBorkBork": "Huly Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
         "Category": null,
         "SubCategory": null
     },
@@ -3203,36 +2573,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "397": {
-        "ModelID": 397,
-        "Name": "Butterfly Sword",
-        "Names": {
-            "English": "Butterfly Sword",
-            "German": "Schmetterlingsschwert",
-            "Korean": "나비검",
-            "French": "Epée papillon",
-            "Italian": "Spada della Farfalla",
-            "Spanish": "Espada de mariposa",
-            "TraditionalChinese": "蝴蝶之劍",
-            "Japanese": "バタフライ ソード",
-            "Polish": "Motyli Miecz",
-            "Russian": "Butterfly Sword",
-            "BorkBorkBork": "Bootterffly Svurd"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Butterfly_Sword",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "400": {
         "ModelID": 400,
         "Name": "Fellblade",
@@ -3273,36 +2613,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Fellblade",
         "InventoryIcon": "https://wiki.guildwars.com/images/6/62/Fellblade.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "405": {
-        "ModelID": 405,
-        "Name": "Falchion",
-        "Names": {
-            "English": "Falchion",
-            "German": "Krummschwert",
-            "Korean": "언월도",
-            "French": "Sabre",
-            "Italian": "Sciabola Falchion",
-            "Spanish": "Alfanje",
-            "TraditionalChinese": "圓月砍刀",
-            "Japanese": "ファルシオン",
-            "Polish": "Bułat",
-            "Russian": "Falchion",
-            "BorkBorkBork": "Faelcheeun"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Falchion",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -3512,36 +2822,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Shadow_Blade",
         "InventoryIcon": "https://wiki.guildwars.com/images/4/4a/Shadow_Blade.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "418": {
-        "ModelID": 418,
-        "Name": "Short Sword",
-        "Names": {
-            "English": "Short Sword",
-            "German": "Kurzschwert",
-            "Korean": "단검",
-            "French": "Epée courte",
-            "Italian": "Spada Corta",
-            "Spanish": "Espada corta",
-            "TraditionalChinese": "短劍",
-            "Japanese": "ショート ソード",
-            "Polish": "Krótki Miecz",
-            "Russian": "Short Sword",
-            "BorkBorkBork": "Shurt Svurd"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Short_Sword",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -6170,36 +5450,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "589": {
-        "ModelID": 589,
-        "Name": "Air Staff",
-        "Names": {
-            "English": "Air Staff",
-            "German": "Luft-Stab",
-            "Korean": "바람의 스태프",
-            "French": "Bâton de l'air",
-            "Italian": "Bastone dell'Aria",
-            "Spanish": "Báculo de aire",
-            "TraditionalChinese": "風之法杖",
-            "Japanese": "エアー スタッフ",
-            "Polish": "Powietrzny Kostur",
-            "Russian": "Air Staff",
-            "BorkBorkBork": "Aeur Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "AirMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Air_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
     "594": {
         "ModelID": 594,
         "Name": "Air Staff",
@@ -6383,56 +5633,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Staff",
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "611": {
-        "ModelID": 611,
-        "Name": "Fire Staff",
-        "Names": {
-            "English": "Fire Staff",
-            "German": "Feuer-Stab",
-            "Korean": "불의 스태프",
-            "French": "Bâton de feu",
-            "Italian": "Bastone del Fuoco",
-            "Spanish": "Báculo de fuego",
-            "TraditionalChinese": "火之法杖",
-            "Japanese": "ファイア スタッフ",
-            "Polish": "Ognisty Kostur",
-            "Russian": "Fire Staff",
-            "BorkBorkBork": "Fure-a Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "FireMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "612": {
-        "ModelID": 612,
-        "Name": "Water Staff",
-        "Names": {
-            "English": "Water Staff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "WaterMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Water_Staff",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": "Elementalist",
         "Category": null,
@@ -7781,7 +6981,6 @@
     },
     "808": {
         "ModelID": 808,
-        "Name": "Silver Crimson Skull Coin",
         "Names": {
             "German": "Silberne Purpurschädel-Münze",
             "French": "Pièce d'argent du Crâne Cramoisi",
@@ -7792,8 +6991,7 @@
             "Polish": "Srebrna Moneta Szkarłatnej Czaszki",
             "Russian": "Silver Crimson Skull Coin",
             "BorkBorkBork": "Seelfer Creemsun Skooll Cueen",
-            "Japanese": "シルバー クリムゾン スカル コイン",
-            "English": "Silver Crimson Skull Coin"
+            "Japanese": "シルバー クリムゾン スカル コイン"
         },
         "ItemType": "Trophy",
         "DropInfo": "",
@@ -9334,17 +8532,7 @@
         "ModelID": 897,
         "Name": "Sword Hilt",
         "Names": {
-            "English": "Sword Hilt",
-            "German": "Schwertheft",
-            "Korean": "칼자루",
-            "French": "Poignée d'épée",
-            "Italian": "Elsa della spada",
-            "Spanish": "Empuñadura de espada",
-            "TraditionalChinese": "劍柄",
-            "Japanese": "ソードの柄",
-            "Polish": "Rękojeść Miecza",
-            "Russian": "Sword Hilt",
-            "BorkBorkBork": "Svurd Heelt"
+            "English": "Sword Hilt"
         },
         "ItemType": "Rune_Mod",
         "DropInfo": "No data added yet",
@@ -9353,24 +8541,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Sword_Hilt",
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8e/Sword_Hilt.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "898": {
-        "ModelID": 898,
-        "Name": "Rune",
-        "Names": {
-            "English": "Rune"
-        },
-        "ItemType": "Rune_Mod",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Rune",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -11060,36 +10230,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1049": {
-        "ModelID": 1049,
-        "Name": "Sturdy Recurve Bow",
-        "Names": {
-            "English": "Sturdy Recurve Bow",
-            "German": "Robuster Recurvebogen",
-            "Korean": "튼튼한 곡궁",
-            "French": "Arc recourbé robuste",
-            "Italian": "Arco Ricurvo Resistente",
-            "Spanish": "Arco recurvado resistente",
-            "TraditionalChinese": "堅固反曲弓",
-            "Japanese": "スターディ リカーブ ボウ",
-            "Polish": "Wytrzymały Łuk Refleksyjny",
-            "Russian": "Sturdy Recurve Bow",
-            "BorkBorkBork": "Stoordy Recoorfe-a Boo"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Sturdy_Recurve_Bow",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1050": {
         "ModelID": 1050,
         "Name": "Composite Shortbow",
@@ -11125,36 +10265,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/0/02/Composite_Shortbow.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1053": {
-        "ModelID": 1053,
-        "Name": "Stone Chakram",
-        "Names": {
-            "English": "Stone Chakram",
-            "German": "Stein-Tschakra",
-            "Korean": "돌 차크람",
-            "French": "Chakram de pierre",
-            "Italian": "Chakram di Pietra",
-            "Spanish": "Chakram de piedra",
-            "TraditionalChinese": "石製圓月輪",
-            "Japanese": "ストーン チャクラム",
-            "Polish": "Kamienny Czakram",
-            "Russian": "Stone Chakram",
-            "BorkBorkBork": "Stune-a Chaekraem"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "IllusionMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Stone_Chakram",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
         "Category": null,
         "SubCategory": null
     },
@@ -11504,17 +10614,7 @@
         "ModelID": 1069,
         "Name": "Plagueborn Hornbow",
         "Names": {
-            "English": "Plagueborn Hornbow",
-            "German": "Pest-Hornbogen",
-            "Korean": "흡혈의 역병 각궁",
-            "French": "Arc de corne du fléau",
-            "Italian": "Arco di Corno della Peste",
-            "Spanish": "Arco de cuerno pestilente",
-            "TraditionalChinese": "吸血鬼 瘟疫角弓",
-            "Japanese": "ヴァンピリック プレイグボーン ホーンボウ",
-            "Polish": "Rogowy Łuk Zarazy",
-            "Russian": "Plagueborn Hornbow",
-            "BorkBorkBork": "Plaegooeburn Hurnboo"
+            "English": "Plagueborn Hornbow"
         },
         "ItemType": "Bow",
         "DropInfo": "",
@@ -11599,7 +10699,6 @@
     },
     "1143": {
         "ModelID": 1143,
-        "Name": "Naga Vambrace",
         "Names": {
             "German": "Naga-Armschiene",
             "French": "Brassard de Naga",
@@ -11610,8 +10709,7 @@
             "Polish": "Karwasz Nag",
             "Russian": "Naga Vambrace",
             "BorkBorkBork": "Naega Faembraece-a",
-            "Japanese": "ナーガの腕甲",
-            "English": "Naga Vambrace"
+            "Japanese": "ナーガの腕甲"
         },
         "ItemType": "Salvage",
         "DropInfo": "",
@@ -11873,36 +10971,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1182": {
-        "ModelID": 1182,
-        "Name": "Air Prism",
-        "Names": {
-            "English": "Air Prism",
-            "German": "Luftprisma",
-            "Korean": "바람의 프리즘",
-            "French": "Prisme d'air",
-            "Italian": "Prisma dell'Aria",
-            "Spanish": "Prisma de aire",
-            "TraditionalChinese": "氣之稜鏡",
-            "Japanese": "エアー プリズム",
-            "Polish": "Powietrzny Pryzmat",
-            "Russian": "Air Prism",
-            "BorkBorkBork": "Aeur Preesm"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "AirMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Air_Prism",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
     "1188": {
         "ModelID": 1188,
         "Name": "Air Staff",
@@ -11928,36 +10996,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Air_Staff",
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1191": {
-        "ModelID": 1191,
-        "Name": "Earth Staff",
-        "Names": {
-            "English": "Earth Staff",
-            "German": "Erd-Stab",
-            "Korean": "대지의 스태프",
-            "French": "Bâton de la terre",
-            "Italian": "Bastone della Terra",
-            "Spanish": "Báculo de tierra",
-            "TraditionalChinese": "大地法杖",
-            "Japanese": "アース スタッフ",
-            "Polish": "Ziemny Kostur",
-            "Russian": "Earth Staff",
-            "BorkBorkBork": "Iaert Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "EarthMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Staff",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": "Elementalist",
         "Category": null,
@@ -12004,34 +11042,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Fiery_Gladius",
         "InventoryIcon": "https://wiki.guildwars.com/images/d/d7/Fiery_Gladius.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1200": {
-        "ModelID": 1200,
-        "Name": "Corsair Trappings",
-        "Names": {
-            "English": "Corsair Trappings",
-            "German": "Korsarenausstattung",
-            "Korean": "커세어 로브",
-            "French": "Ornements de corsaire",
-            "Italian": "Ornamenti Corsari",
-            "Spanish": "Ropaje de corsario",
-            "TraditionalChinese": "海盜飾品",
-            "Japanese": "コルセアの衣服",
-            "Polish": "Korsarski Pancerz",
-            "Russian": "Corsair Trappings",
-            "BorkBorkBork": "Cursaeur Traeppeengs"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Corsair_Trappings",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -12089,66 +11099,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1210": {
-        "ModelID": 1210,
-        "Name": "Idol",
-        "Names": {
-            "English": "Idol",
-            "German": "Götzenbild",
-            "Korean": "신상",
-            "French": "Idole",
-            "Italian": "Idolo",
-            "Spanish": "Ídolo",
-            "TraditionalChinese": "法器",
-            "Japanese": "アイドル",
-            "Polish": "Totem",
-            "Russian": "Idol",
-            "BorkBorkBork": "Idul"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Idol",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1212": {
-        "ModelID": 1212,
-        "Name": "Grim Cesta",
-        "Names": {
-            "English": "Grim Cesta",
-            "German": "Grausiger Cestus",
-            "Korean": "냉기의 세스타",
-            "French": "Ceste farouche",
-            "Italian": "Scudiscio Macabro",
-            "Spanish": "Cipión macabro",
-            "TraditionalChinese": "邪魔法器",
-            "Japanese": "グリム セスタ",
-            "Polish": "Ponura Cesta",
-            "Russian": "Grim Cesta",
-            "BorkBorkBork": "Greem Cesta"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "DeathMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Grim_Cesta",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "1213": {
         "ModelID": 1213,
         "Name": "Bone Idol",
@@ -12176,36 +11126,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": "Necromancer",
-        "Category": "RareWeapon",
-        "SubCategory": null
-    },
-    "1217": {
-        "ModelID": 1217,
-        "Name": "Golden Chalice",
-        "Names": {
-            "English": "Golden Chalice",
-            "German": "Goldener Kelch",
-            "Korean": "황금 잔",
-            "French": "Calice d'or",
-            "Italian": "Calice d'Oro",
-            "Spanish": "Cáliz de oro",
-            "TraditionalChinese": "黃金聖杯",
-            "Japanese": "ゴールデン カリス",
-            "Polish": "Złoty Puchar",
-            "Russian": "Golden Chalice",
-            "BorkBorkBork": "Guldee Chaeleece-a"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "EnergyStorage"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Golden_Chalice",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
         "Category": null,
         "SubCategory": null
     },
@@ -12259,64 +11179,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/c/c9/Frost_Artifact.png",
         "NickIndex": null,
         "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1221": {
-        "ModelID": 1221,
-        "Name": "Divine Symbol",
-        "Names": {
-            "English": "Divine Symbol",
-            "German": "Göttliches Symbol",
-            "Korean": "신의 심볼",
-            "French": "Symbole divin",
-            "Italian": "Simbolo Divino",
-            "Spanish": "Símbolo divino",
-            "TraditionalChinese": "神聖符號",
-            "Japanese": "ディヴァイン シンボル",
-            "Polish": "Boski Symbol",
-            "Russian": "Divine Symbol",
-            "BorkBorkBork": "Deefeene-a Symbul"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "DivineFavor"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Symbol",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1230": {
-        "ModelID": 1230,
-        "Name": "Corsair Pauldron",
-        "Names": {
-            "English": "Corsair Pauldron",
-            "German": "Korsaren-Schulterschutz",
-            "Korean": "커세어 어깨보호대",
-            "French": "Epaulette de corsaire",
-            "Italian": "Spallone Corsaro",
-            "Spanish": "Hombrera de corsario",
-            "TraditionalChinese": "海盜護甲",
-            "Japanese": "コルセアの肩甲",
-            "Polish": "Korsarski Naramiennik",
-            "Russian": "Corsair Pauldron",
-            "BorkBorkBork": "Cursaeur Pooldrun"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Corsair_Pauldron",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
         "Category": null,
         "SubCategory": null
     },
@@ -12456,66 +11318,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1241": {
-        "ModelID": 1241,
-        "Name": "Air Wand",
-        "Names": {
-            "English": "Air Wand",
-            "German": "Luft-Zauberstab",
-            "Korean": "바람의 지팡이",
-            "French": "Baguette d'air",
-            "Italian": "Bacchetta dell'Aria",
-            "Spanish": "Varita de aire",
-            "TraditionalChinese": "風魔杖",
-            "Japanese": "エアー ワンド",
-            "Polish": "Powietrzna Różdżka",
-            "Russian": "Air Wand",
-            "BorkBorkBork": "Aeur Vund"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "AirMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Air_Wand",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1245": {
-        "ModelID": 1245,
-        "Name": "Fire Wand",
-        "Names": {
-            "English": "Fire Wand",
-            "German": "Feuer-Zauberstab",
-            "Korean": "불의 지팡이",
-            "French": "Baguette de feu",
-            "Italian": "Bacchetta del Fuoco",
-            "Spanish": "Varita de fuego",
-            "TraditionalChinese": "火魔杖",
-            "Japanese": "ファイア ワンド",
-            "Polish": "Ognista Różdżka",
-            "Russian": "Fire Wand",
-            "BorkBorkBork": "Fure-a Vund"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "FireMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Wand",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
     "1246": {
         "ModelID": 1246,
         "Name": "Dragon's Breath Wand",
@@ -12610,36 +11412,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Water_Spirit_Rod",
         "InventoryIcon": "https://wiki.guildwars.com/images/6/64/Water_Spirit_Rod.png",
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1261": {
-        "ModelID": 1261,
-        "Name": "Fire Prism",
-        "Names": {
-            "English": "Fire Prism",
-            "German": "Feuerprisma",
-            "Korean": "불의 프리즘",
-            "French": "Prisme de feu",
-            "Italian": "Prisma del Fuoco",
-            "Spanish": "Prisma de fuego",
-            "TraditionalChinese": "火之稜鏡",
-            "Japanese": "ファイア プリズム",
-            "Polish": "Ognisty Pryzmat",
-            "Russian": "Fire Prism",
-            "BorkBorkBork": "Fure-a Preesm"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "FireMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Prism",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": "Elementalist",
         "Category": null,
@@ -12752,94 +11524,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1274": {
-        "ModelID": 1274,
-        "Name": "Skree Rags",
-        "Names": {
-            "English": "Skree Rags",
-            "German": "Skree-Lumpen",
-            "Korean": "하피 로브",
-            "French": "Haillons de skree",
-            "Italian": "Stracci Skree",
-            "Spanish": "Harapo de skree",
-            "TraditionalChinese": "鳥妖破衣衫",
-            "Japanese": "スクリー ラッグ",
-            "Polish": "Łachmany Skree",
-            "Russian": "Skree Rags",
-            "BorkBorkBork": "Skree-a Raegs"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Short_Sword",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1276": {
-        "ModelID": 1276,
-        "Name": "Clairvoyant Staff",
-        "Names": {
-            "English": "Clairvoyant Staff",
-            "German": "Hellseher-Stab",
-            "Korean": "투시의 스태프",
-            "French": "Bâton de clairvoyance",
-            "Italian": "Bastone del Chiaroveggente",
-            "Spanish": "Báculo de clarividente",
-            "TraditionalChinese": "遠視法杖",
-            "Japanese": "クレアボヤント スタッフ",
-            "Polish": "Kostur Jasnowidza",
-            "Russian": "Clairvoyant Staff",
-            "BorkBorkBork": "Claeurfuyunt Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DominationMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Clairvoyant_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Mesmer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1280": {
-        "ModelID": 1280,
-        "Name": "Dark Tendril Staff",
-        "Names": {
-            "English": "Dark Tendril Staff",
-            "German": "Dunkelranken-Stab",
-            "Korean": "검은덩굴 스태프",
-            "French": "Bâton à tentacule noir",
-            "Italian": "Bastone con Ciuffo Nero",
-            "Spanish": "Báculo de zarcillo",
-            "TraditionalChinese": "黑蔓法杖",
-            "Japanese": "ダーク テンドリル スタッフ",
-            "Polish": "Kostur Mrocznych Nici",
-            "Russian": "Dark Tendril Staff",
-            "BorkBorkBork": "Daerk Tendreel Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dark_Tendril_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "1281": {
         "ModelID": 1281,
         "Name": "Accursed Staff",
@@ -12885,36 +11569,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1282": {
-        "ModelID": 1282,
-        "Name": "Evil Eye Staff",
-        "Names": {
-            "English": "Evil Eye Staff",
-            "German": "Böser-Blick-Stab",
-            "Korean": "악마의눈 스태프",
-            "French": "Bâton de mauvais oeil",
-            "Italian": "Bastone del Malocchio",
-            "Spanish": "Báculo de ojo malvado",
-            "TraditionalChinese": "邪眼法杖",
-            "Japanese": "イビル アイ スタッフ",
-            "Polish": "Kostur Złego Oka",
-            "Russian": "Evil Eye Staff",
-            "BorkBorkBork": "Ifeel Iye-a Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "Curses"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Evil_Eye_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "1283": {
         "ModelID": 1283,
         "Name": "Bone Staff",
@@ -12948,36 +11602,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Staff",
         "InventoryIcon": "https://wiki.guildwars.com/images/b/b5/Bone_Staff.png",
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1284": {
-        "ModelID": 1284,
-        "Name": "Wailing Staff",
-        "Names": {
-            "English": "Wailing Staff",
-            "German": "Klagender Stab",
-            "Korean": "통곡의 스태프",
-            "French": "Bâton des lamentations",
-            "Italian": "Bastone del Lamento",
-            "Spanish": "Báculo de lamentos",
-            "TraditionalChinese": "哭嚎法杖",
-            "Japanese": "ウェイル スタッフ",
-            "Polish": "Płaczący Kostur",
-            "Russian": "Wailing Staff",
-            "BorkBorkBork": "Vaeeeleeng Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "DeathMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Wailing_Staff",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": "Necromancer",
         "Category": null,
@@ -13043,66 +11667,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1295": {
-        "ModelID": 1295,
-        "Name": "Smiting Staff",
-        "Names": {
-            "English": "Smiting Staff",
-            "German": "Peinigungs-Stab",
-            "Korean": "천벌의 스태프",
-            "French": "Bâton de châtiment",
-            "Italian": "Bastone Punitivo",
-            "Spanish": "Báculo de ataque",
-            "TraditionalChinese": "懲戒法杖",
-            "Japanese": "スマイティング スタッフ",
-            "Polish": "Ofensywny Kostur",
-            "Russian": "Smiting Staff",
-            "BorkBorkBork": "Smeeteeng Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "SmitingPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Smiting_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1296": {
-        "ModelID": 1296,
-        "Name": "Winged Staff",
-        "Names": {
-            "English": "Winged Staff",
-            "German": "Geflügelter Stab",
-            "Korean": "날개달린 스태프",
-            "French": "Bâton ailé",
-            "Italian": "Bastone Alato",
-            "Spanish": "Báculo alado",
-            "TraditionalChinese": "翼之法杖",
-            "Japanese": "ウイング スタッフ",
-            "Polish": "Skrzydlasty Kostur",
-            "Russian": "Winged Staff",
-            "BorkBorkBork": "Veenged Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "SmitingPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Winged_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
     "1299": {
         "ModelID": 1299,
         "Name": "Channeling Staff",
@@ -13141,51 +11705,11 @@
         "Category": null,
         "SubCategory": null
     },
-    "1301": {
-        "ModelID": 1301,
-        "Name": "Brute Sword",
-        "Names": {
-            "English": "Brute Sword",
-            "German": "Grobschlächtiges Schwert",
-            "Korean": "야수검",
-            "French": "Epée brutale",
-            "Italian": "Spada del Bruto",
-            "Spanish": "Espada bastarda",
-            "TraditionalChinese": "殘忍之劍",
-            "Japanese": "ブルート ソード",
-            "Polish": "Miecz Okrutnika",
-            "Russian": "Brute Sword",
-            "BorkBorkBork": "Broote-a Svurd"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Brute_Sword",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1305": {
         "ModelID": 1305,
         "Name": "Skree Vambrace",
         "Names": {
-            "English": "Skree Vambrace",
-            "German": "Skree-Armschiene",
-            "Korean": "하피 팔보호대",
-            "French": "Brassard de skree",
-            "Italian": "Bracciali Skree",
-            "Spanish": "Brazales de skree",
-            "TraditionalChinese": "鳥妖前臂鎧甲",
-            "Japanese": "スクリーの腕甲",
-            "Polish": "Bazubandy Skree",
-            "Russian": "Skree Vambrace",
-            "BorkBorkBork": "Skree-a Faembraece-a"
+            "English": "Skree Vambrace"
         },
         "ItemType": "Salvage",
         "DropInfo": "",
@@ -13255,34 +11779,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Jade_Sword",
         "InventoryIcon": "https://wiki.guildwars.com/images/7/7a/Jade_Sword.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1326": {
-        "ModelID": 1326,
-        "Name": "Skree Helmet",
-        "Names": {
-            "English": "Skree Helmet",
-            "German": "Skree-Helm",
-            "Korean": "하피 헬멧",
-            "French": "Heaume de skree",
-            "Italian": "Elmo Skree",
-            "Spanish": "Casco de skree",
-            "TraditionalChinese": "鳥妖頭盔",
-            "Japanese": "スクリー ヘルム",
-            "Polish": "Hełm Skree",
-            "Russian": "Skree Helmet",
-            "BorkBorkBork": "Skree-a Helmet"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Skree_Helmet",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -13434,36 +11930,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1343": {
-        "ModelID": 1343,
-        "Name": "Avian Axe",
-        "Names": {
-            "English": "Avian Axe",
-            "German": "Vogelaxt",
-            "Korean": "매의 도끼",
-            "French": "Hache aviaire",
-            "Italian": "Ascia Aviaria",
-            "Spanish": "Hacha de ave",
-            "TraditionalChinese": "禽斧",
-            "Japanese": "エビアン アックス",
-            "Polish": "Ptasi Topór",
-            "Russian": "Avian Axe",
-            "BorkBorkBork": "Aefeeun Aexe-a"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Avian_Axe",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1344": {
         "ModelID": 1344,
         "Name": "Barbed Axe",
@@ -13512,66 +11978,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Barbed_Axe",
         "InventoryIcon": "https://wiki.guildwars.com/images/1/1e/Barbed_Axe.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1345": {
-        "ModelID": 1345,
-        "Name": "Heket Axe",
-        "Names": {
-            "English": "Heket Axe",
-            "German": "Heket-Axt",
-            "Korean": "두꺼비 도끼",
-            "French": "Hache d'Heket",
-            "Italian": "Ascia di Ecate",
-            "Spanish": "Hacha de heket",
-            "TraditionalChinese": "哈克斧",
-            "Japanese": "ヘケット アックス",
-            "Polish": "Hekecki Topór",
-            "Russian": "Heket Axe",
-            "BorkBorkBork": "Heket Aexe-a"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Axe",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1346": {
-        "ModelID": 1346,
-        "Name": "Dual Winged Axe",
-        "Names": {
-            "English": "Dual Winged Axe",
-            "German": "Doppelschwingenaxt",
-            "Korean": "쌍날 도끼",
-            "French": "Hache à deux ailes",
-            "Italian": "Ascia a Due Ali",
-            "Spanish": "Hacha alada doble",
-            "TraditionalChinese": "雙翼斧",
-            "Japanese": "デュアル ウイング アックス",
-            "Polish": "Dwuskrzydły Topór",
-            "Russian": "Dual Winged Axe",
-            "BorkBorkBork": "Dooael Veenged Aexe-a"
-        },
-        "ItemType": "Axe",
-        "DropInfo": "",
-        "Attributes": [
-            "AxeMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dual_Winged_Axe",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -13673,7 +12079,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/c/c6/Stygian_Reaver.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1358": {
@@ -13767,66 +12173,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1360": {
-        "ModelID": 1360,
-        "Name": "Bramble Hornbow",
-        "Names": {
-            "English": "Bramble Hornbow",
-            "German": "Dornenranken-Hornbogen",
-            "Korean": "가시나무 각궁",
-            "French": "Arc de cornes en ronces",
-            "Italian": "Arco di Corno di Rovo",
-            "Spanish": "Arco de cuerno de zarzas",
-            "TraditionalChinese": "荊棘角弓",
-            "Japanese": "ブランブル ホーンボウ",
-            "Polish": "Cierniowy Rogowy Łuk",
-            "Russian": "Bramble Hornbow",
-            "BorkBorkBork": "Braemble-a Hurnboo"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Hornbow",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1364": {
-        "ModelID": 1364,
-        "Name": "Dragon Hornbow",
-        "Names": {
-            "English": "Dragon Hornbow",
-            "German": "Drachen-Hornbogen",
-            "Korean": "드래곤 각궁",
-            "French": "Arc de corne du dragon",
-            "Italian": "Arco di Corno del Drago",
-            "Spanish": "Arco de cuerno de dragón",
-            "TraditionalChinese": "龍之角弓",
-            "Japanese": "ドラゴン ホーンボウ",
-            "Polish": "Smoczy Łuk Rogowy",
-            "Russian": "Dragon Hornbow",
-            "BorkBorkBork": "Draegun Hurnboo"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Dragon_Hornbow",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1365": {
         "ModelID": 1365,
         "Name": "Caged Shortbow",
@@ -13860,36 +12206,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Caged_Shortbow",
         "InventoryIcon": "https://wiki.guildwars.com/images/a/a6/Caged_Shortbow.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1369": {
-        "ModelID": 1369,
-        "Name": "Aureate Longbow",
-        "Names": {
-            "English": "Aureate Longbow",
-            "German": "Prächtiger Langbogen",
-            "Korean": "화려한 장궁",
-            "French": "Arc long auréat",
-            "Italian": "Arco Lungo Aureo",
-            "Spanish": "Arco largo áureo",
-            "TraditionalChinese": "鍍金長弓",
-            "Japanese": "オーリアト ロングボウ",
-            "Polish": "Złocisty Długi Łuk",
-            "Russian": "Aureate Longbow",
-            "BorkBorkBork": "Ooreaete-a Lungboo"
-        },
-        "ItemType": "Bow",
-        "DropInfo": "",
-        "Attributes": [
-            "Marksmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Aureate_Longbow",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -14190,96 +12506,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1390": {
-        "ModelID": 1390,
-        "Name": "Spined Focus",
-        "Names": {
-            "English": "Spined Focus",
-            "German": "Dornen-Fokus",
-            "Korean": "가시박힌 포커스",
-            "French": "Focus épineux",
-            "Italian": "Focus Spinato",
-            "Spanish": "Foco espinado",
-            "TraditionalChinese": "尖刺聚能器",
-            "Japanese": "スパイン フォーカス",
-            "Polish": "Kolczasty Fokus",
-            "Russian": "Spined Focus",
-            "BorkBorkBork": "Speened Fucoos"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "BloodMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Spined_Focus",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1398": {
-        "ModelID": 1398,
-        "Name": "Unholy Staff",
-        "Names": {
-            "English": "Unholy Staff",
-            "German": "Unheiliger Stab",
-            "Korean": "부정한 스태프",
-            "French": "Bâton impie",
-            "Italian": "Bastone Empio",
-            "Spanish": "Báculo impío",
-            "TraditionalChinese": "邪惡法杖",
-            "Japanese": "アンホーリー スタッフ",
-            "Polish": "Kostur Bezbożności",
-            "Russian": "Unholy Staff",
-            "BorkBorkBork": "Unhuly Staeffff"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "Curses"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Unholy_Staff",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1399": {
-        "ModelID": 1399,
-        "Name": "Bone Charm",
-        "Names": {
-            "English": "Bone Charm",
-            "German": "Knochentalisman",
-            "Korean": "뼈 부적",
-            "French": "Charme d'os",
-            "Italian": "Amuleto d'Ossa",
-            "Spanish": "Amuleto de hueso",
-            "TraditionalChinese": "白骨符咒",
-            "Japanese": "ボーン チャーム",
-            "Polish": "Kościany Amulet",
-            "Russian": "Bone Charm",
-            "BorkBorkBork": "Bune-a Chaerm"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "DeathMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Bone_Charm",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
     "1400": {
         "ModelID": 1400,
         "Name": "Boneclaw Staff",
@@ -14543,152 +12769,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/0/08/Barrel_Hammer.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1417": {
-        "ModelID": 1417,
-        "Name": "Ivory Hammer",
-        "Names": {
-            "English": "Ivory Hammer",
-            "German": "Elfenbeinhammer",
-            "Korean": "상아 해머",
-            "French": "Marteau en ivoire",
-            "Italian": "Martello d'Avorio",
-            "Spanish": "Martillo de marfil",
-            "TraditionalChinese": "象牙鎚",
-            "Japanese": "アイボリー ハンマー",
-            "Polish": "Młot Z Kości Słoniowej",
-            "Russian": "Ivory Hammer",
-            "BorkBorkBork": "Ifury Haemmer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Ivory_Hammer",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1422": {
-        "ModelID": 1422,
-        "Name": "Granite Hammer",
-        "Names": {
-            "English": "Granite Hammer",
-            "German": "Granithammer",
-            "Korean": "화강암 해머",
-            "French": "Marteau de granite",
-            "Italian": "Martello di Granito",
-            "Spanish": "Martillo de granito",
-            "TraditionalChinese": "花崗石鎚",
-            "Japanese": "グラナイト ハンマー",
-            "Polish": "Granitowy Młot",
-            "Russian": "Granite Hammer",
-            "BorkBorkBork": "Gruneete-a Haemmer"
-        },
-        "ItemType": "Hammer",
-        "DropInfo": "",
-        "Attributes": [
-            "HammerMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Granite_Hammer",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1423": {
-        "ModelID": 1423,
-        "Name": "Stolen Goods",
-        "Names": {
-            "English": "Stolen Goods",
-            "German": "Gestohlene Ware",
-            "Korean": "훔친 물건",
-            "French": "Biens volés",
-            "Italian": "Merci Rubate",
-            "Spanish": "Objetos robados",
-            "TraditionalChinese": "失竊品",
-            "Japanese": "盗品",
-            "Polish": "Skradzione Towary",
-            "Russian": "Stolen Goods",
-            "BorkBorkBork": "Stulee Guuds"
-        },
-        "ItemType": "CC_Shards",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Stolen_Goods",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1434": {
-        "ModelID": 1434,
-        "Name": "Half-Digested Boots",
-        "Names": {
-            "English": "Half-Digested Boots",
-            "German": "Halbgegessene Stiefel",
-            "Korean": "반쯤 손상된 부츠",
-            "French": "Bottes dégurgitées",
-            "Italian": "Stivali Digeriti Parzialmente",
-            "Spanish": "Par de botas medio digeridas",
-            "TraditionalChinese": "未消化的鞋子",
-            "Japanese": "半分消化されたブーツ",
-            "Polish": "Niestrawione Buty",
-            "Russian": "Half-Digested Boots",
-            "BorkBorkBork": "Haelff-Deegested Buuts"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Half-Digested_Boots",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1435": {
-        "ModelID": 1435,
-        "Name": "Crimson Claw Scepter",
-        "Names": {
-            "English": "Crimson Claw Scepter",
-            "German": "Purpurklauen-Zepter",
-            "Korean": "핏빛발톱 홀",
-            "French": "Sceptre de griffe cramoisie",
-            "Italian": "Scettro dell'Artiglio Cremisi",
-            "Spanish": "Cetro carmesí",
-            "TraditionalChinese": "血紅爪權杖",
-            "Japanese": "クリムゾン クロウ セプター",
-            "Polish": "Berło Karmazynowego Szponu",
-            "Russian": "Crimson Claw Scepter",
-            "BorkBorkBork": "Creemsun Claev Scepter"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "SoulReaping"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Crimson_Claw_Scepter",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
         "Category": null,
         "SubCategory": null
     },
@@ -15052,8 +13132,7 @@
         "ItemType": "Scythe",
         "DropInfo": "",
         "Attributes": [
-            "ScytheMastery",
-            "None_"
+            "ScytheMastery"
         ],
         "CommonSalvage": {
             "Iron Ingot": {
@@ -15232,96 +13311,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1499": {
-        "ModelID": 1499,
-        "Name": "Vabbian Tower Shield",
-        "Names": {
-            "English": "Vabbian Tower Shield",
-            "German": "Vaabi-Turmschild",
-            "Korean": "바비 타워형 방패",
-            "French": "Pavois vabbian",
-            "Italian": "Scudo della Torre Vabbiana",
-            "Spanish": "Escudo torre de Vabbi",
-            "TraditionalChinese": "瓦貝塔盾",
-            "Japanese": "ヴァアビ タワー シールド",
-            "Polish": "Vabbiańska Tarcza Prostokątna",
-            "Russian": "Vabbian Tower Shield",
-            "BorkBorkBork": "Faebbeeun Tooer Sheeeld"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Motivation"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Vabbian_Tower_Shield",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1504": {
-        "ModelID": 1504,
-        "Name": "Vabbian Bastion",
-        "Names": {
-            "English": "Vabbian Bastion",
-            "German": "Vaabi-Bollwerk",
-            "Korean": "바비 이지스",
-            "French": "Bastion vabbian",
-            "Italian": "Bastione Vabbiano",
-            "Spanish": "Bastión de Vabbi",
-            "TraditionalChinese": "瓦貝堡壘",
-            "Japanese": "ヴァアビ バスチャン",
-            "Polish": "Vabbiański Bastion",
-            "Russian": "Vabbian Bastion",
-            "BorkBorkBork": "Faebbeeun Baesshun"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Command"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Vabbian_Bastion",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1510": {
-        "ModelID": 1510,
-        "Name": "Windblade Spear",
-        "Names": {
-            "English": "Windblade Spear",
-            "German": "Windklingen-Speer",
-            "Korean": "칼바람 창",
-            "French": "Javelot Lame-vent",
-            "Italian": "Lancia con Lama del Vento",
-            "Spanish": "Lanza del viento",
-            "TraditionalChinese": "風刃矛",
-            "Japanese": "ウインドブレード スピア",
-            "Polish": "Włócznia Wietrznego Ostrza",
-            "Russian": "Windblade Spear",
-            "BorkBorkBork": "Veendblaede-a Speaer"
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Windblade_Spear",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1513": {
         "ModelID": 1513,
         "Name": "Banded Spear",
@@ -15432,23 +13421,11 @@
         "ModelID": 1517,
         "Name": "Crenellated Spear",
         "Names": {
-            "English": "Crenellated Spear",
-            "German": "Krenelierter Speer",
-            "Korean": "총안 창",
-            "French": "Javelot crénelé",
-            "Italian": "Lancia Merlata",
-            "Spanish": "Lanza dentada",
-            "TraditionalChinese": "華麗之矛",
-            "Japanese": "クレネレイト スピア",
-            "Polish": "Krenelażowa Włócznia",
-            "Russian": "Crenellated Spear",
-            "BorkBorkBork": "Crenellaeted Speaer"
+            "English": "Crenellated Spear"
         },
         "ItemType": "Spear",
         "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
+        "Attributes": [],
         "CommonSalvage": {
             "Iron Ingot": {
                 "Amount": -1,
@@ -15627,36 +13604,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Spiraling_Spear",
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8a/Spiraling_Spear.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1522": {
-        "ModelID": 1522,
-        "Name": "Sunburst Spear",
-        "Names": {
-            "English": "Sunburst Spear",
-            "German": "Sonnensplitter-Speer",
-            "Korean": "햇살문양 창",
-            "French": "Javelot solaire",
-            "Italian": "Lancia Raggiante",
-            "Spanish": "Lanza radiante",
-            "TraditionalChinese": "日照之矛",
-            "Japanese": "サンバースト スピア",
-            "Polish": "Włócznia Słonecznej Eksplozji",
-            "Russian": "Sunburst Spear",
-            "BorkBorkBork": "Soonboorst Speaer"
-        },
-        "ItemType": "Spear",
-        "DropInfo": "",
-        "Attributes": [
-            "SpearMastery"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Sunburst_Spear",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -15988,36 +13935,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1571": {
-        "ModelID": 1571,
-        "Name": "Broadblade Scimitar",
-        "Names": {
-            "English": "Broadblade Scimitar",
-            "German": "Breitklingen-Krummschwert",
-            "Korean": "넓은날 시미터",
-            "French": "Cimeterre à large lame",
-            "Italian": "Scimitarra a Lama Ampia",
-            "Spanish": "Cimitarra ancha",
-            "TraditionalChinese": "闊刃半月刀",
-            "Japanese": "ブロードブレード シミター",
-            "Polish": "Szeroki Sejmitar",
-            "Russian": "Broadblade Scimitar",
-            "BorkBorkBork": "Bruaedblaede-a Sceemeetaer"
-        },
-        "ItemType": "Sword",
-        "DropInfo": "",
-        "Attributes": [
-            "Swordsmanship"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Broadblade_Scimitar",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1573": {
         "ModelID": 1573,
         "Name": "Salient Sword",
@@ -16197,17 +14114,7 @@
         "ModelID": 1581,
         "Name": "Margonite Mask",
         "Names": {
-            "English": "Margonite Mask",
-            "German": "Margoniter-Maske",
-            "Korean": "마고나이트 마스크",
-            "French": "Masque margonite",
-            "Italian": "Maschera Margonita",
-            "Spanish": "Máscara de margonita",
-            "TraditionalChinese": "瑪骨奈面具",
-            "Japanese": "マーゴナイト マスク",
-            "Polish": "Margonicka Maska",
-            "Russian": "Margonite Mask",
-            "BorkBorkBork": "Maerguneete-a Maesk"
+            "English": "Margonite Mask"
         },
         "ItemType": "Trophy",
         "DropInfo": "Dropped by data to be added",
@@ -16456,36 +14363,6 @@
         "Category": "Trophy",
         "SubCategory": null
     },
-    "1594": {
-        "ModelID": 1594,
-        "Name": "Kournan Defender",
-        "Names": {
-            "English": "Kournan Defender",
-            "German": "Kourna-Verteidiger",
-            "Korean": "쿠르나 방패",
-            "French": "Défenseur kournan",
-            "Italian": "Difensore Kournano",
-            "Spanish": "Defensor kourniano",
-            "TraditionalChinese": "高楠防禦者",
-            "Japanese": "クールナ ディフェンダー",
-            "Polish": "Kournański Obrońca",
-            "Russian": "Kournan Defender",
-            "BorkBorkBork": "Kuoornun Deffender"
-        },
-        "ItemType": "Shield",
-        "DropInfo": "",
-        "Attributes": [
-            "Strength"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Kournan_Defender",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1597": {
         "ModelID": 1597,
         "Name": "Insect Appendage",
@@ -16720,17 +14597,7 @@
         "ModelID": 1610,
         "Name": "Skree Wing",
         "Names": {
-            "English": "Skree Wing",
-            "German": "Skree-Flügel",
-            "Korean": "하피 깃털",
-            "French": "Aile de skree",
-            "Italian": "Ala di Skree",
-            "Spanish": "Ala de skree",
-            "TraditionalChinese": "鳥妖翅膀",
-            "Japanese": "スクリーの翼",
-            "Polish": "Skrzydło Skree",
-            "Russian": "Skree Wing",
-            "BorkBorkBork": "Skree-a Veeng"
+            "English": "Skree Wing"
         },
         "ItemType": "Trophy",
         "DropInfo": "Dropped by data to be added",
@@ -16775,7 +14642,7 @@
             "Russian": "Krytan Gloves",
             "BorkBorkBork": "Krytun Glufes"
         },
-        "ItemType": "Trophy",
+        "ItemType": "Gloves",
         "DropInfo": "",
         "Attributes": [],
         "CommonSalvage": {},
@@ -16885,26 +14752,6 @@
         "Category": "Trophy",
         "SubCategory": null
     },
-    "1627": {
-        "ModelID": 1627,
-        "Name": "Holy Vial",
-        "Names": {
-            "English": "Holy Vial"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "ProtectionPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Vial",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
-        "Category": null,
-        "SubCategory": null
-    },
     "1632": {
         "ModelID": 1632,
         "Name": "Giant's Boots",
@@ -17001,85 +14848,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1642": {
-        "ModelID": 1642,
-        "Name": "Blighted Rod",
-        "Names": {
-            "English": "Blighted Rod",
-            "German": "Verderbter Stecken",
-            "Korean": "역병의 막대",
-            "French": "Badine du fléau",
-            "Italian": "Verga Appassita",
-            "Spanish": "Vara infectada",
-            "TraditionalChinese": "毀滅手杖",
-            "Japanese": "ブライト ロッド",
-            "Polish": "Zaśniedziałe Berło",
-            "Russian": "Blighted Rod",
-            "BorkBorkBork": "Bleeghted Rud"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "Curses"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Blighted_Rod",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Necromancer",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1647": {
-        "ModelID": 1647,
-        "Name": "Watercrest Wand",
-        "Names": {
-            "English": "Watercrest Wand"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "None_",
-            "WaterMagic"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/No_Item",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Elementalist",
-        "Category": null,
-        "SubCategory": null
-    },
-    "1654": {
-        "ModelID": 1654,
-        "Name": "Heket Robe",
-        "Names": {
-            "English": "Heket Robe",
-            "German": "Heket-Robe",
-            "Korean": "두꺼비 로브",
-            "French": "Robe d'Heket",
-            "Italian": "Veste di Ecate",
-            "Spanish": "Ropón de heket",
-            "TraditionalChinese": "哈克蛙長袍",
-            "Japanese": "ヘケットの衣",
-            "Polish": "Szaty Heketa",
-            "Russian": "Heket Robe",
-            "BorkBorkBork": "Heket Rube-a"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Robe",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1655": {
         "ModelID": 1655,
         "Name": "Heket Garment",
@@ -17170,24 +14938,6 @@
         },
         "WikiURL": "https://wiki.guildwars.com/wiki/Heket_Armor",
         "InventoryIcon": "https://wiki.guildwars.com/images/e/e8/Salvage_Heavy_Armor.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1657": {
-        "ModelID": 1657,
-        "Name": "Silken Spider Web",
-        "Names": {
-            "English": "Silken Spider Web"
-        },
-        "ItemType": "CC_Shards",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Silken Spider Web",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -17459,17 +15209,7 @@
         "ModelID": 1675,
         "Name": "Behemoth Hide",
         "Names": {
-            "English": "Behemoth Hide",
-            "German": "Behemoth-Haut",
-            "Korean": "베헤모스 가죽",
-            "French": "Fourrure de Béhémoth",
-            "Italian": "Pelle di Behemoth",
-            "Spanish": "Trozo de piel de behemot",
-            "TraditionalChinese": "巨獸皮革",
-            "Japanese": "ベヒモスの皮",
-            "Polish": "Skóra Behemota",
-            "Russian": "Behemoth Hide",
-            "BorkBorkBork": "Behemut Heede-a"
+            "English": "Behemoth Hide"
         },
         "ItemType": "Trophy",
         "DropInfo": "Dropped by Behemoth Gravebane, Scytheclaw Behemoth in Vabii - Nightfall",
@@ -17811,34 +15551,6 @@
         "Category": null,
         "SubCategory": null
     },
-    "1694": {
-        "ModelID": 1694,
-        "Name": "Half-Digested Armor",
-        "Names": {
-            "English": "Half-Digested Armor",
-            "German": "Halbgegessene Rüstung",
-            "Korean": "반쯤 손상된 갑옷",
-            "French": "Armure dégurgitée",
-            "Italian": "Armatura Digerita Parzialmente",
-            "Spanish": "Armadura medio digerida",
-            "TraditionalChinese": "未消化的盔甲",
-            "Japanese": "半分消化された防具",
-            "Polish": "Niestrawiona Zbroja",
-            "Russian": "Half-Digested Armor",
-            "BorkBorkBork": "Haelff-Deegested Aermur"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Half-Digested_Armor",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
     "1695": {
         "ModelID": 1695,
         "Name": "Ethereal Garment",
@@ -17872,120 +15584,6 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/c/cd/Ethereal_Garment.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1696": {
-        "ModelID": 1696,
-        "Name": "Margonite Robes",
-        "Names": {
-            "English": "Margonite Robes",
-            "German": "Margoniter-Robe",
-            "Korean": "마고나이트 로브",
-            "French": "Robe margonite",
-            "Italian": "Toga Margonita",
-            "Spanish": "Ropón de margonita",
-            "TraditionalChinese": "瑪骨奈法袍",
-            "Japanese": "マーゴナイト ローブ",
-            "Polish": "Margonickie Szaty",
-            "Russian": "Margonite Robes",
-            "BorkBorkBork": "Maerguneete-a Rubes"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Margonite_Robes",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1697": {
-        "ModelID": 1697,
-        "Name": "Margonite Tunic",
-        "Names": {
-            "English": "Margonite Tunic",
-            "German": "Margoniter-Tunika",
-            "Korean": "마고나이트 튜닉",
-            "French": "Tunique margonite",
-            "Italian": "Casacca Margonita",
-            "Spanish": "Túnica de margonita",
-            "TraditionalChinese": "瑪骨奈罩衫",
-            "Japanese": "マーゴナイト チュニック",
-            "Polish": "Margonicka Tunika",
-            "Russian": "Margonite Tunic",
-            "BorkBorkBork": "Maerguneete-a Tooneec"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Margonite_Tunic",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1698": {
-        "ModelID": 1698,
-        "Name": "Margonite Armor",
-        "Names": {
-            "English": "Margonite Armor",
-            "German": "Margoniter-Rüstung",
-            "Korean": "마고나이트 갑옷",
-            "French": "Armure margonite",
-            "Italian": "Armatura Margonita",
-            "Spanish": "Armadura de margonita",
-            "TraditionalChinese": "瑪骨奈盔甲",
-            "Japanese": "マーゴナイトアーマー",
-            "Polish": "Margonicka Zbroja",
-            "Russian": "Margonite Armor",
-            "BorkBorkBork": "Maerguneete-a Aermur"
-        },
-        "ItemType": "Salvage",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Margonite_Armor",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "1700": {
-        "ModelID": 1700,
-        "Name": "Eternal Flame Wand",
-        "Names": {
-            "English": "Eternal Flame Wand",
-            "German": "Ewige Flamme-Zauberstab",
-            "Korean": "화염의 지팡이",
-            "French": "Baguette de flamme éternelle",
-            "Italian": "Bacchetta della Fiamma Eterna",
-            "Spanish": "Varita de fuego eterno",
-            "TraditionalChinese": "恆火魔杖",
-            "Japanese": "エターナル フレイム ワンド",
-            "Polish": "Różdżka Wiecznego Płomienia",
-            "Russian": "Eternal Flame Wand",
-            "BorkBorkBork": "Iternael Flaeme-a Vund"
-        },
-        "ItemType": "Wand",
-        "DropInfo": "",
-        "Attributes": [
-            "HealingPrayers"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Eternal_Flame_Wand",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": "Monk",
         "Category": null,
         "SubCategory": null
     },
@@ -18932,7 +16530,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/7/73/Obsidian_Edge.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1914": {
@@ -19111,7 +16709,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1956": {
@@ -19147,7 +16745,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1957": {
@@ -19183,7 +16781,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1958": {
@@ -19219,7 +16817,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1959": {
@@ -19255,7 +16853,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1960": {
@@ -19291,7 +16889,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1961": {
@@ -19327,7 +16925,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1962": {
@@ -19363,7 +16961,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1963": {
@@ -19399,7 +16997,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1964": {
@@ -19435,7 +17033,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1965": {
@@ -19471,7 +17069,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1966": {
@@ -19507,7 +17105,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1967": {
@@ -19543,7 +17141,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1968": {
@@ -19579,7 +17177,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1969": {
@@ -19615,7 +17213,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1970": {
@@ -19651,7 +17249,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1971": {
@@ -19687,7 +17285,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1972": {
@@ -19723,7 +17321,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1973": {
@@ -19759,7 +17357,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1974": {
@@ -19795,7 +17393,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1975": {
@@ -19831,7 +17429,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/8/8b/Frog_Scepter.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1978": {
@@ -19869,7 +17467,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/0/0f/Draconic_Scythe.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "1987": {
@@ -20895,37 +18493,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/5/5e/Fox%27s_Greed.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
-        "SubCategory": null
-    },
-    "2082": {
-        "ModelID": 2082,
-        "Name": "Fox's Greed",
-        "Names": {
-            "English": "Fox's Greed",
-            "German": "Gier des Fuchses",
-            "Korean": "여우의 욕심",
-            "French": "Avidité du renard",
-            "Italian": "Cupidigia della Volpe",
-            "Spanish": "Hambre de zorro",
-            "TraditionalChinese": "狐狸的貪婪",
-            "Japanese": "フォックス グリード",
-            "Polish": "Chciwość Lisa",
-            "Russian": "Fox's Greed",
-            "BorkBorkBork": "Fux's Greed"
-        },
-        "ItemType": "Offhand",
-        "DropInfo": "",
-        "Attributes": [
-            "SpawningPower"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Fox's_Greed",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2085": {
@@ -20955,7 +18523,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/1/1c/Wolf%27s_Greed.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2113": {
@@ -21089,7 +18657,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/2/22/Stoneblade.jpg/175px-Stoneblade.jpg",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2198": {
@@ -21769,7 +19337,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/f/f7/Legendary_Sword.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2306": {
@@ -21991,7 +19559,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/5/5d/Crystal_Flame_Staff.png",
         "NickIndex": null,
         "Profession": "Elementalist",
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2393": {
@@ -22260,7 +19828,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/2/2b/Unicorn%27s_Wrath.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2449": {
@@ -22290,37 +19858,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/c/cc/Death%27s_Head.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
-        "SubCategory": null
-    },
-    "2451": {
-        "ModelID": 2451,
-        "Name": "Snake's Envy",
-        "Names": {
-            "English": "Snake's Envy",
-            "German": "Neid der Schlange",
-            "Korean": "독사의 질투(워리어)",
-            "French": "Envie du serpent",
-            "Italian": "Invidia del Serpente",
-            "Spanish": "Envidia de serpiente",
-            "TraditionalChinese": "蛇的妒忌",
-            "Japanese": "スネーク エンヴィー",
-            "Polish": "Zawiść Węża",
-            "Russian": "Snake's Envy",
-            "BorkBorkBork": "Snaeke-a's Infy"
-        },
-        "ItemType": "Staff",
-        "DropInfo": "",
-        "Attributes": [
-            "SoulReaping"
-        ],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Snake's_Envy",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2454": {
@@ -22378,7 +19916,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/4/4d/Hourglass_Staff.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "2511": {
@@ -22692,24 +20230,6 @@
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Salvage_Kit",
         "InventoryIcon": "https://wiki.guildwars.com/images/3/38/Salvage_Kit.png",
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "2993": {
-        "ModelID": 2993,
-        "Name": "Salvage Kit",
-        "Names": {
-            "English": "Salvage Kit"
-        },
-        "ItemType": "Kit",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Salvage_Kit",
-        "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
         "Category": null,
@@ -24155,7 +21675,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/thumb/6/67/Disambig_icon.png/31px-Disambig_icon.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "11766": {
@@ -24792,7 +22312,7 @@
         "InventoryIcon": "https://wiki.guildwars.com/images/9/9a/Exalted_Aegis.png",
         "NickIndex": null,
         "Profession": null,
-        "Category": "RareWeapon",
+        "Category": null,
         "SubCategory": null
     },
     "15477": {
@@ -25267,17 +22787,7 @@
         "ModelID": 15559,
         "Name": "Kournan Key",
         "Names": {
-            "English": "Kournan Key",
-            "German": "Kourna-Schlüssel",
-            "Korean": "쿠르나 열쇠",
-            "French": "Clé kournan",
-            "Italian": "Chiave Kournana",
-            "Spanish": "Llave de Kourna",
-            "TraditionalChinese": "高楠鑰匙",
-            "Japanese": "クールナのカギ",
-            "Polish": "Kournański Klucz",
-            "Russian": "Kournan Key",
-            "BorkBorkBork": "Kuoornun Key"
+            "English": "Kournan Key"
         },
         "ItemType": "Key",
         "DropInfo": "Foes Kourna",
@@ -25308,24 +22818,6 @@
         "Profession": null,
         "Category": "Key",
         "SubCategory": "NightfallKey"
-    },
-    "15564": {
-        "ModelID": 15564,
-        "Name": "Rare Antique Elonian Vase",
-        "Names": {
-            "English": "Rare Antique Elonian Vase"
-        },
-        "ItemType": "Quest_Item",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Rare_Antique_Elonian_Vase",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
     },
     "15583": {
         "ModelID": 15583,
@@ -25989,7 +23481,7 @@
         "Names": {
             "English": "Trade Contract"
         },
-        "ItemType": "Trophy",
+        "ItemType": "Unknown",
         "DropInfo": "No data added yet",
         "Attributes": [],
         "CommonSalvage": {},
@@ -27121,24 +24613,6 @@
         "CommonSalvage": {},
         "RareSalvage": {},
         "WikiURL": "https://wiki.guildwars.com/wiki/Inscription:_Offhand",
-        "InventoryIcon": null,
-        "NickIndex": null,
-        "Profession": null,
-        "Category": null,
-        "SubCategory": null
-    },
-    "19132": {
-        "ModelID": 19132,
-        "Name": "Insignia",
-        "Names": {
-            "English": "Insignia"
-        },
-        "ItemType": "Rune_Mod",
-        "DropInfo": "",
-        "Attributes": [],
-        "CommonSalvage": {},
-        "RareSalvage": {},
-        "WikiURL": "https://wiki.guildwars.com/wiki/Insignia",
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,

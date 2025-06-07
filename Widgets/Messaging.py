@@ -151,6 +151,21 @@ def InviteToParty(index, message):
     ConsoleLog(MODULE_NAME, f"InviteToParty message processed and finished.", Console.MessageType.Info)
     
 #endregion
+
+#region LeaveParty
+def LeaveParty(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing LeaveParty message: {message}", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    GLOBAL_CACHE.Party.LeaveParty()
+    yield from Routines.Yield.wait(100)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, f"LeaveParty message processed and finished.", Console.MessageType.Info)
+#endregion
+
 #region TravelToMap
     
 def TravelToMap(index, message):
@@ -434,6 +449,10 @@ def ProcessMessages():
         case SharedCommandType.MerchantItems:
             pass
         case SharedCommandType.MerchantMaterials:
+            pass
+        case SharedCommandType.LeaveParty:
+            ConsoleLog(MODULE_NAME, f"Processing LeaveParty message: {message}", Console.MessageType.Info)
+            GLOBAL_CACHE.Coroutines.append(LeaveParty(index, message))            
             pass
         case SharedCommandType.LootEx:
             #privately Handled Command, by Frenkey

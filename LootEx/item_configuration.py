@@ -16,6 +16,7 @@ class ConfigurationCondition:
         self.inherent_mod: Optional[str] = None
         self.old_school_only: bool = False
         self.threshold: Optional[int] = None
+        self.keep_in_inventory: int = 0
 
         self.rarities: dict[Rarity, bool] = {
             rarity: False for rarity in Rarity}
@@ -35,7 +36,7 @@ class ItemConfiguration:
             "conditions": [
                 {
                     "name": condition.name,
-                    "item_type": condition.item_type.name if condition.item_type else None,
+                    "keep_in_inventory": condition.keep_in_inventory,
                     "damage_range": (condition.damage_range.min, condition.damage_range.max)
                     if condition.damage_range
                     else None,
@@ -47,7 +48,7 @@ class ItemConfiguration:
                     "rarities": {
                         rarity.name: value for rarity, value in condition.rarities.items()
                     },
-                    "item_acactiontion": condition.action.name,
+                    "action": condition.action.name,
                     "requirements": {
                         attribute.name: (requirement.min, requirement.max)
                         for attribute, requirement in condition.requirements.items()
@@ -72,16 +73,10 @@ class ItemConfiguration:
             if not name:
                 raise ValueError("Condition name is required")
             
-            condition = ConfigurationCondition(name)
-            
-            item_type = condition_data.get("item_type", None)
-            item_type = (
-                ItemType[item_type]
-                if item_type in ItemType.__members__
-                else None
-            )
-            
+            condition = ConfigurationCondition(name)            
             condition.action = ItemAction[condition_data.get("action", "STASH")]
+            
+            condition.keep_in_inventory = condition_data.get("keep_in_inventory", 0)
             
             damage_range = condition_data.get("damage_range", None)
             damage_range = (
@@ -90,9 +85,9 @@ class ItemConfiguration:
                 )
                 if condition_data["damage_range"]
                 else None
-            )
-            
+            )            
             condition.damage_range = damage_range
+            
             condition.prefix_mod = condition_data.get("prefix_mod", None)
             condition.suffix_mod = condition_data.get("suffix_mod", None)
             condition.inherent_mod = condition_data.get("inherent_mod", None)
@@ -105,7 +100,6 @@ class ItemConfiguration:
                 for rarity, value in rarities.items()
                 if rarity in Rarity.__members__
             } if rarities else {}
-            
             condition.rarities = rarities
 
             requirements = condition_data.get("requirements", {})
@@ -124,7 +118,7 @@ class ItemConfiguration:
 
         return item
 
-    def get_action(self, item_id: int) -> enum.ItemAction:        
+    def get_condition(self, item_id: int) -> Optional[ConfigurationCondition]:
         item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
         
         #sort the conditions based on their assigned action value 
@@ -161,10 +155,23 @@ class ItemConfiguration:
                 if rarity not in condition.rarities or not condition.rarities[rarity]:
                     continue
                 
-                return condition.action
-            
+                return condition            
             else:
-                return condition.action
+                if condition.action == ItemAction.STASH:
+                    amount = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
+                    
+                    if amount <= condition.keep_in_inventory:                        
+                        continue
+                
+                return condition
             
+        return None
+              
+    def get_action(self, item_id: int) -> enum.ItemAction:        
+        condition = self.get_condition(item_id)
+        
+        if condition:
+            return condition.action
+        
         return ItemAction.NONE
         

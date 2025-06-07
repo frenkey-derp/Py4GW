@@ -4461,7 +4461,17 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Inspiration Magic"
+            "English": "of Inspiration Magic",
+            "German": "d. Inspirationsmagie",
+            "Korean": "(영감)",
+            "French": "(Magie de l'inspiration)",
+            "Italian": "del bastone Magia di Ispirazione",
+            "Spanish": "(Magia de inspiración)",
+            "TraditionalChinese": "靈感魔法",
+            "Japanese": "(インスピレーション)",
+            "Polish": "(Magia Inspiracji)",
+            "Russian": "of Inspiration Magic",
+            "BorkBorkBork": "ooff Inspuraeshun Maegeec"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -5215,7 +5225,17 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Assassin"
+            "English": "of the Assassin",
+            "German": "d. des Assassinen",
+            "Korean": "(어새신)",
+            "French": "(l'Assassin)",
+            "Italian": "dell'arco l'assassino",
+            "Spanish": "(el asesino)",
+            "TraditionalChinese": "the",
+            "Japanese": "(アサシン)",
+            "Polish": "(Zabójcy)",
+            "Russian": "of ассасин",
+            "BorkBorkBork": "ooff zee Aessaesseen"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -5444,7 +5464,17 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Ranger"
+            "English": "of the Ranger",
+            "German": "d. des Waldläufers",
+            "Korean": "(레인저)",
+            "French": "(le Rôdeur)",
+            "Italian": "della Bacchetta il ranger",
+            "Spanish": "(el guardabosques)",
+            "TraditionalChinese": "the",
+            "Japanese": "(レンジャー)",
+            "Polish": "(Łowcy)",
+            "Russian": "of рейнджер",
+            "BorkBorkBork": "ooff zee Runger"
         },
         "ModType": "Suffix",
         "TargetTypes": [

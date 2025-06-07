@@ -1,6 +1,7 @@
 import datetime
 from LootEx import data, data_collector, enum, loot_handling, settings
 from Py4GWCoreLib import Inventory, Player
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
 from Py4GWCoreLib.enums import SharedCommandType
@@ -122,6 +123,21 @@ def SendPauseDataCollection(exclude_self: bool = False):
     
         sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
 
+
+def SendResign(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Resign, 0, 0))
+        
+def SendReloadWidgets(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadWidgets, 0, 0))
+
 def ReloadWidgets():    
     widgetHandler = WidgetHandler()
     widgetHandler.discover_widgets()
@@ -193,6 +209,16 @@ def HandleReceivedMessages():
                         case enum.MessageActions.OpenXunlai:    
                             Inventory.OpenXunlaiWindow()                            
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                        
+                        case enum.MessageActions.Resign:
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            ConsoleLog("LootEx", "Resigning from the game.")
+                            GLOBAL_CACHE.Player.SendChatCommand("resign")
+                            return False
+                        
+                        case enum.MessageActions.ReloadWidgets:
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            ReloadWidgets()
                         
                         case _:
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
