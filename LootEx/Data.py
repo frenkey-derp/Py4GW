@@ -703,6 +703,75 @@ def SaveItems(shared_file: bool = False, items: Optional[dict[int, models.Item]]
         json.dump({item.model_id: item.to_json()
                   for item in items.values()}, file, indent=4, ensure_ascii=False)
 
+
+@staticmethod
+def LoadItemsV2():
+    global Items
+
+    # Load items from data/items_v2.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+    path = os.path.join(data_directory, "items_v2.json")
+
+    ConsoleLog(
+        "LootEx", f"Loading items v2...", Console.MessageType.Debug)
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    if not os.path.exists(path):
+        with open(path, 'w', encoding='utf-8') as file:
+            file.write('{}')
+
+    with open(path, 'r', encoding='utf-8') as file:
+        items = json.load(file)
+
+        for item_type, item_data in items.items():
+            for model_id, value in item_data.items():
+                item = models.Item.from_json(value)
+                Items[item.model_id] = item
+
+
+@staticmethod
+def SaveItemsV2(shared_file: bool = False, items: Optional[dict[int, models.Item]] = None):
+    global Items
+
+    # Save items to data/items.json
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    data_directory = os.path.join(file_directory, "data")
+
+    if not shared_file:
+        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        data_directory = os.path.join(
+            file_directory, "data", "diffs", account_name)
+
+    path = os.path.join(data_directory, "items_v2.json")
+
+    if not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    if not shared_file:
+        if items is not None:
+            items = dict(sorted(items.items(), key=lambda item: item[0]))
+
+    else:
+        items = dict(sorted(Items.items(), key=lambda item: item[0]))
+
+    if items is None:
+        return
+
+    # Create a new dictionary from items which we first split by item type and then use the model_id as key
+    items_by_type = {}
+    for item in items.values():
+        if item.item_type not in items_by_type:
+            items_by_type[item.item_type] = {}
+            
+        items_by_type[item.item_type][item.model_id] = item
+
+    with open(path, 'w', encoding='utf-8') as file:
+        ## Save the items by type
+        json.dump({item_type.name: {model_id: item.to_json() for model_id, item in items.items()} for item_type, items in items_by_type.items()}, file, indent=4, ensure_ascii=False)
+
 @staticmethod
 def MergeDiffItems():
     global Items

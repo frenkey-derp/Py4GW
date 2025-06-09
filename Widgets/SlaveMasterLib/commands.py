@@ -2,15 +2,33 @@ from typing import Callable
 from Py4GWCoreLib import IconsFontAwesome5
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
-from Py4GWCoreLib.enums import SharedCommandType
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Py4GWCoreLib.enums import Key, SharedCommandType
 
 
 class Command:
-    def __init__(self, name: str, action: Callable, icon: str = IconsFontAwesome5.ICON_PLAY):
+    def __init__(self, name: str, icon: str, action: Callable, *args):
         self.name : str = name
         self.action : Callable = action
         self.icon : str = icon
+        self.args : tuple = args
         
+    def execute(self):
+        try:
+            if callable(self.action):
+                
+                ##Check if the action is callable with parameters
+                if self.args:
+                    ConsoleLog("SlaveMaster", f"Executing command '{self.name}' with args: {self.args}")
+                    return self.action(*self.args)
+                
+                ##If no parameters are provided, just call the action
+                return self.action()
+            
+        except Exception as e:
+            ConsoleLog("SlaveMaster", f"Error executing command '{self.name}': {e}")
+            return False
+            
 class Commands:
     instance = None
     
@@ -28,12 +46,29 @@ class Commands:
         self._initialized = True
         self.current_account = GLOBAL_CACHE.Player.GetAccountEmail()
         self.commands : list[Command] = [
-            Command("Resign", self.resign_command, IconsFontAwesome5.ICON_FLAG),
-            Command("Stack on me", self.stack_on_me, IconsFontAwesome5.ICON_RUNNING),
-            Command("Leave party", self.leave_party, IconsFontAwesome5.ICON_DOOR_OPEN),
-            Command("Interact with Target", self.interact_with_taget, IconsFontAwesome5.ICON_HAND_POINT_LEFT),
-            Command("Reload", self.reload, IconsFontAwesome5.ICON_SYNC),
+            Command("Resign", IconsFontAwesome5.ICON_FLAG, self.resign_command),
+            Command("Stack on me", IconsFontAwesome5.ICON_RUNNING, self.stack_on_me),
+            Command("Leave party", IconsFontAwesome5.ICON_DOOR_OPEN, self.leave_party),
+            Command("Interact with Target", IconsFontAwesome5.ICON_HAND_POINT_LEFT, self.interact_with_taget),
+            # Command("Reload", self.reload, IconsFontAwesome5.ICON_SYNC),
+            Command("Weaponset 1",  "1", self.change_weaponset, 1),
+            Command("Weaponset 2",  "2", self.change_weaponset, 2),
+            Command("ESC",  "ESC", self.press_escape),
         ]
+        
+    def press_escape(self):
+        for acc in self.sharedMemoryManager.GetAllAccountData():
+            if acc.AccountEmail == self.current_account:
+                continue
+            
+            self.sharedMemoryManager.SendMessage(
+                self.current_account, acc.AccountEmail, SharedCommandType.PressKey, (Key.Escape.value, 1, 0, 0))
+                    
+    def change_weaponset(self, weaponset: int):        
+        for acc in self.sharedMemoryManager.GetAllAccountData():            
+            key = (Key.F1.value - 1) + weaponset            
+            self.sharedMemoryManager.SendMessage(
+                self.current_account, acc.AccountEmail, SharedCommandType.PressKey, (key, 3, 0, 0))
         
     def resign_command(self, exclude_self: bool = False):
         for acc in self.sharedMemoryManager.GetAllAccountData():

@@ -1555,7 +1555,17 @@
             "English": "Armor +{arg2} (vs. Physical damage)"
         },
         "Names": {
-            "English": "\"Survival of the Fittest\""
+            "English": "\"Survival of the Fittest\"",
+            "German": "\"Hart wie Stahl\"",
+            "Korean": "적자생존",
+            "French": "\"La survie du plus fort\"",
+            "Italian": "\"Sopravvivenza Integrale\"",
+            "Spanish": "\"Supervivencia del más fuerte\"",
+            "TraditionalChinese": "\"適者生存\"",
+            "Japanese": "サバイバル オブ ザ フィッテスト",
+            "Polish": "\"Przetrwają najsilniejsi\"",
+            "Russian": "\"Естественный отбор\"",
+            "BorkBorkBork": "\"Soorfeefael ooff zee Feettest\""
         },
         "ModType": "Inherent",
         "TargetTypes": [

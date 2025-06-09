@@ -23,17 +23,23 @@ class LootFilter:
                               for item_type_enum in self.item_types if self.item_types[item_type_enum])
 
         if not item_type_match:
+            if item_id == -1:
+                ConsoleLog("LootEx", f"item_type_match {item_type.name} <<<|>>> {"|".join(item_type.name if selected else "" for item_type, selected in self.item_types.items())}", Console.MessageType.Debug) 
             return False
 
         rarity = Rarity(GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0])
 
         if not self.rarities.get(rarity, False):
+            if item_id == -1:
+                ConsoleLog("LootEx", f"rarities", Console.MessageType.Debug) 
             return False
 
         model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
         item_data = data.Items.get(model_id, None)
 
         if self.exclude_rare_weapons and (item_data is None or item_data.category == ItemCategory.RareWeapon):
+            if item_id == -1:
+                ConsoleLog("LootEx", f"exclude_rare_weapons", Console.MessageType.Debug) 
             return False
 
         if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_SMART or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:

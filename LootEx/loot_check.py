@@ -55,7 +55,7 @@ class LootCheck:
                                 "LootEx", f"Item with model ID {model_id} not found in items data.", Console.MessageType.Error)
                             return None
                         
-                        material = data.Materials.get(model_id, Material.from_item(item_data))
+                        material = data.Materials.get(model_id, None)
                         
                         if material:
                             material.vendor_value = int(price / (10 if model_id in enum.COMMON_MATERIALS else 1))

@@ -15,9 +15,15 @@ from HeroAI.windows import DrawMessagingOptions
 #from HeroAI.targeting import *
 #from HeroAI.combat import *
 from HeroAI.cache_data import CacheData
+from HeroAI import combat
+from HeroAI import custom_skill
 import math
 from enum import Enum
 import traceback
+import importlib
+
+importlib.reload(custom_skill)
+importlib.reload(combat)
 
 MODULE_NAME = "HeroAI"
 

@@ -1,3 +1,4 @@
+import re
 import webbrowser
 from LootEx import settings, data, loot_check, item_configuration, utility, enum, cache, ui_manager_extensions, loot_handling, wiki_scraper, loot_filter, loot_profile, models, messaging, data_collector,wiki_scraper
 from LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
@@ -140,6 +141,7 @@ class UI:
         self.prefix_names = ["Any"]
         self.suffix_names = ["Any"]
         self.inherent_names = ["Any"]
+        self.inventory_coords: Optional[settings.FrameCoords] = None
         
         for mod in data.Weapon_Mods.values():
             if mod.mod_type == enum.ModType.Prefix:
@@ -216,6 +218,7 @@ class UI:
     ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem),    
 ]
 
+        self.data_collector = data_collector.DataCollector()
         self.filter_weapon_mods()        
         self.filter_items()    
         
@@ -268,15 +271,17 @@ class UI:
 
     def draw_inventory_controls(self):    
         if not UIManager.IsWindowVisible(WindowID.WindowID_InventoryBags):
+            if self.inventory_coords is not None:
+                self.inventory_coords = None
             return
         
-        coords = settings.FrameCoords(UIManager.GetFrameIDByHash(291586130))
+        self.inventory_coords = settings.FrameCoords(UIManager.GetFrameIDByHash(291586130))
 
-        if coords is None:
+        if self.inventory_coords is None:
             return
 
         width = 30
-        PyImGui.set_next_window_pos(coords.left - (width - 5), coords.top)
+        PyImGui.set_next_window_pos(self.inventory_coords.left - (width - 5), self.inventory_coords.top)
         PyImGui.set_next_window_size(width, 0)
         PyImGui.push_style_color(PyImGui.ImGuiCol.WindowBg,
                                 Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 125)))
@@ -439,9 +444,11 @@ class UI:
 
                 ImGui.show_tooltip("Merge all diff files into the data files.")
 
-                PyImGui.same_line(0, 5)
+                if PyImGui.button("Scrape Wiki", 200, 50):
+                    wiki_scraper.WikiScraper.scrape_missing_entries()
+                    pass
 
-                if PyImGui.button("Test", 300, 50):
+                if PyImGui.button("Test", 200, 50):
                     clipboard_text = "```\n"
 
                     # sort weapon mods by mod_type then by name
@@ -467,11 +474,7 @@ class UI:
                     clipboard_text += "```"
                     PyImGui.set_clipboard_text(clipboard_text)
                     
-                    for item in data.Items.values():
-                        if utility.Util.IsRareWeapon(item.model_id):
-                            item.category = enum.ItemCategory.RareWeapon
-                    
-                    data.SaveItems(True)
+                    data.SaveItemsV2(True)
                     
                                 
                                 
@@ -483,6 +486,89 @@ class UI:
             PyImGui.end_child()
             
             PyImGui.same_line(0, 5)
+            
+            if PyImGui.begin_child("DataCollectorIventory", (child_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
+                child_size = PyImGui.get_content_region_avail()
+            
+                if self.inventory_coords:
+                    inventory_width = self.inventory_coords.right - self.inventory_coords.left
+                    item_ids, bag_sizes = utility.Util.GetZeroFilledBags(Bag.Backpack, Bag.Bag_2)
+                    
+                    columns = math.floor((inventory_width - 24) // 37)
+                    rows = math.ceil(len(item_ids) / columns)
+                    
+                    if PyImGui.is_rect_visible(0, 20):
+                        if PyImGui.begin_table("Inventory Debug Table", columns, PyImGui.TableFlags.NoBordersInBody, 0, 0):
+                            remaining_size = PyImGui.get_content_region_avail()
+                            button_width = math.floor((remaining_size[0] - 50) / columns)
+                            button_height = math.floor((child_size[1] - 28) / rows)
+                            
+                            for i, item_id in enumerate(item_ids):    
+                                model_id = GLOBAL_CACHE.Item.GetModelID(item_id) if item_id > 0 else -1                            
+                                item = data.Items.get(model_id, None)
+                                
+                                PyImGui.table_next_column()                                
+                                    
+                                if PyImGui.is_rect_visible(button_width, button_height):
+                                
+                                    if item and not item.wiki_scraped:
+                                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.ChildBg,
+                                            Utils.ColorToTuple(Utils.RGBToColor(255, 0, 0, 125))
+                                        )
+                                    
+                                    complete = item_id == 0 or (self.data_collector.is_item_collected(item_id) and not self.data_collector.has_uncollected_mods(item_id))
+                                    if not complete:
+                                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.ChildBg,
+                                            Utils.ColorToTuple(Utils.RGBToColor(255, 255, 0, 125))
+                                        )
+                                    
+                                    if PyImGui.begin_child(str(i), (button_width, button_height), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                                    
+                                        PyImGui.text_scaled(str(item_id), (1,1,1,0.75), 0.7)
+                                        PyImGui.text_scaled(str(model_id), (1,1,1,1), 0.8)
+                                        
+                                        PyImGui.text_wrapped(item.name if item else "")
+                                        
+                                    if item and not item.wiki_scraped:
+                                        PyImGui.pop_style_color(1)
+                                        
+                                    if not complete:
+                                        PyImGui.pop_style_color(1)
+                                    
+                                    PyImGui.end_child()
+                                    
+                                    if PyImGui.is_item_clicked(0) and item and not item.wiki_scraped:
+                                        data.Reload()                  
+                                        item = data.Items.get(model_id, None)
+                                        
+                                        if item and not item.wiki_scraped:
+                                            wiki_scraper.WikiScraper.scrape_multiple_entries([item.model_id])
+                                    
+                                        
+                                    if item:
+                                        if PyImGui.is_item_hovered():
+                                            PyImGui.set_next_window_size(300, 0)
+                                            
+                                            PyImGui.begin_tooltip()
+                                            self.draw_item_header(item)
+                                            PyImGui.end_tooltip()
+                                        pass
+                                else:
+                                    PyImGui.dummy(int(button_width), int(button_height))
+                                    
+                        PyImGui.end_table()
+            
+            
+            PyImGui.end_child()
+            
+
+            PyImGui.end_tab_item()
+
+    def draw_prices_tab(self):
+        if PyImGui.begin_tab_item("Prices"):
+            tab_size = PyImGui.get_content_region_avail()
+            child_width = (tab_size[0] - 10) / 2
             
             PyImGui.begin_child("DataCollectorMaterialsChild", (child_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag)
             
@@ -528,9 +614,9 @@ class UI:
             
             
             PyImGui.end_child()
-
-            PyImGui.end_tab_item()
-
+        PyImGui.end_tab_item()
+        pass
+    
     def draw_window(self):
         if self.first_draw:
             PyImGui.set_next_window_size(

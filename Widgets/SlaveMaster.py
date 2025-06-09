@@ -37,17 +37,18 @@ def main():
                          
     ui.draw()
     
-    if GLOBAL_CACHE.Player.GetAccountEmail() == "lasse-gerth@gmx.de":
-        if GLOBAL_CACHE.ShMem.FindAccount("lasse-gerth@gmx.de") > -1:
-            game_option = GLOBAL_CACHE.ShMem.GetHeroAIOptions("lasse-gerth@gmx.de")
-            if game_option is not None:      
-                game_option.Following = False
-                game_option.Avoidance = False
-                game_option.Looting = False
-                game_option.Targeting = False
-                game_option.Combat = False
+    # account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
+    # if GLOBAL_CACHE.Map.IsExplorable():
+    #     if GLOBAL_CACHE.ShMem.FindAccount(account_mail) > -1:
+    #         game_option = GLOBAL_CACHE.ShMem.GetHeroAIOptions(account_mail)
+    #         if game_option is not None:      
+    #             game_option.Following = False
+    #             game_option.Avoidance = False
+    #             game_option.Looting = False
+    #             game_option.Targeting = False
+    #             game_option.Combat = True
                 
-                GLOBAL_CACHE.ShMem.SetHeroAIOptions("lasse-gerth@gmx.de", game_option)
+    #             GLOBAL_CACHE.ShMem.SetHeroAIOptions(account_mail, game_option)
     
 
 __all__ = ['main', 'configure']

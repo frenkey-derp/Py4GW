@@ -1,0 +1,332 @@
+{
+    "334": {
+        "ModelID": 334,
+        "Names": {
+            "English": "Shield of the Wing"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Shield_of_the_Wing",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "587": {
+        "ModelID": 587,
+        "Names": {
+            "English": "Eerie Rod"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "Communing"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Eerie_Rod",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Ritualist",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "591": {
+        "ModelID": 591,
+        "Names": {
+            "English": "Jeweled Staff"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "IllusionMagic"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Staff",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Mesmer",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "624": {
+        "ModelID": 624,
+        "Names": {
+            "English": "Am Fah Cape"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Assassin",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "626": {
+        "ModelID": 626,
+        "Names": {
+            "English": "Am Fah Cape"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Necromancer",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "628": {
+        "ModelID": 628,
+        "Names": {
+            "English": "Am Fah Cape"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Monk",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "631": {
+        "ModelID": 631,
+        "Names": {
+            "English": "Am Fah Cape"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Ritualist",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "676": {
+        "ModelID": 676,
+        "Names": {
+            "English": "Jade Brotherhood Garb"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Jade_Brotherhood_Garb",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Mesmer",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "715": {
+        "ModelID": 715,
+        "Names": {
+            "English": "Dirks"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dirks",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "720": {
+        "ModelID": 720,
+        "Names": {
+            "English": "Stilletos"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Stilletos",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "735": {
+        "ModelID": 735,
+        "Names": {
+            "English": "Bo Staff",
+            "German": "Bo-Stab",
+            "French": "Bâton Bo",
+            "Korean": "보 스태프",
+            "Italian": "Bastone Bo",
+            "Spanish": "Báculo de Bo",
+            "TraditionalChinese": "波法杖",
+            "Polish": "Kostur Bo",
+            "Russian": "Bo Staff",
+            "BorkBorkBork": "Bu Staeffff",
+            "Japanese": "ボウ スタッフ"
+        },
+        "ItemType": "Staff",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor",
+            "BloodMagic",
+            "Curses"
+        ],
+        "CommonSalvage": {
+            "Wood Plank": {
+                "Amount": -1,
+                "MinAmount": -1,
+                "MaxAmount": -1,
+                "MaterialModelID": 946,
+                "MaterialName": "Wood Plank"
+            }
+        },
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bo_Staff",
+        "InventoryIcon": "https://wiki.guildwars.com/images/3/32/Bo_Staff.png",
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": true
+    },
+    "770": {
+        "ModelID": 770,
+        "Names": {
+            "English": "Clouded Maul"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Clouded_Maul",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "858": {
+        "ModelID": 858,
+        "Names": {
+            "English": "Paper Fan"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "DivineFavor"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paper_Fan",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Monk",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "866": {
+        "ModelID": 866,
+        "Names": {
+            "English": "Paper Fan"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "SpawningPower"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Paper_Fan",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Ritualist",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "924": {
+        "ModelID": 924,
+        "Names": {
+            "English": "Grinning Dragon Axe"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Grinning_Dragon_Axe",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "1013": {
+        "ModelID": 1013,
+        "Names": {
+            "English": "Hypnotic Scepter"
+        },
+        "ItemType": "Wand",
+        "DropInfo": "",
+        "Attributes": [
+            "IllusionMagic"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hypnotic_Scepter",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Mesmer",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    }
+}

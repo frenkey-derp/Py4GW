@@ -21,8 +21,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:17.514456",
-        "VendorValue": 390,
+        "VendorUpdated": "2025-06-08T19:03:47.812275",
+        "VendorValue": 400,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -57,8 +57,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:17.311676",
-        "VendorValue": 140,
+        "VendorUpdated": "2025-06-08T19:03:47.619760",
+        "VendorValue": 160,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -93,7 +93,7 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:17.703228",
+        "VendorUpdated": "2025-06-08T19:03:48.003685",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -129,8 +129,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:16.909355",
-        "VendorValue": 180,
+        "VendorUpdated": "2025-06-08T19:03:47.225320",
+        "VendorValue": 210,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -165,8 +165,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:17.894078",
-        "VendorValue": 110,
+        "VendorUpdated": "2025-06-08T19:03:48.197124",
+        "VendorValue": 100,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -201,7 +201,7 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:17.110338",
+        "VendorUpdated": "2025-06-08T19:03:47.420644",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -237,8 +237,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:16.720711",
-        "VendorValue": 330,
+        "VendorUpdated": "2025-06-08T19:03:47.032937",
+        "VendorValue": 370,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -273,7 +273,7 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:26.043480",
+        "VendorUpdated": "2025-06-08T19:03:56.272850",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -309,8 +309,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:25.660985",
-        "VendorValue": 3800,
+        "VendorUpdated": "2025-06-08T19:03:55.880246",
+        "VendorValue": 4600,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -345,8 +345,8 @@
         "Profession": "_None",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:25.855212",
-        "VendorValue": 370,
+        "VendorUpdated": "2025-06-08T19:03:56.080500",
+        "VendorValue": 410,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -381,8 +381,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:35.244345",
-        "VendorValue": 410,
+        "VendorUpdated": "2025-06-08T19:04:05.481985",
+        "VendorValue": 330,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -417,8 +417,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:34.665831",
-        "VendorValue": 11000,
+        "VendorUpdated": "2025-06-08T19:04:04.884897",
+        "VendorValue": 10000,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -453,7 +453,7 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:35.432121",
+        "VendorUpdated": "2025-06-08T19:04:05.684286",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -489,8 +489,8 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:34.859543",
-        "VendorValue": 120,
+        "VendorUpdated": "2025-06-08T19:04:05.094872",
+        "VendorValue": 110,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -525,7 +525,7 @@
         "Profession": "_None",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:35.049969",
+        "VendorUpdated": "2025-06-08T19:04:05.288184",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -561,8 +561,8 @@
         "Profession": "_None",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:44.118406",
-        "VendorValue": 75000,
+        "VendorUpdated": "2025-06-08T19:04:14.335404",
+        "VendorValue": 60000,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -597,7 +597,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:18.703355",
+        "VendorUpdated": "2025-06-08T19:03:48.978534",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -633,7 +633,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:18.097278",
+        "VendorUpdated": "2025-06-08T19:03:48.391809",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -669,7 +669,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:18.299186",
+        "VendorUpdated": "2025-06-08T19:03:48.589256",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -705,8 +705,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:18.904547",
-        "VendorValue": 550,
+        "VendorUpdated": "2025-06-08T19:03:49.171311",
+        "VendorValue": 420,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -741,7 +741,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:18.501187",
+        "VendorUpdated": "2025-06-08T19:03:48.784475",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -777,7 +777,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:26.246472",
+        "VendorUpdated": "2025-06-08T19:03:56.466625",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -813,7 +813,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:26.839065",
+        "VendorUpdated": "2025-06-08T19:03:57.049057",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -849,8 +849,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:27.041804",
-        "VendorValue": 120,
+        "VendorUpdated": "2025-06-08T19:03:57.243689",
+        "VendorValue": 130,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -885,7 +885,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:26.636342",
+        "VendorUpdated": "2025-06-08T19:03:56.854311",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -921,8 +921,8 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:27.242665",
-        "VendorValue": 130,
+        "VendorUpdated": "2025-06-08T19:03:57.436210",
+        "VendorValue": 140,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -957,7 +957,7 @@
         "Profession": "Warrior",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:26.448519",
+        "VendorUpdated": "2025-06-08T19:03:56.662194",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -993,7 +993,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:35.619595",
+        "VendorUpdated": "2025-06-08T19:04:05.876571",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1029,7 +1029,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:36.215911",
+        "VendorUpdated": "2025-06-08T19:04:06.453547",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1074,7 +1074,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:36.419334",
+        "VendorUpdated": "2025-06-08T19:04:06.647058",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1119,7 +1119,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:36.012860",
+        "VendorUpdated": "2025-06-08T19:04:06.261743",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1164,7 +1164,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:36.621541",
+        "VendorUpdated": "2025-06-08T19:04:06.843233",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1209,7 +1209,7 @@
         "Profession": "Warrior",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:35.821770",
+        "VendorUpdated": "2025-06-08T19:04:06.068006",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1254,7 +1254,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:44.327885",
+        "VendorUpdated": "2025-06-08T19:04:14.541907",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -1290,7 +1290,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:44.934212",
+        "VendorUpdated": "2025-06-08T19:04:15.135975",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -1335,7 +1335,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:45.135877",
+        "VendorUpdated": "2025-06-08T19:04:15.328046",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -1380,7 +1380,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:44.731349",
+        "VendorUpdated": "2025-06-08T19:04:14.941660",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -1425,7 +1425,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:45.323328",
+        "VendorUpdated": "2025-06-08T19:04:15.525666",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -1470,7 +1470,7 @@
         "Profession": "Warrior",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:44.529729",
+        "VendorUpdated": "2025-06-08T19:04:14.735777",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -1515,8 +1515,8 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:20.123402",
-        "VendorValue": 230,
+        "VendorUpdated": "2025-06-08T19:03:50.370320",
+        "VendorValue": 270,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -1551,7 +1551,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:19.921842",
+        "VendorUpdated": "2025-06-08T19:03:50.172220",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1587,7 +1587,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:19.113575",
+        "VendorUpdated": "2025-06-08T19:03:49.368893",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1623,7 +1623,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:19.315223",
+        "VendorUpdated": "2025-06-08T19:03:49.573277",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1659,7 +1659,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:19.720443",
+        "VendorUpdated": "2025-06-08T19:03:49.968339",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1695,7 +1695,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:19.517784",
+        "VendorUpdated": "2025-06-08T19:03:49.771307",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1731,7 +1731,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:27.847023",
+        "VendorUpdated": "2025-06-08T19:03:58.020080",
         "VendorValue": 150,
         "Modifiers": [
             {
@@ -1767,7 +1767,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:27.645126",
+        "VendorUpdated": "2025-06-08T19:03:57.827756",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1803,8 +1803,8 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:28.035740",
-        "VendorValue": 330,
+        "VendorUpdated": "2025-06-08T19:03:58.214793",
+        "VendorValue": 350,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -1839,7 +1839,7 @@
         "Profession": "Ranger",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:27.443916",
+        "VendorUpdated": "2025-06-08T19:03:57.630591",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1875,7 +1875,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:37.189057",
+        "VendorUpdated": "2025-06-08T19:04:07.427507",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1920,7 +1920,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:36.999656",
+        "VendorUpdated": "2025-06-08T19:04:07.229250",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -1965,7 +1965,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:37.391608",
+        "VendorUpdated": "2025-06-08T19:04:07.626155",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2010,7 +2010,7 @@
         "Profession": "Ranger",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:36.809343",
+        "VendorUpdated": "2025-06-08T19:04:07.034077",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2055,7 +2055,7 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:45.916871",
+        "VendorUpdated": "2025-06-08T19:04:16.115286",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2100,7 +2100,7 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:45.728867",
+        "VendorUpdated": "2025-06-08T19:04:15.920399",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2145,7 +2145,7 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:46.120159",
+        "VendorUpdated": "2025-06-08T19:04:16.313777",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2190,7 +2190,7 @@
         "Profession": "Ranger",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:45.527307",
+        "VendorUpdated": "2025-06-08T19:04:15.721470",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2235,7 +2235,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:20.719115",
+        "VendorUpdated": "2025-06-08T19:03:50.963153",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2271,7 +2271,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:20.515968",
+        "VendorUpdated": "2025-06-08T19:03:50.770138",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2307,7 +2307,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:20.327284",
+        "VendorUpdated": "2025-06-08T19:03:50.570780",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2343,7 +2343,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:28.833041",
+        "VendorUpdated": "2025-06-08T19:03:58.988222",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2379,8 +2379,8 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:28.239030",
-        "VendorValue": 270,
+        "VendorUpdated": "2025-06-08T19:03:58.407748",
+        "VendorValue": 230,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -2415,8 +2415,8 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:28.644869",
-        "VendorValue": 110,
+        "VendorUpdated": "2025-06-08T19:03:58.797480",
+        "VendorValue": 100,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -2451,7 +2451,7 @@
         "Profession": "Monk",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:28.441075",
+        "VendorUpdated": "2025-06-08T19:03:58.602874",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2487,7 +2487,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:38.191116",
+        "VendorUpdated": "2025-06-08T19:04:08.412697",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2532,7 +2532,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:37.596161",
+        "VendorUpdated": "2025-06-08T19:04:07.824695",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2577,7 +2577,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:37.987914",
+        "VendorUpdated": "2025-06-08T19:04:08.215827",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2622,7 +2622,7 @@
         "Profession": "Monk",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:37.783932",
+        "VendorUpdated": "2025-06-08T19:04:08.021413",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2667,7 +2667,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:46.930949",
+        "VendorUpdated": "2025-06-08T19:04:17.095729",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2712,7 +2712,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:46.322213",
+        "VendorUpdated": "2025-06-08T19:04:16.508675",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2757,7 +2757,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:46.728354",
+        "VendorUpdated": "2025-06-08T19:04:16.898363",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2802,7 +2802,7 @@
         "Profession": "Monk",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:46.525158",
+        "VendorUpdated": "2025-06-08T19:04:16.703716",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -2847,7 +2847,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:21.671339",
+        "VendorUpdated": "2025-06-08T19:03:51.952851",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2883,8 +2883,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:20.910511",
-        "VendorValue": 210,
+        "VendorUpdated": "2025-06-08T19:03:51.161490",
+        "VendorValue": 230,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -2919,7 +2919,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:21.291836",
+        "VendorUpdated": "2025-06-08T19:03:51.556367",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -2955,8 +2955,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:21.481689",
-        "VendorValue": 330,
+        "VendorUpdated": "2025-06-08T19:03:51.754206",
+        "VendorValue": 360,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -2991,8 +2991,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:21.098550",
-        "VendorValue": 600,
+        "VendorUpdated": "2025-06-08T19:03:51.354324",
+        "VendorValue": 900,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -3027,8 +3027,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:21.859576",
-        "VendorValue": 100,
+        "VendorUpdated": "2025-06-08T19:03:52.147858",
+        "VendorValue": 110,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -3063,8 +3063,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:29.024308",
-        "VendorValue": 230,
+        "VendorUpdated": "2025-06-08T19:03:59.180396",
+        "VendorValue": 180,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3099,8 +3099,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:29.416772",
-        "VendorValue": 220,
+        "VendorUpdated": "2025-06-08T19:03:59.568771",
+        "VendorValue": 270,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3135,7 +3135,7 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:29.211594",
+        "VendorUpdated": "2025-06-08T19:03:59.374769",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -3171,8 +3171,8 @@
         "Profession": "Necromancer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:29.619293",
-        "VendorValue": 280,
+        "VendorUpdated": "2025-06-08T19:03:59.771391",
+        "VendorValue": 230,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3207,8 +3207,8 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:38.392987",
-        "VendorValue": 250,
+        "VendorUpdated": "2025-06-08T19:04:08.606886",
+        "VendorValue": 210,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3252,7 +3252,7 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:38.798541",
+        "VendorUpdated": "2025-06-08T19:04:08.992630",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -3297,7 +3297,7 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:38.596159",
+        "VendorUpdated": "2025-06-08T19:04:08.799635",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -3342,8 +3342,8 @@
         "Profession": "Necromancer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:39.001142",
-        "VendorValue": 1000,
+        "VendorUpdated": "2025-06-08T19:04:09.187889",
+        "VendorValue": 900,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3387,7 +3387,7 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:47.134001",
+        "VendorUpdated": "2025-06-08T19:04:17.289377",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -3432,7 +3432,7 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:47.538088",
+        "VendorUpdated": "2025-06-08T19:04:17.677103",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -3477,8 +3477,8 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:47.336376",
-        "VendorValue": 380,
+        "VendorUpdated": "2025-06-08T19:04:17.481838",
+        "VendorValue": 340,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3522,7 +3522,7 @@
         "Profession": "Necromancer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:47.725723",
+        "VendorUpdated": "2025-06-08T19:04:17.874412",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -3567,8 +3567,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:22.268014",
-        "VendorValue": 100,
+        "VendorUpdated": "2025-06-08T19:03:52.538297",
+        "VendorValue": 120,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -3603,8 +3603,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:22.471572",
-        "VendorValue": 7500,
+        "VendorUpdated": "2025-06-08T19:03:52.733334",
+        "VendorValue": 9500,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -3639,8 +3639,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:22.064963",
-        "VendorValue": 320,
+        "VendorUpdated": "2025-06-08T19:03:52.344224",
+        "VendorValue": 410,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -3675,8 +3675,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:30.003951",
-        "VendorValue": 290,
+        "VendorUpdated": "2025-06-08T19:04:00.170542",
+        "VendorValue": 250,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3711,7 +3711,7 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:29.807476",
+        "VendorUpdated": "2025-06-08T19:03:59.963204",
         "VendorValue": 800,
         "Modifiers": [
             {
@@ -3747,7 +3747,7 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:30.191151",
+        "VendorUpdated": "2025-06-08T19:04:00.363968",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -3783,8 +3783,8 @@
         "Profession": "Mesmer",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:30.381064",
-        "VendorValue": 2400,
+        "VendorUpdated": "2025-06-08T19:04:00.556752",
+        "VendorValue": 2900,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3819,8 +3819,8 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:39.413940",
-        "VendorValue": 460,
+        "VendorUpdated": "2025-06-08T19:04:09.583764",
+        "VendorValue": 440,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3864,8 +3864,8 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:39.209519",
-        "VendorValue": 440,
+        "VendorUpdated": "2025-06-08T19:04:09.391314",
+        "VendorValue": 380,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -3909,7 +3909,7 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:39.616467",
+        "VendorUpdated": "2025-06-08T19:04:09.779182",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -3954,7 +3954,7 @@
         "Profession": "Mesmer",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:39.819405",
+        "VendorUpdated": "2025-06-08T19:04:09.976798",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -3999,8 +3999,8 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:48.133145",
-        "VendorValue": 6000,
+        "VendorUpdated": "2025-06-08T19:04:18.260529",
+        "VendorValue": 6500,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -4044,7 +4044,7 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:47.931328",
+        "VendorUpdated": "2025-06-08T19:04:18.067778",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4089,8 +4089,8 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:48.327553",
-        "VendorValue": 310,
+        "VendorUpdated": "2025-06-08T19:04:18.464447",
+        "VendorValue": 280,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -4134,7 +4134,7 @@
         "Profession": "Mesmer",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:48.532717",
+        "VendorUpdated": "2025-06-08T19:04:18.661317",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4179,7 +4179,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:23.290953",
+        "VendorUpdated": "2025-06-08T19:03:53.516268",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4215,7 +4215,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:22.884501",
+        "VendorUpdated": "2025-06-08T19:03:53.130572",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4251,7 +4251,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:22.682146",
+        "VendorUpdated": "2025-06-08T19:03:52.938195",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4287,8 +4287,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:23.493540",
-        "VendorValue": 130,
+        "VendorUpdated": "2025-06-08T19:03:53.710484",
+        "VendorValue": 120,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -4323,7 +4323,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:23.087104",
+        "VendorUpdated": "2025-06-08T19:03:53.322722",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4359,8 +4359,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:30.984059",
-        "VendorValue": 140,
+        "VendorUpdated": "2025-06-08T19:04:01.151154",
+        "VendorValue": 150,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -4395,7 +4395,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:31.175284",
+        "VendorUpdated": "2025-06-08T19:04:01.346480",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4431,8 +4431,8 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:30.577321",
-        "VendorValue": 250,
+        "VendorUpdated": "2025-06-08T19:04:00.757188",
+        "VendorValue": 240,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -4467,7 +4467,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:30.781723",
+        "VendorUpdated": "2025-06-08T19:04:00.953203",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4503,7 +4503,7 @@
         "Profession": "Elementalist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:31.364343",
+        "VendorUpdated": "2025-06-08T19:04:01.541879",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4539,7 +4539,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:40.397420",
+        "VendorUpdated": "2025-06-08T19:04:10.560598",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4584,7 +4584,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:40.601574",
+        "VendorUpdated": "2025-06-08T19:04:10.760512",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4629,7 +4629,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:40.021210",
+        "VendorUpdated": "2025-06-08T19:04:10.171643",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4674,7 +4674,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:40.210005",
+        "VendorUpdated": "2025-06-08T19:04:10.366464",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4719,7 +4719,7 @@
         "Profession": "Elementalist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:40.803135",
+        "VendorUpdated": "2025-06-08T19:04:10.963269",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -4764,7 +4764,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:49.139714",
+        "VendorUpdated": "2025-06-08T19:04:19.247344",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4809,7 +4809,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:49.330910",
+        "VendorUpdated": "2025-06-08T19:04:19.439840",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4854,7 +4854,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:48.734172",
+        "VendorUpdated": "2025-06-08T19:04:18.860071",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4899,7 +4899,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:48.937620",
+        "VendorUpdated": "2025-06-08T19:04:19.055634",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4944,7 +4944,7 @@
         "Profession": "Elementalist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:49.534936",
+        "VendorUpdated": "2025-06-08T19:04:19.634531",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -4989,7 +4989,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:23.887641",
+        "VendorUpdated": "2025-06-08T19:03:54.097077",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5025,8 +5025,8 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:24.283025",
-        "VendorValue": 370,
+        "VendorUpdated": "2025-06-08T19:03:54.482562",
+        "VendorValue": 420,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -5061,7 +5061,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:24.090297",
+        "VendorUpdated": "2025-06-08T19:03:54.290262",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5097,7 +5097,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:23.694424",
+        "VendorUpdated": "2025-06-08T19:03:53.903425",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5133,8 +5133,8 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:31.552429",
-        "VendorValue": 280,
+        "VendorUpdated": "2025-06-08T19:04:01.735483",
+        "VendorValue": 260,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -5169,8 +5169,8 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:31.757695",
-        "VendorValue": 120,
+        "VendorUpdated": "2025-06-08T19:04:01.931387",
+        "VendorValue": 110,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -5205,7 +5205,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:31.961005",
+        "VendorUpdated": "2025-06-08T19:04:02.128325",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5241,7 +5241,7 @@
         "Profession": "Assassin",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:32.149068",
+        "VendorUpdated": "2025-06-08T19:04:02.324063",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5277,7 +5277,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:40.992357",
+        "VendorUpdated": "2025-06-08T19:04:11.168648",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5322,7 +5322,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:41.185629",
+        "VendorUpdated": "2025-06-08T19:04:11.369348",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5367,7 +5367,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:41.389915",
+        "VendorUpdated": "2025-06-08T19:04:11.574342",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5412,7 +5412,7 @@
         "Profession": "Assassin",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:41.578320",
+        "VendorUpdated": "2025-06-08T19:04:11.769047",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5457,7 +5457,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:49.738387",
+        "VendorUpdated": "2025-06-08T19:04:19.827313",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -5502,7 +5502,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:49.939264",
+        "VendorUpdated": "2025-06-08T19:04:20.028345",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -5547,7 +5547,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:50.141955",
+        "VendorUpdated": "2025-06-08T19:04:20.228394",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -5592,7 +5592,7 @@
         "Profession": "Assassin",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:50.345501",
+        "VendorUpdated": "2025-06-08T19:04:20.427106",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -5637,7 +5637,7 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:24.679895",
+        "VendorUpdated": "2025-06-08T19:03:54.885557",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5673,8 +5673,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:24.882377",
-        "VendorValue": 100,
+        "VendorUpdated": "2025-06-08T19:03:55.079096",
+        "VendorValue": 120,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -5709,8 +5709,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:24.485580",
-        "VendorValue": 3600,
+        "VendorUpdated": "2025-06-08T19:03:54.684878",
+        "VendorValue": 2700,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -5745,7 +5745,7 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:32.341903",
+        "VendorUpdated": "2025-06-08T19:04:02.520683",
         "VendorValue": 110,
         "Modifiers": [
             {
@@ -5781,8 +5781,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:32.724806",
-        "VendorValue": 370,
+        "VendorUpdated": "2025-06-08T19:04:02.917441",
+        "VendorValue": 300,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -5817,8 +5817,8 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:32.530235",
-        "VendorValue": 1200,
+        "VendorUpdated": "2025-06-08T19:04:02.713908",
+        "VendorValue": 1500,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -5853,7 +5853,7 @@
         "Profession": "Ritualist",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:32.928518",
+        "VendorUpdated": "2025-06-08T19:04:03.111055",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5889,7 +5889,7 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:41.779913",
+        "VendorUpdated": "2025-06-08T19:04:11.961467",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5934,7 +5934,7 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:42.191478",
+        "VendorUpdated": "2025-06-08T19:04:12.350858",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -5979,7 +5979,7 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:41.983656",
+        "VendorUpdated": "2025-06-08T19:04:12.157631",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6024,7 +6024,7 @@
         "Profession": "Ritualist",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:42.379774",
+        "VendorUpdated": "2025-06-08T19:04:12.543813",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6069,8 +6069,8 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:50.533669",
-        "VendorValue": 280,
+        "VendorUpdated": "2025-06-08T19:04:20.620829",
+        "VendorValue": 240,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6114,8 +6114,8 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:50.926876",
-        "VendorValue": 700,
+        "VendorUpdated": "2025-06-08T19:04:21.011503",
+        "VendorValue": 600,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6159,7 +6159,7 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:50.725131",
+        "VendorUpdated": "2025-06-08T19:04:20.818028",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -6204,8 +6204,8 @@
         "Profession": "Ritualist",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:51.127470",
-        "VendorValue": 400,
+        "VendorUpdated": "2025-06-08T19:04:21.212369",
+        "VendorValue": 330,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6249,8 +6249,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:25.085372",
-        "VendorValue": 550,
+        "VendorUpdated": "2025-06-08T19:03:55.277829",
+        "VendorValue": 700,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -6285,8 +6285,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:33.493023",
-        "VendorValue": 350,
+        "VendorUpdated": "2025-06-08T19:04:03.693111",
+        "VendorValue": 370,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6321,7 +6321,7 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:33.116975",
+        "VendorUpdated": "2025-06-08T19:04:03.306695",
         "VendorValue": 140,
         "Modifiers": [
             {
@@ -6357,7 +6357,7 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:33.304870",
+        "VendorUpdated": "2025-06-08T19:04:03.499370",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6393,8 +6393,8 @@
         "Profession": "Paragon",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:33.680654",
-        "VendorValue": 800,
+        "VendorUpdated": "2025-06-08T19:04:03.887783",
+        "VendorValue": 700,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6429,7 +6429,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:42.959298",
+        "VendorUpdated": "2025-06-08T19:04:13.131746",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6474,7 +6474,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:42.568092",
+        "VendorUpdated": "2025-06-08T19:04:12.741051",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6519,7 +6519,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:42.770912",
+        "VendorUpdated": "2025-06-08T19:04:12.940573",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6564,7 +6564,7 @@
         "Profession": "Paragon",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:43.161076",
+        "VendorUpdated": "2025-06-08T19:04:13.327112",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6609,7 +6609,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:51.696125",
+        "VendorUpdated": "2025-06-08T19:04:21.795595",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -6654,7 +6654,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:51.318593",
+        "VendorUpdated": "2025-06-08T19:04:21.408263",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -6699,7 +6699,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:51.508082",
+        "VendorUpdated": "2025-06-08T19:04:21.602729",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -6744,7 +6744,7 @@
         "Profession": "Paragon",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:51.901210",
+        "VendorUpdated": "2025-06-08T19:04:21.991060",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -6789,7 +6789,7 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:25.473694",
+        "VendorUpdated": "2025-06-08T19:03:55.681942",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -6825,8 +6825,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:25.281054",
-        "VendorValue": 900,
+        "VendorUpdated": "2025-06-08T19:03:55.481105",
+        "VendorValue": 1600,
         "Modifiers": [
             {
                 "Identifier": 9224,
@@ -6861,8 +6861,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:34.082219",
-        "VendorValue": 250,
+        "VendorUpdated": "2025-06-08T19:04:04.292175",
+        "VendorValue": 300,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6897,8 +6897,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:33.889613",
-        "VendorValue": 550,
+        "VendorUpdated": "2025-06-08T19:04:04.092398",
+        "VendorValue": 600,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6933,8 +6933,8 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:34.269579",
-        "VendorValue": 950,
+        "VendorUpdated": "2025-06-08T19:04:04.486386",
+        "VendorValue": 1100,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -6969,7 +6969,7 @@
         "Profession": "Dervish",
         "Rarity": "Blue",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:34.462457",
+        "VendorUpdated": "2025-06-08T19:04:04.687659",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -7005,7 +7005,7 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:43.551077",
+        "VendorUpdated": "2025-06-08T19:04:13.722343",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -7050,8 +7050,8 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:43.348545",
-        "VendorValue": 100,
+        "VendorUpdated": "2025-06-08T19:04:13.520897",
+        "VendorValue": 110,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -7095,8 +7095,8 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:43.739001",
-        "VendorValue": 140,
+        "VendorUpdated": "2025-06-08T19:04:13.925840",
+        "VendorValue": 150,
         "Modifiers": [
             {
                 "Identifier": 8680,
@@ -7140,7 +7140,7 @@
         "Profession": "Dervish",
         "Rarity": "Purple",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:43.928873",
+        "VendorUpdated": "2025-06-08T19:04:14.128456",
         "VendorValue": 100,
         "Modifiers": [
             {
@@ -7185,7 +7185,7 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:52.277339",
+        "VendorUpdated": "2025-06-08T19:04:22.392063",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -7230,7 +7230,7 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:52.088706",
+        "VendorUpdated": "2025-06-08T19:04:22.187775",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -7275,7 +7275,7 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:52.483756",
+        "VendorUpdated": "2025-06-08T19:04:22.585466",
         "VendorValue": 200,
         "Modifiers": [
             {
@@ -7320,7 +7320,7 @@
         "Profession": "Dervish",
         "Rarity": "Gold",
         "UpgradeExists": true,
-        "VendorUpdated": "2025-06-04T21:19:52.685711",
+        "VendorUpdated": "2025-06-08T19:04:22.779685",
         "VendorValue": 200,
         "Modifiers": [
             {

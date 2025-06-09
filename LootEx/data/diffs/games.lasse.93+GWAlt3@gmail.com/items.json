@@ -1,0 +1,325 @@
+{
+    "558": {
+        "ModelID": 558,
+        "Names": {
+            "English": "Longbow"
+        },
+        "ItemType": "Bow",
+        "DropInfo": "",
+        "Attributes": [
+            "Marksmanship"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Longbow",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "565": {
+        "ModelID": 565,
+        "Names": {
+            "English": "Accursed Icon"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "Curses"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Icon",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Necromancer",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "624": {
+        "ModelID": 624,
+        "Names": {
+            "English": "Am Fah Cape"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Assassin",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "627": {
+        "ModelID": 627,
+        "Names": {
+            "English": "Am Fah Cape"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Elementalist",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "629": {
+        "ModelID": 629,
+        "Names": {
+            "English": "Am Fah Vambrace"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Vambrace",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Warrior",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "630": {
+        "ModelID": 630,
+        "Names": {
+            "English": "Am Fah Vambrace"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Vambrace",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Ranger",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "678": {
+        "ModelID": 678,
+        "Names": {
+            "English": "Jade Brotherhood Garb"
+        },
+        "ItemType": "Salvage",
+        "DropInfo": "",
+        "Attributes": [],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Jade_Brotherhood_Garb",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Elementalist",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "720": {
+        "ModelID": 720,
+        "Names": {
+            "English": "Stilletos"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Stilletos",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "739": {
+        "ModelID": 739,
+        "Names": {
+            "English": "Dadao Sword"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Dadao_Sword",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "752": {
+        "ModelID": 752,
+        "Names": {
+            "English": "Plagueborn Axe"
+        },
+        "ItemType": "Axe",
+        "DropInfo": "",
+        "Attributes": [
+            "AxeMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Plagueborn_Axe",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "765": {
+        "ModelID": 765,
+        "Names": {
+            "English": "Kukris"
+        },
+        "ItemType": "Daggers",
+        "DropInfo": "",
+        "Attributes": [
+            "DaggerMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Kukris",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "774": {
+        "ModelID": 774,
+        "Names": {
+            "English": "Plagueborn Maul"
+        },
+        "ItemType": "Hammer",
+        "DropInfo": "",
+        "Attributes": [
+            "HammerMastery"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Plagueborn_Maul",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "780": {
+        "ModelID": 780,
+        "Names": {
+            "English": "Bronze Shield"
+        },
+        "ItemType": "Shield",
+        "DropInfo": "",
+        "Attributes": [
+            "Tactics"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Bronze_Shield",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "791": {
+        "ModelID": 791,
+        "Names": {
+            "English": "Crenellated Sword"
+        },
+        "ItemType": "Sword",
+        "DropInfo": "",
+        "Attributes": [
+            "Swordsmanship"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Crenellated_Sword",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    },
+    "929": {
+        "ModelID": 929,
+        "Names": {
+            "English": "Pile of Glittering Dust",
+            "German": "Glitzerstaubhaufen",
+            "French": "Tas de Poussière scintillante",
+            "Korean": "빛나는 먼지 덩어리",
+            "Italian": "Mucchio di Polvere Brillante",
+            "Spanish": "Pila de polvo brillante",
+            "TraditionalChinese": "閃爍之土",
+            "Japanese": "光り輝く粉",
+            "Polish": "Garść Lśniącego Pyłu",
+            "Russian": "Pile of Glittering Dust",
+            "BorkBorkBork": "Peele-a ooff Gleettereeng Doost"
+        },
+        "ItemType": "Materials_Zcoins",
+        "DropInfo": "Common Material",
+        "Attributes": [
+            "WaterMagic",
+            "AirMagic",
+            "Curses",
+            "IllusionMagic"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Pile_of_Glittering_Dust",
+        "InventoryIcon": "https://wiki.guildwars.com/images/6/62/Pile_of_Glittering_Dust.png",
+        "NickIndex": null,
+        "Profession": null,
+        "Category": "Material",
+        "SubCategory": "CommonMaterial",
+        "WikiScraped": true
+    },
+    "1010": {
+        "ModelID": 1010,
+        "Names": {
+            "English": "Hallowed Idol"
+        },
+        "ItemType": "Offhand",
+        "DropInfo": "",
+        "Attributes": [
+            "SmitingPrayers"
+        ],
+        "CommonSalvage": {},
+        "RareSalvage": {},
+        "WikiURL": "https://wiki.guildwars.com/wiki/Hallowed_Idol",
+        "InventoryIcon": null,
+        "NickIndex": null,
+        "Profession": "Monk",
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false
+    }
+}

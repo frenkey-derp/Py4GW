@@ -3200,7 +3200,7 @@ class CustomSkillClass:
         skill = self.CustomSkill()
         skill.SkillID = GLOBAL_CACHE.Skill.GetID("Strength_of_Honor")
         skill.SkillType = SkillType.Enchantment.value
-        skill.TargetAllegiance = Skilltarget.AllyMartial.value
+        skill.TargetAllegiance = Skilltarget.AllyMartialMelee.value
         skill.Nature = SkillNature.Buff.value
         skill.Conditions.TargetingStrict = True
         skill.Conditions.IsOutOfCombat = True
@@ -4395,7 +4395,7 @@ class CustomSkillClass:
         skill.SkillID = GLOBAL_CACHE.Skill.GetID("Withering_Aura")
         skill.SkillType = SkillType.Enchantment.value
         skill.TargetAllegiance = Skilltarget.AllyMartialMelee.value
-        skill.Nature = SkillNature.Buff.value
+        skill.Nature = SkillNature.CustomA.value
         skill.Conditions.TargetingStrict = True
         self.skill_data[skill.SkillID] = skill
         #NECROMANCER NO ATTRIBUTE

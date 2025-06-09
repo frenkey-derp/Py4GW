@@ -1,7 +1,6 @@
 {
     "6532": {
         "ModelID": 6532,
-        "Name": "Amber Chunk",
         "Names": {
             "English": "Amber Chunk",
             "German": "Bernstein-Klumpen",
@@ -24,12 +23,16 @@
         "InventoryIcon": null,
         "NickIndex": 47,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 370,
-        "VendorUpdated": "2025-06-04T21:51:38.389639"
+        "VendorUpdated": "2025-06-04T21:51:38.389639",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 36
     },
     "925": {
         "ModelID": 925,
-        "Name": "Bolt of Cloth",
         "Names": {
             "English": "Bolt of Cloth",
             "German": "Tuchballen",
@@ -52,12 +55,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 10,
-        "VendorUpdated": "2025-06-04T21:50:33.649504"
+        "VendorUpdated": "2025-06-04T21:50:33.649504",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 5
     },
     "927": {
         "ModelID": 927,
-        "Name": "Bolt of Damask",
         "Names": {
             "English": "Bolt of Damask",
             "German": "Damastballen",
@@ -80,12 +87,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 700,
-        "VendorUpdated": "2025-06-04T21:51:34.457212"
+        "VendorUpdated": "2025-06-04T21:51:34.457212",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 14
     },
     "926": {
         "ModelID": 926,
-        "Name": "Bolt of Linen",
         "Names": {
             "English": "Bolt of Linen",
             "German": "Leinentuchballen",
@@ -116,12 +127,16 @@
         "InventoryIcon": null,
         "NickIndex": 135,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 220,
-        "VendorUpdated": "2025-06-04T21:51:34.272608"
+        "VendorUpdated": "2025-06-04T21:51:34.272608",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 13
     },
     "928": {
         "ModelID": 928,
-        "Name": "Bolt of Silk",
         "Names": {
             "English": "Bolt of Silk",
             "German": "Seidentuchballen",
@@ -159,12 +174,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 100,
-        "VendorUpdated": "2025-06-04T21:51:34.645415"
+        "VendorUpdated": "2025-06-04T21:51:34.645415",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 15
     },
     "921": {
         "ModelID": 921,
-        "Name": "Bone",
         "Names": {
             "English": "Bone",
             "German": "Knochen",
@@ -187,12 +206,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 19,
-        "VendorUpdated": "2025-06-04T21:50:32.732591"
+        "VendorUpdated": "2025-06-04T21:50:32.732591",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 0
     },
     "954": {
         "ModelID": 954,
-        "Name": "Chitin Fragment",
         "Names": {
             "English": "Chitin Fragment",
             "German": "Chitin-Fragment",
@@ -215,12 +238,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 10,
-        "VendorUpdated": "2025-06-04T21:50:33.465726"
+        "VendorUpdated": "2025-06-04T21:50:33.465726",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 4
     },
     "950": {
         "ModelID": 950,
-        "Name": "Deldrimor Steel Ingot",
         "Names": {
             "English": "Deldrimor Steel Ingot",
             "German": "Deldrimor-Stahlbarren",
@@ -251,12 +278,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 1100,
-        "VendorUpdated": "2025-06-04T21:51:35.208444"
+        "VendorUpdated": "2025-06-04T21:51:35.208444",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 18
     },
     "935": {
         "ModelID": 935,
-        "Name": "Diamond",
         "Names": {
             "English": "Diamond",
             "German": "Diamant",
@@ -279,12 +310,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 500,
-        "VendorUpdated": "2025-06-04T21:51:36.333815"
+        "VendorUpdated": "2025-06-04T21:51:36.333815",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 24
     },
     "943": {
         "ModelID": 943,
-        "Name": "Elonian Leather Square",
         "Names": {
             "English": "Elonian Leather Square",
             "German": "Elona-Lederquadrat",
@@ -322,12 +357,16 @@
         "InventoryIcon": null,
         "NickIndex": 88,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 350,
-        "VendorUpdated": "2025-06-04T21:51:37.463432"
+        "VendorUpdated": "2025-06-04T21:51:37.463432",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 31
     },
     "933": {
         "ModelID": 933,
-        "Name": "Feather",
         "Names": {
             "English": "Feather",
             "German": "Feder",
@@ -350,12 +389,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 32,
-        "VendorUpdated": "2025-06-04T21:50:34.565941"
+        "VendorUpdated": "2025-06-04T21:50:34.565941",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 11
     },
     "941": {
         "ModelID": 941,
-        "Name": "Fur Square",
         "Names": {
             "English": "Fur Square",
             "German": "Pelzquadrat",
@@ -378,12 +421,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 230,
-        "VendorUpdated": "2025-06-04T21:51:34.082907"
+        "VendorUpdated": "2025-06-04T21:51:34.082907",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 12
     },
     "930": {
         "ModelID": 930,
-        "Name": "Glob of Ectoplasm",
         "Names": {
             "English": "Glob of Ectoplasm",
             "German": "Ektoplasmakugel",
@@ -406,12 +453,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 4400,
-        "VendorUpdated": "2025-06-04T21:51:34.833558"
+        "VendorUpdated": "2025-06-04T21:51:34.833558",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 16
     },
     "955": {
         "ModelID": 955,
-        "Name": "Granite Slab",
         "Names": {
             "English": "Granite Slab",
             "German": "Granitplatte",
@@ -434,12 +485,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 10,
-        "VendorUpdated": "2025-06-04T21:50:34.017270"
+        "VendorUpdated": "2025-06-04T21:50:34.017270",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 8
     },
     "948": {
         "ModelID": 948,
-        "Name": "Iron Ingot",
         "Names": {
             "English": "Iron Ingot",
             "German": "Eisenbarren",
@@ -462,12 +517,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 21,
-        "VendorUpdated": "2025-06-04T21:50:32.915484"
+        "VendorUpdated": "2025-06-04T21:50:32.915484",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 1
     },
     "6533": {
         "ModelID": 6533,
-        "Name": "Jadeite Shard",
         "Names": {
             "English": "Jadeite Shard",
             "German": "Jadeit-Scherbe",
@@ -490,12 +549,16 @@
         "InventoryIcon": null,
         "NickIndex": 53,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 470,
-        "VendorUpdated": "2025-06-04T21:51:38.575950"
+        "VendorUpdated": "2025-06-04T21:51:38.575950",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 37
     },
     "942": {
         "ModelID": 942,
-        "Name": "Leather Square",
         "Names": {
             "English": "Leather Square",
             "German": "Lederquadrat",
@@ -526,12 +589,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 200,
-        "VendorUpdated": "2025-06-04T21:51:37.272380"
+        "VendorUpdated": "2025-06-04T21:51:37.272380",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 30
     },
     "922": {
         "ModelID": 922,
-        "Name": "Lump of Charcoal",
         "Names": {
             "English": "Lump of Charcoal",
             "German": "Holzkohleklumpen",
@@ -562,12 +629,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 290,
-        "VendorUpdated": "2025-06-04T21:51:36.706100"
+        "VendorUpdated": "2025-06-04T21:51:36.706100",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 26
     },
     "923": {
         "ModelID": 923,
-        "Name": "Monstrous Claw",
         "Names": {
             "English": "Monstrous Claw",
             "German": "Monsterklaue",
@@ -590,12 +661,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 1200,
-        "VendorUpdated": "2025-06-04T21:51:35.398617"
+        "VendorUpdated": "2025-06-04T21:51:35.398617",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 19
     },
     "931": {
         "ModelID": 931,
-        "Name": "Monstrous Eye",
         "Names": {
             "English": "Monstrous Eye",
             "German": "Monsterauge",
@@ -618,12 +693,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 650,
-        "VendorUpdated": "2025-06-04T21:51:35.584796"
+        "VendorUpdated": "2025-06-04T21:51:35.584796",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 20
     },
     "932": {
         "ModelID": 932,
-        "Name": "Monstrous Fang",
         "Names": {
             "English": "Monstrous Fang",
             "German": "Monsterfangzahn",
@@ -646,12 +725,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 420,
-        "VendorUpdated": "2025-06-04T21:51:35.772488"
+        "VendorUpdated": "2025-06-04T21:51:35.772488",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 21
     },
     "945": {
         "ModelID": 945,
-        "Name": "Obsidian Shard",
         "Names": {
             "English": "Obsidian Shard",
             "German": "Obsidian-Scherbe",
@@ -674,12 +757,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 3100,
-        "VendorUpdated": "2025-06-04T21:51:36.891573"
+        "VendorUpdated": "2025-06-04T21:51:36.891573",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 27
     },
     "936": {
         "ModelID": 936,
-        "Name": "Onyx Gemstone",
         "Names": {
             "English": "Onyx Gemstone",
             "German": "Onyx",
@@ -702,12 +789,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 500,
-        "VendorUpdated": "2025-06-04T21:51:36.518380"
+        "VendorUpdated": "2025-06-04T21:51:36.518380",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 25
     },
     "929": {
         "ModelID": 929,
-        "Name": "Pile of Glittering Dust",
         "Names": {
             "English": "Pile of Glittering Dust",
             "German": "Glitzerstaubhaufen",
@@ -730,12 +821,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 26,
-        "VendorUpdated": "2025-06-04T21:50:34.200080"
+        "VendorUpdated": "2025-06-04T21:50:34.200080",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 9
     },
     "934": {
         "ModelID": 934,
-        "Name": "Plant Fiber",
         "Names": {
             "English": "Plant Fiber",
             "German": "Pflanzenfaser",
@@ -758,12 +853,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 42,
-        "VendorUpdated": "2025-06-04T21:50:34.383625"
+        "VendorUpdated": "2025-06-04T21:50:34.383625",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 10
     },
     "951": {
         "ModelID": 951,
-        "Name": "Roll of Parchment",
         "Names": {
             "English": "Roll of Parchment",
             "German": "Pergamentrolle",
@@ -794,12 +893,16 @@
         "InventoryIcon": null,
         "NickIndex": 20,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 170,
-        "VendorUpdated": "2025-06-04T21:51:37.833460"
+        "VendorUpdated": "2025-06-04T21:51:37.833460",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 33
     },
     "952": {
         "ModelID": 952,
-        "Name": "Roll of Vellum",
         "Names": {
             "English": "Roll of Vellum",
             "German": "Vellinrolle",
@@ -822,12 +925,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 350,
-        "VendorUpdated": "2025-06-04T21:51:38.018605"
+        "VendorUpdated": "2025-06-04T21:51:38.018605",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 34
     },
     "937": {
         "ModelID": 937,
-        "Name": "Ruby",
         "Names": {
             "English": "Ruby",
             "German": "Rubin",
@@ -850,12 +957,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 2300,
-        "VendorUpdated": "2025-06-04T21:51:35.960118"
+        "VendorUpdated": "2025-06-04T21:51:35.960118",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 22
     },
     "938": {
         "ModelID": 938,
-        "Name": "Sapphire",
         "Names": {
             "English": "Sapphire",
             "German": "Saphir",
@@ -878,12 +989,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 3500,
-        "VendorUpdated": "2025-06-04T21:51:36.148652"
+        "VendorUpdated": "2025-06-04T21:51:36.148652",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 23
     },
     "953": {
         "ModelID": 953,
-        "Name": "Scale",
         "Names": {
             "English": "Scale",
             "German": "Schuppe",
@@ -906,12 +1021,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 28,
-        "VendorUpdated": "2025-06-04T21:50:33.283488"
+        "VendorUpdated": "2025-06-04T21:50:33.283488",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 3
     },
     "956": {
         "ModelID": 956,
-        "Name": "Spiritwood Plank",
         "Names": {
             "English": "Spiritwood Plank",
             "German": "Geisterholzbrett",
@@ -949,12 +1068,16 @@
         "InventoryIcon": null,
         "NickIndex": 61,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 100,
-        "VendorUpdated": "2025-06-04T21:51:38.205090"
+        "VendorUpdated": "2025-06-04T21:51:38.205090",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 35
     },
     "949": {
         "ModelID": 949,
-        "Name": "Steel Ingot",
         "Names": {
             "English": "Steel Ingot",
             "German": "Stahlbarren",
@@ -993,12 +1116,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 160,
-        "VendorUpdated": "2025-06-04T21:51:35.018876"
+        "VendorUpdated": "2025-06-04T21:51:35.018876",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 17
     },
     "940": {
         "ModelID": 940,
-        "Name": "Tanned Hide Square",
         "Names": {
             "English": "Tanned Hide Square",
             "German": "Gerbfellquadrat",
@@ -1021,12 +1148,16 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 10,
-        "VendorUpdated": "2025-06-04T21:50:33.099058"
+        "VendorUpdated": "2025-06-04T21:50:33.099058",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 2
     },
     "939": {
         "ModelID": 939,
-        "Name": "Tempered Glass Vial",
         "Names": {
             "English": "Tempered Glass Vial",
             "German": "Vergütetes Glasfläschchen",
@@ -1057,12 +1188,16 @@
         "InventoryIcon": null,
         "NickIndex": 98,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 230,
-        "VendorUpdated": "2025-06-04T21:51:37.088505"
+        "VendorUpdated": "2025-06-04T21:51:37.088505",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 29
     },
     "944": {
         "ModelID": 944,
-        "Name": "Vial of Ink",
         "Names": {
             "English": "Vial of Ink",
             "German": "Tintenfläschchen",
@@ -1101,12 +1236,16 @@
         "InventoryIcon": null,
         "NickIndex": 115,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 550,
-        "VendorUpdated": "2025-06-04T21:51:37.647243"
+        "VendorUpdated": "2025-06-04T21:51:37.647243",
+        "MaterialType": "Rare",
+        "MaterialStorageSlot": 32
     },
     "946": {
         "ModelID": 946,
-        "Name": "Wood Plank",
         "Names": {
             "English": "Wood Plank",
             "German": "Holzbrett",
@@ -1129,7 +1268,12 @@
         "InventoryIcon": null,
         "NickIndex": null,
         "Profession": null,
+        "Category": null,
+        "SubCategory": null,
+        "WikiScraped": false,
         "VendorValue": 10,
-        "VendorUpdated": "2025-06-04T21:50:33.833491"
+        "VendorUpdated": "2025-06-04T21:50:33.833491",
+        "MaterialType": "Common",
+        "MaterialStorageSlot": 6
     }
 }

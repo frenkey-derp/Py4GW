@@ -19,6 +19,7 @@ class SharedCommandType(IntEnum):
     MerchantMaterials = 15
     LootEx = 16 #privately Handled Command, by Frenkey
     LeaveParty = 17
+    PressKey = 18
 
 #region mouse
 class MouseButton(IntEnum):

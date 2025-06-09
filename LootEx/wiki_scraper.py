@@ -59,11 +59,12 @@ class WikiScraper:
         return model_ids
 
     @staticmethod
-    def extract_materials(td) -> dict[str, models.SalvageInfo]:
+    def extract_materials(td) -> models.SalvageInfoCollection:
+        materials : models.SalvageInfoCollection = models.SalvageInfoCollection()
+        
         if not td:
-            return {}
+            return materials
 
-        materials : dict[str, models.SalvageInfo] = {}
         tokens = list(td.children)
         current_amount = None
 
@@ -129,6 +130,7 @@ class WikiScraper:
 
         if info_table:
             rows = info_table.find_all('tr')
+            scraped = False
 
             for row in rows:
                 th = row.find('th')
@@ -145,6 +147,7 @@ class WikiScraper:
                             
                             if mats:
                                 item.common_salvage = mats
+                                scraped = True
 
                     rare_material_names = []
                     if th.find('a', string="Rare salvage"):
@@ -155,6 +158,7 @@ class WikiScraper:
                             
                             if mats:
                                 item.rare_salvage = mats
+                                scraped = True
 
                     if "Type" in th.get_text():
                         td = row.find('td')
@@ -162,38 +166,42 @@ class WikiScraper:
                         if td:
                             text = td.get_text(strip=True)
                             
-                            if text and item.item_type == models.ItemType.Unknown:                                
-                                try:
-                                    item.item_type = ItemType[text]
-                                except KeyError:
-                                    if "upgrade" in text.lower():
-                                        item.item_type = ItemType.Rune_Mod
-                                    
-                                    elif "focus" in text.lower():
-                                        item.item_type = ItemType.Offhand
+                            if text:
+                                scraped = True          
+                                                      
+                                if item.item_type == models.ItemType.Unknown:                                
+                                    try:
+                                        item.item_type = ItemType[text]
+                                    except KeyError:
+                                        if "upgrade" in text.lower():
+                                            item.item_type = ItemType.Rune_Mod
                                         
-                                    elif "consumable" in text.lower():
-                                        item.item_type = ItemType.Usable
-                                        
-                                    elif "sweet" in text.lower():
-                                        item.item_type = ItemType.Usable
-                                        
-                                    elif "alcohol" in text.lower():
-                                        item.item_type = ItemType.Usable
-                                        
-                                    else:
-                                        item.item_type = ItemType.Unknown
-                                        ConsoleLog("LootEx", f"Unknown item type '{text}' for {item.name} ({item.model_id}) in {item.wiki_url}.")
+                                        elif "focus" in text.lower():
+                                            item.item_type = ItemType.Offhand
+                                            
+                                        elif "consumable" in text.lower():
+                                            item.item_type = ItemType.Usable
+                                            
+                                        elif "sweet" in text.lower():
+                                            item.item_type = ItemType.Usable
+                                            
+                                        elif "alcohol" in text.lower():
+                                            item.item_type = ItemType.Usable
+                                            
+                                        else:
+                                            item.item_type = ItemType.Unknown
+                                            ConsoleLog("LootEx", f"Unknown item type '{text}' for {item.name} ({item.model_id}) in {item.wiki_url}.")
                                     
                                 
                     if th.find('a', string="Inventory icon"):
-                        td = row.find('td')
+                        td = row.find('td')                        
 
                         if td:
                             # Extract the image URL
                             img = td.find('img')
                             if img and 'src' in img.attrs:
                                 item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
+                                scraped = True
 
             if not item.inventory_icon or item.inventory_icon == "":
                 # Try to find the first image in the table as a fallback
@@ -201,14 +209,21 @@ class WikiScraper:
                 first_image = info_table.find('img')
 
                 if first_image and 'src' in first_image.attrs:
-                    item.inventory_icon = f"https://wiki.guildwars.com{first_image['src']}"                    
+                    item.inventory_icon = f"https://wiki.guildwars.com{first_image['src']}"      
+            
+            if item.inventory_icon and "Disambig_icon" in item.inventory_icon:
+                # If the icon is a disambiguation icon, set it to None
+                item.inventory_icon = None
+            
+            if scraped and not item.wiki_scraped:
+                item.wiki_scraped = True
 
     @staticmethod
-    def scrape_multiple_entries(entries: dict[int, models.Item]):
-        total = len(entries)
+    def scrape_multiple_entries(model_ids: list[int]):
+        total = len(model_ids)
         i  = 0
         
-        for entry in entries.values():
+        for model_id in model_ids:
             # Skip entries with no wiki_url
             i += 1
             
@@ -222,12 +237,14 @@ class WikiScraper:
                     ConsoleLog("LootEx", "Finished scraping all entries.")
                     return
 
-            try:
+            entry = data.Items.get(model_id)
+            if not entry:
+                ConsoleLog("LootEx", f"Skipping model ID {model_id} as it does not exist in the items data.")
+                continue
+            
+            try:                
                 if not entry.wiki_url:
                     ConsoleLog("LootEx", f"Skipping {entry.name} due to missing wiki URL.")
-                    continue
-                
-                if entry.item_type != models.ItemType.Unknown:
                     continue
                 
                 ActionQueueManager().AddAction("ACTION", 
@@ -238,5 +255,10 @@ class WikiScraper:
             
 
     @staticmethod
-    def scrape_all_entries():
-        pass
+    def scrape_missing_entries():                
+        items_with_missing_info = [
+            item.model_id for item in data.Items.values()
+            if item.wiki_url and not item.wiki_scraped
+        ]
+        
+        WikiScraper.scrape_multiple_entries(items_with_missing_info)

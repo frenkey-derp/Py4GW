@@ -70,6 +70,8 @@ class Settings:
             "window_position": self.window_position,
             "window_collapsed": self.window_collapsed,
             "manual_window_visible": self.manual_window_visible,
+            "collect_items": self.collect_items,
+            "last_xunlai_check": self.last_xunlai_check.isoformat(),
         }
         # ConsoleLog(
         #     "LootEx", f"Saving settings to '{self.settings_file_path}'...", Console.MessageType.Debug)
@@ -125,6 +127,11 @@ class Settings:
                     "window_collapsed", False)
                 self.manual_window_visible = settings_dict.get(
                     "manual_window_visible", False)
+                self.collect_items = settings_dict.get("collect_items", False)
+                last_xunlai_check_str = settings_dict.get("last_xunlai_check", None)
+                if last_xunlai_check_str:
+                    self.last_xunlai_check = datetime.datetime.fromisoformat(
+                        last_xunlai_check_str)
 
             self.automatic_inventory_handling = (
                 self.automatic_inventory_handling if self.loot_profile else False

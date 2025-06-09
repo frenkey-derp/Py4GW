@@ -20,7 +20,7 @@ salvage_timer = ThrottledTimer(750)
 identification_timer = ThrottledTimer(500)
 merchant_timer = ThrottledTimer(1000)
 deposit_timer = ThrottledTimer(5000)
-inventory_timer = ThrottledTimer(750)
+inventory_timer = ThrottledTimer(5000)
 compact_inventory_timer = ThrottledTimer(250)
 indentify_action_queue = ActionQueueNode(250)
 salvage_action_queue = ActionQueueNode(150)
@@ -90,18 +90,24 @@ def DepositMaterials(force : bool = False) -> bool:
         
         deposited = True
         
-        for material_item_id in material_storage:        
-            item_id = next(
-                (item_id for item_id in items if GLOBAL_CACHE.Item.GetModelID(item_id) == GLOBAL_CACHE.Item.GetModelID(material_item_id)), None)
+        for item_id in items:
+            model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
             
-            if item_id is not None:
-                move_amount = min(material_capacity - GLOBAL_CACHE.Item.Properties.GetQuantity(material_item_id), GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
+            if model_id:
+                material_storage_item = next(
+                    (item_id for item_id in material_storage if GLOBAL_CACHE.Item.GetModelID(item_id) == model_id), None)
+                
+                max_move_amount = material_capacity - GLOBAL_CACHE.Item.Properties.GetQuantity(material_storage_item) if material_storage_item else material_capacity
+                move_amount = min(max_move_amount, GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
                 
                 if move_amount <= 0:
                     continue
                 
-                Inventory.MoveItem(item_id, Bags.MaterialStorage, GLOBAL_CACHE.Item.GetSlot(material_item_id), move_amount)
-                
+                material_data = data.Materials.get(model_id, None)
+                if material_data:
+                    ConsoleLog("LootEx", f"Depositing item {move_amount}x '{material_data.name}' ({item_id}) to material storage.", Console.MessageType.Info)
+                    Inventory.MoveItem(item_id, Bags.MaterialStorage, material_data.material_storage_slot, move_amount)                    
+                    
         return True
                 
     elif not capacity_checked:
@@ -151,10 +157,10 @@ def GetSalvageOption(item_id: int, action : ItemAction) -> Optional[SalvageOptio
             rare_salvage = rare_salvage / max(1, len(item_info.rare_salvage) + len(item_info.common_salvage))
             
             multiplier = 1.5
-            if value >= rare_salvage * multiplier and value >= common_salvage * multiplier:
-                return None
-            else:
-                return SalvageOption.LesserCraftingMaterials if common_salvage > rare_salvage else SalvageOption.RareCraftingMaterials
+            # if value >= rare_salvage * multiplier and value >= common_salvage * multiplier:
+            #     return None
+            # else:
+            return SalvageOption.LesserCraftingMaterials if common_salvage > rare_salvage else SalvageOption.RareCraftingMaterials
     else:
         match action:
             case ItemAction.SALVAGE_COMMON_MATERIALS:
@@ -176,10 +182,12 @@ def ShouldSalvageItem(item_id: int) -> tuple[bool, ItemAction]:
 
             if action != ItemAction.NONE:
                 return action == ItemAction.SALVAGE or action == ItemAction.SALVAGE_SMART or action == ItemAction.SALVAGE_COMMON_MATERIALS or action == ItemAction.SALVAGE_RARE_MATERIALS or action == ItemAction.SALVAGE_SMART, action
-
+            
         for filter in settings.current.loot_profile.filters:
-            if filter.action == ItemAction.SALVAGE or filter.action == ItemAction.SALVAGE_COMMON_MATERIALS or filter.action == ItemAction.SALVAGE_RARE_MATERIALS or filter.action == ItemAction.SALVAGE_SMART:
-                return filter.handles_item_id(item_id), filter.action
+            action = filter.get_action(item_id)
+            
+            if action != ItemAction.NONE:
+                return action == ItemAction.SALVAGE or action == ItemAction.SALVAGE_COMMON_MATERIALS or action == ItemAction.SALVAGE_RARE_MATERIALS or action == ItemAction.SALVAGE_SMART, action
    
     return False, ItemAction.NONE
 
@@ -230,10 +238,12 @@ def ShouldSellItemToMerchant(item_id: int) -> bool:
         if item_config:
             action = item_config.get_action(item_id)
             return action == ItemAction.SELL_TO_MERCHANT
-        
+                        
         for filter in settings.current.loot_profile.filters:
-            if filter.action == ItemAction.SELL_TO_MERCHANT:
-                return filter.get_action(item_id) == ItemAction.SELL_TO_MERCHANT
+            action = filter.get_action(item_id)
+            
+            if action != ItemAction.NONE:
+                return action == ItemAction.SELL_TO_MERCHANT
     
     return False
 
@@ -286,7 +296,10 @@ def ShouldStashItem(item_id: int) -> bool:
         return action == ItemAction.STASH
 
     for filter in settings.current.loot_profile.filters:
-        return filter.get_action(item_id) == ItemAction.STASH
+        action = filter.get_action(item_id)
+        
+        if action != ItemAction.NONE:
+            return action == ItemAction.STASH
         
     return False
 
@@ -540,8 +553,10 @@ def ShouldDestroyItem(item_id: int) -> bool:
         return action == ItemAction.DESTROY
     
     for filter in settings.current.loot_profile.filters:
-        if filter.action == ItemAction.SELL_TO_MERCHANT:
-            return filter.get_action(item_id) == ItemAction.DESTROY
+        action = filter.get_action(item_id)
+        
+        if action != ItemAction.NONE:
+            return action == ItemAction.DESTROY
         
     return False
 
@@ -614,7 +629,8 @@ def Run():
         
         for item_id in GLOBAL_CACHE.ItemArray.GetItemArray([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]):
             action = GetItemAction(item_id)
-            # ConsoleLog("LootEx", f"Processing item: '{utility.Util.GetItemDataName(item_id)}' {item_id} with action: {action.name}", Console.MessageType.Debug)        
+            if item_id == -1:
+                ConsoleLog("LootEx", f"Processing item: '{utility.Util.GetItemDataName(item_id)}' {item_id} with action: {action.name}", Console.MessageType.Debug)        
                         
             if action == ItemAction.SALVAGE_SMART or action == ItemAction.SALVAGE or action == ItemAction.SALVAGE_COMMON_MATERIALS or action == ItemAction.SALVAGE_RARE_MATERIALS:
                 if CanSalvage():                    

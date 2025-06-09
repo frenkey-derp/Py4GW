@@ -1,7 +1,10 @@
 
 from Py4GWCoreLib import GLOBAL_CACHE, PyImGui, SharedCommandType, Routines, ConsoleLog, Console, UIManager
-from Py4GWCoreLib import LootConfig, Range, ActionQueueManager
+from Py4GWCoreLib import LootConfig, Range, ActionQueueManager, enums
+from Py4GWCoreLib.Py4GWcorelib import Keystroke
 
+import importlib
+importlib.reload(enums)
 
 MODULE_NAME = "Messaging"
 
@@ -339,6 +342,23 @@ def UsePcon(index, message):
     ConsoleLog(MODULE_NAME, "UsePcon message processed and finished.", Console.MessageType.Info)
 #endregion
 
+#region PressKey
+def PressKey(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing PressKey message: {message}", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    
+    key_id = int(message.Params[0])    
+    repetition = int(message.Params[1]) if len(message.Params) > 1 else 1
+    
+    if key_id:    
+        for _ in range(repetition):
+            Keystroke.PressAndRelease(key_id)
+            yield from Routines.Yield.wait(100)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "PressKey message processed and finished.", Console.MessageType.Info)   
+#endregion
+
 #region PickUpLoot
 def PickUpLoot(index, message):
     def _exit_if_not_map_valid():
@@ -451,8 +471,10 @@ def ProcessMessages():
         case SharedCommandType.MerchantMaterials:
             pass
         case SharedCommandType.LeaveParty:
-            ConsoleLog(MODULE_NAME, f"Processing LeaveParty message: {message}", Console.MessageType.Info)
             GLOBAL_CACHE.Coroutines.append(LeaveParty(index, message))            
+            pass
+        case SharedCommandType.PressKey:
+            GLOBAL_CACHE.Coroutines.append(PressKey(index, message))            
             pass
         case SharedCommandType.LootEx:
             #privately Handled Command, by Frenkey

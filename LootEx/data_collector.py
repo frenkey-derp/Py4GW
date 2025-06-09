@@ -45,9 +45,16 @@ class inventory_item:
 
 
 class DataCollector:
+    instance : "DataCollector"
     AllBags = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Max.value))
     XunlaiStorage = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Storage_1.value, Bag_enum.Storage_14.value))
     CharacterInventory = GLOBAL_CACHE.ItemArray.CreateBagList(*range(Bag_enum.Backpack.value, Bag_enum.Equipment_Pack.value), Bag_enum.Equipped_Items.value)
+    
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(DataCollector, cls).__new__(cls)
+            
+        return cls.instance
     
     def __init__(self):
         self.modified_items: dict[int, models.Item] = {}
@@ -542,15 +549,7 @@ class DataCollector:
             profession = item.profession if item.profession else Profession._None
 
             if utility.Util.IsArmorType(item.item_type) and item.item_type != ItemType.Salvage and profession:
-                split_name = english_name.split(" ")
-                # remove the last part of the name as it indicates the armor slot e.g. ("Headpiece", "Chestpiece", etc.)
-                if len(split_name) > 1:
-                    split_name = split_name[:-1]
-
-                # join the parts of the name together separated by a space
-                english_name = " ".join(split_name)
-
-                wiki_url = f"https://wiki.guildwars.com/wiki/{profession.name}_{english_name.replace(' ', '_')}_armor"
+                return self.get_armor_wiki_url(item)
 
             return wiki_url
 
@@ -821,6 +820,65 @@ class DataCollector:
             
         return False
     
+    def get_armor_wiki_url(self, item: models.Item) -> str:
+        """Get the wiki URL for an armor item."""
+        wiki_url = ""
+        
+        common_armors = [
+                "Bandana",
+                "Blindfold",
+                "Crown",
+                "Dread Mask",
+                "Highlander Woad",
+                "Mask of the Mo Zing",
+                "Norn Woad",
+                "Slim Spectacles",
+                "Spectacles",
+                "Tinted Spectacles",
+                "Chaos Gloves",
+                "Destroyer Gauntlets",
+                "Dragon Gauntlets",
+                "Glacial Gauntlets",
+                "Stone Gauntlets",
+            ]
+        
+        if item.name in common_armors:
+            return f"https://wiki.guildwars.com/wiki/{item.name.replace(' ', '_')}"
+        
+        if item.profession:
+            if item.item_type == ItemType.Headpiece:
+                profession_urls ={
+                    Profession.Warrior: "https://wiki.guildwars.com/wiki/Warrior_helms",
+                    Profession.Ranger: "https://wiki.guildwars.com/wiki/Ranger_masks",
+                    Profession.Monk: "https://wiki.guildwars.com/wiki/Monk_scalp_designs",
+                    Profession.Necromancer: "https://wiki.guildwars.com/wiki/Necromancer_scar_patterns",
+                    Profession.Mesmer: "https://wiki.guildwars.com/wiki/Mesmer_masks",
+                    Profession.Elementalist: "https://wiki.guildwars.com/wiki/Elementalist_helms",
+                    Profession.Assassin: "https://wiki.guildwars.com/wiki/Assassin_masks",
+                    Profession.Ritualist: "https://wiki.guildwars.com/wiki/Ritualist_headwraps",
+                    Profession.Paragon: "https://wiki.guildwars.com/wiki/Paragon_crests",
+                    Profession.Dervish: "https://wiki.guildwars.com/wiki/Dervish_hoods"
+                }
+                
+                if item.profession in profession_urls:
+                    return profession_urls[item.profession]     
+            else:
+                name_url = re.sub(r'\s+\w+$', '_armor', f"{item.profession.name}_{item.name.replace('PvP', '').strip()}").replace(' ', '_')                                    
+                wiki_url = f"https://wiki.guildwars.com/wiki/{name_url}"
+                return wiki_url     
+        
+        return wiki_url                         
+        
+        
+        
+    def fix_armor_wiki_urls(self):
+        for item in data.Items.values():
+            if item.item_type != ItemType.Salvage and utility.Util.IsArmorType(item.item_type) and not item.wiki_scraped:
+                item.wiki_url = self.get_armor_wiki_url(item)
+                
+        
+        data.SaveItems(True)
+    
     def run_v2(self):
         global save_items, save_runes, queued_runes, save_weapon_mods
 
@@ -899,7 +957,6 @@ class DataCollector:
                         self.queue[item_id] = True
                         self.action_queue.add_action(
                             self.check, item_id)
-
 
     def stop_collection(self):
         global save_items, save_runes, save_weapon_mods

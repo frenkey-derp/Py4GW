@@ -242,6 +242,7 @@ class Item():
     inventory_icon: Optional[str] = None
     category: enum.ItemCategory = enum.ItemCategory.None_
     sub_category: enum.ItemSubCategory = enum.ItemSubCategory.None_    
+    wiki_scraped: bool = False
     
     @property
     def is_nick_item(self) -> bool:
@@ -343,19 +344,19 @@ class Item():
         
         return {
             "ModelID": self.model_id,
-            "Name" : self.names.get(ServerLanguage.English, self.name),
             "Names": {lang.name: name for lang, name in self.names.items()},
             "ItemType": self.item_type.name,
             "DropInfo": self.drop_info,
             "Attributes": [attribute.name for attribute in self.attributes] if self.attributes else [],
-            "CommonSalvage": self.common_salvage.to_dict() if self.common_salvage else {},
-            "RareSalvage": self.rare_salvage.to_dict() if self.rare_salvage else {},
+            "CommonSalvage": (self.common_salvage or SalvageInfoCollection()).to_dict(),
+            "RareSalvage": (self.rare_salvage or SalvageInfoCollection()).to_dict(),
             "WikiURL": self.wiki_url or get_wiki_url(),
             "InventoryIcon": self.inventory_icon,
             "NickIndex": self.nick_index,
             "Profession": self.profession.name if self.profession and self.profession != Profession._None else None,
             "Category": self.category.name if self.category else None,
-            "SubCategory": self.sub_category.name if self.sub_category else None
+            "SubCategory": self.sub_category.name if self.sub_category else None,
+            "WikiScraped": self.wiki_scraped
         }
 
     @staticmethod
@@ -374,7 +375,8 @@ class Item():
             nick_index=json["NickIndex"] if "NickIndex" in json else None,
             profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else None,
             category=enum.ItemCategory[json["Category"]] if "Category" in json and json["Category"] else enum.ItemCategory.None_,
-            sub_category=enum.ItemSubCategory[json["SubCategory"]] if "SubCategory" in json and json["SubCategory"] else enum.ItemSubCategory.None_
+            sub_category=enum.ItemSubCategory[json["SubCategory"]] if "SubCategory" in json and json["SubCategory"] else enum.ItemSubCategory.None_,
+            wiki_scraped=json.get("WikiScraped", False) 
         )
 
 @dataclass
@@ -382,12 +384,14 @@ class Material(Item):
     vendor_updated: datetime = datetime.min
     vendor_value: int = 0
     material_type: MaterialType = MaterialType.Common
+    material_storage_slot : int = -1
     
     def to_json(self):
         dict = super().to_json()
         dict["VendorValue"] = self.vendor_value
         dict["VendorUpdated"] = self.vendor_updated.isoformat() if self.vendor_updated else None
         dict["MaterialType"] = self.material_type.name
+        dict["MaterialStorageSlot"] = self.material_storage_slot if self.material_storage_slot != -1 else None
         return dict
     
     @staticmethod
@@ -414,28 +418,9 @@ class Material(Item):
             material_type=material_type,
             inventory_icon=item.inventory_icon,
             category=item.category,
-            sub_category=item.sub_category
-        )
-    
-    @staticmethod
-    def from_item(item: Item) -> 'Material':
-        return Material(
-            model_id=item.model_id,
-            names=item.names,
-            item_type=item.item_type,
-            drop_info=item.drop_info,
-            attributes=item.attributes,
-            wiki_url=item.wiki_url,
-            common_salvage=item.common_salvage,
-            rare_salvage=item.rare_salvage,
-            nick_index=item.nick_index,
-            profession=item.profession,
-            vendor_value=0,
-            vendor_updated=datetime.min,
-            material_type=MaterialType.Common if item.model_id in enum.COMMON_MATERIALS else MaterialType.Rare,
-            inventory_icon=item.inventory_icon,
-            category=item.category,
-            sub_category=item.sub_category
+            sub_category=item.sub_category,
+            wiki_scraped= item.wiki_scraped,
+            material_storage_slot=json.get("MaterialStorageSlot", -1) if "MaterialStorageSlot" in json else -1
         )
 
 @dataclass
