@@ -92,6 +92,9 @@ class UI:
         RARE_WEAPONS_TEXT = Utils.RGBToColor(251, 62, 141, 255)
         RARE_WEAPONS_FRAME = Utils.RGBToColor(251, 62, 141, 75)
         RARE_WEAPONS_FRAME_HOVERED = Utils.RGBToColor(251, 62, 141, 125)
+        LOW_REQ_WEAPONS_TEXT = Utils.RGBToColor(242, 136, 22, 255)
+        LOW_REQ_WEAPONS_FRAME = Utils.RGBToColor(242, 136, 22, 75)
+        LOW_REQ_WEAPONS_FRAME_HOVERED = Utils.RGBToColor(242, 136, 22, 125)
     
     def __new__(cls):
         if cls._instance is None:
@@ -142,6 +145,27 @@ class UI:
         self.suffix_names = ["Any"]
         self.inherent_names = ["Any"]
         self.inventory_coords: Optional[settings.FrameCoords] = None
+        
+        self.bag_ranges : dict[str, tuple[Bag, Bag]] = {
+            "Inventory": (Bag.Backpack, Bag.Bag_2),   
+            "Equipped Items": (Bag.Equipped_Items, Bag.Equipped_Items),       
+            "Equipment Pack": (Bag.Equipment_Pack, Bag.Equipment_Pack),       
+        }
+        for bag in Bag:
+            if bag.value <= Bag.Bag_2.value:
+                continue
+            
+            if bag == Bag.Max:
+                continue
+            
+            key = utility.Util.reformat_string(bag.name)
+            if key in self.bag_ranges:
+                continue
+            
+            self.bag_ranges[key] = (bag, bag)
+
+        self.bag_names = [key for key in self.bag_ranges.keys()]
+        self.bag_index = 0
         
         for mod in data.Weapon_Mods.values():
             if mod.mod_type == enum.ModType.Prefix:
@@ -403,24 +427,22 @@ class UI:
     def draw_data_collector_tab(self):
         if PyImGui.begin_tab_item("Data Collector"):
             tab_size = PyImGui.get_content_region_avail()
-            child_width = (tab_size[0] - 10) / 2
+            child_width = tab_size[0] - 10
+            tab1_size = (max(400, child_width * 0.25), tab_size[1])
+            tab2_size = (child_width - tab1_size[0], tab_size[1])
             
-            if PyImGui.begin_child("DataCollectorChild", (child_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
+            if PyImGui.begin_child("DataCollectorChild", tab1_size, True, PyImGui.WindowFlags.NoFlag):
                 PyImGui.text("Data Collector")
                 PyImGui.separator()
 
+                child_size = PyImGui.get_content_region_avail()
                 if PyImGui.is_rect_visible(0, 20):
-                    if PyImGui.begin_table("DataCollectorTable", 2, PyImGui.TableFlags.ScrollY, 250, 100):
+                    if PyImGui.begin_table("DataCollectorTable", 2, PyImGui.TableFlags.ScrollY, 200, child_size[1] - 5):
                         PyImGui.table_setup_column("Data")
-                        PyImGui.table_setup_column("Amount")
+                        PyImGui.table_setup_column("Amount", PyImGui.TableColumnFlags.WidthFixed, 50)
 
                         # PyImGui.table_headers_row()
                         PyImGui.table_next_row()
-
-                        PyImGui.table_next_column()
-                        PyImGui.text(f"Items")
-                        PyImGui.table_next_column()
-                        PyImGui.text(f"{len(data.Items)}")
 
                         PyImGui.table_next_column()
                         PyImGui.text(f"Weapon Mods")
@@ -431,77 +453,114 @@ class UI:
                         PyImGui.text(f"Runes")
                         PyImGui.table_next_column()
                         PyImGui.text(f"{len(data.Runes)}")
+
+                        PyImGui.table_next_column()
+                        PyImGui.text(f"Items")
+                        PyImGui.table_next_column()
+                        PyImGui.text(f"{len(data.Items.All)}")
+                        
+                        PyImGui.table_next_column()
+                        PyImGui.separator()
+                        PyImGui.table_next_column()
+                        PyImGui.separator()
+                        
+                        
+                        for item_type, items in data.Items.items():                            
+                            item_count = len(items)
+                            if item_count > 0:
+                                PyImGui.table_next_column()
+                                PyImGui.text(f"{item_type.name}")
+                                PyImGui.table_next_column()
+                                PyImGui.text(f"{item_count}")
+                                
                     PyImGui.end_table()
-
-                if PyImGui.button("Merge Diffs into Data", 200, 50):
-                    ConsoleLog(
-                        "LootEx",
-                        "Merging diffs into data...",
-                        Console.MessageType.Info,
-                    )
-
-                    messaging.SendMergingMessage()
-
-                ImGui.show_tooltip("Merge all diff files into the data files.")
-
-                if PyImGui.button("Scrape Wiki", 200, 50):
-                    wiki_scraper.WikiScraper.scrape_missing_entries()
-                    pass
-
-                if PyImGui.button("Test", 200, 50):
-                    clipboard_text = "```\n"
-
-                    # sort weapon mods by mod_type then by name
-                    mods = sorted(data.Weapon_Mods.values(), key=lambda x: (
-                        x.mod_type, x.names.get(ServerLanguage.English, "")))
-
-                    for mod in mods:
-                        if not mod.upgrade_exists:
-                            continue
-
-                        english = mod.names.get(ServerLanguage.English, None)
-
-                        # check if the mod has a value for each language but Unknown in names
-                        has_all_languages = all(
-                            mod.names.get(
-                                lang) is not None or lang == ServerLanguage.Unknown
-                            for lang in ServerLanguage
+                
+                PyImGui.same_line(0, 5)
+                if PyImGui.begin_child("DataCollectorButtonsChild", (0, child_size[1] - 5), False, PyImGui.WindowFlags.NoFlag):
+                    if PyImGui.button("Merge Diffs into Data", 200, 50):
+                        ConsoleLog(
+                            "LootEx",
+                            "Merging diffs into data...",
+                            Console.MessageType.Info,
                         )
 
-                        if not has_all_languages and english:
-                            clipboard_text += f"\n{english}"
+                        messaging.SendMergingMessage()
 
-                    clipboard_text += "```"
-                    PyImGui.set_clipboard_text(clipboard_text)
-                    
-                    data.SaveItems(True)
-                    
-                                
-                                
-                    
-                        
-                ImGui.show_tooltip("Copy all weapon mods that have an upgrade to the clipboard.")
+                    ImGui.show_tooltip("Merge all diff files into the data files.")
+
+                    if PyImGui.button("Scrape Wiki", 200, 50):
+                        wiki_scraper.WikiScraper.scrape_missing_entries()
+                        pass
+
+                    if PyImGui.button("Test", 200, 50):
+                        clipboard_text = "```\n"
+
+                        # sort weapon mods by mod_type then by name
+                        mods = sorted(data.Weapon_Mods.values(), key=lambda x: (
+                            x.mod_type, x.names.get(ServerLanguage.English, "")))
+
+                        for mod in mods:
+                            if not mod.upgrade_exists:
+                                continue
+
+                            english = mod.names.get(ServerLanguage.English, None)
+
+                            # check if the mod has a value for each language but Unknown in names
+                            has_all_languages = all(
+                                mod.names.get(
+                                    lang) is not None or lang == ServerLanguage.Unknown
+                                for lang in ServerLanguage
+                            )
+
+                            if not has_all_languages and english:
+                                clipboard_text += f"\n{english}"
+
+                        clipboard_text += "```"
+                        PyImGui.set_clipboard_text(clipboard_text)
                 
 
-            PyImGui.end_child()
+                PyImGui.end_child()
             
+            PyImGui.end_child()
+                
             PyImGui.same_line(0, 5)
             
-            if PyImGui.begin_child("DataCollectorIventory", (child_width, tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
+            if PyImGui.begin_child("DataCollectorIventory", tab2_size, True, PyImGui.WindowFlags.NoFlag):
                 child_size = PyImGui.get_content_region_avail()
             
                 if self.inventory_coords:
-                    inventory_width = self.inventory_coords.right - self.inventory_coords.left
-                    item_ids, bag_sizes = utility.Util.GetZeroFilledBags(Bag.Backpack, Bag.Bag_2)
                     
-                    columns = math.floor((inventory_width - 24) // 37)
+                    PyImGui.push_item_width(child_size[0] - 110)
+                    self.bag_index = PyImGui.combo(
+                        "##Bag",
+                        self.bag_index,
+                        self.bag_names
+                    )
+                    bag_range = self.bag_ranges[self.bag_names[self.bag_index]]         
+                    
+                    PyImGui.push_item_width(100)
+                    PyImGui.same_line(0, 5)
+                    index = PyImGui.input_int("##BagRange", self.bag_index)           
+                    if index > len(self.bag_names) - 1:
+                        index = len(self.bag_names) - 1
+                    elif index < 0:
+                        index = 0
+                    
+                    if index != self.bag_index:
+                        self.bag_index = index
+                        
+                    item_ids, _ = utility.Util.GetZeroFilledBags(bag_range[0], bag_range[1])
+                    PyImGui.separator()
+                    
+                    inventory_width = self.inventory_coords.right - self.inventory_coords.left
+                    columns = math.floor((inventory_width - 24) // 37) if self.bag_index == 0 else 5
                     rows = math.ceil(len(item_ids) / columns)
                     
                     if PyImGui.is_rect_visible(0, 20):
                         if PyImGui.begin_table("Inventory Debug Table", columns, PyImGui.TableFlags.NoBordersInBody, 0, 0):
                             remaining_size = PyImGui.get_content_region_avail()
                             button_width = math.floor((remaining_size[0] - 50) / columns)
-                            button_height = math.floor((child_size[1] - 28) / rows)
+                            button_height = math.floor((child_size[1] - 75) / rows)
                             
                             for i, item_id in enumerate(item_ids):    
                                 model_id = GLOBAL_CACHE.Item.GetModelID(item_id) if item_id > 0 else -1   
@@ -519,7 +578,10 @@ class UI:
                                             Utils.ColorToTuple(Utils.RGBToColor(255, 0, 0, 125))
                                         )
                                     
-                                    complete = item_id == 0 or (self.data_collector.is_item_collected(item_id) and not self.data_collector.has_uncollected_mods(item_id))
+                                    collected, missing = self.data_collector.is_item_collected(item_id) if item_id != 0 else (True, "")
+                                    mods_missing, mod_missing = self.data_collector.has_uncollected_mods(item_id) if item_id != 0 else (False, "")
+                                    
+                                    complete = (collected and not mods_missing)
                                     if not complete:
                                         PyImGui.push_style_color(
                                             PyImGui.ImGuiCol.ChildBg,
@@ -545,7 +607,7 @@ class UI:
                                         item = data.Items.get_item(item_type, model_id)
                                         
                                         if item and not item.wiki_scraped:
-                                            wiki_scraper.WikiScraper.scrape_multiple_entries([item.model_id])
+                                            wiki_scraper.WikiScraper.scrape_multiple_entries([item])
                                     
                                         
                                     if item:
@@ -554,6 +616,17 @@ class UI:
                                             
                                             PyImGui.begin_tooltip()
                                             self.draw_item_header(item)
+                                            
+                                            if not collected:
+                                                PyImGui.text_colored(missing, (255, 0, 0, 255))
+                                                
+                                            if mods_missing:
+                                                PyImGui.text_colored(mod_missing, (255, 0, 0, 255))
+                                            
+                                            if not item.wiki_scraped:
+                                                PyImGui.text_colored("Wiki data not scraped yet", (255, 0, 0, 255))
+                                                
+                                                
                                             PyImGui.end_tooltip()
                                         pass
                                 else:
@@ -1280,6 +1353,28 @@ class UI:
                         ImGui.show_tooltip(
                             "Exclude weapons found from Dungeon Boss Chests, Elite Area Boss Chests\nand other marked weapons which are generally traded at a high value.\n\n"+
                             "The list of weapons is updated periodically, but may not be complete.")
+
+                        PyImGui.pop_style_color(3)
+                        
+                        PyImGui.push_style_color(
+                            PyImGui.ImGuiCol.Text, Utils.ColorToTuple(UI.COLORS.LOW_REQ_WEAPONS_TEXT))
+                        PyImGui.push_style_color(
+                            PyImGui.ImGuiCol.FrameBg, Utils.ColorToTuple(UI.COLORS.LOW_REQ_WEAPONS_FRAME))
+                        PyImGui.push_style_color(
+                            PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(UI.COLORS.LOW_REQ_WEAPONS_FRAME_HOVERED))
+
+                        label = f"Exclude Low Req"
+                        unique_id = f"##{label}"
+                        selected = PyImGui.checkbox(
+                            IconsFontAwesome5.ICON_SHIELD_ALT + " " + label + unique_id, loot_filter.exclude_low_req)
+
+                        if loot_filter.exclude_low_req != selected:
+                            loot_filter.exclude_low_req = selected
+                            settings.current.loot_profile.save()
+                            
+                        ImGui.show_tooltip(
+                            "Exclude weapons with damage within a tolerance of 1 which are used for Speed Clears\nQ0 8-17 Scythe\nQ6 14-24 Bow\nQ6 7-14 Dagger\n +10 armor vs Demons Shields\n\n"+
+                            "The check is a temporary solution until we havea ui to configure them.")
 
                         PyImGui.pop_style_color(3)
                     PyImGui.end_child()

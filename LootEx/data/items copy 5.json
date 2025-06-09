@@ -4695,7 +4695,7 @@
                 "Polish": "Rdzeń Niszczyciela",
                 "Russian": "Destroyer Core",
                 "BorkBorkBork": "Destruyer Cure-a",
-                "Japanese": "デストロイヤーの心臓"
+                "Japanese": "デストロイヤーの心臓 250個"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -12057,23 +12057,15 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {
-                "Wood Plank": {
-                    "Amount": -1,
-                    "MinAmount": -1,
-                    "MaxAmount": -1,
-                    "MaterialModelID": 946,
-                    "MaterialName": "Wood Plank"
-                }
-            },
+            "CommonSalvage": {},
             "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Flatbow_(wooden)",
-            "InventoryIcon": "https://wiki.guildwars.com/images/b/bd/Wooden_Longbow.png",
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ascalon_Flatbow",
+            "InventoryIcon": "https://wiki.guildwars.com/images/e/e7/Icon_split.png",
             "NickIndex": null,
             "Profession": null,
             "Category": "Trophy",
             "SubCategory": null,
-            "WikiScraped": true
+            "WikiScraped": false
         },
         "24753": {
             "ModelID": 24753,
@@ -13327,23 +13319,15 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {
-                "Wood Plank": {
-                    "Amount": -1,
-                    "MinAmount": -1,
-                    "MaxAmount": -1,
-                    "MaterialModelID": 946,
-                    "MaterialName": "Wood Plank"
-                }
-            },
+            "CommonSalvage": {},
             "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Recurve_Bow_(weapon)",
-            "InventoryIcon": "https://wiki.guildwars.com/images/f/fb/Sturdy_Recurve_Bow.png",
+            "WikiURL": "https://wiki.guildwars.com/wiki/Recurve_Bow",
+            "InventoryIcon": null,
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": true
+            "WikiScraped": false
         },
         "144": {
             "ModelID": 144,
@@ -39022,15 +39006,15 @@
             "Names": {
                 "English": "Birthday Cupcake",
                 "German": "Geburtstagskuchen",
-                "Japanese": "バースデー カップケーキ",
-                "Korean": "생일 컵케이크",
+                "Japanese": "バースデー カップケーキ 250個",
+                "Korean": "250 생일 컵케이크",
                 "French": "Petit gâteau d'anniversaire",
-                "Italian": "Tortina di Compleanno",
-                "Spanish": "Tarta de cumpleaños",
-                "TraditionalChinese": "生日杯子蛋糕",
-                "Polish": "Urodzinowa Babeczka",
-                "Russian": "Birthday Cupcake",
-                "BorkBorkBork": "Burthdaey Coopcaeke-a"
+                "Italian": "250 Tortine di Compleanno",
+                "Spanish": "250 Tartas de cumpleaños",
+                "TraditionalChinese": "250 生日杯子蛋糕",
+                "Polish": "250 x Urodzinowa Babeczka",
+                "Russian": "250 Birthday Cupcakes",
+                "BorkBorkBork": "250 Burthdaey Coopcaeke-as"
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebrations & Dragon Festival & Canthan New Year",
@@ -39122,7 +39106,7 @@
                 "Polish": "Butelka Grogu",
                 "Russian": "Bottle of Grog",
                 "BorkBorkBork": "Buttle-a ooff Grug",
-                "Japanese": "グロッグ"
+                "Japanese": "グロッグ 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "Pirate Week",
@@ -39222,7 +39206,7 @@
                 "Polish": "Kandyzowane Jabłko",
                 "Russian": "Candy Apple",
                 "BorkBorkBork": "Cundy Aepple-a",
-                "Japanese": "リンゴあめ"
+                "Japanese": "リンゴあめ 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -39250,7 +39234,7 @@
                 "Polish": "Kandyzowana Kukurydza",
                 "Russian": "Candy Corn",
                 "BorkBorkBork": "Cundy Curn",
-                "Japanese": "コーン キャンディ"
+                "Japanese": "コーン キャンディ 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -39388,7 +39372,7 @@
                 "Polish": "Rozkazy Spowiednika",
                 "Russian": "Confessor's Orders",
                 "BorkBorkBork": "Cunffessur's Oorders",
-                "Japanese": "聖者イザヤの指令書"
+                "Japanese": "聖者イザヤの指令書 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "Dropped by the White Mantle & Peacekeepers",
@@ -41390,7 +41374,7 @@
                 "Polish": "Złote Jajo",
                 "Russian": "Golden Egg",
                 "BorkBorkBork": "Guldee Igg",
-                "Japanese": "金の卵"
+                "Japanese": "金の卵 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "Sweet Treats Week",
@@ -41768,7 +41752,7 @@
                 "Polish": "Księżycowa Wróżba [Rok Małpy]",
                 "Russian": "Lunar Fortune [Год Обезьяны]",
                 "BorkBorkBork": "Loonaer Furtoone-a [Yeaer ooff zee Munkey]",
-                "Japanese": "おみくじ [サル年]"
+                "Japanese": "おみくじ [サル年] 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "Year of the Monkey (2016)",
@@ -42246,7 +42230,7 @@
                 "Polish": "Ciastko z Dyni",
                 "Russian": "Pumpkin Cookie",
                 "BorkBorkBork": "Poompkeen Cuukeee-a",
-                "Japanese": "パンプキン クッキー"
+                "Japanese": "パンプキン クッキー 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -42576,7 +42560,7 @@
                 "Polish": "Kawałek Ciasta z Dyni",
                 "Russian": "Slice of Pumpkin Pie",
                 "BorkBorkBork": "Sleece-a ooff Poompkeen Peee-a",
-                "Japanese": "パンプキン パイ"
+                "Japanese": "パンプキン パイ 250個"
             },
             "ItemType": "Usable",
             "DropInfo": "Special Treats Week",
@@ -47215,7 +47199,7 @@
                 "Polish": "Wytrych",
                 "Russian": "Отмычка",
                 "BorkBorkBork": "Luckpeeck",
-                "Japanese": "万能カギ"
+                "Japanese": "万能カギ 250個"
             },
             "ItemType": "Key",
             "DropInfo": "Foes All Regions Hard Mode",
@@ -47677,17 +47661,7 @@
         "3256": {
             "ModelID": 3256,
             "Names": {
-                "English": "Passage Scroll to Urgoz's Warren",
-                "German": "Zugangsschriftrolle zu Urgoz' Bau",
-                "Korean": "우르고즈 서식처 통행증",
-                "French": "Parchemin de Passage pour le Labyrinthe d'Urgoz",
-                "Italian": "Pergamena di Passaggio al Recinto di Urgoz",
-                "Spanish": "Pergamino de entrada a la Madriguera de Urgoz",
-                "TraditionalChinese": "爾果的養殖場傳送卷軸",
-                "Japanese": "アーゴズの棲処への通行証",
-                "Polish": "Zwój Przejścia do Labiryntu Urgoza",
-                "Russian": "Passage Scroll в Urgoz's Warren",
-                "BorkBorkBork": "Paessaege-a Scrull tu Urguz's Vaerree"
+                "English": "Passage Scroll to Urgoz's Warren"
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses HM & Foes Urgoz",
@@ -47705,17 +47679,7 @@
         "22279": {
             "ModelID": 22279,
             "Names": {
-                "English": "Passage Scroll to the Deep",
-                "German": "Zugangsschriftrolle in die Tiefe",
-                "Korean": "악령의 은신처 통행증",
-                "French": "Parchemin de Passage pour l'Abîme",
-                "Italian": "Pergamena di Passaggio alla Profondità",
-                "Spanish": "Pergamino de entrada a La Profundidad",
-                "TraditionalChinese": "深處傳送卷軸",
-                "Japanese": "深淵への通行証",
-                "Polish": "Zwój Przejścia do Głębin",
-                "Russian": "Passage Scroll в Deep",
-                "BorkBorkBork": "Paessaege-a Scrull tu zee Deep"
+                "English": "Passage Scroll to the Deep"
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses HM & Foes The Deep",
@@ -47761,17 +47725,7 @@
         "3746": {
             "ModelID": 3746,
             "Names": {
-                "English": "Passage Scroll to the Underworld",
-                "German": "Zugangsschriftrolle in die Unterwelt",
-                "Korean": "지하세계 통행증",
-                "French": "Parchemin de Passage pour l'Outre-Monde",
-                "Italian": "Pergamena di Passaggio agli Inferi",
-                "Spanish": "Pergamino de entrada al Inframundo",
-                "TraditionalChinese": "地下世界傳送卷軸",
-                "Japanese": "アンダーワールドへの通行証",
-                "Polish": "Zwój Przejścia do Krainy Zmarłych",
-                "Russian": "Passage Scroll в Underworld",
-                "BorkBorkBork": "Paessaege-a Scrull tu zee Undervurld"
+                "English": "Passage Scroll to the Underworld"
             },
             "ItemType": "Scroll",
             "DropInfo": "Bosses HM & Foes The Uw",
@@ -47957,17 +47911,7 @@
         "21233": {
             "ModelID": 21233,
             "Names": {
-                "English": "Scroll of the Lightbringer",
-                "German": "Schriftrolle des Lichtbringers",
-                "Korean": "빛의 수호자 주문서",
-                "French": "Parchemin du Porteur de Lumière",
-                "Italian": "Pergamena del Portatore della Luce",
-                "Spanish": "Pergamino de Iluminador",
-                "TraditionalChinese": "光明使者捲軸",
-                "Japanese": "ライトブリンガー スクロール",
-                "Polish": "Zwój Niosącego Światłość",
-                "Russian": "Scroll of the Lightbringer",
-                "BorkBorkBork": "Scrull ooff zee Leeghtbreenger"
+                "English": "Scroll of the Lightbringer"
             },
             "ItemType": "Scroll",
             "DropInfo": "No data added yet",

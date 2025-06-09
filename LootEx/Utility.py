@@ -12,8 +12,8 @@ import importlib
 from LootEx.models import ModifierInfo, Rune, WeaponMod
 from Py4GWCoreLib import Item, UIManager
 import Py4GWCoreLib
-from Py4GWCoreLib.Py4GWcorelib import Utils
-from Py4GWCoreLib.enums import Attribute, DamageType, ItemType, ModelID, NumberPreference, Profession, Rarity, DyeColor, ServerLanguage
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
+from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, NumberPreference, Profession, Rarity, DyeColor, ServerLanguage
 
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 importlib.reload(item_configuration)
@@ -21,10 +21,9 @@ importlib.reload(data)
 importlib.reload(enum)
 
 
-class Util:    
+class Util:
     merchant_threshold = 10
-    merchantwindow_coords : list[tuple[int, int, int, int]] = []
-    
+    merchantwindow_coords: list[tuple[int, int, int, int]] = []
 
     @staticmethod
     def get_mod_mask(identifier: int, arg1: int, arg2: int) -> str:
@@ -70,99 +69,47 @@ class Util:
         """
         if mod_type == enum.ModType.Inherent:
             return enum.SalvageOption.Inherent
-        
+
         elif mod_type == enum.ModType.Prefix:
             return enum.SalvageOption.Prefix
-        
+
         elif mod_type == enum.ModType.Suffix:
             return enum.SalvageOption.Suffix
-        
+
         else:
             return enum.SalvageOption.None_
 
     # TODO: Add handling for non max mods
     @staticmethod
-    def GetMods(item_id: int, max_mods: bool = False) -> list[WeaponMod | Rune]:
+    def GetMods(item_id: int, tolerance: int = -1) -> tuple[list[WeaponMod | Rune], list[Rune], list[WeaponMod]]:
         item_type = ItemType[Item.GetItemType(item_id)[1]]
         mods = []
+        rune_mods = []
+        weapon_mods = []
 
         is_rune = item_type == ItemType.Rune_Mod and GLOBAL_CACHE.Item.Customization.Modifiers.GetModifierValues(
             item_id, ModifierIdentifier.TargetItemType)[0] == 0
 
         # ConsoleLog("LootEx", f"Item ID: {item_id} - Item Type: {item_type}")
-        modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(item_id)
+        modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(
+            item_id)
 
         if Util.IsArmorType(item_type) or is_rune:
-            matching_runes = [
+            rune_mods = [
                 rune for rune in data.Runes.values() if rune.is_item_modifier(modifiers)]
-            mods.extend(matching_runes)
+            mods.extend(rune_mods)
 
         elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
-            matching_mods = [
-                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(modifiers, item_type, max_mods=max_mods)]
-            mods.extend(matching_mods)
-            
+            weapon_mods = [
+                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(modifiers, item_type, tolerance)]
+            mods.extend(weapon_mods)
+
         else:
-            return []
+            return [], [], []
 
         mods.sort(key=lambda x: x.mod_type, reverse=True)
 
-        return mods
-
-    @staticmethod
-    def GetModFromRune_Mod(item_id: int):
-        """
-        Retrieves the weapon mod associated with a specific item ID if that item is a Rune or Mod.
-        Args:
-            item_id (int): The unique identifier of the item.
-        Returns:
-            Optional[WeaponMod]: The weapon mod associated with the item ID, 
-            or None if no matching mod is found.
-        """
-
-        item_type = Item.GetItemType(item_id)
-
-        if (item_type == ItemType.Rune_Mod):
-            _, value, _ = Item.Customization.Modifiers.GetModifierValues(
-                item_id, ModifierIdentifier.TargetItemType)
-            target_item_type = ItemType(value) if value else None
-
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(
-                    mod, target_item_type)), None)
-
-                if matching_mod is not None:
-                    matching_mod = next(
-                        (weapon_mod for weapon_mod in data.Runes.values() if weapon_mod.is_item_modifier(mod)), None)
-
-                return matching_mod
-        else:
-            return None
-
-    @staticmethod
-    def GetWeaponModFromRune_Mod(item_id: int) -> Optional[WeaponMod]:
-        """
-        Retrieves the weapon mod associated with a specific item ID if that item is a Rune or Mod.
-        Args:
-            item_id (int): The unique identifier of the item.
-        Returns:
-            Optional[WeaponMod]: The weapon mod associated with the item ID, 
-            or None if no matching mod is found.
-        """
-
-        item_type = Item.GetItemType(item_id)
-
-        if (item_type == ItemType.Rune_Mod):
-            _, value, _ = Item.Customization.Modifiers.GetModifierValues(
-                item_id, ModifierIdentifier.TargetItemType)
-            target_item_type = ItemType(value) if value else None
-
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                matching_mod = next((weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(
-                    mod, target_item_type)), None)
-                return matching_mod
-        else:
-            return None
+        return mods, rune_mods, weapon_mods
 
     @staticmethod
     def GetRuneFromRune_Mod(item_id: int) -> Optional[Rune]:
@@ -223,6 +170,15 @@ class Util:
             item_id, ModifierIdentifier.Damage)
 
         if max_damage == None and min_damage == None:
+            _, attribute_id, requirement = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifierValues(
+                item_id, ModifierIdentifier.Requirement)
+
+            if attribute_id == None or requirement == None:
+                _, max_damage, min_damage = Item.Customization.Modifiers.GetModifierValues(
+                    item_id, ModifierIdentifier.Damage_NoReq)
+
+                return min_damage if min_damage else 0, max_damage if max_damage else 0
+
             return -1, -1
 
         return min_damage if min_damage else 0, max_damage if max_damage else 0
@@ -344,7 +300,7 @@ class Util:
         return damage_range.min == max_damage.min - tollerance.min and damage_range.max >= max_damage.max - tollerance.max
 
     @staticmethod
-    def GetDataItem(item_type : ItemType, model_id: int) -> Optional[models.Item]:
+    def GetDataItem(item_type: ItemType, model_id: int) -> Optional[models.Item]:
         """
         Get the data item based on item type and model ID.
 
@@ -356,7 +312,7 @@ class Util:
             Optional[models.Item]: The data item if found, otherwise None.
         """
         items = data.Items.get(item_type, {})
-        
+
         return items.get(model_id, None)
 
     @staticmethod
@@ -376,7 +332,7 @@ class Util:
         return Util.IsArmorType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
-    def IsWeaponType(itemtype: ItemType) -> bool:                
+    def IsWeaponType(itemtype: ItemType) -> bool:
         return itemtype in {
             ItemType.Axe,
             ItemType.Bow,
@@ -529,16 +485,15 @@ class Util:
                 modifier_value_arg=ModifierValueArg.Fixed,
             )
         ]
-    
+
     @staticmethod
     def get_server_language():
         preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
         server_language = ServerLanguage(preference)
         return server_language
-    
-    
+
     @staticmethod
-    def is_inscription_item(item_name : str) -> bool:
+    def is_inscription_item(item_name: str) -> bool:
         """
         Check if the item is an inscription item based on its name.
 
@@ -560,13 +515,13 @@ class Util:
             ServerLanguage.Russian: "Надпись: ",
             ServerLanguage.BorkBorkBork: "Inscreepshun: "
         }
-            
+
         server_language = Util.get_server_language()
         pattern = patterns.get(server_language, "Inscription: ")
         return item_name.startswith(pattern) if pattern else False
-    
+
     @staticmethod
-    def is_inscription_model_item(model_id : int) -> bool:
+    def is_inscription_model_item(model_id: int) -> bool:
         """
         Check if the item is an inscription item based on its model ID.
 
@@ -586,28 +541,28 @@ class Util:
         ]
 
         return model_id in model_ids
-    
+
     @staticmethod
-    def is_missing_item(item_id: int) -> bool:        
+    def is_missing_item(item_id: int) -> bool:
         return data.Items.get_item_data(item_id) is None
-    
+
     @staticmethod
-    def has_missing_mods(item_id : int) -> bool:
-        mods = Util.GetMods(item_id)
-        
+    def has_missing_mods(item_id: int) -> bool:
+        mods, _, _ = Util.GetMods(item_id)
+
         if not mods or len(mods) == 0:
             return False
-        
+
         for mod in mods:
             if mod.names is None or len(mod.names) == 0:
                 return True
-            
+
             for lang in ServerLanguage:
                 if lang not in mod.names or mod.names[lang] is None or mod.names[lang] == "":
                     return True
-        
+
         return False
-    
+
     @staticmethod
     def get_target_item_type_from_mod(item_id: int) -> Optional[ItemType]:
         """
@@ -621,9 +576,9 @@ class Util:
         """
         _, value, _ = Item.Customization.Modifiers.GetModifierValues(
             item_id, ModifierIdentifier.TargetItemType)
-        
+
         return ItemType(value) if value else None
-    
+
     @staticmethod
     def reformat_string(item_name: str) -> str:
         # split on uppercase letters
@@ -639,7 +594,7 @@ class Util:
         item_name = item_name.strip()
 
         return item_name
-    
+
     @staticmethod
     def format_currency(value: int) -> str:
         platinum = value // 1000
@@ -654,7 +609,7 @@ class Util:
         return " ".join(parts)
 
     @staticmethod
-    def format_time_ago(delta : timedelta) -> str:
+    def format_time_ago(delta: timedelta) -> str:
         """
         Format a timedelta into a human-readable string indicating how long ago it was.
 
@@ -676,7 +631,7 @@ class Util:
         else:
             days = seconds // 86400
             return f"{days} days ago"
-    
+
     @staticmethod
     def is_common_material(model_id: int) -> bool:
         """
@@ -689,7 +644,7 @@ class Util:
             bool: True if the item is a common material, False otherwise.
         """
         return model_id in data.Common_Materials
-    
+
     @staticmethod
     def is_color(item_id: int) -> bool:
         """
@@ -702,7 +657,7 @@ class Util:
             bool: True if the item is a color, False otherwise.
         """
         return GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Vial_Of_Dye
-    
+
     @staticmethod
     def get_color(item_id: int) -> DyeColor:
         """
@@ -714,41 +669,42 @@ class Util:
         Returns:
             DyeColor: The dye color of the item.
         """
-        
+
         if GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Vial_Of_Dye:
             dye_info = GLOBAL_CACHE.Item.Customization.GetDyeInfo(item_id)
-            
+
             if dye_info is not None:
                 color_id = dye_info.dye1.ToInt() if dye_info.dye1 else -1
-                color = DyeColor(color_id) if color_id != -1 else None 
+                color = DyeColor(color_id) if color_id != -1 else None
                 return color if color is not None else DyeColor.NoColor
-        
+
         return DyeColor.NoColor
-    
+
     @staticmethod
-    def GetZeroFilledBags(start_bag : Py4GWCoreLib.Bag, end_bag : Py4GWCoreLib.Bag) -> tuple[list[int], dict[Py4GWCoreLib.Bag, int]]:  
-        inventory = []      
+    def GetZeroFilledBags(start_bag: Py4GWCoreLib.Bag, end_bag: Py4GWCoreLib.Bag) -> tuple[list[int], dict[Py4GWCoreLib.Bag, int]]:
+        inventory = []
         bag_sizes = {}
-        
-        bags = GLOBAL_CACHE.Item.raw_item_array.get_bags(list(range(start_bag.value, end_bag.value + 1)))
+
+        bags = GLOBAL_CACHE.Item.raw_item_array.get_bags(
+            list(range(start_bag.value, end_bag.value + 1)))
         for bag in bags:
-            size = bag.GetSize()            
+            size = bag.GetSize()
             bag_enum = Py4GWCoreLib.Bag(bag.id)
-                        
+
             if bag_enum is None:
                 continue
-            
+
             bag_sizes[bag_enum] = size
             slots = [0] * size
-            
+
             for item in bag.GetItems():
                 if 0 <= item.slot < size:
                     slots[item.slot] = item.item_id
-            
+
             inventory.extend(slots)
-            
+
         return inventory, bag_sizes
-    
+
     @staticmethod
     def IsRareWeapon(model_id: int) -> bool:
         """
@@ -759,27 +715,27 @@ class Util:
 
         Returns:
             bool: True if the item is a rare weapon, False otherwise.
-        """       
-        
+        """
+
         combined_meta_types = (
             data.ItemType_MetaTypes.get(ItemType.Weapon, []) +
             data.ItemType_MetaTypes.get(ItemType.OffhandOrShield, [])
         )
-        
+
         for item_type in combined_meta_types:
             items = data.Items.get(item_type, {})
             item = items.get(model_id, None)
-            
+
             if item:
                 if item.category == ItemCategory.RareWeapon:
-                    return True   
-                
+                    return True
+
                 name = item.names.get(ServerLanguage.English, None)
                 if name and name in data.Rare_Weapon_Names:
                     return True
-        
+
         return False
-    
+
     @staticmethod
     def GetItemDataName(item_id: int) -> str:
         """
@@ -792,5 +748,109 @@ class Util:
             str: The name of the item, or "Unknown Item" if not found.
         """
         data_item = data.Items.get_item_data(item_id)
-        
+
         return data_item.name if data_item else "Unknown Item"
+
+    @staticmethod
+    def is_low_requirement_item(item_id: int) -> bool:
+        """
+        Check if the item with the given ID is a low requirement item.
+
+        Args:
+            item_id (int): The unique identifier of the item.
+
+        Returns:
+            bool: True if the item is a low requirement item, False otherwise.
+        """
+        tolerance = \
+            {
+                ItemType.Daggers: models.IntRange(1, 1),
+                ItemType.Scythe: models.IntRange(1, 1),
+                ItemType.Spear: models.IntRange(1, 1),
+                ItemType.Bow: models.IntRange(1, 1),
+                ItemType.Shield: models.IntRange(0, 0),
+            }
+
+        sc_requirements: dict[ItemType, list[int]] = \
+            {
+            ItemType.Daggers: [0, 4, 5, 6],
+            ItemType.Scythe: [0],
+            ItemType.Spear: [0],
+            ItemType.Bow: [5, 6],
+            ItemType.Shield: [5, 8],
+        }
+
+        desired_inherent_mods = {
+            ItemType.Daggers: [
+                "AQAiaAAPJQ==",  # Guided by Fate
+                "AQAieDIPJQ==",  # Strength and Honor
+                "AQAiiDIUJQ=="  # Vengeance is Mine
+            ],
+            ItemType.Bow: [
+                "AQAiaAAPJQ==",  # Guided by Fate
+                "AQAieDIPJQ==",  # Strength and Honor
+                "AQAiiDIUJQ=="  # Vengeance is Mine
+            ],
+            ItemType.Shield: [
+                "AQAhSAgKJw==",  # Armor vs Demons
+                "AQAhSAQKJw==",  # Armor vs Sekeletons
+                "AQAhSAAKJw==",  # Armor vs Undeads
+                "AQAgiAACJw==",  # -2 / when enchanted
+                "AwAjaC0AGBoM",  # +45 hp when enchanted
+                "AwAjSB4AJhoYDA==",  # +30 hp
+            ]
+        }
+
+        item_type = ItemType(Item.GetItemType(item_id)[0])
+        attribute_id, requirement = Util.GetItemRequirements(item_id)
+        max_damage = Util.GetMaxDamage(requirement, item_type)
+
+        if item_type == ItemType.Shield:
+            min_armor, max_armor = Util.GetShieldArmor(item_id) or (0, 0)
+
+            _, _, weapon_mods = Util.GetMods(item_id)
+            inscribeable = GLOBAL_CACHE.Item.Customization.IsInscribable(
+                item_id)
+
+            if (not weapon_mods or len(weapon_mods) == 0) and not inscribeable:
+                return False
+
+            good_inherent_mod = any(
+                mod.identifier in desired_inherent_mods.get(item_type, [])
+                for mod in weapon_mods if mod.mod_type == enum.ModType.Inherent
+            )
+
+            modifiers = GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(
+                item_id)
+            
+            good_suffix_mod = any(
+                mod.identifier in desired_inherent_mods.get(item_type, [])
+                for mod in weapon_mods if mod.mod_type == enum.ModType.Suffix and mod.is_item_modifier(modifiers=modifiers, item_type=item_type, tolerance=5)
+            )
+
+            customizeable_shield = item_type in sc_requirements and \
+                requirement in sc_requirements[item_type] and \
+                min_armor >= max_damage.min - tolerance[item_type].min and \
+                max_armor >= max_damage.max - tolerance[item_type].max and \
+                (inscribeable or good_inherent_mod)
+
+            oldschool_shield = good_inherent_mod and good_suffix_mod
+
+            return customizeable_shield or oldschool_shield
+
+        else:
+            min_dmg, max_dmg = Util.GetItemDamage(item_id)
+
+            _, _, weapon_mods = Util.GetMods(item_id)
+            good_inherent_mod = any(
+                mod.identifier in desired_inherent_mods.get(item_type, [])
+                for mod in weapon_mods if mod.mod_type == enum.ModType.Inherent
+            )
+            inscribeable = GLOBAL_CACHE.Item.Customization.IsInscribable(
+                item_id)
+
+            return item_type in sc_requirements and \
+                requirement in sc_requirements[item_type] and \
+                min_dmg >= max_damage.min - tolerance[item_type].min and \
+                max_dmg >= max_damage.max - tolerance[item_type].max and \
+                (inscribeable or good_inherent_mod)

@@ -25,6 +25,7 @@ DamageRanges: dict[ItemType, dict[int, models.IntRange]] = {
         8:  models.IntRange(6, 27),
         9:  models.IntRange(6, 28),
     },
+    
     ItemType.Bow: {
         0:  models.IntRange(9, 13),
         1:  models.IntRange(9, 14),
@@ -625,7 +626,7 @@ def LoadItems():
     # Load items from data/items.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
     data_directory = os.path.join(file_directory, "data")
-    path = os.path.join(data_directory, "items_v2.json")
+    path = os.path.join(data_directory, "items.json")
 
     ConsoleLog(
         "LootEx", f"Loading items...", Console.MessageType.Debug)

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex
 from LootEx import settings
 from LootEx import enum
-from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierValueArg
+from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
@@ -253,6 +253,9 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
         if item.model_id not in self[item.item_type]:
             self[item.item_type][item.model_id] = item
             self.All.append(item)
+        else:
+            existing_item = self[item.item_type][item.model_id]
+            existing_item.update(item)
     
     def sort_items(self):
         """
@@ -304,7 +307,7 @@ class ItemsByType(dict[ItemType, dict[int, 'Item']]):
         return item
     
     def to_json(self) -> dict:
-        return {item_type.name: [item.to_json() for item in items.values()] for item_type, items in self.items()}
+        return {item_type.name: {item.model_id : item.to_json() for item in items.values()} for item_type, items in self.items()}
     
     @staticmethod
     def from_dict(data: dict) -> 'ItemsByType':
@@ -609,8 +612,7 @@ class ItemMod():
         self.name : str = self.get_name(language)   
         self.full_name : str = self.get_full_name(language) 
         self.description: str  = self.get_description(language)
-        self.applied_name : str = self.get_applied_name(language)
-    
+        self.applied_name : str = self.get_applied_name(language)  
     
     def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         name = self.get_name(language)
@@ -691,7 +693,7 @@ class ItemMod():
             description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace_simple, description)
 
         return description
-
+    
 
 @dataclass
 class Rune(ItemMod):
@@ -856,35 +858,48 @@ class WeaponMod(ItemMod):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
                 
-    def is_item_modifier(self, modifiers, target_item_type : Optional[ItemType] = None, max_mods : bool = False) -> bool:
-        for mod in self.modifiers:
+    def is_item_modifier(self, modifiers : list, item_type : ItemType, tolerance : int = -1) -> bool:
+        is_tolerance_set = tolerance if tolerance >= 0 else 0
+                
+        for mod in self.modifiers:            
+            if not is_tolerance_set:
+                tolerance = mod.arg1 if mod.modifier_value_arg == ModifierValueArg.Arg1 else mod.arg2 if mod.modifier_value_arg == ModifierValueArg.Arg2 else 0
+                
             matched = False
+            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:                
+                arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
+                arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
 
-            for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:
-                if modifier and hasattr(modifier, 'GetIdentifier') and  modifier.GetIdentifier() == mod.identifier:
-                    arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
-                    arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
+                if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                    if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                        matched = arg1 >= mod.max - tolerance
+                
+                elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                    if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                        matched = arg2 >= mod.max - tolerance
 
-                    if mod.modifier_value_arg == ModifierValueArg.Arg1:
-                        if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
-                            matched = arg1 == mod.max if max_mods else True
-                    
-                    elif mod.modifier_value_arg == ModifierValueArg.Arg2:
-                        if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
-                            matched = arg2 == mod.max if max_mods else True
-
-                    elif mod.modifier_value_arg == ModifierValueArg.Fixed:
-                        if arg1 == mod.arg1 and arg2 == mod.arg2:
-                            matched = True
-                            
-                    elif mod.modifier_value_arg == ModifierValueArg.None_:
+                elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                    if arg1 == mod.arg1 and arg2 == mod.arg2:
                         matched = True
-            
-            if not matched:
+                        
+                elif mod.modifier_value_arg == ModifierValueArg.None_:
+                    matched = True
+                        
+            if not matched:       
                 return False
-
+            
+            
         from LootEx import utility
-        return target_item_type is None or target_item_type is ItemType.Rune_Mod or any(utility.Util.IsMatchingItemType(target_item_type, item_type) for item_type in self.target_types)       
+        if item_type == ItemType.Rune_Mod:
+            applied_to_item_type_mod = next(modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType)
+            applied_to_item_type_id = applied_to_item_type_mod.GetArg1() if hasattr(applied_to_item_type_mod, 'GetArg1') else 255
+            applied_to_item_type = ItemType(applied_to_item_type_id)
+                        
+            return any(utility.Util.IsMatchingItemType(applied_to_item_type, target_item_type) for target_item_type in self.target_types)
+            
+        else:
+            return any(utility.Util.IsMatchingItemType(item_type, target_item_type) for target_item_type in self.target_types)
+     
 
     def has_item_type(self, item_type: ItemType) -> bool:
         if not self.target_types:

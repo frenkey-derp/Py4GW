@@ -1,4 +1,4 @@
-from LootEx import models, enum, utility
+from LootEx import models, enum
 from LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
@@ -120,57 +120,54 @@ class ItemConfiguration:
 
         return item
 
-    def get_condition(self, item_id: int) -> Optional[ConfigurationCondition]:
-        item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
+    def get_condition(self, item) -> Optional[ConfigurationCondition]:        
+        from LootEx.cache import Cached_Item
         
         #sort the conditions based on their assigned action value 
         sorted_conditions = sorted(self.conditions, key=lambda c: c.action.value)
+        item.GetMods()
         
-        for condition in sorted_conditions:
-            if utility.Util.IsWeaponType(item_type):
-                mods = utility.Util.GetMods(item_id)
-                
-                has_prefix = condition.prefix_mod is None or any(mod.identifier == condition.prefix_mod for mod in mods)
-                has_suffix = condition.suffix_mod is None or any(mod.identifier == condition.suffix_mod for mod in mods)
-                has_inherent = condition.inherent_mod is None or any(mod.identifier == condition.inherent_mod for mod in mods)
+        for condition in sorted_conditions:            
+            if item.is_weapon and item.mods:                
+                has_prefix = condition.prefix_mod is None or any(mod.identifier == condition.prefix_mod for mod in item.mods)
+                has_suffix = condition.suffix_mod is None or any(mod.identifier == condition.suffix_mod for mod in item.mods)
+                has_inherent = condition.inherent_mod is None or any(mod.identifier == condition.inherent_mod for mod in item.mods)
                 
                 if not (has_prefix and has_suffix and has_inherent):
                     continue
                 
-                if condition.old_school_only and GLOBAL_CACHE.Item.Customization.IsInscribable(item_id):
+                if condition.old_school_only and item.is_inscribable:
                     continue
                 
-                attribute, requirements = utility.Util.GetItemRequirements(item_id)
                 if condition.requirements:
-                    if not condition.requirements.get(attribute, None):
+                    if not condition.requirements.get(item.attribute, None):
                         continue
                     
-                    requirement = condition.requirements[attribute]
-                    if requirement.min > requirements or requirement.max < requirements:
+                    requirement = condition.requirements[item.attribute]
+                    if requirement.min > item.requirements or requirement.max < item.requirements:
                         continue
                 
-                min_dmg, max_dmg = utility.Util.GetItemDamage(item_id)
-                if condition.damage_range and (condition.damage_range.min > min_dmg or condition.damage_range.max < max_dmg):
+                if condition.damage_range and (condition.damage_range.min > item.damage[0] or condition.damage_range.max < item.damage[1]):
                     continue
                 
-                rarity = Rarity(GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0])
-                if rarity not in condition.rarities or not condition.rarities[rarity]:
+                if item.rarity not in condition.rarities or not condition.rarities[item.rarity]:
                     continue
                 
                 return condition            
             else:
                 if condition.action == ItemAction.STASH:
-                    amount = GLOBAL_CACHE.Item.Properties.GetQuantity(item_id)
-                    
-                    if amount <= condition.keep_in_inventory:                        
+                    if item.quantity <= condition.keep_in_inventory:                        
                         continue
                 
                 return condition
             
         return None
               
-    def get_action(self, item_id: int) -> enum.ItemAction:        
-        condition = self.get_condition(item_id)
+    def get_action(self, item) -> enum.ItemAction:
+        if item.action != ItemAction.NONE:
+            return item.action
+                        
+        condition = self.get_condition(item)
         
         if condition:
             return condition.action

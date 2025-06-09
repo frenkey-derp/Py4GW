@@ -189,6 +189,7 @@ class ModifierIdentifier(IntEnum):
     None_ = 0
     Requirement = 10136
     Damage = 42920
+    Damage_NoReq = 42120
     DamageType = 9400
     ShieldArmor = 42936
     TargetItemType = 9656

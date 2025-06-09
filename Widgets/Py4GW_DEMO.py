@@ -960,9 +960,10 @@ def ShowItemDataWindow(item_id):
 
             item_type_id, item_type_name = GLOBAL_CACHE.Item.GetItemType(item_id)
             if _item_name == "Not recieved":
-                item_name = GLOBAL_CACHE.Item.GetName(item_id)
-                if item_name != _item_name and item_name != "":
-                    _item_name = item_name
+                # item_name = GLOBAL_CACHE.Item.GetName(item_id)
+                # if item_name != _item_name and item_name != "":
+                #     _item_name = item_name
+                pass
 
 
             headers = ["Value","Data"]

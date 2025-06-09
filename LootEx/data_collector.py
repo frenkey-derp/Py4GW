@@ -27,15 +27,11 @@ queued_mods: dict[int, bool] = {}
 queued_items: dict[int, bool] = {}
 queued_runes: dict[int, bool] = {}
 
-global_timer = ThrottledTimer(250)
+global_timer = ThrottledTimer(1000)
 save_timer = ThrottledTimer(2500)
 save_items: bool = False
 save_runes: bool = False
 save_weapon_mods: bool = False
-
-ignored_model_ids = {
- 35, # Abbot's Robes and Bag sharing the same model ID
-}
 
 class inventory_item:
     def __init__(self, item_id: int, model_id: int):
@@ -91,9 +87,7 @@ class DataCollector:
                             self.modified_items.add_item(item)
                         else:
                             self.modified_items[item_type][model_id].update(item)
-                        
-                items = json.load(file)
-                        
+                                                
         if os.path.exists(account_weapon_mods_file):
             with open(account_weapon_mods_file, 'r', encoding='utf-8') as file:
                 weapon_mods = json.load(file)
@@ -149,19 +143,19 @@ class DataCollector:
 
         return not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id) and (utility.Util.IsWeaponType(item_type) or utility.Util.IsArmorType(item_type)) and (rarity != Rarity.Green and rarity != Rarity.White)
 
-    def has_uncollected_mods(self, item_id: int) -> bool:
-        mods = self.get_mods(item_id)
+    def has_uncollected_mods(self, item_id: int) -> tuple[bool, str]:
+        mods, _, _ = self.get_mods(item_id)
         
         if len(mods) == 0:
-            return False
+            return False, "No mods found for item"
                 
         for mod in mods:
             if not mod.upgrade_exists:
                 continue
             
-            # if mod.mod_type == enum.ModType.Inherent:
-            #     if not GLOBAL_CACHE.Item.Customization.IsInscribable(item_id):
-            #         continue
+            if mod.mod_type == enum.ModType.Inherent:
+                if not GLOBAL_CACHE.Item.Customization.IsInscribable(item_id) and not utility.Util.is_inscription_model_item(self.get_model_id(item_id)):
+                    continue
                 
             if mod.mod_type == enum.ModType.Prefix:
                 if not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
@@ -172,45 +166,46 @@ class DataCollector:
                     continue
 
             if mod.names is None or len(mod.names) == 0:
-                return True        
+                return True, "Mod names are empty"        
             
             for server_language in ServerLanguage:
                 if server_language is ServerLanguage.Unknown:
                     continue
                 
                 if server_language not in mod.names or mod.names[server_language] is None:
-                    return True
+                    return True, f"Missing {server_language.name} mod name for {mod.names.get(ServerLanguage.English, mod.name)}"
                 
-        return False
+        return False, "All mods are collected or unnecessary to collect"
     
-    def is_item_collected(self, item_id: int) -> bool:
+    def is_item_collected(self, item_id: int) -> tuple[bool, str]:
         if item_id not in self.cache:
             self.cache[item_id] = {"collected": False}
 
         if "collected" in self.cache[item_id] and self.cache[item_id]["collected"]:
-            return True
+            return True, "Item already collected"
 
         model_id = self.get_model_id(item_id)
         item_type = self.get_item_type(item_id)
 
-        if model_id not in data.Items:
-            return False
-
         item = data.Items.get_item(item_type, model_id)
-        if item is None or item.names is None or len(item.names) == 0:
-            return False
+        if item is None or not item.names:
+            # ConsoleLog(
+            #     "LootEx", f"Item names are empty for item {item_id} ({model_id})", Console.MessageType.Warning)
+            return False, "Item names are empty" if item is None else "Item not found in data"
     
         for server_language in ServerLanguage:
-            if server_language is ServerLanguage.Unknown:
+            if server_language == ServerLanguage.Unknown:
                 continue
             
             if server_language not in item.names or item.names[server_language] is None:
                 # ConsoleLog(
-                #     "LootEx", f"{server_language} | {item.name} | {item.names}", Console.MessageType.Warning)
-                return False
+                #     "LootEx", f"Missing {server_language} | {item.name} | {item.names}", Console.MessageType.Warning)
+                return False, f"Missing {server_language.name}"
 
         if item.contains_amount:
-            return False
+            # ConsoleLog(
+            #     "LootEx", f"Item {item_id} ({model_id}) has a quantity of 1 but the name contains an amount.", Console.MessageType.Warning)
+            return False, "Item name contains amount"
 
         model_id = self.get_model_id(item_id)
         profession = self.get_profession(item_id)
@@ -218,13 +213,19 @@ class DataCollector:
         is_identified = GLOBAL_CACHE.Item.Usage.IsIdentified(item_id)
 
         if item.wiki_url is None or item.wiki_url == "":
-            return False
+            # ConsoleLog(
+            #     "LootEx", f"Item {item_id} ({model_id}) has no wiki URL, skipping collection check.", Console.MessageType.Debug)
+            return False, "Item has no wiki URL"
 
         if item.item_type != item_type:
-            return False
+            # ConsoleLog(
+            #     "LootEx", f"Item type mismatch for item {item_id} ({model_id}): {item.item_type} != {item_type}", Console.MessageType.Warning)
+            return False, "Item type mismatch"
 
         if profession != item.profession:
-            return False
+            # ConsoleLog(
+            #     "LootEx", f"Profession mismatch for item {item_id} ({model_id}): {profession} (ITEM) != {item.profession} (DATA)", Console.MessageType.Warning)
+            return False, "Profession mismatch"
 
         if utility.Util.IsWeaponType(item_type):
             requirements = utility.Util.GetItemRequirements(item_id)
@@ -232,18 +233,20 @@ class DataCollector:
                 attribute, _ = requirements
 
                 if (attribute is not None and attribute not in item.attributes):
-                    return False
+                    # ConsoleLog(
+                    #     "LootEx", f"Item {item_id} ({model_id}) is missing attribute: {attribute.name}", Console.MessageType.Warning)
+                    return False, "Missing attribute"
 
         if rarity == Rarity.Green:
             self.cache[item_id]["collected"] = True
-            return True
+            return True, "Item is a green item"
 
         if not is_identified and (utility.Util.IsWeaponType(item_type) or utility.Util.IsArmorType(item_type)):
             self.cache[item_id]["collected"] = True
-            return True
+            return True, "Item is not identified but is a weapon or armor type"
 
         self.cache[item_id]["collected"] = True
-        return self.cache[item_id]["collected"]
+        return self.cache[item_id]["collected"], "Item is collected"
     
     def is_complete(self, item_id: int) -> bool:
         if item_id not in self.cache:
@@ -254,17 +257,12 @@ class DataCollector:
 
         model_id = self.get_model_id(item_id)
         item_type = self.get_item_type(item_id)
-        mods = self.get_mods(item_id)
+        mods, _, _ = self.get_mods(item_id)
         
-        if item_type == ItemType.Rune_Mod and any(mod.identifier in data.Runes for mod in mods):
-            # If the item is a rune, we don't need to check for completion as runes are handled separately and are already collected
-            self.cache[item_id]["completed"] = True
-            return True
-
-        if model_id not in data.Items:
-            # ConsoleLog(
-            #     "LootEx", f"Model ID {model_id} not found in data.Items for item {item_id}", Console.MessageType.Warning)
-            return False
+        # if item_type == ItemType.Rune_Mod and any(mod.identifier in data.Runes for mod in mods):
+        #     # If the item is a rune, we don't need to check for completion as runes are handled separately and are already collected
+        #     self.cache[item_id]["completed"] = True
+        #     return True
 
         item = data.Items.get_item(item_type, model_id)
         if item is None or item.names is None or len(item.names) == 0:
@@ -283,7 +281,6 @@ class DataCollector:
                 #     "LootEx", f"Item {item_id} ({model_id}) has a quantity of 1 but the name contains an amount.", Console.MessageType.Warning)
             return False
 
-        model_id = self.get_model_id(item_id)
         profession = self.get_profession(item_id)
         rarity = GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)
         is_inscribeable = GLOBAL_CACHE.Item.Customization.IsInscribable(
@@ -385,7 +382,7 @@ class DataCollector:
             return True
 
         if utility.Util.IsWeaponType(item_type) or utility.Util.IsArmorType(item_type):
-            mods = self.get_mods(item_id)
+            mods, _, _ = self.get_mods(item_id)
 
             if len(mods) > 0:
                 for mod in mods:
@@ -448,8 +445,15 @@ class DataCollector:
 
         return item_name
 
-    def get_cleaned_item_name(self, item_id: int):
+    def get_cleaned_item_name(self, item_id: int) -> str:
         item_name = self.get_item_name(item_id)
+        item_type = self.get_item_type(item_id)
+        model_id = self.get_model_id(item_id)
+        
+        if item_name == "STRING DO NOT LOCALIZE":
+            item = data.Items.get_item(item_type, model_id)
+            if item is not None:
+                item_name = item.names.get(ServerLanguage.English, None)
 
         if item_name is None or item_name == "":
             return ""
@@ -458,24 +462,25 @@ class DataCollector:
             # If the item is a green item, we don't need to cleanup the item name
             return item_name.strip()
         
-        item_type = self.get_item_type(item_id)
         quantity = self.get_quantity(item_id)
 
         if utility.Util.IsWeaponType(item_type) or utility.Util.IsArmorType(item_type) or item_type == ItemType.Rune_Mod:
-            mods = self.get_mods(item_id)
+            mods, runes, _ = self.get_mods(item_id)
             is_identified = GLOBAL_CACHE.Item.Usage.IsIdentified(item_id)
 
             if not is_identified and not GLOBAL_CACHE.Item.Properties.IsCustomized(item_id) and (utility.Util.IsWeaponType(item_type) or item_type == ItemType.Salvage):
                 return item_name.strip()
 
             if len(mods) > 0:
-                for mod in mods:
+                for mod in mods:                    
+                    suffix = ("Minor" if mod.rarity == Rarity.Blue else "Major" if mod.rarity == Rarity.Purple else "Superior" if mod.rarity == Rarity.Gold else "") if mod in runes else ""
+                    
                     if mod.mod_type == enum.ModType.Inherent:
                         # If the mod is inherent, we don't need to cleanup the item name as its not affected by the mod
                         continue
                     
                     if mod.mod_type == enum.ModType.Prefix:
-                        if not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
+                        if item_type == ItemType.Rune_Mod or not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
                             continue
                         
                     if mod.mod_type == enum.ModType.Suffix:
@@ -496,7 +501,10 @@ class DataCollector:
                     
                     if item_name.startswith("-"):
                         item_name = item_name[1:].strip()
-
+                    
+                    if item_type == ItemType.Rune_Mod:
+                        item_name += f" ({suffix})"
+                        
             if item_type == ItemType.Rune_Mod:
                 if utility.Util.is_inscription_model_item(self.get_model_id(item_id)):
                     inscription = {
@@ -516,7 +524,7 @@ class DataCollector:
                     target_item_type = utility.Util.get_target_item_type_from_mod(
                         item_id)
                     # If the item is an inscription model item, we don't need to cleanup the item name
-                    return f"{inscription.get(self.server_language, 'Inscription')}: {self.reformat_string(target_item_type.name) if target_item_type else ''}".strip()
+                    return f"{inscription.get(self.server_language, 'Inscription')}: {self.reformat_string(target_item_type.name) if target_item_type else ''}".strip()       
 
         if quantity > 1:
             item_name = item_name.replace(str(quantity), "250").strip()
@@ -542,6 +550,20 @@ class DataCollector:
         if item.wiki_url is not None and item.wiki_url != "":
             # If the item already has a wiki URL, we can return it
             return item.wiki_url
+        
+        if item.item_type == ItemType.Rune_Mod:
+            
+            _, runes, _ = self.get_mods(item_id)
+            if len(runes) > 0:
+                rune = runes[0]                
+                rank = "Superior" if rune.rarity == Rarity.Gold else "Major" if rune.rarity == Rarity.Purple else "Minor" if rune.rarity == Rarity.Blue else ""
+            
+                if rune.mod_type == enum.ModType.Suffix:                
+                    wiki_url = f"https://wiki.guildwars.com/wiki/Rune {rune.applied_name}".replace(rank, '').replace('  ', ' ').replace(' ', '_')
+                else:
+                    wiki_url = f"https://wiki.guildwars.com/wiki/{rune.applied_name} Insignia".replace(' ', '_')
+                    
+                return wiki_url                    
 
         english_name = item.names.get(
             ServerLanguage.English, None)
@@ -622,7 +644,7 @@ class DataCollector:
             return
 
         if item_type == ItemType.Rune_Mod:
-            mods = self.get_mods(item_id)
+            mods, _, _ = self.get_mods(item_id)
 
             if len(mods) > 0:
                 for mod in mods:
@@ -749,7 +771,7 @@ class DataCollector:
                     data.Items.add_item(item)    
                     
                 item = data.Items.get_item(item_type, model_id)
-                if item and item.contains_amount and self.get_quantity(item_id) == 1:
+                if item and (item.contains_amount or not item.names.get(self.server_language, None)) and self.get_quantity(item_id) == 1:
                     item.set_name(
                         item_name, self.server_language)
                     self.modified_items.add_item(item)
@@ -779,14 +801,15 @@ class DataCollector:
                         save_items = True
 
             wiki_url = self.get_wiki_url(item_id)
-            save_items = save_items or item.wiki_url != wiki_url
+            save_items = save_items or (wiki_url != "" and item.wiki_url != wiki_url)
             item.wiki_url = wiki_url
 
             if save_items:
                 self.modified_items.add_item(item)
 
                 ConsoleLog(
-                    "LootEx", f"Collected item: {item.names.get(self.server_language, 'Unknown')} ({model_id}) from item '{self.get_item_name(item_id)}' with id ({item_id})", Console.MessageType.Debug)                
+                    "LootEx", f"Collected item: {item.names.get(self.server_language, "Unknown")} ({model_id}) from item '{self.get_item_name(item_id)}' with id ({item_id})", Console.MessageType.Debug)        
+                
 
     def get_sorted_items(self) -> tuple[dict[int, inventory_item], dict[int, inventory_item], dict[int, inventory_item]]:
         """Get a sorted list of items in the inventory."""
@@ -794,9 +817,15 @@ class DataCollector:
         single_items: dict[int, inventory_item] = {}
         stacked_items: dict[int, inventory_item] = {}
         
-        item_array = GLOBAL_CACHE.ItemArray.GetItemArray(DataCollector.AllBags)
+        item_array : list[int] = GLOBAL_CACHE.ItemArray.GetItemArray(DataCollector.AllBags)
+        trader_array : list[int] = GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or []
+        merchant_array : list[int] = GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or []
+        crafter_array : list[int] = GLOBAL_CACHE.Trading.Crafter.GetOfferedItems() or []
+        collector_array : list[int] = GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or []
+        
+        all_arrays = item_array + trader_array + merchant_array + crafter_array + collector_array
 
-        for item_id in item_array:
+        for item_id in all_arrays:
             model_id = self.get_model_id(item_id)
             if not item_id in items:
                 items[item_id] = inventory_item(item_id, model_id)
@@ -944,12 +973,7 @@ class DataCollector:
 
                 for item_id in item_array:
                     model_id = self.get_model_id(item_id)
-                    
-                    if model_id in ignored_model_ids:
-                        # ConsoleLog(
-                        #     "LootEx", f"Item {item_id} ({model_id}) is ignored, skipping.", Console.MessageType.Debug)
-                        continue
-                                        
+                                                            
                     if self.is_complete(item_id):
                         continue
                     

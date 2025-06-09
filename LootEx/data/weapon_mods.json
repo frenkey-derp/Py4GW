@@ -88,7 +88,7 @@
                 "Arg1": 0,
                 "Arg2": 5,
                 "Arg": 5,
-                "ModifierValueArg": "Arg2",
+                "ModifierValueArg": "Fixed",
                 "Min": 5,
                 "Max": 5
             },
@@ -911,7 +911,17 @@
             "English": "Received physical damage -{arg2} (Chance: {arg1}%)"
         },
         "Names": {
-            "English": "\"Luck of the Draw\""
+            "English": "\"Luck of the Draw\"",
+            "German": "\"Glück im Spiel ...\"",
+            "Spanish": "\"La suerte del apostante\"",
+            "Korean": "비김의 행운",
+            "French": "\"Une question de chance\"",
+            "Italian": "\"La Fortuna è Cieca\"",
+            "TraditionalChinese": "\"全憑運氣\"",
+            "Japanese": "ラック オブ ザ ドロー",
+            "Polish": "\"Szczęśliwe rozdanie\"",
+            "Russian": "\"Счастливый жребий\"",
+            "BorkBorkBork": "\"Loock ooff zee Draev\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -3761,7 +3771,7 @@
                 "Arg1": 1,
                 "Arg2": 0,
                 "Arg": 256,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 1
             },
@@ -4118,7 +4128,7 @@
                 "Arg1": 9,
                 "Arg2": 0,
                 "Arg": 2304,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 9
             },
@@ -4156,7 +4166,7 @@
                 "Arg1": 6,
                 "Arg2": 0,
                 "Arg": 1536,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 6
             },
@@ -4365,7 +4375,7 @@
                 "Arg1": 5,
                 "Arg2": 0,
                 "Arg": 1280,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 5
             },
@@ -4628,7 +4638,7 @@
                 "Arg1": 10,
                 "Arg2": 0,
                 "Arg": 2560,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 10
             },
@@ -4674,7 +4684,17 @@
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Pruning"
+            "English": "of Pruning",
+            "German": "d. Pflanzentötung",
+            "Spanish": "(mataplantas)",
+            "Korean": "(식물 상대 무기)",
+            "French": "(anti-plantes)",
+            "Italian": "del martello da Sfoltimento",
+            "TraditionalChinese": "枝葉修整",
+            "Japanese": "(プルーニング)",
+            "Polish": "(Obcinania)",
+            "Russian": "of Pruning",
+            "BorkBorkBork": "ooff Prooneeng"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -4691,7 +4711,7 @@
                 "Arg1": 3,
                 "Arg2": 0,
                 "Arg": 768,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 3
             },
@@ -4860,7 +4880,7 @@
                 "Arg1": 4,
                 "Arg2": 0,
                 "Arg": 1024,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 4
             },
@@ -5078,7 +5098,7 @@
                 "Arg1": 7,
                 "Arg2": 0,
                 "Arg": 1792,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 7
             },
@@ -5116,7 +5136,7 @@
                 "Arg1": 2,
                 "Arg2": 0,
                 "Arg": 512,
-                "ModifierValueArg": "Arg1",
+                "ModifierValueArg": "Fixed",
                 "Min": 1,
                 "Max": 2
             },

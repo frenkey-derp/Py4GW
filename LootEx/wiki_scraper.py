@@ -31,7 +31,7 @@ class WikiScraper:
         """
         materials = {}
 
-        for item in data.Items.values():
+        for item in data.Items.get(models.ItemType.Materials_Zcoins, {}).values():
             if item.item_type == models.ItemType.Materials_Zcoins:
                 materials[item.names.get(ServerLanguage.English, item.name).lower()] = item
 
@@ -39,25 +39,6 @@ class WikiScraper:
     
     MATERIALS: dict[str, models.Item] = {}
     
-    @staticmethod
-    def get_material_ids(material_names: list[str]) -> list[int]:
-        model_ids = []
-
-        for item in data.Items.values():
-            if item.item_type == models.ItemType.Materials_Zcoins:
-                name = item.names.get(ServerLanguage.English, None)
-
-                if name:
-                    name = name.lower()
-
-                    if any(name in material_name.lower() for material_name in material_names):
-                        ConsoleLog(
-                            "LootEx", f"Found material: {name} with ID {item.model_id} in the items data."
-                        )
-                        model_ids.append(item.model_id)
-
-        return model_ids
-
     @staticmethod
     def extract_materials(td) -> models.SalvageInfoCollection:
         materials : models.SalvageInfoCollection = models.SalvageInfoCollection()
@@ -202,6 +183,33 @@ class WikiScraper:
                             if img and 'src' in img.attrs:
                                 item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
                                 scraped = True
+                
+             
+            if item.item_type == ItemType.Rune_Mod:
+                tr = rows[1]
+                td = tr.find('td')   
+                name = item.names.get(ServerLanguage.English, item.name).lower()
+                image_index = 0 if "minor" in name else 1 if "major" in name else 2 if "superior" in name else -1
+                
+                if td and image_index >= 0:
+                    if "rune" in item.wiki_url.lower():
+                        images = td.find_all('img')
+                        if not images or image_index >= len(images):
+                            print(f"Image at index {image_index} not found.")
+                            return ""
+
+                        # Extract and normalize the src
+                        img = images[image_index]
+                        item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
+                        
+                    elif "insignia" in item.wiki_url.lower():  
+                        # Extract the image URL
+                        img = td.find('img')
+                        if img and 'src' in img.attrs:
+                            item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
+                            scraped = True
+                            
+                        pass            
 
             if not item.inventory_icon or item.inventory_icon == "":
                 # Try to find the first image in the table as a fallback
@@ -219,13 +227,16 @@ class WikiScraper:
                 item.wiki_scraped = True
 
     @staticmethod
-    def scrape_multiple_entries(model_ids: list[int]):
-        total = len(model_ids)
+    def scrape_multiple_entries(items: list[models.Item]):
+        total = len(items)
         i  = 0
         
-        for model_id in model_ids:
+        for entry in items:
             # Skip entries with no wiki_url
             i += 1
+            
+            if not entry:
+                continue
             
             def ScrapeEntry(entry: models.Item, i: int):
                 ConsoleLog("LootEx", f"Scraping {entry.name} from {entry.wiki_url} | ({i} / {total})...")                
@@ -236,11 +247,6 @@ class WikiScraper:
                 if i >= total:
                     ConsoleLog("LootEx", "Finished scraping all entries.")
                     return
-
-            entry = data.Items.get(model_id)
-            if not entry:
-                ConsoleLog("LootEx", f"Skipping model ID {model_id} as it does not exist in the items data.")
-                continue
             
             try:                
                 if not entry.wiki_url:
@@ -257,8 +263,7 @@ class WikiScraper:
     @staticmethod
     def scrape_missing_entries():                
         items_with_missing_info = [
-            item.model_id for item in data.Items.values()
-            if item.wiki_url and not item.wiki_scraped
+            item for subdict in data.Items.values() for item in subdict.values()
         ]
         
         WikiScraper.scrape_multiple_entries(items_with_missing_info)

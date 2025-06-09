@@ -4,6 +4,7 @@ from LootEx.models import Material
 from Py4GWCoreLib import Item, Merchant, Console
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
+from Py4GWCoreLib.enums import ItemType
 
 trader_queue = ActionQueueNode(175)
 checked_items: list[str] = []
@@ -47,8 +48,8 @@ class LootCheck:
 
                     if price is not None:
                         model_id = GLOBAL_CACHE.Item.GetModelID(item)
-                        
-                        item_data = data.Items.get(model_id)
+                        item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item)[0])
+                        item_data = data.Items.get_item(item_type, model_id)
                         
                         if item_data is None:
                             ConsoleLog(
@@ -120,7 +121,7 @@ class LootCheck:
             Item.RequestName(item)
             
             def create_quotes_for_item(item):
-                mods = utility.Util.GetMods(item)
+                mods, _, _ = utility.Util.GetMods(item)
                 
                 if mods is None or len(mods) != 1:
                     ConsoleLog(
