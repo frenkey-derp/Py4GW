@@ -249,8 +249,7 @@ Item_Attributes: dict[ItemType, list[Attribute]] = {
     ItemType.Staff: Caster_Attributes,
 }
 
-Items: dict[int, models.Item] = {}
-Items_By_Type: dict[ItemType, dict[int, models.Item]] = {}
+Items: models.ItemsByType = models.ItemsByType()
 
 Runes: dict[str, models.Rune] = {}
 Runes_by_Profession: dict[Profession, dict[str, models.Rune]] = {}
@@ -378,9 +377,11 @@ Rare_Weapon_Names = [
 def UpdateLanguage(server_language: ServerLanguage):
     global Items, Runes, Weapon_Mods
 
-    for item in Items.values():
+    for item in Items.All:
         item.update_language(server_language)
-
+        
+    Items.sort_items()
+        
     for rune in Runes.values():
         rune.update_language(server_language)
 
@@ -406,7 +407,6 @@ def Reload():
     LoadWeaponMods()
 
     Items.clear()
-    Items_By_Type.clear()
     # Load the items
     LoadItems()
     
@@ -423,7 +423,6 @@ def Load():
     
     #Load the materials
     LoadMaterials()
-
 
 @staticmethod
 def LoadMaterials():
@@ -626,7 +625,7 @@ def LoadItems():
     # Load items from data/items.json
     file_directory = os.path.dirname(os.path.abspath(__file__))
     data_directory = os.path.join(file_directory, "data")
-    path = os.path.join(data_directory, "items.json")
+    path = os.path.join(data_directory, "items_v2.json")
 
     ConsoleLog(
         "LootEx", f"Loading items...", Console.MessageType.Debug)
@@ -639,37 +638,29 @@ def LoadItems():
             file.write('{}')
 
     with open(path, 'r', encoding='utf-8') as file:
-        items = json.load(file)
-
-        for value in items.values():
-            item = models.Item.from_json(value)
-            Items[item.model_id] = item
+        Items = models.ItemsByType.from_dict(json.load(file))
 
     account_file = os.path.join(
         file_directory, "data", "diffs", GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
     if os.path.exists(account_file):
         with open(account_file, 'r', encoding='utf-8') as file:
-            items = json.load(file)
+            account_items = models.ItemsByType.from_dict(json.load(file))
+            
+            for item_type, items in account_items.items():
+                if item_type not in Items:
+                    Items[item_type] = {}
+                    
+                for model_id, item in items.items():
+                    if model_id not in Items[item_type]:
+                        Items.add_item(item)
+                    else:
+                        Items[item_type][model_id].update(item)
 
-            for value in items.values():
-                item = models.Item.from_json(value)
-                if item.model_id not in Items:
-                    Items[item.model_id] = item
-                else:
-                    # If the item already exists, we can update it
-                    Items[item.model_id].update(item)
-
-    Items = dict(sorted(Items.items(), key=lambda item: (item[1].name, item[1].model_id)))
-    
-    for item in Items.values():
-        if item.item_type not in Items_By_Type:
-            Items_By_Type[item.item_type] = {}
-
-        Items_By_Type[item.item_type][item.model_id] = item
+    Items.sort_items()
 
 
 @staticmethod
-def SaveItems(shared_file: bool = False, items: Optional[dict[int, models.Item]] = None):
+def SaveItems(shared_file: bool = False, items: Optional[models.ItemsByType] = None):
     global Items
 
     # Save items to data/items.json
@@ -688,10 +679,11 @@ def SaveItems(shared_file: bool = False, items: Optional[dict[int, models.Item]]
 
     if not shared_file:
         if items is not None:
-            items = dict(sorted(items.items(), key=lambda item: item[0]))
+            items.sort_items()
 
     else:
-        items = dict(sorted(Items.items(), key=lambda item: item[0]))
+        items = Items
+        items.sort_items()
 
     if items is None:
         return
@@ -700,77 +692,7 @@ def SaveItems(shared_file: bool = False, items: Optional[dict[int, models.Item]]
     with open(path, 'w', encoding='utf-8') as file:
         ConsoleLog(
             "LootEx", f"Saving items ...", Console.MessageType.Debug)
-        json.dump({item.model_id: item.to_json()
-                  for item in items.values()}, file, indent=4, ensure_ascii=False)
-
-
-@staticmethod
-def LoadItemsV2():
-    global Items
-
-    # Load items from data/items_v2.json
-    file_directory = os.path.dirname(os.path.abspath(__file__))
-    data_directory = os.path.join(file_directory, "data")
-    path = os.path.join(data_directory, "items_v2.json")
-
-    ConsoleLog(
-        "LootEx", f"Loading items v2...", Console.MessageType.Debug)
-
-    if not os.path.exists(data_directory):
-        os.makedirs(data_directory)
-
-    if not os.path.exists(path):
-        with open(path, 'w', encoding='utf-8') as file:
-            file.write('{}')
-
-    with open(path, 'r', encoding='utf-8') as file:
-        items = json.load(file)
-
-        for item_type, item_data in items.items():
-            for model_id, value in item_data.items():
-                item = models.Item.from_json(value)
-                Items[item.model_id] = item
-
-
-@staticmethod
-def SaveItemsV2(shared_file: bool = False, items: Optional[dict[int, models.Item]] = None):
-    global Items
-
-    # Save items to data/items.json
-    file_directory = os.path.dirname(os.path.abspath(__file__))
-    data_directory = os.path.join(file_directory, "data")
-
-    if not shared_file:
-        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-        data_directory = os.path.join(
-            file_directory, "data", "diffs", account_name)
-
-    path = os.path.join(data_directory, "items_v2.json")
-
-    if not os.path.exists(data_directory):
-        os.makedirs(data_directory)
-
-    if not shared_file:
-        if items is not None:
-            items = dict(sorted(items.items(), key=lambda item: item[0]))
-
-    else:
-        items = dict(sorted(Items.items(), key=lambda item: item[0]))
-
-    if items is None:
-        return
-
-    # Create a new dictionary from items which we first split by item type and then use the model_id as key
-    items_by_type = {}
-    for item in items.values():
-        if item.item_type not in items_by_type:
-            items_by_type[item.item_type] = {}
-            
-        items_by_type[item.item_type][item.model_id] = item
-
-    with open(path, 'w', encoding='utf-8') as file:
-        ## Save the items by type
-        json.dump({item_type.name: {model_id: item.to_json() for model_id, item in items.items()} for item_type, items in items_by_type.items()}, file, indent=4, ensure_ascii=False)
+        json.dump(items.to_json(), file, indent=4, ensure_ascii=False)
 
 @staticmethod
 def MergeDiffItems():
@@ -788,21 +710,26 @@ def MergeDiffItems():
                 ConsoleLog(
                     "LootEx", f"Merging diff items from {file_path}...", Console.MessageType.Debug)
                 
-                items = json.load(file)
+                file_data = json.load(file)
+                file_items = models.ItemsByType.from_dict(file_data)
 
-                for value in items.values():
-                    item = models.Item.from_json(value)
-                    
-                    if item.model_id not in Items:
-                        Items[item.model_id] = item
-                    else:
-                        # If the item already exists, we can update it
-                        Items[item.model_id].update(item)
-                    
-                    name = item.names.get(ServerLanguage.English, None)
-                    if name is not None and name != "":
-                        if name in Rare_Weapon_Names:
-                            item.category = ItemCategory.RareWeapon
+                for item_type, items in file_items.items():
+                    if item_type not in Items:
+                        Items[item_type] = {}
+                        
+                    # Iterate through the items in the diff file
+                    for model_id, item in items.items():
+                        
+                        if model_id not in Items[item_type]:
+                            Items.add_item(item)
+                        else:
+                            # If the item already exists, we can update it
+                            Items[item_type][model_id].update(item)
+                        
+                        name = item.names.get(ServerLanguage.English, None)
+                        if name is not None and name != "":
+                            if name in Rare_Weapon_Names:
+                                item.category = ItemCategory.RareWeapon                                
         
             # Delete the diff file after merging
             os.remove(file_path)
@@ -833,36 +760,3 @@ def MergeDiffItems():
             os.remove(file_path)
     
     SaveWeaponMods(shared_file=True, mods=Weapon_Mods)
-    
-    
-@staticmethod
-def GetScraperFile():
-    file_directory = os.path.dirname(os.path.abspath(__file__))
-    data_directory = os.path.join(file_directory, "data")
-    path = os.path.join(data_directory, "scraper.json")
-
-    if not os.path.exists(data_directory):
-        os.makedirs(data_directory)
-    scrapedata = {}
-    
-    for item in Items.values():
-        if item.contains_amount:
-            continue
-        
-        if item.wiki_url is None or item.wiki_url == "" and ServerLanguage.English in item.names:
-            item.wiki_url = f"https://wiki.guildwars.com/wiki/{item.names[ServerLanguage.English].replace(' ', '_')}"
-            
-        if item.wiki_url is None or item.wiki_url == "":
-            continue
-        
-        if utility.Util.IsArmorType(item.item_type) or utility.Util.IsWeaponType(item.item_type):
-            scrapedata[item.model_id] = {
-            "ModelID": item.model_id,
-            "Name": item.name,
-            "WikiURL": item.wiki_url
-        }
-    
-    with open(path, 'w', encoding='utf-8') as file:
-        json.dump(scrapedata, file, indent=4, ensure_ascii=False)
-
-    return path

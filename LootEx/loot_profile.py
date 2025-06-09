@@ -11,6 +11,38 @@ from Py4GWCoreLib.enums import DyeColor
 import importlib
 importlib.reload(item_configuration)
 
+class ItemConfigurations(dict[ItemType, dict[int, ItemConfiguration]]):
+    """A dictionary to hold item configurations by item type and model ID."""
+    
+    def __init__(self):
+        super().__init__()
+
+    def add_item(self, item: models.Item, action: ItemAction = ItemAction.STASH):
+        """Add an item configuration to the dictionary."""
+        if item.item_type not in self:
+            self[item.item_type] = {}
+        
+        if item.model_id not in self[item.item_type]:
+            self[item.item_type][item.model_id] = ItemConfiguration(item.model_id, item.item_type, action)
+        else:
+            if len(self[item.item_type][item.model_id].conditions) == 1:
+                self[item.item_type][item.model_id].conditions[0].action = action
+    
+    def get_item_config(self, item_type : ItemType, model_id: int) -> ItemConfiguration | None:
+        """Get the item configuration for a specific item."""
+        if item_type in self and model_id in self[item_type]:
+            return self[item_type][model_id]
+        
+        return None
+    
+    def delete_item_config(self, item_type : ItemType, model_id: int):
+        """Delete an item configuration from the dictionary."""
+        if item_type in self:
+            if model_id in self[item_type]:
+                del self[item_type][model_id]
+                
+                if not self[item_type]:
+                    del self[item_type]
 
 class LootProfile:
     def __init__(self, profile_name: str):
@@ -30,8 +62,8 @@ class LootProfile:
 
         self.runes: dict[str, bool] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
-        self.items: dict[int, ItemConfiguration] = {}
-        self.blacklist: dict[int, bool] = {}
+        self.items: ItemConfigurations = ItemConfigurations()
+        self.blacklist: dict[ItemType, dict[int, bool]] = {}
 
     def save(self):
         """Save the profile as a JSON file."""
@@ -45,7 +77,6 @@ class LootProfile:
             "sell_threshold": self.sell_threshold,
             "nick_weeks_to_keep": self.nick_weeks_to_keep,
             "nick_items_to_keep": self.nick_items_to_keep,
-            "blacklist": self.blacklist,
             "filters": [LootFilter.to_dict(filter) for filter in self.filters],
             "runes": self.runes,
             "weapon_mods": {
@@ -53,8 +84,19 @@ class LootProfile:
                            is_active in types.items()}
                 for mod_name, types in self.weapon_mods.items()
             },
-            "items": {item.model_id: ItemConfiguration.to_dict(item) for item_id, item in self.items.items()}
+            "items": {
+                item_type.name: {
+                    item_id: ItemConfiguration.to_dict(item_config)
+                    for item_id, item_config in items.items()
+                }
+                for item_type, items in self.items.items()                
+            },
+            "blacklist": {
+                item_type.name: list(self.blacklist[item_type].keys())
+                for item_type in self.blacklist
+            }                
         }
+        
         file_path = os.path.join(
             settings.current.profiles_path, f"{self.name}.json")
 
@@ -96,13 +138,22 @@ class LootProfile:
                     for mod_name, types in profile_dict.get("weapon_mods", {}).items()
                 }
                 
-                configured_items = profile_dict.get("items", {})
-                for item_id, item in configured_items.items():
-                    item_config = ItemConfiguration.from_dict(item)
-                    self.items[int(item_id)] = item_config
-                    
                 self.blacklist = {
-                    int(model_id): True for model_id in profile_dict.get("blacklist", {}).keys()}
+                    ItemType[item_type]: {int(model_id): True for model_id in model_ids}
+                    for item_type, model_ids in profile_dict.get("blacklist", {}).items()
+                }
+                
+                configured_items = profile_dict.get("items", {})
+                for item_type_name, items in configured_items.items():
+                    for item_id, item in items.items():
+                        item_config = ItemConfiguration.from_dict(item)
+                        item_type = ItemType[item_type_name]
+                        
+                        if item_type not in self.items:
+                            self.items[item_type] = {}
+                        
+                        self.items[item_type][int(item_id)] = item_config
+                    
 
         except FileNotFoundError:
             ConsoleLog(
@@ -124,26 +175,54 @@ class LootProfile:
         """Check if the profile contains a specific weapon mod."""
         return mod_name in self.weapon_mods and any(self.weapon_mods[mod_name].values())
 
-    def add_item(self, model_id: int, action: ItemAction = ItemAction.STASH):
+    def add_item_by_model(self, item_type : ItemType, model_id: int, action: ItemAction = ItemAction.STASH):
+        """Add an item to the profile by model ID."""
+        if item_type not in self.items:
+            self.items[item_type] = {}
+        
+        if model_id not in self.items[item_type]:
+            self.items[item_type][model_id] = ItemConfiguration(model_id, item_type, action)
+        else:
+            if len(self.items[item_type][model_id].conditions) == 1:
+                self.items[item_type][model_id].conditions[0].action = action
+            
+    def add_item(self, item: models.Item, action: ItemAction = ItemAction.STASH):
         """Add an item to the profile."""
-        if model_id not in self.items:
-            self.items[model_id] = ItemConfiguration(model_id, action)
+        if item.item_type not in self.items:
+            self.items[item.item_type] = {}
+        
+        if item.model_id not in self.items[item.item_type]:
+            self.items[item.item_type][item.model_id] = ItemConfiguration(item.model_id, item.item_type, action)
+        else:
+            if len(self.items[item.item_type][item.model_id].conditions) == 1:
+                self.items[item.item_type][item.model_id].conditions[0].action = action
 
-    def blacklist_item(self, model_id: int):
-        """Blacklist an item in the profile."""        
-        if model_id not in self.blacklist:
-            self.blacklist[model_id] = True
+    def blacklist_item(self, item_type : ItemType, model_id: int):
+        """Blacklist an item in the profile."""      
+        if item_type not in self.blacklist:
+            self.blacklist[item_type] = {}
+            
+              
+        if model_id not in self.blacklist[item_type]:
+            self.blacklist[item_type][model_id] = True
 
-    def whitelist_item(self, model_id: int):
+    def whitelist_item(self, item_type : ItemType, model_id: int):
         """Remove an item from the blacklist in the profile."""
-        if model_id in self.blacklist:
-            del self.blacklist[model_id]
+        if item_type in self.blacklist:
+            if model_id in self.blacklist[item_type]:
+                del self.blacklist[item_type][model_id]
+                
+                if not self.blacklist[item_type]:
+                    del self.blacklist[item_type]
 
-    def is_blacklisted(self, model_id: int) -> bool:
+    def is_blacklisted(self, item_type : ItemType, model_id: int) -> bool:
         """Check if an item is blacklisted in the profile."""
-        return model_id in self.blacklist
+        return item_type in self.blacklist and model_id in self.blacklist[item_type]
 
-    def remove_item(self, model_id: int):
+    def remove_item(self, item_type : ItemType, model_id: int):
         """Remove an item from the profile."""
-        if model_id in self.items:
-            del self.items[model_id]
+        if item_type in self.items:
+            if model_id in self.items[item_type]:
+                del self.items[item_type][model_id]
+                if not self.items[item_type]:
+                    del self.items[item_type]

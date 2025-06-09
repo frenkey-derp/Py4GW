@@ -474,7 +474,7 @@ class UI:
                     clipboard_text += "```"
                     PyImGui.set_clipboard_text(clipboard_text)
                     
-                    data.SaveItemsV2(True)
+                    data.SaveItems(True)
                     
                                 
                                 
@@ -504,8 +504,10 @@ class UI:
                             button_height = math.floor((child_size[1] - 28) / rows)
                             
                             for i, item_id in enumerate(item_ids):    
-                                model_id = GLOBAL_CACHE.Item.GetModelID(item_id) if item_id > 0 else -1                            
-                                item = data.Items.get(model_id, None)
+                                model_id = GLOBAL_CACHE.Item.GetModelID(item_id) if item_id > 0 else -1   
+                                item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]) if item_id > 0 else ItemType.Unknown
+                                                         
+                                item = data.Items.get_item(item_type, model_id)
                                 
                                 PyImGui.table_next_column()                                
                                     
@@ -540,7 +542,7 @@ class UI:
                                     
                                     if PyImGui.is_item_clicked(0) and item and not item.wiki_scraped:
                                         data.Reload()                  
-                                        item = data.Items.get(model_id, None)
+                                        item = data.Items.get_item(item_type, model_id)
                                         
                                         if item and not item.wiki_scraped:
                                             wiki_scraper.WikiScraper.scrape_multiple_entries([item.model_id])
@@ -1415,7 +1417,7 @@ class UI:
                 
                 if PyImGui.begin_child("selectable_items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                     for item in self.filtered_loot_items:
-                        if item and not settings.current.loot_profile.is_blacklisted(item.item_info.model_id):
+                        if item and not settings.current.loot_profile.is_blacklisted(item.item_info.item_type, item.item_info.model_id):
                             if PyImGui.is_rect_visible(1, 20):
                                 self.draw_selectable_item(item)
                             else:
@@ -1433,13 +1435,15 @@ class UI:
                     self.selected_loot_items) == 1 else None
 
                 if selected_loot_item:
-                    has_settings = selected_loot_item.item_info.model_id and selected_loot_item.item_info.model_id in settings.current.loot_profile.items
+                    item_settings = settings.current.loot_profile.items.get_item_config(selected_loot_item.item_info.item_type, selected_loot_item.item_info.model_id)
+                    has_settings = item_settings != None
+                    
                     self.draw_item_header(selected_loot_item.item_info, True)
 
                     if PyImGui.begin_child("item_settings", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                         if has_settings:
-                            loot_item = settings.current.loot_profile.items.get(
-                                selected_loot_item.item_info.model_id)
+                            loot_item = settings.current.loot_profile.items.get_item_config(
+                                selected_loot_item.item_info.item_type, selected_loot_item.item_info.model_id)
 
                             if PyImGui.begin_tab_bar("item_conditions") and loot_item:
                                 for condition in loot_item.conditions:
@@ -1661,8 +1665,8 @@ class UI:
                                             if  len(loot_item.conditions) > 1:
                                                 loot_item.conditions.remove(condition)
                                                 settings.current.loot_profile.save()
-                                            else:
-                                                del settings.current.loot_profile.items[loot_item.model_id]
+                                            elif loot_item:
+                                                settings.current.loot_profile.items.delete_item_config(loot_item.item_type, loot_item.model_id)
                                                 selected_loot_item = None
                                                 
                                         ImGui.show_tooltip("Delete Condition")
@@ -1685,8 +1689,7 @@ class UI:
                             PyImGui.pop_style_color(1)
 
                             if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Add to Profile", 0, 25) and selected_loot_item and selected_loot_item.item_info.model_id not in settings.current.loot_profile.items:
-                                settings.current.loot_profile.items[selected_loot_item.item_info.model_id] = ItemConfiguration(
-                                    selected_loot_item.item_info.model_id)
+                                settings.current.loot_profile.items.add_item(selected_loot_item.item_info)
                                 settings.current.loot_profile.save()
 
                     PyImGui.end_child()
@@ -1703,15 +1706,13 @@ class UI:
                     if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Create Default Rule", 0, 25):
                         for item in self.selected_loot_items:
                             if item and item.item_info.model_id and item.item_info.model_id not in settings.current.loot_profile.items:
-                                settings.current.loot_profile.items[item.item_info.model_id] = ItemConfiguration(
-                                    item.item_info.model_id)
+                                settings.current.loot_profile.items.add_item(item.item_info)
                                 settings.current.loot_profile.save()
 
                     if PyImGui.button(IconsFontAwesome5.ICON_TRASH + " Delete All Rules", 0, 25):
                         for item in self.selected_loot_items:
                             if item and item.item_info.model_id and item.item_info.model_id in settings.current.loot_profile.items:
-                                settings.current.loot_profile.items.pop(
-                                    item.item_info.model_id, None)
+                                settings.current.loot_profile.items.delete_item_config(item.item_info.item_type, item.item_info.model_id)
                                 settings.current.loot_profile.save()
 
                     PyImGui.end_child()
@@ -1750,7 +1751,7 @@ class UI:
             # Left panel: Loot Items Selection
             if PyImGui.begin_child("blacklisted_selection_items_child", (tab_size, 0), True, PyImGui.WindowFlags.NoFlag):
                 for item in self.filtered_blacklist_items:
-                    if item and not settings.current.loot_profile.is_blacklisted(item.item_info.model_id):
+                    if item and not settings.current.loot_profile.is_blacklisted(item.item_info.item_type, item.item_info.model_id):
                         if PyImGui.is_rect_visible(1, 20):
                             self.draw_blacklist_selectable_item(item)
                         else:
@@ -1764,7 +1765,7 @@ class UI:
             # Right panel: Loot Item Details
             if PyImGui.begin_child("blacklisted_items_child", (tab_size, 0), True, PyImGui.WindowFlags.NoFlag):
                 for item in self.filtered_blacklist_items:                                                       
-                    if item and settings.current.loot_profile.is_blacklisted(item.item_info.model_id):
+                    if item and settings.current.loot_profile.is_blacklisted(item.item_info.item_type, item.item_info.model_id):
                         if PyImGui.is_rect_visible(1, 20):
                             self.draw_blacklist_selectable_item(item)
                         else:
@@ -1853,13 +1854,13 @@ class UI:
 
     def filter_items(self):        
         self.filtered_loot_items = [
-                        SelectableItem(item) for item in data.Items.values()
-                        if item and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
+                        SelectableItem(item) for item in data.Items.All
+                        if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
                     ]
         
         self.filtered_blacklist_items = [
-                        SelectableItem(item) for item in data.Items.values()
-                        if item and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
+                        SelectableItem(item) for item in data.Items.All
+                        if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
                     ]
 
     def _calc_mod_description_height(self, mod, tab_width: float) -> float:
@@ -2560,7 +2561,7 @@ class UI:
         PyImGui.end_child()
         PyImGui.pop_style_var(1)
         
-        blacklisted = settings.current.loot_profile.is_blacklisted(item.item_info.model_id)
+        blacklisted = settings.current.loot_profile.is_blacklisted(item.item_info.item_type, item.item_info.model_id)
         
         # Pop background color styles if applied
         if item.is_selected:
@@ -2596,12 +2597,12 @@ class UI:
                     return
                 
                 if blacklisted:
-                    settings.current.loot_profile.whitelist_item(item.item_info.model_id)            
+                    settings.current.loot_profile.whitelist_item(item.item_info.item_type, item.item_info.model_id)            
                     settings.current.loot_profile.save()
                     item.is_hovered = False
                     item.is_selected = False
                 else:
-                    settings.current.loot_profile.blacklist_item(item.item_info.model_id)           
+                    settings.current.loot_profile.blacklist_item(item.item_info.item_type, item.item_info.model_id)           
                     settings.current.loot_profile.save()
                     item.is_hovered = False
                     item.is_selected = False
@@ -2666,7 +2667,7 @@ class UI:
             item_name = f"{item_name} ({profession})"
             
         # Determine text color based on whether the item has settings
-        has_settings = item.item_info.model_id in settings.current.loot_profile.items
+        has_settings = settings.current.loot_profile.items.get_item_config(item.item_info.item_type, item.item_info.model_id) is not None
         text_color = (
             utility.Util.GetRarityColor(Rarity.Gold)["text"]
             if has_settings
@@ -2715,10 +2716,10 @@ class UI:
             py_io = PyImGui.get_io()
             
             if item.item_info.model_id in settings.current.loot_profile.items:
-                settings.current.loot_profile.remove_item(item.item_info.model_id)     
+                settings.current.loot_profile.remove_item(item.item_info.item_type, item.item_info.model_id)     
                 settings.current.loot_profile.save()
             else:
-                settings.current.loot_profile.add_item(item.item_info.model_id)     
+                settings.current.loot_profile.add_item(item.item_info)     
                 settings.current.loot_profile.save()
 
         elif PyImGui.is_mouse_clicked(0) and item.is_hovered:

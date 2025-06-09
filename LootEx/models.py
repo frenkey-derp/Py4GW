@@ -3,10 +3,11 @@ import json
 import re
 import base64
 from dataclasses import dataclass, field
-from typing import ClassVar, List, Optional
+from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex
 from LootEx import settings
 from LootEx import enum
 from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierValueArg
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
 
@@ -224,7 +225,110 @@ class AquisitionInfo():
         info.map_id = data.get("MapID", -1)
         info.sources = data.get("Sources", [])
         return info
+                   
+class ItemsByType(dict[ItemType, dict[int, 'Item']]):
+    """
+    A dictionary that maps ItemType to a list of Item objects.
+    
+    This class extends the built-in dict to provide a more specific type for
+    collections of Item objects categorized by their ItemType.
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.All : List['Item'] = []
+    
+    def add_item(self, item: 'Item'):
+        """
+        Add an Item to the collection under the specified ItemType.
         
+        Args:
+            item_type (ItemType): The type of the item to add.
+            item (Item): The Item object to add.
+        """
+        
+        if item.item_type not in self:
+            self[item.item_type] = {}
+        
+        if item.model_id not in self[item.item_type]:
+            self[item.item_type][item.model_id] = item
+            self.All.append(item)
+    
+    def sort_items(self):
+        """
+        Sort all items in the collection by their model ID.
+        
+        This method sorts the items in each ItemType category by their model ID
+        and updates the All list to reflect the sorted order.
+        """
+        for item_type, items in self.items():
+            sorted_items = sorted(items.values(), key=lambda item: (item.name, item.model_id))
+            self[item_type] = {item.model_id: item for item in sorted_items}
+        
+        self.All.sort(key=lambda item: item.name)
+    
+    def get_item_data(self, item_id: int) -> Optional['Item']:
+        """
+        Get an Item by its item ID.
+        Args:
+            item_id (int): The ID of the item to retrieve.  
+        Returns:
+            Item: The Item data object from the specified item ID, or None if not found.
+        """
+        
+        if item_id <= 0:
+            return None
+        
+        item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
+        model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+        
+        items = self.get(item_type, {})
+        item = items.get(model_id, None)
+                
+        return item
+    
+    def get_item(self, item_type: ItemType, model_id : int) -> Optional['Item']:
+        """
+        Get an Item by its ItemType and model ID.
+        
+        Args:
+            item_type (ItemType): The type of the item to retrieve.
+            model_id (int): The model ID of the item to retrieve.
+        
+        Returns:
+            Item: The Item object with the specified ItemType and model ID, or None if not found.
+        """
+        items = self.get(item_type, {})
+        item = items.get(model_id, None)
+            
+        return item
+    
+    def to_json(self) -> dict:
+        return {item_type.name: [item.to_json() for item in items.values()] for item_type, items in self.items()}
+    
+    @staticmethod
+    def from_dict(data: dict) -> 'ItemsByType':
+        """
+        Create an ItemByTypes from a dictionary.
+        
+        Args:
+            data (dict): A dictionary where keys are ItemType names and values are lists of Item JSON objects.
+        
+        Returns:
+            ItemByTypes: An instance of ItemByTypes populated with the data.
+        """
+        item_by_types = ItemsByType()
+        
+        for item_type_name, items in data.items():
+            item_type = ItemType[item_type_name]
+            item_by_types[item_type] = {}
+            
+            for model_id, item_data in items.items():
+                item = Item.from_json(item_data)
+                item_by_types.add_item(item)
+            
+        return item_by_types
+
 @dataclass
 class Item():
     model_id: int

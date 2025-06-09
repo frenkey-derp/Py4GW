@@ -141,7 +141,9 @@ def DepositMaterials(force : bool = False) -> bool:
 
 def GetSalvageOption(item_id: int, action : ItemAction) -> Optional[SalvageOption]:
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-    item_info = data.Items.get(model_id, None)
+    item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
+    
+    item_info = data.Items.get_item(item_type, model_id)
     
     if action == ItemAction.SALVAGE_SMART:
         if item_info is None:
@@ -175,8 +177,9 @@ def GetSalvageOption(item_id: int, action : ItemAction) -> Optional[SalvageOptio
 def ShouldSalvageItem(item_id: int) -> tuple[bool, ItemAction]:                
     if GLOBAL_CACHE.Item.Usage.IsSalvageable(item_id) and settings.current.loot_profile:   
         model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+        item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
         
-        item_config = settings.current.loot_profile.items.get(model_id, None)
+        item_config = settings.current.loot_profile.items.get_item_config(item_type, model_id)
         if item_config:
             action = item_config.get_action(item_id)
 
@@ -233,7 +236,7 @@ def ShouldSellItemToMerchant(item_id: int) -> bool:
             return False
         
     if GLOBAL_CACHE.Item.Properties.GetValue(item_id) > 0:
-        item_config = settings.current.loot_profile.items.get(model_id, None)
+        item_config = settings.current.loot_profile.items.get_item_config(item_type, model_id)
         
         if item_config:
             action = item_config.get_action(item_id)
@@ -268,7 +271,7 @@ def ShouldStashItem(item_id: int) -> bool:
     if settings.current.loot_profile is None:
         return False
         
-    item_data = data.Items.get(GLOBAL_CACHE.Item.GetModelID(item_id), None)
+    item_data = data.Items.get_item_data(item_id)
     if item_data is not None:
         if item_data.nick_index and item_data.next_nick_week:
             weeks_until = (item_data.next_nick_week - date.today()).days // 7
@@ -290,7 +293,9 @@ def ShouldStashItem(item_id: int) -> bool:
             return True
     
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-    item_config = settings.current.loot_profile.items.get(model_id, None)
+    item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
+    
+    item_config = settings.current.loot_profile.items.get_item_config(item_type, model_id)
     if item_config:
         action = item_config.get_action(item_id)        
         return action == ItemAction.STASH
@@ -458,9 +463,10 @@ def StashItem(item_id: int) -> bool:
                 
     stash = GLOBAL_CACHE.Inventory.GetZeroFilledStorageArray()
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+    item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
     
     if GLOBAL_CACHE.Item.Customization.IsStackable(item_id):
-        item_config = settings.current.loot_profile.items.get(model_id, None)
+        item_config = settings.current.loot_profile.items.get_item_config(item_type, model_id)
         config_condition = item_config.get_condition(item_id) if item_config else None
         keep_amount = config_condition.keep_in_inventory if config_condition else 0
         
@@ -543,10 +549,12 @@ def ShouldDestroyItem(item_id: int) -> bool:
         return False
     
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-    if settings.current.loot_profile.is_blacklisted(model_id):
+    item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
+    
+    if settings.current.loot_profile.is_blacklisted(item_type, model_id):
         return False
     
-    item_config = settings.current.loot_profile.items.get(model_id, None)
+    item_config = settings.current.loot_profile.items.get_item_config(item_type, model_id)
     
     if item_config:
         action = item_config.get_action(item_id)
@@ -598,6 +606,7 @@ def Run():
     if data_collector.instance.is_running():
         return
     
+    return
     if not settings.current.automatic_inventory_handling:
         return
     
@@ -714,7 +723,7 @@ def GetItemsFromStorage(items: dict[int, int]) -> bool:
             continue
         
         bag, slot = GetBagFromSlot(inventory_slot, bag_sizes)
-        item_data = data.Items.get(GLOBAL_CACHE.Item.GetModelID(item_id), None)        
+        item_data = data.Items.get_item_data(item_id)        
         item_name = item_data.name if item_data else "Item Name Unavailable"
         
         ConsoleLog("LootEx", f"Withdrawing {quantity}x '{item_name}' ({item_id})", Console.MessageType.Info)  
@@ -975,15 +984,16 @@ def HasModToKeep(item_id: int) -> tuple[bool, list[models.WeaponMod], list[model
 
 def CanProcessItem(item_id: int) -> bool:
     model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
+    item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])
     
-    if settings.current.loot_profile and settings.current.loot_profile.is_blacklisted(model_id):
+    if settings.current.loot_profile and settings.current.loot_profile.is_blacklisted(item_type, model_id):
         return False
     
     if GLOBAL_CACHE.Item.Properties.IsCustomized(item_id):
         # ConsoleLog("LootEx", f"Item '{utility.Util.GetItemDataName(item_id)}' {item_id} is customized, skipping processing.", Console.MessageType.Warning)
         return False
     
-    if utility.Util.IsWeaponType(ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0])):
+    if utility.Util.IsWeaponType(item_type):
         has_mod_to_keep, mods_to_keep, _ = HasModToKeep(item_id)
         if has_mod_to_keep and len(mods_to_keep) > 1:
             return False
@@ -1091,7 +1101,7 @@ def BuyItemsFromMerchant(items_to_buy: dict[int, int]):
             continue
         
         value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
-        item_data = data.Items.get(GLOBAL_CACHE.Item.GetModelID(item_id), None)        
+        item_data = data.Items.get_item_data(item_id)        
         item_name = item_data.name if item_data else "Item Name Unavailable"
         ConsoleLog  ("LootEx", f"Buying {amount}x '{item_name}' ({item_id}) from merchant for {utility.Util.format_currency(value * amount)}.", Console.MessageType.Info)
         

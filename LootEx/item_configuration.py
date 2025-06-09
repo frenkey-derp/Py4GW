@@ -25,14 +25,15 @@ class ConfigurationCondition:
 
 
 class ItemConfiguration:
-    def __init__(self, model_id: int, action: ItemAction = ItemAction.STASH):
+    def __init__(self, model_id: int, item_type : ItemType, action: ItemAction = ItemAction.STASH):
         self.model_id: int = model_id
+        self.item_type: ItemType = item_type
         self.conditions: list[ConfigurationCondition] = [ConfigurationCondition("Default", action)]
 
-    @staticmethod
-    def to_dict(data) -> dict:
+    def to_dict(self) -> dict:
         return {
-            "model_id": data.model_id,
+            "model_id": self.model_id,
+            "item_type": self.item_type.name if isinstance(self.item_type, ItemType) else self.item_type,
             "conditions": [
                 {
                     "name": condition.name,
@@ -56,15 +57,16 @@ class ItemConfiguration:
                     if condition.requirements
                     else None,
                 }
-                for condition in data.conditions
+                for condition in self.conditions
             ],
         }
 
     @staticmethod
     def from_dict(data) -> "ItemConfiguration":
         model_id = data["model_id"]
+        item_type = data.get("item_type", None)
 
-        item = ItemConfiguration(model_id)
+        item = ItemConfiguration(model_id, item_type)
         item.conditions = []
 
         for condition_data in data.get("conditions", []):
@@ -72,7 +74,7 @@ class ItemConfiguration:
             
             if not name:
                 raise ValueError("Condition name is required")
-            
+                        
             condition = ConfigurationCondition(name)            
             condition.action = ItemAction[condition_data.get("action", "STASH")]
             

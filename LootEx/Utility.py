@@ -344,10 +344,20 @@ class Util:
         return damage_range.min == max_damage.min - tollerance.min and damage_range.max >= max_damage.max - tollerance.max
 
     @staticmethod
-    def GetDataItem(model_id: int) -> Optional[models.Item]:
-        dataitem = next(
-            (data_item for data_item in data.Items.values() if model_id == data_item.model_id), None)
-        return dataitem
+    def GetDataItem(item_type : ItemType, model_id: int) -> Optional[models.Item]:
+        """
+        Get the data item based on item type and model ID.
+
+        Args:
+            item_type (ItemType): The type of the item.
+            model_id (int): The model ID of the item.
+
+        Returns:
+            Optional[models.Item]: The data item if found, otherwise None.
+        """
+        items = data.Items.get(item_type, {})
+        
+        return items.get(model_id, None)
 
     @staticmethod
     def IsArmorType(itemtype: ItemType) -> bool:
@@ -362,7 +372,7 @@ class Util:
 
     @staticmethod
     def IsArmor(item: ItemConfiguration) -> bool:
-        dataitem = Util.GetDataItem(item.model_id)
+        dataitem = Util.GetDataItem(item.item_type, item.model_id)
         return Util.IsArmorType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
@@ -383,7 +393,7 @@ class Util:
 
     @staticmethod
     def IsWeapon(item: ItemConfiguration) -> bool:
-        dataitem = Util.GetDataItem(item.model_id)
+        dataitem = Util.GetDataItem(item.item_type, item.model_id)
         return Util.IsWeaponType(dataitem.item_type) if dataitem is not None else False
 
     @staticmethod
@@ -578,10 +588,8 @@ class Util:
         return model_id in model_ids
     
     @staticmethod
-    def is_missing_item(item_id: int) -> bool:
-        model_id = Item.GetModelID(item_id)
-        
-        return data.Items.get(model_id) is None
+    def is_missing_item(item_id: int) -> bool:        
+        return data.Items.get_item_data(item_id) is None
     
     @staticmethod
     def has_missing_mods(item_id : int) -> bool:
@@ -752,13 +760,25 @@ class Util:
         Returns:
             bool: True if the item is a rare weapon, False otherwise.
         """       
-        data_item = data.Items.get(model_id, None)
         
-        name = data_item.names.get(ServerLanguage.English, None) if data_item else None
-        if name and name in data.Rare_Weapon_Names:
-            return True
+        combined_meta_types = (
+            data.ItemType_MetaTypes.get(ItemType.Weapon, []) +
+            data.ItemType_MetaTypes.get(ItemType.OffhandOrShield, [])
+        )
+        
+        for item_type in combined_meta_types:
+            items = data.Items.get(item_type, {})
+            item = items.get(model_id, None)
+            
+            if item:
+                if item.category == ItemCategory.RareWeapon:
+                    return True   
                 
-        return data_item.category == ItemCategory.RareWeapon if data_item else False
+                name = item.names.get(ServerLanguage.English, None)
+                if name and name in data.Rare_Weapon_Names:
+                    return True
+        
+        return False
     
     @staticmethod
     def GetItemDataName(item_id: int) -> str:
@@ -771,7 +791,6 @@ class Util:
         Returns:
             str: The name of the item, or "Unknown Item" if not found.
         """
-        model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-        data_item = data.Items.get(model_id, None)
+        data_item = data.Items.get_item_data(item_id)
         
         return data_item.name if data_item else "Unknown Item"

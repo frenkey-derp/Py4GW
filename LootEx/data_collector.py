@@ -57,7 +57,7 @@ class DataCollector:
         return cls.instance
     
     def __init__(self):
-        self.modified_items: dict[int, models.Item] = {}
+        self.modified_items: models.ItemsByType = models.ItemsByType()
         self.modified_weapon_mods: dict[str, models.WeaponMod] = {}
         self.modified_runes: dict[str, models.Rune] = {}
         
@@ -77,15 +77,22 @@ class DataCollector:
         
         if os.path.exists(account_items_file):
             with open(account_items_file, 'r', encoding='utf-8') as file:
-                items = json.load(file)
-
+                account_items = models.ItemsByType.from_dict(json.load(file))
+            
                 if self.modified_items:
                     self.modified_items.clear()
-                
-                for value in items.values():
-                    item = models.Item.from_json(value)
-                    if item.model_id not in self.modified_items:
-                        self.modified_items[item.model_id] = item
+                    
+                for item_type, items in account_items.items():
+                    if item_type not in self.modified_items:
+                        self.modified_items[item_type] = {}
+                        
+                    for model_id, item in items.items():
+                        if model_id not in self.modified_items[item_type]:
+                            self.modified_items.add_item(item)
+                        else:
+                            self.modified_items[item_type][model_id].update(item)
+                        
+                items = json.load(file)
                         
         if os.path.exists(account_weapon_mods_file):
             with open(account_weapon_mods_file, 'r', encoding='utf-8') as file:
@@ -184,12 +191,13 @@ class DataCollector:
             return True
 
         model_id = self.get_model_id(item_id)
+        item_type = self.get_item_type(item_id)
 
         if model_id not in data.Items:
             return False
 
-        item = data.Items[model_id]
-        if item.names is None or len(item.names) == 0:
+        item = data.Items.get_item(item_type, model_id)
+        if item is None or item.names is None or len(item.names) == 0:
             return False
     
         for server_language in ServerLanguage:
@@ -205,7 +213,6 @@ class DataCollector:
             return False
 
         model_id = self.get_model_id(item_id)
-        item_type = self.get_item_type(item_id)
         profession = self.get_profession(item_id)
         rarity = GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)
         is_identified = GLOBAL_CACHE.Item.Usage.IsIdentified(item_id)
@@ -259,8 +266,8 @@ class DataCollector:
             #     "LootEx", f"Model ID {model_id} not found in data.Items for item {item_id}", Console.MessageType.Warning)
             return False
 
-        item = data.Items[model_id]
-        if item.names is None or len(item.names) == 0:
+        item = data.Items.get_item(item_type, model_id)
+        if item is None or item.names is None or len(item.names) == 0:
             # ConsoleLog(
             #     "LootEx", f"Item names are empty for item {item_id} ({model_id})", Console.MessageType.Warning)
             return False
@@ -526,8 +533,9 @@ class DataCollector:
 
     def get_wiki_url(self, item_id: int) -> str:        
         model_id = self.get_model_id(item_id)
-
-        item = data.Items.get(model_id, None)
+        item_type = self.get_item_type(item_id)
+        
+        item = data.Items.get_item(item_type, model_id)
         if item is None:
             return ""
 
@@ -673,6 +681,7 @@ class DataCollector:
     def create_item_name(self, item_id: int) -> Optional[str]:
         global save_items
         model_id = self.get_model_id(item_id)
+        item_type = self.get_item_type(item_id)
         item_name = self.get_cleaned_item_name(item_id)
         quantity = self.get_quantity(item_id)
 
@@ -680,7 +689,7 @@ class DataCollector:
         #     "LootEx", f"Collecting names for item: {item_id} ({model_id}) - Name: {item_name}", Console.MessageType.Debug)
 
         if model_id in data.Items and item_name is not None and item_name != "":
-            item = data.Items.get(model_id, None)
+            item = data.Items.get_item(item_type, model_id)
 
             if item is not None and item.names is not None and quantity == 1:
                 if self.server_language in item.names and item.names[self.server_language] is not None:
@@ -730,22 +739,20 @@ class DataCollector:
             self.get_mods_names(item_id)
 
         item_name = self.create_item_name(item_id)
-        
+                
         if not self.is_complete(item_id):            
             if item_name:
-                if model_id not in data.Items:
-                    data.Items[model_id] = models.Item(model_id=model_id)
-
-                if self.server_language not in data.Items[model_id].names or data.Items[model_id].names[self.server_language] is None:
-                    data.Items[model_id].set_name(
-                        item_name, self.server_language)
+                if model_id not in data.Items[item_type]:
+                    item = models.Item(model_id=model_id, item_type=item_type, profession=profession, names={self.server_language: item_name}, wiki_url=self.get_wiki_url(item_id))                    
                     save_items = True
-                    self.modified_items[model_id] = data.Items[model_id]
-
-                if data.Items[model_id].contains_amount and self.get_quantity(item_id) == 1:
-                    data.Items[model_id].set_name(
-                        item_name, self.server_language)                    
-                    self.modified_items[model_id] = data.Items[model_id]
+                    self.modified_items.add_item(item)
+                    data.Items.add_item(item)    
+                    
+                item = data.Items.get_item(item_type, model_id)
+                if item and item.contains_amount and self.get_quantity(item_id) == 1:
+                    item.set_name(
+                        item_name, self.server_language)
+                    self.modified_items.add_item(item)
                     save_items = True
 
             else:
@@ -753,33 +760,33 @@ class DataCollector:
                 #     "LootEx", f"Item name for item '{self.get_item_name(item_id)}' {item_id} ({model_id}) is empty or None, skipping.", Console.MessageType.Debug)
                 return retry_check()
 
-        if model_id in data.Items:
-            save_items = save_items or data.Items[model_id].item_type != item_type
-            data.Items[model_id].item_type = item_type
+        item = data.Items.get_item(item_type, model_id)
+        if item:
+            save_items = save_items or item.item_type != item_type
+            item.item_type = item_type
 
-            save_items = save_items or data.Items[model_id].profession != profession
-            data.Items[model_id].profession = profession
+            save_items = save_items or item.profession != profession
+            item.profession = profession
 
             if utility.Util.IsWeaponType(item_type):
                 requirements = utility.Util.GetItemRequirements(item_id)
                 if requirements is not None:
                     attribute, _ = requirements
 
-                    if (attribute is not None and attribute not in data.Items[model_id].attributes):
-                        data.Items[model_id].attributes.append(attribute)
-                        self.modified_items[model_id] = data.Items[model_id]
+                    if (attribute is not None and attribute not in item.attributes):
+                        item.attributes.append(attribute)
+                        self.modified_items.add_item(item)
                         save_items = True
 
             wiki_url = self.get_wiki_url(item_id)
-            save_items = save_items or data.Items[model_id].wiki_url != wiki_url
-            data.Items[model_id].wiki_url = wiki_url
+            save_items = save_items or item.wiki_url != wiki_url
+            item.wiki_url = wiki_url
 
             if save_items:
-                self.modified_items[model_id] = data.Items[model_id]
+                self.modified_items.add_item(item)
 
                 ConsoleLog(
-                    "LootEx", f"Collected item: {data.Items[model_id].names.get(self.server_language, 'Unknown')} ({model_id}) from item '{self.get_item_name(item_id)}' with id ({item_id})", Console.MessageType.Debug)
-                return
+                    "LootEx", f"Collected item: {item.names.get(self.server_language, 'Unknown')} ({model_id}) from item '{self.get_item_name(item_id)}' with id ({item_id})", Console.MessageType.Debug)                
 
     def get_sorted_items(self) -> tuple[dict[int, inventory_item], dict[int, inventory_item], dict[int, inventory_item]]:
         """Get a sorted list of items in the inventory."""
@@ -811,8 +818,9 @@ class DataCollector:
         
         if quantity > 0:
             model_id = self.get_model_id(item_id)
+            item_type = self.get_item_type(item_id)
             single_item = single_items.get(model_id, None)
-            item = data.Items.get(model_id, None)
+            item = data.Items.get_item(item_type, model_id)
             
             if item is not None and (item.contains_amount or not item.has_name(self.server_language)):
                 # If the item contains an amount, we need to split it
@@ -872,9 +880,11 @@ class DataCollector:
         
         
     def fix_armor_wiki_urls(self):
-        for item in data.Items.values():
-            if item.item_type != ItemType.Salvage and utility.Util.IsArmorType(item.item_type) and not item.wiki_scraped:
-                item.wiki_url = self.get_armor_wiki_url(item)
+        for item_type, items in data.Items.items():             
+            if item_type != ItemType.Salvage and utility.Util.IsArmorType(item_type):
+                for item in items.values():
+                    if not item.wiki_scraped:
+                        item.wiki_url = self.get_armor_wiki_url(item)
                 
         
         data.SaveItems(True)
