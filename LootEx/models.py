@@ -4,6 +4,8 @@ import re
 import base64
 from dataclasses import dataclass, field
 from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex
+
+from PyItem import ItemModifier
 from LootEx import settings
 from LootEx import enum
 from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg
@@ -375,8 +377,18 @@ class Item():
             
             if nick_date >= dt:
                 return date(nick_date.year, nick_date.month, nick_date.day)
+       
+    def has_missing_names(self) -> ServerLanguage | bool:
+        if not self.names:
+            return ServerLanguage.English
         
-
+        for lang in ServerLanguage:
+            if lang != ServerLanguage.Unknown:
+                if lang not in self.names or not self.names[lang]:
+                    return lang
+        
+        return False
+    
     def update_language(self, language: ServerLanguage):
         self.name : str = self.get_name(language)      
         
@@ -572,6 +584,17 @@ class ItemMod():
         self.names[language] = name        
         self.name = self.get_name(language)   
                 
+    def has_missing_names(self) -> ServerLanguage | bool:
+        if not self.names:
+            return ServerLanguage.English
+        
+        for lang in ServerLanguage:
+            if lang != ServerLanguage.Unknown:
+                if lang not in self.names or not self.names[lang]:
+                    return lang
+        
+        return False
+    
     def generate_binary_identifier(self) -> str:
         # Start with mod_type (1 byte)
         data = bytearray()
@@ -756,14 +779,14 @@ class Rune(ItemMod):
         return modified_name.strip()
 
 
-    def is_item_modifier(self, modifiers) -> bool:
+    def is_in_item_modifier(self, modifiers : list["ItemModifier"]) -> bool:
         for mod in self.modifiers:
             matched = False
 
             for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:
-                if modifier and hasattr(modifier, 'GetIdentifier') and  modifier.GetIdentifier() == mod.identifier:
-                    arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
-                    arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
+                if modifier:
+                    arg1 = modifier.GetArg1()
+                    arg2 = modifier.GetArg2()
 
                     if mod.modifier_value_arg == ModifierValueArg.Arg1:
                         if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
@@ -781,6 +804,25 @@ class Rune(ItemMod):
                 return False
         
         return True
+    
+    def is_item_modifier(self, identifier : int, arg1 : int, arg2 : int) -> tuple[bool, bool]:
+        for mod in self.modifiers:            
+            if mod.identifier != identifier:
+                continue
+            
+            if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                    return True, arg1 >= mod.max
+            
+            elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                    return True, arg2 >= mod.max
+
+            elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                if arg1 == mod.arg1 and arg2 == mod.arg2:
+                    return True, True
+        
+        return False, False
     
     def to_json(self) -> dict:
         return {
@@ -857,8 +899,27 @@ class WeaponMod(ItemMod):
     def __post_init__(self):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
-                
-    def is_item_modifier(self, modifiers : list, item_type : ItemType, tolerance : int = -1) -> bool:
+                  
+    def is_item_modifier(self, identifier : int, arg1 : int, arg2 : int) -> tuple[bool, bool]:
+        for mod in self.modifiers:            
+            if mod.identifier != identifier:
+                continue
+            
+            if mod.modifier_value_arg == ModifierValueArg.Arg1:
+                if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
+                    return True, arg1 >= mod.max
+            
+            elif mod.modifier_value_arg == ModifierValueArg.Arg2:
+                if arg2 >= mod.min and arg2 <= mod.max and arg1 == mod.arg1:
+                    return True, arg2 >= mod.max
+
+            elif mod.modifier_value_arg == ModifierValueArg.Fixed:
+                if arg1 == mod.arg1 and arg2 == mod.arg2:
+                    return True, True
+        
+        return False, False
+    
+    def is_in_item_modifier(self, modifiers : list["ItemModifier"], item_type : ItemType, tolerance : int = -1) -> bool:
         is_tolerance_set = tolerance if tolerance >= 0 else 0
                 
         for mod in self.modifiers:            
@@ -867,8 +928,8 @@ class WeaponMod(ItemMod):
                 
             matched = False
             for modifier in [m for m in modifiers if m.GetIdentifier() == mod.identifier]:                
-                arg1 = modifier.GetArg1() if hasattr(modifier, 'GetArg1') else -1
-                arg2 = modifier.GetArg2() if hasattr(modifier, 'GetArg2') else -1
+                arg1 = modifier.GetArg1()
+                arg2 = modifier.GetArg2()
 
                 if mod.modifier_value_arg == ModifierValueArg.Arg1:
                     if arg1 >= mod.min and arg1 <= mod.max and arg2 == mod.arg2:
@@ -892,7 +953,7 @@ class WeaponMod(ItemMod):
         from LootEx import utility
         if item_type == ItemType.Rune_Mod:
             applied_to_item_type_mod = next(modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType)
-            applied_to_item_type_id = applied_to_item_type_mod.GetArg1() if hasattr(applied_to_item_type_mod, 'GetArg1') else 255
+            applied_to_item_type_id = applied_to_item_type_mod.GetArg1()
             applied_to_item_type = ItemType(applied_to_item_type_id)
                         
             return any(utility.Util.IsMatchingItemType(applied_to_item_type, target_item_type) for target_item_type in self.target_types)

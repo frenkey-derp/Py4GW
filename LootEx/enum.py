@@ -97,6 +97,7 @@ class ItemAction(IntEnum):
     SELL_TO_MERCHANT = 9
     SELL_TO_TRADER = 10
     DESTROY = 11
+    DEPOSIT_MATERIAL = 12
     
 class LootAction(IntEnum):
     NONE = 0
@@ -123,8 +124,8 @@ class MessageActions(IntEnum):
     ResumeDataCollection = 2
     StartDataCollection = 3
     ReloadData = 4
-    StartLootHandling = 5
-    StopLootHandling = 6
+    Start = 5
+    Stop = 6
     ShowLootExWindow = 7
     HideLootExWindow = 8
     OpenXunlai = 9    
@@ -195,3 +196,5 @@ class ModifierIdentifier(IntEnum):
     TargetItemType = 9656
     RuneAttribute = 8680
     HealthLoss = 8408
+    ImprovedVendorValue = 9720
+    HighlySalvageable = 9736

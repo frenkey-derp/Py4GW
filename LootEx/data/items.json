@@ -684,6 +684,57 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "631": {
+            "ModelID": 631,
+            "Names": {
+                "English": "Am Fah Cape",
+                "German": "Am Fah-Umhang",
+                "Korean": "암파강 망토",
+                "French": "Cape de l'Am Fah",
+                "Italian": "Mantello Am Fah",
+                "Spanish": "Capa de Am Fah",
+                "TraditionalChinese": "安費披風",
+                "Japanese": "アム ファー マント",
+                "Polish": "Peleryna Am Fah",
+                "Russian": "Am Fah Cape",
+                "BorkBorkBork": "Aem Faeh Caepe-a"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Am_Fah_Cape",
+            "InventoryIcon": "https://wiki.guildwars.com/images/5/54/Am_Fah_Cape.png",
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "629": {
             "ModelID": 629,
             "Names": {
@@ -1808,6 +1859,57 @@
             "InventoryIcon": "https://wiki.guildwars.com/images/8/8d/Salvage_Robe.png",
             "NickIndex": null,
             "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "676": {
+            "ModelID": 676,
+            "Names": {
+                "English": "Jade Brotherhood Garb",
+                "German": "Jadebruderschafts-Tracht",
+                "Korean": "비취결사단 망토",
+                "French": "Habit de la Fraternité de Jade",
+                "Italian": "Abito della Confraternita di Giada",
+                "Spanish": "Andrajo de la Hermandad de Jade",
+                "TraditionalChinese": "翡翠兄弟會裝束",
+                "Japanese": "ジェイド ブラザーズ マント",
+                "Polish": "Strój Jadeitowego Bractwa",
+                "Russian": "Jade Brotherhood Garb",
+                "BorkBorkBork": "Jaede-a Bruzeerhuud Gaerb"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Jade_Brotherhood_Garb",
+            "InventoryIcon": "https://wiki.guildwars.com/images/c/c0/Salvage_Light_Armor.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -3220,6 +3322,34 @@
         }
     },
     "Bag": {
+        "35": {
+            "ModelID": 35,
+            "Names": {
+                "English": "Bag",
+                "German": "Tasche",
+                "Korean": "가방",
+                "French": "Bourse",
+                "Italian": "Sacco",
+                "Spanish": "Bolsa",
+                "TraditionalChinese": "袋子",
+                "Japanese": "バッグ",
+                "Polish": "Torba",
+                "Russian": "Bag",
+                "BorkBorkBork": "Baeg"
+            },
+            "ItemType": "Bag",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bag",
+            "InventoryIcon": "https://wiki.guildwars.com/images/d/d4/Bag.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "34": {
             "ModelID": 34,
             "Names": {
@@ -3276,6 +3406,34 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "31224": {
+            "ModelID": 31224,
+            "Names": {
+                "German": "Schweres Ausrüstungspack",
+                "English": "Heavy Equipment Pack",
+                "Korean": "중량 장비 가방",
+                "French": "Sac lourd",
+                "Italian": "Sacco per l'equipaggiamento pesante",
+                "Spanish": "Pack de equipamiento pesado",
+                "TraditionalChinese": "Heavy Equipment Pack",
+                "Japanese": "装備品パック (特大)",
+                "Polish": "Ciężki plecak na ekwipunek",
+                "Russian": "Heavy Equipment Pack",
+                "BorkBorkBork": "Heaefy Iqooeepment Paeck"
+            },
+            "ItemType": "Bag",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Heavy_Equipment_Pack",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "31223": {
             "ModelID": 31223,
             "Names": {
@@ -3303,6 +3461,62 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "31222": {
+            "ModelID": 31222,
+            "Names": {
+                "German": "Leichtes Ausrüstungspack",
+                "English": "Light Equipment Pack",
+                "Korean": "경량 장비 가방",
+                "French": "Sac léger",
+                "Italian": "Sacco per l'equipaggiamento leggero",
+                "Spanish": "Pack de equipamiento ligero",
+                "TraditionalChinese": "Light Equipment Pack",
+                "Japanese": "装備品パック (中)",
+                "Polish": "Lekki plecak na ekwipunek",
+                "Russian": "Light Equipment Pack",
+                "BorkBorkBork": "Leeght Iqooeepment Paeck"
+            },
+            "ItemType": "Bag",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Light_Equipment_Pack",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "31220": {
+            "ModelID": 31220,
+            "Names": {
+                "BorkBorkBork": "Smaell Iqooeepment Paeck",
+                "Russian": "Small Equipment Pack",
+                "Polish": "Mały plecak na ekwipunek",
+                "Japanese": "装備品パック (小)",
+                "TraditionalChinese": "Small Equipment Pack",
+                "Spanish": "Pack de equipamiento pequeño",
+                "Italian": "Sacco per l'equipaggiamento piccolo",
+                "French": "Petit sac",
+                "Korean": "소형 장비 가방",
+                "English": "Small Equipment Pack",
+                "German": "Kleines Ausrüstungspack"
+            },
+            "ItemType": "Bag",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Small_Equipment_Pack",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "31221": {
             "ModelID": 31221,
@@ -11185,6 +11399,36 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "36679": {
+            "ModelID": 36679,
+            "Names": {
+                "German": "Gesandtenaxt",
+                "English": "Envoy Axe",
+                "Korean": "특사의 도끼",
+                "French": "Hache d'émissaire",
+                "Italian": "Ascia del Messaggero",
+                "Spanish": "Hacha del enviado",
+                "TraditionalChinese": "Envoy Axe",
+                "Japanese": "エンボイ アックス",
+                "Polish": "Topór emisariusza",
+                "Russian": "Envoy Axe",
+                "BorkBorkBork": "Infuy Aexe-a"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Envoy_Axe",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "115": {
             "ModelID": 115,
             "Names": {
@@ -11285,6 +11529,52 @@
             },
             "WikiURL": "https://wiki.guildwars.com/wiki/Greater_Jagged_Reaver",
             "InventoryIcon": "https://wiki.guildwars.com/images/d/d4/Greater_Jagged_Reaver.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "924": {
+            "ModelID": 924,
+            "Names": {
+                "English": "Grinning Dragon Axe",
+                "German": "Grinsender Drache-Axt",
+                "Korean": "분노한용의 도끼",
+                "French": "Hache de dragon rieur",
+                "Italian": "Ascia del Drago Ridente",
+                "Spanish": "Hacha de diente de dragón",
+                "TraditionalChinese": "鋸齒龍斧",
+                "Japanese": "グリニング ドラゴン アックス",
+                "Polish": "Topór Wyszczerzonego Smoka",
+                "Russian": "Grinning Dragon Axe",
+                "BorkBorkBork": "Greenneeng Draegun Aexe-a"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Grinning_Dragon_Axe",
+            "InventoryIcon": "https://wiki.guildwars.com/images/e/e8/Grinning_Dragon_Axe.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -13118,15 +13408,23 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Longbow",
-            "InventoryIcon": null,
+            "WikiURL": "https://wiki.guildwars.com/wiki/Longbow_(wooden)",
+            "InventoryIcon": "https://wiki.guildwars.com/images/b/bd/Wooden_Longbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "758": {
             "ModelID": 758,
@@ -16150,15 +16448,38 @@
             "Attributes": [
                 "DeathMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Grim_Cesta",
-            "InventoryIcon": null,
+            "CommonSalvage": {
+                "Bone": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 921,
+                    "MaterialName": "Bone"
+                },
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Grim_Cesta_(gauntlet)",
+            "InventoryIcon": "https://wiki.guildwars.com/images/6/65/Grim_Cesta_%28gauntlet%29.png",
             "NickIndex": null,
             "Profession": "Necromancer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "170": {
             "ModelID": 170,
@@ -17192,6 +17513,98 @@
             "InventoryIcon": "https://wiki.guildwars.com/images/0/03/Paper_Fan.png",
             "NickIndex": null,
             "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "858": {
+            "ModelID": 858,
+            "Names": {
+                "English": "Paper Fan",
+                "German": "Papierfächer",
+                "Korean": "종이 부채",
+                "French": "Eventail en papier",
+                "Italian": "Ventaglio di Carta",
+                "Spanish": "Abanico de papel",
+                "TraditionalChinese": "紙扇",
+                "Japanese": "ペーパー ファン",
+                "Polish": "Papierowy Wachlarz",
+                "Russian": "Paper Fan",
+                "BorkBorkBork": "Paeper Fun"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Roll of Parchment": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 951,
+                    "MaterialName": "Roll of Parchment"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paper_Fan",
+            "InventoryIcon": "https://wiki.guildwars.com/images/0/03/Paper_Fan.png",
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "866": {
+            "ModelID": 866,
+            "Names": {
+                "English": "Paper Fan",
+                "German": "Papierfächer",
+                "Korean": "종이 부채",
+                "French": "Eventail en papier",
+                "Italian": "Ventaglio di Carta",
+                "Spanish": "Abanico de papel",
+                "TraditionalChinese": "紙扇",
+                "Japanese": "ペーパー ファン",
+                "Polish": "Papierowy Wachlarz",
+                "Russian": "Paper Fan",
+                "BorkBorkBork": "Paeper Fun"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Roll of Parchment": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 951,
+                    "MaterialName": "Roll of Parchment"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paper_Fan",
+            "InventoryIcon": "https://wiki.guildwars.com/images/0/03/Paper_Fan.png",
+            "NickIndex": null,
+            "Profession": "Ritualist",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -20277,15 +20690,38 @@
             "Attributes": [
                 "DominationMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
-            "InventoryIcon": null,
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Piles of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": -1,
+                    "MaterialName": "Piles of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Cane_(Domination)",
+            "InventoryIcon": "https://wiki.guildwars.com/images/e/ef/Cane_%28Domination%29.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1233": {
             "ModelID": 1233,
@@ -21340,6 +21776,52 @@
             "InventoryIcon": "https://wiki.guildwars.com/images/f/f7/Holy_Rod.png",
             "NickIndex": null,
             "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1013": {
+            "ModelID": 1013,
+            "Names": {
+                "English": "Hypnotic Scepter",
+                "German": "Hypnotik-Zepter",
+                "Korean": "최면의 홀",
+                "French": "Sceptre hypnotique",
+                "Italian": "Scettro Ipnotico",
+                "Spanish": "Cetro hipnótico",
+                "TraditionalChinese": "催眠權杖",
+                "Japanese": "ヒプナティック セプター",
+                "Polish": "Hipnotyczne Berło",
+                "Russian": "Hypnotic Scepter",
+                "BorkBorkBork": "Hypnuteec Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Hypnotic_Scepter",
+            "InventoryIcon": "https://wiki.guildwars.com/images/3/3f/Hypnotic_Scepter.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -24474,6 +24956,52 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "334": {
+            "ModelID": 334,
+            "Names": {
+                "English": "Shield of the Wing",
+                "German": "Flügelschild",
+                "Korean": "날개 방패",
+                "French": "Bouclier de l'aile",
+                "Italian": "Scudo dell'Ala",
+                "Spanish": "Escudo de las Alas",
+                "TraditionalChinese": "飛翼盾",
+                "Japanese": "ウイング シールド",
+                "Polish": "Skrzydlasta Tarcza",
+                "Russian": "Shield of the Wing",
+                "BorkBorkBork": "Sheeeld ooff zee Veeng"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Shield_of_the_Wing",
+            "InventoryIcon": "https://wiki.guildwars.com/images/f/f4/Shield_of_the_Wing.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "337": {
             "ModelID": 337,
             "Names": {
@@ -25517,7 +26045,8 @@
             "ItemType": "Staff",
             "DropInfo": "",
             "Attributes": [
-                "DivineFavor"
+                "DivineFavor",
+                "Curses"
             ],
             "CommonSalvage": {
                 "Wood Plank": {
@@ -26592,6 +27121,36 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "36671": {
+            "ModelID": 36671,
+            "Names": {
+                "German": "Chaotischer Gesandtenstab",
+                "English": "Chaotic Envoy Staff",
+                "Korean": "혼돈의 특사의 지팡이",
+                "French": "Bâton d'Envoyé chaotique",
+                "Italian": "Bastone del Messaggero Caotico",
+                "Spanish": "Báculo de enviado caótico",
+                "TraditionalChinese": "Envoy Staff",
+                "Japanese": "カオティック エンボイ スタッフ",
+                "Polish": "Kostur Chaotyckiego Emisariusza",
+                "Russian": "Chaotic Envoy Staff",
+                "BorkBorkBork": "Chaeuteec Infuy Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "FastCasting"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Chaotic_Envoy_Staff",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1276": {
             "ModelID": 1276,
             "Names": {
@@ -26749,6 +27308,36 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "36672": {
+            "ModelID": 36672,
+            "Names": {
+                "German": "Dunkler Gesandtenstab",
+                "English": "Dark Envoy Staff",
+                "Korean": "암흑의 특사의 지팡이",
+                "French": "Bâton d'Envoyé obscur",
+                "Italian": "Bastone del Messaggero Oscuro",
+                "Spanish": "Báculo de enviado oscuro",
+                "TraditionalChinese": "Envoy Staff",
+                "Japanese": "ダーク エンボイ スタッフ",
+                "Polish": "Kostur Mrocznego Emisariusza",
+                "Russian": "Dark Envoy Staff",
+                "BorkBorkBork": "Daerk Infuy Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SoulReaping"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dark_Envoy_Staff",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1280": {
             "ModelID": 1280,
             "Names": {
@@ -26872,6 +27461,36 @@
             "Category": "RareWeapon",
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "36674": {
+            "ModelID": 36674,
+            "Names": {
+                "German": "Göttlicher Gesandtenstab",
+                "English": "Divine Envoy Staff",
+                "Korean": "신성의 특사의 지팡이",
+                "French": "Bâton d'Envoyé divin",
+                "Italian": "Bastone del Messaggero Divino",
+                "Spanish": "Báculo de enviado divino",
+                "TraditionalChinese": "Envoy Staff",
+                "Japanese": "ディヴァイン エンボイ スタッフ",
+                "Polish": "Kostur Boskiego Emisariusza",
+                "Russian": "Divine Envoy Staff",
+                "BorkBorkBork": "Deefeene-a Infuy Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Envoy_Staff",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1294": {
             "ModelID": 1294,
@@ -27501,6 +28120,36 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "36673": {
+            "ModelID": 36673,
+            "Names": {
+                "German": "Elementarer Gesandtenstab",
+                "English": "Elemental Envoy Staff",
+                "Korean": "정령의 특사의 지팡이",
+                "French": "Bâton d'Envoyé élémentaire",
+                "Italian": "Bastone del Messaggero Elementale",
+                "Spanish": "Báculo de enviado elemental",
+                "TraditionalChinese": "Envoy Staff",
+                "Japanese": "エレメンタル エンボイ スタッフ",
+                "Polish": "Kostur Emisariusza Żywiołów",
+                "Russian": "Elemental Envoy Staff",
+                "BorkBorkBork": "Ilementael Infuy Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EnergyStorage"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Elemental_Envoy_Staff",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1063": {
             "ModelID": 1063,
@@ -29000,6 +29649,66 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "591": {
+            "ModelID": 591,
+            "Names": {
+                "English": "Jeweled Staff",
+                "German": "Juwelen-Stab",
+                "Korean": "보석이 박힌 스태프",
+                "French": "Bâton serti",
+                "Italian": "Bastone con Gioielli",
+                "Spanish": "Báculo enjoyado",
+                "TraditionalChinese": "寶石法杖",
+                "Japanese": "ジュエル スタッフ",
+                "Polish": "Zdobiony Kostur",
+                "Russian": "Jeweled Staff",
+                "BorkBorkBork": "Jooeled Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Staff",
+            "InventoryIcon": "https://wiki.guildwars.com/images/2/29/Jeweled_Staff_%28metal%29.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "25870": {
             "ModelID": 25870,
             "Names": {
@@ -29463,6 +30172,36 @@
             "Category": "RareWeapon",
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "36675": {
+            "ModelID": 36675,
+            "Names": {
+                "German": "Spiritueller Gesandtenstab",
+                "English": "Spiritual Envoy Staff",
+                "Korean": "영혼의 특사의 지팡이",
+                "French": "Bâton d'Envoyé spirituel",
+                "Italian": "Bastone del Messaggero Spirituale",
+                "Spanish": "Báculo de enviado espiritual",
+                "TraditionalChinese": "Envoy Staff",
+                "Japanese": "スピリチュアル エンボイ スタッフ",
+                "Polish": "Kostur Duchowego Emisariusza",
+                "Russian": "Spiritual Envoy Staff",
+                "BorkBorkBork": "Spureetooael Infuy Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spiritual_Envoy_Staff",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1930": {
             "ModelID": 1930,
@@ -31139,6 +31878,36 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "36669": {
+            "ModelID": 36669,
+            "Names": {
+                "German": "Gesandtenschwert",
+                "English": "Envoy Sword",
+                "Korean": "특사의 칼",
+                "French": "Epée d'émissaire",
+                "Italian": "Spada del Messaggero",
+                "Spanish": "Espada del enviado",
+                "TraditionalChinese": "Envoy Sword",
+                "Japanese": "エンボイ ソード",
+                "Polish": "Miecz emisariusza",
+                "Russian": "Envoy Sword",
+                "BorkBorkBork": "Infuy Svurd"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Envoy_Sword",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "405": {
             "ModelID": 405,
@@ -32945,6 +33714,34 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2571": {
+            "ModelID": 2571,
+            "Names": {
+                "German": "Himmelssigill",
+                "English": "Celestial Sigil",
+                "Korean": "신성의 도장",
+                "French": "Sceau céleste",
+                "Italian": "Sigillo Celestiale",
+                "Spanish": "Sello celestial",
+                "TraditionalChinese": "神聖印記",
+                "Japanese": "聖なる刻印",
+                "Polish": "Niebiańska Pieczęć",
+                "Russian": "Celestial Sigil",
+                "BorkBorkBork": "Celesteeael Seegeel"
+            },
+            "ItemType": "Unknown",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Celestial_Sigil",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "27341": {
             "ModelID": 27341,
             "Names": {
@@ -34292,6 +35089,52 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "715": {
+            "ModelID": 715,
+            "Names": {
+                "English": "Dirks",
+                "German": "Langdolche",
+                "Korean": "더크",
+                "French": "Poignards",
+                "Italian": "Dirk",
+                "Spanish": "Dirks",
+                "TraditionalChinese": "匕首",
+                "Japanese": "ダーク",
+                "Polish": "Dirki",
+                "Russian": "Dirks",
+                "BorkBorkBork": "Durks"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dirks",
+            "InventoryIcon": "https://wiki.guildwars.com/images/1/12/Dirks.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "2220": {
             "ModelID": 2220,
             "Names": {
@@ -35255,6 +36098,52 @@
             },
             "WikiURL": "https://wiki.guildwars.com/wiki/Steel_Daggers_(common)",
             "InventoryIcon": "https://wiki.guildwars.com/images/2/25/Steel_Daggers_%28common%29.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "720": {
+            "ModelID": 720,
+            "Names": {
+                "English": "Stilletos",
+                "German": "Stilette",
+                "Korean": "스틸레토",
+                "French": "Stylets",
+                "Italian": "Stiletti",
+                "Spanish": "Estiletos",
+                "TraditionalChinese": "雙刃短劍",
+                "Japanese": "スティレット",
+                "Polish": "Kłujące Sztylety",
+                "Russian": "Stilletos",
+                "BorkBorkBork": "Steelletus"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Stilletos",
+            "InventoryIcon": "https://wiki.guildwars.com/images/6/67/Stilletos.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -37914,12 +38803,12 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Rune_of_Channeling_Magic",
-            "InventoryIcon": null,
+            "InventoryIcon": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
             "NickIndex": null,
             "Profession": "Ritualist",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "6329": {
             "ModelID": 6329,
@@ -38864,7 +39753,17 @@
         "30962": {
             "ModelID": 30962,
             "Names": {
-                "English": "Arctic Summoning Stone"
+                "English": "Arctic Summoning Stone",
+                "German": "Arktis-Herbeirufstein",
+                "Korean": "극한의 소환석",
+                "French": "Pierre d'invocation arctique",
+                "Italian": "Pietra Artica Evocante",
+                "Spanish": "Piedra de invocación ártica",
+                "TraditionalChinese": "Arctic Summoning Stone",
+                "Japanese": "アークティック サモン ストーン",
+                "Polish": "Arktyczny Kamień Przyzywania",
+                "Russian": "Arctic Summoning Stone",
+                "BorkBorkBork": "Aercteec Soommuneeng Stune-a"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -39332,7 +40231,17 @@
         "30959": {
             "ModelID": 30959,
             "Names": {
-                "English": "Chitinous Summoning Stone"
+                "English": "Chitinous Summoning Stone",
+                "German": "Chitin-Herbeirufstein",
+                "Korean": "각질의 소환석",
+                "French": "Pierre d'invocation chitineuse",
+                "Italian": "Pietra Chetinosa Evocante",
+                "Spanish": "Piedra de invocación quitinosa",
+                "TraditionalChinese": "Chitinous Summoning Stone",
+                "Japanese": "キトサン サモン ストーン",
+                "Polish": "Chitynowy Kamień Przyzywania",
+                "Russian": "Chitinous Summoning Stone",
+                "BorkBorkBork": "Cheeteenuoos Soommuneeng Stune-a"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -39420,6 +40329,34 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "29436": {
+            "ModelID": 29436,
+            "Names": {
+                "German": "Feuerwerkkiste",
+                "English": "Crate of Fireworks",
+                "Korean": "폭죽 상자",
+                "French": "Caisse de feux d'artifice",
+                "Italian": "Cassa di Fuochi d'Artificio",
+                "Spanish": "Caja con fuegos artificiales",
+                "TraditionalChinese": "煙火箱子",
+                "Japanese": "打上げ花火",
+                "Polish": "Skrzynka Sztucznych Ogni",
+                "Russian": "Ящик с фейерверками",
+                "BorkBorkBork": "Craete-a ooff Furoourks"
+            },
+            "ItemType": "Usable",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Crate_of_Fireworks",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "15528": {
             "ModelID": 15528,
@@ -39554,7 +40491,17 @@
         "5585": {
             "ModelID": 5585,
             "Names": {
-                "English": "Dwarven Ale"
+                "English": "Dwarven Ale",
+                "German": "Zwergenbier",
+                "Korean": "드워프 맥주",
+                "French": "Bière des Nains",
+                "Italian": "Birra dei Nani",
+                "Spanish": "Cerveza de enano",
+                "TraditionalChinese": "矮人啤酒",
+                "Japanese": "ドワーフの醸造酒",
+                "Polish": "Krasnoludzkie Piwo",
+                "Russian": "Dwarven Ale",
+                "BorkBorkBork": "Dvaerfee Aele-a"
             },
             "ItemType": "Usable",
             "DropInfo": "Irontoe's Chest",
@@ -41178,7 +42125,17 @@
         "30965": {
             "ModelID": 30965,
             "Names": {
-                "English": "Fossilized Summoning Stone"
+                "English": "Fossilized Summoning Stone",
+                "German": "Fossil-Herbeirufstein",
+                "Korean": "화석 소환석",
+                "French": "Pierre d'invocation fossilisée",
+                "Italian": "Pietra Fossilizzata Evocante",
+                "Spanish": "Piedra de invocación fosilizada",
+                "TraditionalChinese": "Fossilized Summoning Stone",
+                "Japanese": "ファスライズ サモン ストーン",
+                "Polish": "Skostniały Kamień Przyzywania",
+                "Russian": "Fossilized Summoning Stone",
+                "BorkBorkBork": "Fusseeleezed Soommuneeng Stune-a"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -41288,7 +42245,17 @@
         "30964": {
             "ModelID": 30964,
             "Names": {
-                "English": "Gelatinous Summoning Stone"
+                "English": "Gelatinous Summoning Stone",
+                "German": "Gallert-Herbeirufstein",
+                "Korean": "아교질 소환석",
+                "French": "Pierre d'invocation gélatineuse",
+                "Italian": "Pietra Gelatinosa Evocante",
+                "Spanish": "Piedra de invocación gelatinosa",
+                "TraditionalChinese": "Gelatinous Summoning Stone",
+                "Japanese": "ゼラチン サモン ストーン",
+                "Polish": "Galaretowaty Kamień Przyzywania",
+                "Russian": "Gelatinous Summoning Stone",
+                "BorkBorkBork": "Gelaeteenuoos Soommuneeng Stune-a"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -41566,7 +42533,17 @@
         "910": {
             "ModelID": 910,
             "Names": {
-                "English": "Hunters Ale"
+                "English": "Hunters Ale",
+                "Korean": "사냥꾼의 맥주",
+                "French": "Bière du chasseur",
+                "German": "Jägerbier",
+                "Italian": "Birra del Cacciatore",
+                "Spanish": "Cerveza para cazadores",
+                "TraditionalChinese": "獵人啤酒",
+                "Japanese": "ハンターの酒",
+                "Polish": "Piwo Myśliwego",
+                "Russian": "Hunter's Ale",
+                "BorkBorkBork": "Hoonter's Aele-a"
             },
             "ItemType": "Usable",
             "DropInfo": "Anniversary Celebration",
@@ -42964,7 +43941,17 @@
         "31156": {
             "ModelID": 31156,
             "Names": {
-                "English": "Zaishen Summoning Stone"
+                "English": "Zaishen Summoning Stone",
+                "BorkBorkBork": "Zaeeeshee Soommuneeng Stune-a",
+                "Russian": "Zaishen Summoning Stone",
+                "Polish": "Kamień Przyzywania Zaishen",
+                "Japanese": "ザイシン サモン ストーン",
+                "TraditionalChinese": "Zaishen Summoning Stone",
+                "Spanish": "Piedra de invocación de Zaishen",
+                "Italian": "Pietra di invocazione Zaishen",
+                "French": "Pierre d'invocation zaishen",
+                "Korean": "자이센 소환석",
+                "German": "Zaishen-Herbeirufstein"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -42982,7 +43969,17 @@
         "31144": {
             "ModelID": 31144,
             "Names": {
-                "English": "Zaishen Tonic"
+                "English": "Zaishen Tonic",
+                "BorkBorkBork": "Zaeeeshee Tuneec",
+                "Russian": "Zaishen Tonic",
+                "Polish": "Tonik Zaishen",
+                "Japanese": "ザイシン トニック",
+                "TraditionalChinese": "Zaishen Tonic",
+                "Spanish": "Tónico de Zaishen",
+                "Italian": "Tonico Zaishen",
+                "French": "Tonique zaishen",
+                "Korean": "자이센 물약",
+                "German": "Zaishen-Trank"
             },
             "ItemType": "Usable",
             "DropInfo": "No data added yet",
@@ -45051,11 +46048,23 @@
         "36677": {
             "ModelID": 36677,
             "Names": {
-                "English": "Envoy Scythe"
+                "English": "Envoy Scythe",
+                "German": "Gesandtensense",
+                "Korean": "특사의 사이드",
+                "French": "Faux d'émissaire",
+                "Italian": "Falce del Messaggero",
+                "Spanish": "Guadaña del enviado",
+                "TraditionalChinese": "Envoy Scythe",
+                "Japanese": "エンボイ サイズ",
+                "Polish": "Kosa emisariusza",
+                "Russian": "Envoy Scythe",
+                "BorkBorkBork": "Infuy Scyzee"
             },
             "ItemType": "Scythe",
             "DropInfo": "No data added yet",
-            "Attributes": [],
+            "Attributes": [
+                "ScytheMastery"
+            ],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
                     "Amount": 1,
@@ -47438,6 +48447,34 @@
             "SubCategory": "NightfallKey",
             "WikiScraped": true
         },
+        "28517": {
+            "ModelID": 28517,
+            "Names": {
+                "German": "Zaishen-Schlüssel",
+                "English": "Zaishen Key",
+                "Korean": "자이센 열쇠",
+                "French": "Clé zaishen",
+                "Italian": "Chiave Zaishen",
+                "Spanish": "Llave de Zaishen",
+                "TraditionalChinese": "戰承鑰匙",
+                "Japanese": "ザイシンのカギ",
+                "Polish": "Klucz Zaishen",
+                "Russian": "Zaishen Key",
+                "BorkBorkBork": "Zaeeeshee Key"
+            },
+            "ItemType": "Key",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Zaishen_Key",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "28571": {
             "ModelID": 28571,
             "Names": {
@@ -47542,6 +48579,34 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "22281": {
+            "ModelID": 22281,
+            "Names": {
+                "BorkBorkBork": "Perffect Saelfaege-a Keet",
+                "Russian": "Perfect Salvage Kit",
+                "Polish": "Doskonały Zestaw do Odzysku Surowców",
+                "Japanese": "完全分解キット",
+                "TraditionalChinese": "完美的拆解工具",
+                "Spanish": "Herramientas de reciclaje perfectas",
+                "Italian": "Attrezzatura da Riciclaggio Perfetta",
+                "French": "Nécessaire de recyclage parfait",
+                "Korean": "완전 분해 도구",
+                "English": "Perfect Salvage Kit",
+                "German": "Perfektes Wiederverwertungswerkzeug"
+            },
+            "ItemType": "Kit",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Perfect_Salvage_Kit",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "25881": {
             "ModelID": 25881,
             "Names": {
@@ -47569,6 +48634,62 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "37954": {
+            "ModelID": 37954,
+            "Names": {
+                "German": "Rune der Gürteltaschen-Lagerung",
+                "English": "Rune of Belt Holding",
+                "Korean": "주머니 벨트 확장 룬",
+                "French": "Rune de stockage pour giberne",
+                "Italian": "Runa del Marsupio",
+                "Spanish": "Runa de almacenamiento para cinturón",
+                "Japanese": "ホールディング ベルト ルーン",
+                "TraditionalChinese": "Rune of Belt Holding",
+                "Polish": "Runa Udźwigu",
+                "Russian": "Rune of Belt Holding",
+                "BorkBorkBork": "Roone-a ooff Belt Huldeeng"
+            },
+            "ItemType": "Kit",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Rune_of_Belt_Holding",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "2988": {
+            "ModelID": 2988,
+            "Names": {
+                "German": "Rune der Lagerung",
+                "English": "Rune of Holding",
+                "Korean": "가방 확장 룬",
+                "French": "Rune de stockage",
+                "Italian": "Runa dell'Inventario",
+                "Spanish": "Runa de almacenamiento",
+                "TraditionalChinese": "擴展袋子的符文",
+                "Japanese": "ホールディング ルーン",
+                "Polish": "Runa Pojemności",
+                "Russian": "Rune of Holding",
+                "BorkBorkBork": "Roone-a ooff Huldeeng"
+            },
+            "ItemType": "Kit",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Rune_of_Holding",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "2992": {
             "ModelID": 2992,
@@ -47643,6 +48764,34 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "37955": {
+            "ModelID": 37955,
+            "Names": {
+                "German": "Überlegene Rune der Lagerung",
+                "English": "Superior Rune of Holding",
+                "Korean": "고급 가방 확장 룬",
+                "French": "Rune de stockage supérieure",
+                "Italian": "Runa Suprema dell'Inventario",
+                "Spanish": "Runa superior de almacenamiento",
+                "Japanese": "スーパー ホールディング ルーン",
+                "TraditionalChinese": "Superior Rune of Holding",
+                "Polish": "Większa Runa Pojemności",
+                "Russian": "Superior Rune of Holding",
+                "BorkBorkBork": "Soopereeur Roone-a ooff Huldeeng"
+            },
+            "ItemType": "Kit",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Superior_Rune_of_Holding",
+            "InventoryIcon": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "5900": {
             "ModelID": 5900,

@@ -15,12 +15,13 @@ importlib.reload(loot_check)
 importlib.reload(messaging)
 
 MODULE_NAME = "LootEx"
-loot_handling_timer = ThrottledTimer(50)
 throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 data.Load()
 ui = gui.UI()
+
+loot_handler = loot_handling.LootHandler()
 
 # Load settings
 settings.current.settings_file_path = os.path.join(
@@ -45,6 +46,7 @@ def main():
     global inventory_frame_hash
     
     if not Routines.Checks.Map.MapValid():
+        loot_handler.reset()
         return           
 
     if messaging.HandleMessages():
@@ -76,15 +78,9 @@ def main():
         return
 
 
-    data_collector.instance.run_v2()                               
+    data_collector.instance.run_v2()  
+    loot_handler.Run()                            
                              
-    if (settings.current.automatic_inventory_handling):
-        if not loot_handling_timer.IsExpired():
-            return
-
-        loot_handling_timer.Reset()
-        loot_handling.Run()
-
 
 # if __name__ == "__main__":
 #     main()

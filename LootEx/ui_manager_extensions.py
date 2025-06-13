@@ -1,9 +1,7 @@
-import PyImGui
 import PyUIManager
 from LootEx import enum
-from LootEx.utility import Util
 from Py4GWCoreLib import UIManager
-from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager, ConsoleLog
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 
 
 class UIManagerExtensions:
@@ -21,6 +19,11 @@ class UIManagerExtensions:
         return isinstance(frame_id, int) and frame_id > 0
 
     @staticmethod
+    def IsUpgradeWindowOpen() -> bool:
+        upgrade_window_frame_id = UIManager.GetFrameIDByHash(2612519688)
+        return UIManagerExtensions.IsElementVisible(upgrade_window_frame_id)
+    
+    @staticmethod
     def IsMerchantWindowOpen() -> bool:
         merchant_window_frame_id = UIManager.GetFrameIDByHash(3613855137)
         # merchant_window_frame_inner_id = UIManager.GetChildFrameID(3613855137, [
@@ -31,14 +34,14 @@ class UIManagerExtensions:
         return UIManagerExtensions.IsElementVisible(merchant_window_frame_id)
 
     @staticmethod
-    def IsConfirmMaterialsWindowOpen() -> tuple[bool, int, int]:
-        # salvage_lower_kit_id = UIManager.GetChildFrameID(140452905, [6,98])
-        salvage_lower_kit_yes_button_id = UIManager.GetChildFrameID(140452905, [
-                                                                    6, 98, 6])
-        salvage_lower_kit_no_button_id = UIManager.GetChildFrameID(140452905, [
-                                                                   6, 98, 4])
+    def IsConfirmMaterialsWindowOpen() -> bool:
+        salvage_lower_kit_id = UIManager.GetChildFrameID(140452905, [6,98])
+        # salvage_lower_kit_yes_button_id = UIManager.GetChildFrameID(140452905, [
+        #                                                             6, 98, 6])
+        # salvage_lower_kit_no_button_id = UIManager.GetChildFrameID(140452905, [
+        #                                                            6, 98, 4])
 
-        return UIManagerExtensions.IsElementVisible(salvage_lower_kit_yes_button_id), salvage_lower_kit_yes_button_id, salvage_lower_kit_no_button_id
+        return UIManagerExtensions.IsElementVisible(salvage_lower_kit_id)
 
     @staticmethod
     def ConfirmLesserSalvage():
@@ -46,6 +49,12 @@ class UIManagerExtensions:
                                                                     6, 98, 6])
         UIManager.FrameClick(salvage_lower_kit_yes_button_id)
 
+    @staticmethod
+    def CancelLesserSalvage():
+        salvage_lower_kit_no_button_id = UIManager.GetChildFrameID(140452905, [
+                                                                   6, 98, 4])
+        UIManager.FrameClick(salvage_lower_kit_no_button_id)
+    
     @staticmethod
     def IsSalvageWindowOpen() -> bool:
         salvage_window_frame_id = UIManager.GetFrameIDByHash(684387150)

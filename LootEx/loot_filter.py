@@ -32,7 +32,7 @@ class LootFilter:
         if self.exclude_rare_weapons and (item.data is None or item.data.category == ItemCategory.RareWeapon):
             return False
         
-        if self.exclude_low_req and utility.Util.is_low_requirement_item(item.item_id):
+        if self.exclude_low_req and utility.Util.is_low_requirement_item(item.id):
             return False
 
         if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_SMART or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:

@@ -104,6 +104,8 @@ class UI:
         return cls._instance
     
     def __init__(self):       
+        # self.cached_item = cache.Cached_Item(1401) 
+        
         self.selected_loot_items: list[SelectableItem] = []
         
         self.item_search: str = ""
@@ -198,7 +200,8 @@ class UI:
         self.item_actions = [
             enum.ItemAction.STASH,
             enum.ItemAction.SELL_TO_MERCHANT,
-            enum.ItemAction.SALVAGE,
+            enum.ItemAction.SALVAGE_SMART,
+            enum.ItemAction.SALVAGE_COMMON_MATERIALS,
             enum.ItemAction.SALVAGE_RARE_MATERIALS,
             enum.ItemAction.DESTROY,
         ]
@@ -285,7 +288,7 @@ class UI:
                     # messaging.SendOpenXunlai(imgui_io.key_shift)
                     pass
                 else:
-                    loot_handling.CondenseStacks(Bag.Storage_1, Bag.Storage_14)
+                    loot_handling.LootHandler().CondenseStacks(Bag.Storage_1, Bag.Storage_14)
 
             ImGui.show_tooltip("Condense items to full stacks" +
                             "\nHold Ctrl to send message to all accounts" +
@@ -340,15 +343,15 @@ class UI:
 
             if imgui_io.key_ctrl:
                 if settings.current.automatic_inventory_handling:
-                    messaging.SendStopLootHandling(imgui_io.key_shift)
-                    settings.current.save()
+                    messaging.SendStop(imgui_io.key_shift)
                 else:
-                    messaging.SendStartLootHandling(imgui_io.key_shift)
-                    settings.current.save()
+                    messaging.SendStart(imgui_io.key_shift)
 
             else:
-                settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
-                settings.current.save()
+                if settings.current.automatic_inventory_handling:
+                    loot_handling.LootHandler().Stop()
+                else:
+                    loot_handling.LootHandler().Start()                    
 
         # ImGui.show_tooltip(
         #     ("Disable" if settings.current.automatic_inventory_handling else "Enable") +
@@ -517,7 +520,18 @@ class UI:
 
                         clipboard_text += "```"
                         PyImGui.set_clipboard_text(clipboard_text)
-                
+                        
+                        loot_handling.LootHandler().processing = True
+                        # ConsoleLog(
+                        #     "LootEx",
+                        #     f"{self.cached_item.model_name if self.cached_item.model_name else 'No Item'} exists {self.cached_item.ExistsInInventory() if self.cached_item else 'No Item Exists'}",
+                        #     Console.MessageType.Info,
+                        # )
+                        
+                        # salvage_kit = Inventory.GetFirstSalvageKit(True)
+                        # if salvage_kit and self.cached_item and self.cached_item.ExistsInInventory():
+                        #     Inventory.SalvageItem(self.cached_item.id, salvage_kit)
+                        
 
                 PyImGui.end_child()
             
@@ -552,88 +566,89 @@ class UI:
                     item_ids, _ = utility.Util.GetZeroFilledBags(bag_range[0], bag_range[1])
                     PyImGui.separator()
                     
-                    inventory_width = self.inventory_coords.right - self.inventory_coords.left
-                    columns = math.floor((inventory_width - 24) // 37) if self.bag_index == 0 else 5
-                    rows = math.ceil(len(item_ids) / columns)
-                    
-                    if PyImGui.is_rect_visible(0, 20):
-                        if PyImGui.begin_table("Inventory Debug Table", columns, PyImGui.TableFlags.NoBordersInBody, 0, 0):
-                            remaining_size = PyImGui.get_content_region_avail()
-                            button_width = math.floor((remaining_size[0] - 50) / columns)
-                            button_height = math.floor((child_size[1] - 75) / rows)
-                            
-                            for i, item_id in enumerate(item_ids):    
-                                model_id = GLOBAL_CACHE.Item.GetModelID(item_id) if item_id > 0 else -1   
-                                item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]) if item_id > 0 else ItemType.Unknown
-                                                         
-                                item = data.Items.get_item(item_type, model_id)
+                    if item_ids: 
+                        inventory_width = self.inventory_coords.right - self.inventory_coords.left
+                        columns = math.floor((inventory_width - 24) // 37) if self.bag_index == 0 else 5
+                        rows = math.ceil(len(item_ids) / columns)
+                        
+                        if PyImGui.is_rect_visible(0, 20):
+                            if PyImGui.begin_table("Inventory Debug Table", columns, PyImGui.TableFlags.NoBordersInBody, 0, 0):
+                                remaining_size = PyImGui.get_content_region_avail()
+                                button_width = math.floor((remaining_size[0] - 50) / columns)
+                                button_height = math.floor((child_size[1] - 75) / rows)
                                 
-                                PyImGui.table_next_column()                                
+                                for i, item_id in enumerate(item_ids):    
+                                    model_id = GLOBAL_CACHE.Item.GetModelID(item_id) if item_id > 0 else -1   
+                                    item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]) if item_id > 0 else ItemType.Unknown
+                                                            
+                                    item = data.Items.get_item(item_type, model_id)
                                     
-                                if PyImGui.is_rect_visible(button_width, button_height):
-                                
-                                    if item and not item.wiki_scraped:
-                                        PyImGui.push_style_color(
-                                            PyImGui.ImGuiCol.ChildBg,
-                                            Utils.ColorToTuple(Utils.RGBToColor(255, 0, 0, 125))
-                                        )
-                                    
-                                    collected, missing = self.data_collector.is_item_collected(item_id) if item_id != 0 else (True, "")
-                                    mods_missing, mod_missing = self.data_collector.has_uncollected_mods(item_id) if item_id != 0 else (False, "")
-                                    
-                                    complete = (collected and not mods_missing)
-                                    if not complete:
-                                        PyImGui.push_style_color(
-                                            PyImGui.ImGuiCol.ChildBg,
-                                            Utils.ColorToTuple(Utils.RGBToColor(255, 255, 0, 125))
-                                        )
-                                    
-                                    if PyImGui.begin_child(str(i), (button_width, button_height), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                                    
-                                        PyImGui.text_scaled(str(item_id), (1,1,1,0.75), 0.7)
-                                        PyImGui.text_scaled(str(model_id), (1,1,1,1), 0.8)
+                                    PyImGui.table_next_column()                                
                                         
-                                        PyImGui.text_wrapped(item.name if item else "")
-                                        
-                                    if item and not item.wiki_scraped:
-                                        PyImGui.pop_style_color(1)
-                                        
-                                    if not complete:
-                                        PyImGui.pop_style_color(1)
+                                    if PyImGui.is_rect_visible(button_width, button_height):
                                     
-                                    PyImGui.end_child()
-                                    
-                                    if PyImGui.is_item_clicked(0) and item and not item.wiki_scraped:
-                                        data.Reload()                  
-                                        item = data.Items.get_item(item_type, model_id)
-                                        
                                         if item and not item.wiki_scraped:
-                                            wiki_scraper.WikiScraper.scrape_multiple_entries([item])
-                                    
+                                            PyImGui.push_style_color(
+                                                PyImGui.ImGuiCol.ChildBg,
+                                                Utils.ColorToTuple(Utils.RGBToColor(255, 0, 0, 125))
+                                            )
                                         
-                                    if item:
-                                        if PyImGui.is_item_hovered():
-                                            PyImGui.set_next_window_size(300, 0)
+                                        collected, missing = self.data_collector.is_item_collected(item_id) if item_id != 0 else (True, "")
+                                        mods_missing, mod_missing = self.data_collector.has_uncollected_mods(item_id) if item_id != 0 else (False, "")
+                                        
+                                        complete = (collected and not mods_missing)
+                                        if not complete:
+                                            PyImGui.push_style_color(
+                                                PyImGui.ImGuiCol.ChildBg,
+                                                Utils.ColorToTuple(Utils.RGBToColor(255, 255, 0, 125))
+                                            )
+                                        
+                                        if PyImGui.begin_child(str(i), (button_width, button_height), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                                    
+                                            PyImGui.text_scaled(str(item_id), (1,1,1,0.75), 0.7)
+                                            PyImGui.text_scaled(str(model_id), (1,1,1,1), 0.8)
                                             
-                                            PyImGui.begin_tooltip()
-                                            self.draw_item_header(item)
+                                            PyImGui.text_wrapped(item.name if item else "")
                                             
-                                            if not collected:
-                                                PyImGui.text_colored(missing, (255, 0, 0, 255))
-                                                
-                                            if mods_missing:
-                                                PyImGui.text_colored(mod_missing, (255, 0, 0, 255))
+                                        if item and not item.wiki_scraped:
+                                            PyImGui.pop_style_color(1)
                                             
-                                            if not item.wiki_scraped:
-                                                PyImGui.text_colored("Wiki data not scraped yet", (255, 0, 0, 255))
+                                        if not complete:
+                                            PyImGui.pop_style_color(1)
+                                        
+                                        PyImGui.end_child()
+                                        
+                                        if PyImGui.is_item_clicked(0) and item and not item.wiki_scraped:
+                                            data.Reload()                  
+                                            item = data.Items.get_item(item_type, model_id)
+                                            
+                                            if item and not item.wiki_scraped:
+                                                wiki_scraper.WikiScraper.scrape_multiple_entries([item])
+                                        
+                                            
+                                        if item:
+                                            if PyImGui.is_item_hovered():
+                                                PyImGui.set_next_window_size(300, 0)
                                                 
+                                                PyImGui.begin_tooltip()
+                                                self.draw_item_header(item)
                                                 
-                                            PyImGui.end_tooltip()
-                                        pass
-                                else:
-                                    PyImGui.dummy(int(button_width), int(button_height))
-                                    
-                        PyImGui.end_table()
-            
+                                                if not collected:
+                                                    PyImGui.text_colored(missing, (255, 0, 0, 255))
+                                                    
+                                                if mods_missing:
+                                                    PyImGui.text_colored(mod_missing, (255, 0, 0, 255))
+                                                
+                                                if not item.wiki_scraped:
+                                                    PyImGui.text_colored("Wiki data not scraped yet", (255, 0, 0, 255))
+                                                    
+                                                    
+                                                PyImGui.end_tooltip()
+                                            pass
+                                    else:
+                                        PyImGui.dummy(int(button_width), int(button_height))
+                                        
+                            PyImGui.end_table()
+                
             
             PyImGui.end_child()
             
@@ -750,6 +765,8 @@ class UI:
                 )
                 settings.current.profile_combo = selected_index
                 settings.current.loot_profile = settings.current.loot_profiles[selected_index]
+                
+                loot_handling.LootHandler().SetPollingInterval(settings.current.loot_profile.polling_interval)
                 settings.current.save()
 
             PyImGui.same_line(0, 5)
@@ -990,13 +1007,23 @@ class UI:
             tab_size = PyImGui.get_content_region_avail()
             dye_section_width = 250
 
-            if PyImGui.begin_child("GeneralSettingsChild", (tab_size[0] - dye_section_width - 5, tab_size[1]), True, PyImGui.WindowFlags.NoFlag):
-                PyImGui.text("Merchant Settings")
-                PyImGui.separator()
-
+            if PyImGui.begin_child("GeneralSettingsChild", (tab_size[0] - dye_section_width - 5, tab_size[1]), True, PyImGui.WindowFlags.NoFlag) and settings.current.loot_profile:
                 subtab_size = PyImGui.get_content_region_avail()
 
-                if PyImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 150), True, PyImGui.WindowFlags.NoBackground) and settings.current.loot_profile:
+                PyImGui.text("General")
+                PyImGui.separator()
+                if PyImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 50), True, PyImGui.WindowFlags.NoBackground):
+                    polling_interval = PyImGui.slider_float("Polling Interval (ms)", settings.current.loot_profile.polling_interval, 0.1, 5)
+                    
+                    if polling_interval != settings.current.loot_profile.polling_interval:
+                        settings.current.loot_profile.polling_interval = polling_interval
+                        loot_handling.LootHandler().SetPollingInterval(polling_interval)
+                        settings.current.loot_profile.save()
+                PyImGui.end_child()
+                
+                PyImGui.text("Merchant Settings")
+                PyImGui.separator()
+                if PyImGui.begin_child("GeneralSettings_Merchant", (subtab_size[0], 150), True, PyImGui.WindowFlags.NoBackground) and settings.current.loot_profile:
                     self._update_merchant_setting(
                         "Identification Kits", settings.current.loot_profile.identification_kits)
                     self._update_merchant_setting(
@@ -1008,10 +1035,10 @@ class UI:
 
                 PyImGui.end_child()
                 
-                PyImGui.text("Utility Settings")
+                PyImGui.text("Nick Settings")
                 PyImGui.separator()
                 
-                if PyImGui.begin_child("GeneralSettingsChildInner2", (subtab_size[0], 0), True, PyImGui.WindowFlags.NoBackground) and settings.current.loot_profile:
+                if PyImGui.begin_child("GeneralSettings_Nick", (subtab_size[0], 0), True, PyImGui.WindowFlags.NoBackground) and settings.current.loot_profile:
                     
                     PyImGui.push_item_width(150)
                     weeks = PyImGui.slider_int("Nick Weeks to Keep",
@@ -1563,7 +1590,7 @@ class UI:
                                         # Get the action names, replace underscores with spaces, split at space, all lowercase and first letter to upper case
 
                                         action = PyImGui.combo("Action", self.item_actions.index(
-                                            condition.action), self.item_action_names)
+                                            condition.action) if condition.action in self.item_actions else 0, self.item_action_names)
 
                                         if self.item_actions[action] != condition.action:
                                             condition.action = self.item_actions[action]

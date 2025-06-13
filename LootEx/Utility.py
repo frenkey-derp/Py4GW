@@ -2,6 +2,8 @@ from datetime import timedelta
 import re
 from typing import List, Optional
 
+from PyItem import DyeInfo
+
 from LootEx import data, item_configuration, enum
 from LootEx import models
 from LootEx.enum import ItemAction, ItemCategory, ModifierIdentifier, ModifierValueArg
@@ -96,12 +98,12 @@ class Util:
 
         if Util.IsArmorType(item_type) or is_rune:
             rune_mods = [
-                rune for rune in data.Runes.values() if rune.is_item_modifier(modifiers)]
+                rune for rune in data.Runes.values() if rune.is_in_item_modifier(modifiers)]
             mods.extend(rune_mods)
 
         elif Util.IsWeaponType(item_type) or item_type == ItemType.Rune_Mod:
             weapon_mods = [
-                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_item_modifier(modifiers, item_type, tolerance)]
+                weapon_mod for weapon_mod in data.Weapon_Mods.values() if weapon_mod.is_in_item_modifier(modifiers, item_type, tolerance)]
             mods.extend(weapon_mods)
 
         else:
@@ -110,28 +112,7 @@ class Util:
         mods.sort(key=lambda x: x.mod_type, reverse=True)
 
         return mods, rune_mods, weapon_mods
-
-    @staticmethod
-    def GetRuneFromRune_Mod(item_id: int) -> Optional[Rune]:
-        """
-        Retrieves the weapon mod associated with a specific item ID if that item is a Rune or Mod.
-        Args:
-            item_id (int): The unique identifier of the item.
-        Returns:
-            Optional[WeaponMod]: The weapon mod associated with the item ID, 
-            or None if no matching mod is found.
-        """
-
-        item_type = Item.GetItemType(item_id)
-
-        if (item_type == ItemType.Rune_Mod):
-            for mod in Item.Customization.Modifiers.GetModifiers(item_id):
-                matching_mod = next(
-                    (weapon_mod for weapon_mod in data.Runes.values() if weapon_mod.is_item_modifier(mod)), None)
-                return matching_mod
-        else:
-            return None
-
+    
     @staticmethod
     def GetItemRequirements(item_id: int) -> tuple[Attribute, int]:
         """
@@ -679,6 +660,23 @@ class Util:
                 return color if color is not None else DyeColor.NoColor
 
         return DyeColor.NoColor
+    
+    @staticmethod
+    def get_color_from_info(dye_info: DyeInfo) -> DyeColor:
+        """
+        Get the dye color associated with the dye info.
+        Args:
+            dye_info (DyeInfo): The dye information.
+        Returns:
+            DyeColor: The dye color of the item.
+        """
+
+        if dye_info is not None:
+            color_id = dye_info.dye1.ToInt() if dye_info.dye1 else -1
+            color = DyeColor(color_id) if color_id != -1 else None
+            return color if color is not None else DyeColor.NoColor
+
+        return DyeColor.NoColor
 
     @staticmethod
     def GetZeroFilledBags(start_bag: Py4GWCoreLib.Bag, end_bag: Py4GWCoreLib.Bag) -> tuple[list[int], dict[Py4GWCoreLib.Bag, int]]:
@@ -825,7 +823,7 @@ class Util:
             
             good_suffix_mod = any(
                 mod.identifier in desired_inherent_mods.get(item_type, [])
-                for mod in weapon_mods if mod.mod_type == enum.ModType.Suffix and mod.is_item_modifier(modifiers=modifiers, item_type=item_type, tolerance=5)
+                for mod in weapon_mods if mod.mod_type == enum.ModType.Suffix and mod.is_in_item_modifier(modifiers=modifiers, item_type=item_type, tolerance=5)
             )
 
             customizeable_shield = item_type in sc_requirements and \

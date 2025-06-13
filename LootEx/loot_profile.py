@@ -56,6 +56,8 @@ class LootProfile:
         self.sell_threshold: int = 200
         self.nick_weeks_to_keep: int = 0
         self.nick_items_to_keep: int = 0
+        self.changed : bool = False
+        self.polling_interval : float = 1  # Default polling interval in seconds
 
         # Collection of LootFilters
         self.filters: list[loot_filter.LootFilter] = []
@@ -67,6 +69,8 @@ class LootProfile:
 
     def save(self):
         """Save the profile as a JSON file."""
+        self.changed = True
+        
         profile_dict = {
             "name": self.name,
             "dyes": {dye.name: value for dye, value in self.dyes.items()},
@@ -78,6 +82,7 @@ class LootProfile:
             "nick_weeks_to_keep": self.nick_weeks_to_keep,
             "nick_items_to_keep": self.nick_items_to_keep,
             "filters": [LootFilter.to_dict(filter) for filter in self.filters],
+            "polling_interval": self.polling_interval,
             "runes": self.runes,
             "weapon_mods": {
                 mod_name: {weapon_type: is_active for weapon_type,
@@ -114,6 +119,7 @@ class LootProfile:
             with open(file_path, 'r') as file:
                 profile_dict = json.load(file)
                 self.name = profile_dict.get("name", self.name)
+                self.polling_interval = profile_dict.get("polling_interval", self.polling_interval)
                 self.nick_weeks_to_keep = profile_dict.get(
                     "nick_weeks_to_keep", self.nick_weeks_to_keep)
                 self.nick_items_to_keep = profile_dict.get(

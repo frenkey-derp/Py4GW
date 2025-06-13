@@ -1,5 +1,6 @@
 import datetime
 from typing import Optional
+from LootEx import loot_handling
 from LootEx.loot_filter import LootFilter
 from LootEx.loot_profile import LootProfile
 from Py4GWCoreLib import Player, UIManager
@@ -54,6 +55,8 @@ class Settings:
         self.collect_runes: bool = False
         self.collect_items: bool = False
         self.last_xunlai_check : datetime.datetime = datetime.datetime.min
+        
+        self.changed = False
 
     def set_language(self, lang = ServerLanguage.English):
         self.language = lang
@@ -137,6 +140,7 @@ class Settings:
                 self.automatic_inventory_handling if self.loot_profile else False
             )
             self.loot_profile = self.loot_profiles[0] if self.loot_profile is None else self.loot_profile
+            loot_handling.LootHandler().SetPollingInterval(self.loot_profile.polling_interval)
 
         except FileNotFoundError:
             ConsoleLog(

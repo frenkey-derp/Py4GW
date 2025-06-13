@@ -70,19 +70,19 @@ def MergeWhenCollectionPaused():
             
     return True
 
-def SendStartLootHandling(exclude_self: bool = False):    
+def SendStart(exclude_self: bool = False):    
     for acc in sharedMemoryManager.GetAllAccountData():
         if exclude_self and acc.AccountEmail == current_account:
             continue
     
-        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartLootHandling, 0, 0))
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Start, 0, 0))
 
-def SendStopLootHandling(exclude_self: bool = False):    
+def SendStop(exclude_self: bool = False):    
     for acc in sharedMemoryManager.GetAllAccountData():
         if exclude_self and acc.AccountEmail == current_account:
             continue
     
-        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StopLootHandling, 0, 0))
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Stop, 0, 0))
 
 def SendShowLootExWindow(exclude_self: bool = False):
     for acc in sharedMemoryManager.GetAllAccountData():
@@ -183,12 +183,12 @@ def HandleReceivedMessages():
                             
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
                         
-                        case enum.MessageActions.StartLootHandling:
-                            loot_handling.StartLootHandling()
+                        case enum.MessageActions.Start:
+                            loot_handling.LootHandler().Start()
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
                             
-                        case enum.MessageActions.StopLootHandling:
-                            loot_handling.StopLootHandling()
+                        case enum.MessageActions.Stop:
+                            loot_handling.LootHandler().Stop()
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
                                 
                         case enum.MessageActions.ReloadData:

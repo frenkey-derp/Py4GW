@@ -143,8 +143,21 @@ class DataCollector:
 
         return not GLOBAL_CACHE.Item.Usage.IsIdentified(item_id) and (utility.Util.IsWeaponType(item_type) or utility.Util.IsArmorType(item_type)) and (rarity != Rarity.Green and rarity != Rarity.White)
 
+    def get_upgrade_ables(self, item_id: int) -> tuple[bool, bool, bool]:
+        return self.get(item_id, "upgrade_ables", lambda item_id: self.__get_upgrade_ables(item_id))
+        
+    def __get_upgrade_ables(self, item_id: int) -> tuple[bool, bool, bool]:
+        inscriptions = GLOBAL_CACHE.Item.Customization.IsInscribable(item_id) and not utility.Util.is_inscription_model_item(self.get_model_id(item_id))
+        prefixes = GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id)
+        suffixes = GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item_id)
+        return inscriptions, prefixes, suffixes
+    
     def has_uncollected_mods(self, item_id: int) -> tuple[bool, str]:
+        if not item_id or item_id <= 0:
+            return False, "Invalid item ID"
+        
         mods, _, _ = self.get_mods(item_id)
+        inherent, prefixes, suffixes = self.get_upgrade_ables(item_id)  
         
         if len(mods) == 0:
             return False, "No mods found for item"
@@ -154,30 +167,27 @@ class DataCollector:
                 continue
             
             if mod.mod_type == enum.ModType.Inherent:
-                if not GLOBAL_CACHE.Item.Customization.IsInscribable(item_id) and not utility.Util.is_inscription_model_item(self.get_model_id(item_id)):
+                if not inherent:
                     continue
                 
             if mod.mod_type == enum.ModType.Prefix:
-                if not GLOBAL_CACHE.Item.Customization.IsPrefixUpgradable(item_id):
+                if not prefixes:
                     continue
                 
             if mod.mod_type == enum.ModType.Suffix:
-                if not GLOBAL_CACHE.Item.Customization.IsSuffixUpgradable(item_id):
+                if not suffixes:
                     continue
 
-            if mod.names is None or len(mod.names) == 0:
-                return True, "Mod names are empty"        
+            missing_language = mod.has_missing_names()
+            if missing_language:
+                return True, f"Missing {missing_language.name} mod name for {mod.names.get(ServerLanguage.English, mod.name)}"
             
-            for server_language in ServerLanguage:
-                if server_language is ServerLanguage.Unknown:
-                    continue
-                
-                if server_language not in mod.names or mod.names[server_language] is None:
-                    return True, f"Missing {server_language.name} mod name for {mod.names.get(ServerLanguage.English, mod.name)}"
-                
         return False, "All mods are collected or unnecessary to collect"
     
     def is_item_collected(self, item_id: int) -> tuple[bool, str]:
+        if not item_id or item_id <= 0:
+            return False, "Invalid item ID"
+        
         if item_id not in self.cache:
             self.cache[item_id] = {"collected": False}
 
