@@ -349,6 +349,7 @@ class Item():
     profession : Optional[Profession] = None
     contains_amount: bool = False    
     inventory_icon: Optional[str] = None
+    inventory_icon_url: Optional[str] = None
     category: enum.ItemCategory = enum.ItemCategory.None_
     sub_category: enum.ItemSubCategory = enum.ItemSubCategory.None_    
     wiki_scraped: bool = False
@@ -471,6 +472,7 @@ class Item():
             "RareSalvage": (self.rare_salvage or SalvageInfoCollection()).to_dict(),
             "WikiURL": self.wiki_url or get_wiki_url(),
             "InventoryIcon": self.inventory_icon,
+            "InventoryIconURL": self.inventory_icon_url,
             "NickIndex": self.nick_index,
             "Profession": self.profession.name if self.profession and self.profession != Profession._None else None,
             "Category": self.category.name if self.category else None,
@@ -487,6 +489,7 @@ class Item():
             item_type=ItemType[json["ItemType"]],
             drop_info=json["DropInfo"],
             inventory_icon=json.get("InventoryIcon", None),
+            inventory_icon_url=json.get("InventoryIconURL", None),
             attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
             wiki_url=json["WikiURL"],
             common_salvage=SalvageInfoCollection.from_dict(json.get("CommonSalvage", {})),
@@ -536,6 +539,7 @@ class Material(Item):
             vendor_updated=datetime.fromisoformat(json["VendorUpdated"]) if "VendorUpdated" in json else datetime.min,
             material_type=material_type,
             inventory_icon=item.inventory_icon,
+            inventory_icon_url=item.inventory_icon_url,
             category=item.category,
             sub_category=item.sub_category,
             wiki_scraped= item.wiki_scraped,
@@ -717,7 +721,6 @@ class ItemMod():
 
         return description
     
-
 @dataclass
 class Rune(ItemMod):
     _rune_identifier_lookup: dict[str, str] = field(default_factory=dict)
@@ -726,6 +729,8 @@ class Rune(ItemMod):
     vendor_value: int = 0
     profession: Profession = Profession._None
     rarity: Rarity = Rarity.White
+    inventory_icon: Optional[str] = None
+    inventory_icon_url: Optional[str] = None
         
     def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
@@ -835,6 +840,8 @@ class Rune(ItemMod):
             'UpgradeExists': self.upgrade_exists,
             'VendorUpdated': self.vendor_updated.isoformat() if self.vendor_updated else None,
             'VendorValue': self.vendor_value,
+            'InventoryIcon': self.inventory_icon,
+            'InventoryIconURL': self.inventory_icon_url,
             'Modifiers': [
                 {
                     'Identifier': modifier.identifier,
@@ -859,6 +866,8 @@ class Rune(ItemMod):
             upgrade_exists=json.get("UpgradeExists", True),
             vendor_updated=datetime.fromisoformat(json["VendorUpdated"]) if "VendorUpdated" in json else datetime.min,
             vendor_value=json.get("VendorValue", 0),
+            inventory_icon=json.get("InventoryIcon", None),
+            inventory_icon_url=json.get("InventoryIconURL", None),
             modifiers=[
                 ModifierInfo(
                     identifier=modifier["Identifier"],

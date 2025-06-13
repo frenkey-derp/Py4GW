@@ -35,24 +35,24 @@ class UIManagerExtensions:
 
     @staticmethod
     def IsConfirmMaterialsWindowOpen() -> bool:
-        salvage_lower_kit_id = UIManager.GetChildFrameID(140452905, [6,98])
+        salvage_lower_kit_id = UIManager.GetChildFrameID(140452905, [6,100])
         # salvage_lower_kit_yes_button_id = UIManager.GetChildFrameID(140452905, [
-        #                                                             6, 98, 6])
+        #                                                             6, 100, 6])
         # salvage_lower_kit_no_button_id = UIManager.GetChildFrameID(140452905, [
-        #                                                            6, 98, 4])
+        #                                                            6, 100, 4])
 
         return UIManagerExtensions.IsElementVisible(salvage_lower_kit_id)
 
     @staticmethod
     def ConfirmLesserSalvage():
         salvage_lower_kit_yes_button_id = UIManager.GetChildFrameID(140452905, [
-                                                                    6, 98, 6])
+                                                                    6, 100, 6])
         UIManager.FrameClick(salvage_lower_kit_yes_button_id)
 
     @staticmethod
     def CancelLesserSalvage():
         salvage_lower_kit_no_button_id = UIManager.GetChildFrameID(140452905, [
-                                                                   6, 98, 4])
+                                                                   6, 100, 4])
         UIManager.FrameClick(salvage_lower_kit_no_button_id)
     
     @staticmethod

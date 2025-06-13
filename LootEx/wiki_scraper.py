@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 
@@ -181,7 +182,7 @@ class WikiScraper:
                             # Extract the image URL
                             img = td.find('img')
                             if img and 'src' in img.attrs:
-                                item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
+                                item.inventory_icon_url = f"https://wiki.guildwars.com{img['src']}"
                                 scraped = True
                 
              
@@ -200,32 +201,85 @@ class WikiScraper:
 
                         # Extract and normalize the src
                         img = images[image_index]
-                        item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
+                        item.inventory_icon_url = f"https://wiki.guildwars.com{img['src']}"
                         
                     elif "insignia" in item.wiki_url.lower():  
                         # Extract the image URL
                         img = td.find('img')
                         if img and 'src' in img.attrs:
-                            item.inventory_icon = f"https://wiki.guildwars.com{img['src']}"
+                            item.inventory_icon_url = f"https://wiki.guildwars.com{img['src']}"
                             scraped = True
                             
                         pass            
 
-            if not item.inventory_icon or item.inventory_icon == "":
+            if not item.inventory_icon_url or item.inventory_icon_url == "":
                 # Try to find the first image in the table as a fallback
 
                 first_image = info_table.find('img')
 
                 if first_image and 'src' in first_image.attrs:
-                    item.inventory_icon = f"https://wiki.guildwars.com{first_image['src']}"      
+                    item.inventory_icon_url = f"https://wiki.guildwars.com{first_image['src']}"      
             
-            if item.inventory_icon and "Disambig_icon" in item.inventory_icon:
+            if item.inventory_icon_url and "Disambig_icon" in item.inventory_icon_url:
                 # If the icon is a disambiguation icon, set it to None
-                item.inventory_icon = None
+                item.inventory_icon_url = None
             
             if scraped and not item.wiki_scraped:
                 item.wiki_scraped = True
+    
+    @staticmethod            
+    def get_image_name(url: str) -> str:
+        last_part = url.rsplit('/', 1)[-1]
+        #Remove all invalid characters from the filename
+        # filename = re.sub(r'[<>:"/\\|?*]', '', last_part)
+        return last_part.replace("File:", "")
 
+    @staticmethod
+    def download_image(item: models.Item) -> bool:       
+        """
+        Downloads an image from the given URL and saves it to the item's inventory_icon_url path.
+        """
+        
+        if not item.inventory_icon_url:
+            ConsoleLog("LootEx", f"No URL provided for {item.name}. Cannot download image.")
+            return False
+        filename = WikiScraper.get_image_name(item.inventory_icon_url)
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        data_directory = os.path.join(file_directory, "data")
+        path = os.path.join(data_directory, "textures", filename)
+        if not os.path.exists(data_directory):
+            os.makedirs(data_directory)
+            
+        if not os.path.exists(os.path.join(data_directory, "textures")):
+            os.makedirs(os.path.join(data_directory, "textures"))
+        
+        if not filename:
+            ConsoleLog("LootEx", f"Invalid filename for {item.name}. Cannot download image.")
+            return False    
+        
+        if os.path.exists(path):
+            item.inventory_icon = filename
+            data.SaveItems(True)
+            return True
+        
+        try:
+            response = requests.get(item.inventory_icon_url)
+            response.raise_for_status()  # Raise an error for bad responses                               
+            
+            # Save the image to the item's inventory_icon_url path
+            with open(path, 'wb') as file:
+                file.write(response.content)
+                item.inventory_icon = filename
+                
+                
+            ConsoleLog("LootEx", f"Downloaded image for {item.name} from {item.inventory_icon_url} to {path}.")
+            data.SaveItems(True)
+            return True
+        
+        except requests.RequestException as e:
+            ConsoleLog("LootEx", f"Failed to download image for {item.name} from {item.inventory_icon_url}: {e}")            
+        return False
+    
     @staticmethod
     def scrape_multiple_entries(items: list[models.Item]):
         total = len(items)
@@ -242,7 +296,10 @@ class WikiScraper:
                 ConsoleLog("LootEx", f"Scraping {entry.name} from {entry.wiki_url} | ({i} / {total})...")                
                 # Scrape the item information from the wiki
                 WikiScraper.scrape_info_from_wiki(entry)
-                data.SaveItems(True)
+                
+                if not entry.inventory_icon_url or not WikiScraper.download_image(entry):
+                    data.SaveItems(True)
+                    
                 
                 if i >= total:
                     ConsoleLog("LootEx", "Finished scraping all entries.")
@@ -263,7 +320,11 @@ class WikiScraper:
     @staticmethod
     def scrape_missing_entries():                
         items_with_missing_info = [
-            item for subdict in data.Items.values() for item in subdict.values()
+            item for subdict in data.Items.values() for item in subdict.values() if not item.wiki_scraped
         ]
+                      
+        # items_with_missing_info = [
+        #     item for subdict in data.Items.values() for item in subdict.values() if item.inventory_icon_url and not item.inventory_icon
+        # ]
         
         WikiScraper.scrape_multiple_entries(items_with_missing_info)

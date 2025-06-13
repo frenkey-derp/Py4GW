@@ -105,6 +105,8 @@ class UI:
     
     def __init__(self):       
         # self.cached_item = cache.Cached_Item(1401) 
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        self.texture_path = os.path.join(file_directory, "data", "textures")
         
         self.selected_loot_items: list[SelectableItem] = []
         
@@ -147,6 +149,94 @@ class UI:
         self.suffix_names = ["Any"]
         self.inherent_names = ["Any"]
         self.inventory_coords: Optional[settings.FrameCoords] = None
+        
+        self.mod_textures : dict[ItemType, dict[enum.ModType, str]] = {
+            ItemType.Axe: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Axe_Haft.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Axe_Grip.png"),
+            },
+            ItemType.Bow: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Bow_String.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Bow_Grip.png"),
+            },
+            ItemType.Offhand: {
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Focus_Core.png"),
+            },
+            ItemType.Hammer: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Hammer_Haft.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Hammer_Grip.png"),
+            },
+            ItemType.Wand: {
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Wand_Wrapping.png"),
+            },
+            ItemType.Shield: {
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Shield_Handle.png"),                        
+            },
+            ItemType.Staff: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Staff_Head.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Staff_Wrapping.png"),
+            },
+            ItemType.Sword: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Sword_Hilt.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Sword_Pommel.png"),
+            },
+            ItemType.Daggers: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Dagger_Tang.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Dagger_Handle.png"),
+            },
+            ItemType.Spear: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Spearhead.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Spear_Grip.png"),
+            },
+            ItemType.Scythe: {
+                enum.ModType.Prefix: os.path.join(self.texture_path, "Scythe_Snathe.png"),
+                enum.ModType.Suffix: os.path.join(self.texture_path, "Scythe_Grip.png"),
+            },                            
+        }
+        
+        self.item_type_textures: dict[ItemType, str] = {
+            ItemType.Salvage: os.path.join(self.texture_path, "Salvage_Heavy_Armor.png"),
+            ItemType.Axe: os.path.join(self.texture_path, "Great_Axe.png"),
+            ItemType.Bag: os.path.join(self.texture_path, "Bag.png"),
+            # ItemType.Boots: os.path.join(self.texture_path, "Boots.png"),
+            ItemType.Bow: os.path.join(self.texture_path, "Ivory_Bow.png"),
+            # ItemType.Bundle: os.path.join(self.texture_path, "Bundle.png"),
+            # ItemType.Chestpiece: os.path.join(self.texture_path, "Chestpiece.png"),
+            ItemType.Rune_Mod: os.path.join(self.texture_path, "Inscription_martial_weapons.png"),
+            ItemType.Usable: os.path.join(self.texture_path, "Cr%C3%A8me_Br%C3%BBl%C3%A9e.png"),
+            ItemType.Dye: os.path.join(self.texture_path, "White_Dye.png"),
+            ItemType.Materials_Zcoins: os.path.join(self.texture_path, "Wood_Plank.png"),
+            ItemType.Offhand: os.path.join(self.texture_path, "Channeling_Focus.png"),
+            # ItemType.Gloves: os.path.join(self.texture_path, "Gloves.png"),
+            ItemType.Hammer: os.path.join(self.texture_path, "PvP_Hammer.png"),
+            # ItemType.Headpiece: os.path.join(self.texture_path, "Headpiece.png"),
+            ItemType.CC_Shards: os.path.join(self.texture_path, "Candy_Cane_Shard.png"),
+            ItemType.Key: os.path.join(self.texture_path, "Zaishen_Key.png"),
+            # ItemType.Leggings: os.path.join(self.texture_path, "Leggings.png"),
+            # ItemType.Gold_Coin: os.path.join(self.texture_path, "Gold.png"),
+            ItemType.Quest_Item: os.path.join(self.texture_path, "Top_Right_Map_Piece.png"),
+            ItemType.Wand: os.path.join(self.texture_path, "Shaunur%27s_Scepter.png"),
+            ItemType.Shield: os.path.join(self.texture_path, "Crude_Shield.png"),
+            ItemType.Staff : os.path.join(self.texture_path, "Holy_Staff.png"),
+            ItemType.Sword: os.path.join(self.texture_path, "Short_Sword.png"),
+            ItemType.Kit: os.path.join(self.texture_path, "Superior_Salvage_Kit.png"),
+            ItemType.Trophy: os.path.join(self.texture_path, "Destroyer_Core.png"),
+            ItemType.Scroll: os.path.join(self.texture_path, "Scroll_of_the_Lightbringer.png"),
+            ItemType.Daggers: os.path.join(self.texture_path, "Kris_Daggers.png"),
+            ItemType.Present: os.path.join(self.texture_path, "Birthday_Present.png"),
+            ItemType.Minipet: os.path.join(self.texture_path, "Miniature_Celestial_Tiger.png"),
+            ItemType.Scythe: os.path.join(self.texture_path, "Suntouched_Scythe.png"),
+            ItemType.Spear: os.path.join(self.texture_path, "Suntouched_Spear.png"),
+            ItemType.Weapon: os.path.join(self.texture_path, "Inscription_weapons.png"),
+            ItemType.MartialWeapon: os.path.join(self.texture_path, "Inscription_martial_weapons.png"),
+            ItemType.OffhandOrShield: os.path.join(self.texture_path, "Inscription_focus_items_or_shields.png"),
+            ItemType.EquippableItem: os.path.join(self.texture_path, "Inscription_equippable_items.png"),
+            ItemType.SpellcastingWeapon: os.path.join(self.texture_path, "Inscription_spellcasting_weapons.png"),
+            # ItemType.Storybook: os.path.join(self.texture_path, "Young_Heroes_of_Tyria.png"),
+            # ItemType.Costume: os.path.join(self.texture_path, "134px-Shining_Blade_costume.png"),
+            # ItemType.Costume_Headpiece: os.path.join(self.texture_path, "Divine_Halo.png"),
+            # ItemType.Unknown: os.path.join(self.texture_path, "Unknown_Item.png"),
+        }
         
         self.bag_ranges : dict[str, tuple[Bag, Bag]] = {
             "Inventory": (Bag.Backpack, Bag.Bag_2),   
@@ -532,6 +622,20 @@ class UI:
                         # if salvage_kit and self.cached_item and self.cached_item.ExistsInInventory():
                         #     Inventory.SalvageItem(self.cached_item.id, salvage_kit)
                         
+                        materials = data.Items.get(ItemType.Materials_Zcoins)
+                        
+                        if materials:
+                            for material in data.Materials.values():
+                                material_item = data.Items.get_item(ItemType.Materials_Zcoins, material.model_id)
+                                
+                                if material_item:
+                                    material.inventory_icon = material_item.inventory_icon
+                                    material.inventory_icon_url = material_item.inventory_icon_url
+                        
+                        data.SaveMaterials()
+                                                                            
+                                
+                        
 
                 PyImGui.end_child()
             
@@ -855,7 +959,7 @@ class UI:
                 settings.current.window_position = (pos[0], pos[1])
                 settings.current.save()
 
-            if settings.current.window_size != (size[0], size[1]):
+            if settings.current.window_size != (size[0], size[1]) and expanded:
                 # ConsoleLog(
                 #     "LootEx",
                 #     f"Window size changed to ({size[0]}, {size[1]})",
@@ -1024,14 +1128,10 @@ class UI:
                 PyImGui.text("Merchant Settings")
                 PyImGui.separator()
                 if PyImGui.begin_child("GeneralSettings_Merchant", (subtab_size[0], 150), True, PyImGui.WindowFlags.NoBackground) and settings.current.loot_profile:
-                    self._update_merchant_setting(
-                        "Identification Kits", settings.current.loot_profile.identification_kits)
-                    self._update_merchant_setting(
-                        "Salvage Kits", settings.current.loot_profile.salvage_kits)
-                    self._update_merchant_setting(
-                        "Expert Salvage Kits", settings.current.loot_profile.expert_salvage_kits)
-                    self._update_merchant_setting(
-                        "Lockpicks", settings.current.loot_profile.lockpicks)
+                    self._input_int_setting("Identification Kits", settings.current.loot_profile.identification_kits, os.path.join(self.texture_path, "Superior_Identification_Kit.png"))
+                    self._input_int_setting("Salvage Kits", settings.current.loot_profile.salvage_kits, os.path.join(self.texture_path, "Salvage_Kit.png"))
+                    self._input_int_setting("Expert Salvage Kits", settings.current.loot_profile.expert_salvage_kits, os.path.join(self.texture_path, "Expert_Salvage_Kit.png"))
+                    self._input_int_setting("Lockpicks", settings.current.loot_profile.lockpicks, os.path.join(self.texture_path, "Lockpick.png"))
 
                 PyImGui.end_child()
                 
@@ -1040,20 +1140,9 @@ class UI:
                 
                 if PyImGui.begin_child("GeneralSettings_Nick", (subtab_size[0], 0), True, PyImGui.WindowFlags.NoBackground) and settings.current.loot_profile:
                     
-                    PyImGui.push_item_width(150)
-                    weeks = PyImGui.slider_int("Nick Weeks to Keep",
-                                       settings.current.loot_profile.nick_weeks_to_keep, 0, 137)
-                    if weeks != settings.current.loot_profile.nick_weeks_to_keep:
-                        settings.current.loot_profile.nick_weeks_to_keep = weeks
-                        settings.current.loot_profile.save()   
+                    self._slider_int_setting("Nick Weeks to Keep", settings.current.loot_profile.nick_weeks_to_keep, os.path.join(self.texture_path, "Gift_of_the_Traveler.png"), 0, 137)                    
+                    self._slider_int_setting("Amount of Nick Items", settings.current.loot_profile.nick_items_to_keep, os.path.join(self.texture_path, "Red_Iris_Flower.png"), 0, 500)                    
                         
-                    PyImGui.push_item_width(150)
-                    amount = PyImGui.slider_int("Amount of Nick Items",
-                                       settings.current.loot_profile.nick_items_to_keep, 0, 500)
-                    if amount != settings.current.loot_profile.nick_items_to_keep:
-                        settings.current.loot_profile.nick_items_to_keep = amount
-                        settings.current.loot_profile.save()               
-                
                 PyImGui.end_child()
                 
 
@@ -1070,6 +1159,7 @@ class UI:
                 if PyImGui.begin_child("DyesSelection", (dye_section_width - 20, 0), True, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoBackground):
                     for dye in DyeColor:
                         if dye != DyeColor.NoColor:
+                            file_path = os.path.join(self.texture_path, f"{dye.name}_Dye.png")
                             if dye not in settings.current.loot_profile.dyes:
                                 settings.current.loot_profile.dyes[dye] = False
 
@@ -1079,9 +1169,15 @@ class UI:
                                 PyImGui.ImGuiCol.FrameBg, Utils.ColorToTuple(color))
                             hover_color = utility.Util.GetDyeColor(dye)
                             PyImGui.push_style_color(
-                                PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(hover_color))
+                                PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(hover_color))                            
+                            UI.ImageToggle(file_path, 16.25, 20, 
+                                           settings.current.loot_profile.dyes[dye]
+                            )
+                            
+                            PyImGui.same_line(0, 5)
+                            
                             selected = PyImGui.checkbox(
-                                IconsFontAwesome5.ICON_FLASK + " " + dye.name, settings.current.loot_profile.dyes[dye])
+                                dye.name, settings.current.loot_profile.dyes[dye])
 
                             if settings.current.loot_profile.dyes[dye] != selected:
                                 settings.current.loot_profile.dyes[dye] = selected
@@ -1096,19 +1192,47 @@ class UI:
 
             PyImGui.end_tab_item()
 
-    def _update_merchant_setting(self, label, current_value, tooltip=None):
+    def _input_int_setting(self, label, current_value, texture_path=None):
         if settings.current.loot_profile is None:
             return
 
         PyImGui.push_item_width(150)
-        new_value = PyImGui.input_int(label, current_value)
+        new_value = PyImGui.input_int("##" + label, current_value)
         if new_value != current_value:
             setattr(settings.current.loot_profile,
                     label.replace(" ", "_").lower(), new_value)
             settings.current.loot_profile.save()
+            
+        PyImGui.same_line(0, 5)
+        if texture_path and os.path.exists(texture_path):
+            ImGui.DrawTexture(
+                texture_path, 16, 16)
+        else:
+            PyImGui.dummy(16, 16)
+        
+        PyImGui.same_line(0, 5)
+        PyImGui.text(label)
+        
+    def _slider_int_setting(self, label, current_value, texture_path=None, min_value=0, max_value=100):
+        if settings.current.loot_profile is None:
+            return
 
-        if tooltip:
-            ImGui.show_tooltip(tooltip.format(value=new_value))
+        PyImGui.push_item_width(150)
+        new_value = PyImGui.slider_int("##" + label, current_value, min_value, max_value)
+        if new_value != current_value:
+            setattr(settings.current.loot_profile,
+                    label.replace(" ", "_").lower(), new_value)
+            settings.current.loot_profile.save()
+            
+        PyImGui.same_line(0, 5)
+        if texture_path and os.path.exists(texture_path):
+            ImGui.DrawTexture(
+                texture_path, 16, 16)
+        else:
+            PyImGui.dummy(16, 16)
+        
+        PyImGui.same_line(0, 5)
+        PyImGui.text(label)
 
     def draw_loot_filters(self):
         if PyImGui.begin_tab_item("Filter Based Actions") and settings.current.loot_profile:
@@ -1303,27 +1427,28 @@ class UI:
                             "loot_filter_table", columns, PyImGui.TableFlags.ScrollY)
 
                         count = 0
-                        chunk_size = math.ceil(len(loot_filter.item_types) / columns)
+                        chunk_size = math.ceil(len(self.item_type_textures) / columns)
                         PyImGui.table_next_column()
 
                         sorted_item_types = sorted(
                             ItemType, key=lambda x: x.name)
 
                         for item_type in sorted_item_types:
-                            count += 1
+                            if item_type in self.item_type_textures:
+                                count += 1
 
-                            if count > chunk_size:
-                                PyImGui.table_next_column()
-                                count = 1
+                                if count > chunk_size:
+                                    PyImGui.table_next_column()
+                                    count = 1
 
-                            if loot_filter.item_types[item_type] is None:
-                                continue
+                                if loot_filter.item_types[item_type] is None:
+                                    continue
 
-                            changed, loot_filter.item_types[item_type] = self.draw_item_type_selectable(
-                                item_type, loot_filter.item_types[item_type])
-                            if changed:
-                                settings.current.loot_profile.save()
-                            ImGui.show_tooltip(
+                                changed, loot_filter.item_types[item_type] = self.draw_item_type_selectable(
+                                    item_type, loot_filter.item_types[item_type])
+                                if changed:
+                                    settings.current.loot_profile.save()
+                                ImGui.show_tooltip(
                                 f"Item Type: {item_type.name}")
                         PyImGui.end_table()
 
@@ -1899,11 +2024,11 @@ class UI:
             PyImGui.end_tab_item()
 
     def draw_item_header(self, item_info : models.Item, border : bool = False, height : float = 130, image_size : float = 110):       
+        image_size = min(image_size, 64)
         
         if PyImGui.begin_child("item_info", (0, max(height, image_size)), border, PyImGui.WindowFlags.NoFlag):            
             if PyImGui.begin_child("item_texture", (image_size, image_size), False, PyImGui.WindowFlags.NoFlag): 
                 posX, posY = PyImGui.get_cursor_screen_pos()
-                
                 if UI.is_mouse_in_rect((posX, posY, image_size, image_size)):                                
                     if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, image_size, image_size) and item_info.wiki_url:
                         Player.SendChatCommand(
@@ -1925,8 +2050,11 @@ class UI:
                                         PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(color))
                     PyImGui.push_style_color(
                                         PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
-                    PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
-                                        item_info.model_id), image_size, image_size)
+                    if item_info.inventory_icon:
+                        ImGui.DrawTexture(os.path.join(self.texture_path, item_info.inventory_icon), image_size, image_size)
+                    else:
+                        PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
+                                            item_info.model_id), image_size, image_size)
                     PyImGui.pop_style_color(3)
                                 
                                 
@@ -2119,6 +2247,16 @@ class UI:
                         is_selected = m.identifier in settings.current.loot_profile.weapon_mods and weapon_type.name in settings.current.loot_profile.weapon_mods[
                             m.identifier] and settings.current.loot_profile.weapon_mods[m.identifier][weapon_type.name] or False
 
+                        # textures = self.mod_textures.get(weapon_type, None)
+                        # texture = textures.get(m.mod_type, None) if textures else None
+                        texture = self.item_type_textures.get(weapon_type, None)
+                        if texture:
+                            ImGui.DrawTexture(texture, 24, 24)
+                        else:
+                            PyImGui.dummy(24, 24)
+                            
+                        PyImGui.same_line(0, 0)
+                        
                         selected = UI.toggle_button(
                             label = f"{utility.Util.reformat_string(weapon_type.name)}##{m.identifier}{weapon_type.name}", v = is_selected, width= 100, height= 20,
                             default_color=Utils.ColorToTuple(Utils.RGBToColor(255, 204, 85, 155)),
@@ -2432,8 +2570,8 @@ class UI:
                                 if not rune or not rune.identifier:
                                     continue
 
-                                if not PyImGui.is_rect_visible(0, 20):
-                                    PyImGui.dummy(0, 20)
+                                if not PyImGui.is_rect_visible(0, 24):
+                                    PyImGui.dummy(0, 24)
                                     continue
 
                                 color = utility.Util.GetRarityColor(
@@ -2445,6 +2583,15 @@ class UI:
                                 PyImGui.push_style_color(
                                     PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(color["frame"]))
 
+                                texture = os.path.join(
+                                    self.texture_path, rune.inventory_icon) if rune.inventory_icon else None
+                                if texture:
+                                    ImGui.DrawTexture(texture, 24, 24)
+                                else:
+                                    PyImGui.dummy(24, 24)
+                                    
+                                PyImGui.same_line(0, 5)
+                                
                                 label = f"{rune.full_name}"
                                 unique_id = f"##{rune.identifier}"
                                 rune_selected = PyImGui.checkbox(
@@ -2548,8 +2695,16 @@ class UI:
         PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
                                 Utils.ColorToTuple(text_color))
 
+        texture = os.path.join(self.texture_path, material.inventory_icon) if material.inventory_icon else None
+        if texture:
+            ImGui.DrawTexture(texture, 20, 20)
+        else:
+            PyImGui.dummy(20, 20)
+        
+        PyImGui.same_line(0, 5)
+        
         is_now_selected = PyImGui.checkbox(
-            f"{IconsFontAwesome5.ICON_STAR_HALF_ALT} {utility.Util.reformat_string(material.name)}", is_selected
+            f"{utility.Util.reformat_string(material.name)}", is_selected
         )
         PyImGui.pop_style_color(1)
         
@@ -2602,9 +2757,17 @@ class UI:
             255, 255, 255, 255) if is_selected else Utils.RGBToColor(255, 255, 255, 125)
         PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
                                 Utils.ColorToTuple(text_color))
+        
+        texture = self.item_type_textures.get(item_type, None)
+        if texture:
+            ImGui.DrawTexture(texture, 20, 20)
+        else:
+            PyImGui.dummy(20, 20)
+            
+        PyImGui.same_line(0, 5)
 
         is_now_selected = PyImGui.checkbox(
-            f"{IconsFontAwesome5.ICON_STAR_HALF_ALT} {utility.Util.reformat_string(item_type.name)}", is_selected
+            f"{utility.Util.reformat_string(item_type.name)}", is_selected
         )
         PyImGui.pop_style_color(1)
 
@@ -2640,6 +2803,12 @@ class UI:
             PyImGui.WindowFlags.NoFlag,
         )
 
+        if item.item_info.inventory_icon:
+            ImGui.DrawTexture(os.path.join(self.texture_path, item.item_info.inventory_icon), 20, 20)
+        else:
+            PyImGui.dummy(20, 20)
+        
+        PyImGui.same_line(0, 5)
         # Construct item name with attributes if available
         attributes = (
             [utility.Util.GetAttributeName(
@@ -2798,6 +2967,13 @@ class UI:
         PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
                                 Utils.ColorToTuple(text_color))
 
+        if item.item_info.inventory_icon:
+            ImGui.DrawTexture(os.path.join(self.texture_path, item.item_info.inventory_icon), 20, 20)
+        else:
+            PyImGui.dummy(20, 20)
+                    
+                    
+        PyImGui.same_line(0, 5)
         # Draw item name with vertical centering
         PyImGui.set_cursor_pos_x(PyImGui.get_cursor_pos_x() + 5)
         UI.vertical_centered_text(item_name, None, 20)
@@ -2866,7 +3042,48 @@ class UI:
                 item.is_selected = True
 
     # region general ui elements
+    @staticmethod
+    def ImageToggle(path : str, width : float, height : float, is_selected : bool) -> bool:
+        """
+        Draws an image toggle button with the specified icon and width.
+        
+        Args:
+            path (str): The path to the image file.
+            width (float): The width of the button.
+            height (float): The height of the button.
+            is_selected (bool): Whether the button is selected or not.
+        
+        Returns:
+            bool: True if the button was clicked, False otherwise.
+        """
+        cursor_pos = PyImGui.get_cursor_screen_pos()
+        rect = (cursor_pos[0], cursor_pos[1], width, height)
+        transparent_color = Utils.ColorToTuple(Utils.RGBToColor(0, 0, 0, 0))   
+        PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
+        PyImGui.push_style_color(
+            PyImGui.ImGuiCol.Text,
+            Utils.ColorToTuple(
+                Utils.RGBToColor(255, 255, 255, 255)
+                if is_selected
+                else Utils.RGBToColor(255, 255, 255, 200)
+                if UI.is_mouse_in_rect(rect)
+                else Utils.RGBToColor(255, 255, 255, 125)
+            ),
+        )
+        PyImGui.push_style_color(PyImGui.ImGuiCol.Button,
+                                transparent_color)
+        PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(
+            Utils.RGBToColor(0, 0, 0, 125)))
+        PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive,
+                                transparent_color)
 
+        clicked = ImGui.ImageButton(f"##{path}", path, width, height)
+
+        PyImGui.pop_style_var(1)
+        PyImGui.pop_style_color(4)
+
+        return clicked
+ 
     @staticmethod
     def weapon_mod_tooltip(mod: models.WeaponMod):
         if PyImGui.is_item_hovered():

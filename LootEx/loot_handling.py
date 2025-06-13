@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from LootEx.cache import Cached_Item
-from LootEx.enum import SalvageKitOption, SalvageOption, ItemAction
+from LootEx.enum import ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from LootEx import data, data_collector, models, settings, utility, ui_manager_extensions, loot_filter, item_configuration
 
@@ -37,11 +37,10 @@ class LootHandler:
         self._initialized = True
         self.run_once = False
 
-        self.inventory_changed : bool = False
+        self.inventory_changed: bool = False
         self.deposited = False
         self.capacity_checked = False
         self.material_capacity = 2500
-        self.processing = False
 
         # Initialize timers and action queues
         self.salvage_timer = ThrottledTimer(750)
@@ -62,18 +61,18 @@ class LootHandler:
         self.id_kit: int = -1
         self.remaining_uses: int = -1
         self.cached_inventory: list[Cached_Item] = []
-        
+
         self.merchant_open: bool | None = False
         self.checked_storage_for_merchant_items: bool = False
-        
-        self.salvage_queue : list[Cached_Item] = []
+
+        self.salvage_queue: list[Cached_Item] = []
         self.salvaged = False
-        self.salvage_windows_updated : bool = False
-        self.salvaging_item : Cached_Item | None = None
+        self.salvage_windows_updated: bool = False
+        self.salvaging_item: Cached_Item | None = None
         self.salvage_option: SalvageOption = SalvageOption.None_
-        self.salvage_requires_confirmation : bool = False
-        self.is_confirm_materials_window_open : bool = False
-        self.is_salvage_window_open : bool = False
+        self.salvage_requires_confirmation: bool = False
+        self.is_confirm_materials_window_open: bool = False
+        self.is_salvage_window_open: bool = False
         self.upgrade_open: bool | None = False
 
     def soft_reset(self):
@@ -87,26 +86,28 @@ class LootHandler:
         self.inventory_materials = []
         self.material_storage = None
         self.salvage_windows_updated = False
-        # self.salvaging_item = None         
-        
+        # self.salvaging_item = None
+
     def reset(self):
         self.ResetSalvageWindow()
         self.__init__(reset=True)
-        self.SetPollingInterval(settings.current.loot_profile.polling_interval if settings.current.loot_profile else 1)
-    
+        self.SetPollingInterval(
+            settings.current.loot_profile.polling_interval if settings.current.loot_profile else 1)
+
     def SetPollingInterval(self, interval: float):
         self.inventory_timer.SetThrottleTime(interval * 1000)
 
     def GetMaterialStorage(self) -> list[tuple[int, int]]:
         if self.material_storage is None:
-            material_storage, _ = utility.Util.GetZeroFilledBags(Bag.Material_Storage, Bag.Material_Storage)
+            material_storage, _ = utility.Util.GetZeroFilledBags(
+                Bag.Material_Storage, Bag.Material_Storage)
             self.material_storage = [
                 (item_id, 0)
                 for item_id in material_storage
             ]
 
         return self.material_storage
-    
+
     def GetInventoryArray(self) -> list[int]:
         if self.inventory_array is None:
             inventory, inventory_sizes = utility.Util.GetZeroFilledBags(
@@ -115,23 +116,24 @@ class LootHandler:
             self.inventory_sizes = inventory_sizes
 
         return self.inventory_array
-    
+
     def GetItemStorage(self) -> Tuple[list[tuple[int, ItemType, int, int]], list[tuple[int, ItemType, int, int]]]:
         """Get the item storage, which is a list of tuples containing item_id, ItemType, model_id and quantity.
         The list is sorted by item_id, with empty slots (item_id == 0) at the end.
-        
+
         Returns:
             list[tuple[int, int, int]]: A list of tuples containing item_id, ItemType, model_id and quantity.
         """
-        
-        
+
         if self.item_storage is None:
-            storage, _ = utility.Util.GetZeroFilledBags(Bag.Storage_1, Bag.Storage_14)
+            storage, _ = utility.Util.GetZeroFilledBags(
+                Bag.Storage_1, Bag.Storage_14)
             self.item_storage = [
-                (item_id, ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]), GLOBAL_CACHE.Item.GetModelID(item_id), GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
+                (item_id, ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]), GLOBAL_CACHE.Item.GetModelID(
+                    item_id), GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
                 for item_id in storage
             ]
-            
+
         sorted = self.item_storage.copy()
         sorted.sort(key=lambda x: (
             x[0] == 0,  # Ensure empty slots are at the end
@@ -139,7 +141,6 @@ class LootHandler:
             x[2],  # Then by model_id
             -x[3]  # Then by quantity in descending order
         ), reverse=False)
-                
 
         return self.item_storage, sorted
 
@@ -241,7 +242,7 @@ class LootHandler:
                 # Default to Lesser or Expert for any other option which implies crafting materials
                 return SalvageKitOption.LesserOrExpert
 
-    def SalvageItem(self, item : Cached_Item, option: SalvageOption = SalvageOption.LesserCraftingMaterials):
+    def SalvageItem(self, item: Cached_Item, option: SalvageOption = SalvageOption.LesserCraftingMaterials):
 
         if item.id <= 0:
             return False
@@ -262,10 +263,10 @@ class LootHandler:
         ConsoleLog(
             "LootEx", f"Salvaging item: '{item.model_name}' ({item.id}) using kit {utility.Util.GetItemDataName(salvage_kit)} {salvage_kit}", Console.MessageType.Info)
         Inventory.SalvageItem(item.id, salvage_kit)
-        
+
         rarity_requires_confirmation = item.rarity >= Rarity.Blue
         mods_require_confirmation = item.has_mods and option is not SalvageOption.LesserCraftingMaterials
-        
+
         self.salvaged = True
         self.salvaging_item = item
         self.salvage_timer.Reset()
@@ -279,7 +280,7 @@ class LootHandler:
     def CanSalvage(self) -> bool:
         return not self.salvage_requires_confirmation and (self.salvaging_item is None or not self.salvaging_item.ExistsInCache(self.cached_inventory)) and not self.is_confirm_materials_window_open and not self.is_salvage_window_open
 
-    def ResetSalvageConfirmation(self):        
+    def ResetSalvageConfirmation(self):
         # self.salvage_requires_confirmation = False
         pass
 
@@ -315,7 +316,7 @@ class LootHandler:
     def ExtractWantedMods(self, item: Cached_Item) -> bool:
         if item.id == 0:
             return False
-        
+
         if not item.is_salvageable:
             ConsoleLog("LootEx", f"Item '{item.model_name}' ({item.id}) is not salvageable, cannot extract mods.",
                        Console.MessageType.Warning)
@@ -343,58 +344,62 @@ class LootHandler:
         ConsoleLog(
             "LootEx", f"Extracting '{mod_to_extract.name}' from item: '{item.model_name}' ({item.id}) using kit {utility.Util.GetItemDataName(salvage_kit)} {salvage_kit}", Console.MessageType.Info)
         Inventory.SalvageItem(item.id, salvage_kit)
-        
+
         self.salvaged = True
         self.salvaging_item = item
         self.salvage_requires_confirmation = True
-        self.salvage_option = utility.Util.GetSalvageOptionFromModType(mod_to_extract.mod_type)
-        
+        self.salvage_option = utility.Util.GetSalvageOptionFromModType(
+            mod_to_extract.mod_type)
+
         # self.ConfirmSalvage(
         #     item, utility.Util.GetSalvageOptionFromModType(mod_to_extract.mod_type))
 
         return True
 
-    def __Get_Empty_Storage_Slot(self, stash : list[tuple[int, ItemType, int, int]]) -> tuple[int, int, int]:
+    def __Get_Empty_Storage_Slot(self, stash: list[tuple[int, ItemType, int, int]]) -> tuple[int, int, int]:
         for index, (id, _, _, _) in enumerate(stash):
             if id == 0:
                 return index, Bag.Storage_1.value + math.floor(index / 25), index % 25
-            
+
         return -1, -1, -1
 
-    def __Move_Item_To_Empty_Slot(self, stash : list[tuple[int, ItemType, int, int]], item : Cached_Item, amount):
+    def __Move_Item_To_Empty_Slot(self, stash: list[tuple[int, ItemType, int, int]], item: Cached_Item, amount):
         if amount > 0:
-            index, storage_index, storage_slot = self.__Get_Empty_Storage_Slot(stash)
-            
+            index, storage_index, storage_slot = self.__Get_Empty_Storage_Slot(
+                stash)
+
             if index == -1:
                 ConsoleLog(
                     "LootEx", "No empty slot found in stash, cannot stash item.", Console.MessageType.Warning)
                 return False
-            
+
             move_amount = min(250, amount)
-            
+
             ConsoleLog(
                 "LootEx", f"Stashing item {move_amount} '{item.model_name}' {item.id} to storage {Bag(storage_index)} slot {storage_slot}", Console.MessageType.Info)
-            
-            stash[index] = (item.id, item.item_type, item.model_id, move_amount)
+
+            stash[index] = (item.id, item.item_type,
+                            item.model_id, move_amount)
             Inventory.MoveItem(item.id, storage_index,
-                                storage_slot, move_amount)
-            
+                               storage_slot, move_amount)
+
     def StashItem(self, item: Cached_Item) -> bool:
         if not settings.current.loot_profile:
             return False
 
-        stash, sorted_stash = self.GetItemStorage()   
-                
+        stash, sorted_stash = self.GetItemStorage()
+
         if item.is_stackable:
-            config_condition = item.config.get_condition(item) if item.config else None
+            config_condition = item.config.get_condition(
+                item) if item.config else None
             keep_amount = config_condition.keep_in_inventory if config_condition else 0
 
-            amount = item.quantity - keep_amount            
+            amount = item.quantity - keep_amount
 
             for e in sorted_stash:
                 slot = stash.index(e)
                 id, item_type, model_id, quantity = e
-                
+
                 storage_index = Bag.Storage_1.value + math.floor(slot / 25)
                 storage_slot = slot % 25
 
@@ -450,36 +455,37 @@ class LootHandler:
         average_time = sum(action_times, timedelta()) / len(action_times)
         # ConsoleLog(f"LootEx [{name}]", f"Current: {time_delta.microseconds * 0.000001} sec | Average processing time: {average_time.microseconds * 0.000001} sec. | {len(action_times)} entries", Console.MessageType.Debug)
 
-    def GetItemsFromStorage(self, items: dict[int, tuple[ItemType, int]], force : bool = False) -> bool:
+    def GetItemsFromStorage(self, items: dict[int, tuple[ItemType, int]], force: bool = False) -> bool:
         withdrawn_items = False
         if not force and self.checked_storage_for_merchant_items:
             return False
 
         if not items:
             ConsoleLog("LootEx", "No items to withdraw from storage.",
-                       Console.MessageType.Warning) 
+                       Console.MessageType.Warning)
             return False
-        
+
         if not self.cached_inventory:
             ConsoleLog("LootEx", "No cached inventory available, cannot withdraw items from storage.",
-                          Console.MessageType.Warning)
+                       Console.MessageType.Warning)
             return False
-        
+
         _, sorted_storage = self.GetItemStorage()
 
         for model_id, (item_type, quantity) in items.items():
             # find a matching item in the sorted_storage
-            storage_item_id = next((item[0] for item in sorted_storage if item[2] == model_id and item[1] == item_type), 0)
+            storage_item_id = next(
+                (item[0] for item in sorted_storage if item[2] == model_id and item[1] == item_type), 0)
 
             if not storage_item_id:
                 continue
 
             occupies_slot = True
-            
-            #get slot from the self.cached_inventory for the first item that has id == 0
+
+            # get slot from the self.cached_inventory for the first item that has id == 0
             inventory_slot = next(
                 (index for index, item in enumerate(self.cached_inventory) if item.id == 0), None)
-                        
+
             if GLOBAL_CACHE.Item.Customization.IsStackable(storage_item_id):
                 existing_slot = next(
                     (index for index, item in enumerate(self.cached_inventory) if item.item_type == item_type and item.quantity < 250), None)
@@ -490,26 +496,27 @@ class LootHandler:
 
             if inventory_slot is None:
                 continue
-            
+
             if self.inventory_sizes is None:
                 return False
 
-            bag, slot = self.GetBagFromSlot(inventory_slot, self.inventory_sizes)
+            bag, slot = self.GetBagFromSlot(
+                inventory_slot, self.inventory_sizes)
             item_data = data.Items.get_item_data(storage_item_id)
             item_name = item_data.name if item_data else "Item Name Unavailable"
-            
+
             if occupies_slot:
-                self.cached_inventory[inventory_slot] = Cached_Item(storage_item_id, inventory_slot)
-                
+                self.cached_inventory[inventory_slot] = Cached_Item(
+                    storage_item_id, inventory_slot)
+
             else:
                 self.cached_inventory[inventory_slot].quantity += quantity
-
 
             ConsoleLog(
                 "LootEx", f"Withdrawing {quantity}x '{item_name}' ({storage_item_id})", Console.MessageType.Info)
             Inventory.MoveItem(storage_item_id, bag.value, slot, quantity)
             withdrawn_items = True
-            
+
         self.checked_storage_for_merchant_items = True
         return withdrawn_items
 
@@ -536,7 +543,8 @@ class LootHandler:
                 self.bag = bag
                 self.slot = slot
                 self.model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-                self.item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]) if item_id else ItemType.Unknown
+                self.item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[
+                                          0]) if item_id else ItemType.Unknown
                 self.stackable = GLOBAL_CACHE.Item.Customization.IsStackable(
                     item_id)
                 self.quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(
@@ -556,23 +564,23 @@ class LootHandler:
         condensed = False
         slot_infos.sort(key=lambda x: (
             x.model_id, x.quantity, x.bag.value, x.slot))
-        
-        lookup : dict[ItemType, dict[int, list[SlotInfo]]] = {}
+
+        lookup: dict[ItemType, dict[int, list[SlotInfo]]] = {}
         for slot_info in slot_infos:
             if slot_info.item_type not in lookup:
                 lookup[slot_info.item_type] = {}
-                
+
             if slot_info.model_id not in lookup[slot_info.item_type]:
                 lookup[slot_info.item_type][slot_info.model_id] = []
-                
+
             lookup[slot_info.item_type][slot_info.model_id].append(slot_info)
-            lookup[slot_info.item_type][slot_info.model_id].sort(key=lambda x: x.quantity, reverse=True)
-        
-        #sort the slot_infos in lookup by quantity
-            
+            lookup[slot_info.item_type][slot_info.model_id].sort(
+                key=lambda x: x.quantity, reverse=True)
+
+        # sort the slot_infos in lookup by quantity
 
         for slot_info in slot_infos:
-            if slot_info.stackable and slot_info.quantity < 250:                
+            if slot_info.stackable and slot_info.quantity < 250:
                 for next_slot_info in lookup[slot_info.item_type][slot_info.model_id]:
                     if next_slot_info.item_id == slot_info.item_id or next_slot_info.item_id == 0:
                         continue
@@ -646,11 +654,11 @@ class LootHandler:
                 bag, slot = self.GetBagFromSlot(target_slot, bag_sizes)
 
                 Inventory.MoveItem(item_id, bag.value, slot,
-                                    GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
+                                   GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
 
         return False
 
-    def HasModToKeep(self, item : Cached_Item) -> tuple[bool, list[models.WeaponMod], list[models.Rune]]:
+    def HasModToKeep(self, item: Cached_Item) -> tuple[bool, list[models.WeaponMod], list[models.Rune]]:
         runes_to_keep: list[models.Rune] = []
         mods_to_keep: list[models.WeaponMod] = []
 
@@ -668,7 +676,7 @@ class LootHandler:
 
         return True if runes_to_keep or mods_to_keep else False, mods_to_keep, runes_to_keep
 
-    def CanProcessItem(self, item : Cached_Item) -> bool:
+    def CanProcessItem(self, item: Cached_Item) -> bool:
         if settings.current.loot_profile and settings.current.loot_profile.is_blacklisted(item.item_type, item.model_id):
             return False
 
@@ -682,7 +690,7 @@ class LootHandler:
         if settings.current.loot_profile is None:
             return {}
 
-        missing_items : dict[int, tuple[ItemType, int]] = {}
+        missing_items: dict[int, tuple[ItemType, int]] = {}
 
         if settings.current.loot_profile.identification_kits > 0:
             identificationKits = Inventory.GetModelCount(
@@ -690,12 +698,14 @@ class LootHandler:
             identificationKits += Inventory.GetModelCount(
                 ModelID.Identification_Kit)
             if identificationKits < settings.current.loot_profile.identification_kits:
-                missing_items[ModelID.Superior_Identification_Kit] = (ItemType.Kit, settings.current.loot_profile.identification_kits - identificationKits)
+                missing_items[ModelID.Superior_Identification_Kit] = (
+                    ItemType.Kit, settings.current.loot_profile.identification_kits - identificationKits)
 
         if settings.current.loot_profile.salvage_kits > 0:
             salvageKits = Inventory.GetModelCount(ModelID.Salvage_Kit)
             if salvageKits < settings.current.loot_profile.salvage_kits:
-                missing_items[ModelID.Salvage_Kit] = (ItemType.Kit, settings.current.loot_profile.salvage_kits - salvageKits)
+                missing_items[ModelID.Salvage_Kit] = (
+                    ItemType.Kit, settings.current.loot_profile.salvage_kits - salvageKits)
 
         if settings.current.loot_profile.expert_salvage_kits > 0:
             expertSalvageKits = Inventory.GetModelCount(
@@ -703,12 +713,14 @@ class LootHandler:
             expertSalvageKits += Inventory.GetModelCount(
                 ModelID.Superior_Salvage_Kit)
             if expertSalvageKits < settings.current.loot_profile.expert_salvage_kits:
-                missing_items[ModelID.Expert_Salvage_Kit] = (ItemType.Kit, settings.current.loot_profile.expert_salvage_kits - expertSalvageKits)
+                missing_items[ModelID.Expert_Salvage_Kit] = (
+                    ItemType.Kit, settings.current.loot_profile.expert_salvage_kits - expertSalvageKits)
 
         if settings.current.loot_profile.lockpicks > 0:
             lockpicks = Inventory.GetModelCount(ModelID.Lockpick)
             if lockpicks < settings.current.loot_profile.lockpicks:
-                missing_items[ModelID.Lockpick] = (ItemType.Key, settings.current.loot_profile.lockpicks - lockpicks)
+                missing_items[ModelID.Lockpick] = (
+                    ItemType.Key, settings.current.loot_profile.lockpicks - lockpicks)
 
         return missing_items
 
@@ -748,31 +760,32 @@ class LootHandler:
     def DepositMaterial(self, item: Cached_Item) -> bool:
         if not self.material_capacity:
             return False
-        
+
         if not item.material:
             return False
 
         material_storage = self.GetMaterialStorage()
         material_item_id, material_amount = material_storage[item.material.material_storage_slot]
-        
+
         if material_item_id > 0 and material_amount == 0:
-            material_storage[item.material.material_storage_slot] = (material_item_id, GLOBAL_CACHE.Item.Properties.GetQuantity(material_item_id))
+            material_storage[item.material.material_storage_slot] = (
+                material_item_id, GLOBAL_CACHE.Item.Properties.GetQuantity(material_item_id))
             material_item_id, material_amount = material_storage[item.material.material_storage_slot]
-        
+
         max_move_amount = self.material_capacity - material_amount
         move_amount = min(
             max_move_amount, item.quantity)
-        
+
         if move_amount <= 0:
             return False
-        
-        
-        material_storage[item.material.material_storage_slot] = (material_item_id, material_amount + move_amount)
-        
+
+        material_storage[item.material.material_storage_slot] = (
+            material_item_id, material_amount + move_amount)
+
         # ConsoleLog(
         #     "LootEx", f"Depositing item {move_amount}x '{item.material.name}' ({item.id}) to material storage.", Console.MessageType.Info)
         Inventory.MoveItem(item.id, Bags.MaterialStorage,
-                    item.material.material_storage_slot, move_amount)                
+                           item.material.material_storage_slot, move_amount)
 
         return False
 
@@ -781,96 +794,158 @@ class LootHandler:
             self.is_salvage_window_open = ui_manager_extensions.UIManagerExtensions.IsSalvageWindowOpen()
             self.is_confirm_materials_window_open = ui_manager_extensions.UIManagerExtensions.IsConfirmMaterialsWindowOpen()
             self.salvage_windows_updated = True
-        
-    def IsSalvageAction(self, action : ItemAction) -> bool:
+
+    def IsSalvageAction(self, action: ItemAction) -> bool:
         return action in (ItemAction.SALVAGE_COMMON_MATERIALS, ItemAction.SALVAGE_RARE_MATERIALS, ItemAction.SALVAGE_SMART, ItemAction.SALVAGE_MODS, ItemAction.SALVAGE)
-        
-    ## TODO: Implement the salvage queue processing logic
+
+    # TODO: Implement the salvage queue processing logic
     def ProcessSalvageList(self):
-        if not self.processing:
-            return
-        
         salvage_item = self.salvage_queue[0] if self.salvage_queue else None
         if salvage_item is None:
             return
-    
+
         salvaged, remaining = salvage_item.IsSalvaged()
-        
+
         if salvaged:
             if remaining <= 0:
-                ConsoleLog(f"LootEx", f"Salvaged {salvage_item.model_name}!", Console.MessageType.Debug)
+                ConsoleLog(
+                    f"LootEx", f"Salvaged {salvage_item.model_name}!", Console.MessageType.Debug)
                 self.salvage_queue.pop(0)  # Remove the item from the queue
                 salvage_item.salvage_started = None
+                self.inventory_changed = True                
                 return True
-            
+
             else:
-                ConsoleLog(f"LootEx", f"Salvaged {salvage_item.model_name}, but still has {remaining} remaining.", Console.MessageType.Debug)
+                ConsoleLog(
+                    f"LootEx", f"Salvaged {salvage_item.model_name}, but still has {remaining} remaining.", Console.MessageType.Debug)
                 salvage_item.salvage_started = None
                 return False
-        
-        if not salvage_item.salvage_started:
-            kit = self.GetSalvageKit(self.GetSalvageKitOption(salvage_item.salvage_option))
+
+        elif not salvage_item.salvage_started:
+            kit = self.GetSalvageKit(
+                self.GetSalvageKitOption(salvage_item.salvage_option))
 
             if kit == 0:
-                ConsoleLog("LootEx", "No salvage kit found, cannot salvage item.", Console.MessageType.Warning)
+                ConsoleLog(
+                    "LootEx", "No salvage kit found, cannot salvage item.", Console.MessageType.Warning)
                 return False
 
             salvage_item.salvage_started = datetime.now()  # ✅ Correct object here
             Inventory.SalvageItem(salvage_item.id, kit)
-            ConsoleLog("LootEx", f"Started salvaging on {salvage_item.quantity} {salvage_item.model_name} with kit {kit} with salvage option {salvage_item.salvage_option.name}", Console.MessageType.Debug)
+            ConsoleLog(
+                "LootEx", f"Started salvaging on {salvage_item.quantity} {salvage_item.model_name} with kit {kit} with salvage option {salvage_item.salvage_option.name}", Console.MessageType.Debug)
             return True
 
-        elif salvage_item.salvage_started:   
-            time_since_salvage = datetime.now() - (salvage_item.salvage_started or datetime.now())    
-            
+        elif salvage_item.salvage_started:
+            time_since_salvage = datetime.now() - (salvage_item.salvage_started or datetime.now())
+
             if time_since_salvage.total_seconds() > 10:
-                ConsoleLog("LootEx", f"Salvage operation for {salvage_item.model_name} has timed out after {time_since_salvage.total_seconds()} seconds.", Console.MessageType.Warning)
+                ConsoleLog(
+                    "LootEx", f"Salvage operation for {salvage_item.model_name} has timed out after {time_since_salvage.total_seconds()} seconds.", Console.MessageType.Warning)
                 self.ResetSalvageWindow()
                 salvage_item.salvage_started = None
-                
+
                 if salvage_item.savlage_tries >= 3:
-                    self.salvage_queue.remove(salvage_item) 
-                    return False 
-                
+                    self.salvage_queue.remove(salvage_item)
+                    return False
+
                 return True
-                              
+
             if salvage_item.salvage_requires_confirmation:
-                    self.UpdateSalvageWindows()
+                self.UpdateSalvageWindows()
 
-                    match salvage_item.salvage_option:
-                        case SalvageOption.LesserCraftingMaterials:
-                            if self.is_confirm_materials_window_open:
-                                ConsoleLog("LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name}", Console.MessageType.Info)
-                                self._SendConfirmSalvage(salvage_item, salvage_item.salvage_option)
-                                # salvage_item.salvage_requires_confirmation = False
-                                return True
+                match salvage_item.salvage_option:
+                    case SalvageOption.LesserCraftingMaterials:
+                        if self.is_confirm_materials_window_open:  
+                            ConsoleLog(
+                                "LootEx", f"Confirming lesser salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name}", Console.MessageType.Info)
+                            
+                            ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
+                            # salvage_item.salvage_requires_confirmation = False
+                            return True
 
-                        case SalvageOption.RareCraftingMaterials | SalvageOption.Prefix | SalvageOption.Suffix | SalvageOption.Inherent:
-                            if self.is_salvage_window_open:
-                                ConsoleLog("LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name}", Console.MessageType.Info)
-                                self._SendConfirmSalvage(salvage_item, salvage_item.salvage_option)
-                                # salvage_item.salvage_requires_confirmation = False
-                                return True                             
-            
-        return False        
+                    case SalvageOption.RareCraftingMaterials | SalvageOption.Prefix | SalvageOption.Suffix | SalvageOption.Inherent:
+                        if self.is_salvage_window_open:                  
+                            if salvage_item.salvage_option == SalvageOption.Prefix:
+                                prefix = None
+                                
+                                if salvage_item.is_weapon:
+                                    prefix = next(
+                                        (mod for mod in salvage_item.max_weapon_mods if mod.mod_type == ModType.Prefix), None)
+                                elif salvage_item.is_armor:
+                                    prefix = next(
+                                        (rune for rune in salvage_item.max_runes if rune.mod_type == ModType.Prefix), None)
+                                
+                                if prefix:
+                                    ConsoleLog(
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} to extract {prefix.name}", Console.MessageType.Info)
+                                else:
+                                    ConsoleLog(
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} to extract 'Unkown Upgrade'", Console.MessageType.Info)
+                            elif salvage_item.salvage_option == SalvageOption.Suffix:
+                                suffix = None
+                                
+                                if salvage_item.is_weapon:
+                                    suffix = next(
+                                        (mod for mod in salvage_item.max_weapon_mods if mod.mod_type == ModType.Suffix), None)
+                                elif salvage_item.is_armor:
+                                    suffix = next(
+                                        (rune for rune in salvage_item.max_runes if rune.mod_type == ModType.Suffix), None)
+                                
+                                if suffix:
+                                    ConsoleLog(
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} to extract {suffix.name}", Console.MessageType.Info)
+                                else:
+                                    ConsoleLog(
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} to extract 'Unkown Upgrade'", Console.MessageType.Info)
+                            elif salvage_item.salvage_option == SalvageOption.Inherent:
+                                inherent = None
+                                
+                                if salvage_item.is_weapon:
+                                    inherent = next(
+                                        (mod for mod in salvage_item.max_weapon_mods if mod.mod_type == ModType.Inherent), None)
+                                    
+                                elif salvage_item.is_armor:
+                                    ConsoleLog(
+                                        "LootEx", f"Armors don't have a inherent mod to extract.", Console.MessageType.Info)
+                                    return False
+                                
+                                if inherent:
+                                    ConsoleLog(
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} to extract {inherent.name}", Console.MessageType.Info)
+                                else:
+                                    ConsoleLog(
+                                        "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name} to extract 'Unkown Upgrade'", Console.MessageType.Info)
+                            else:
+                                ConsoleLog(
+                                    "LootEx", f"Confirming salvage option: {salvage_item.salvage_option.name} for {salvage_item.model_name}", Console.MessageType.Info)
+                                
+                            ui_manager_extensions.UIManagerExtensions.ConfirmLesserSalvage()
+                            ui_manager_extensions.UIManagerExtensions.SelectSalvageOptionAndSalvage(
+                                salvage_item.salvage_option)
+                            # salvage_item.salvage_requires_confirmation = False
+                            return True
+
+        return False
 
     def GetActions(self, ) -> dict[int, Cached_Item]:
         if not settings.current.loot_profile:
             return {}
 
         actions: dict[int, Cached_Item] = {}
-        cached_inventory : list[Cached_Item] = []
+        cached_inventory: list[Cached_Item] = []
 
         def ShouldStashItem(item: Cached_Item) -> bool:
             if item.data and item.data.next_nick_week:
-                weeks_until = (item.data.next_nick_week - date.today()).days // 7
-                
+                weeks_until = (item.data.next_nick_week -
+                               date.today()).days // 7
+
                 if weeks_until <= settings.current.loot_profile.nick_weeks_to_keep if settings.current.loot_profile else False:
                     return True
-                        
+
             if self.IsVial_Of_DyeToKeep(item):
                 return True
-                
+
             # Item has more than one weapon mod we want to keep, do not process it, let the player decide
             if utility.Util.IsWeaponType(item.item_type):
                 has_mod_to_keep, _, mods_to_keep = item.HasModToKeep()
@@ -879,17 +954,16 @@ class LootHandler:
 
             # Item has more than one rune or insignia we want to keep do not process it, let the player decide
             if utility.Util.IsArmorType(item.item_type):
-                has_mod_to_keep, runes_to_keep, _  = item.HasModToKeep()
+                has_mod_to_keep, runes_to_keep, _ = item.HasModToKeep()
                 if has_mod_to_keep and (len(runes_to_keep) > 1):
                     return True
 
-            
             return False
-            
+
         def ShouldCollectData(item: Cached_Item) -> bool:
             if not item.data:
                 return True
-            
+
             missing_language = item.data.has_missing_names()
             if missing_language:
                 ConsoleLog("LootEx", f"Item '{item.model_name}' ({item.id}) has missing data for {missing_language}, collecting data.",
@@ -898,7 +972,7 @@ class LootHandler:
 
             if (item.is_armor or item.is_weapon or item.is_upgrade) and data_collector.instance.has_uncollected_mods(item_id)[0]:
                 return True
-            
+
             return False
 
         def ShouldIdentifyItem(item: Cached_Item) -> bool:
@@ -916,10 +990,16 @@ class LootHandler:
 
             if item.is_salvageable:
                 if item.is_weapon or item.is_armor:
-                    has_mod_to_keep, _, _ = item.HasModToKeep()
+                    has_max_mods, runes, weapon_mods = item.HasModToKeep()
 
-                    if has_mod_to_keep:
-                        return True
+                    if has_max_mods:
+                        for rune in runes:
+                            if settings.current.loot_profile and settings.current.loot_profile.runes.get(rune.identifier, False):
+                                return True
+                        
+                        for weapon_mod in weapon_mods:
+                            if settings.current.loot_profile and settings.current.loot_profile.weapon_mods.get(weapon_mod.identifier, {}).get(item.item_type.name, False):
+                                return True                        
 
             return False
 
@@ -930,9 +1010,9 @@ class LootHandler:
             if item.is_blacklisted:
                 return False
 
-            if not item.is_salvageable:         
+            if not item.is_salvageable:
                 return False
-            
+
             return self.IsSalvageAction(item.action)
 
         def ShouldSellItemToMerchant(item: Cached_Item) -> bool:
@@ -967,30 +1047,35 @@ class LootHandler:
 
         inventory_array = self.GetInventoryArray()
         self.inventory_changed = False
-
+        
+        has_empty_slot = False
         for slot, item_id in enumerate(inventory_array):
             item = Cached_Item(item_id, slot)
             cached_inventory.append(item)
-                        
+
+            has_empty_slot = item.id == 0 or has_empty_slot
             if item.id == 0:
                 continue
-            
+
             existing_item = next(
                 (item for item in self.cached_inventory if item.id == item_id), None)
-            
-            if existing_item and existing_item.Update() and existing_item.is_inventory_item and existing_item.quantity == item.quantity and (existing_item.rarity == item.rarity):                
+
+            if existing_item and item.is_inventory_item and existing_item.quantity == item.quantity and (existing_item.rarity == item.rarity):
                 item.action = existing_item.action
                 actions[item_id] = item
-                self.inventory_changed = self.inventory_changed or existing_item.slot != item.slot
+                self.inventory_changed = self.inventory_changed or existing_item.slot != item.slot or has_empty_slot
                 continue
-            
+
             if not item.is_inventory_item:
                 if item_id in actions:
                     del actions[item_id]
-                    
+
                 cached_inventory.remove(item)
                 continue
             
+            if has_empty_slot:
+                self.inventory_changed = True
+
             actions[item_id] = item
             self.inventory_changed = True
 
@@ -998,16 +1083,16 @@ class LootHandler:
                 action = item.config.get_action(item)
                 if action != ItemAction.NONE:
                     item.action = action
-                    
+
                     if self.IsSalvageAction(item.action):
                         salvage_option = self.GetSalvageOption(item)
-                        
+
                         if salvage_option is not None:
                             item.salvage_option = salvage_option
                             rarity_requires_confirmation = item.rarity >= Rarity.Blue
                             mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
                             item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-                            self.salvage_queue.append(item)                            
+                            self.salvage_queue.append(item)
                     continue
 
             for filter in settings.current.loot_profile.filters:
@@ -1015,18 +1100,18 @@ class LootHandler:
 
                 if action != ItemAction.NONE:
                     item.action = action
-                    
+
                     if self.IsSalvageAction(item.action):
                         salvage_option = self.GetSalvageOption(item)
-                        
+
                         if salvage_option is not None:
                             item.salvage_option = salvage_option
                             rarity_requires_confirmation = item.rarity >= Rarity.Blue
                             mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
                             item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-                            self.salvage_queue.append(item)                            
+                            self.salvage_queue.append(item)
                     continue
-                
+
             # Soft action set for materials to deposit them to the material storage, may be overridden later through filters or item config
             if item.item_type == ItemType.Materials_Zcoins and item.action == ItemAction.NONE:
                 if item.model_id in data.Materials:
@@ -1040,23 +1125,25 @@ class LootHandler:
             if ShouldIdentifyItem(item):
                 item.action = ItemAction.IDENTIFY
                 continue
-            
+
             if ShouldStashItem(item):
                 item.action = ItemAction.STASH
                 continue
-            
+
             if ShouldExtractMods(item):
                 if item.is_weapon:
-                    if item.max_weapon_mods and len(item.max_weapon_mods) == 1:                        
+                    if item.max_weapon_mods and len(item.max_weapon_mods) == 1:
                         item.action = ItemAction.SALVAGE_MODS
-                        item.salvage_option = utility.Util.GetSalvageOptionFromModType(item.max_weapon_mods[0].mod_type)
+                        item.salvage_option = utility.Util.GetSalvageOptionFromModType(
+                            item.max_weapon_mods[0].mod_type)
                         item.salvage_requires_confirmation = True
                         self.salvage_queue.append(item)
-                        
+
                 elif item.is_armor:
-                    if item.max_runes and len(item.max_runes) == 1:                        
+                    if item.max_runes and len(item.max_runes) == 1:
                         item.action = ItemAction.SALVAGE_MODS
-                        item.salvage_option = utility.Util.GetSalvageOptionFromModType(item.max_runes[0].mod_type)
+                        item.salvage_option = utility.Util.GetSalvageOptionFromModType(
+                            item.max_runes[0].mod_type)
                         item.salvage_requires_confirmation = True
                         self.salvage_queue.append(item)
                 continue
@@ -1065,19 +1152,19 @@ class LootHandler:
                 salvage_option = self.GetSalvageOption(item)
                 ConsoleLog(
                     "LootEx", f"Salvage option for item {item.model_name} with action {item.action} is {salvage_option.name if salvage_option else 'None'}", Console.MessageType.Debug)
-                
+
                 if salvage_option is None:
                     continue
-                
-                if self.IsSalvageAction(item.action):                
-                    # self.salvage_option = salvage_option    
-                                                
+
+                if self.IsSalvageAction(item.action):
+                    # self.salvage_option = salvage_option
+
                     rarity_requires_confirmation = item.rarity >= Rarity.Blue
                     mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
-                    
+
                     item.salvage_option = salvage_option
                     item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-                    
+
                     self.salvage_queue.append(item)
                     continue
 
@@ -1087,10 +1174,9 @@ class LootHandler:
 
             if ShouldDestroyItem(item):
                 continue
-                
-                
+
         self.cached_inventory = cached_inventory
-        
+
         return actions
 
     def Run(self):
@@ -1105,50 +1191,47 @@ class LootHandler:
 
         if not settings.current.loot_profile or not settings.current.automatic_inventory_handling:
             return
-        
+
         if settings.current.loot_profile.changed:
             settings.current.loot_profile.changed = False
             self.reset()
             return
 
         global_time = datetime.now()
-        
+
         self.ProcessSalvageList()
-        
+
         if self.salvaging_item:
             self.UpdateSalvageWindows()
-            
+
             if self.is_salvage_window_open or self.is_confirm_materials_window_open:
                 if self.salvage_requires_confirmation:
                     if self._SendConfirmSalvage(self.salvaging_item, self.salvage_option):
                         self.salvaging_item.ResetMods()
                     return
-            
-                    
+
         if self.inventory_timer.IsExpired():
             self.inventory_timer.Reset()
 
             self.UpdateSalvageWindows()
             self.merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()
             self.upgrade_open = ui_manager_extensions.UIManagerExtensions.IsUpgradeWindowOpen()
-            
+
             if self.upgrade_open:
                 self.reset()
                 return
-            
-            
+
             self.empty_slots = GLOBAL_CACHE.Inventory.GetFreeSlotCount()
             actions = self.GetActions()
-            
+
             if self.merchant_timer.IsExpired():
                 self.merchant_timer.Reset()
-                
+
                 items_to_buy = self.GetMissingItems()
-                if items_to_buy:             
-                    if self.is_outpost and not self.GetItemsFromStorage(items_to_buy):                        
+                if items_to_buy:
+                    if self.is_outpost and not self.GetItemsFromStorage(items_to_buy):
                         if self.merchant_open:
                             self.BuyItemsFromMerchant(items_to_buy)
-
 
             for _, item in actions.items():
                 time = datetime.now()
@@ -1165,13 +1248,14 @@ class LootHandler:
 
                     case ItemAction.DEPOSIT_MATERIAL:
                         if self.is_outpost and self.inventory_changed:
-                            # self.DepositMaterial(item)
-                            pass
+                            if self.DepositMaterial(item):
+                                self.inventory_changed = True
                         continue
 
                     case ItemAction.STASH:
                         if self.is_outpost:
                             self.StashItem(item)
+                            self.inventory_changed = True                            
 
                     case ItemAction.IDENTIFY:
                         self.id_kit = Inventory.GetFirstIDKit() if self.id_kit == -1 else self.id_kit
@@ -1194,19 +1278,20 @@ class LootHandler:
                         if self.merchant_open:
                             Trading.Merchant.SellItem(
                                 item.id, item.quantity * item.value)
+                            self.inventory_changed = True
 
                     case ItemAction.DESTROY:
                         ConsoleLog(
                             "LootEx", f"Destroying item: '{item.model_name}' ({item.id})", Console.MessageType.Info)
                         # Inventory.DestroyItem(item_id)
+                        # self.inventory_changed = True
 
                     case _:
                         pass
-            
-            
+
             if self.inventory_changed:
                 self.CompactInventory()
-            
+
             time_delta = datetime.now() - global_time
             self.TrackTime(time_delta, time_results, "Global")
             ConsoleLog(
@@ -1225,7 +1310,7 @@ class LootHandler:
     def Start(self) -> bool:
         ConsoleLog("LootEx", "Starting loot handling",
                    Console.MessageType.Info)
-        
+
         self.reset()
         settings.current.automatic_inventory_handling = True
         settings.current.save()

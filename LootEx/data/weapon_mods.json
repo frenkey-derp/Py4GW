@@ -3986,7 +3986,17 @@
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Demonslaying"
+            "English": "of Demonslaying",
+            "German": "d. Dämonentötung",
+            "Korean": "(데몬 상대 무기)",
+            "French": "(anti-démons)",
+            "Italian": "dell'arco Ammazza-demoni",
+            "Spanish": "(matademonios)",
+            "TraditionalChinese": "惡魔殺手",
+            "Japanese": "(デーモン キラー)",
+            "Polish": "(Zabijania Demonów)",
+            "Russian": "of Demonslaying",
+            "BorkBorkBork": "ooff Demunslaeyeeng"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -4901,7 +4911,17 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Smiting Prayers"
+            "English": "of Smiting Prayers",
+            "German": "d. Peinigungsgebete",
+            "Korean": "(천벌)",
+            "French": "(Prières de châtiment)",
+            "Italian": "del bastone Preghiere Punitive",
+            "Spanish": "(Plegarias de ataque)",
+            "TraditionalChinese": "懲戒祈禱",
+            "Japanese": "(ホーリー)",
+            "Polish": "(Modlitwy Ofensywne)",
+            "Russian": "of Smiting Prayers",
+            "BorkBorkBork": "ooff Smeeteeng Praeyers"
         },
         "ModType": "Suffix",
         "TargetTypes": [
