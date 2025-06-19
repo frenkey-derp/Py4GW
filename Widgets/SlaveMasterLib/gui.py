@@ -94,7 +94,12 @@ class UI:
                 ImGui.show_tooltip("Combat")
                 
                 
-                options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(self.account_mail)
+                            
+                if not self.account_mail or self.account_mail != GLOBAL_CACHE.Player.GetAccountEmail():
+                    ConsoleLog("SlaveMaster", "No current account set, cannot handle messages.")
+                    self.account_mail = GLOBAL_CACHE.Player.GetAccountEmail()  
+                
+                options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(self.account_mail) if self.account_mail else None
                 if options is not None:
                     options.Following = self.options.Following
                     options.Avoidance = self.options.Avoidance
