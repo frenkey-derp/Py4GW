@@ -1,0 +1,225 @@
+import datetime
+from LootEx import data, data_collector, enum, loot_handling, settings
+from Py4GWCoreLib import Inventory, Player
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
+from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
+from Py4GWCoreLib.enums import SharedCommandType
+
+import importlib
+
+from Py4GW_widget_manager import WidgetHandler
+
+importlib.reload(enum)
+importlib.reload(data)
+importlib.reload(settings)
+
+sharedMemoryManager = Py4GWSharedMemoryManager()
+current_account = Player.GetAccountEmail()
+action_node = ActionQueueNode(150)
+
+
+start : datetime.datetime = datetime.datetime.now()
+is_collecting = False
+
+def ResetMessages():
+    ConsoleLog("LootEx", "Resetting messages...")
+    messages = sharedMemoryManager.GetAllMessages()
+    messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
+    
+    for index, message in messages:
+        receiverEmail = message.ReceiverEmail
+        sharedMemoryManager.MarkMessageAsFinished(receiverEmail, index)
+
+def SendMergingMessage():
+    global is_collecting
+    
+    ResetMessages()
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
+        
+    MergeWhenCollectionPaused()
+        
+def MergeWhenCollectionPaused():    
+    messages = sharedMemoryManager.GetAllMessages()
+    messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
+    
+    for index, message in messages:
+        if message.Command == SharedCommandType.LootEx:
+            param = int(message.Params[0] if len(message.Params) > 0 else 0)
+            
+            if param == enum.MessageActions.PauseDataCollection:                
+                action_node.add_action(
+                    MergeWhenCollectionPaused
+                )
+                
+                return False
+    
+    data.MergeDiffItems()
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if acc.AccountEmail == current_account:
+            continue
+        
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadData, 0, 0))
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ResumeDataCollection, 0, 0))
+            
+    return True
+
+def SendStart(exclude_self: bool = False):    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Start, 0, 0))
+
+def SendStop(exclude_self: bool = False):    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Stop, 0, 0))
+
+def SendShowLootExWindow(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ShowLootExWindow, 0, 0))
+        
+def SendHideLootExWindow(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.HideLootExWindow, 0, 0))
+
+def SendOpenXunlai(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.OpenXunlai, 0, 0))
+
+def SendStartDataCollection(exclude_self: bool = False):
+    global is_collecting
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartDataCollection, 0, 0))
+    
+def SendPauseDataCollection(exclude_self: bool = False):
+    global is_collecting
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
+
+
+def SendResign(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Resign, 0, 0))
+        
+def SendReloadWidgets(exclude_self: bool = False):
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if exclude_self and acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadWidgets, 0, 0))
+
+def ReloadWidgets():    
+    widgetHandler = WidgetHandler()
+    widgetHandler.discover_widgets()
+
+def HandleMessages():
+    action_node.ProcessQueue()    
+    HandleReceivedMessages()
+    
+def HandleReceivedMessages():
+    global is_collecting
+    
+    messages = sharedMemoryManager.GetAllMessages()
+    messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
+
+    for index, message in messages:
+        if message.Command == SharedCommandType.LootEx:
+            if message.ReceiverEmail == current_account:
+                param = int(message.Params[0] if len(message.Params) > 0 else 0)
+                
+                if param > 0:
+                    # action : enum.MessageActions = enum.MessageActions(param)
+                    
+                    match param:
+                        case enum.MessageActions.PauseDataCollection:
+                            sharedMemoryManager.MarkMessageAsRunning(current_account, index)     
+                            is_collecting = settings.current.collect_items
+                                                   
+                            data_collector.instance.stop_collection()                            
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
+                        case enum.MessageActions.ResumeDataCollection:
+                            sharedMemoryManager.MarkMessageAsRunning(current_account, index)
+                            
+                            if is_collecting:
+                                data_collector.instance.start_collection()
+                            
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
+                        case enum.MessageActions.StartDataCollection:
+                            sharedMemoryManager.MarkMessageAsRunning(current_account, index)
+                            
+                            data_collector.instance.start_collection()
+                            
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                        
+                        case enum.MessageActions.Start:
+                            loot_handling.LootHandler().Start()
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
+                        case enum.MessageActions.Stop:
+                            loot_handling.LootHandler().Stop()
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                                
+                        case enum.MessageActions.ReloadData:
+                            sharedMemoryManager.MarkMessageAsRunning(current_account, index)
+                            
+                            ConsoleLog("LootEx", "Reloading data...")
+                            data.Reload()
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
+                        case enum.MessageActions.ShowLootExWindow:
+                            settings.current.manual_window_visible = True
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
+                        case enum.MessageActions.HideLootExWindow:
+                            settings.current.manual_window_visible = False
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
+                        case enum.MessageActions.OpenXunlai:    
+                            Inventory.OpenXunlaiWindow()                            
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                        
+                        case enum.MessageActions.Resign:
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            ConsoleLog("LootEx", "Resigning from the game.")
+                            GLOBAL_CACHE.Player.SendChatCommand("resign")
+                            return False
+                        
+                        case enum.MessageActions.ReloadWidgets:
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            ReloadWidgets()
+                        
+                        case _:
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            return
