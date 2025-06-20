@@ -94,6 +94,17 @@ class LootHandler:
         self.SetPollingInterval(
             settings.current.loot_profile.polling_interval if settings.current.loot_profile else 1)
 
+    def Should_Loot_Item(self, item_id: int) -> bool:
+        ConsoleLog("LootEx", f"Checking if item {item_id} should be looted.", Console.MessageType.Debug)
+        cached_item = Cached_Item(item_id)
+        
+        if cached_item.model_id == ModelID.Vial_Of_Dye:
+            if not self.IsVial_Of_DyeToKeep(cached_item):
+                ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that is not in the keep list, skipping.", Console.MessageType.Debug)
+                return False
+            
+        return True
+    
     def SetPollingInterval(self, interval: float):
         self.inventory_timer.SetThrottleTime(interval * 1000)
 

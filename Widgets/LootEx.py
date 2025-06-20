@@ -49,6 +49,8 @@ def configure():
 
 VK_LBUTTON = 0x01  # Virtual-Key code for left mouse button
 
+LootConfig().AddCondition(LootConfig.ConditionCategory.Custom, loot_handler.Should_Loot_Item, "LootEx - Should Loot Item")
+    
 @staticmethod
 def is_left_mouse_down():
     return (windll.user32.GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
@@ -63,7 +65,7 @@ def main():
 
     if messaging.HandleMessages():
         return
-    
+        
     if settings.current.parent_frame_id is None or settings.current.parent_frame_id == 0:
         settings.current.parent_frame_id = UIManager.GetFrameIDByHash(inventory_frame_hash)
     

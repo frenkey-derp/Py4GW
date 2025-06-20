@@ -103,12 +103,12 @@ def save_rarity_filter_data():
         os.makedirs(os.path.dirname(RARITY_FILTER_DATA_FILE), exist_ok=True)
         with open(RARITY_FILTER_DATA_FILE, "w") as f:
             json.dump({
-                "white": loot_filter_singleton.loot_whites,
-                "blue": loot_filter_singleton.loot_blues,
-                "purple": loot_filter_singleton.loot_purples,
-                "gold": loot_filter_singleton.loot_golds,
-                "green": loot_filter_singleton.loot_greens,
-                "gold_coins": loot_filter_singleton.loot_gold_coins,   # ← NEW
+                "white": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Whites),
+                "blue": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Blues),
+                "purple": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Purples),
+                "gold": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Golds),
+                "green": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Greens),
+                "gold_coins": loot_filter_singleton. GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins)
             }, f, indent=4)
         print("[INFO] Saved rarity_filter_data.json")
     except Exception as e:
@@ -151,7 +151,7 @@ def load_loot_config():
             loot_filter_singleton.AddToWhitelist(mid)
 
     # 5) Always keep gold coins if that toggle’s on
-    if loot_filter_singleton.loot_gold_coins:
+    if loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins):
         loot_filter_singleton.AddToWhitelist(ModelID.Gold_Coins.value)
 
     # 🔥 Rebuild singleton whitelist
@@ -166,7 +166,7 @@ def load_loot_config():
             loot_filter_singleton.AddToWhitelist(model_id)
 
     # ——— KEEP GOLD COINS WHITELISTED ———
-    if loot_filter_singleton.loot_gold_coins:
+    if loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins):
         # ensure you have ModelID.Gold_Coin in your enum
         loot_filter_singleton.AddToWhitelist(ModelID.Gold_Coins.value)
 
@@ -182,7 +182,7 @@ def load_rarity_filter_settings():
     )
 
     # if the user wants gold coins, ensure they remain whitelisted
-    if loot_filter_singleton.loot_gold_coins:
+    if loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins):
         loot_filter_singleton.AddToWhitelist(ModelID.Gold_Coins.value)
 
 def save_loot_config_to(path: str):
@@ -191,12 +191,12 @@ def save_loot_config_to(path: str):
         output = {
             "items": loot_items,
             "rarity": {
-                "loot_whites": loot_filter_singleton.loot_whites,
-                "loot_blues": loot_filter_singleton.loot_blues,
-                "loot_purples": loot_filter_singleton.loot_purples,
-                "loot_golds": loot_filter_singleton.loot_golds,
-                "loot_greens": loot_filter_singleton.loot_greens,
-                "loot_gold_coins": loot_filter_singleton.loot_gold_coins,
+                "white": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Whites),
+                "blue": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Blues),
+                "purple": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Purples),
+                "gold": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Golds),
+                "green": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Greens),
+                "gold_coins": loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins)
             }
         }
         with open(path, "w") as f:
@@ -370,12 +370,12 @@ def DrawWindow():
                 load_loot_config_from(path)
 
         if PyImGui.tree_node("Common"):
-            rw = loot_filter_singleton.loot_whites
-            rb = loot_filter_singleton.loot_blues
-            rp = loot_filter_singleton.loot_purples
-            rg = loot_filter_singleton.loot_golds
-            re = loot_filter_singleton.loot_greens
-            gc = loot_filter_singleton.loot_gold_coins
+            rw = loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Whites)
+            rb = loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Blues)
+            rp = loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Purples)
+            rg = loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Golds)
+            re = loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Greens)
+            gc = loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins)
 
             new_rw = PyImGui.checkbox("White Items", rw)
             new_rb = PyImGui.checkbox("Blue Items", rb)
@@ -540,12 +540,12 @@ def DrawWhitelistViewer():
             PyImGui.separator()
 
             try:
-                PyImGui.text(f"White: {loot_filter_singleton.loot_whites}")
-                PyImGui.text(f"Blue: {loot_filter_singleton.loot_blues}")
-                PyImGui.text(f"Purple: {loot_filter_singleton.loot_purples}")
-                PyImGui.text(f"Gold: {loot_filter_singleton.loot_golds}")
-                PyImGui.text(f"Green: {loot_filter_singleton.loot_greens}")
-                PyImGui.text(f"Gold Coins: {loot_filter_singleton.loot_gold_coins}")
+                PyImGui.text(f"White: {loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Whites)}")
+                PyImGui.text(f"Blue: {loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Blues)}")
+                PyImGui.text(f"Purple: {loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Purples)}")
+                PyImGui.text(f"Gold: {loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Golds)}")
+                PyImGui.text(f"Green: {loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Greens)}")
+                PyImGui.text(f"Gold Coins: {loot_filter_singleton.GetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins)}")
             except Exception as e:
                 PyImGui.text(f"Error reading rarity settings: {str(e)}")
 

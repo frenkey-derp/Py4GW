@@ -4,7 +4,7 @@ from enum import Enum
 import time
 from time import sleep
 from collections import namedtuple, deque
-from typing import Optional
+from typing import Callable, Optional
 import ctypes
 
 import Py4GW
@@ -2013,6 +2013,32 @@ class MultiThreading:
 
 #region ConfigCalsses
 class LootConfig:
+    class ConditionCategory(IntEnum):
+        """
+        Represents the category of loot conditions.
+        This is used to categorize loot conditions for better organization.
+        """
+        None_ = 0
+        Gold_Coins = 1
+        Whites = 2
+        Blues = 3
+        Purples = 4
+        Greens = 5
+        Golds = 6
+        Custom = 7
+        
+    class LootCondition:
+        """
+        Represents a condition for looting items.
+        This is a callable that takes an item ID and returns True if the item should be looted.
+        """
+        def __init__(self, condition_fn: Callable[[int], bool]):
+            self.condition_fn = condition_fn
+            self.enabled = True 
+
+        def __call__(self, item_id: int) -> bool:
+            return self.condition_fn(item_id)
+        
     _instance = None
 
     def __new__(cls):
@@ -2026,27 +2052,138 @@ class LootConfig:
             return
         self.reset()
         self._initialized = True
+        self.base_conditions : dict[LootConfig.ConditionCategory, LootConfig.LootCondition] = {}  # List of conditions to check for looting items
+        self.conditions : dict[str, LootConfig.LootCondition] = {}  # List of conditions to check for looting items
 
     def reset(self):
-        self.loot_gold_coins = False
-        self.loot_whites = False
-        self.loot_blues = False
-        self.loot_purples = False
-        self.loot_golds = False
-        self.loot_greens = False
+        self.conditions = {}  # Reset conditions
+        self.base_conditions = {}  # Reset base conditions
         self.whitelist = set()  # Avoid duplicates
         self.blacklist = set()
         self.item_id_blacklist = set()  # For items that are blacklisted by ID
         self.item_id_whitelist = set()  # For items that are whitelisted by ID
 
     def SetProperties(self, loot_whites=False, loot_blues=False, loot_purples=False, loot_golds=False, loot_greens=False, loot_gold_coins=False):
-        self.loot_gold_coins = loot_gold_coins
-        self.loot_whites = loot_whites
-        self.loot_blues = loot_blues
-        self.loot_purples = loot_purples
-        self.loot_golds = loot_golds
-        self.loot_greens = loot_greens
+        from .GlobalCache import GLOBAL_CACHE
+        
+        self.AddCondition(LootConfig.ConditionCategory.Gold_Coins, lambda item_id: loot_gold_coins and GLOBAL_CACHE.Item.GetModelID(item_id) == ModelID.Gold_Coins.value)  
+        self.SetConditionEnabled(LootConfig.ConditionCategory.Gold_Coins, loot_gold_coins)
+              
+        self.AddCondition(LootConfig.ConditionCategory.Whites, lambda item_id: loot_whites and GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] == Rarity.White.value and GLOBAL_CACHE.Item.GetModelID(item_id) != ModelID.Gold_Coins.value)
+        self.SetConditionEnabled(LootConfig.ConditionCategory.Whites, loot_whites)
+        
+        self.AddCondition(LootConfig.ConditionCategory.Blues, lambda item_id: loot_blues and GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] == Rarity.Blue.value and GLOBAL_CACHE.Item.GetModelID(item_id) != ModelID.Gold_Coins.value)
+        self.SetConditionEnabled(LootConfig.ConditionCategory.Blues, loot_blues)
+        
+        self.AddCondition(LootConfig.ConditionCategory.Purples, lambda item_id: loot_purples and GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] == Rarity.Purple.value and GLOBAL_CACHE.Item.GetModelID(item_id) != ModelID.Gold_Coins.value)
+        self.SetConditionEnabled(LootConfig.ConditionCategory.Purples, loot_purples)
+        
+        self.AddCondition(LootConfig.ConditionCategory.Golds, lambda item_id: loot_golds and GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] == Rarity.Gold.value and GLOBAL_CACHE.Item.GetModelID(item_id) != ModelID.Gold_Coins.value)
+        self.SetConditionEnabled(LootConfig.ConditionCategory.Golds, loot_golds)
+        
+        self.AddCondition(LootConfig.ConditionCategory.Greens, lambda item_id: loot_greens and GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0] == Rarity.Green.value and GLOBAL_CACHE.Item.GetModelID(item_id) != ModelID.Gold_Coins.value)
+        self.SetConditionEnabled(LootConfig.ConditionCategory.Greens, loot_greens)
 
+    def GetCondition(self, category: ConditionCategory, condition_name : str = "") -> LootCondition | None:
+        """
+        Get the condition function for a specific category or by name.
+        If the category is Custom, it will return the condition by name.
+        """
+        if category == LootConfig.ConditionCategory.None_:
+            return None
+        
+        if category != LootConfig.ConditionCategory.Custom:
+            return self.base_conditions.get(category, None)
+        
+        if condition_name:
+            return self.conditions.get(condition_name, None)
+        
+        return None
+    
+    def GetConditionEnabled(self, category: ConditionCategory, condition_name : str = "") -> bool:
+        """
+        Get the enabled status of a condition based on its category or name.
+        If the category is Custom, it will return the enabled status by name.
+        """
+        if category == LootConfig.ConditionCategory.None_:
+            return False
+        
+        if category != LootConfig.ConditionCategory.Custom:
+            condition = self.base_conditions.get(category, None)
+            return condition.enabled if condition else False
+        
+        if condition_name:
+            condition = self.conditions.get(condition_name, None)
+            return condition.enabled if condition else False
+        
+        return False
+
+    def RemoveCondition(self, category: ConditionCategory, condition_name: str = "") -> bool:
+        """
+        Remove a condition based on its category or name.
+        If the category is Custom, it will remove the condition by name.
+        """
+        if category == LootConfig.ConditionCategory.None_:
+            return False
+        
+        if category != LootConfig.ConditionCategory.Custom:
+            if category in self.base_conditions:
+                del self.base_conditions[category]
+                return True
+        else:
+            if condition_name and condition_name in self.conditions:
+                del self.conditions[condition_name]
+                return True
+        
+        return False
+    
+    def AddCondition(self, category: ConditionCategory, condition_fn: Callable[[int], bool], condition_name : str = "") -> bool:
+        """
+        Set the condition function for a specific category.
+        This allows updating the condition logic dynamically.
+        """
+        if category == LootConfig.ConditionCategory.None_ or condition_fn is None:
+            return False
+        
+        if category != LootConfig.ConditionCategory.Custom:
+            if category in self.base_conditions:
+                self.base_conditions[category].condition_fn = condition_fn
+                return True
+            
+            else:
+                self.base_conditions[category] = LootConfig.LootCondition(condition_fn)
+                return True
+            
+        else:
+            if condition_name and condition_name in self.conditions:
+                self.conditions[condition_name].condition_fn = condition_fn
+                return True
+            
+            elif condition_name:
+                self.conditions[condition_name] = LootConfig.LootCondition(condition_fn)
+                return True
+        
+        return False
+
+    def SetConditionEnabled(self, category: ConditionCategory, enabled: bool):
+        """
+        Enable or disable a condition based on its category.
+        If the category is Custom, it will enable/disable the condition by name.
+        """
+        if category == LootConfig.ConditionCategory.None_:
+            return False
+        
+        if category != LootConfig.ConditionCategory.Custom:
+            if category in self.base_conditions:
+                self.base_conditions[category].enabled = enabled
+                return True
+        else:
+            for condition in self.conditions.values():
+                condition.enabled = enabled
+            return True
+        
+        return False
+    
     def AddToWhitelist(self, model_id: int):
         self.whitelist.add(model_id)
 
@@ -2189,7 +2326,7 @@ class LootConfig:
             
         loot_array = GLOBAL_CACHE.AgentArray.GetItemArray()
         loot_array = AgentArray.Filter.ByDistance(loot_array, GLOBAL_CACHE.Player.GetXY(), distance)
-
+        
         if multibox_loot:
             loot_array = AgentArray.Filter.ByCondition(loot_array, lambda item_id: IsValidFollowerItem(item_id))
         else:
@@ -2199,8 +2336,8 @@ class LootConfig:
         for agent_id in loot_array[:]:  # Iterate over a copy to avoid modifying while iterating
             item_data = GLOBAL_CACHE.Agent.GetItemAgent(agent_id)
             item_id = item_data.item_id
-            model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-
+            model_id = GLOBAL_CACHE.Item.GetModelID(item_id)            
+            
             if self.IsWhitelisted(model_id):
                 continue
             
@@ -2214,22 +2351,26 @@ class LootConfig:
             if self.IsItemIDBlacklisted(item_id):
                 loot_array.remove(agent_id)
                 continue
-
-            if not self.loot_whites and GLOBAL_CACHE.Item.Rarity.IsWhite(item_id):
-                loot_array.remove(agent_id)
+            
+            matched_condition = next((
+                condition for condition in self.conditions.values() 
+                if condition.enabled and condition(item_id)
+            ), None)
+            
+            if matched_condition:
                 continue
-            if not self.loot_blues and GLOBAL_CACHE.Item.Rarity.IsBlue(item_id):
-                loot_array.remove(agent_id)
+            
+            matched_base_condition = next((
+                condition for condition in self.base_conditions.values() 
+                if condition.enabled and condition(item_id)
+            ), None)
+            
+            if matched_base_condition:     
                 continue
-            if not self.loot_purples and GLOBAL_CACHE.Item.Rarity.IsPurple(item_id):
-                loot_array.remove(agent_id)
-                continue
-            if not self.loot_golds and GLOBAL_CACHE.Item.Rarity.IsGold(item_id):
-                loot_array.remove(agent_id)
-                continue
-            if not self.loot_greens and GLOBAL_CACHE.Item.Rarity.IsGreen(item_id):
-                loot_array.remove(agent_id)
-                continue
+            
+            # If no conditions matched, remove the item from the loot array
+            loot_array.remove(agent_id)
+                  
 
         loot_array = AgentArray.Sort.ByDistance(loot_array, GLOBAL_CACHE.Player.GetXY())
 

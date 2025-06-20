@@ -18,7 +18,6 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 
 inventory_frame_hash = 291586130
 sharedMemoryManager = Py4GWSharedMemoryManager()
-current_account = GLOBAL_CACHE.Player.GetAccountEmail()
 
 ui = gui.UI()
 
@@ -33,12 +32,7 @@ def main():
         return
         
     if GLOBAL_CACHE.Player.GetAgentID() != GLOBAL_CACHE.Party.GetPartyLeaderID():
-        return      
-         
-    if not current_account or current_account != GLOBAL_CACHE.Player.GetAccountEmail():
-        ConsoleLog("SlaveMaster", "No current account set, cannot handle messages.")
-        current_account = GLOBAL_CACHE.Player.GetAccountEmail()
-        return                         
+        return                     
                          
     ui.draw()
         
