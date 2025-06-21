@@ -1,4 +1,4 @@
-from LootEx import settings, loot_check, cache, loot_handling, loot_profile, data_collector, data, utility, messaging
+from LootEx import loot_handling, profile, settings, price_check, cache, inventory_handling, data_collector, data, utility, messaging
 from LootEx.cache import Cached_Item
 from Py4GWCoreLib import *
 from LootEx import gui
@@ -12,11 +12,11 @@ import importlib
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 importlib.reload(gui)
 importlib.reload(cache)
-importlib.reload(loot_profile)
+importlib.reload(profile)
 importlib.reload(settings)
-importlib.reload(loot_handling)
+importlib.reload(inventory_handling)
 importlib.reload(data_collector)
-importlib.reload(loot_check)
+importlib.reload(price_check)
 importlib.reload(messaging)
 
 MODULE_NAME = "LootEx"
@@ -27,6 +27,7 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 data.Load()
 ui = gui.UI()
 
+inventory_handler = inventory_handling.InventoryHandler()
 loot_handler = loot_handling.LootHandler()
 
 # Load settings
@@ -60,7 +61,7 @@ def main():
     global inventory_frame_hash
     
     if not Routines.Checks.Map.MapValid():
-        loot_handler.reset()
+        inventory_handler.reset()
         return           
 
     if messaging.HandleMessages():
@@ -94,25 +95,25 @@ def main():
                     hotkey_timer.Reset()
                     if py_io.key_shift:
                         if item.is_inventory_item:
-                            loot_handler.DropItem(item)
+                            inventory_handler.DropItem(item)
                             
                     elif item.is_inventory_item:
-                        loot_handler.DepositItem(item, False)
+                        inventory_handler.DepositItem(item, False)
                         
                     elif item.is_storage_item:
-                        loot_handler.WithdrawItem(item)
+                        inventory_handler.WithdrawItem(item)
             
     # if (throttle_timer.IsExpired()):
     #     throttle_timer.Reset()
     # else:
     #     return
-    if not loot_check.trader_queue.action_queue.is_empty():
-        loot_check.LootCheck.process_trader_queue()
+    if not price_check.trader_queue.action_queue.is_empty():
+        price_check.PriceCheck.process_trader_queue()
         return
 
 
     data_collector.instance.run_v2()  
-    loot_handler.Run()                            
+    inventory_handler.Run()                            
                              
 
 # if __name__ == "__main__":

@@ -3,7 +3,7 @@ from LootEx.enum import ItemAction, ItemCategory
 from Py4GWCoreLib import *
 
 
-class LootFilter:
+class Filter:
     def __init__(self, filter_name: str):
         self.name: str = filter_name
         self.item_types: dict[ItemType, bool] = {
@@ -69,7 +69,7 @@ class LootFilter:
         return ItemAction.NONE
 
     @staticmethod
-    def to_dict(data: "LootFilter") -> dict:
+    def to_dict(data: "Filter") -> dict:
         return {
             "name": data.name,
             "item_types": {item_type.name: value for item_type, value in data.item_types.items()},
@@ -83,13 +83,13 @@ class LootFilter:
         }
 
     @staticmethod
-    def from_dict(data) -> "LootFilter":
+    def from_dict(data) -> "Filter":
         name = data.get("name", None)
 
         if not name:
-            raise ValueError("LootFilter must have a name")
+            raise ValueError("Filter must have a name")
 
-        loot_filter = LootFilter(name)
+        loot_filter = Filter(name)
 
         action = ItemAction[data.get("action", "STASH")]
         loot_filter.action = action

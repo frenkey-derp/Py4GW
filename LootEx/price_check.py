@@ -14,7 +14,7 @@ importlib.reload(data)
 importlib.reload(models)
 
 
-class LootCheck:
+class PriceCheck:
     @staticmethod 
     def get_material_prices_from_trader():
         if not trader_queue.action_queue.is_empty():
@@ -87,7 +87,7 @@ class LootCheck:
 
             return " ".join(parts)
 
-        if settings.current.loot_profile is None:
+        if settings.current.profile is None:
             ConsoleLog(
                 "LootEx", "No loot profile selected, skipping item check.", Console.MessageType.Error)
             return
@@ -105,7 +105,7 @@ class LootCheck:
                 "LootEx", "No items found in merchant's inventory.", Console.MessageType.Error)
             return
 
-        settings.current.loot_profile.runes.clear()
+        settings.current.profile.runes.clear()
         if profession is not None and profession != 0:
             ConsoleLog(
                 "LootEx", f"Checking for runes and insignias for profession {profession}...", Console.MessageType.Info)
@@ -138,7 +138,7 @@ class LootCheck:
                     price = Merchant.Trading.Trader.GetQuotedValue()
 
                     if price is not None:
-                        if mod.identifier and settings.current.loot_profile:
+                        if mod.identifier and settings.current.profile:
                             checked_items.append(mod.identifier)
                             rune = data.Runes.get(mod.identifier)
                             
@@ -153,8 +153,8 @@ class LootCheck:
                                     f"{mod.full_name} is currently quoted at {format_currency(price)}. Marking it as valuable.",
                                     Console.MessageType.Info,
                                 )
-                                settings.current.loot_profile.runes[mod.identifier] = True
-                                settings.current.loot_profile.save()
+                                settings.current.profile.runes[mod.identifier] = True
+                                settings.current.profile.save()
 
                         trader_queue.execute_next()
                         return price
@@ -168,14 +168,14 @@ class LootCheck:
             for rune in data.Runes.values():
                 profession_match = profession is not None and rune.profession == profession
 
-                if rune.identifier not in checked_items and settings.current.loot_profile and profession_match:
+                if rune.identifier not in checked_items and settings.current.profile and profession_match:
                     ConsoleLog(
                         "LootEx",
                         f"{rune.full_name} is currently not available. Marking it as valuable.",
                         Console.MessageType.Info,
                     )
-                    settings.current.loot_profile.runes[rune.identifier] = True
-                    settings.current.loot_profile.save()
+                    settings.current.profile.runes[rune.identifier] = True
+                    settings.current.profile.save()
             ConsoleLog(
                 "LootEx", "Finished checking for runes and insignias.", Console.MessageType.Success)
 

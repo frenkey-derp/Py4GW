@@ -7,7 +7,7 @@ from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, Rarity
+from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, ModelID, Rarity
 
 
 class Cached_Item:
@@ -63,10 +63,10 @@ class Cached_Item:
         self.data: models.Item | None = data.Items.get_item(
             self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
         self.model_name: str = self.data.name if self.data else "Unknown Item"
-        self.config = settings.current.loot_profile.items.get_item_config(
-            self.item_type, self.model_id) if settings.current.loot_profile and self.model_id > -1 else None
-        self.is_blacklisted: bool = settings.current.loot_profile.is_blacklisted(
-            self.item_type, self.model_id) if settings.current.loot_profile and self.model_id > -1 else False
+        self.config = settings.current.profile.items.get_item_config(
+            self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else None
+        self.is_blacklisted: bool = settings.current.profile.is_blacklisted(
+            self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else False
 
         self.action: enum.ItemAction = enum.ItemAction.NONE
         self.savlage_tries: int = 0
@@ -93,6 +93,18 @@ class Cached_Item:
         
 
         pass
+    
+    def IsVial_Of_DyeToKeep(self) -> bool:
+        Profile = settings.current.profile
+
+        if Profile is None:
+            return False
+
+        if self.model_id == ModelID.Vial_Of_Dye:
+                if self.color is not None and self.color in Profile.dyes:
+                    return Profile.dyes[self.color]
+
+        return False
     
     def Update(self):
         item = Item.item_instance(self.id) if self.id > 0 else None
@@ -181,7 +193,7 @@ class Cached_Item:
                     
                     if is_max:
                         self.max_runes.append(rune)
-                        if settings.current.loot_profile and settings.current.loot_profile.runes.get(rune.identifier, False):
+                        if settings.current.profile and settings.current.profile.runes.get(rune.identifier, False):
                             self.runes_to_keep.append(rune)
 
         if self.is_weapon or self.is_upgrade:
@@ -197,7 +209,7 @@ class Cached_Item:
                     
                     if is_max:
                         self.max_weapon_mods.append(weapon_mod)
-                        if settings.current.loot_profile and settings.current.loot_profile.weapon_mods.get(weapon_mod.identifier, {}).get(self.item_type.name, False):
+                        if settings.current.profile and settings.current.profile.weapon_mods.get(weapon_mod.identifier, {}).get(self.item_type.name, False):
                             self.weapon_mods_to_keep.append(weapon_mod)
                         
                     self.weapon_mods.append(weapon_mod)
@@ -257,13 +269,13 @@ class Cached_Item:
                 self.has_increased_value = any(
                     mod.identifier == "AQAl-AAvKA==" for mod in mods)
 
-                if settings.current.loot_profile is not None and settings.current.loot_profile.weapon_mods is not None:
+                if settings.current.profile is not None and settings.current.profile.weapon_mods is not None:
                     self.max_runes = [
-                        rune for rune in runes if rune.identifier in settings.current.loot_profile.runes and settings.current.loot_profile.runes[rune.identifier]
+                        rune for rune in runes if rune.identifier in settings.current.profile.runes and settings.current.profile.runes[rune.identifier]
                     ]
 
                     self.max_weapon_mods = [
-                        mod for mod in weapon_mods if mod.identifier in settings.current.loot_profile.weapon_mods and settings.current.loot_profile.weapon_mods[mod.identifier].get(self.item_type.name, False)
+                        mod for mod in weapon_mods if mod.identifier in settings.current.profile.weapon_mods and settings.current.profile.weapon_mods[mod.identifier].get(self.item_type.name, False)
                     ]
 
         self.mods = self.mods or []

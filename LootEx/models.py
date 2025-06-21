@@ -361,13 +361,27 @@ class Item():
     def __post_init__(self):
         self.name : str = self.get_name()
         self.next_nick_week: Optional[date] = self.get_next_nick_date()
+        self.weeks_until_next_nick: Optional[int] = self.get_weeks_until_next_nick()
+
+    def get_weeks_until_next_nick(self) -> Optional[int]:
+        if self.nick_index is None:
+            return None
+        
+        next_nick_date = self.get_next_nick_date()
+        if next_nick_date:
+            today = date.today()
+            delta = next_nick_date - today
+            if delta.days >= 0:
+                return delta.days // 7
+            
+        return None        
 
     def get_next_nick_date(self) -> Optional[date]:
         if self.nick_index is None:
             return None
         
         from LootEx import data
-        start_date = data.Nick_Cycle_Start_Date
+        start_date = datetime.combine(data.Nick_Cycle_Start_Date, datetime.min.time())
         
         today = date.today()
         monday_of_current_week = today - timedelta(days=today.weekday())
@@ -376,7 +390,7 @@ class Item():
         for i in range(0, 100):
             nick_date = start_date + timedelta(weeks=self.nick_index + (i * data.Nick_Cycle_Count))                     
             
-            if nick_date >= dt:
+            if nick_date > dt:
                 return date(nick_date.year, nick_date.month, nick_date.day)
        
     def has_missing_names(self) -> ServerLanguage | bool:

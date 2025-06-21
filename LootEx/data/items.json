@@ -35203,8 +35203,7 @@
             "ItemType": "Staff",
             "DropInfo": "",
             "Attributes": [
-                "FireMagic",
-                "None_"
+                "FireMagic"
             ],
             "CommonSalvage": {
                 "Iron Ingot": {
@@ -46287,7 +46286,7 @@
         "19132": {
             "ModelID": 19132,
             "Names": {
-                "English": "Insignia",
+                "English": "Survivor Insignia",
                 "German": "Überlebende Befähigung",
                 "Korean": "생존자의 휘장",
                 "French": "Insigne du survivant",
@@ -46305,8 +46304,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Insignia",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Survivor_Insignia.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b7/Survivor_Insignia.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -57457,25 +57456,6 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
-        },
-        "28571": {
-            "ModelID": 28571,
-            "Names": {
-                "English": "Zaishen Key"
-            },
-            "ItemType": "Key",
-            "DropInfo": "No data added yet",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Zaishen_Key",
-            "InventoryIcon": "Zaishen_Key.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Zaishen_Key.png",
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": true
         }
     },
     "Kit": {
@@ -58161,8 +58141,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blindfold",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Blindfold.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/18/Blindfold.png",
             "NickIndex": null,
             "Profession": "Necromancer",
             "Category": null,
@@ -58190,8 +58170,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blindfold",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Blindfold.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/18/Blindfold.png",
             "NickIndex": null,
             "Profession": "Monk",
             "Category": null,
@@ -58219,8 +58199,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blindfold",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Blindfold.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/18/Blindfold.png",
             "NickIndex": null,
             "Profession": "Warrior",
             "Category": null,
@@ -58248,8 +58228,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blindfold",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Blindfold.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/18/Blindfold.png",
             "NickIndex": null,
             "Profession": "Dervish",
             "Category": null,
@@ -58277,8 +58257,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Blindfold",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Blindfold.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/18/Blindfold.png",
             "NickIndex": null,
             "Profession": "Ritualist",
             "Category": null,
@@ -58451,8 +58431,8 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Dread_Mask",
-            "InventoryIcon": "Any-tango-icon-20.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/3/33/Any-tango-icon-20.png",
+            "InventoryIcon": "Dread_Mask.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/db/Dread_Mask.png",
             "NickIndex": null,
             "Profession": "Dervish",
             "Category": null,

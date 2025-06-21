@@ -251,6 +251,8 @@ Item_Attributes: dict[ItemType, list[Attribute]] = {
 }
 
 Items: models.ItemsByType = models.ItemsByType()
+Nick_Items: dict[int, models.Item] = {}
+Nick_Cycle: list[models.Item] = []
 
 Runes: dict[str, models.Rune] = {}
 Runes_by_Profession: dict[Profession, dict[str, models.Rune]] = {}
@@ -408,6 +410,8 @@ def Reload():
     LoadWeaponMods()
 
     Items.clear()
+    Nick_Items.clear()
+    Nick_Cycle.clear()
     # Load the items
     LoadItems()
     
@@ -658,6 +662,14 @@ def LoadItems():
                         Items[item_type][model_id].update(item)
 
     Items.sort_items()
+    for item_type, items in Items.items():
+        for model_id, item in items.items():
+            if item.is_nick_item and item.nick_index is not None:
+                Nick_Items[item.nick_index] = item
+                Nick_Cycle.append(item)
+    
+    Nick_Cycle.sort(key=lambda x: x.weeks_until_next_nick if x.weeks_until_next_nick is not None else 9999)
+    
 
 
 @staticmethod

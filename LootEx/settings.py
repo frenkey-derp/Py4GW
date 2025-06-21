@@ -1,8 +1,8 @@
 import datetime
 from typing import Optional
-from LootEx import loot_handling
-from LootEx.loot_filter import LootFilter
-from LootEx.loot_profile import LootProfile
+from LootEx import inventory_handling
+from LootEx.filter import Filter
+from LootEx.profile import Profile
 from Py4GWCoreLib import Player, UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
 from Py4GWCoreLib.enums import ServerLanguage
@@ -32,9 +32,9 @@ class Settings:
         
         self._initialized = True
         self.profile_combo: int = 0
-        self.loot_profile: Optional[LootProfile] = None
-        self.loot_profiles: list[LootProfile] = []
-        self.selected_loot_filter: Optional[LootFilter] = None
+        self.profile: Optional[Profile] = None
+        self.profiles: list[Profile] = []
+        self.selected_filter: Optional[Filter] = None
         self.automatic_inventory_handling: bool = "games" in Player.GetAccountEmail().lower()
         self.window_size: tuple[float, float] = (800, 600)
         self.window_position: tuple[float, float] = (500, 200)
@@ -67,7 +67,7 @@ class Settings:
         import json
 
         settings_dict = {
-            "loot_profile": self.loot_profile.name if self.loot_profile else None,
+            "profile": self.profile.name if self.profile else None,
             "automatic_inventory_handling": self.automatic_inventory_handling,
             "window_size": self.window_size,
             "window_position": self.window_position,
@@ -101,25 +101,25 @@ class Settings:
         # Load profiles
         for file_name in os.listdir(self.profiles_path):
             if file_name.endswith(".json"):
-                profile = LootProfile(file_name[:-5])
+                profile = Profile(file_name[:-5])
                 profile.load()
-                self.loot_profiles.append(profile)
+                self.profiles.append(profile)
 
-        if not self.loot_profiles:
-            default_profile = LootProfile("Default")
+        if not self.profiles:
+            default_profile = Profile("Default")
             default_profile.save()
-            self.loot_profiles.append(default_profile)
+            self.profiles.append(default_profile)
 
         try:
             with open(self.settings_file_path, 'r') as file:
                 settings_dict = json.load(file)
-                self.loot_profile = next(
-                    (profile for profile in self.loot_profiles if profile.name ==
-                     settings_dict.get("loot_profile")),
+                self.profile = next(
+                    (profile for profile in self.profiles if profile.name ==
+                     settings_dict.get("profile")),
                     None
                 )
-                self.profile_combo = self.loot_profiles.index(
-                    self.loot_profile) if self.loot_profile else 0
+                self.profile_combo = self.profiles.index(
+                    self.profile) if self.profile else 0
                 self.automatic_inventory_handling = settings_dict.get(
                     "automatic_inventory_handling", True)
                 self.window_size = tuple(
@@ -137,10 +137,10 @@ class Settings:
                         last_xunlai_check_str)
 
             self.automatic_inventory_handling = (
-                self.automatic_inventory_handling if self.loot_profile else False
+                self.automatic_inventory_handling if self.profile else False
             )
-            self.loot_profile = self.loot_profiles[0] if self.loot_profile is None else self.loot_profile
-            loot_handling.LootHandler().SetPollingInterval(self.loot_profile.polling_interval)
+            self.profile = self.profiles[0] if self.profile is None else self.profile
+            inventory_handling.InventoryHandler().SetPollingInterval(self.profile.polling_interval)
 
         except FileNotFoundError:
             ConsoleLog(

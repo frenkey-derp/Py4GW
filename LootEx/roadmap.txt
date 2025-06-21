@@ -33,21 +33,21 @@ OldSchool = bool
 Rarities = [Any, Common, Uncommon, Fine, Rare, Unique] --> Requires at least one rarity, else defaults to Any
 
 
-LootFilter.py
+Filter.py
 Defining Filters to pickup by creating filters or handling common item groups. An Item has to match only one filter to be picked up
 ItemTypes = [Weapon, Consumable, Armor ...] --> Empty = any
 Rarity = [Any, Common, Uncommon, Fine, Rare, Unique] --> Requires at least one rarity, else defaults to Any
 
 
-LootProfile
+Profile
 Dyes = [Grey, Blue ... White, Black] --> empty = any
 PCons = [Cupcake, Candy Corn, ...] --> empty = any
 
 ItemsByRarity = [Any, Common, Uncommon, Fine, Rare, Unique] --> Requires at least one rarity, else *NO ITEM* will be picked up unless handled in other filters and rules 
 
-Filters = [] -- Collection of LootFilters
+Filters = [] -- Collection of Filters
  
-LootCheck
+PriceCheck
 Checks for items we want to keep based on their mods, skins ... 
 These determine what we'll do with the items
 HasNiceMod(LootItem) --> Checks if the item has a selected mod struct
@@ -96,4 +96,4 @@ HandleMerchant() --> bool, while items beeing bought and sold
 IsInventoryFull(itemid = -1) --> bool, check if the inventory is full for a given item id, e.g. just farming Cupcakes we can farm until the last slot is filled with a stack of 250 and not if the last slot is filled by a single one
 
 AddItemTemporary(LootItem) --> Add a Loot Item which is used while your bot is running
-AddFilterTemporary(LootFilter) --> Add a Loot Filter which is used while your bot is running
+AddFilterTemporary(Filter) --> Add a Loot Filter which is used while your bot is running

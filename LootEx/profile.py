@@ -1,7 +1,7 @@
 import os
 import json
-from LootEx import item_configuration, loot_filter, settings
-from LootEx.loot_filter import LootFilter
+from LootEx import filter, item_configuration, settings
+from LootEx.filter import Filter
 from LootEx.item_configuration import *
 from Py4GWCoreLib import Console
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
@@ -47,7 +47,7 @@ class ItemConfigurations(dict[ItemType, dict[int, ItemConfiguration]]):
 class OldSchoolItemsConfigurations(dict[int, ItemConfiguration]):
     pass
 
-class LootProfile:
+class Profile:
     def __init__(self, profile_name: str):
         self.name = profile_name
 
@@ -62,8 +62,8 @@ class LootProfile:
         self.changed : bool = False
         self.polling_interval : float = 1  # Default polling interval in seconds
 
-        # Collection of LootFilters
-        self.filters: list[loot_filter.LootFilter] = []
+        # Collection of Filters
+        self.filters: list[filter.Filter] = []
 
         self.runes: dict[str, bool] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
@@ -84,7 +84,7 @@ class LootProfile:
             "sell_threshold": self.sell_threshold,
             "nick_weeks_to_keep": self.nick_weeks_to_keep,
             "nick_items_to_keep": self.nick_items_to_keep,
-            "filters": [LootFilter.to_dict(filter) for filter in self.filters],
+            "filters": [Filter.to_dict(filter) for filter in self.filters],
             "polling_interval": self.polling_interval,
             "runes": self.runes,
             "weapon_mods": {
@@ -138,7 +138,7 @@ class LootProfile:
                 self.lockpicks = profile_dict.get("lockpicks", self.lockpicks)
                 self.sell_threshold = profile_dict.get(
                     "sell_threshold", self.sell_threshold)
-                self.filters = [LootFilter.from_dict(
+                self.filters = [Filter.from_dict(
                     filter) for filter in profile_dict.get("filters", [])]
                 self.runes = profile_dict.get("runes", self.runes)
                 self.weapon_mods = {

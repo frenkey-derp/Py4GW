@@ -319,12 +319,12 @@ class WikiScraper:
 
     @staticmethod
     def scrape_missing_entries():                
-        items_with_missing_info = [
-            item for subdict in data.Items.values() for item in subdict.values() if not item.wiki_scraped
-        ]
-                      
         # items_with_missing_info = [
-        #     item for subdict in data.Items.values() for item in subdict.values() if item.inventory_icon_url and not item.inventory_icon
+        #     item for subdict in data.Items.values() for item in subdict.values() if not item.wiki_scraped
         # ]
+                      
+        items_with_missing_info = [
+            item for subdict in data.Items.values() for item in subdict.values() if item.inventory_icon_url and not item.inventory_icon
+        ]
         
         WikiScraper.scrape_multiple_entries(items_with_missing_info)
