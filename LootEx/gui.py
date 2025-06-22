@@ -341,7 +341,7 @@ class UI:
             ItemFilter("Reward Trophies", lambda item: item.category == enum.ItemCategory.RewardTrophy),
             ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem),    
         ]
-
+        
         self.data_collector = data_collector.DataCollector()
         self.filter_weapon_mods()        
         self.filter_items()    
@@ -1115,6 +1115,14 @@ class UI:
                 PyImGui.end_child()
                 
                 PyImGui.text("Merchant Settings")
+                def draw_hint():
+                    PyImGui.text_wrapped("These settings control the items that are automatically bought from merchants when opening a merchant window.")
+                    PyImGui.text_wrapped("Before buying items, LootEx will check your stash for these items and move them to your inventory if they are present.\n"+
+                                 "If the item is not present in your stash, it will be bought from the merchant.\n")
+                
+                PyImGui.same_line(0, 5)
+                self.draw_info_icon(draw_action=draw_hint, width=500)
+                                        
                 PyImGui.separator()
                 if PyImGui.begin_child("GeneralSettings_Merchant", (subtab_size[0], 150), True, PyImGui.WindowFlags.NoBackground) and settings.current.profile:
                     self._input_int_setting("Identification Kits", settings.current.profile.identification_kits, os.path.join(self.texture_path, "Superior_Identification_Kit.png"))
@@ -1132,42 +1140,74 @@ class UI:
                     self._slider_int_setting("Nick Weeks to Keep", settings.current.profile.nick_weeks_to_keep, os.path.join(self.texture_path, "Gift_of_the_Traveler.png"), 0, 137)                    
                     self._slider_int_setting("Amount of Nick Items", settings.current.profile.nick_items_to_keep, os.path.join(self.texture_path, "Red_Iris_Flower.png"), 0, 500)    
                     
-                    PyImGui.begin_child("NickItems", (0,0), True, PyImGui.WindowFlags.AlwaysVerticalScrollbar)
+                    PyImGui.spacing()
                      
-                    height = 15
-                    for i, nick_item in enumerate(data.Nick_Cycle):
-                        if nick_item.weeks_until_next_nick is None:
-                            continue
+                    height = 20                    
+                    nick_gradient = UI.get_gradient_colors((0.5, 1, 0, 0.5), (1, 0, 0, 0.5), settings.current.profile.nick_weeks_to_keep)
+                    
+                    if PyImGui.is_rect_visible(0, 20):
+                        PyImGui.begin_table("NickItemsTable", 3, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.BordersOuterV | PyImGui.TableFlags.BordersOuterH, 0, 0)    
+                        # PyImGui.table_setup_column("Index", PyImGui.TableColumnFlags.WidthFixed, 25)
+                        PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 20)
+                        PyImGui.table_setup_column("Name")
+                        PyImGui.table_setup_column("Weeks Until Next Nick", PyImGui.TableColumnFlags.WidthFixed, 85)   
+                             
+                        PyImGui.table_next_column()                
+                        PyImGui.table_next_column()                
                         
-                        if nick_item.weeks_until_next_nick > settings.current.profile.nick_weeks_to_keep:
-                            continue
-                        
-                        if not PyImGui.is_rect_visible(0, height):
-                            PyImGui.dummy(0, height)
-                            continue
-                        
-                        PyImGui.text(f"{i}.")
-                        PyImGui.same_line(0, 5)       
-                        if nick_item.inventory_icon:
-                            ImGui.DrawTexture(
-                                os.path.join(self.texture_path, nick_item.inventory_icon), height, height)
-                        else:
-                            PyImGui.dummy(height, height)
+                        for i, nick_item in enumerate(data.Nick_Cycle):
+                            if nick_item.weeks_until_next_nick is None:
+                                continue
                             
-                        PyImGui.same_line(0, 5)                        
-                        PyImGui.text(nick_item.name)
-                        if PyImGui.is_item_hovered():
-                            PyImGui.set_next_window_size(400, 0)
-                            PyImGui.begin_tooltip()
+                            if nick_item.weeks_until_next_nick > settings.current.profile.nick_weeks_to_keep:
+                                continue
                             
-                            self.draw_item_header(item_info=nick_item, border=False, height=self.get_tooltip_height(nick_item), image_size=50)
+                            PyImGui.table_next_row()
+                            if not PyImGui.is_rect_visible(0, height):
+                                PyImGui.dummy(0, height)
+                                PyImGui.table_next_row()
+                                continue
+                            
+                            # PyImGui.table_next_column()
+                            # PyImGui.text(f"{i}.")
+                            # hovered = PyImGui.is_item_hovered()
+                            
+                            PyImGui.table_next_column()
+                            if nick_item.inventory_icon:
+                                ImGui.DrawTexture(
+                                    os.path.join(self.texture_path, nick_item.inventory_icon), height, height)
+                            else:
+                                PyImGui.dummy(height, height)                            
+                            hovered = PyImGui.is_item_hovered()
+                            
+                            PyImGui.table_next_column()                                                    
+                            PyImGui.text(nick_item.name)
+                            hovered = PyImGui.is_item_hovered() or hovered
+                            
+                            
+                            color = (0, 1, 0, 0.9) if nick_item.weeks_until_next_nick == 0 else \
+                                    (0, 1, 0, 0.7) if nick_item.weeks_until_next_nick == 1 else \
+                                    nick_gradient[nick_item.weeks_until_next_nick] if nick_item.weeks_until_next_nick < len(nick_gradient) else (1, 1, 1, 1) 
 
-                            PyImGui.separator()
-                            PyImGui.text(f"Nicholas the Traveler collects these items in: {nick_item.weeks_until_next_nick} weeks")                
-                            PyImGui.text(nick_item.drop_info)                
-                            PyImGui.end_tooltip()
+                            PyImGui.table_next_column()
+                            PyImGui.text_colored(
+                                "current week" if nick_item.weeks_until_next_nick == 0 else f"next week"  if nick_item.weeks_until_next_nick == 1 else f"{nick_item.weeks_until_next_nick} weeks" , 
+                                color
+                            )
+                            hovered = PyImGui.is_item_hovered() or hovered
                             
-                    PyImGui.end_child()                
+                            if hovered:
+                                PyImGui.set_next_window_size(400, 0)
+                                PyImGui.begin_tooltip()
+                                
+                                self.draw_item_header(item_info=nick_item, border=False, height=self.get_tooltip_height(nick_item), image_size=50)
+
+                                PyImGui.separator()
+                                PyImGui.text(f"Nicholas the Traveler collects these items in: {nick_item.weeks_until_next_nick} weeks")                
+                                PyImGui.text(nick_item.drop_info)                
+                                PyImGui.end_tooltip()
+                                
+                        PyImGui.end_table()           
                         
                 PyImGui.end_child()
                 
@@ -1697,7 +1737,7 @@ class UI:
             if PyImGui.begin_child("loot_items_selection_child", (tab_size[0] * 0.3, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
                 child_size = PyImGui.get_content_region_avail()
 
-                changed, search = UI.search_field("##search_loot_items", self.item_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for Item Name or Model ID...", child_size[0] - 35)
+                changed, search = UI.search_field("##search_loot_items", self.item_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for Item Name or Model ID...", child_size[0] - 60)
                 if changed:
                     self.item_search = search
                     self.filter_items()            
@@ -1708,7 +1748,19 @@ class UI:
                     if self.filter_popup:
                         PyImGui.open_popup("Filter Loot Items")
                     pass
-            
+                
+                def draw_hint():
+                    PyImGui.text_wrapped(
+                        "Select items to manage their actions in your inventory.\n" +
+                        "You can filter items by name or model ID and filter them through the filter popup.\n\n" +
+                        "To select multiple items click on the first item, hold down the SHIFT key and click on the last item.\n" +
+                        "All items in between will be selected.")
+                                           
+                PyImGui.same_line(0, 5)
+                self.draw_info_icon(
+                    draw_action=draw_hint,
+                    width=500
+                )            
                 
                 if PyImGui.begin_child("selectable_items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                     for item in self.filtered_loot_items:
@@ -2012,7 +2064,11 @@ class UI:
 
                     PyImGui.end_child()
                 else:
-                    PyImGui.text("No Item Selected")
+                    self.draw_item_header(None, True)
+                    
+                    PyImGui.begin_child("item_settings", (0, 0), True, PyImGui.WindowFlags.NoFlag)     
+                    PyImGui.text("No Item Selected")                   
+                    PyImGui.end_child()
 
             PyImGui.end_child()
 
@@ -2035,8 +2091,6 @@ class UI:
                 PyImGui.text_wrapped(text)
             
             PyImGui.end_tooltip()
-            
-        
     
     def draw_blacklist(self):
         if PyImGui.begin_tab_item("Black- & Whitelist") and settings.current.profile:
@@ -2121,63 +2175,63 @@ class UI:
             self.draw_filter_popup()
             PyImGui.end_tab_item()
 
-    def draw_item_header(self, item_info : models.Item, border : bool = False, height : float = 130, image_size : float = 110):       
+    def draw_item_header(self, item_info : models.Item | None, border : bool = False, height : float = 130, image_size : float = 110):       
         image_size = min(image_size, 64)
         
         if PyImGui.begin_child("item_info", (0, max(height, image_size)), border, PyImGui.WindowFlags.NoFlag):            
             if PyImGui.begin_child("item_texture", (image_size, image_size), False, PyImGui.WindowFlags.NoFlag): 
-                posX, posY = PyImGui.get_cursor_screen_pos()
-                if UI.is_mouse_in_rect((posX, posY, image_size, image_size)):                                
-                    if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, image_size, image_size) and item_info.wiki_url:
-                        Player.SendChatCommand(
-                                            "wiki " + item_info.name)
+                if item_info:
+                    posX, posY = PyImGui.get_cursor_screen_pos()
+                    if UI.is_mouse_in_rect((posX, posY, image_size, image_size)):                                
+                        if PyImGui.button(IconsFontAwesome5.ICON_GLOBE, image_size, image_size) and item_info.wiki_url:
+                            Player.SendChatCommand(
+                                                "wiki " + item_info.name)
 
-                                        # start the url in the default browser
-                        webbrowser.open(
-                                            item_info.wiki_url)
+                                            # start the url in the default browser
+                            webbrowser.open(
+                                                item_info.wiki_url)
 
-                    ImGui.show_tooltip(
-                                        "Open the wiki page for this item.\n" +
-                                        "If the item is not found, it will search for the item name in the wiki." if item_info.wiki_url else "This item does not have a wiki page set yet."
-                                    )
-                else:
-                    color = Utils.RGBToColor(64, 64, 64, 255)
-                    PyImGui.push_style_color(
-                                        PyImGui.ImGuiCol.Button, Utils.ColorToTuple(color))
-                    PyImGui.push_style_color(
-                                        PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(color))
-                    PyImGui.push_style_color(
-                                        PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
-                    if item_info.inventory_icon:
-                        ImGui.DrawTexture(os.path.join(self.texture_path, item_info.inventory_icon), image_size, image_size)
+                        ImGui.show_tooltip(
+                                            "Open the wiki page for this item.\n" +
+                                            "If the item is not found, it will search for the item name in the wiki." if item_info.wiki_url else "This item does not have a wiki page set yet."
+                                        )
                     else:
-                        PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
-                                            item_info.model_id), image_size, image_size)
-                    PyImGui.pop_style_color(3)
-                                
-                                
+                        color = Utils.RGBToColor(64, 64, 64, 255)
+                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.Button, Utils.ColorToTuple(color))
+                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.ButtonHovered, Utils.ColorToTuple(color))
+                        PyImGui.push_style_color(
+                                            PyImGui.ImGuiCol.ButtonActive, Utils.ColorToTuple(color))
+                        if item_info.inventory_icon:
+                            ImGui.DrawTexture(os.path.join(self.texture_path, item_info.inventory_icon), image_size, image_size)
+                        else:
+                            PyImGui.button(IconsFontAwesome5.ICON_SHIELD_ALT + "##" + str(
+                                                item_info.model_id), image_size, image_size)
+                        PyImGui.pop_style_color(3)                                    
             PyImGui.end_child()
 
             PyImGui.same_line(0, 10)
             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() + 3)
 
             if PyImGui.begin_child("item_details", (0, 0), False, PyImGui.WindowFlags.NoFlag):
-                PyImGui.text("Name: " + item_info.name)
+                if item_info:
+                    PyImGui.text("Name: " + item_info.name)
 
-                PyImGui.text("Model ID: " + str(item_info.model_id))
-                PyImGui.text("Type: " + utility.Util.GetItemType(item_info.item_type).name)
-                                
-                if item_info.nick_index:
-                    PyImGui.text("Next Nick Week: " + str(item_info.next_nick_week))
-                                
-                if item_info.common_salvage:
-                    summaries = [salvage_info.summary for salvage_info in item_info.common_salvage.values()]                        
-                    PyImGui.text("Salvage: " + ", ".join(summaries))
-                                
-                if item_info.rare_salvage:
-                    summaries = [salvage_info.summary for salvage_info in item_info.rare_salvage.values()]   
-                    PyImGui.text("Rare Salvage: " + ", ".join(summaries))
-            
+                    PyImGui.text("Model ID: " + str(item_info.model_id))
+                    PyImGui.text("Type: " + utility.Util.GetItemType(item_info.item_type).name)
+                                    
+                    if item_info.nick_index:
+                        PyImGui.text("Next Nick Week: " + str(item_info.next_nick_week))
+                                    
+                    if item_info.common_salvage:
+                        summaries = [salvage_info.summary for salvage_info in item_info.common_salvage.values()]                        
+                        PyImGui.text("Salvage: " + ", ".join(summaries))
+                                    
+                    if item_info.rare_salvage:
+                        summaries = [salvage_info.summary for salvage_info in item_info.rare_salvage.values()]   
+                        PyImGui.text("Rare Salvage: " + ", ".join(summaries))
+                
             PyImGui.end_child()
         PyImGui.end_child()
     
@@ -2246,13 +2300,31 @@ class UI:
             changed, search = UI.search_field(
                 "##SearchWeaponMods",
                 self.mod_search,
-                f"{IconsFontAwesome5.ICON_SEARCH} Search for Mod Name, Description or Mod Struct...",
-                tab_size[0]
+                f"{IconsFontAwesome5.ICON_SEARCH} Search for Mod Name, Description or internal Id...",
+                tab_size[0] - 25
             )
             
             if changed:
                 self.mod_search = search
                 self.filter_weapon_mods()
+            
+            PyImGui.same_line(0, 5)
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() + 5)
+            def draw_hint():
+                PyImGui.text_wrapped("Search for Weapon Mods by Name, Description or their internal Id.\n"+
+                             "Selected Weapon Mods will be highlighted in the list.\n"+
+                             "You can select a Weapon Mod by clicking on any weapon type which the mod can be applied to.\n"+
+                             "Selected Weapon types will be highlighted as well.\n")
+                
+                PyImGui.spacing()
+                PyImGui.separator()
+                
+                PyImGui.text_wrapped("Weapon Mods")
+                PyImGui.spacing()
+                PyImGui.text_wrapped("Items containing the selected Weapon Mods will be picked up and processed by the inventory handler.\n"+
+                                     "Items with more than one selected Weapon Mod will be stashed so you can choose which mod to keep.\n")
+                
+            self.draw_info_icon(draw_action=draw_hint, width=500)
             
             selection_width = tab_size[0]  # max(255, tab_size[0] * 0.3)
             edit_width = tab_size[0] - selection_width - 20
@@ -3120,17 +3192,13 @@ class UI:
 
         # Show tooltip with item name
         if item.is_hovered:
+            PyImGui.set_next_window_size(400, 0)
             PyImGui.begin_tooltip()
             
             self.draw_item_header(item_info=item.item_info, border=False, height=self.get_tooltip_height(item.item_info), image_size=50)
 
             PyImGui.separator()
             PyImGui.text("Click to select the item.")
-    
-            if not has_settings:
-                PyImGui.text(f"Double-click to add the item with action '{enum.ItemAction.STASH.name}' to your loot profile.")
-            else:
-                PyImGui.text(f"Double-click to remove the item from your loot profile.")
             
             PyImGui.end_tooltip()
             
@@ -3504,4 +3572,27 @@ class UI:
         PyImGui.end_child()
 
         return (search != text, search)
+    
+    @staticmethod
+    def get_gradient_colors(start_color: tuple[float, float, float, float], end_color: tuple[float, float, float, float], steps: int) -> list[tuple[float, float, float, float]]:
+        """
+        Generates a list of gradient colors between two specified colors.
+
+        Args:
+            start_color (tuple): The starting color in RGBA format.
+            end_color (tuple): The ending color in RGBA format.
+            steps (int): The number of gradient steps.
+
+        Returns:
+            list: A list of colors representing the gradient.
+        """
+        return [
+            (
+                start_color[0] + (end_color[0] - start_color[0]) * i / (steps - 1),
+                start_color[1] + (end_color[1] - start_color[1]) * i / (steps - 1),
+                start_color[2] + (end_color[2] - start_color[2]) * i / (steps - 1),
+                start_color[3] + (end_color[3] - start_color[3]) * i / (steps - 1)
+            )
+            for i in range(steps)
+        ]
     # endregion
