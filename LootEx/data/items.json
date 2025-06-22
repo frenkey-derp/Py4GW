@@ -16165,13 +16165,13 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Shortbow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "InventoryIcon": "Tormented_Shortbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/10/Tormented_Shortbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1506": {
             "ModelID": 1506,
@@ -46283,35 +46283,6 @@
             "SubCategory": null,
             "WikiScraped": true
         },
-        "19132": {
-            "ModelID": 19132,
-            "Names": {
-                "English": "Survivor Insignia",
-                "German": "Überlebende Befähigung",
-                "Korean": "생존자의 휘장",
-                "French": "Insigne du survivant",
-                "Italian": "Insegne del Superstite",
-                "Spanish": "Insignia de superviviente",
-                "TraditionalChinese": "生存 徽記",
-                "Japanese": "サバイバー 記章",
-                "Polish": "Symbol Przetrwania",
-                "Russian": "Survivor Insignia",
-                "BorkBorkBork": "Soorfeefur Inseegneea"
-            },
-            "ItemType": "Rune_Mod",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Insignia",
-            "InventoryIcon": "Survivor_Insignia.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b7/Survivor_Insignia.png",
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": true
-        },
         "19152": {
             "ModelID": 19152,
             "Names": {
@@ -47622,6 +47593,35 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/6/6a/Stormbound_Insignia.png",
             "NickIndex": null,
             "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "19132": {
+            "ModelID": 19132,
+            "Names": {
+                "English": "Survivor Insignia",
+                "German": "Überlebende Befähigung",
+                "Korean": "생존자의 휘장",
+                "French": "Insigne du survivant",
+                "Italian": "Insegne del Superstite",
+                "Spanish": "Insignia de superviviente",
+                "TraditionalChinese": "生存 徽記",
+                "Japanese": "サバイバー 記章",
+                "Polish": "Symbol Przetrwania",
+                "Russian": "Survivor Insignia",
+                "BorkBorkBork": "Soorfeefur Inseegneea"
+            },
+            "ItemType": "Rune_Mod",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Insignia",
+            "InventoryIcon": "Survivor_Insignia.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b7/Survivor_Insignia.png",
+            "NickIndex": null,
+            "Profession": null,
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true

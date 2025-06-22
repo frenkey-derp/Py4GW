@@ -6,6 +6,8 @@ from LootEx.profile import Profile
 from Py4GWCoreLib import Player, UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
 from Py4GWCoreLib.enums import ServerLanguage
+import json
+import os
 
 
 class FrameCoords:
@@ -57,6 +59,12 @@ class Settings:
         self.last_xunlai_check : datetime.datetime = datetime.datetime.min
         
         self.changed = False
+        self.development_mode: bool = os.path.exists("C:\\frenkey_development") 
+        ConsoleLog(
+            "LootEx",
+            f"Development mode is {'enabled' if self.development_mode else 'disabled'}.",
+            Console.MessageType.Debug,
+        )
 
     def set_language(self, lang = ServerLanguage.English):
         self.language = lang
@@ -64,8 +72,6 @@ class Settings:
 
     def save(self):
         """Save the settings as a JSON file."""
-        import json
-
         settings_dict = {
             "profile": self.profile.name if self.profile else None,
             "automatic_inventory_handling": self.automatic_inventory_handling,
@@ -82,7 +88,6 @@ class Settings:
             return
         
         # Create the directory if it doesn't exist
-        import os
         os.makedirs(os.path.dirname(self.settings_file_path), exist_ok=True)
         
         with open(self.settings_file_path, 'w') as file:
@@ -90,8 +95,6 @@ class Settings:
 
     def load(self):
         """Load the settings from a JSON file."""
-        import json
-        import os
 
         # Create the directory if it doesn't exist
         os.makedirs(os.path.dirname(self.settings_file_path), exist_ok=True)

@@ -111,6 +111,8 @@ class UI:
         # self.cached_item = cache.Cached_Item(1401) 
         file_directory = os.path.dirname(os.path.abspath(__file__))
         self.texture_path = os.path.join(file_directory, "data", "textures")
+        self.actions_timer = ThrottledTimer()
+        self.actions : dict[int, cache.Cached_Item] = {}
         
         self.selected_loot_items: list[SelectableItem] = []
         
@@ -525,7 +527,7 @@ class UI:
                         "\nHold Shift to send message to all accounts excluding yourself")
 
     def draw_data_collector_tab(self):
-        if PyImGui.begin_tab_item("Data Collector"):
+        if PyImGui.begin_tab_item("Debug & Data"):
             tab_size = PyImGui.get_content_region_avail()
             child_width = tab_size[0] - 10
             tab1_size = (max(400, child_width * 0.25), tab_size[1])
@@ -577,7 +579,7 @@ class UI:
                 
                 PyImGui.same_line(0, 5)
                 if PyImGui.begin_child("DataCollectorButtonsChild", (0, child_size[1] - 5), False, PyImGui.WindowFlags.NoFlag):
-                    if PyImGui.button("Merge Diffs into Data", 200, 50):
+                    if PyImGui.button("Merge Diffs into Data", 160, 50):
                         ConsoleLog(
                             "LootEx",
                             "Merging diffs into data...",
@@ -588,11 +590,11 @@ class UI:
 
                     ImGui.show_tooltip("Merge all diff files into the data files.")
 
-                    if PyImGui.button("Scrape Wiki", 200, 50):
+                    if PyImGui.button("Scrape Wiki", 160, 50):
                         wiki_scraper.WikiScraper.scrape_missing_entries()
                         pass
 
-                    if PyImGui.button("Test", 200, 50):
+                    if settings.current.development_mode and PyImGui.button("Test", 160, 50):
                         clipboard_text = "```\n"
 
                         # sort weapon mods by mod_type then by name
@@ -623,9 +625,6 @@ class UI:
                             Bag.Belt_Pouch, Bag.Belt_Pouch
                         )
                                                                             
-                                
-                        
-
                 PyImGui.end_child()
             
             PyImGui.end_child()
@@ -634,9 +633,12 @@ class UI:
             
             if PyImGui.begin_child("DataCollectorIventory", tab2_size, True, PyImGui.WindowFlags.NoFlag):
                 child_size = PyImGui.get_content_region_avail()
+                
+                if self.actions_timer.IsExpired():
+                    self.actions = inventory_handling.InventoryHandler().GetActions()
+                    self.actions_timer.Reset()
             
-                if self.inventory_coords:
-                    
+                if self.inventory_coords:                    
                     PyImGui.push_item_width(child_size[0] - 110)
                     self.bag_index = PyImGui.combo(
                         "##Bag",
@@ -699,6 +701,11 @@ class UI:
                                         if PyImGui.begin_child(str(i), (button_width, button_height), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                                    
                                             PyImGui.text_scaled(str(item_id), (1,1,1,0.75), 0.7)
                                             PyImGui.text_scaled(str(model_id), (1,1,1,1), 0.8)
+                                            
+                                            if item_id in self.actions:
+                                                PyImGui.text("Action: " + self.actions[item_id].action.name)
+                                            else:
+                                                PyImGui.dummy(0, 20)    
                                             
                                             PyImGui.text_wrapped(item.name if item else "")
                                             
