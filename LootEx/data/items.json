@@ -1,4 +1,25 @@
 {
+    "Gold_Coin":{        
+        "2511": {
+            "ModelID": 2511,
+            "Names": {
+                "English": "Gold Coins"
+            },
+            "ItemType": "Gold_Coin",
+            "DropInfo": "No data added yet",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Gold_Coins",
+            "InventoryIcon": "Gold.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/10/Gold.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        }
+    },
     "Present": {
         "0": {
             "ModelID": 0,
@@ -41828,25 +41849,6 @@
             "NickIndex": null,
             "Profession": null,
             "Category": "RewardTrophy",
-            "SubCategory": null,
-            "WikiScraped": true
-        },
-        "2511": {
-            "ModelID": 2511,
-            "Names": {
-                "English": "Gold Coins"
-            },
-            "ItemType": "Unknown",
-            "DropInfo": "No data added yet",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Gold_Coins",
-            "InventoryIcon": "Gold.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/1/10/Gold.png",
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
             "SubCategory": null,
             "WikiScraped": true
         },

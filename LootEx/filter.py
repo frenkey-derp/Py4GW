@@ -29,10 +29,10 @@ class Filter:
         if not self.rarities.get(item.rarity, False) or self.rarities[item.rarity] is False:
             return False
 
-        if self.exclude_rare_weapons and (item.data is None or item.data.category == ItemCategory.RareWeapon):
+        if self.exclude_rare_weapons and item.is_rare_weapon:
             return False
         
-        if self.exclude_low_req and utility.Util.is_low_requirement_item(item.id):
+        if self.exclude_low_req and item.is_low_requirement_item:
             return False
 
         if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_SMART or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:

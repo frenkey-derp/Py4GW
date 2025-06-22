@@ -64,7 +64,8 @@ class ItemConfiguration:
     @staticmethod
     def from_dict(data) -> "ItemConfiguration":
         model_id = data["model_id"]
-        item_type = data.get("item_type", None)
+        item_type_name = data.get("item_type", ItemType.Unknown.name)
+        item_type = ItemType[item_type_name] if item_type_name in ItemType.__members__ else ItemType.Unknown
 
         item = ItemConfiguration(model_id, item_type)
         item.conditions = []

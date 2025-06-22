@@ -1,3 +1,4 @@
+from time import sleep
 import PyUIManager
 from LootEx import enum
 from Py4GWCoreLib import UIManager
@@ -50,6 +51,19 @@ class UIManagerExtensions:
         UIManager.FrameClick(salvage_lower_kit_yes_button_id)
 
     @staticmethod
+    def ConfirmModMaterialSalvage():
+        salvage_with_mods_yes_button_id = UIManager.GetChildFrameID(684387150, [
+                                                                    0, 6])
+        UIManager.FrameClick(salvage_with_mods_yes_button_id)
+        PyUIManager.UIManager.test_mouse_action(salvage_with_mods_yes_button_id, 8, 0, 0) 
+        
+    @staticmethod
+    def ConfirmModMaterialSalvageVisible():
+        salvage_with_mods_yes_button_id = UIManager.GetChildFrameID(684387150, [
+                                                                    0, 6])
+        return UIManagerExtensions.IsElementVisible(salvage_with_mods_yes_button_id)  
+        
+    @staticmethod
     def CancelLesserSalvage():
         salvage_lower_kit_no_button_id = UIManager.GetChildFrameID(140452905, [
                                                                    6, 100, 4])
@@ -80,8 +94,6 @@ class UIManagerExtensions:
                 elif id > 0:
                     ConsoleLog("LootEx", f"Element with ID: {id} at ({i}, {j}) is not visible or does not exist.")
         
-        
-        
     @staticmethod
     def SelectSalvageOptionAndSalvage(option: enum.SalvageOption) -> bool:
         """
@@ -99,8 +111,9 @@ class UIManagerExtensions:
             ConsoleLog("LootEx", f"Selecting salvage option: {option.name}")           
                                 
             # UIManager.FrameClick(options[option])
-            PyUIManager.UIManager.test_mouse_action(options[option], 7, 0, 0)               
+            PyUIManager.UIManager.test_mouse_action(options[option], 7, 0, 0)              
             UIManagerExtensions.ConfirmSalvageOption()
+            
             return True
         else:
             ConsoleLog("LootEx", f"Salvage option {option.name} not available.")
@@ -158,6 +171,7 @@ class UIManagerExtensions:
             options[enum.SalvageOption.Inherent] = salvage_window_mod_three_id
 
         if UIManagerExtensions.IsElementVisible(salvage_window_materials_id):
+            options[enum.SalvageOption.RareCraftingMaterials] = salvage_window_materials_id
             options[enum.SalvageOption.CraftingMaterials] = salvage_window_materials_id
 
         return options

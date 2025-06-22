@@ -378,7 +378,7 @@ def UpdateStatus(cached_data:CacheData):
 
     DrawFlags(cached_data)
     
-    draw_Targeting_floating_buttons(cached_data)
+    # draw_Targeting_floating_buttons(cached_data)
     
     if (
         not cached_data.data.player_is_alive or

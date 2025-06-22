@@ -1,0 +1,25 @@
+{
+    "Staff": {
+        "1289": {
+            "ModelID": 1289,
+            "Names": {
+                "English": "Fire Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Staff",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        }
+    }
+}

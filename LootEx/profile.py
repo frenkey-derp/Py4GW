@@ -37,7 +37,8 @@ class ItemConfigurations(dict[ItemType, dict[int, ItemConfiguration]]):
     
     def delete_item_config(self, item_type : ItemType, model_id: int):
         """Delete an item configuration from the dictionary."""
-        if item_type in self:
+        
+        if item_type in self:            
             if model_id in self[item_type]:
                 del self[item_type][model_id]
                 

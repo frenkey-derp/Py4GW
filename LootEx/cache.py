@@ -72,6 +72,8 @@ class Cached_Item:
         self.savlage_tries: int = 0
         self.salvage_started: datetime | None = None
         self.salvage_requires_confirmation: bool = False
+        self.salvage_confirmed: bool = False
+        self.salvage_requires_material_confirmation: bool = False
         self.salvage_option: enum.SalvageOption = enum.SalvageOption.None_
 
         self.has_mods: bool = False
@@ -91,7 +93,7 @@ class Cached_Item:
         self.has_increased_value: bool = False
         
         self.is_low_requirement_item : bool = utility.Util.is_low_requirement_item(self.id)
-        self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id)
+        self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id) and self.rarity == Rarity.Gold
         
         self.GetModsFromModifiers()
         
