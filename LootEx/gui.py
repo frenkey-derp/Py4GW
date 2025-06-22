@@ -822,11 +822,14 @@ class UI:
                                             
                                 PyImGui.end_table()
                     else:
-                        if self.action_summary and self.action_summary.cached_inventory:                             
+                        if self.action_summary and self.action_summary.cached_inventory: 
+                            remaining_size = PyImGui.get_content_region_avail()
+                            columns = math.floor(remaining_size[0] // 125)
+                            
                             if PyImGui.is_rect_visible(0, 20):
-                                if PyImGui.begin_table("Inventory Debug Table", 1, PyImGui.TableFlags.ScrollY, 0, 0):
+                                if PyImGui.begin_table("Inventory Debug Table", columns, PyImGui.TableFlags.ScrollY, 0, 0):
                                     remaining_size = PyImGui.get_content_region_avail()
-                                    button_width = math.floor(remaining_size[0] - 20)
+                                    button_width = math.floor((remaining_size[0] - 50) / columns)
                                     button_height = 90
                                     
                                     PyImGui.table_next_row()

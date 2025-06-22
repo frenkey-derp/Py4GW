@@ -769,8 +769,8 @@ class InventoryHandler:
             max_move_amount, item.quantity)
 
         if move_amount <= 0:
-            ConsoleLog(
-                "LootEx", f"Item {item.model_name} ({item.id}) cannot be deposited to material storage, not enough space.", Console.MessageType.Warning)
+            # ConsoleLog(
+            #     "LootEx", f"Item {item.model_name} ({item.id}) cannot be deposited to material storage, not enough space.", Console.MessageType.Warning)
             return False
 
         material_storage[item.material.material_storage_slot] = (
