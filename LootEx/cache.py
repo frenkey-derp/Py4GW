@@ -89,6 +89,10 @@ class Cached_Item:
         
         self.is_highly_salvageable: bool = False
         self.has_increased_value: bool = False
+        
+        self.is_low_requirement_item : bool = utility.Util.is_low_requirement_item(self.id)
+        self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id)
+        
         self.GetModsFromModifiers()
         
 

@@ -108,15 +108,6 @@ class InventoryHandler:
 
         return self.material_storage
 
-    def GetInventoryArray(self) -> list[int]:
-        if self.inventory_array is None:
-            inventory, inventory_sizes = utility.Util.GetZeroFilledBags(
-                Bag.Backpack, Bag.Bag_2)
-            self.inventory_array = inventory
-            self.inventory_sizes = inventory_sizes
-
-        return self.inventory_array
-
     def GetItemStorage(self) -> Tuple[list[tuple[int, ItemType, int, int]], list[tuple[int, ItemType, int, int]]]:
         """Get the item storage, which is a list of tuples containing item_id, ItemType, model_id and quantity.
         The list is sorted by item_id, with empty slots (item_id == 0) at the end.
@@ -946,16 +937,31 @@ class InventoryHandler:
 
         return False
 
-    def GetActions(self, debug : bool = False) -> dict[int, Cached_Item]:
-        if not settings.current.profile:
-            return {}
-
-        actions: dict[int, Cached_Item] = {}
-        cached_inventory: list[Cached_Item] = []
-        salvage_kits: list[Cached_Item] = []
-        identification_kits: list[Cached_Item] = []
+    class ActionsSummary:
+        def __init__(self, inventory_handler):            
+            self.inventory_handler = inventory_handler
+            self.salvage_queue: list[Cached_Item] = []
+            self.inventory_array: list[int] = []
+            self.inventory_sizes: dict[Bag, int] = {}
+            self.inventory_changed: bool = False
+            
+            self.inventory_materials: list[Cached_Item] = []
+            
+            self.salvage_kits: list[Cached_Item] = []
+            self.lesser_salvage_kits: list[Cached_Item] = []
+            self.expert_salvage_kits: list[Cached_Item] = []
+            self.perfect_salvage_kits: list[Cached_Item] = []
+            
+            self.identification_kits: list[Cached_Item] = []
+            self.cached_inventory: list[Cached_Item] = []
+            self.actions: dict[int, Cached_Item] = {}
+                    
+    def GetActions(self, start_bag : Bag = Bag.Backpack, end_bag : Bag = Bag.Bag_2) -> ActionsSummary:
+        result = InventoryHandler.ActionsSummary(self)
         
-
+        if not settings.current.profile:
+            return result
+        
         def ShouldDepositItem(item: Cached_Item) -> bool:
             if item.data and item.data.next_nick_week:
                 weeks_until = (item.data.next_nick_week -
@@ -974,7 +980,13 @@ class InventoryHandler:
             elif item.is_armor:
                 if item.runes_to_keep and len(item.runes_to_keep) > 1:
                     return True  
-           
+
+            if item.is_rare_weapon:
+                return True
+            
+            if item.is_low_requirement_item:
+                return True
+            
             return False
 
         def ShouldCollectData(item: Cached_Item) -> bool:
@@ -996,7 +1008,7 @@ class InventoryHandler:
             if not item.is_identified:
 
                 if item.is_weapon or item.is_armor:
-                    if item.rarity > Rarity.White or item.value >= 25:
+                    if (item.rarity > Rarity.White or item.value >= 25) and item.rarity < Rarity.Green:
                         return True
 
             return False
@@ -1058,14 +1070,16 @@ class InventoryHandler:
 
             return item.action == ItemAction.DESTROY
 
-        inventory_array = self.GetInventoryArray()
-        if not debug:
-            self.inventory_changed = False
+        inventory_array, inventory_sizes = utility.Util.GetZeroFilledBags(
+            start_bag, end_bag)
+        
+        result.inventory_array = inventory_array
+        result.inventory_sizes = inventory_sizes
         
         has_empty_slot = False
         for slot, item_id in enumerate(inventory_array):
             item = Cached_Item(item_id, slot)
-            cached_inventory.append(item)
+            result.cached_inventory.append(item)
             
             has_empty_slot = item.id == 0 or has_empty_slot
             if item.id == 0:
@@ -1079,11 +1093,11 @@ class InventoryHandler:
             
             if item.is_salvage_kit:
                 if item.uses > 0:
-                    salvage_kits.append(item)
+                    result.salvage_kits.append(item)
                     
             if item.is_identification_kit:
                 if item.uses > 0:
-                    identification_kits.append(item)
+                    result.identification_kits.append(item)
 
             existing_item = next(
                 (item for item in self.cached_inventory if item.id == item_id), None)
@@ -1096,26 +1110,22 @@ class InventoryHandler:
                 item.salvage_started = existing_item.salvage_started
                 item.is_blacklisted = existing_item.is_blacklisted
                 
-                actions[item_id] = item
-                if not debug:
-                    self.inventory_changed = self.inventory_changed or existing_item.slot != item.slot or has_empty_slot
+                result.actions[item_id] = item
+                result.inventory_changed = result.inventory_changed or existing_item.slot != item.slot or has_empty_slot
                     
                 continue
 
             if not item.is_inventory_item:
-                if item_id in actions:
-                    del actions[item_id]
+                if item_id in result.actions:
+                    del result.actions[item_id]
 
-                cached_inventory.remove(item)
+                result.cached_inventory.remove(item)
                 continue
             
             if has_empty_slot:
-                if not debug:
-                    self.inventory_changed = True
+                result.inventory_changed = True
 
-            actions[item_id] = item
-            if not debug:
-                self.inventory_changed = True
+            result.actions[item_id] = item
 
             if ShouldCollectData(item):
                 item.action = ItemAction.COLLECT_DATA
@@ -1137,9 +1147,8 @@ class InventoryHandler:
                             item.weapon_mods_to_keep[0].mod_type)
                         item.salvage_requires_confirmation = True
                         
-                        if not debug:
-                            if not item in self.salvage_queue:
-                                self.salvage_queue.append(item)
+                        if not item in result.salvage_queue:
+                            result.salvage_queue.append(item)
 
                 elif item.item_type :
                     if item.runes_to_keep and len(item.runes_to_keep) == 1:
@@ -1148,9 +1157,8 @@ class InventoryHandler:
                             item.runes_to_keep[0].mod_type)
                         item.salvage_requires_confirmation = True
                         
-                        if not debug:
-                            if not item in self.salvage_queue:
-                                self.salvage_queue.append(item)
+                        if not item in result.salvage_queue:
+                            result.salvage_queue.append(item)
                     else:
                         item.action = ItemAction.STASH
                 
@@ -1160,7 +1168,7 @@ class InventoryHandler:
             
             if item.config:
                 action = item.config.get_action(item)
-                if action != ItemAction.NONE:
+                if action != ItemAction.NONE and (not item.is_inventory_item or action != ItemAction.LOOT):
                     item.action = action
 
                     if self.IsSalvageAction(item.action):
@@ -1176,15 +1184,14 @@ class InventoryHandler:
                             mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
                             item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
                             
-                            if not debug:
-                                if not item in self.salvage_queue:
-                                    self.salvage_queue.append(item)
+                            if not item in result.salvage_queue:
+                                result.salvage_queue.append(item)
                     continue
 
             for filter in settings.current.profile.filters:
                 action = filter.get_action(item)
 
-                if action != ItemAction.NONE:
+                if action != ItemAction.NONE and (not item.is_inventory_item or action != ItemAction.LOOT):
                     item.action = action
 
                     if self.IsSalvageAction(item.action):
@@ -1200,9 +1207,8 @@ class InventoryHandler:
                             mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
                             item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
                             
-                            if not debug:
-                                if not item in self.salvage_queue:
-                                    self.salvage_queue.append(item)
+                            if not item in result.salvage_queue:
+                                result.salvage_queue.append(item)
                     break
             
             if item.action != ItemAction.NONE:
@@ -1211,8 +1217,7 @@ class InventoryHandler:
             # Soft action set for materials to deposit them to the material storage, may be overridden later through filters or item config
             if item.item_type == ItemType.Materials_Zcoins and item.action == ItemAction.NONE:
                 if item.model_id in data.Materials:                    
-                    if not debug:
-                        self.inventory_materials.append(item)
+                    result.inventory_materials.append(item)
                         
                     item.action = ItemAction.DEPOSIT_MATERIAL
 
@@ -1233,9 +1238,8 @@ class InventoryHandler:
                     item.salvage_option = salvage_option
                     item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
                     
-                    if not debug:
-                        if not item in self.salvage_queue:
-                            self.salvage_queue.append(item)
+                    if not item in result.salvage_queue:
+                        result.salvage_queue.append(item)
                         
                     # ConsoleLog(
                     #     "LootEx", f"Adding item {item.model_name} ({item.id}) to salvage queue with option {salvage_option.name}", Console.MessageType.Debug)
@@ -1248,21 +1252,20 @@ class InventoryHandler:
             if ShouldDestroyItem(item):
                 continue
 
-        salvage_kits.sort(
-            key=lambda x: x.uses) if salvage_kits else []
+        result.salvage_kits.sort(
+            key=lambda x: x.uses) if result.salvage_kits else []
         
-        identification_kits.sort(
-            key=lambda x: x.uses) if identification_kits else []
+        result.lesser_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id == ModelID.Salvage_Kit]
+        result.expert_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id in (ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit)]
+        result.perfect_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id == ModelID.Perfect_Salvage_Kit]
         
-        if not debug:
-            self.cached_inventory = cached_inventory
-            self.lesser_salvage_kits = [kit for kit in salvage_kits if kit.model_id == ModelID.Salvage_Kit]
-            self.expert_salvage_kits = [kit for kit in salvage_kits if kit.model_id in (ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit)]
-            self.perfect_salvage_kits = [kit for kit in salvage_kits if kit.model_id == ModelID.Perfect_Salvage_Kit]
-            self.identification_kits = identification_kits       
+        
+        result.identification_kits.sort(
+            key=lambda x: x.uses) if result.identification_kits else []
+           
             
-        return actions
-
+        return result
+                    
     def Run(self):
         global time_results, actiontime_results
         self.run_once = False
@@ -1297,7 +1300,21 @@ class InventoryHandler:
                 return
 
             self.empty_slots = GLOBAL_CACHE.Inventory.GetFreeSlotCount()
-            actions = self.GetActions()
+            result = self.GetActions()
+            if not result:
+                return            
+            
+            self.cached_inventory = result.cached_inventory
+            self.lesser_salvage_kits = result.lesser_salvage_kits
+            self.expert_salvage_kits = result.expert_salvage_kits
+            self.perfect_salvage_kits = result.perfect_salvage_kits
+            self.identification_kits = result.identification_kits
+            self.inventory_materials = result.inventory_materials
+            self.inventory_changed = result.inventory_changed
+            self.inventory_array = result.inventory_array
+            self.inventory_sizes = result.inventory_sizes
+            self.actions = result.actions
+            self.salvage_queue = result.salvage_queue
 
             if self.merchant_timer.IsExpired():
                 self.merchant_timer.Reset()
@@ -1308,7 +1325,7 @@ class InventoryHandler:
                         if self.merchant_open:
                             self.BuyItemsFromMerchant(items_to_buy)
 
-            for _, item in actions.items():
+            for _, item in self.actions.items():
                 time = datetime.now()
                 time_delta = datetime.now() - time
                 self.TrackTime(time_delta, actiontime_results, "Action")
