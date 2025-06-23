@@ -1,5 +1,5 @@
 {
-    "Gold_Coin":{        
+    "Gold_Coin": {
         "2511": {
             "ModelID": 2511,
             "Names": {
@@ -3944,6 +3944,311 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "689": {
+            "ModelID": 689,
+            "Names": {
+                "English": "Warden Armguard",
+                "German": "Aufseher-Armschutz",
+                "Korean": "파수꾼 팔목보호대",
+                "French": "Garde-bras de gardien",
+                "Italian": "Parabraccia del Difensore",
+                "Spanish": "Brazalete de guardián",
+                "TraditionalChinese": "看守者護手",
+                "Japanese": "ウォードン アームガード",
+                "Polish": "Naramiennik Strażnika",
+                "Russian": "Warden Armguard",
+                "BorkBorkBork": "Vaerdee Aermgooaerd"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Tanned Hide Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
+            "RareSalvage": {
+                "Leather Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 942,
+                    "MaterialName": "Leather Square"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Armguard",
+            "InventoryIcon": "Salvage_Medium_Armor.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Salvage_Medium_Armor.png",
+            "NickIndex": null,
+            "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "688": {
+            "ModelID": 688,
+            "Names": {
+                "English": "Warden Pauldron",
+                "German": "Aufseher-Schulterplatte",
+                "Korean": "파수꾼 갑옷",
+                "French": "Epaulette de gardien",
+                "Italian": "Spalliera del Difensore",
+                "Spanish": "Hombrera de guardián",
+                "TraditionalChinese": "看守者護肩甲",
+                "Japanese": "ウォードンの肩甲",
+                "Polish": "Epolet Strażnika",
+                "Russian": "Warden Pauldron",
+                "BorkBorkBork": "Vaerdee Pooldrun"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Tanned Hide Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Pauldron",
+            "InventoryIcon": "Salvage_Plating.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d1/Salvage_Plating.png",
+            "NickIndex": null,
+            "Profession": "Warrior",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "684": {
+            "ModelID": 684,
+            "Names": {
+                "English": "Warden Vestments",
+                "German": "Aufseher-Ornat",
+                "Korean": "파수꾼 로브",
+                "French": "Habits de cérémonie de gardien",
+                "Italian": "Vestimenti del Difensore",
+                "Spanish": "Vestimenta de guardián",
+                "TraditionalChinese": "看守者法袍",
+                "Japanese": "ウォードン ベスト",
+                "Polish": "Szaty Strażnika",
+                "Russian": "Warden Vestments",
+                "BorkBorkBork": "Vaerdee Festments"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Vestments",
+            "InventoryIcon": "Am_Fah_Cape.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/54/Am_Fah_Cape.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "686": {
+            "ModelID": 686,
+            "Names": {
+                "English": "Warden Vestments",
+                "German": "Aufseher-Ornat",
+                "Korean": "파수꾼 로브",
+                "French": "Habits de cérémonie de gardien",
+                "Italian": "Vestimenti del Difensore",
+                "Spanish": "Vestimenta de guardián",
+                "TraditionalChinese": "看守者法袍",
+                "Japanese": "ウォードン ベスト",
+                "Polish": "Szaty Strażnika",
+                "Russian": "Warden Vestments",
+                "BorkBorkBork": "Vaerdee Festments"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Vestments",
+            "InventoryIcon": "Am_Fah_Cape.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/54/Am_Fah_Cape.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "687": {
+            "ModelID": 687,
+            "Names": {
+                "English": "Warden Vestments",
+                "German": "Aufseher-Ornat",
+                "Korean": "파수꾼 로브",
+                "French": "Habits de cérémonie de gardien",
+                "Italian": "Vestimenti del Difensore",
+                "Spanish": "Vestimenta de guardián",
+                "TraditionalChinese": "看守者法袍",
+                "Polish": "Szaty Strażnika",
+                "Japanese": "ウォードン ベスト",
+                "Russian": "Warden Vestments",
+                "BorkBorkBork": "Vaerdee Festments"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Vestments",
+            "InventoryIcon": "Am_Fah_Cape.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/54/Am_Fah_Cape.png",
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "690": {
+            "ModelID": 690,
+            "Names": {
+                "English": "Warden Vestments",
+                "German": "Aufseher-Ornat",
+                "Korean": "파수꾼 로브",
+                "French": "Habits de cérémonie de gardien",
+                "Italian": "Vestimenti del Difensore",
+                "Spanish": "Vestimenta de guardián",
+                "TraditionalChinese": "看守者法袍",
+                "Japanese": "ウォードン ベスト",
+                "Polish": "Szaty Strażnika",
+                "Russian": "Warden Vestments",
+                "BorkBorkBork": "Vaerdee Festments"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Vestments",
+            "InventoryIcon": "Am_Fah_Cape.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/54/Am_Fah_Cape.png",
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1175": {
             "ModelID": 1175,
             "Names": {
@@ -5747,7 +6052,17 @@
         "819": {
             "ModelID": 819,
             "Names": {
-                "English": "Dragon Root"
+                "English": "Dragon Root",
+                "German": "Drachenwurzel",
+                "Korean": "드래곤 발톱",
+                "French": "Racine de dragon",
+                "Italian": "Radice di Drago",
+                "Spanish": "Raíz de dragón",
+                "TraditionalChinese": "龍根",
+                "Japanese": "ドラゴン ルート",
+                "Polish": "Smoczy Korzeń",
+                "Russian": "Dragon Root",
+                "BorkBorkBork": "Draegun Ruut"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -8462,7 +8777,17 @@
         "815": {
             "ModelID": 815,
             "Names": {
-                "English": "Mantid Pincer"
+                "English": "Mantid Pincer",
+                "German": "Mantis-Zange",
+                "Korean": "흑사마귀 앞다리",
+                "French": "Pince de mante",
+                "Italian": "Chela di Locusta",
+                "Spanish": "Pinza de mantis",
+                "TraditionalChinese": "螳螂鐮",
+                "Japanese": "マンティス ピンサー",
+                "Polish": "Szczypce Młodej Mantydy",
+                "Russian": "Mantis Pincer",
+                "BorkBorkBork": "Muntees Peencer"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -9235,7 +9560,17 @@
         "817": {
             "ModelID": 817,
             "Names": {
-                "English": "Oni Claw"
+                "English": "Oni Claw",
+                "German": "Klaue des scharfen Oni",
+                "Korean": "날카로운 갈퀴 발톱",
+                "French": "Griffe tranchante d'oni",
+                "Italian": "Artiglio Affilato di Oni",
+                "Spanish": "Garra afilada de oni",
+                "TraditionalChinese": "銳利鬼爪",
+                "Japanese": "キーン オニ クロウ",
+                "Polish": "Ostry Szpon Demona Oni",
+                "Russian": "Keen Oni Claw",
+                "BorkBorkBork": "Keee Oonee Claev"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -9254,7 +9589,7 @@
             "InventoryIcon": "Oni_Claw.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Oni_Claw.png",
             "NickIndex": null,
-            "Profession": null,
+            "Profession": "Assassin",
             "Category": "Trophy",
             "SubCategory": null,
             "WikiScraped": true
@@ -10793,7 +11128,17 @@
         "814": {
             "ModelID": 814,
             "Names": {
-                "English": "Skull Juju"
+                "English": "Skull Juju",
+                "German": "Schädeljuju",
+                "Korean": "해골 부적",
+                "French": "Crâne breloque",
+                "Italian": "Cranio di Juju",
+                "Spanish": "Calavera talismán",
+                "TraditionalChinese": "頭骨土符",
+                "Japanese": "スカル ジュージュ",
+                "Polish": "Amulet Czaszki",
+                "Russian": "Skull Juju",
+                "BorkBorkBork": "Skooll Joojoo"
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
@@ -11098,7 +11443,17 @@
         "816": {
             "ModelID": 816,
             "Names": {
-                "English": "Stone Horn"
+                "English": "Stone Horn",
+                "German": "Steinhorn",
+                "Korean": "기린 돌뿔",
+                "French": "Corne de pierre",
+                "Italian": "Corno di Pietra",
+                "Spanish": "Cuerno de piedra",
+                "TraditionalChinese": "石之角",
+                "Japanese": "ストーン ホーン",
+                "Polish": "Kamienny Róg",
+                "Russian": "Stone Horn",
+                "BorkBorkBork": "Stune-a Hurn"
             },
             "ItemType": "Trophy",
             "DropInfo": "No data added yet",
@@ -11722,7 +12077,17 @@
         "822": {
             "ModelID": 822,
             "Names": {
-                "English": "Warden Horn"
+                "English": "Warden Horn",
+                "German": "Aufseherhorn",
+                "Korean": "파수꾼 뿔",
+                "French": "Corne de gardien",
+                "Italian": "Corno del Difensore",
+                "Spanish": "Cuerno de guardián",
+                "TraditionalChinese": "看守者之角",
+                "Polish": "Róg Strażnika",
+                "Japanese": "ウォードン ホーン",
+                "Russian": "Warden Horn",
+                "BorkBorkBork": "Vaerdee Hurn"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -12684,6 +13049,60 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Envoy_Axe",
             "InventoryIcon": "Envoy_Axe.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/7/7f/Envoy_Axe.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "748": {
+            "ModelID": 748,
+            "Names": {
+                "English": "Gothic Axe",
+                "German": "Gotische Axt",
+                "Korean": "고트 도끼",
+                "French": "Hache gothique",
+                "Italian": "Ascia Gotica",
+                "Spanish": "Hacha gótica",
+                "TraditionalChinese": "哥德斧",
+                "Japanese": "ゴシック アックス",
+                "Polish": "Gotycki Topór",
+                "Russian": "Gothic Axe",
+                "BorkBorkBork": "Gutheec Aexe-a"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Spiritwood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 956,
+                    "MaterialName": "Spiritwood Plank"
+                },
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Gothic_Axe",
+            "InventoryIcon": "Gothic_Axe.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/9f/Gothic_Axe.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -13819,6 +14238,60 @@
         }
     },
     "Bow": {
+        "754": {
+            "ModelID": 754,
+            "Names": {
+                "English": "Amber Longbow",
+                "German": "Bernstein-Langbogen",
+                "Korean": "호박석 장궁",
+                "French": "Arc long en ambre",
+                "Italian": "Arco Lungo Ambrato",
+                "Spanish": "Arco largo de ámbar",
+                "TraditionalChinese": "琥珀長弓",
+                "Japanese": "アンバー ロングボウ",
+                "Polish": "Bursztynowy Długi Łuk",
+                "Russian": "Amber Longbow",
+                "BorkBorkBork": "Aember Lungboo"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Amber Chunk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 6532,
+                    "MaterialName": "Amber Chunk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Longbow",
+            "InventoryIcon": "Amber_Longbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b2/Amber_Longbow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1357": {
             "ModelID": 1357,
             "Names": {
@@ -14440,6 +14913,52 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Hornbow",
             "InventoryIcon": "Bramble_Hornbow.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/3/39/Bramble_Hornbow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "868": {
+            "ModelID": 868,
+            "Names": {
+                "English": "Bramble Longbow",
+                "German": "Dornenranken-Langbogen",
+                "Korean": "가시나무 장궁",
+                "French": "Arc long de ronces",
+                "Italian": "Arco Lungo di Rovo",
+                "Spanish": "Arco largo de zarzas",
+                "TraditionalChinese": "荊棘長弓",
+                "Japanese": "ブランブル ロングボウ",
+                "Polish": "Cierniowy Długi Łuk",
+                "Russian": "Bramble Longbow",
+                "BorkBorkBork": "Braemble-a Lungboo"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Longbow",
+            "InventoryIcon": "Bramble_Longbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d7/Bramble_Longbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -18849,6 +19368,60 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "569": {
+            "ModelID": 569,
+            "Names": {
+                "English": "Flame Artifact",
+                "German": "Flammenartefakt",
+                "Korean": "화염의 유물",
+                "French": "Artefact de flamme",
+                "Italian": "Manufatto della Fiamma",
+                "Spanish": "Artefacto de llama",
+                "TraditionalChinese": "火焰神器",
+                "Japanese": "フレイム アーティファクト",
+                "Polish": "Płomienny Artefakt",
+                "Russian": "Flame Artifact",
+                "BorkBorkBork": "Flaeme-a Aerteeffaect"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Monstrous Eye": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 931,
+                    "MaterialName": "Monstrous Eye"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Flame_Artifact_(flame)",
+            "InventoryIcon": "Flame_Artifact_%28flame%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e2/Flame_Artifact_%28flame%29.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1218": {
             "ModelID": 1218,
             "Names": {
@@ -20058,6 +20631,45 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "564": {
+            "ModelID": 564,
+            "Names": {
+                "English": "Idol",
+                "German": "Götzenbild",
+                "Korean": "신상",
+                "French": "Idole",
+                "Italian": "Idolo",
+                "Spanish": "Ídolo",
+                "TraditionalChinese": "法器",
+                "Japanese": "アイドル",
+                "Polish": "Totem",
+                "Russian": "Idol",
+                "BorkBorkBork": "Idul"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {
+                "Bone": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 921,
+                    "MaterialName": "Bone"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Idol_(hand)",
+            "InventoryIcon": "Idol_%28hand%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/1f/Idol_%28hand%29.png",
+            "NickIndex": null,
+            "Profession": "Necromancer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1210": {
             "ModelID": 1210,
             "Names": {
@@ -20417,23 +21029,56 @@
         "562": {
             "ModelID": 562,
             "Names": {
-                "English": "Jeweled Chakram"
+                "English": "Jeweled Chakram",
+                "German": "Juwelentschakra",
+                "Korean": "보석이 박힌 챠크람",
+                "French": "Chakram serti de joyaux",
+                "Italian": "Chakram con Gioielli",
+                "Spanish": "Chakram enjoyado",
+                "TraditionalChinese": "寶石的圓月輪",
+                "Japanese": "ジュエル チャクラム",
+                "Polish": "Zdobiony Czakram",
+                "Russian": "Jeweled Chakram",
+                "BorkBorkBork": "Jooeled Chaekraem"
             },
             "ItemType": "Offhand",
             "DropInfo": "",
             "Attributes": [
                 "IllusionMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chakram",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chakram_(metal)",
+            "InventoryIcon": "Jeweled_Chakram_%28metal%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e3/Jeweled_Chakram_%28metal%29.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1788": {
             "ModelID": 1788,
@@ -24243,6 +24888,65 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "925": {
+            "ModelID": 925,
+            "Names": {
+                "English": "Amber Wand",
+                "German": "Bernstein-Zauberstab",
+                "Korean": "호박석 완드",
+                "French": "Baguette d'ambre",
+                "Italian": "Bacchetta Ambrata",
+                "Spanish": "Varita de ámbar",
+                "TraditionalChinese": "琥珀杖",
+                "Japanese": "アンバー ワンド",
+                "Polish": "Bursztynowa Różdżka",
+                "Russian": "Amber Wand",
+                "BorkBorkBork": "Aember Vund"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic",
+                "DominationMagic",
+                "BloodMagic",
+                "ChannelingMagic",
+                "Curses",
+                "SmitingPrayers"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Amber Chunk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 6532,
+                    "MaterialName": "Amber Chunk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Wand",
+            "InventoryIcon": "Amber_Wand.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/5e/Amber_Wand.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1832": {
             "ModelID": 1832,
             "Names": {
@@ -24671,23 +25375,56 @@
         "254": {
             "ModelID": 254,
             "Names": {
-                "English": "Cane"
+                "English": "Cane",
+                "German": "Stock",
+                "Korean": "지팡이",
+                "French": "Canne",
+                "Italian": "Canna",
+                "Spanish": "Bastón",
+                "TraditionalChinese": "藤杖",
+                "Japanese": "ステッキ",
+                "Polish": "Laska",
+                "Russian": "Cane",
+                "BorkBorkBork": "Cune-a"
             },
             "ItemType": "Wand",
             "DropInfo": "",
             "Attributes": [
                 "DominationMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Piles of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": -1,
+                    "MaterialName": "Piles of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Cane_(Domination)",
+            "InventoryIcon": "Cane_%28Domination%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/ef/Cane_%28Domination%29.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "255": {
             "ModelID": 255,
@@ -24902,16 +25639,39 @@
             "Attributes": [
                 "DominationMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Cane",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Piles of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": -1,
+                    "MaterialName": "Piles of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Cane_(Domination)",
+            "InventoryIcon": "Cane_%28Domination%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/ef/Cane_%28Domination%29.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1231": {
             "ModelID": 1231,
@@ -25076,6 +25836,67 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Rod_(loop)",
             "InventoryIcon": "Channeling_Rod_%28loop%29.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/5/57/Channeling_Rod_%28loop%29.png",
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "734": {
+            "ModelID": 734,
+            "Names": {
+                "English": "Channeling Rod",
+                "German": "Kanalisierungs-Stecken",
+                "Korean": "증폭의 막대",
+                "French": "Badine de canalisation",
+                "Italian": "Verga Incanalante",
+                "Spanish": "Vara de canalización",
+                "TraditionalChinese": "導引手杖",
+                "Japanese": "チャネリング ロッド",
+                "Polish": "Różdżka Połączeń",
+                "Russian": "Channeling Rod",
+                "BorkBorkBork": "Chunneleeng Rud"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "ChannelingMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Spiritwood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 956,
+                    "MaterialName": "Spiritwood Plank"
+                },
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Channeling_Rod_(forked)",
+            "InventoryIcon": "Channeling_Rod_%28forked%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/73/Channeling_Rod_%28forked%29.png",
             "NickIndex": null,
             "Profession": "Ritualist",
             "Category": null,
@@ -25875,6 +26696,67 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/0/05/Earth_Wand.png",
             "NickIndex": null,
             "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "587": {
+            "ModelID": 587,
+            "Names": {
+                "English": "Eerie Rod",
+                "German": "Schauriger Stecken",
+                "Korean": "섬뜩한 막대",
+                "French": "Badine étrange",
+                "Italian": "Verga Soprannaturale",
+                "Spanish": "Vara misteriosa",
+                "TraditionalChinese": "詭異手杖",
+                "Japanese": "イーリー ロッド",
+                "Polish": "Upiorna Różdżka",
+                "Russian": "Eerie Rod",
+                "BorkBorkBork": "Iereee-a Rud"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "Communing"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Planks": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": -1,
+                    "MaterialName": "Wood Planks"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                },
+                "Spiritwood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 956,
+                    "MaterialName": "Spiritwood Plank"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Eerie_Rod",
+            "InventoryIcon": "Eerie_Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/bb/Eerie_Rod.png",
+            "NickIndex": null,
+            "Profession": "Ritualist",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -26938,6 +27820,53 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/3/32/Platinum_Wand.png",
             "NickIndex": null,
             "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1014": {
+            "ModelID": 1014,
+            "Names": {
+                "English": "Pronged Rod",
+                "German": "Gezackter Stecken",
+                "Korean": "갈라진 막대",
+                "French": "Badine dentelée",
+                "Italian": "Verga Forcuta",
+                "Spanish": "Vara puntiaguda",
+                "TraditionalChinese": "分叉手杖",
+                "Japanese": "プロング ロッド",
+                "Polish": "Widłowe Berło",
+                "Russian": "Pronged Rod",
+                "BorkBorkBork": "Prunged Rud"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Pronged_Rod",
+            "InventoryIcon": "Pronged_Rod.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Pronged_Rod.png",
+            "NickIndex": null,
+            "Profession": "Necromancer",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -30314,6 +31243,114 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "954": {
+            "ModelID": 954,
+            "Names": {
+                "English": "Ornate Shield",
+                "German": "Verzierter Schild",
+                "Korean": "화려한 방패",
+                "French": "Bouclier décoré",
+                "Italian": "Scudo Adorno",
+                "Spanish": "Escudo ornamentado",
+                "TraditionalChinese": "華麗盾",
+                "Polish": "Zdobiona Tarcza",
+                "Japanese": "オルネート シールド",
+                "Russian": "Ornate Shield",
+                "BorkBorkBork": "Oornaete-a Sheeeld"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Strength"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ornate_Shield",
+            "InventoryIcon": "Ornate_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Ornate_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "955": {
+            "ModelID": 955,
+            "Names": {
+                "English": "Ornate Shield",
+                "German": "Verzierter Schild",
+                "Korean": "화려한 방패",
+                "French": "Bouclier décoré",
+                "Italian": "Scudo Adorno",
+                "Spanish": "Escudo ornamentado",
+                "TraditionalChinese": "華麗盾",
+                "Japanese": "オルネート シールド",
+                "Polish": "Zdobiona Tarcza",
+                "Russian": "Ornate Shield",
+                "BorkBorkBork": "Oornaete-a Sheeeld"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ornate_Shield",
+            "InventoryIcon": "Ornate_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Ornate_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "327": {
             "ModelID": 327,
             "Names": {
@@ -32091,6 +33128,68 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/7/73/Air_Staff_%28lightning_spire%29.png",
             "NickIndex": null,
             "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "784": {
+            "ModelID": 784,
+            "Names": {
+                "English": "Amber Staff",
+                "German": "Bernstein-Stab",
+                "Korean": "호박석 스태프",
+                "French": "Bâton d'ambre",
+                "Italian": "Bastone Ambrato",
+                "Spanish": "Báculo de ámbar",
+                "TraditionalChinese": "琥珀法杖",
+                "Japanese": "アンバー スタッフ",
+                "Polish": "Bursztynowy Kostur",
+                "Russian": "Amber Staff",
+                "BorkBorkBork": "Aember Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "ChannelingMagic",
+                "WaterMagic",
+                "DominationMagic",
+                "Curses",
+                "DeathMagic",
+                "Communing",
+                "BloodMagic",
+                "IllusionMagic",
+                "EarthMagic"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Amber Chunk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 6532,
+                    "MaterialName": "Amber Chunk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Amber_Staff",
+            "InventoryIcon": "Amber_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Amber_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -34646,6 +35745,53 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "885": {
+            "ModelID": 885,
+            "Names": {
+                "English": "Earth Staff",
+                "German": "Erd-Stab",
+                "Korean": "대지의 스태프",
+                "French": "Bâton de la terre",
+                "Italian": "Bastone della Terra",
+                "Spanish": "Báculo de tierra",
+                "TraditionalChinese": "大地法杖",
+                "Japanese": "アース スタッフ",
+                "Polish": "Ziemny Kostur",
+                "Russian": "Earth Staff",
+                "BorkBorkBork": "Iaert Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Staff_(metal)",
+            "InventoryIcon": "Earth_Staff_%28metal%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/4e/Earth_Staff_%28metal%29.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1190": {
             "ModelID": 1190,
             "Names": {
@@ -35169,6 +36315,45 @@
         },
         "611": {
             "ModelID": 611,
+            "Names": {
+                "English": "Fire Staff",
+                "German": "Feuer-Stab",
+                "Korean": "불의 스태프",
+                "French": "Bâton de feu",
+                "Italian": "Bastone del Fuoco",
+                "Spanish": "Báculo de fuego",
+                "TraditionalChinese": "火之法杖",
+                "Japanese": "ファイア スタッフ",
+                "Polish": "Ognisty Kostur",
+                "Russian": "Fire Staff",
+                "BorkBorkBork": "Fure-a Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Fire_Staff_(core)",
+            "InventoryIcon": "Fire_Staff_%28core%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/0/0b/Fire_Staff_%28core%29.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1289": {
+            "ModelID": 1289,
             "Names": {
                 "English": "Fire Staff",
                 "German": "Feuer-Stab",
@@ -36056,6 +37241,53 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/5/5e/Galigord%27s_Stone_Staff.png",
             "NickIndex": null,
             "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "961": {
+            "ModelID": 961,
+            "Names": {
+                "English": "Holy Branch",
+                "German": "Heiliger Zweig",
+                "Korean": "신성한 스태프",
+                "French": "Branche sacrée",
+                "Italian": "Ramo Santo",
+                "Spanish": "Rama sagrada",
+                "TraditionalChinese": "神聖樹枝",
+                "Japanese": "ホーリー ブランチ",
+                "Polish": "Święty Konar",
+                "Russian": "Holy Branch",
+                "BorkBorkBork": "Huly Brunch"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Spiritwood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 956,
+                    "MaterialName": "Spiritwood Plank"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Branch",
+            "InventoryIcon": "Holy_Branch.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/a/a7/Holy_Branch.png",
+            "NickIndex": null,
+            "Profession": "Monk",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -41289,6 +42521,53 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "792": {
+            "ModelID": 792,
+            "Names": {
+                "English": "Wicked Blade",
+                "German": "Böse Klinge",
+                "Korean": "흑단 검",
+                "French": "Lame du mal",
+                "Italian": "Lama Malvagia",
+                "Spanish": "Espada maldita",
+                "TraditionalChinese": "邪惡刀",
+                "Japanese": "ウィケッド ブレード",
+                "Polish": "Złowrogie Ostrze",
+                "Russian": "Wicked Blade",
+                "BorkBorkBork": "Veecked Blaede-a"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Wicked_Blade",
+            "InventoryIcon": "Wicked_Blade.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Wicked_Blade.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "421": {
             "ModelID": 421,
             "Names": {
@@ -43414,6 +44693,37 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Elonian_Daggers_(rare)",
             "InventoryIcon": "Elonian_Daggers_%28rare%29.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/6/65/Elonian_Daggers_%28rare%29.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "8028": {
+            "ModelID": 8028,
+            "Names": {
+                "English": "Everthorn's Chakrams",
+                "German": "Immerdorns Tschakren",
+                "Korean": "영원가시 차크람 단검",
+                "French": "Chakrams de Longuépine",
+                "Italian": "Chakram di Spineterna",
+                "Spanish": "Chakrams de Espinaeterna",
+                "TraditionalChinese": "恆刺的圓月輪",
+                "Japanese": "エヴァーソーン チャクラム",
+                "Polish": "Czakram Wiecznego Ciernia",
+                "Russian": "Everthorn's Chakrams",
+                "BorkBorkBork": "Iferthurn's Chaekraems"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Everthorn's_Chakrams",
+            "InventoryIcon": "Everthorn%27s_Chakrams.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/93/Everthorn%27s_Chakrams.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,

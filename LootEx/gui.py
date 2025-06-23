@@ -561,6 +561,11 @@ class UI:
                     Utils.ColorToTuple(Utils.RGBToColor(255, 255, 0, 125))
                 )
             
+            PyImGui.push_style_color(
+                PyImGui.ImGuiCol.Border,
+                Utils.ColorToTuple(utility.Util.GetRarityColor(cached_item.rarity)["text"])
+            )
+            
             if PyImGui.begin_child(str(i), (button_width, button_height), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                                    
                 image_size = (32, 32)               
                 if PyImGui.is_rect_visible(image_size[0], image_size[1]):                 
@@ -623,6 +628,7 @@ class UI:
                 PyImGui.pop_style_color(1)
             
             PyImGui.end_child()
+            PyImGui.pop_style_color(1)
             
             if PyImGui.is_item_clicked(0) and cached_item and cached_item.data and not cached_item.data.wiki_scraped:
                 data.Reload()                  
@@ -663,6 +669,37 @@ class UI:
                         PyImGui.table_next_column()
                         PyImGui.text(str(cached_item.quantity) if cached_item.quantity > 0 else "N/A")
                         
+                        if cached_item.runes:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Runes")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.runes:
+                                PyImGui.text(utility.Util.reformat_string(mod.name))
+                        
+                        if cached_item.weapon_mods:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Mods")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.weapon_mods:
+                                PyImGui.text(utility.Util.reformat_string(mod.name))
+                        
+                        if cached_item.is_rare_weapon:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Rare Weapon")
+
+                            PyImGui.table_next_column()
+                            PyImGui.text_colored("Yes", (0, 1, 0, 1))
+                            
+                        if cached_item.is_low_requirement_item:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Low Req")
+
+                            PyImGui.table_next_column()
+                            PyImGui.text_colored("Yes", (0, 1, 0, 1))
+                            
+                                
                         PyImGui.table_next_column()
                         PyImGui.text("Action")
                         
@@ -2356,7 +2393,7 @@ class UI:
                     PyImGui.text("Type: " + utility.Util.GetItemType(item_info.item_type).name)
                                     
                     if item_info.nick_index:
-                        PyImGui.text("Next Nick Week: " + str(item_info.next_nick_week))
+                        PyImGui.text("Next Nick Week: " + str(item_info.next_nick_week) + " in " + str(item_info.weeks_until_next_nick) + " weeks")
                                     
                     if item_info.common_salvage:
                         summaries = [salvage_info.summary for salvage_info in item_info.common_salvage.values()]                        

@@ -5312,7 +5312,17 @@
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
         "Names": {
-            "English": "of the Dervish"
+            "English": "of the Dervish",
+            "German": "d. des Derwischs",
+            "Korean": "(더비시)",
+            "French": "(le Derviche)",
+            "Italian": "dell'arco il derviscio",
+            "Spanish": "(el derviche)",
+            "TraditionalChinese": "the",
+            "Japanese": "(ダルウィーシュ)",
+            "Polish": "(Derwisza)",
+            "Russian": "of дервиш",
+            "BorkBorkBork": "ooff zee Derfeesh"
         },
         "ModType": "Suffix",
         "TargetTypes": [

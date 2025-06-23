@@ -14,6 +14,7 @@ importlib.reload(cache)
 # TODO: Collect salvage data for items, so we can make better decisions on what to salvage and what not to salvage.
 # TODO: Add sorting options for the inventory and storage.
 # TODO: Add options to mark accounts as data collectors and allow salvaging of unknown items on other accounts
+# TODO: Fix the bug of items not getting processed fully but handler stopping after a few items
 
 salvagetime_results = []
 actiontime_results = []
@@ -284,7 +285,6 @@ class InventoryHandler:
                 "LootEx", f"Cannot drop item {item.model_name} ({item.id}), it is not an inventory item.", Console.MessageType.Warning)
             return False
         
-##TODO: Implement withdraw and stash methods to handle items in the inventory and storage.
     def WithdrawItem(self, item: cache.Cached_Item) -> bool:
         if item.is_stackable and not item.is_inventory_item:
             inventory_item_ids, bag_sizes = utility.Util.GetZeroFilledBags(
@@ -1003,8 +1003,8 @@ class InventoryHandler:
 
             missing_language = item.data.has_missing_names()
             if missing_language:
-                ConsoleLog("LootEx", f"Item '{item.model_name}' ({item.id}) has missing data for {missing_language}, collecting data.",
-                           Console.MessageType.Warning)
+                # ConsoleLog("LootEx", f"Item '{item.model_name}' ({item.id}) has missing data for {missing_language}, collecting data.",
+                #            Console.MessageType.Warning)
                 return True
 
             if (item.is_armor or item.is_weapon or item.is_upgrade) and data_collector.instance.has_uncollected_mods(item_id)[0]:
@@ -1096,6 +1096,9 @@ class InventoryHandler:
             if item.is_blacklisted:
                 continue
             
+            if has_empty_slot and item.id > 0:
+                result.inventory_changed = True
+            
             if not item.is_inventory_item or item.quantity <= 0:
                 continue
             
@@ -1148,14 +1151,14 @@ class InventoryHandler:
                 continue
                         
             if ShouldDepositItem(item):
-                ConsoleLog(
-                    "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
+                # ConsoleLog(
+                #     "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
                 item.action = ItemAction.STASH
                 continue
             
             if ShouldExtractMods(item):
-                ConsoleLog(
-                    "LootEx", f"Item '{item.model_name}' ({item.id}) has mods to extract.", Console.MessageType.Info)
+                # ConsoleLog(
+                #     "LootEx", f"Item '{item.model_name}' ({item.id}) has mods to extract.", Console.MessageType.Info)
                 if not item.is_salvageable:
                     item.action = ItemAction.NONE
                     continue
