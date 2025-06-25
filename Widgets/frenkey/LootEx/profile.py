@@ -1,8 +1,8 @@
 import os
 import json
-from LootEx import filter, item_configuration, settings
-from LootEx.filter import Filter
-from LootEx.item_configuration import *
+from Widgets.frenkey.LootEx import filter, item_configuration, settings
+from Widgets.frenkey.LootEx.filter import Filter
+from Widgets.frenkey.LootEx.item_configuration import *
 from Py4GWCoreLib import Console
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import DyeColor
@@ -10,6 +10,29 @@ from Py4GWCoreLib.enums import DyeColor
 
 import importlib
 importlib.reload(item_configuration)
+
+class RuneConfiguration:
+    def __init__(self, identifier: str = "", valuable: bool = False, should_sell: bool = False):
+        self.identifier = identifier
+        self.valuable = valuable
+        self.should_sell = should_sell
+        pass
+    
+    def to_dict(self) -> dict:
+        return {
+            "identifier": self.identifier,
+            "valuable": self.valuable,
+            "should_sell": self.should_sell
+        }
+        
+    @staticmethod
+    def from_dict(data: dict) -> 'RuneConfiguration':
+        rune_config = RuneConfiguration()
+        rune_config.valuable = data.get("valuable", False)
+        rune_config.should_sell = data.get("should_sell", False)
+        rune_config.identifier = data.get("identifier", "")
+        
+        return rune_config
 
 class ItemConfigurations(dict[ItemType, dict[int, ItemConfiguration]]):
     """A dictionary to hold item configurations by item type and model ID."""
@@ -58,7 +81,7 @@ class Profile:
         self.expert_salvage_kits: int = 1
         self.lockpicks: int = 10
         self.sell_threshold: int = 200
-        self.nick_weeks_to_keep: int = 0
+        self.nick_weeks_to_keep: int = -1
         self.nick_items_to_keep: int = 0
         self.changed : bool = False
         self.polling_interval : float = 1  # Default polling interval in seconds
@@ -66,7 +89,7 @@ class Profile:
         # Collection of Filters
         self.filters: list[filter.Filter] = []
 
-        self.runes: dict[str, bool] = {}
+        self.runes: dict[str, RuneConfiguration] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
         self.items: ItemConfigurations = ItemConfigurations()
         self.blacklist: dict[ItemType, dict[int, bool]] = {}
@@ -87,7 +110,10 @@ class Profile:
             "nick_items_to_keep": self.nick_items_to_keep,
             "filters": [Filter.to_dict(filter) for filter in self.filters],
             "polling_interval": self.polling_interval,
-            "runes": self.runes,
+            "runes":  {
+                rune_identifier: rune_config.to_dict()
+                for rune_identifier, rune_config in self.runes.items()
+            },
             "weapon_mods": {
                 mod_name: {weapon_type: is_active for weapon_type,
                            is_active in types.items()}
@@ -141,7 +167,10 @@ class Profile:
                     "sell_threshold", self.sell_threshold)
                 self.filters = [Filter.from_dict(
                     filter) for filter in profile_dict.get("filters", [])]
-                self.runes = profile_dict.get("runes", self.runes)
+                self.runes =  {
+                    rune_identifier: RuneConfiguration.from_dict(rune_config)
+                    for rune_identifier, rune_config in profile_dict.get("runes", {}).items()
+                }
                 self.weapon_mods = {
                     mod_name: {weapon_type: is_active for weapon_type,
                                is_active in types.items()}
@@ -162,8 +191,7 @@ class Profile:
                         if item_type not in self.items:
                             self.items[item_type] = {}
                         
-                        self.items[item_type][int(item_id)] = item_config
-                    
+                        self.items[item_type][int(item_id)] = item_config                
 
         except FileNotFoundError:
             ConsoleLog(
@@ -181,6 +209,27 @@ class Profile:
             ConsoleLog(
                 "LootEx", f"Profile file {file_path} not found.", Console.MessageType.Warning)
 
+    def set_rune(self, rune_identifier: str, is_valuable: bool, should_sell: bool | None = None):
+        """Set the value of a rune in the profile."""
+        config = self.runes.get(rune_identifier, RuneConfiguration(rune_identifier, is_valuable))
+        
+        if should_sell is not None and config.should_sell != should_sell:
+            config.should_sell = should_sell
+        
+        if config.valuable != is_valuable:
+            config.valuable = is_valuable
+            
+        self.changed = True
+        
+        if rune_identifier not in self.runes:
+            self.runes[rune_identifier] = config
+            return
+                
+        if not self.runes[rune_identifier].valuable and not self.runes[rune_identifier].should_sell:
+            if rune_identifier in self.runes:
+                del self.runes[rune_identifier]
+        
+        
     def contains_weapon_mod(self, mod_name: str) -> bool:
         """Check if the profile contains a specific weapon mod."""
         return mod_name in self.weapon_mods and any(self.weapon_mods[mod_name].values())

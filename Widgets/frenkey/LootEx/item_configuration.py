@@ -1,5 +1,5 @@
-from LootEx import models, enum
-from LootEx.enum import ItemAction
+from Widgets.frenkey.LootEx import models, enum
+from Widgets.frenkey.LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
 import importlib
@@ -122,7 +122,7 @@ class ItemConfiguration:
         return item
 
     def get_condition(self, item) -> Optional[ConfigurationCondition]:        
-        from LootEx.cache import Cached_Item
+        from Widgets.frenkey.LootEx.cache import Cached_Item
         
         #sort the conditions based on their assigned action value 
         sorted_conditions = sorted(self.conditions, key=lambda c: c.action.value)

@@ -1,5 +1,5 @@
-from LootEx import utility
-from LootEx.enum import ItemAction, ItemCategory
+from Widgets.frenkey.LootEx import utility
+from Widgets.frenkey.LootEx.enum import ItemAction, ItemCategory
 from Py4GWCoreLib import *
 
 

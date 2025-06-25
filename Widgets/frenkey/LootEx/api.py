@@ -1,5 +1,5 @@
 import math
-from LootEx import utility
+from Widgets.frenkey.LootEx import utility
 from Py4GWCoreLib import Inventory
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Item import Bag

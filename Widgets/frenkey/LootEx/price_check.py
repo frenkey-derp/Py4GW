@@ -1,6 +1,6 @@
 import datetime
-from LootEx import enum, settings, data, utility, models
-from LootEx.models import Material
+from Widgets.frenkey.LootEx import enum, settings, data, utility, models
+from Widgets.frenkey.LootEx.models import Material
 from Py4GWCoreLib import Item, Merchant, Console
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
@@ -74,7 +74,7 @@ class PriceCheck:
             create_quotes_for_item(item)
         
     @staticmethod
-    def get_expensive_runes_from_merchant(threshold: int = 1000, profession: int = 0) -> None:
+    def get_expensive_runes_from_merchant(threshold: int = 1000, mark_to_sell : bool = False, profession: int = 0) -> None:
         def format_currency(value: int) -> str:
             platinum = value // 1000
             gold = value % 1000
@@ -145,7 +145,7 @@ class PriceCheck:
                             if rune:
                                 rune.vendor_value = price
                                 rune.vendor_updated = datetime.datetime.now()
-                                data.SaveRunes()
+                                data.SaveRunes(False)
                             
                             if price >= threshold:
                                 ConsoleLog(
@@ -153,7 +153,7 @@ class PriceCheck:
                                     f"{mod.full_name} is currently quoted at {format_currency(price)}. Marking it as valuable.",
                                     Console.MessageType.Info,
                                 )
-                                settings.current.profile.runes[mod.identifier] = True
+                                settings.current.profile.set_rune(mod.identifier, True, mark_to_sell)
                                 settings.current.profile.save()
 
                         trader_queue.execute_next()
@@ -174,7 +174,8 @@ class PriceCheck:
                         f"{rune.full_name} is currently not available. Marking it as valuable.",
                         Console.MessageType.Info,
                     )
-                    settings.current.profile.runes[rune.identifier] = True
+                    
+                    settings.current.profile.set_rune(rune.identifier, True)
                     settings.current.profile.save()
             ConsoleLog(
                 "LootEx", "Finished checking for runes and insignias.", Console.MessageType.Success)

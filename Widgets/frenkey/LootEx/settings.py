@@ -1,8 +1,9 @@
 import datetime
 from typing import Optional
-from LootEx import inventory_handling
-from LootEx.filter import Filter
-from LootEx.profile import Profile
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Widgets.frenkey.LootEx import inventory_handling
+from Widgets.frenkey.LootEx.filter import Filter
+from Widgets.frenkey.LootEx.profile import Profile
 from Py4GWCoreLib import Player, UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
 from Py4GWCoreLib.enums import ServerLanguage
@@ -26,6 +27,7 @@ class Settings:
         if cls._instance is None:
             cls._instance = super(Settings, cls).__new__(cls)
             cls._instance._initialized = False
+            
         return cls._instance
     
     def __init__(self):
@@ -33,8 +35,8 @@ class Settings:
             return
         
         self._initialized = True
-        self.profile_combo: int = 0
-        self.profile: Optional[Profile] = None
+        self.profile: Profile | None = None
+        self.character_profiles: dict[str, str] = {}
         self.profiles: list[Profile] = []
         self.selected_filter: Optional[Filter] = None
         self.automatic_inventory_handling: bool = "games" in Player.GetAccountEmail().lower()
@@ -54,26 +56,38 @@ class Settings:
                 
         self.language : ServerLanguage = ServerLanguage.English
         
-        self.collect_runes: bool = False
         self.collect_items: bool = False
         self.last_xunlai_check : datetime.datetime = datetime.datetime.min
         
         self.changed = False
         self.development_mode: bool = os.path.exists("C:\\frenkey_development") 
-        ConsoleLog(
-            "LootEx",
-            f"Development mode is {'enabled' if self.development_mode else 'disabled'}.",
-            Console.MessageType.Debug,
-        )
-
+        
     def set_language(self, lang = ServerLanguage.English):
         self.language = lang
-
+        
+    
+    def SetProfile(self, profile_name: str | None):
+        self.profile = Profile("Default")
+        
+        if profile_name is not None:            
+            for profile in self.profiles:
+                if profile.name == profile_name:
+                    self.profile = profile
+                    break
+                
+            if self.profile is None:
+                self.profile = self.profiles[0] if self.profiles else Profile("Default")
+            
+            if not self.profiles:
+                self.profiles.append(self.profile)
+                
+        if self.profile:
+            inventory_handling.InventoryHandler().SetPollingInterval(self.profile.polling_interval)
 
     def save(self):
         """Save the settings as a JSON file."""
         settings_dict = {
-            "profile": self.profile.name if self.profile else None,
+            "character_profiles":  self.character_profiles,
             "automatic_inventory_handling": self.automatic_inventory_handling,
             "window_size": self.window_size,
             "window_position": self.window_position,
@@ -111,18 +125,13 @@ class Settings:
         if not self.profiles:
             default_profile = Profile("Default")
             default_profile.save()
+            default_profile.load()
             self.profiles.append(default_profile)
 
         try:
             with open(self.settings_file_path, 'r') as file:
                 settings_dict = json.load(file)
-                self.profile = next(
-                    (profile for profile in self.profiles if profile.name ==
-                     settings_dict.get("profile")),
-                    None
-                )
-                self.profile_combo = self.profiles.index(
-                    self.profile) if self.profile else 0
+                self.character_profiles  = settings_dict.get("character_profiles", {})
                 self.automatic_inventory_handling = settings_dict.get(
                     "automatic_inventory_handling", True)
                 self.window_size = tuple(
@@ -142,13 +151,11 @@ class Settings:
             self.automatic_inventory_handling = (
                 self.automatic_inventory_handling if self.profile else False
             )
-            self.profile = self.profiles[0] if self.profile is None else self.profile
-            inventory_handling.InventoryHandler().SetPollingInterval(self.profile.polling_interval)
 
         except FileNotFoundError:
             ConsoleLog(
                 "LootEx",
-                f"Settings file {self.settings_file_path} not found. Using default settings.",
+                f"Settings file for {GLOBAL_CACHE.Player.GetAccountEmail()} not found. Using default settings.",
                 Console.MessageType.Warning,
             )
 

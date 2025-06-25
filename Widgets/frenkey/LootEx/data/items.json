@@ -21187,6 +21187,59 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "157": {
+            "ModelID": 157,
+            "Names": {
+                "English": "Jeweled Chalice",
+                "German": "Juwelenkelch",
+                "Korean": "보석이 박힌 잔",
+                "French": "Calice serti de joyaux",
+                "Italian": "Calice con Gioielli",
+                "Spanish": "Cáliz enjoyado",
+                "TraditionalChinese": "寶石聖杯",
+                "Japanese": "ジュエル カリス",
+                "Polish": "Zdobiony Kielich",
+                "Russian": "Jeweled Chalice",
+                "BorkBorkBork": "Jooeled Chaeleece-a"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "InspirationMagic"
+            ],
+            "CommonSalvage": {
+                "Granite Slab": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chalice",
+            "InventoryIcon": "Jeweled_Chalice.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/fd/Jeweled_Chalice.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "158": {
             "ModelID": 158,
             "Names": {
@@ -22218,6 +22271,53 @@
             "NickIndex": null,
             "Profession": null,
             "Category": "RareWeapon",
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "575": {
+            "ModelID": 575,
+            "Names": {
+                "English": "Writhing Focus",
+                "German": "Krümmender Fokus",
+                "Korean": "고뇌의 포커스",
+                "French": "Focus ondulant",
+                "Italian": "Focus della Convulsione",
+                "Spanish": "Foco de retorsión",
+                "TraditionalChinese": "扭曲聚能器",
+                "Japanese": "ライズ フォーカス",
+                "Polish": "Wijący się Fokus",
+                "Russian": "Writhing Focus",
+                "BorkBorkBork": "Vreetheeng Fucoos"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "RestorationMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Writhing_Focus",
+            "InventoryIcon": "Writhing_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/91/Writhing_Focus.png",
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
             "SubCategory": null,
             "WikiScraped": true
         },
@@ -30942,6 +31042,74 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "869": {
+            "ModelID": 869,
+            "Names": {
+                "English": "Iridescent Aegis",
+                "German": "Schillernde Aegis",
+                "Korean": "무지개 방패",
+                "French": "Egide iridescente",
+                "Italian": "Egida Iridescente",
+                "Spanish": "Égida irisada",
+                "TraditionalChinese": "七彩神盾",
+                "Japanese": "イリデセント イージス",
+                "Polish": "Opalowa Egida",
+                "Russian": "Iridescent Aegis",
+                "BorkBorkBork": "Ireedescent Aeegees"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Strength"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": 1,
+                    "MaxAmount": 2,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Diamond": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 935,
+                    "MaterialName": "Diamond"
+                },
+                "Ruby": {
+                    "Amount": -1,
+                    "MinAmount": 1,
+                    "MaxAmount": 2,
+                    "MaterialModelID": 937,
+                    "MaterialName": "Ruby"
+                },
+                "Sapphire": {
+                    "Amount": -1,
+                    "MinAmount": 1,
+                    "MaxAmount": 2,
+                    "MaterialModelID": 938,
+                    "MaterialName": "Sapphire"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Iridescent_Aegis",
+            "InventoryIcon": "Iridescent_Aegis.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/73/Iridescent_Aegis.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1542": {
             "ModelID": 1542,
             "Names": {
@@ -35698,6 +35866,67 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": false
+        },
+        "605": {
+            "ModelID": 605,
+            "Names": {
+                "English": "Earth Staff",
+                "German": "Erd-Stab",
+                "Korean": "대지의 스태프",
+                "French": "Bâton de la terre",
+                "Italian": "Bastone della Terra",
+                "Spanish": "Báculo de tierra",
+                "TraditionalChinese": "大地法杖",
+                "Japanese": "アース スタッフ",
+                "Polish": "Ziemny Kostur",
+                "Russian": "Earth Staff",
+                "BorkBorkBork": "Iaert Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Staff_(core)",
+            "InventoryIcon": "Earth_Staff_%28core%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/0/09/Earth_Staff_%28core%29.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
         },
         "607": {
             "ModelID": 607,
@@ -42802,6 +43031,51 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Captured_Skeleton",
             "InventoryIcon": "Captured_Skeleton.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/6/61/Captured_Skeleton.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "2571": {
+            "ModelID": 2571,
+            "Names": {
+                "English": "Celestial Sigil",
+                "Korean": "신성의 도장",
+                "German": "Himmelssigill",
+                "French": "Sceau céleste",
+                "Italian": "Sigillo Celestiale",
+                "Spanish": "Sello celestial",
+                "TraditionalChinese": "神聖印記",
+                "Japanese": "聖なる刻印",
+                "Russian": "Celestial Sigil",
+                "Polish": "Niebiańska Pieczęć",
+                "BorkBorkBork": "Celesteeael Seegeel"
+            },
+            "ItemType": "Unknown",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Gold Zaishen Coin": {
+                    "Amount": -1,
+                    "MinAmount": 1,
+                    "MaxAmount": 2,
+                    "MaterialModelID": 31203,
+                    "MaterialName": "Gold Zaishen Coin"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Celestial_Sigil",
+            "InventoryIcon": "Celestial_Sigil.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/0/0c/Celestial_Sigil.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,

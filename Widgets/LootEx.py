@@ -1,9 +1,5 @@
-from LootEx import loot_handling, profile, settings, price_check, cache, inventory_handling, data_collector, data, utility, messaging
-from LootEx.cache import Cached_Item
+from Widgets.frenkey.LootEx import loot_handling, profile, settings, price_check, cache, inventory_handling, data_collector, data, utility, messaging, gui
 from Py4GWCoreLib import *
-from LootEx import gui
-
-import ctypes
 from ctypes import windll
 
 # Reload imports
@@ -32,38 +28,88 @@ inventory_handler = inventory_handling.InventoryHandler()
 loot_handler = loot_handling.LootHandler()
 
 # Load settings
-settings.current.settings_file_path = os.path.join(
-    script_directory, "Config", "LootEx", "LootExSettings.json")
-settings.current.profiles_path = os.path.join(
-    script_directory, "Config", "LootEx", "Profiles")
-settings.current.data_collection_path = os.path.join(
-    script_directory, "Config", "LootEx", "DataCollection")
-settings.current.load()
+    
 
 inventory_frame_hash = 291586130
 sharedMemoryManager = Py4GWSharedMemoryManager()
-current_account = Player.GetAccountEmail()
-
-def configure():
-    if not settings.current.window_visible is True:
-        settings.current.window_visible = True
-    pass
-
-VK_LBUTTON = 0x01  # Virtual-Key code for left mouse button
+current_account : str = ""
+current_character : str = ""
+current_character_requested : bool = False
+current_character_set : bool = False
 
 LootConfig().AddCondition(LootConfig.ConditionCategory.Custom, loot_handler.Should_Loot_Item, "LootEx - Should Loot Item")
+
+def configure():
+    pass
+
+def Initialize_And_Load():
+    settings.current.settings_file_path = os.path.join(
+        script_directory, "Config", "LootEx", f"{Player.GetAccountEmail()}.json")
+    settings.current.profiles_path = os.path.join(
+        script_directory, "Config", "LootEx", "Profiles")
+    settings.current.data_collection_path = os.path.join(script_directory, "Config", "DataCollection")    
+    settings.current.load()
     
+
+def CreateDirectories():
+    if not os.path.exists(settings.current.profiles_path):
+        os.makedirs(settings.current.profiles_path)  
+        
+    if not os.path.exists(settings.current.data_collection_path):
+        os.makedirs(settings.current.data_collection_path)    
+        
+VK_LBUTTON = 0x01  # Virtual-Key code for left mouse button
+
+
 @staticmethod
 def is_left_mouse_down():
     return (windll.user32.GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
 
 
 def main():
-    global inventory_frame_hash
+    global inventory_frame_hash, current_account, current_character, current_character_requested
     
     if not Routines.Checks.Map.MapValid():
         inventory_handler.reset()
+        current_character = ""
+        current_character_requested = False
         return           
+    
+    if not current_account:
+        current_account = GLOBAL_CACHE.Player.GetAccountEmail()
+        
+        if current_account:            
+            Initialize_And_Load()
+    
+    if not current_account:
+        return
+        
+    if not current_character:
+        agent_id = Player.GetAgentID()
+        
+        if not current_character_requested:
+            Agent.RequestName(agent_id)
+            current_character_requested = True
+            return
+        
+        if Agent.IsNameReady(agent_id):
+            current_character = Agent.GetName(agent_id)        
+            
+    if not current_character: 
+        return
+    
+    if not settings.current.character_profiles.get(current_character, False):        
+        if settings.current.profiles:
+            settings.current.character_profiles[current_character] = settings.current.profiles[0].name
+            
+        settings.current.SetProfile(settings.current.character_profiles[current_character])
+        ConsoleLog(MODULE_NAME, f"First time using {MODULE_NAME} on '{current_character}'.{"\nDisabling inventory handling to prevent unwanted actions." if settings.current.automatic_inventory_handling else ""}\nSet Profile to '{settings.current.profile.name}'.", Console.MessageType.Warning)          
+        settings.current.automatic_inventory_handling = False  
+        settings.current.save()
+    
+    if not settings.current.profile:
+        settings.current.SetProfile(settings.current.character_profiles[current_character])
+        return
 
     if messaging.HandleMessages():
         return
@@ -76,21 +122,18 @@ def main():
         settings.current.language = language
         data.UpdateLanguage(language)
         settings.current.save()
-        
+    
+    ui.py_io = PyImGui.get_io()
     ui.draw_vault_controls()        
     ui.draw_inventory_controls()
-
-    if settings.current.window_visible:
-        ui.draw_window()
-
-    settings.current.window_visible = False
+    ui.draw_window()
     
     hovered_item = GLOBAL_CACHE.Inventory.GetHoveredItemID()
     if hovered_item > -1:
         py_io = PyImGui.get_io()
         if py_io.key_ctrl:                
             if is_left_mouse_down():
-                item = Cached_Item(hovered_item)  
+                item = cache.Cached_Item(hovered_item)  
                     
                 if hotkey_timer.IsExpired():
                     hotkey_timer.Reset()
@@ -104,20 +147,12 @@ def main():
                     elif item.is_storage_item:
                         inventory_handler.WithdrawItem(item)
             
-    # if (throttle_timer.IsExpired()):
-    #     throttle_timer.Reset()
-    # else:
-    #     return
     if not price_check.trader_queue.action_queue.is_empty():
         price_check.PriceCheck.process_trader_queue()
         return
 
-
     data_collector.instance.run_v2()  
-    inventory_handler.Run()                            
-                             
-
-# if __name__ == "__main__":
-#     main()
+    inventory_handler.Run()                           
+                        
 
 __all__ = ['main', 'configure']

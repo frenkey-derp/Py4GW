@@ -1,18 +1,19 @@
 from datetime import datetime
 from PyItem import DyeInfo, ItemModifier, PyItem
-from LootEx import data, models, settings, utility
-from LootEx.data_collector import GLOBAL_CACHE
-from LootEx.enum import ModifierIdentifier
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Widgets.frenkey.LootEx import data, models, settings, utility
 from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, ModelID, Rarity
+from Widgets.frenkey.LootEx.enum import ModifierIdentifier
+from Widgets.frenkey.LootEx.profile import RuneConfiguration
 
 
 class Cached_Item:
     def __init__(self, item_id: int, slot: int = -1):
-        from LootEx import utility, settings, data, models, enum
+        from Widgets.frenkey.LootEx import utility, settings, data, models, enum
 
         item = Item.item_instance(item_id) if item_id > 0 else None
         
@@ -87,6 +88,7 @@ class Cached_Item:
         self.max_weapon_mods: list[models.WeaponMod] = []
         
         self.runes_to_keep: list[models.Rune] = []
+        self.runes_to_sell: list[models.Rune] = []
         self.weapon_mods_to_keep: list[models.WeaponMod] = []
         
         self.is_highly_salvageable: bool = False
@@ -199,8 +201,14 @@ class Cached_Item:
                     
                     if is_max:
                         self.max_runes.append(rune)
-                        if settings.current.profile and settings.current.profile.runes.get(rune.identifier, False):
-                            self.runes_to_keep.append(rune)
+                        setting = settings.current.profile.runes.get(rune.identifier, None) if settings.current.profile else None
+                        
+                        if setting:
+                            if setting.valuable:
+                                self.runes_to_keep.append(rune)
+                            
+                            if setting.should_sell:
+                                self.runes_to_sell.append(rune)
 
         if self.is_weapon or self.is_upgrade:
             for weapon_mod in data.Weapon_Mods.values():

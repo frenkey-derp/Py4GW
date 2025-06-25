@@ -6,7 +6,7 @@ import time
 import random
 from typing import Any, Callable, Optional, OrderedDict
 
-from LootEx import data, enum, models, settings, utility
+from Widgets.frenkey.LootEx import data, enum, models, settings, utility
 from Py4GWCoreLib import AgentArray, GlobalCache, Item, Routines, UIManager
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog, ThrottledTimer
@@ -942,7 +942,7 @@ class DataCollector:
 
             if save_runes:
                 save_runes = False
-                data.SaveRunes()
+                data.SaveRunes(True)
                 saved = True
 
             if save_weapon_mods:

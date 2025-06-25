@@ -1,18 +1,19 @@
 from datetime import timedelta
+import os
 import re
 from typing import List, Optional
 
 import PyInventory
 from PyItem import DyeInfo
 
-from LootEx import data, item_configuration, enum
-from LootEx import models
-from LootEx.enum import ItemAction, ItemCategory, ModifierIdentifier, ModifierValueArg
-from LootEx.item_configuration import ItemConfiguration
+from Widgets.frenkey.LootEx import data, item_configuration, enum
+from Widgets.frenkey.LootEx import models
+from Widgets.frenkey.LootEx.enum import ItemAction, ItemCategory, ModifierIdentifier, ModifierValueArg
+from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration
 
 import importlib
 
-from LootEx.models import ModifierInfo, Rune, WeaponMod
+from Widgets.frenkey.LootEx.models import ModifierInfo, Rune, WeaponMod
 from Py4GWCoreLib import Item, UIManager
 import Py4GWCoreLib
 from Py4GWCoreLib.ItemArray import ItemArray
@@ -28,7 +29,14 @@ importlib.reload(enum)
 class Util:
     merchant_threshold = 10
     merchantwindow_coords: list[tuple[int, int, int, int]] = []
+    @staticmethod
+    def GetPy4GWPath() -> str:
+        file_path = os.path.abspath(__file__)
+        marker = os.sep + "Py4GW" + os.sep
+        base_path = file_path.partition(marker)[0] + marker if marker in file_path else file_path
 
+        return base_path
+    
     @staticmethod
     def get_mod_mask(identifier: int, arg1: int, arg2: int) -> str:
         """

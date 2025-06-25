@@ -6,9 +6,9 @@ from dataclasses import dataclass, field
 from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex
 
 from PyItem import ItemModifier
-from LootEx import settings
-from LootEx import enum
-from LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg
+from Widgets.frenkey.LootEx import settings
+from Widgets.frenkey.LootEx import enum
+from Widgets.frenkey.LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DamageType, ItemType, ModelID, Profession, Rarity, ServerLanguage
@@ -142,7 +142,7 @@ class SalvageInfo():
             amount = (self.min_amount + self.max_amount) / 2.0
         
         else:
-            from LootEx import data
+            from Widgets.frenkey.LootEx import data
             material = data.Materials.get(self.material_model_id, None)
             
             if material is None:
@@ -157,7 +157,7 @@ class SalvageInfo():
         return amount * (3 if is_highly_salvageable else 1) if amount > 0 else 0
     
     def get_average_value(self, is_highly_salvageable : bool = False) -> int:
-        from LootEx import data
+        from Widgets.frenkey.LootEx import data
         material = data.Materials.get(self.material_model_id, None)
     
         if material is None:
@@ -380,7 +380,7 @@ class Item():
         if self.nick_index is None:
             return None
         
-        from LootEx import data
+        from Widgets.frenkey.LootEx import data
         start_date = datetime.combine(data.Nick_Cycle_Start_Date, datetime.min.time())
         
         today = date.today()
@@ -986,7 +986,7 @@ class WeaponMod(ItemMod):
                 return False
             
             
-        from LootEx import utility
+        from Widgets.frenkey.LootEx import utility
         if item_type == ItemType.Rune_Mod:
             applied_to_item_type_mod = next(modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType)
             applied_to_item_type_id = applied_to_item_type_mod.GetArg1()
@@ -1046,7 +1046,7 @@ class WeaponMod(ItemMod):
         if any(result[0] == False for result in results):
             return False, False
         
-        from LootEx import utility
+        from Widgets.frenkey.LootEx import utility
         if item_type == ItemType.Rune_Mod:
             applied_to_item_type_mod = next((identifier, arg1, arg2) for identifier, arg1, arg2 in modifiers if identifier == ModifierIdentifier.TargetItemType)
             applied_to_item_type = ItemType(applied_to_item_type_mod[1])
@@ -1060,7 +1060,7 @@ class WeaponMod(ItemMod):
         if not self.target_types:
             return True
 
-        from LootEx import data
+        from Widgets.frenkey.LootEx import data
         if (self.target_types):
             for target_type in self.target_types:
                 if item_type == target_type or item_type in data.ItemType_MetaTypes.get(target_type, []):

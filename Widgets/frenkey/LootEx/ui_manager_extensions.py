@@ -1,6 +1,6 @@
 from time import sleep
 import PyUIManager
-from LootEx import enum
+from Widgets.frenkey.LootEx import enum
 from Py4GWCoreLib import UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 

@@ -2,8 +2,8 @@ import datetime
 import json
 import os
 from typing import Optional
-from LootEx import models, utility
-from LootEx.enum import ItemCategory
+from Widgets.frenkey.LootEx import models, settings, utility
+from Widgets.frenkey.LootEx.enum import ItemCategory
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, ServerLanguage
@@ -391,11 +391,6 @@ def UpdateLanguage(server_language: ServerLanguage):
     for weapon_mod in Weapon_Mods.values():
         weapon_mod.update_language(server_language)
 
-
-def __init__(self):
-    pass
-
-
 @staticmethod
 def Reload():
     global Runes, Weapon_Mods, Items, Runes_by_Profession, Items_By_Type
@@ -509,8 +504,7 @@ def LoadWeaponMods():
                 if not mod.identifier in Weapon_Mods:
                     Weapon_Mods[mod.identifier] = mod
 
-    account_file = os.path.join(
-        file_directory, "data", "diffs", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
+    account_file = os.path.join(utility.Util.GetPy4GWPath(), "Widgets", "Config", "DataCollection", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
     if os.path.exists(account_file):
         with open(account_file, 'r', encoding='utf-8') as file:
             weapon_mods = json.load(file)
@@ -539,8 +533,7 @@ def SaveWeaponMods(shared_file: bool = False, mods: Optional[dict[str, models.We
 
     if not shared_file:
         account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-        data_directory = os.path.join(
-            file_directory, "data", "diffs", account_name)
+        data_directory = os.path.join(settings.current.data_collection_path, account_name)
 
     path = os.path.join(data_directory, "weapon_mods.json")
 
@@ -605,7 +598,7 @@ def LoadRunes():
 
 
 @staticmethod
-def SaveRunes():
+def SaveRunes(debug : bool = False):
     global Runes
 
     # Save runes to data/runes.json
@@ -618,8 +611,10 @@ def SaveRunes():
         os.makedirs(data_directory)
 
     with open(path, 'w', encoding='utf-8') as file:
-        ConsoleLog(
-            "LootEx", f"Saving runes ...", Console.MessageType.Debug)
+        if debug:
+            ConsoleLog(
+                "LootEx", f"Saving runes ...", Console.MessageType.Debug)
+            
         json.dump({rune.identifier: rune.to_json() for rune in Runes.values()}, file, indent=4, ensure_ascii=False)
 
 
@@ -645,8 +640,7 @@ def LoadItems():
     with open(path, 'r', encoding='utf-8') as file:
         Items = models.ItemsByType.from_dict(json.load(file))
 
-    account_file = os.path.join(
-        file_directory, "data", "diffs", GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
+    account_file = os.path.join(settings.current.data_collection_path, GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
     if os.path.exists(account_file):
         with open(account_file, 'r', encoding='utf-8') as file:
             account_items = models.ItemsByType.from_dict(json.load(file))
@@ -682,8 +676,7 @@ def SaveItems(shared_file: bool = False, items: Optional[models.ItemsByType] = N
 
     if not shared_file:
         account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-        data_directory = os.path.join(
-            file_directory, "data", "diffs", account_name)
+        data_directory = os.path.join(settings.current.data_collection_path, account_name)
 
     path = os.path.join(data_directory, "items.json")
 
@@ -710,13 +703,10 @@ def SaveItems(shared_file: bool = False, items: Optional[models.ItemsByType] = N
 @staticmethod
 def MergeDiffItems():
     global Items
-
-    file_directory = os.path.dirname(os.path.abspath(__file__))
-    diffs_directory = os.path.join(file_directory, "data", "diffs")
     
-    dirs = os.listdir(diffs_directory)
+    dirs = os.listdir(settings.current.data_collection_path)
     for dir_name in dirs:
-        file_path = os.path.join(diffs_directory, dir_name, "items.json")
+        file_path = os.path.join(settings.current.data_collection_path, dir_name, "items.json")
         
         if os.path.exists(file_path):            
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -751,7 +741,7 @@ def MergeDiffItems():
     
     
     for dir_name in dirs:
-        file_path = os.path.join(diffs_directory, dir_name, "weapon_mods.json")
+        file_path = os.path.join(settings.current.data_collection_path, dir_name, "weapon_mods.json")
         
         if os.path.exists(file_path):            
             with open(file_path, 'r', encoding='utf-8') as file:

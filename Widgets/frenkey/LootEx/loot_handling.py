@@ -1,6 +1,6 @@
-from LootEx import settings
-from LootEx.cache import Cached_Item
-from LootEx.enum import ItemAction
+from Widgets.frenkey.LootEx import settings
+from Widgets.frenkey.LootEx.cache import Cached_Item
+from Widgets.frenkey.LootEx.enum import ItemAction
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Console, ItemType, ModelID
 

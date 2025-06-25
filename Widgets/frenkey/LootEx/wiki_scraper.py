@@ -2,7 +2,7 @@ import os
 import re
 import sys
 
-from LootEx import data, models, module_import
+from Widgets.frenkey.LootEx import data, models, module_import, utility
 import importlib
 
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager, ConsoleLog
@@ -246,12 +246,10 @@ class WikiScraper:
         filename = WikiScraper.get_image_name(item.inventory_icon_url)
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
-        path = os.path.join(data_directory, "textures", filename)
-        if not os.path.exists(data_directory):
-            os.makedirs(data_directory)
-            
-        if not os.path.exists(os.path.join(data_directory, "textures")):
-            os.makedirs(os.path.join(data_directory, "textures"))
+        texture_directory = os.path.join(utility.Util.GetPy4GWPath(), "Textures", "Items")
+        path = os.path.join(texture_directory, filename)
+        if not os.path.exists(texture_directory):
+            os.makedirs(texture_directory)            
         
         if not filename:
             ConsoleLog("LootEx", f"Invalid filename for {item.name}. Cannot download image.")
