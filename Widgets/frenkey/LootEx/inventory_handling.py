@@ -792,6 +792,61 @@ class InventoryHandler:
             self.is_confirm_materials_window_open = ui_manager_extensions.UIManagerExtensions.IsConfirmMaterialsWindowOpen()
             self.salvage_windows_updated = True
 
+    def UpdateMerchantWindow(self):
+        merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()        
+        
+        if self.merchant_open != merchant_open:
+            self.merchant_open = merchant_open
+            
+        if not self.merchant_open:
+            self.merchant_type = MerchantType.None_
+            
+        else:                
+            if ui_manager_extensions.UIManagerExtensions.IsCrafterOpen():
+                self.merchant_type = MerchantType.Crafter
+                return
+            
+            if ui_manager_extensions.UIManagerExtensions.IsCollectorOpen():
+                self.merchant_type = MerchantType.Collector
+                return
+            
+            if ui_manager_extensions.UIManagerExtensions.IsSkillTrainerOpen():
+                self.merchant_type = MerchantType.None_
+                return
+                            
+            item_ids = GLOBAL_CACHE.Trading.Merchant.GetOfferedItems()
+                            
+            if item_ids:                    
+                item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_ids[0])[0])              
+                
+                if item_type == ItemType.Rune_Mod:
+                    self.merchant_type = MerchantType.RuneTrader
+                    return
+                
+                elif item_type == ItemType.Scroll:
+                    self.merchant_type = MerchantType.ScrollTrader
+                    return
+                
+                elif item_type == ItemType.Dye and utility.Util.get_color(item_ids[0]) > DyeColor.NoColor != DyeColor.Gray:
+                    self.merchant_type = MerchantType.DyeTrader
+                    return
+                
+                elif item_type == ItemType.Materials_Zcoins:
+                    model_id = GLOBAL_CACHE.Item.GetModelID(item_ids[0])
+                    material = data.Materials.get(model_id, None)
+                    
+                    if material:
+                        if material.material_type == MaterialType.Rare:
+                            self.merchant_type = MerchantType.RareMaterialTrader
+                            return
+                        
+                        elif material.material_type == MaterialType.Common:                                    
+                            self.merchant_type = MerchantType.MaterialTrader
+                            return
+                else:
+                    self.merchant_type = MerchantType.Merchant
+                    return
+       
     def IsSalvageAction(self, action: ItemAction) -> bool:
         return action in (ItemAction.SALVAGE_COMMON_MATERIALS, ItemAction.SALVAGE_RARE_MATERIALS, ItemAction.SALVAGE_SMART, ItemAction.SALVAGE_MODS, ItemAction.SALVAGE)
 
@@ -803,8 +858,9 @@ class InventoryHandler:
                         
         if Inventory.GetFreeSlotCount() <= 0:
             return False
-            
-        salvage_item = self.salvage_queue[0] if self.salvage_queue else None
+        
+        salvage_item = next(iter(self.salvage_queue.values()), None)
+        
         if salvage_item is None:
             return
 
@@ -1536,7 +1592,7 @@ class InventoryHandler:
                         continue
 
                     case ItemAction.SELL_TO_MERCHANT:
-                        if self.merchant_open:
+                        if self.merchant_open and self.merchant_type == MerchantType.Merchant:
                             ConsoleLog(
                                 "LootEx", f"Selling item: '{item.model_name}' ({item.id}) to merchant for {utility.Util.format_currency(item.value * item.quantity)}", Console.MessageType.Info)
                             Trading.Merchant.SellItem(
@@ -1563,64 +1619,6 @@ class InventoryHandler:
             # self.TrackTime(time_delta, time_results, "Global")
             # ConsoleLog(
             #     "LootEx", f"Processed {len(self.actions)} items in {time_delta.microseconds * 0.000001} sec.", Console.MessageType.Debug)
-
-    def UpdateMerchantWindow(self):
-        merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()        
-        
-        if self.merchant_open != merchant_open:
-            self.merchant_open = merchant_open
-            
-        if not self.merchant_open:
-            self.merchant_type = MerchantType.None_
-            
-        else:                
-            if ui_manager_extensions.UIManagerExtensions.IsCrafterOpen():
-                self.merchant_type = MerchantType.Crafter
-                return
-            
-            if ui_manager_extensions.UIManagerExtensions.IsCollectorOpen():
-                self.merchant_type = MerchantType.Collector
-                return
-            
-            if ui_manager_extensions.UIManagerExtensions.IsSkillTrainerOpen():
-                self.merchant_type = MerchantType.None_
-                return
-                            
-            item_ids = GLOBAL_CACHE.Trading.Merchant.GetOfferedItems()
-                            
-            if item_ids:                    
-                item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_ids[0])[0])              
-                
-                if item_type == ItemType.Rune_Mod:
-                    self.merchant_type = MerchantType.RuneTrader
-                    return
-                
-                elif item_type == ItemType.Scroll:
-                    self.merchant_type = MerchantType.ScrollTrader
-                    return
-                
-                elif item_type == ItemType.Dye and utility.Util.get_color(item_ids[0]) > DyeColor.NoColor != DyeColor.Gray:
-                    self.merchant_type = MerchantType.DyeTrader
-                    return
-                
-                elif item_type == ItemType.Materials_Zcoins:
-                    model_id = GLOBAL_CACHE.Item.GetModelID(item_ids[0])
-                    material = data.Materials.get(model_id, None)
-                    
-                    if material:
-                        if material.material_type == MaterialType.Rare:
-                            self.merchant_type = MerchantType.RareMaterialTrader
-                            return
-                        
-                        elif material.material_type == MaterialType.Common:                                    
-                            self.merchant_type = MerchantType.MaterialTrader
-                            return
-                else:
-                    self.merchant_type = MerchantType.Merchant
-                    return
-                            
-                
-        
 
     def Stop(self):
         ConsoleLog("LootEx", "Stopping loot handling",
