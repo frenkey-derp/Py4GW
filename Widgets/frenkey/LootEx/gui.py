@@ -1057,9 +1057,9 @@ class UI:
                                 
                 if self.actions_timer.IsExpired() or self.action_summary is None:
                     if self.bag_names[self.bag_index] == "Merchant/Trader":
-                        self.action_summary = inventory_handling.InventoryHandler().GetActions(item_ids=GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or GLOBAL_CACHE.Trading.Crafter.GetOfferedItems())
+                        self.action_summary = inventory_handling.InventoryHandler().GetActions(item_ids=GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or GLOBAL_CACHE.Trading.Crafter.GetOfferedItems(),  preview=True)
                     else:
-                        self.action_summary = inventory_handling.InventoryHandler().GetActions(bag_range[0], bag_range[1])
+                        self.action_summary = inventory_handling.InventoryHandler().GetActions(start_bag=bag_range[0], end_bag=bag_range[1],  preview=True)
                         
                     self.actions_timer.Reset()
                 
@@ -1328,7 +1328,7 @@ class UI:
                 if PyImGui.begin_child("GeneralSettings_Nick", (subtab_size[0], 0), True, PyImGui.WindowFlags.NoBackground) and settings.current.profile:
                     
                     self._slider_int_setting("Nick Weeks to Keep", settings.current.profile.nick_weeks_to_keep, os.path.join(self.item_textures_path, "Gift_of_the_Traveler.png"), -1, 137)                    
-                    self._slider_int_setting("Amount of Nick Items", settings.current.profile.nick_items_to_keep, os.path.join(self.item_textures_path, "Red_Iris_Flower.png"), 0, 500)    
+                    self._slider_int_setting("Nick Items to Keep", settings.current.profile.nick_items_to_keep, os.path.join(self.item_textures_path, "Red_Iris_Flower.png"), 0, 500)    
                     
                     PyImGui.spacing()
                      
@@ -2487,8 +2487,10 @@ class UI:
 
         else:
             self.filtered_weapon_mods = []
+            lower_search = self.mod_search.lower()
+            
             for mod in data.Weapon_Mods.values():
-                if mod and mod.name and (mod.name.lower().find(self.mod_search.lower()) != -1 or mod.description.lower().find(self.mod_search.lower()) != -1 or str(mod.identifier).find(self.mod_search.lower()) != -1):
+                if mod and ((mod.name and mod.name.lower().find(lower_search)) != -1 or mod.description.lower().find(lower_search) != -1 or mod.identifier.lower().find(lower_search) != -1):
                     self.filtered_weapon_mods.append(SelectableWrapper(mod))
 
     def draw_weapon_mods(self):

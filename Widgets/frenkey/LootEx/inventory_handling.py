@@ -1120,7 +1120,7 @@ class InventoryHandler:
             self.cached_inventory: list[cache.Cached_Item] = []
             self.actions: dict[int, cache.Cached_Item] = {}
                     
-    def GetActions(self, start_bag : Bag = Bag.Backpack, end_bag : Bag = Bag.Bag_2, item_ids : list[int] = []) -> ActionsSummary:
+    def GetActions(self, start_bag : Bag = Bag.Backpack, end_bag : Bag = Bag.Bag_2, item_ids : list[int] = [], preview : bool = False) -> ActionsSummary:
         result = InventoryHandler.ActionsSummary(self)
         if not settings.current.profile:
             return result
@@ -1266,7 +1266,7 @@ class InventoryHandler:
             if has_empty_slot and item.id > 0:
                 result.inventory_changed = True
             
-            if not item.is_inventory_item or item.quantity <= 0:
+            if (not item.is_inventory_item or item.quantity <= 0):
                 continue
             
             if not self.CanProcessItem(item):
