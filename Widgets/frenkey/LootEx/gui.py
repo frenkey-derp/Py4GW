@@ -1019,20 +1019,8 @@ class UI:
                         pass
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
-
-                        ConsoleLog(
-                            "LootEx",
-                            f"Test button clicked! Base path: {os.path.join(utility.Util.GetPy4GWPath(), "Widgets", "Config", "DataCollection")}",
-                            Console.MessageType.Info,
-                        )
-                        
-                        ConsoleLog(
-                            "LootEx",
-                            f"Test button clicked! Data Collection path: {settings.current.data_collection_path}",
-                            Console.MessageType.Info,
-                        )
-                        
-                                                                            
+                        inventory_handling.InventoryHandler().UpdateMerchantWindow()
+                                                 
                 PyImGui.end_child()
             
             PyImGui.end_child()

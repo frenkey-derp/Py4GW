@@ -33,6 +33,31 @@ class UIManagerExtensions:
         # merchant_window_buy_button_id = UIManager.GetFrameIDByHash(1532320307)
 
         return UIManagerExtensions.IsElementVisible(merchant_window_frame_id)
+    
+    @staticmethod
+    
+    @staticmethod
+    def IsCollectorOpen() -> bool:        
+        merchant_buy_button = 1532320307
+        crafter_craft_button = 1517397806
+        exchange_collector_button = UIManager.GetChildFrameID(3613855137, [
+                                                                   0, 0, 6])
+        sell_tab = UIManager.GetChildFrameID(3613855137, [0, 4294967294])
+
+        return UIManagerExtensions.IsElementVisible(exchange_collector_button) and not UIManagerExtensions.IsElementVisible(sell_tab)
+    
+    @staticmethod
+    def IsSkillTrainerOpen() -> bool:     
+        display_type_button_id = UIManager.GetChildFrameID(1746895597,[3])
+        sell_tab = UIManager.GetChildFrameID(3613855137, [0, 4294967294])
+
+        return UIManagerExtensions.IsElementVisible(display_type_button_id) and not UIManagerExtensions.IsElementVisible(sell_tab)
+    
+    @staticmethod
+    def IsCrafterOpen() -> bool:
+        crafter_craft_button_id = UIManager.GetFrameIDByHash(1517397806)
+
+        return UIManagerExtensions.IsElementVisible(crafter_craft_button_id)
 
     @staticmethod
     def IsConfirmMaterialsWindowOpen() -> bool:

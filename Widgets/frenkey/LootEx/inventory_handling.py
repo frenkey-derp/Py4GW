@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from Widgets.frenkey.LootEx.enum import ModType, SalvageKitOption, SalvageOption, ItemAction
+from Widgets.frenkey.LootEx.enum import MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from Widgets.frenkey.LootEx import data, data_collector, filter, models, settings, utility, ui_manager_extensions, item_configuration, cache
 
@@ -15,7 +15,7 @@ importlib.reload(cache)
 # TODO: Add sorting options for the inventory and storage.
 # TODO: Add options to mark accounts as data collectors and allow salvaging of unknown items on other accounts
 # TODO: Fix the bug of items not getting processed fully but handler stopping after a few items
-# TODO: Add rune selling
+# TODO: Add a way to determine which trader is open and which items are available for trading
 
 salvagetime_results = []
 actiontime_results = []
@@ -69,6 +69,7 @@ class InventoryHandler:
         self.identification_kits: list[cache.Cached_Item] = []
 
         self.merchant_open: bool | None = False
+        self.merchant_type: MerchantType = MerchantType.None_
         self.checked_storage_for_merchant_items: bool = False
 
         self.salvage_queue: dict[int, cache.Cached_Item] = {}
@@ -955,12 +956,13 @@ class InventoryHandler:
             Buy = 1
             Sell = 2
             
-        def __init__(self, item: cache.Cached_Item, action: ActionType = ActionType.Sell):
+        def __init__(self, item: cache.Cached_Item, trader_type: MerchantType, action: ActionType = ActionType.Sell):
             self.item = item
             self.price_requested:bool = False
             self.price :int  = 0
             self.action = action
-            self.requested: datetime = datetime.min            
+            self.requested: datetime = datetime.min      
+            self.trader_type : MerchantType = trader_type    
             
             
         def __call__(self, *args, **kwds):
@@ -1016,12 +1018,32 @@ class InventoryHandler:
             
     def ProcessTraderList(self):
         for item_id, trader_action in self.trader_queue.items():
-            if trader_action():
+            if trader_action.trader_type == self.merchant_type != MerchantType.None_ and trader_action():
                 self.trader_queue.pop(item_id)
                 self.inventory_changed = True
                 return True
         
         return False
+    
+    def GetTraderType(self, item: cache.Cached_Item) -> MerchantType:
+        if item.item_type == ItemType.Rune_Mod:
+            return MerchantType.RuneTrader
+
+        if item.item_type == ItemType.Materials_Zcoins:
+            if item.material: 
+                if item.material.material_type == MaterialType.Rare:
+                    return MerchantType.RareMaterialTrader
+                else:            
+                    return MerchantType.MaterialTrader
+
+        if item.item_type == ItemType.Scroll:
+            return MerchantType.ScrollTrader
+        
+        if item.item_type == ItemType.Dye:
+            if item.color and item.color > DyeColor.NoColor != DyeColor.Gray:
+                return MerchantType.DyeTrader
+
+        return MerchantType.None_
     
     class ActionsSummary:
         def __init__(self, inventory_handler):            
@@ -1419,7 +1441,7 @@ class InventoryHandler:
             self.inventory_timer.Reset()
 
             self.UpdateSalvageWindows()
-            self.merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()
+            self.UpdateMerchantWindow()
             self.upgrade_open = ui_manager_extensions.UIManagerExtensions.IsUpgradeWindowOpen()
 
             if self.upgrade_open:
@@ -1452,7 +1474,7 @@ class InventoryHandler:
                 
                 if item.action == ItemAction.SELL_TO_TRADER:
                     if item.id not in self.trader_queue:
-                        self.trader_queue[item.id] = InventoryHandler.TraderAction(item, InventoryHandler.TraderAction.ActionType.Sell) 
+                        self.trader_queue[item.id] = InventoryHandler.TraderAction(item, self.GetTraderType(item), InventoryHandler.TraderAction.ActionType.Sell) 
             
 
             if self.merchant_timer.IsExpired():
@@ -1461,7 +1483,7 @@ class InventoryHandler:
                 items_to_buy = self.GetMissingItems()
                 if items_to_buy:
                     if self.is_outpost and not self.GetItemsFromStorage(items_to_buy):
-                        if self.merchant_open:
+                        if self.merchant_open and self.merchant_type == MerchantType.Merchant:
                             self.BuyItemsFromMerchant(items_to_buy)
 
             for _, item in self.actions.items():
@@ -1538,9 +1560,67 @@ class InventoryHandler:
                 self.CompactInventory()
 
             time_delta = datetime.now() - global_time
-            self.TrackTime(time_delta, time_results, "Global")
-            ConsoleLog(
-                "LootEx", f"Processed {len(self.actions)} items in {time_delta.microseconds * 0.000001} sec.", Console.MessageType.Debug)
+            # self.TrackTime(time_delta, time_results, "Global")
+            # ConsoleLog(
+            #     "LootEx", f"Processed {len(self.actions)} items in {time_delta.microseconds * 0.000001} sec.", Console.MessageType.Debug)
+
+    def UpdateMerchantWindow(self):
+        merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()        
+        
+        if self.merchant_open != merchant_open:
+            self.merchant_open = merchant_open
+            
+        if not self.merchant_open:
+            self.merchant_type = MerchantType.None_
+            
+        else:                
+            if ui_manager_extensions.UIManagerExtensions.IsCrafterOpen():
+                self.merchant_type = MerchantType.Crafter
+                return
+            
+            if ui_manager_extensions.UIManagerExtensions.IsCollectorOpen():
+                self.merchant_type = MerchantType.Collector
+                return
+            
+            if ui_manager_extensions.UIManagerExtensions.IsSkillTrainerOpen():
+                self.merchant_type = MerchantType.None_
+                return
+                            
+            item_ids = GLOBAL_CACHE.Trading.Merchant.GetOfferedItems()
+                            
+            if item_ids:                    
+                item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_ids[0])[0])              
+                
+                if item_type == ItemType.Rune_Mod:
+                    self.merchant_type = MerchantType.RuneTrader
+                    return
+                
+                elif item_type == ItemType.Scroll:
+                    self.merchant_type = MerchantType.ScrollTrader
+                    return
+                
+                elif item_type == ItemType.Dye and utility.Util.get_color(item_ids[0]) > DyeColor.NoColor != DyeColor.Gray:
+                    self.merchant_type = MerchantType.DyeTrader
+                    return
+                
+                elif item_type == ItemType.Materials_Zcoins:
+                    model_id = GLOBAL_CACHE.Item.GetModelID(item_ids[0])
+                    material = data.Materials.get(model_id, None)
+                    
+                    if material:
+                        if material.material_type == MaterialType.Rare:
+                            self.merchant_type = MerchantType.RareMaterialTrader
+                            return
+                        
+                        elif material.material_type == MaterialType.Common:                                    
+                            self.merchant_type = MerchantType.MaterialTrader
+                            return
+                else:
+                    self.merchant_type = MerchantType.Merchant
+                    return
+                            
+                
+        
 
     def Stop(self):
         ConsoleLog("LootEx", "Stopping loot handling",

@@ -84,6 +84,17 @@ class MaterialType(IntEnum):
     Common = 1
     Rare = 2
 
+class MerchantType(IntEnum):
+    None_ = 0
+    Merchant = 1
+    RuneTrader = 2
+    ScrollTrader = 3
+    DyeTrader = 4
+    MaterialTrader = 5
+    RareMaterialTrader = 6
+    Collector = 7
+    Crafter = 8
+
 class ItemAction(IntEnum):
     NONE = 0
     LOOT = 1
