@@ -1072,6 +1072,25 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "818": {
+            "ModelID": 818,
+            "Names": {
+                "English": "Bag"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bag",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1331": {
             "ModelID": 1331,
             "Names": {
@@ -1549,6 +1568,251 @@
                 }
             },
             "WikiURL": "https://wiki.guildwars.com/wiki/Decayed_Orr_Armor",
+            "InventoryIcon": "Salvage_Medium_Armor.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Salvage_Medium_Armor.png",
+            "NickIndex": null,
+            "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "23281": {
+            "ModelID": 23281,
+            "Names": {
+                "English": "Disciple's Insignia [Monk]"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Disciple's_Insignia_[Monk]",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "2587606142": {
+            "ModelID": 2587606142,
+            "Names": {
+                "English": "Disciple's Insignia [Monk]"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Disciple's_Insignia_[Monk]",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "643": {
+            "ModelID": 643,
+            "Names": {
+                "English": "Dredge Garment",
+                "Spanish": "Prenda de Rebelde",
+                "German": "Schaufler-Kleidungsstück",
+                "Korean": "드레지 로브",
+                "French": "Vêtements de Draguerre",
+                "Italian": "Abito del Dragatore",
+                "TraditionalChinese": "挖掘者用具",
+                "Japanese": "ドレッジの衣服",
+                "Polish": "Ubiór Drega",
+                "Russian": "Dredge Garment",
+                "BorkBorkBork": "Dredge-a Gaerment"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Bolt of Cloth": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 925,
+                    "MaterialName": "Bolt of Cloth"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Linen": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 926,
+                    "MaterialName": "Bolt of Linen"
+                },
+                "Bolt of Silk": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dredge_Garment",
+            "InventoryIcon": "Salvage_Light_Armor.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/c0/Salvage_Light_Armor.png",
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "647": {
+            "ModelID": 647,
+            "Names": {
+                "English": "Dredge Garment",
+                "German": "Schaufler-Kleidungsstück",
+                "Korean": "드레지 로브",
+                "French": "Vêtements de Draguerre",
+                "Italian": "Abito del Dragatore",
+                "Spanish": "Prenda de Rebelde",
+                "TraditionalChinese": "挖掘者用具",
+                "Japanese": "ドレッジの衣服",
+                "Polish": "Ubiór Drega",
+                "BorkBorkBork": "Dredge-a Gaerment",
+                "Russian": "Dredge Garment"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dredge_Garment",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "650": {
+            "ModelID": 650,
+            "Names": {
+                "English": "Dredge Garment",
+                "German": "Schaufler-Kleidungsstück",
+                "Korean": "드레지 로브",
+                "French": "Vêtements de Draguerre",
+                "Italian": "Abito del Dragatore",
+                "Spanish": "Prenda de Rebelde",
+                "TraditionalChinese": "挖掘者用具",
+                "Japanese": "ドレッジの衣服",
+                "Polish": "Ubiór Drega",
+                "Russian": "Dredge Garment",
+                "BorkBorkBork": "Dredge-a Gaerment"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dredge_Garment",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "648": {
+            "ModelID": 648,
+            "Names": {
+                "English": "Dredge Plating",
+                "Spanish": "Coraza de Rebelde",
+                "German": "Schaufler-Plattierung",
+                "Korean": "드레지 갑옷",
+                "French": "Armure de Draguerre",
+                "Italian": "Corpetto a Piastre del Dragatore",
+                "TraditionalChinese": "挖掘者鍍層",
+                "Japanese": "ドレッジの鎧",
+                "Polish": "Pancerz Drega",
+                "Russian": "Dredge Plating",
+                "BorkBorkBork": "Dredge-a Plaeteeng"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Tanned Hide Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dredge_Plating",
+            "InventoryIcon": "Salvage_Plating.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d1/Salvage_Plating.png",
+            "NickIndex": null,
+            "Profession": "Warrior",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "649": {
+            "ModelID": 649,
+            "Names": {
+                "Spanish": "Hombrera de Rebelde",
+                "English": "Dredge Spaulder",
+                "German": "Schaufler-Schulterschutz",
+                "Korean": "드레지 어깨보호대",
+                "French": "Spallière de Draguerre",
+                "Italian": "Spallaccio del Dragatore",
+                "TraditionalChinese": "挖掘者套裝",
+                "Japanese": "ドレッジの肩甲",
+                "Polish": "Epolet Drega",
+                "Russian": "Dredge Spaulder",
+                "BorkBorkBork": "Dredge-a Spoolder"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {
+                "Tanned Hide Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
+            "RareSalvage": {
+                "Leather Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 942,
+                    "MaterialName": "Leather Square"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dredge_Spaulder",
             "InventoryIcon": "Salvage_Medium_Armor.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Salvage_Medium_Armor.png",
             "NickIndex": null,
@@ -2606,6 +2870,93 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "664": {
+            "ModelID": 664,
+            "Names": {
+                "English": "Luxon Armor",
+                "German": "Luxon-Rüstung",
+                "Korean": "룩손 갑옷",
+                "French": "Armure luxonne",
+                "Italian": "Armatura Luxon",
+                "Spanish": "Armadura de Luxon",
+                "TraditionalChinese": "勒克森防具",
+                "Japanese": "ラクソン アーマー",
+                "Polish": "Zbroja Luksońska",
+                "Russian": "Luxon Armor",
+                "BorkBorkBork": "Looxun Aermur"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Luxon_Armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Warrior",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "665": {
+            "ModelID": 665,
+            "Names": {
+                "English": "Luxon Bracers",
+                "German": "Luxon-Handschutz",
+                "Korean": "룩손 팔보호구",
+                "French": "Bracelets luxons",
+                "Italian": "Bracciali Luxon",
+                "Spanish": "Brazal de Luxon",
+                "TraditionalChinese": "勒克森腕甲",
+                "Japanese": "ラクソン ブレイサー",
+                "Polish": "Naramiennik Luksonów",
+                "Russian": "Luxon Bracers",
+                "BorkBorkBork": "Looxun Braecers"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Luxon_Bracers",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "659": {
+            "ModelID": 659,
+            "Names": {
+                "English": "Luxon Garb",
+                "German": "Luxon-Tracht",
+                "Korean": "룩손 로브",
+                "French": "Habit luxon",
+                "Italian": "Abito Luxon",
+                "Spanish": "Vestimenta de Luxon",
+                "TraditionalChinese": "勒克森裝束",
+                "Japanese": "ラクソンの衣",
+                "Polish": "Strój Luksonów",
+                "Russian": "Luxon Garb",
+                "BorkBorkBork": "Looxun Gaerb"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Luxon_Garb",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1698": {
             "ModelID": 1698,
             "Names": {
@@ -3393,6 +3744,44 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2548285332": {
+            "ModelID": 2548285332,
+            "Names": {
+                "English": "Prismatic Insignia [Elementalist]"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Prismatic_Insignia_[Elementalist]",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "2147494472": {
+            "ModelID": 2147494472,
+            "Names": {
+                "English": "Pyrebound Insignia [Ranger]"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Pyrebound_Insignia_[Ranger]",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "2178": {
             "ModelID": 2178,
             "Names": {
@@ -3541,6 +3930,25 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "3055759861": {
+            "ModelID": 3055759861,
+            "Names": {
+                "English": "Rune of Vitae"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Rune_of_Vitae",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1333": {
             "ModelID": 1333,
@@ -4040,6 +4448,35 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "683": {
+            "ModelID": 683,
+            "Names": {
+                "English": "Warden Vestments",
+                "German": "Aufseher-Ornat",
+                "Korean": "파수꾼 로브",
+                "French": "Habits de cérémonie de gardien",
+                "Italian": "Vestimenti del Difensore",
+                "Spanish": "Vestimenta de guardián",
+                "TraditionalChinese": "看守者法袍",
+                "Japanese": "ウォードン ベスト",
+                "Polish": "Szaty Strażnika",
+                "Russian": "Warden Vestments",
+                "BorkBorkBork": "Vaerdee Festments"
+            },
+            "ItemType": "Salvage",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Warden_Vestments",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Assassin",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "684": {
             "ModelID": 684,
@@ -6116,7 +6553,17 @@
         "818": {
             "ModelID": 818,
             "Names": {
-                "English": "Dredge Incisor"
+                "English": "Dredge Incisor",
+                "German": "Schaufler-Schneidezahn",
+                "Korean": "드레지 이빨",
+                "French": "Incisive de Draguerre",
+                "Italian": "Incisivo di Dragatore",
+                "Spanish": "Incisivo de Rebelde",
+                "TraditionalChinese": "挖掘者之牙",
+                "Japanese": "ドレッジ インサイザー",
+                "Polish": "Siekacz Drega",
+                "Russian": "Dredge Incisor",
+                "BorkBorkBork": "Dredge-a Inceesur"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -8597,7 +9044,17 @@
         "810": {
             "ModelID": 810,
             "Names": {
-                "English": "Luxon Pendant"
+                "English": "Luxon Pendant",
+                "German": "Luxon-Anhänger",
+                "Korean": "룩손 펜던트",
+                "French": "Pendentif luxon",
+                "Italian": "Pendente Luxon",
+                "Spanish": "Colgante de Luxon",
+                "TraditionalChinese": "勒克森飾物",
+                "Japanese": "ラクソン ペンダント",
+                "Polish": "Wisiorek Luksonów",
+                "Russian": "Luxon Pendant",
+                "BorkBorkBork": "Looxun Pendunt"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -13758,6 +14215,37 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "753": {
+            "ModelID": 753,
+            "Names": {
+                "English": "Runic Axe",
+                "German": "Runenaxt",
+                "Korean": "룬 도끼",
+                "French": "Hache runique",
+                "Italian": "Ascia Runica",
+                "Spanish": "Hacha rúnica",
+                "TraditionalChinese": "古文斧",
+                "Japanese": "ルニック アックス",
+                "Polish": "Runiczny Topór",
+                "Russian": "Runic Axe",
+                "BorkBorkBork": "Rooneec Aexe-a"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Runic_Axe",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "125": {
             "ModelID": 125,
@@ -19615,6 +20103,37 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2068": {
+            "ModelID": 2068,
+            "Names": {
+                "English": "Fox's Greed",
+                "German": "Gier des Fuchses",
+                "Korean": "여우의 욕심",
+                "French": "Avidité du renard",
+                "Italian": "Cupidigia della Volpe",
+                "Spanish": "Hambre de zorro",
+                "TraditionalChinese": "狐狸的貪婪",
+                "Japanese": "フォックス グリード",
+                "Polish": "Chciwość Lisa",
+                "Russian": "Fox's Greed",
+                "BorkBorkBork": "Fux's Greed"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Fox's_Greed",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": "RareWeapon",
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "2080": {
             "ModelID": 2080,
             "Names": {
@@ -19838,6 +20357,37 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "880": {
+            "ModelID": 880,
+            "Names": {
+                "English": "Gilded Artifact",
+                "German": "Vergoldetes Artefakt",
+                "Korean": "도금한 유물",
+                "French": "Artefact doré",
+                "Italian": "Manufatto Dorato",
+                "Spanish": "Artefacto dorado",
+                "TraditionalChinese": "鍍金神器",
+                "Japanese": "ギルデッド アーティファクト",
+                "Polish": "Pozłacany Artefakt",
+                "BorkBorkBork": "Geelded Aerteeffaect",
+                "Russian": "Gilded Artifact"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "FastCasting"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Gilded_Artifact",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "895": {
             "ModelID": 895,
@@ -20773,6 +21323,37 @@
         },
         "149": {
             "ModelID": 149,
+            "Names": {
+                "English": "Inscribed Chakram",
+                "German": "Graviertes Tschakra",
+                "Korean": "문자가 새겨진 챠크람",
+                "French": "Chakram gravé",
+                "Italian": "Chakram Inciso",
+                "Spanish": "Chakram con grabados",
+                "TraditionalChinese": "雕刻的圓月輪",
+                "Japanese": "インスクライブ チャクラム",
+                "Polish": "Grawerowany Czakram",
+                "Russian": "Inscribed Chakram",
+                "BorkBorkBork": "Inscreebed Chaekraem"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DominationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Inscribed_Chakram",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "150": {
+            "ModelID": 150,
             "Names": {
                 "English": "Inscribed Chakram",
                 "German": "Graviertes Tschakra",
@@ -25011,7 +25592,11 @@
                 "BloodMagic",
                 "ChannelingMagic",
                 "Curses",
-                "SmitingPrayers"
+                "SmitingPrayers",
+                "WaterMagic",
+                "EarthMagic",
+                "Communing",
+                "DivineFavor"
             ],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
@@ -27495,6 +28080,37 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "286": {
+            "ModelID": 286,
+            "Names": {
+                "English": "Holy Rod",
+                "German": "Heiliger Stecken",
+                "Korean": "신성의 지팡이",
+                "French": "Badine sacrée",
+                "Italian": "Verga Sacra",
+                "Spanish": "Vara sagrada",
+                "TraditionalChinese": "神聖手杖",
+                "Japanese": "ホーリー ロッド",
+                "Polish": "Święte Berło",
+                "Russian": "Holy Rod",
+                "BorkBorkBork": "Huly Rud"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Holy_Rod",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1249": {
             "ModelID": 1249,
@@ -33326,7 +33942,9 @@
                 "Communing",
                 "BloodMagic",
                 "IllusionMagic",
-                "EarthMagic"
+                "EarthMagic",
+                "SmitingPrayers",
+                "AirMagic"
             ],
             "CommonSalvage": {
                 "Pile of Glittering Dust": {
@@ -33459,7 +34077,8 @@
             "Attributes": [
                 "DivineFavor",
                 "Curses",
-                "DominationMagic"
+                "DominationMagic",
+                "AirMagic"
             ],
             "CommonSalvage": {
                 "Wood Plank": {
@@ -46003,6 +46622,37 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "8539": {
+            "ModelID": 8539,
+            "Names": {
+                "English": "Urkal's Kamas",
+                "German": "Urkals Kamas",
+                "Korean": "우르칼의 카마스",
+                "French": "Kamas d'Urkal",
+                "Italian": "Kama di Urkal",
+                "Spanish": "Kamas de Urkal",
+                "TraditionalChinese": "烏卡的手鐮",
+                "Japanese": "ユーカル カマ",
+                "Polish": "Kamas Urkala",
+                "Russian": "Urkal's Kamas",
+                "BorkBorkBork": "Urkael's Kaemaes"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Urkal's_Kamas",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "15838": {
             "ModelID": 15838,

@@ -890,8 +890,8 @@ class InventoryHandler:
                 self.GetSalvageKitOption(salvage_item.salvage_option))
 
             if kit is None or kit.uses <= 0:
-                ConsoleLog(
-                    "LootEx", f"No salvage kit for salvage option {salvage_item.salvage_option.name} found, cannot salvage item.", Console.MessageType.Warning)
+                # ConsoleLog(
+                #     "LootEx", f"No salvage kit for salvage option {salvage_item.salvage_option.name} found, cannot salvage item.", Console.MessageType.Warning)
                 return False
 
             salvage_item.salvage_started = datetime.now()
@@ -1210,6 +1210,9 @@ class InventoryHandler:
             if item.is_blacklisted:
                 return False
 
+            if item.value <= 0:
+                return False
+            
             # If the item is a material, we should not sell it to the merchant, instead we should deposit it to the material storage or visit the material trader
             if item.item_type == ItemType.Materials_Zcoins:
                 return False
@@ -1218,9 +1221,6 @@ class InventoryHandler:
             if item.item_type == ItemType.Rune_Mod:
                 if item.is_rune:
                     return False
-
-            if item.value <= 0:
-                return False
 
             return item.action == ItemAction.SELL_TO_MERCHANT
 

@@ -34,6 +34,10 @@ class Filter:
         
         if self.exclude_low_req and item.is_low_requirement_item:
             return False
+        
+        if self.action == ItemAction.SELL_TO_MERCHANT:
+            if item.value <= 0:
+                return False
 
         if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_SMART or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:
             if self.materials:

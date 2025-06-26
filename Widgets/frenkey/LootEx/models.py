@@ -988,7 +988,10 @@ class WeaponMod(ItemMod):
             
         from Widgets.frenkey.LootEx import utility
         if item_type == ItemType.Rune_Mod:
-            applied_to_item_type_mod = next(modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType)
+            applied_to_item_type_mod = next((modifier for modifier in modifiers if modifier.GetIdentifier() == ModifierIdentifier.TargetItemType), None)
+            if not applied_to_item_type_mod:
+                return False
+            
             applied_to_item_type_id = applied_to_item_type_mod.GetArg1()
             applied_to_item_type = ItemType(applied_to_item_type_id)
                         
