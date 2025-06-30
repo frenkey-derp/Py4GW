@@ -832,11 +832,12 @@ class DataCollector:
         
         item_array : list[int] = GLOBAL_CACHE.ItemArray.GetItemArray(DataCollector.AllBags)
         trader_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or []
+        trader2_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems2() or []
         merchant_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or []
         crafter_array : list[int] = ui_manager_extensions.UIManagerExtensions.IsCrafterOpen() and GLOBAL_CACHE.Trading.Crafter.GetOfferedItems() or []
         collector_array : list[int] = ui_manager_extensions.UIManagerExtensions.IsCollectorOpen() and GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or []
         
-        all_arrays = item_array + trader_array + merchant_array + crafter_array + collector_array
+        all_arrays = item_array + trader_array  + trader2_array + merchant_array + crafter_array + collector_array
 
         for item_id in all_arrays:
             model_id = self.get_model_id(item_id)
