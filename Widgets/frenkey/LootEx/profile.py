@@ -1,6 +1,6 @@
 import os
 import json
-from Widgets.frenkey.LootEx import filter, item_configuration, settings
+from Widgets.frenkey.LootEx import filter, item_configuration, messaging, settings
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.item_configuration import *
 from Py4GWCoreLib import Console
@@ -139,6 +139,8 @@ class Profile:
             # ConsoleLog(
             #     "LootEx", f"Saving profile {self.name}...", Console.MessageType.Debug)
             json.dump(profile_dict, file, indent=4)
+        
+        messaging.SendReloadProfiles()
 
     def load(self):
         """Load the profile from a JSON file."""

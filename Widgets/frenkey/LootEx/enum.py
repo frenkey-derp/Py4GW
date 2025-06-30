@@ -142,6 +142,7 @@ class MessageActions(IntEnum):
     HideLootExWindow = 8
     OpenXunlai = 9    
     ReloadWidgets = 10
+    ReloadProfiles = 11
     
 class SalvageOption(IntEnum):
     None_ = 0

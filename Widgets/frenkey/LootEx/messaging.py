@@ -1,4 +1,5 @@
 import datetime
+from Widgets import LootEx
 from Widgets.frenkey.LootEx import data, data_collector, enum, inventory_handling, settings
 from Py4GWCoreLib import Inventory, Player
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -30,6 +31,17 @@ def ResetMessages():
     for index, message in messages:
         receiverEmail = message.ReceiverEmail
         sharedMemoryManager.MarkMessageAsFinished(receiverEmail, index)
+
+def SendReloadProfiles():
+    global current_account
+    
+    ResetMessages()
+    
+    for acc in sharedMemoryManager.GetAllAccountData():
+        if acc.AccountEmail == current_account:
+            continue
+    
+        sharedMemoryManager.SendMessage(current_account, acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadProfiles, 0, 0))
 
 def SendMergingMessage():
     global is_collecting
@@ -158,6 +170,18 @@ def HandleReceivedMessages():
                     # action : enum.MessageActions = enum.MessageActions(param)
                     
                     match param:
+                        case enum.MessageActions.ReloadProfiles:
+                            sharedMemoryManager.MarkMessageAsRunning(current_account, index)
+                            
+                            if settings.current.current_character:
+                                ConsoleLog("LootEx", "Reloading profiles...")
+                                settings.current.ReloadProfiles()
+                                settings.current.SetProfile(settings.current.character_profiles[settings.current.current_character])
+                            else:
+                                ConsoleLog("LootEx", "Reloading profiles failed because no current character is set ...")
+                                
+                            sharedMemoryManager.MarkMessageAsFinished(current_account, index)
+                            
                         case enum.MessageActions.PauseDataCollection:
                             sharedMemoryManager.MarkMessageAsRunning(current_account, index)     
                             is_collecting = settings.current.collect_items

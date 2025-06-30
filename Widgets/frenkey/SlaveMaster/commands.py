@@ -3,7 +3,7 @@ from Py4GWCoreLib import IconsFontAwesome5
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Key, SharedCommandType
+from Py4GWCoreLib.enums import CombatPrepSkillsType, Key, SharedCommandType
 
 
 class Command:
@@ -56,6 +56,19 @@ class Commands:
             Command("ESC",  "ESC", self.press_escape),
         ]
                 
+    def prep_spirits(self):       
+        accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+        for acc in accounts:
+            if acc.AccountEmail == self.current_account:
+                continue
+            
+            GLOBAL_CACHE.ShMem.SendMessage(
+                self.current_account, 
+                acc.AccountEmail,
+                SharedCommandType.UseSkill,
+                (CombatPrepSkillsType.SpiritsPrep, 0, 0, 0),
+            )
+                            
     def press_escape(self):
         for acc in self.sharedMemoryManager.GetAllAccountData():
             if acc.AccountEmail == self.current_account:

@@ -48,6 +48,7 @@ class Settings:
 
         self.settings_file_path: str = ""
         self.profiles_path: str = ""
+        self.current_character: str = ""
         self.data_collection_path: str = ""
         
         self.inventory_frame_exists: bool = False
@@ -66,6 +67,23 @@ class Settings:
         self.language = lang
         
     
+    def ReloadProfiles(self):
+        """Reloads the profiles from the profiles directory."""
+        self.profiles.clear()
+        
+        # Load profiles
+        for file_name in os.listdir(self.profiles_path):
+            if file_name.endswith(".json"):
+                profile = Profile(file_name[:-5])
+                profile.load()
+                self.profiles.append(profile)
+
+        if not self.profiles:
+            default_profile = Profile("Default")
+            default_profile.save()
+            default_profile.load()
+            self.profiles.append(default_profile)
+        
     def SetProfile(self, profile_name: str | None):
         self.profile = Profile("Default")
         
@@ -114,7 +132,7 @@ class Settings:
         os.makedirs(os.path.dirname(self.settings_file_path), exist_ok=True)
         os.makedirs(self.profiles_path, exist_ok=True)
         os.makedirs(self.data_collection_path, exist_ok=True)
-
+        
         # Load profiles
         for file_name in os.listdir(self.profiles_path):
             if file_name.endswith(".json"):

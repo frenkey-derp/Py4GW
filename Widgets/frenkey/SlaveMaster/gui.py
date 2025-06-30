@@ -2,6 +2,7 @@
 import ctypes
 from ctypes import wintypes
 import math
+import os
 import Py4GW
 import PyImGui
 from Py4GWCoreLib import IconsFontAwesome5, ImGui, UIManager
@@ -9,6 +10,7 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import HeroAIOptionStruct
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Widgets.frenkey.LootEx import utility
 import Widgets.frenkey.SlaveMaster.commands
 from Widgets.frenkey.SlaveMaster.ui_manager_extensions import UIManagerExtensions
 import importlib
@@ -32,8 +34,13 @@ class UI:
 
         self._initialized = True
         self.window = None
-        self.commands = Widgets.frenkey.SlaveMaster.commands.Commands().commands
+        self.commands = Widgets.frenkey.SlaveMaster.commands.Commands()
+        self.commands_list = self.commands.commands
         self.account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
+        file_directory = os.path.dirname(os.path.abspath(__file__))
+        self.icon_textures_path = os.path.join(file_directory, "textures")
+        self.skill_textures_path = os.path.join(utility.Util.GetPy4GWPath(), "Textures", "Items")
+        self.skill_textures_path = os.path.join(utility.Util.GetPy4GWPath(), "Textures", "Skill_Icons")
         self.options = HeroAIOptionStruct()
 
     def draw(self):
@@ -92,8 +99,6 @@ class UI:
                 PyImGui.table_next_column()
                 self.options.Combat = ImGui.toggle_button(IconsFontAwesome5.ICON_SKULL_CROSSBONES + "##Combat", self.options.Combat,40,40)
                 ImGui.show_tooltip("Combat")
-                
-                
                             
                 if not self.account_mail or self.account_mail != GLOBAL_CACHE.Player.GetAccountEmail():
                     ConsoleLog("SlaveMaster", "No current account set, cannot handle messages.")
@@ -143,9 +148,14 @@ class UI:
                 
                 #     pass
                 
+                PyImGui.table_next_column()
+                
+                if ImGui.ImageButton("##SpiritPrep", os.path.join(self.skill_textures_path, "[1240] - Soul Twisting.jpg"), button_size, button_size, 0):
+                    self.commands.prep_spirits()
+                    
                 PyImGui.table_next_row()    
                                          
-                for command in self.commands:
+                for command in self.commands_list:
                     PyImGui.table_next_column()
                     if PyImGui.button(command.icon + f"##{command.name}", button_size, button_size):
                         command.execute()

@@ -100,6 +100,7 @@ def main():
     if not current_character: 
         return
     
+    settings.current.current_character = current_character
     if not settings.current.character_profiles.get(current_character, False):        
         if settings.current.profiles:
             settings.current.character_profiles[current_character] = settings.current.profiles[0].name

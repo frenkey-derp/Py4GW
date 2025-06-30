@@ -1283,19 +1283,20 @@ class InventoryHandler:
             existing_item = next(
                 (item for item in self.cached_inventory if item.id == item_id), None)
 
-            if existing_item and item.is_inventory_item and existing_item.quantity == item.quantity and (existing_item.rarity == item.rarity):                
-                item.action = existing_item.action
-                item.salvage_option = existing_item.salvage_option
-                item.salvage_requires_confirmation = existing_item.salvage_requires_confirmation
-                item.salvage_requires_material_confirmation = existing_item.salvage_requires_material_confirmation
-                item.savlage_tries = existing_item.savlage_tries
-                item.salvage_started = existing_item.salvage_started
-                item.is_blacklisted = existing_item.is_blacklisted
-                
-                result.actions[item_id] = item
-                result.inventory_changed = result.inventory_changed or existing_item.slot != item.slot or has_empty_slot
+            if existing_item and item.is_inventory_item and existing_item.quantity == item.quantity and (existing_item.rarity == item.rarity):
+                if existing_item.mods == item.mods:                                    
+                    item.action = existing_item.action
+                    item.salvage_option = existing_item.salvage_option
+                    item.salvage_requires_confirmation = existing_item.salvage_requires_confirmation
+                    item.salvage_requires_material_confirmation = existing_item.salvage_requires_material_confirmation
+                    item.savlage_tries = existing_item.savlage_tries
+                    item.salvage_started = existing_item.salvage_started
+                    item.is_blacklisted = existing_item.is_blacklisted
                     
-                continue
+                    result.actions[item_id] = item
+                    result.inventory_changed = result.inventory_changed or existing_item.slot != item.slot or has_empty_slot
+                        
+                    continue
 
             if not item.is_inventory_item:
                 if item_id in result.actions:
