@@ -2,7 +2,7 @@
 # Reload imports
 import importlib
 import os
-from Widgets.SlaveMasterLib import gui
+from Widgets.frenkey.SlaveMaster import gui
 
 from Py4GWCoreLib import Player, Routines
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE

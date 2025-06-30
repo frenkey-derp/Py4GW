@@ -9,12 +9,12 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import HeroAIOptionStruct
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-import Widgets.SlaveMasterLib.commands
-from Widgets.SlaveMasterLib.ui_manager_extensions import UIManagerExtensions
+import commands
+from ui_manager_extensions import UIManagerExtensions
 import importlib
 
 
-importlib.reload(Widgets.SlaveMasterLib.commands)
+importlib.reload(commands)
 
 
 class UI:
@@ -32,7 +32,7 @@ class UI:
 
         self._initialized = True
         self.window = None
-        self.commands = Widgets.SlaveMasterLib.commands.Commands().commands
+        self.commands = commands.Commands().commands
         self.account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
         self.options = HeroAIOptionStruct()
 
