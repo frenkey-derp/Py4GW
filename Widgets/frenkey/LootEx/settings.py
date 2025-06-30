@@ -99,6 +99,8 @@ class Settings:
             if not self.profiles:
                 self.profiles.append(self.profile)
                 
+        inventory_handling.InventoryHandler().reset()
+        
         if self.profile:
             inventory_handling.InventoryHandler().SetPollingInterval(self.profile.polling_interval)
 
