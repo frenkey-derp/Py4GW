@@ -8747,7 +8747,17 @@
         "1598": {
             "ModelID": 1598,
             "Names": {
-                "English": "Juvenile Termite Leg"
+                "English": "Juvenile Termite Leg",
+                "German": "Jungtermiten-Bein",
+                "Korean": "새끼 흰개미 다리",
+                "French": "Patte de jeune termite",
+                "Italian": "Zampa di Termite Infante",
+                "Spanish": "Pata de termita pequeña",
+                "TraditionalChinese": "幼蟻腿",
+                "Japanese": "ジュブナイル ターマイトの足",
+                "Polish": "Odnóże Młodego Termita",
+                "Russian": "Juvenile Termite Leg",
+                "BorkBorkBork": "Joofeneele-a Termeete-a Leg"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -15667,7 +15677,17 @@
         "1361": {
             "ModelID": 1361,
             "Names": {
-                "English": "Bramble Longbow"
+                "English": "Bramble Longbow",
+                "German": "Dornenranken-Langbogen",
+                "Korean": "가시나무 장궁",
+                "French": "Arc long de ronces",
+                "Italian": "Arco Lungo di Rovo",
+                "Spanish": "Arco largo de zarzas",
+                "TraditionalChinese": "荊棘長弓",
+                "Japanese": "ブランブル ロングボウ",
+                "Polish": "Cierniowy Długi Łuk",
+                "Russian": "Bramble Longbow",
+                "BorkBorkBork": "Braemble-a Lungboo"
             },
             "ItemType": "Bow",
             "DropInfo": "",
@@ -15694,6 +15714,52 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Longbow",
             "InventoryIcon": "Bramble_Longbow.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/d/d7/Bramble_Longbow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1362": {
+            "ModelID": 1362,
+            "Names": {
+                "English": "Bramble Recurve Bow",
+                "German": "Dornenranken-Recurvebogen",
+                "Korean": "가시나무 곡궁",
+                "French": "Arc recourbé de ronces",
+                "Italian": "Arco Ricurvo di Rovo",
+                "Spanish": "Arco recurvado de zarzas",
+                "TraditionalChinese": "荊棘反曲弓",
+                "Japanese": "ブランブル リカーブ ボウ",
+                "Polish": "Cierniowy Refleksyjny Łuk",
+                "Russian": "Bramble Recurve Bow",
+                "BorkBorkBork": "Braemble-a Recoorfe-a Boo"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Recurve_Bow",
+            "InventoryIcon": "Bramble_Recurve_Bow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Bramble_Recurve_Bow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -15740,6 +15806,52 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Recurve_Bow",
             "InventoryIcon": "Bramble_Recurve_Bow.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Bramble_Recurve_Bow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1363": {
+            "ModelID": 1363,
+            "Names": {
+                "English": "Bramble Shortbow",
+                "German": "Dornenranken-Kurzbogen",
+                "Korean": "가시나무 단궁",
+                "French": "Arc court de ronces",
+                "Italian": "Arco Corto di Rovo",
+                "Spanish": "Arco corto de zarzas",
+                "TraditionalChinese": "荊棘短弓",
+                "Japanese": "ブランブル ショートボウ",
+                "Polish": "Cierniowy Krótki Łuk",
+                "Russian": "Bramble Shortbow",
+                "BorkBorkBork": "Braemble-a Shurtboo"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {
+                "Plant Fiber": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 934,
+                    "MaterialName": "Plant Fiber"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Shortbow",
+            "InventoryIcon": "Bramble_Shortbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/24/Bramble_Shortbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -17451,6 +17563,45 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2036": {
+            "ModelID": 2036,
+            "Names": {
+                "English": "Turtle Shell Longbow",
+                "German": "Schildkrötenpanzer-Langbogen",
+                "Korean": "거북등껍질 장궁",
+                "French": "Arc long en écailles de tortue",
+                "Italian": "Arco Lungo di Guscio di Tartaruga",
+                "Spanish": "Arco largo de concha de tortuga",
+                "TraditionalChinese": "龜殼長弓",
+                "Japanese": "タートル シェル ロングボウ",
+                "Polish": "Skorupowy Długi Łuk",
+                "Russian": "Turtle Shell Longbow",
+                "BorkBorkBork": "Toortle-a Shell Lungboo"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {
+                "Wood Planks": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": -1,
+                    "MaterialName": "Wood Planks"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Turtle_Shell_Longbow",
+            "InventoryIcon": "Turtle_Shell_Longbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f1/Turtle_Shell_Longbow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1506": {
             "ModelID": 1506,
             "Names": {
@@ -18156,6 +18307,60 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/2/20/Asuran_Focus.png",
             "NickIndex": null,
             "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1409": {
+            "ModelID": 1409,
+            "Names": {
+                "English": "Blessed Chalice",
+                "German": "Gesegneter Kelch",
+                "Korean": "축복받은 잔",
+                "French": "Calice béni",
+                "Italian": "Calice Benedetto",
+                "Spanish": "Cáliz bendito",
+                "TraditionalChinese": "賜福聖杯",
+                "Japanese": "ブレス カリス",
+                "Polish": "Błogosławiony Kielich",
+                "Russian": "Blessed Chalice",
+                "BorkBorkBork": "Blessed Chaeleece-a"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "HealingPrayers"
+            ],
+            "CommonSalvage": {
+                "Piles of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": -1,
+                    "MaterialName": "Piles of Glittering Dust"
+                },
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Blessed_Chalice",
+            "InventoryIcon": "Blessed_Chalice.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e9/Blessed_Chalice.png",
+            "NickIndex": null,
+            "Profession": "Monk",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
@@ -19459,6 +19664,60 @@
         },
         "905": {
             "ModelID": 905,
+            "Names": {
+                "English": "Divine Scroll",
+                "German": "Göttliche Schriftrolle",
+                "Korean": "신성의 스크롤",
+                "French": "Parchemin divin",
+                "Italian": "Pergamena Divina",
+                "Spanish": "Pergamino divino",
+                "TraditionalChinese": "神恩卷軸",
+                "Japanese": "ディヴァイン スクロール",
+                "Polish": "Boski Zwój",
+                "Russian": "Divine Scroll",
+                "BorkBorkBork": "Deefeene-a Scrull"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Roll of Parchment": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 951,
+                    "MaterialName": "Roll of Parchment"
+                },
+                "Roll of Vellum": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 952,
+                    "MaterialName": "Roll of Vellum"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Divine_Scroll",
+            "InventoryIcon": "Divine_Scroll.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Divine_Scroll.png",
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1222": {
+            "ModelID": 1222,
             "Names": {
                 "English": "Divine Scroll",
                 "German": "Göttliche Schriftrolle",
@@ -21529,16 +21788,24 @@
             "Attributes": [
                 "BloodMagic"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Bone": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 921,
+                    "MaterialName": "Bone"
+                }
+            },
             "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Idol",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "WikiURL": "https://wiki.guildwars.com/wiki/Idol_(hand)",
+            "InventoryIcon": "Idol_%28hand%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/1f/Idol_%28hand%29.png",
             "NickIndex": null,
             "Profession": "Necromancer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "161": {
             "ModelID": 161,
@@ -23205,7 +23472,17 @@
         "174": {
             "ModelID": 174,
             "Names": {
-                "English": "Storm Artifact"
+                "English": "Storm Artifact",
+                "German": "Sturmartefakt",
+                "Korean": "폭풍의 유물",
+                "French": "Artefact de tempête",
+                "Italian": "Manufatto della Tempesta",
+                "Spanish": "Artefacto de tormenta",
+                "TraditionalChinese": "暴風神器",
+                "Japanese": "ストーム アーティファクト",
+                "Polish": "Burzowy Artefakt",
+                "Russian": "Storm Artifact",
+                "BorkBorkBork": "Sturm Aerteeffaect"
             },
             "ItemType": "Offhand",
             "DropInfo": "",
@@ -23560,7 +23837,8 @@
             "ItemType": "Hammer",
             "DropInfo": "",
             "Attributes": [
-                "HammerMastery"
+                "HammerMastery",
+                "None_"
             ],
             "CommonSalvage": {
                 "Wood Plank": {
@@ -25812,6 +26090,35 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1658": {
+            "ModelID": 1658,
+            "Names": {
+                "English": "Spider Web",
+                "German": "Spinnennetz",
+                "Korean": "거미줄",
+                "French": "Toile d'araignée",
+                "Italian": "Ragnatela",
+                "Spanish": "Telaraña",
+                "TraditionalChinese": "蜘蛛絲",
+                "Japanese": "スパイダー ウェブ",
+                "Polish": "Pajęczyna",
+                "Russian": "Spider Web",
+                "BorkBorkBork": "Speeder Veb"
+            },
+            "ItemType": "CC_Shards",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spider_Web",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "1423": {
             "ModelID": 1423,
@@ -28813,7 +29120,17 @@
         "1249": {
             "ModelID": 1249,
             "Names": {
-                "English": "Holy Rod"
+                "English": "Holy Rod",
+                "German": "Heiliger Stecken",
+                "Korean": "신성의 지팡이",
+                "French": "Badine sacrée",
+                "Italian": "Verga Sacra",
+                "Spanish": "Vara sagrada",
+                "TraditionalChinese": "神聖手杖",
+                "Japanese": "ホーリー ロッド",
+                "Polish": "Święte Berło",
+                "Russian": "Holy Rod",
+                "BorkBorkBork": "Huly Rud"
             },
             "ItemType": "Wand",
             "DropInfo": "",
@@ -28989,6 +29306,60 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Hypnotic_Scepter",
             "InventoryIcon": "Hypnotic_Scepter.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/3/3f/Hypnotic_Scepter.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1639": {
+            "ModelID": 1639,
+            "Names": {
+                "English": "Imposing Scepter",
+                "German": "Imposantes Zepter",
+                "Korean": "화려한 홀",
+                "French": "Sceptre imposant",
+                "Italian": "Scettro Maestoso",
+                "Spanish": "Cetro imponente",
+                "TraditionalChinese": "雄偉權杖",
+                "Japanese": "インポーズ セプター",
+                "Polish": "Eleganckie Berło",
+                "Russian": "Imposing Scepter",
+                "BorkBorkBork": "Impuseeng Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "DominationMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Imposing_Scepter",
+            "InventoryIcon": "Imposing_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7a/Imposing_Scepter.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
@@ -34222,6 +34593,37 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "1550": {
+            "ModelID": 1550,
+            "Names": {
+                "English": "Woven Shield",
+                "German": "Gewobener Schild",
+                "Korean": "나무 방패",
+                "French": "Bouclier tissé",
+                "Italian": "Scudo Intessuto",
+                "Spanish": "Escudo tejido",
+                "TraditionalChinese": "編織盾",
+                "Japanese": "ウィーブ シールド",
+                "Polish": "Spleciona Tarcza",
+                "Russian": "Woven Shield",
+                "BorkBorkBork": "Vufee Sheeeld"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "None_"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Woven_Shield",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         }
     },
     "Staff": {
@@ -34670,6 +35072,45 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Air_Staff_(lightning_spire)",
             "InventoryIcon": "Air_Staff_%28lightning_spire%29.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/7/73/Air_Staff_%28lightning_spire%29.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1285": {
+            "ModelID": 1285,
+            "Names": {
+                "English": "Air Staff",
+                "German": "Luft-Stab",
+                "Korean": "바람의 스태프",
+                "French": "Bâton de l'air",
+                "Italian": "Bastone dell'Aria",
+                "Spanish": "Báculo de aire",
+                "TraditionalChinese": "風之法杖",
+                "Japanese": "エアー スタッフ",
+                "Polish": "Powietrzny Kostur",
+                "Russian": "Air Staff",
+                "BorkBorkBork": "Aeur Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Air_Staff_(normal)",
+            "InventoryIcon": "Air_Staff_%28normal%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/56/Air_Staff_%28normal%29.png",
             "NickIndex": null,
             "Profession": "Elementalist",
             "Category": null,
@@ -37724,6 +38165,67 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1404": {
+            "ModelID": 1404,
+            "Names": {
+                "English": "Earth Staff",
+                "German": "Erd-Stab",
+                "Korean": "대지의 스태프",
+                "French": "Bâton de la terre",
+                "Italian": "Bastone della Terra",
+                "Spanish": "Báculo de tierra",
+                "TraditionalChinese": "大地法杖",
+                "Japanese": "アース スタッフ",
+                "Polish": "Ziemny Kostur",
+                "Russian": "Earth Staff",
+                "BorkBorkBork": "Iaert Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                },
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Granite Slab": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Earth_Staff_(granite)",
+            "InventoryIcon": "Earth_Staff_%28granite%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b1/Earth_Staff_%28granite%29.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1931": {
             "ModelID": 1931,
             "Names": {
@@ -40116,6 +40618,60 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1703": {
+            "ModelID": 1703,
+            "Names": {
+                "English": "Protective Staff",
+                "German": "Schutz-Stab",
+                "Korean": "보호의 스태프",
+                "French": "Bâton protecteur",
+                "Italian": "Bastone Protettivo",
+                "Spanish": "Báculo de protección",
+                "TraditionalChinese": "保護法杖",
+                "Japanese": "プロテクション スタッフ",
+                "Polish": "Kostur Ochrony",
+                "Russian": "Protective Staff",
+                "BorkBorkBork": "Prutecteefe-a Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "ProtectionPrayers"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Protective_Staff",
+            "InventoryIcon": "Protective_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/1/1d/Protective_Staff.png",
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "17750": {
             "ModelID": 17750,
             "Names": {
@@ -41901,6 +42457,53 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1575": {
+            "ModelID": 1575,
+            "Names": {
+                "English": "Bramble Blade",
+                "German": "Dornenklinge",
+                "Korean": "가시나무 검",
+                "French": "Lame de ronces",
+                "Italian": "Lama di Rovo",
+                "Spanish": "Espada de zarzas",
+                "TraditionalChinese": "刺藤之刃",
+                "Japanese": "ブランブル ブレード",
+                "Polish": "Konarowy Miecz",
+                "Russian": "Bramble Blade",
+                "BorkBorkBork": "Braemble-a Blaede-a"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Bramble_Blade",
+            "InventoryIcon": "Bramble_Blade.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/36/Bramble_Blade.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1561": {
             "ModelID": 1561,
             "Names": {
@@ -43005,6 +43608,53 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Gladius_(short_sword)",
             "InventoryIcon": "Short_Sword.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/c/ca/Short_Sword.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1194": {
+            "ModelID": 1194,
+            "Names": {
+                "English": "Gladius",
+                "German": "Gladius",
+                "Korean": "글라디우스",
+                "French": "Glaive",
+                "Italian": "Gladio",
+                "Spanish": "Gladius",
+                "TraditionalChinese": "羅馬戰劍",
+                "Japanese": "グラディウス",
+                "Polish": "Gladius",
+                "Russian": "Gladius",
+                "BorkBorkBork": "Glaedeeoos"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Gladius",
+            "InventoryIcon": "250px-Gladius_%28gladius%29.jpg",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/thumb/b/b3/Gladius_%28gladius%29.jpg/250px-Gladius_%28gladius%29.jpg",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -47556,6 +48206,53 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Steel_Daggers_(rare)",
             "InventoryIcon": "Steel_Daggers_%28rare%29.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/9/92/Steel_Daggers_%28rare%29.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1380": {
+            "ModelID": 1380,
+            "Names": {
+                "English": "Steel Daggers",
+                "German": "Stahldolche",
+                "Korean": "강철 단검",
+                "French": "Dagues en acier",
+                "Italian": "Pugnali d'Acciaio",
+                "Spanish": "Dagas de acero",
+                "TraditionalChinese": "鋼鐵匕首",
+                "Japanese": "スティール ダガー",
+                "Polish": "Stalowe Sztylety",
+                "Russian": "Steel Daggers",
+                "BorkBorkBork": "Steel Daeggers"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Steel_Daggers",
+            "InventoryIcon": "Steel_Daggers_%28uncommon%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/5c/Steel_Daggers_%28uncommon%29.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,

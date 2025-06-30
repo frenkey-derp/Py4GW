@@ -1,5 +1,4 @@
 import datetime
-from Widgets import LootEx
 from Widgets.frenkey.LootEx import data, data_collector, enum, inventory_handling, settings
 from Py4GWCoreLib import Inventory, Player
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
