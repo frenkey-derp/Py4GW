@@ -37,7 +37,7 @@ current_character : str = ""
 current_character_requested : bool = False
 current_character_set : bool = False
 
-LootConfig().AddCondition(LootConfig.ConditionCategory.Custom, loot_handler.Should_Loot_Item, "LootEx - Should Loot Item")
+# LootConfig().AddCondition(LootConfig.ConditionCategory.Custom, loot_handler.Should_Loot_Item, "LootEx - Should Loot Item")
 
 def configure():
     pass
@@ -49,6 +49,7 @@ def Initialize_And_Load():
         script_directory, "Config", "LootEx", "Profiles")
     settings.current.data_collection_path = os.path.join(script_directory, "Config", "DataCollection")    
     settings.current.load()
+    
     
 
 def CreateDirectories():
@@ -70,6 +71,7 @@ def main():
     global inventory_frame_hash, current_account, current_character, current_character_requested
     
     if not Routines.Checks.Map.MapValid():
+        loot_handler.reset()
         inventory_handler.reset()
         current_character = ""
         current_character_requested = False
@@ -103,7 +105,7 @@ def main():
             settings.current.character_profiles[current_character] = settings.current.profiles[0].name
             
         settings.current.SetProfile(settings.current.character_profiles[current_character])
-        ConsoleLog(MODULE_NAME, f"First time using {MODULE_NAME} on '{current_character}'.{"\nDisabling inventory handling to prevent unwanted actions." if settings.current.automatic_inventory_handling else ""}\nSet Profile to '{settings.current.profile.name}'.", Console.MessageType.Warning)          
+        ConsoleLog(MODULE_NAME, f"First time using {MODULE_NAME} on '{current_character}'.{"\nDisabling inventory handling to prevent unwanted actions." if settings.current.automatic_inventory_handling else ""}\nSet Profile to '{settings.current.profile.name if settings.current.profile else "Unkown Profile"}'.", Console.MessageType.Warning)          
         settings.current.automatic_inventory_handling = False  
         settings.current.save()
     
@@ -111,6 +113,8 @@ def main():
         settings.current.SetProfile(settings.current.character_profiles[current_character])
         return
 
+    loot_handler.CheckExisingLoot()        
+    
     if messaging.HandleMessages():
         return
         

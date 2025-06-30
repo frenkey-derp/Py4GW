@@ -5,7 +5,7 @@ from Widgets.frenkey.LootEx import inventory_handling
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
 from Py4GWCoreLib import Player, UIManager
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console, LootConfig
 from Py4GWCoreLib.enums import ServerLanguage
 import json
 import os
@@ -158,6 +158,5 @@ class Settings:
                 f"Settings file for {GLOBAL_CACHE.Player.GetAccountEmail()} not found. Using default settings.",
                 Console.MessageType.Warning,
             )
-
 
 current = Settings()
