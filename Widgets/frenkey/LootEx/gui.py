@@ -1019,7 +1019,22 @@ class UI:
                         pass
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
-                        inventory_handling.InventoryHandler().UpdateMerchantWindow()
+                        all_items_with_type = [
+                            item for item in data.Items.All if item.item_type != ItemType.Unknown
+                        ] 
+                        
+                        for item in data.Items[ItemType.Unknown].values():
+                            existing_item = next((
+                                i for i in all_items_with_type if i.model_id == item.model_id and i.item_type == item.item_type
+                            ), None)
+                            
+                            if existing_item:
+                                ConsoleLog(
+                                    "LootEx",
+                                    f"Item {item.name} [{item.model_id}] already exists in {existing_item.item_type.name} as {existing_item.name} [{existing_item.model_id}].",
+                                    Console.MessageType.Warning,
+                                )
+                            
                                                  
                 PyImGui.end_child()
             

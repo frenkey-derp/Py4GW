@@ -1576,44 +1576,6 @@
             "SubCategory": null,
             "WikiScraped": true
         },
-        "23281": {
-            "ModelID": 23281,
-            "Names": {
-                "English": "Disciple's Insignia [Monk]"
-            },
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Disciple's_Insignia_[Monk]",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "2587606142": {
-            "ModelID": 2587606142,
-            "Names": {
-                "English": "Disciple's Insignia [Monk]"
-            },
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Disciple's_Insignia_[Monk]",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "643": {
             "ModelID": 643,
             "Names": {
@@ -2934,16 +2896,39 @@
             "ItemType": "Salvage",
             "DropInfo": "",
             "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Luxon_Armor",
-            "InventoryIcon": "64px-Warrior_Luxon_armor_f.jpg",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/thumb/d/de/Warrior_Luxon_armor_f.jpg/64px-Warrior_Luxon_armor_f.jpg",
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Tanned Hide Square": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 940,
+                    "MaterialName": "Tanned Hide Square"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Luxon_Armor_(item)",
+            "InventoryIcon": "Salvage_Heavy_Armor.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Salvage_Heavy_Armor.png",
             "NickIndex": null,
             "Profession": "Warrior",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "665": {
             "ModelID": 665,
@@ -3925,44 +3910,6 @@
             "SubCategory": null,
             "WikiScraped": true
         },
-        "2548285332": {
-            "ModelID": 2548285332,
-            "Names": {
-                "English": "Prismatic Insignia [Elementalist]"
-            },
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Prismatic_Insignia_[Elementalist]",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "2147494472": {
-            "ModelID": 2147494472,
-            "Names": {
-                "English": "Pyrebound Insignia [Ranger]"
-            },
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Pyrebound_Insignia_[Ranger]",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "2178": {
             "ModelID": 2178,
             "Names": {
@@ -4106,25 +4053,6 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Quetzal_Garb",
             "InventoryIcon": "Salvage_Light_Armor.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/c/c0/Salvage_Light_Armor.png",
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": true
-        },
-        "3055759861": {
-            "ModelID": 3055759861,
-            "Names": {
-                "English": "Rune of Vitae"
-            },
-            "ItemType": "Salvage",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Rune_of_Vitae",
-            "InventoryIcon": "Rune_All_Minor.png",
-            "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -11256,7 +11184,17 @@
         "1601": {
             "ModelID": 1601,
             "Names": {
-                "English": "Sentient Seed"
+                "English": "Sentient Seed",
+                "German": "Fühlendes Samenkorn",
+                "Korean": "감각초 씨앗",
+                "French": "Graine sensible",
+                "Italian": "Seme Senziente",
+                "Spanish": "Semilla sensible",
+                "TraditionalChinese": "知覺種子",
+                "Japanese": "センスの種",
+                "Polish": "Świadome Ziarno",
+                "Russian": "Sentient Seed",
+                "BorkBorkBork": "Senteeent Seed"
             },
             "ItemType": "Trophy",
             "DropInfo": "Dropped by data to be added",
@@ -15200,6 +15138,37 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21285": {
+            "ModelID": 21285,
+            "Names": {
+                "German": "Qualaxt",
+                "Korean": "고통의 왕국 도끼",
+                "French": "Hache tourmentée",
+                "Italian": "Ascia Tormentata",
+                "Spanish": "Hacha del Tormento",
+                "TraditionalChinese": "拷問者之斧",
+                "Japanese": "トルメント アックス",
+                "Polish": "Udręczony Topór",
+                "Russian": "Tormented Axe",
+                "BorkBorkBork": "Turmented Aexe-a",
+                "English": "Tormented Axe"
+            },
+            "ItemType": "Axe",
+            "DropInfo": "",
+            "Attributes": [
+                "AxeMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Axe",
+            "InventoryIcon": "Tormented_Axe.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/0/05/Tormented_Axe.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "15064": {
             "ModelID": 15064,
             "Names": {
@@ -17466,16 +17435,24 @@
             "Attributes": [
                 "Marksmanship"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Maplewood_Bow",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "WikiURL": "https://wiki.guildwars.com/wiki/Maplewood_Longbow",
+            "InventoryIcon": "Maplewood_Longbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Maplewood_Longbow.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "758": {
             "ModelID": 758,
@@ -18466,6 +18443,99 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21296": {
+            "ModelID": 21296,
+            "Names": {
+                "German": "Qual-Hornbogen",
+                "Korean": "고통의 왕국 각궁",
+                "French": "Arc de corne tourmentée",
+                "Italian": "Arco di Corno Tormentato",
+                "Spanish": "Arco de cuerno del Tormento",
+                "TraditionalChinese": "拷問者角弓",
+                "Japanese": "トルメント ホーンボウ",
+                "Polish": "Udręczony Rogowy Łuk",
+                "Russian": "Tormented Hornbow",
+                "BorkBorkBork": "Turmented Hurnboo",
+                "English": "Tormented Hornbow"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Hornbow",
+            "InventoryIcon": "Tormented_Hornbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d6/Tormented_Hornbow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21297": {
+            "ModelID": 21297,
+            "Names": {
+                "German": "Qual-Langbogen",
+                "Korean": "고통의 왕국 장궁",
+                "French": "Arc long tourmenté",
+                "Italian": "Arco Lungo Tormentato",
+                "Spanish": "Arco largo del Tormento",
+                "TraditionalChinese": "拷問者長弓",
+                "Japanese": "トルメント ロングボウ",
+                "Polish": "Udręczony Długi Łuk",
+                "Russian": "Tormented Longbow",
+                "BorkBorkBork": "Turmented Lungboo",
+                "English": "Tormented Longbow"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Longbow",
+            "InventoryIcon": "Tormented_Longbow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/20/Tormented_Longbow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21298": {
+            "ModelID": 21298,
+            "Names": {
+                "German": "Qual-Recurvebogen",
+                "Korean": "고통의 왕국 곡궁",
+                "French": "Arc recourbé tourmenté",
+                "Italian": "Arco Ricurvo Tormentato",
+                "Spanish": "Arco recurvado del Tormento",
+                "TraditionalChinese": "拷問者反曲弓",
+                "Japanese": "トルメント リカーブボウ",
+                "Polish": "Udręczony Refleksyjny Łuk",
+                "Russian": "Tormented Recurve Bow",
+                "BorkBorkBork": "Turmented Recoorfe-a Boo",
+                "English": "Tormented Recurve Bow"
+            },
+            "ItemType": "Bow",
+            "DropInfo": "",
+            "Attributes": [
+                "Marksmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Recurve_Bow",
+            "InventoryIcon": "Tormented_Recurve_Bow.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/bd/Tormented_Recurve_Bow.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "21299": {
             "ModelID": 21299,
             "Names": {
@@ -18741,7 +18811,8 @@
             "ItemType": "Bow",
             "DropInfo": "",
             "Attributes": [
-                "Marksmanship"
+                "Marksmanship",
+                "None_"
             ],
             "CommonSalvage": {
                 "Wood Plank": {
@@ -27037,6 +27108,657 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21308": {
+            "ModelID": 21308,
+            "Names": {
+                "German": "Qual-Luftfokus",
+                "Korean": "고통의 왕국 바람 포커스",
+                "French": "Focus de l'air tourmenté",
+                "Italian": "Focus Tormentato dell'Aria",
+                "Spanish": "Foco de aire del Tormento",
+                "TraditionalChinese": "拷問者風魔法聚能器",
+                "Japanese": "トルメント エア フォーカス",
+                "Polish": "Udręczony Fokus Powietrza",
+                "Russian": "Tormented Air Focus",
+                "BorkBorkBork": "Turmented Aeur Fucoos",
+                "English": "Tormented Air Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21304": {
+            "ModelID": 21304,
+            "Names": {
+                "German": "Qual-Blutfokus",
+                "Korean": "고통의 왕국 피 포커스",
+                "French": "Focus de sang tourmenté",
+                "Italian": "Focus Tormentato del Sangue",
+                "Spanish": "Foco de sangre del Tormento",
+                "TraditionalChinese": "拷問者血魔法聚能器",
+                "Japanese": "トルメント ブラッド フォーカス",
+                "Polish": "Udręczony Fokus Krwi",
+                "Russian": "Tormented Blood Focus",
+                "BorkBorkBork": "Turmented Bluud Fucoos",
+                "English": "Tormented Blood Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21320": {
+            "ModelID": 21320,
+            "Names": {
+                "German": "Qual-Kanalisierungsfokus",
+                "Korean": "고통의 왕국 증폭 포커스",
+                "French": "Focus de canalisation tourmenté",
+                "Italian": "Focus Tormentato di Incanalamento",
+                "Spanish": "Foco de canalización del Tormento",
+                "TraditionalChinese": "拷問者導引聚能器",
+                "Japanese": "トルメント チャネリング フォーカス",
+                "Polish": "Udręczony Fokus Połączeń",
+                "Russian": "Tormented Channeling Focus",
+                "BorkBorkBork": "Turmented Chunneleeng Fucoos",
+                "English": "Tormented Channeling Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "ChannelingMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21317": {
+            "ModelID": 21317,
+            "Names": {
+                "German": "Qual-Zwiesprachefokus",
+                "Korean": "고통의 왕국 교감 포커스",
+                "French": "Focus de communion tourmenté",
+                "Italian": "Focus Tormentato del Raccoglimento",
+                "Spanish": "Foco de comunión del Tormento",
+                "TraditionalChinese": "拷問者神諭聚能器",
+                "Japanese": "トルメント コミューン フォーカス",
+                "Polish": "Udręczony Fokus Zjednoczenia",
+                "Russian": "Tormented Communing Focus",
+                "BorkBorkBork": "Turmented Cummooneeng Fucoos",
+                "English": "Tormented Communing Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "Communing"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21305": {
+            "ModelID": 21305,
+            "Names": {
+                "German": "Qual-Fluchfokus",
+                "Korean": "고통의 왕국 저주 포커스",
+                "French": "Focus de Malédictions tourmenté",
+                "Italian": "Focus Tormentato delle Maledizioni",
+                "Spanish": "Foco de maldición del Tormento",
+                "TraditionalChinese": "拷問者詛咒聚能器",
+                "Japanese": "トルメント カース フォーカス",
+                "Polish": "Udręczony Fokus Klątw",
+                "Russian": "Tormented Curses Focus",
+                "BorkBorkBork": "Turmented Coorses Fucoos",
+                "English": "Tormented Curses Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "Curses"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21306": {
+            "ModelID": 21306,
+            "Names": {
+                "German": "Qual-Todesfokus",
+                "Korean": "고통의 왕국 죽음 포커스",
+                "French": "Focus de la mort tourmenté",
+                "Italian": "Focus Tormentato della Morte",
+                "Spanish": "Foco de muerte del Tormento",
+                "TraditionalChinese": "拷問者死亡魔法聚能器",
+                "Japanese": "トルメント デス フォーカス",
+                "Polish": "Udręczony Fokus Śmierci",
+                "Russian": "Tormented Death Focus",
+                "BorkBorkBork": "Turmented Deaet Fucoos",
+                "English": "Tormented Death Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DeathMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21313": {
+            "ModelID": 21313,
+            "Names": {
+                "German": "Qual-Göttlichkeitsfokus",
+                "Korean": "고통의 왕국 은총 포커스",
+                "French": "Focus divin tourmenté",
+                "Italian": "Focus Tormentato Divino",
+                "Spanish": "Foco divino del Tormento",
+                "TraditionalChinese": "拷問者神恩聚能器",
+                "Japanese": "トルメント ディヴァイン フォーカス",
+                "Polish": "Udręczony Fokus Łaski Bogów",
+                "Russian": "Tormented Divine Focus",
+                "BorkBorkBork": "Turmented Deefeene-a Fucoos",
+                "English": "Tormented Divine Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21300": {
+            "ModelID": 21300,
+            "Names": {
+                "German": "Qual-Beherrschungsfokus",
+                "Korean": "고통의 왕국 지배 포커스",
+                "French": "Focus de domination tourmenté",
+                "Italian": "Focus Tormentato del Dominio",
+                "Spanish": "Foco de dominación del Tormento",
+                "TraditionalChinese": "拷問者支配聚能器",
+                "Japanese": "トルメント ドミネーション フォーカス",
+                "Polish": "Udręczony Fokus Dominacji",
+                "Russian": "Tormented Domination Focus",
+                "BorkBorkBork": "Turmented Dumeenaeshun Fucoos",
+                "English": "Tormented Domination Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "DominationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21309": {
+            "ModelID": 21309,
+            "Names": {
+                "German": "Qual-Erdfokus",
+                "Korean": "고통의 왕국 대지 포커스",
+                "French": "Focus de la terre tourmenté",
+                "Italian": "Focus Tormentato della Terra",
+                "Spanish": "Foco de tierra del Tormento",
+                "TraditionalChinese": "拷問者地魔法聚能器",
+                "Japanese": "トルメント アース フォーカス",
+                "Polish": "Udręczony Fokus Ziemi",
+                "Russian": "Tormented Earth Focus",
+                "BorkBorkBork": "Turmented Iaert Fucoos",
+                "English": "Tormented Earth Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21310": {
+            "ModelID": 21310,
+            "Names": {
+                "German": "Qual-Energiespeicherungsfokus",
+                "Korean": "고통의 왕국 에너지 포커스",
+                "French": "Focus de conservation d'énergie tourmenté",
+                "Italian": "Focus Tormentato della Riserva d'Energia",
+                "Spanish": "Foco de almacenamiento de energía del Tormento",
+                "TraditionalChinese": "拷問者能量儲存聚能器",
+                "Japanese": "トルメント ストレージ フォーカス",
+                "Polish": "Udręczony Fokus Zapasu Energii",
+                "Russian": "Tormented Energy Storage Focus",
+                "BorkBorkBork": "Turmented Inergy Sturaege-a Fucoos",
+                "English": "Tormented Energy Storage Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "EnergyStorage"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21301": {
+            "ModelID": 21301,
+            "Names": {
+                "German": "Qual-Schnellwirkungsfokus",
+                "Korean": "고통의 왕국 시전 포커스",
+                "French": "Focus d'incantation rapide tourmenté",
+                "Italian": "Focus Tormentato del Lancio Rapido",
+                "Spanish": "Foco de lanzamiento rápido del Tormento",
+                "TraditionalChinese": "拷問者快速施法聚能器",
+                "Japanese": "トルメント ファスト キャスト フォーカス",
+                "Polish": "Udręczony Fokus Szybkiego Rzucania Czarów",
+                "Russian": "Tormented Fast Casting Focus",
+                "BorkBorkBork": "Turmented Faest Caesteeng Fucoos",
+                "English": "Tormented Fast Casting Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "FastCasting"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21311": {
+            "ModelID": 21311,
+            "Names": {
+                "German": "Qual-Feuerfokus",
+                "Korean": "고통의 왕국 불 포커스",
+                "French": "Focus de feu tourmenté",
+                "Italian": "Focus Tormentato del Fuoco",
+                "Spanish": "Foco de fuego del Tormento",
+                "TraditionalChinese": "拷問者火魔法聚能器",
+                "Japanese": "トルメント ファイア フォーカス",
+                "Polish": "Udręczony Fokus Ognia",
+                "Russian": "Tormented Fire Focus",
+                "BorkBorkBork": "Turmented Fure-a Fucoos",
+                "English": "Tormented Fire Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21314": {
+            "ModelID": 21314,
+            "Names": {
+                "German": "Qual-Heilfokus",
+                "Korean": "고통의 왕국 치유 포커스",
+                "French": "Focus de guérison tourmenté",
+                "Italian": "Focus Tormentato Curativo",
+                "Spanish": "Foco de curación del Tormento",
+                "TraditionalChinese": "拷問者治癒聚能器",
+                "Japanese": "トルメント ヒーリング フォーカス",
+                "Polish": "Udręczony Fokus Uzdrawiania",
+                "Russian": "Tormented Healing Focus",
+                "BorkBorkBork": "Turmented Heaeleeng Fucoos",
+                "English": "Tormented Healing Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "HealingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21302": {
+            "ModelID": 21302,
+            "Names": {
+                "German": "Qual-Illusionsfokus",
+                "Korean": "고통의 왕국 환상 포커스",
+                "French": "Focus d'illusion tourmenté",
+                "Italian": "Focus Tormentato dell'Illusione",
+                "Spanish": "Foco de ilusión del Tormento",
+                "TraditionalChinese": "拷問者幻術聚能器",
+                "Japanese": "トルメント イリュージョン フォーカス",
+                "Polish": "Udręczony Fokus Iluzji",
+                "Russian": "Tormented Illusion Focus",
+                "BorkBorkBork": "Turmented Illooseeun Fucoos",
+                "English": "Tormented Illusion Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21303": {
+            "ModelID": 21303,
+            "Names": {
+                "German": "Qual-Inspirationsfokus",
+                "Korean": "고통의 왕국 영감 포커스",
+                "French": "Focus d'inspiration tourmenté",
+                "Italian": "Focus Tormentato dell'Ispirazione",
+                "Spanish": "Foco de inspiración del Tormento",
+                "TraditionalChinese": "拷問者靈感聚能器",
+                "Japanese": "トルメント インスピレーション フォーカス",
+                "Polish": "Udręczony Fokus Inspiracji",
+                "Russian": "Tormented Inspiration Focus",
+                "BorkBorkBork": "Turmented Inspuraeshun Fucoos",
+                "English": "Tormented Inspiration Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "InspirationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21315": {
+            "ModelID": 21315,
+            "Names": {
+                "German": "Qual-Schutzfokus",
+                "Korean": "고통의 왕국 보호 포커스",
+                "French": "Focus de protection tourmenté",
+                "Italian": "Focus Tormentato Protettivo",
+                "Spanish": "Foco de protección del Tormento",
+                "TraditionalChinese": "拷問者防護聚能器",
+                "Japanese": "トルメント プロテクション フォーカス",
+                "Polish": "Udręczony Fokus Ochrony",
+                "Russian": "Tormented Protection Focus",
+                "BorkBorkBork": "Turmented Prutecshun Fucoos",
+                "English": "Tormented Protection Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "ProtectionPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21319": {
+            "ModelID": 21319,
+            "Names": {
+                "German": "Qual-Wiederherstellungsfokus",
+                "Korean": "고통의 왕국 회복 포커스",
+                "French": "Focus de rétablissement tourmenté",
+                "Italian": "Focus Tormentato del Ripristino",
+                "Spanish": "Foco de restauración del Tormento",
+                "TraditionalChinese": "拷問者復原聚能器",
+                "Japanese": "トルメント レストレーション フォーカス",
+                "Polish": "Udręczony Fokus Odnowy",
+                "Russian": "Tormented Restoration Focus",
+                "BorkBorkBork": "Turmented Resturaeshun Fucoos",
+                "English": "Tormented Restoration Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "RestorationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21316": {
+            "ModelID": 21316,
+            "Names": {
+                "German": "Qual-Peinigungsfokus",
+                "Korean": "고통의 왕국 천벌 포커스",
+                "French": "Focus de châtiment tourmenté",
+                "Italian": "Focus Tormentato Punitivo",
+                "Spanish": "Foco de plegarias de ataque del Tormento",
+                "TraditionalChinese": "拷問者懲戒聚能器",
+                "Japanese": "トルメント ホーリー フォーカス",
+                "Polish": "Udręczony Fokus Modlitw Ofensywnych",
+                "Russian": "Tormented Smiting Focus",
+                "BorkBorkBork": "Turmented Smeeteeng Fucoos",
+                "English": "Tormented Smiting Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "SmitingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21307": {
+            "ModelID": 21307,
+            "Names": {
+                "German": "Qual-Seelensammlungsfokus",
+                "Korean": "고통의 왕국 영혼 포커스",
+                "French": "Focus de Moisson des Ames tourmenté",
+                "Italian": "Focus Tormentato della Sottrazione dell'Anima",
+                "Spanish": "Foco de cosecha de almas del Tormento",
+                "TraditionalChinese": "拷問者靈魂吸取聚能器",
+                "Japanese": "トルメント ソウル リーピング フォーカス",
+                "Polish": "Udręczony Fokus Wydzierania Dusz",
+                "Russian": "Tormented Soul Reaping Focus",
+                "BorkBorkBork": "Turmented Suool Reaepeeng Fucoos",
+                "English": "Tormented Soul Reaping Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "SoulReaping"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21318": {
+            "ModelID": 21318,
+            "Names": {
+                "German": "Qual-Herbeiruffokus",
+                "Korean": "고통의 왕국 생성 포커스",
+                "French": "Focus de l'Invocation tourmenté",
+                "Italian": "Focus Tormentato Sacrificale",
+                "Spanish": "Foco de engendramiento del Tormento",
+                "TraditionalChinese": "拷問者召喚聚能器",
+                "Japanese": "トルメント スポーン フォーカス",
+                "Polish": "Udręczony Fokus Przywoływania",
+                "Russian": "Tormented Spawning Focus",
+                "BorkBorkBork": "Turmented Spaevneeng Fucoos",
+                "English": "Tormented Spawning Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21312": {
+            "ModelID": 21312,
+            "Names": {
+                "German": "Qual-Wasserfokus",
+                "Korean": "고통의 왕국 물 포커스",
+                "French": "Focus d'eau tourmenté",
+                "Italian": "Focus Tormentato dell'Acqua",
+                "Spanish": "Foco de agua del Tormento",
+                "TraditionalChinese": "拷問者水魔法聚能器",
+                "Japanese": "トルメント ウォーター フォーカス",
+                "Polish": "Udręczony Fokus Wody",
+                "Russian": "Tormented Water Focus",
+                "BorkBorkBork": "Turmented Vaeter Fucoos",
+                "English": "Tormented Water Focus"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "WaterMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Focus",
+            "InventoryIcon": "Tormented_Focus.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Tormented_Focus.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "2085": {
             "ModelID": 2085,
             "Names": {
@@ -29123,6 +29845,37 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21286": {
+            "ModelID": 21286,
+            "Names": {
+                "German": "Qual-Schlägel",
+                "Korean": "고통의 왕국 몰",
+                "French": "Maillet tourmenté",
+                "Italian": "Maglio Tormentato",
+                "Spanish": "Maza del Tormento",
+                "TraditionalChinese": "拷問者巨鎚",
+                "Japanese": "トルメント モール",
+                "Polish": "Udręczony Młot",
+                "Russian": "Tormented Maul",
+                "BorkBorkBork": "Turmented Mool",
+                "English": "Tormented Maul"
+            },
+            "ItemType": "Hammer",
+            "DropInfo": "",
+            "Attributes": [
+                "HammerMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Maul",
+            "InventoryIcon": "Tormented_Maul.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/c1/Tormented_Maul.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "203": {
             "ModelID": 203,
             "Names": {
@@ -29869,16 +30622,32 @@
             "ItemType": "CC_Shards",
             "DropInfo": "",
             "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Spider_Web",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "CommonSalvage": {
+                "Pile of Glittering Dust": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Bolt of Silk": {
+                    "Amount": 1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 928,
+                    "MaterialName": "Bolt of Silk"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spider_Web_(Nightfall)",
+            "InventoryIcon": "Spider_Web_%28Nightfall%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/8/80/Spider_Web_%28Nightfall%29.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "1423": {
             "ModelID": 1423,
@@ -36431,6 +37200,657 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21329": {
+            "ModelID": 21329,
+            "Names": {
+                "German": "Qual-Luftzepter",
+                "Korean": "고통의 왕국 바람 지팡이",
+                "French": "Sceptre de l'air tourmenté",
+                "Italian": "Scettro Tormentato dell'Aria",
+                "Spanish": "Cetro de aire del Tormento",
+                "TraditionalChinese": "拷問者風魔法權杖",
+                "Japanese": "トルメント エア セプター",
+                "Polish": "Udręczone Berło Powietrza",
+                "Russian": "Tormented Air Scepter",
+                "BorkBorkBork": "Turmented Aeur Scepter",
+                "English": "Tormented Air Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21325": {
+            "ModelID": 21325,
+            "Names": {
+                "German": "Qual-Blutzepter",
+                "Korean": "고통의 왕국 피 지팡이",
+                "French": "Sceptre du Sang tourmenté",
+                "Italian": "Scettro Tormentato del Sangue",
+                "Spanish": "Cetro de sangre del Tormento",
+                "TraditionalChinese": "拷問者血魔法權杖",
+                "Japanese": "トルメント ブラッド セプター",
+                "Polish": "Udręczone Berło Krwi",
+                "Russian": "Tormented Blood Scepter",
+                "BorkBorkBork": "Turmented Bluud Scepter",
+                "English": "Tormented Blood Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21341": {
+            "ModelID": 21341,
+            "Names": {
+                "English": "Tormented Channeling Scepter",
+                "German": "Qual-Kanalisierungszepter",
+                "Korean": "고통의 왕국 증폭 지팡이",
+                "French": "Sceptre de canalisation tourmenté",
+                "Italian": "Scettro Tormentato dell'Incanalamento",
+                "Spanish": "Cetro de canalización del Tormento",
+                "TraditionalChinese": "拷問者導引權杖",
+                "Japanese": "トルメント チャネリング セプター",
+                "Polish": "Udręczone Berło Połączeń",
+                "Russian": "Tormented Channeling Scepter",
+                "BorkBorkBork": "Turmented Chunneleeng Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "ChannelingMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21338": {
+            "ModelID": 21338,
+            "Names": {
+                "German": "Qual-Zwiesprachezepter",
+                "Korean": "고통의 왕국 교감 지팡이",
+                "French": "Sceptre de communion tourmenté",
+                "Italian": "Scettro Tormentato del Raccoglimento",
+                "Spanish": "Cetro de comunión del Tormento",
+                "TraditionalChinese": "拷問者神諭權杖",
+                "Japanese": "トルメント コミューン セプター",
+                "Polish": "Udręczone Berło Zjednoczenia",
+                "Russian": "Tormented Communing Scepter",
+                "BorkBorkBork": "Turmented Cummooneeng Scepter",
+                "English": "Tormented Communing Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "Communing"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21326": {
+            "ModelID": 21326,
+            "Names": {
+                "German": "Qual-Fluchzepter",
+                "Korean": "고통의 왕국 저주 지팡이",
+                "French": "Sceptre des Malédictions tourmenté",
+                "Italian": "Scettro Tormentato delle Maledizioni",
+                "Spanish": "Cetro de maldición del Tormento",
+                "TraditionalChinese": "拷問者詛咒權杖",
+                "Japanese": "トルメント カース セプター",
+                "Polish": "Udręczone Berło Klątw",
+                "Russian": "Tormented Curses Scepter",
+                "BorkBorkBork": "Turmented Coorses Scepter",
+                "English": "Tormented Curses Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "Curses"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21327": {
+            "ModelID": 21327,
+            "Names": {
+                "German": "Qual-Todeszepter",
+                "Korean": "고통의 왕국 죽음 지팡이",
+                "French": "Sceptre de la mort tourmenté",
+                "Italian": "Scettro Tormentato della Morte",
+                "Spanish": "Cetro de muerte del Tormento",
+                "TraditionalChinese": "拷問者死亡魔法權杖",
+                "Japanese": "トルメント デス セプター",
+                "Polish": "Udręczone Berło Śmierci",
+                "Russian": "Tormented Death Scepter",
+                "BorkBorkBork": "Turmented Deaet Scepter",
+                "English": "Tormented Death Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "DeathMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21334": {
+            "ModelID": 21334,
+            "Names": {
+                "German": "Qual-Göttlichkeitszepter",
+                "Korean": "고통의 왕국 은총 지팡이",
+                "French": "Sceptre divin tourmenté",
+                "Italian": "Scettro Tormentato Divino",
+                "Spanish": "Cetro divino del Tormento",
+                "TraditionalChinese": "拷問者神恩權杖",
+                "Japanese": "トルメント ディヴァイン セプター",
+                "Polish": "Udręczone Berło łaski Bogów",
+                "Russian": "Tormented Divine Scepter",
+                "BorkBorkBork": "Turmented Deefeene-a Scepter",
+                "English": "Tormented Divine Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21321": {
+            "ModelID": 21321,
+            "Names": {
+                "German": "Qual-Beherrschungszepter",
+                "Korean": "고통의 왕국 지배 지팡이",
+                "French": "Sceptre de Domination tourmenté",
+                "Italian": "Scettro Tormentato del Dominio",
+                "Spanish": "Cetro de dominación del Tormento",
+                "TraditionalChinese": "拷問者支配權杖",
+                "Japanese": "トルメント ドミネーション セプター",
+                "Polish": "Udręczone Berło Dominacji",
+                "Russian": "Tormented Domination Scepter",
+                "BorkBorkBork": "Turmented Dumeenaeshun Scepter",
+                "English": "Tormented Domination Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "DominationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21330": {
+            "ModelID": 21330,
+            "Names": {
+                "German": "Qual-Erdzepter",
+                "Korean": "고통의 왕국 대지 지팡이",
+                "French": "Sceptre de la terre tourmenté",
+                "Italian": "Scettro Tormentato della Terra",
+                "Spanish": "Cetro de tierra del Tormento",
+                "TraditionalChinese": "拷問者地魔法權杖",
+                "Japanese": "トルメント アース セプター",
+                "Polish": "Udręczone Berło Ziemi",
+                "Russian": "Tormented Earth Scepter",
+                "BorkBorkBork": "Turmented Iaert Scepter",
+                "English": "Tormented Earth Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21331": {
+            "ModelID": 21331,
+            "Names": {
+                "German": "Qual-Energiespeicherungszepter",
+                "Korean": "고통의 왕국 에너지 지팡이",
+                "French": "Sceptre de conservation d'énergie tourmenté",
+                "Italian": "Scettro Tormentato della Riserva d'Energia",
+                "Spanish": "Cetro de almacenamiento de energía del Tormento",
+                "TraditionalChinese": "拷問者能量儲存權杖",
+                "Japanese": "トルメント ストレージ セプター",
+                "Polish": "Udręczone Berło Zapasu Energii",
+                "Russian": "Tormented Energy Storage Scepter",
+                "BorkBorkBork": "Turmented Inergy Sturaege-a Scepter",
+                "English": "Tormented Energy Storage Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "EnergyStorage"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21322": {
+            "ModelID": 21322,
+            "Names": {
+                "German": "Qual-Schnellwirkungszepter",
+                "Korean": "고통의 왕국 시전 지팡이",
+                "French": "Sceptre d'incantation rapide tourmenté",
+                "Italian": "Scettro Tormentato del Lancio Rapido",
+                "Spanish": "Cetro de lanzamiento rápido del Tormento",
+                "TraditionalChinese": "拷問者快速施法權杖",
+                "Japanese": "トルメント ファスト キャスト セプター",
+                "Polish": "Udręczone Berło Szybkiego Rzucania Czarów",
+                "Russian": "Tormented Fast Casting Scepter",
+                "BorkBorkBork": "Turmented Faest Caesteeng Scepter",
+                "English": "Tormented Fast Casting Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "FastCasting"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21332": {
+            "ModelID": 21332,
+            "Names": {
+                "German": "Qual-Feuerzepter",
+                "Korean": "고통의 왕국 불 지팡이",
+                "French": "Sceptre de feu tourmenté",
+                "Italian": "Scettro Tormentato del Fuoco",
+                "Spanish": "Cetro de fuego del Tormento",
+                "TraditionalChinese": "拷問者火魔法權杖",
+                "Japanese": "トルメント ファイア セプター",
+                "Polish": "Udręczone Berło Ognia",
+                "Russian": "Tormented Fire Scepter",
+                "BorkBorkBork": "Turmented Fure-a Scepter",
+                "English": "Tormented Fire Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21335": {
+            "ModelID": 21335,
+            "Names": {
+                "German": "Qual-Heilzepter",
+                "Korean": "고통의 왕국 치유 지팡이",
+                "French": "Sceptre de guérison tourmenté",
+                "Italian": "Scettro Tormentato Curativo",
+                "Spanish": "Cetro de curación del Tormento",
+                "TraditionalChinese": "拷問者治癒權杖",
+                "Japanese": "トルメント ヒーリング セプター",
+                "Polish": "Udręczone Berło Uzdrawiania",
+                "Russian": "Tormented Healing Scepter",
+                "BorkBorkBork": "Turmented Heaeleeng Scepter",
+                "English": "Tormented Healing Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "HealingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21323": {
+            "ModelID": 21323,
+            "Names": {
+                "German": "Qual-Illusionszepter",
+                "Korean": "고통의 왕국 환상 지팡이",
+                "French": "Sceptre d'Illusion tourmenté",
+                "Italian": "Scettro Tormentato dell'Illusione",
+                "Spanish": "Cetro de ilusión del Tormento",
+                "TraditionalChinese": "拷問者幻術權杖",
+                "Japanese": "トルメント イリュージョン セプター",
+                "Polish": "Udręczone Berło Iluzji",
+                "Russian": "Tormented Illusion Scepter",
+                "BorkBorkBork": "Turmented Illooseeun Scepter",
+                "English": "Tormented Illusion Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21324": {
+            "ModelID": 21324,
+            "Names": {
+                "German": "Qual-Inspirationszepter",
+                "Korean": "고통의 왕국 영감 지팡이",
+                "French": "Sceptre d'Inspiration tourmenté",
+                "Italian": "Scettro Tormentato dell'Ispirazione",
+                "Spanish": "Cetro de inspiración del Tormento",
+                "TraditionalChinese": "拷問者靈感權杖",
+                "Japanese": "トルメント インスピレーション セプター",
+                "Polish": "Udręczone Berło Inspiracji",
+                "Russian": "Tormented Inspiration Scepter",
+                "BorkBorkBork": "Turmented Inspuraeshun Scepter",
+                "English": "Tormented Inspiration Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "InspirationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21336": {
+            "ModelID": 21336,
+            "Names": {
+                "German": "Qual-Schutzzepter",
+                "Korean": "고통의 왕국 보호 지팡이",
+                "French": "Sceptre de protection tourmenté",
+                "Italian": "Scettro Tormentato Protettivo",
+                "Spanish": "Cetro de protección del Tormento",
+                "TraditionalChinese": "拷問者防護權杖",
+                "Japanese": "トルメント プロテクション セプター",
+                "Polish": "Udręczone Berło Ochrony",
+                "Russian": "Tormented Protection Scepter",
+                "BorkBorkBork": "Turmented Prutecshun Scepter",
+                "English": "Tormented Protection Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "ProtectionPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21340": {
+            "ModelID": 21340,
+            "Names": {
+                "German": "Qual-Wiederherstellungszepter",
+                "Korean": "고통의 왕국 회복 지팡이",
+                "French": "Sceptre de rétablissement tourmenté",
+                "Italian": "Scettro Tormentato del Ripristino",
+                "Spanish": "Cetro de restauración del Tormento",
+                "TraditionalChinese": "拷問者復原權杖",
+                "Japanese": "トルメント レストレーション セプター",
+                "Polish": "Udręczone Berło Odnowy",
+                "Russian": "Tormented Restoration Scepter",
+                "BorkBorkBork": "Turmented Resturaeshun Scepter",
+                "English": "Tormented Restoration Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "RestorationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21337": {
+            "ModelID": 21337,
+            "Names": {
+                "German": "Qual-Peinigungszepter",
+                "Korean": "고통의 왕국 천벌 지팡이",
+                "French": "Sceptre de châtiment tourmenté",
+                "Italian": "Scettro Tormentato Punitivo",
+                "Spanish": "Cetro de plegarias de ataque del Tormento",
+                "TraditionalChinese": "拷問者懲戒權杖",
+                "Japanese": "トルメント ホーリー セプター",
+                "Polish": "Udręczone Berło Modlitw Ofensywnych",
+                "Russian": "Tormented Smiting Scepter",
+                "BorkBorkBork": "Turmented Smeeteeng Scepter",
+                "English": "Tormented Smiting Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "SmitingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21328": {
+            "ModelID": 21328,
+            "Names": {
+                "German": "Qual-Seelensammlungszepter",
+                "Korean": "고통의 왕국 영혼 지팡이",
+                "French": "Sceptre de Moisson des Ames tourmenté",
+                "Italian": "Scettro Tormentato della Sottrazione dell'Anima",
+                "Spanish": "Cetro de cosecha de almas del Tormento",
+                "TraditionalChinese": "拷問者靈魂吸取權杖",
+                "Japanese": "トルメント ソウル リーピング セプター",
+                "Polish": "Udręczone Berło Wydzierania Dusz",
+                "Russian": "Tormented Soul Reaping Scepter",
+                "BorkBorkBork": "Turmented Suool Reaepeeng Scepter",
+                "English": "Tormented Soul Reaping Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "SoulReaping"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21339": {
+            "ModelID": 21339,
+            "Names": {
+                "German": "Qual-Herbeirufzepter",
+                "Korean": "고통의 왕국 생성 지팡이",
+                "French": "Sceptre de l'invocation tourmenté",
+                "Italian": "Scettro Tormentato Sacrificale",
+                "Spanish": "Cetro de engendramiento del Tormento",
+                "TraditionalChinese": "拷問者召喚權杖",
+                "Japanese": "トルメント スポーン セプター",
+                "Polish": "Udręczone Berło Przywoływania",
+                "Russian": "Tormented Spawning Scepter",
+                "BorkBorkBork": "Turmented Spaevneeng Scepter",
+                "English": "Tormented Spawning Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21333": {
+            "ModelID": 21333,
+            "Names": {
+                "German": "Qual-Wasserzepter",
+                "Korean": "고통의 왕국 물 지팡이",
+                "French": "Sceptre d'eau tourmenté",
+                "Italian": "Scettro Tormentato dell'Acqua",
+                "Spanish": "Cetro de agua del Tormento",
+                "TraditionalChinese": "拷問者水魔法權杖",
+                "Japanese": "トルメント ウォーター セプター",
+                "Polish": "Udręczone Berło Wody",
+                "Russian": "Tormented Water Scepter",
+                "BorkBorkBork": "Turmented Vaeter Scepter",
+                "English": "Tormented Water Scepter"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "WaterMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scepter",
+            "InventoryIcon": "Tormented_Scepter.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/d/d0/Tormented_Scepter.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "259": {
             "ModelID": 259,
             "Names": {
@@ -40953,6 +42373,130 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Tall_Shield",
             "InventoryIcon": "Tall_Shield.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/9/9c/Tall_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21292": {
+            "ModelID": 21292,
+            "Names": {
+                "German": "Qual-Schild des Befehls",
+                "Korean": "고통의 왕국 통솔 방패",
+                "French": "Bouclier de commandement tourmenté",
+                "Italian": "Scudo Tormentato del Comando",
+                "Spanish": "Escudo de mando del Tormento",
+                "TraditionalChinese": "拷問者命令盾牌",
+                "Japanese": "トルメント コマンド シールド",
+                "Polish": "Udręczona Tarcza Rozkazów",
+                "Russian": "Tormented Command Shield",
+                "BorkBorkBork": "Turmented Cummund Sheeeld",
+                "English": "Tormented Command Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Command"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Shield",
+            "InventoryIcon": "Tormented_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f7/Tormented_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21291": {
+            "ModelID": 21291,
+            "Names": {
+                "German": "Qual-Schild der Motivation",
+                "Korean": "고통의 왕국 격려 방패",
+                "French": "Bouclier de motivation tourmenté",
+                "Italian": "Scudo Tormentato della Motivazione",
+                "Spanish": "Escudo de motivación del Tormento",
+                "TraditionalChinese": "拷問者激勵盾牌",
+                "Japanese": "トルメント モチベーション シールド",
+                "Polish": "Udręczona Tarcza Motywacji",
+                "Russian": "Tormented Motivation Shield",
+                "BorkBorkBork": "Turmented Muteefaeshun Sheeeld",
+                "English": "Tormented Motivation Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Motivation"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Shield",
+            "InventoryIcon": "Tormented_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f7/Tormented_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21293": {
+            "ModelID": 21293,
+            "Names": {
+                "German": "Qual-Schild der Stärke",
+                "Korean": "고통의 왕국 강인함 방패",
+                "French": "Bouclier de force tourmenté",
+                "Italian": "Scudo Tormentato della Forza",
+                "Spanish": "Escudo de fuerza del Tormento",
+                "TraditionalChinese": "拷問者力量盾牌",
+                "Japanese": "トルメント ストレングス シールド",
+                "Polish": "Udręczona Tarcza Siły",
+                "Russian": "Tormented Strength Shield",
+                "BorkBorkBork": "Turmented Strengt Sheeeld",
+                "English": "Tormented Strength Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Strength"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Shield",
+            "InventoryIcon": "Tormented_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f7/Tormented_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21294": {
+            "ModelID": 21294,
+            "Names": {
+                "German": "Qual-Taktik-Schild",
+                "Korean": "고통의 왕국 전술 방패",
+                "French": "Bouclier de tactique tourmenté",
+                "Italian": "Scudo Tormentato della Tattica",
+                "Spanish": "Escudo de táctica del Tormento",
+                "TraditionalChinese": "拷問者戰術盾牌",
+                "Japanese": "トルメント タクティクス シールド",
+                "Polish": "Udręczona Tarcza Taktyki",
+                "Russian": "Tormented Tactics Shield",
+                "BorkBorkBork": "Turmented Taecteecs Sheeeld",
+                "English": "Tormented Tactics Shield"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Shield",
+            "InventoryIcon": "Tormented_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/f/f7/Tormented_Shield.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -51025,6 +52569,657 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21350": {
+            "ModelID": 21350,
+            "Names": {
+                "English": "Tormented Air Staff",
+                "German": "Qual-Luftstab",
+                "Korean": "고통의 왕국 바람 스태프",
+                "French": "Bâton de l'air tourmenté",
+                "Italian": "Bastone Tormentato dell'Aria",
+                "Spanish": "Báculo de aire del Tormento",
+                "TraditionalChinese": "拷問者風魔法法杖",
+                "Japanese": "トルメント エア スタッフ",
+                "Polish": "Udręczony Kostur Powietrza",
+                "Russian": "Tormented Air Staff",
+                "BorkBorkBork": "Turmented Aeur Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21346": {
+            "ModelID": 21346,
+            "Names": {
+                "English": "Tormented Blood Staff",
+                "German": "Qual-Blutstab",
+                "Korean": "고통의 왕국 피 스태프",
+                "French": "Bâton de sang tourmenté",
+                "Italian": "Bastone Tormentato del Sangue",
+                "Spanish": "Báculo de sangre del Tormento",
+                "TraditionalChinese": "拷問者血魔法法杖",
+                "Japanese": "トルメント ブラッド スタッフ",
+                "Polish": "Udręczony Kostur Krwi",
+                "Russian": "Tormented Blood Staff",
+                "BorkBorkBork": "Turmented Bluud Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "BloodMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21362": {
+            "ModelID": 21362,
+            "Names": {
+                "English": "Tormented Channeling Staff",
+                "German": "Qual-Kanalisierungsstab",
+                "Korean": "고통의 왕국 증폭 스태프",
+                "French": "Bâton de canalisation tourmenté",
+                "Italian": "Bastone Tormentato Incanalante",
+                "Spanish": "Báculo de canalización del Tormento",
+                "TraditionalChinese": "拷問者導引法杖",
+                "Japanese": "トルメント チャネリング スタッフ",
+                "Polish": "Udręczony Kostur Połączeń",
+                "Russian": "Tormented Channeling Staff",
+                "BorkBorkBork": "Turmented Chunneleeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "ChannelingMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21359": {
+            "ModelID": 21359,
+            "Names": {
+                "English": "Tormented Communing Staff",
+                "German": "Qual-Zwiesprachestab",
+                "Korean": "고통의 왕국 교감 스태프",
+                "French": "Bâton de communion tourmenté",
+                "Italian": "Bastone Tormentato del Raccoglimento",
+                "Spanish": "Báculo de comunión del Tormento",
+                "TraditionalChinese": "拷問者神諭法杖",
+                "Japanese": "トルメント コミューン スタッフ",
+                "Polish": "Udręczony Kostur Zjednoczenia",
+                "Russian": "Tormented Communing Staff",
+                "BorkBorkBork": "Turmented Cummooneeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "Communing"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21347": {
+            "ModelID": 21347,
+            "Names": {
+                "English": "Tormented Curses Staff",
+                "German": "Qual-Fluchstab",
+                "Korean": "고통의 왕국 저주 스태프",
+                "French": "Bâton des Malédictions tourmenté",
+                "Italian": "Bastone Tormentato delle Maledizioni",
+                "Spanish": "Báculo de maldición del Tormento",
+                "TraditionalChinese": "拷問者詛咒法杖",
+                "Japanese": "トルメント カース スタッフ",
+                "Polish": "Udręczony Kostur Klątw",
+                "Russian": "Tormented Curses Staff",
+                "BorkBorkBork": "Turmented Coorses Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "Curses"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21348": {
+            "ModelID": 21348,
+            "Names": {
+                "English": "Tormented Death Staff",
+                "German": "Qual-Todesstab",
+                "Korean": "고통의 왕국 죽음 스태프",
+                "French": "Bâton de la mort tourmenté",
+                "Italian": "Bastone Tormentato della Morte",
+                "Spanish": "Báculo de muerte del Tormento",
+                "TraditionalChinese": "拷問者死亡魔法法杖",
+                "Japanese": "トルメント デス スタッフ",
+                "Polish": "Udręczony Kostur Śmierci",
+                "Russian": "Tormented Death Staff",
+                "BorkBorkBork": "Turmented Deaet Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DeathMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21355": {
+            "ModelID": 21355,
+            "Names": {
+                "English": "Tormented Divine Staff",
+                "German": "Qual-Göttlichkeitsstab",
+                "Korean": "고통의 왕국 은총 스태프",
+                "French": "Bâton divin tourmenté",
+                "Italian": "Bastone Tormentato Divino",
+                "Spanish": "Báculo divino del Tormento",
+                "TraditionalChinese": "拷問者神恩法杖",
+                "Japanese": "トルメント ディヴァイン スタッフ",
+                "Polish": "Udręczony Kostur Łaski Bogów",
+                "Russian": "Tormented Divine Staff",
+                "BorkBorkBork": "Turmented Deefeene-a Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DivineFavor"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21342": {
+            "ModelID": 21342,
+            "Names": {
+                "English": "Tormented Domination Staff",
+                "German": "Qual-Beherrschungsstab",
+                "Korean": "고통의 왕국 지배 스태프",
+                "French": "Bâton de domination tourmenté",
+                "Italian": "Bastone Tormentato del Dominio",
+                "Spanish": "Báculo de dominación del Tormento",
+                "TraditionalChinese": "拷問者支配法杖",
+                "Japanese": "トルメント ドミネーション スタッフ",
+                "Polish": "Udręczony Kostur Dominacji",
+                "Russian": "Tormented Domination Staff",
+                "BorkBorkBork": "Turmented Dumeenaeshun Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "DominationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21351": {
+            "ModelID": 21351,
+            "Names": {
+                "English": "Tormented Earth Staff",
+                "German": "Qual-Erdstab",
+                "Korean": "고통의 왕국 대지 스태프",
+                "French": "Bâton de la Terre tourmenté",
+                "Italian": "Bastone Tormentato della Terra",
+                "Spanish": "Báculo de tierra del Tormento",
+                "TraditionalChinese": "拷問者地魔法法杖",
+                "Japanese": "トルメント アース スタッフ",
+                "Polish": "Udręczony Kostur Ziemi",
+                "Russian": "Tormented Earth Staff",
+                "BorkBorkBork": "Turmented Iaert Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EarthMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21352": {
+            "ModelID": 21352,
+            "Names": {
+                "English": "Tormented Energy Storage Staff",
+                "German": "Qual-Energiespeicherungsstab",
+                "Korean": "고통의 왕국 에너지 스태프",
+                "French": "Bâton de conservation d'énergie tourmenté",
+                "Italian": "Bastone Tormentato della Riserva d'Energia",
+                "Spanish": "Báculo de almacenamiento de energía del Tormento",
+                "TraditionalChinese": "拷問者能量儲存法杖",
+                "Japanese": "トルメント ストレージ スタッフ",
+                "Polish": "Udręczony Kostur Zapasu Energii",
+                "Russian": "Tormented Energy Storage Staff",
+                "BorkBorkBork": "Turmented Inergy Sturaege-a Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "EnergyStorage"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21343": {
+            "ModelID": 21343,
+            "Names": {
+                "English": "Tormented Fast Casting Staff",
+                "German": "Qual-Schnellwirkungsstab",
+                "Korean": "고통의 왕국 시전 스태프",
+                "French": "Bâton d'incantation rapide tourmenté",
+                "Italian": "Bastone Tormentato del Lancio Rapido",
+                "Spanish": "Báculo de lanzamiento rápido del Tormento",
+                "TraditionalChinese": "拷問者快速施法法杖",
+                "Japanese": "トルメント ファスト キャスト スタッフ",
+                "Polish": "Udręczony Kostur Szybkiego Rzucania Czarów",
+                "Russian": "Tormented Fast Casting Staff",
+                "BorkBorkBork": "Turmented Faest Caesteeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "FastCasting"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21353": {
+            "ModelID": 21353,
+            "Names": {
+                "English": "Tormented Fire Staff",
+                "German": "Qual-Feuerstab",
+                "Korean": "고통의 왕국 불 스태프",
+                "French": "Bâton de feu tourmenté",
+                "Italian": "Bastone Tormentato del Fuoco",
+                "Spanish": "Báculo de fuego del Tormento",
+                "TraditionalChinese": "拷問者火魔法法杖",
+                "Japanese": "トルメント ファイア スタッフ",
+                "Polish": "Udręczony Kostur Ognia",
+                "Russian": "Tormented Fire Staff",
+                "BorkBorkBork": "Turmented Fure-a Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "FireMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21356": {
+            "ModelID": 21356,
+            "Names": {
+                "English": "Tormented Healing Staff",
+                "German": "Qual-Heilstab",
+                "Korean": "고통의 왕국 치유 스태프",
+                "French": "Bâton de guérison tourmenté",
+                "Italian": "Bastone Tormentato Curativo",
+                "Spanish": "Báculo de curación del Tormento",
+                "TraditionalChinese": "拷問者治癒法杖",
+                "Japanese": "トルメント ヒーリング スタッフ",
+                "Polish": "Udręczony Kostur Uzdrawiania",
+                "Russian": "Tormented Healing Staff",
+                "BorkBorkBork": "Turmented Heaeleeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "HealingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21344": {
+            "ModelID": 21344,
+            "Names": {
+                "English": "Tormented Illusion Staff",
+                "German": "Qual-Illusionsstab",
+                "Korean": "고통의 왕국 환상 스태프",
+                "French": "Bâton d'Illusion tourmenté",
+                "Italian": "Bastone Tormentato dell'Illusione",
+                "Spanish": "Báculo de ilusión del Tormento",
+                "TraditionalChinese": "拷問者幻術法杖",
+                "Japanese": "トルメント イリュージョン スタッフ",
+                "Polish": "Udręczony Kostur Iluzji",
+                "Russian": "Tormented Illusion Staff",
+                "BorkBorkBork": "Turmented Illooseeun Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "IllusionMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21345": {
+            "ModelID": 21345,
+            "Names": {
+                "English": "Tormented Inspiration Staff",
+                "German": "Qual-Inspirationsstab",
+                "Korean": "고통의 왕국 영감 스태프",
+                "French": "Bâton d'Inspiration tourmenté",
+                "Italian": "Bastone Tormentato dell'Ispirazione",
+                "Spanish": "Báculo de inspiración del Tormento",
+                "TraditionalChinese": "拷問者靈感法杖",
+                "Japanese": "トルメント インスピレーション スタッフ",
+                "Polish": "Udręczony Kostur Inspiracji",
+                "Russian": "Tormented Inspiration Staff",
+                "BorkBorkBork": "Turmented Inspuraeshun Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "InspirationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21357": {
+            "ModelID": 21357,
+            "Names": {
+                "English": "Tormented Protection Staff",
+                "German": "Qual-Schutzstab",
+                "Korean": "고통의 왕국 보호 스태프",
+                "French": "Bâton de protection tourmenté",
+                "Italian": "Bastone Tormentato Protettivo",
+                "Spanish": "Báculo de protección del Tormento",
+                "TraditionalChinese": "拷問者防護法杖",
+                "Japanese": "トルメント プロテクション スタッフ",
+                "Polish": "Udręczony Kostur Ochrony",
+                "Russian": "Tormented Protection Staff",
+                "BorkBorkBork": "Turmented Prutecshun Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "ProtectionPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21361": {
+            "ModelID": 21361,
+            "Names": {
+                "English": "Tormented Restoration Staff",
+                "German": "Qual-Wiederherstellungsstab",
+                "Korean": "고통의 왕국 회복 스태프",
+                "French": "Bâton de rétablissement tourmenté",
+                "Italian": "Bastone Tormentato del Ripristino",
+                "Spanish": "Báculo de restauración del Tormento",
+                "TraditionalChinese": "拷問者復原法杖",
+                "Japanese": "トルメント レストレーション スタッフ",
+                "Polish": "Udręczony Kostur Odnowy",
+                "Russian": "Tormented Restoration Staff",
+                "BorkBorkBork": "Turmented Resturaeshun Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "RestorationMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21358": {
+            "ModelID": 21358,
+            "Names": {
+                "English": "Tormented Smiting Staff",
+                "German": "Qual-Peinigungsstab",
+                "Korean": "고통의 왕국 천벌 스태프",
+                "French": "Bâton de châtiment tourmenté",
+                "Italian": "Bastone Tormentato Punitivo",
+                "Spanish": "Báculo de plegarias de ataque del Tormento",
+                "TraditionalChinese": "拷問者懲戒法杖",
+                "Japanese": "トルメント ホーリー スタッフ",
+                "Polish": "Udręczony Kostur Modlitw Ofensywnych",
+                "Russian": "Tormented Smiting Staff",
+                "BorkBorkBork": "Turmented Smeeteeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SmitingPrayers"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21349": {
+            "ModelID": 21349,
+            "Names": {
+                "English": "Tormented Soul Reaping Staff",
+                "German": "Qual-Seelensammlungsstab",
+                "Korean": "고통의 왕국 영혼 스태프",
+                "French": "Bâton de Moisson des Ames tourmenté",
+                "Italian": "Bastone Tormentato della Sottrazione dell'Anima",
+                "Spanish": "Báculo de cosecha de almas del Tormento",
+                "TraditionalChinese": "拷問者靈魂吸取法杖",
+                "Japanese": "トルメント ソウル リーピング スタッフ",
+                "Polish": "Udręczony Kostur Wydzierania Dusz",
+                "Russian": "Tormented Soul Reaping Staff",
+                "BorkBorkBork": "Turmented Suool Reaepeeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SoulReaping"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21360": {
+            "ModelID": 21360,
+            "Names": {
+                "English": "Tormented Spawning Staff",
+                "German": "Qual-Herbeirufstab",
+                "Korean": "고통의 왕국 생성 스태프",
+                "French": "Bâton de l'Invocation tourmenté",
+                "Italian": "Bastone Tormentato Sacrificale",
+                "Spanish": "Báculo de engendramiento del Tormento",
+                "TraditionalChinese": "拷問者召喚法杖",
+                "Japanese": "トルメント スポーン スタッフ",
+                "Polish": "Udręczony Kostur Przywoływania",
+                "Russian": "Tormented Spawning Staff",
+                "BorkBorkBork": "Turmented Spaevneeng Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21354": {
+            "ModelID": 21354,
+            "Names": {
+                "English": "Tormented Water Staff",
+                "German": "Qual-Wasserstab",
+                "Korean": "고통의 왕국 물 스태프",
+                "French": "Bâton d'eau tourmenté",
+                "Italian": "Bastone Tormentato dell'Acqua",
+                "Spanish": "Báculo de agua del Tormento",
+                "TraditionalChinese": "拷問者水魔法法杖",
+                "Japanese": "トルメント ウォーター スタッフ",
+                "Polish": "Udręczony Kostur Wody",
+                "Russian": "Tormented Water Staff",
+                "BorkBorkBork": "Turmented Vaeter Staeffff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "WaterMagic"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Staff",
+            "InventoryIcon": "Tormented_Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/7/7b/Tormented_Staff.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "30227": {
             "ModelID": 30227,
             "Names": {
@@ -55052,6 +57247,37 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21287": {
+            "ModelID": 21287,
+            "Names": {
+                "German": "Qual-Schwert",
+                "Korean": "고통의 왕국 검",
+                "French": "Epée tourmentée",
+                "Italian": "Spada Tormentata",
+                "Spanish": "Espada del Tormento",
+                "TraditionalChinese": "拷問者之劍",
+                "Japanese": "トルメント ソード",
+                "Polish": "Udręczony Miecz",
+                "Russian": "Tormented Sword",
+                "BorkBorkBork": "Turmented Svurd",
+                "English": "Tormented Sword"
+            },
+            "ItemType": "Sword",
+            "DropInfo": "",
+            "Attributes": [
+                "Swordsmanship"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Sword",
+            "InventoryIcon": "Tormented_Sword.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/bf/Tormented_Sword.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "415": {
             "ModelID": 415,
             "Names": {
@@ -58556,6 +60782,37 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Thunderfist's_Brass_Knuckles",
             "InventoryIcon": "Thunderfist%27s_Brass_Knuckles.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Thunderfist%27s_Brass_Knuckles.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21288": {
+            "ModelID": 21288,
+            "Names": {
+                "German": "Qual-Dolche",
+                "Korean": "고통의 왕국 단검",
+                "French": "Dagues tourmentées",
+                "Italian": "Pugnali Tormenti",
+                "Spanish": "Dagas del Tormento",
+                "TraditionalChinese": "拷問者匕首",
+                "Japanese": "トルメント ダガー",
+                "Polish": "Udręczone Sztylety",
+                "Russian": "Tormented Daggers",
+                "BorkBorkBork": "Turmented Daeggers",
+                "English": "Tormented Daggers"
+            },
+            "ItemType": "Daggers",
+            "DropInfo": "",
+            "Attributes": [
+                "DaggerMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Daggers",
+            "InventoryIcon": "Tormented_Daggers.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Tormented_Daggers.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
@@ -69411,6 +71668,37 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "21289": {
+            "ModelID": 21289,
+            "Names": {
+                "German": "Qual-Sense",
+                "Korean": "고통의 왕국 사이드",
+                "French": "Faux tourmentée",
+                "Italian": "Falce Tormentata",
+                "Spanish": "Guadaña del Tormento",
+                "TraditionalChinese": "拷問者鐮刀",
+                "Japanese": "トルメント サイズ",
+                "Polish": "Udręczona Kosa",
+                "Russian": "Tormented Scythe",
+                "BorkBorkBork": "Turmented Scyzee",
+                "English": "Tormented Scythe"
+            },
+            "ItemType": "Scythe",
+            "DropInfo": "",
+            "Attributes": [
+                "ScytheMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Scythe",
+            "InventoryIcon": "Tormented_Scythe.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/5/5b/Tormented_Scythe.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "15877": {
             "ModelID": 15877,
             "Names": {
@@ -70795,6 +73083,37 @@
             "WikiURL": "https://wiki.guildwars.com/wiki/Suntouched_Spear",
             "InventoryIcon": "Suntouched_Spear.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/e/e6/Suntouched_Spear.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "21290": {
+            "ModelID": 21290,
+            "Names": {
+                "German": "Qual-Speer",
+                "Korean": "고통의 왕국 창",
+                "French": "Javelot tourmenté",
+                "Italian": "Lancia Tormentata",
+                "Spanish": "Lanza del Tormento",
+                "TraditionalChinese": "拷問者之矛",
+                "Japanese": "トルメント スピア",
+                "Polish": "Udręczona Włócznia",
+                "Russian": "Tormented Spear",
+                "BorkBorkBork": "Turmented Speaer",
+                "English": "Tormented Spear"
+            },
+            "ItemType": "Spear",
+            "DropInfo": "",
+            "Attributes": [
+                "SpearMastery"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Tormented_Spear",
+            "InventoryIcon": "Tormented_Spear.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/2/21/Tormented_Spear.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
