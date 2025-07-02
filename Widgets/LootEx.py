@@ -112,9 +112,7 @@ def main():
     
     if not settings.current.profile:
         settings.current.SetProfile(settings.current.character_profiles[current_character])
-        return
-
-    loot_handler.CheckExisingLoot()        
+        return    
     
     if messaging.HandleMessages():
         return
@@ -157,7 +155,12 @@ def main():
         return
 
     data_collector.instance.run_v2()  
-    inventory_handler.Run()                           
+    inventory_handler.Run()    
+
+    if not settings.current.profile or not settings.current.automatic_inventory_handling:
+        return
+    
+    loot_handler.CheckExisingLoot()                          
                         
 
 __all__ = ['main', 'configure']

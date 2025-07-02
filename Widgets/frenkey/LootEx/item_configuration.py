@@ -133,12 +133,13 @@ class ItemConfiguration:
                 has_suffix = condition.suffix_mod is None or any(mod.identifier == condition.suffix_mod for mod in item.mods)
                 has_inherent = condition.inherent_mod is None or any(mod.identifier == condition.inherent_mod for mod in item.mods)
                 
-                if not (has_prefix and has_suffix and has_inherent):
+                if (not has_prefix or not has_suffix or not has_inherent):
                     continue
                 
                 if condition.old_school_only and item.is_inscribable:
                     continue
-                
+
+                ## TODO: Fix the requirement check as attribute is wrong
                 if condition.requirements:
                     if not condition.requirements.get(item.attribute, None):
                         continue
@@ -147,16 +148,25 @@ class ItemConfiguration:
                     if requirement.min > item.requirements or requirement.max < item.requirements:
                         continue
                 
-                if condition.damage_range and (condition.damage_range.min > item.damage[0] or condition.damage_range.max < item.damage[1]):
-                    continue
+                if item.item_type is ItemType.Shield:
+                    if condition.damage_range and (condition.damage_range.min > item.shield_armor[0] or condition.damage_range.max < item.shield_armor[1]):
+                        continue
+                    
+                elif item.item_type is ItemType.Offhand:
+                    if condition.damage_range and (condition.damage_range.min > item.damage[0] or condition.damage_range.max < item.damage[1]):
+                        continue
+                    
+                else:                
+                    if condition.damage_range and (condition.damage_range.min > item.damage[0] or condition.damage_range.max < item.damage[1]):
+                        continue
                 
-                if item.rarity not in condition.rarities or not condition.rarities[item.rarity]:
-                    continue
+                # if item.rarity not in condition.rarities or not condition.rarities[item.rarity]:
+                #     continue
                 
                 return condition            
             else:
                 if condition.action == ItemAction.STASH:
-                    if item.quantity <= condition.keep_in_inventory:                        
+                    if item.quantity <= condition.keep_in_inventory:                     
                         continue
                 
                 return condition

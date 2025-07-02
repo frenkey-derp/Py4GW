@@ -29,18 +29,6 @@ class LootHandler:
         if settings.current.profile is None:
             return
         
-        # for dye, pickup in settings.current.profile.dyes.items():
-        #     if pickup:
-        #         self.lootconfig.AddToDyeWhitelist(dye)    
-        #     else:
-        #         self.lootconfig.AddToDyeBlacklist(dye)
-                
-        # self.lootconfig.loot_blues = True
-        # self.lootconfig.loot_gold_coins = True
-        # self.lootconfig.loot_golds = True
-        # self.lootconfig.loot_greens = True
-        # self.lootconfig.loot_purples = True
-        # self.lootconfig.loot_whites = True
         pass
     
     def LootingRoutineActive(self):
@@ -92,6 +80,8 @@ class LootHandler:
         if cached_item.model_id == ModelID.Vial_Of_Dye:
             if cached_item.IsVial_Of_DyeToKeep():
                 return True
+            else:
+                return False
         
         if cached_item.config:
             action = cached_item.config.get_action(cached_item)

@@ -19001,16 +19001,38 @@
             "Attributes": [
                 "Curses"
             ],
-            "CommonSalvage": {},
+            "CommonSalvage": {
+                "Chitin Fragment": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 954,
+                    "MaterialName": "Chitin Fragment"
+                },
+                "Granite Slab": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
             "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Icon",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "WikiURL": "https://wiki.guildwars.com/wiki/Accursed_Icon_(diamond)",
+            "InventoryIcon": "Accursed_Icon_%28diamond%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/9/9e/Accursed_Icon_%28diamond%29.png",
             "NickIndex": null,
             "Profession": "Necromancer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "165": {
             "ModelID": 165,
@@ -24327,6 +24349,59 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "194": {
+            "ModelID": 194,
+            "Names": {
+                "English": "Healing Ankh",
+                "German": "Heil-Ankh",
+                "Korean": "치유의 앙크 십자가",
+                "French": "Ankh de guérison",
+                "Italian": "Ankh Curativo",
+                "Spanish": "Ankh de curación",
+                "TraditionalChinese": "癒合十字架",
+                "Japanese": "ヒーリング アンク",
+                "Polish": "Uzdrawiający Ankh",
+                "Russian": "Healing Ankh",
+                "BorkBorkBork": "Heaeleeng Unkh"
+            },
+            "ItemType": "Offhand",
+            "DropInfo": "",
+            "Attributes": [
+                "HealingPrayers"
+            ],
+            "CommonSalvage": {
+                "Chitin Fragment": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 954,
+                    "MaterialName": "Chitin Fragment"
+                },
+                "Granite Slab": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 955,
+                    "MaterialName": "Granite Slab"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Healing_Ankh",
+            "InventoryIcon": "Healing_Ankh.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/ed/Healing_Ankh.png",
+            "NickIndex": null,
+            "Profession": "Monk",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "572": {
             "ModelID": 572,
             "Names": {
@@ -24933,16 +25008,39 @@
             "Attributes": [
                 "IllusionMagic"
             ],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chakram",
-            "InventoryIcon": null,
-            "InventoryIconURL": null,
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Jeweled_Chakram_(metal)",
+            "InventoryIcon": "Jeweled_Chakram_%28metal%29.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e3/Jeweled_Chakram_%28metal%29.png",
             "NickIndex": null,
             "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "153": {
             "ModelID": 153,
@@ -29605,6 +29703,45 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1198": {
+            "ModelID": 1198,
+            "Names": {
+                "English": "Spiked Club",
+                "German": "Stachelkeule",
+                "Korean": "쇠못박힌 몽둥이",
+                "French": "Gourdin à pic",
+                "Italian": "Mazza Appuntita",
+                "Spanish": "Bastón con pinchos",
+                "TraditionalChinese": "棘刺之棒",
+                "Japanese": "スパイク クラブ",
+                "Polish": "Kolczasta Maczuga",
+                "Russian": "Spiked Club",
+                "BorkBorkBork": "Speeked Cloob"
+            },
+            "ItemType": "Hammer",
+            "DropInfo": "",
+            "Attributes": [
+                "HammerMastery"
+            ],
+            "CommonSalvage": {
+                "Wood Plank": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 946,
+                    "MaterialName": "Wood Plank"
+                }
+            },
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spiked_Club",
+            "InventoryIcon": "Spiked_Club.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/b/b4/Spiked_Club.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "1775": {
             "ModelID": 1775,
             "Names": {
@@ -30710,6 +30847,60 @@
         }
     },
     "Wand": {
+        "267": {
+            "ModelID": 267,
+            "Names": {
+                "English": "Air Wand",
+                "German": "Luft-Zauberstab",
+                "Korean": "바람의 지팡이",
+                "French": "Baguette d'air",
+                "Italian": "Bacchetta dell'Aria",
+                "Spanish": "Varita de aire",
+                "TraditionalChinese": "風魔杖",
+                "Japanese": "エアー ワンド",
+                "Polish": "Powietrzna Różdżka",
+                "Russian": "Air Wand",
+                "BorkBorkBork": "Aeur Vund"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "AirMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Air_Wand",
+            "InventoryIcon": "Air_Wand.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/4/4f/Air_Wand.png",
+            "NickIndex": null,
+            "Profession": "Elementalist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "269": {
             "ModelID": 269,
             "Names": {
@@ -42287,6 +42478,53 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1452": {
+            "ModelID": 1452,
+            "Names": {
+                "English": "Sun and Moon Shield",
+                "German": "Sonne-Mond-Schild",
+                "Korean": "초승달 방패",
+                "French": "Bouclier lunisolaire",
+                "Italian": "Scudo Sole e Luna",
+                "Spanish": "Escudo del sol y la luna",
+                "TraditionalChinese": "日月盾",
+                "Japanese": "サン アンド ムーン シールド",
+                "Polish": "Tarcza Słońca I Księżyca",
+                "Russian": "Sun and Moon Shield",
+                "BorkBorkBork": "Soon und Muun Sheeeld"
+            },
+            "ItemType": "Shield",
+            "DropInfo": "",
+            "Attributes": [
+                "Tactics"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Sun_and_Moon_Shield",
+            "InventoryIcon": "Sun_and_Moon_Shield.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/e/e4/Sun_and_Moon_Shield.png",
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "343": {
             "ModelID": 343,
             "Names": {
@@ -52089,7 +52327,9 @@
                 "AirMagic",
                 "FireMagic",
                 "IllusionMagic",
-                "Communing"
+                "Communing",
+                "SpawningPower",
+                "DivineFavor"
             ],
             "CommonSalvage": {
                 "Wood Plank": {
@@ -54188,6 +54428,35 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "19842": {
+            "ModelID": 19842,
+            "Names": {
+                "English": "Obsidian Footwear",
+                "German": "Obsidian-Schuhwerk",
+                "Korean": "옵시디언 부츠",
+                "French": "Chausses d'obsidienne",
+                "Italian": "Calzature d'Ossidiana",
+                "Spanish": "Calzado de obsidiana",
+                "TraditionalChinese": "黑曜石長靴",
+                "Japanese": "オブシディアン シューズ",
+                "Polish": "Obsydianowe obuwie",
+                "Russian": "Obsidian Footwear",
+                "BorkBorkBork": "Oobseedeeun Fuutveaer"
+            },
+            "ItemType": "Boots",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "19867": {
             "ModelID": 19867,
@@ -61214,6 +61483,64 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "19843": {
+            "ModelID": 19843,
+            "Names": {
+                "English": "Obsidian Attire",
+                "German": "Obsidian-Kleidung",
+                "Korean": "옵시디언 재킷",
+                "French": "Tenue d'obsidienne",
+                "Italian": "Abbigliamento d'Ossidiana",
+                "Spanish": "Atuendo de obsidiana",
+                "TraditionalChinese": "黑曜石禮服",
+                "Japanese": "オブシディアン ウェア",
+                "Polish": "Obsydianowe odzienie",
+                "Russian": "Obsidian Attire",
+                "BorkBorkBork": "Oobseedeeun Aetture-a"
+            },
+            "ItemType": "Chestpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "17839": {
+            "ModelID": 17839,
+            "Names": {
+                "English": "Obsidian Raiment",
+                "German": "Obsidiangewand",
+                "Korean": "옵시디언 튜닉",
+                "French": "Vêtements d'obsidienne",
+                "Italian": "Veste d'Ossidiana",
+                "Spanish": "Ropaje de obsidiana",
+                "TraditionalChinese": "黑曜石衣飾",
+                "Japanese": "オブシディアン レイメント",
+                "Polish": "Obsydianowe szaty",
+                "Russian": "Obsidian Raiment",
+                "BorkBorkBork": "Oobseedeeun Raeeement"
+            },
+            "ItemType": "Chestpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Paragon",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "19960": {
             "ModelID": 19960,
             "Names": {
@@ -61300,6 +61627,35 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "19924": {
+            "ModelID": 19924,
+            "Names": {
+                "English": "Obsidian Vest",
+                "German": "Obsidian-Weste",
+                "Korean": "옵시디언 베스트",
+                "French": "Gilet d'obsidienne",
+                "Italian": "Veste d'Ossidiana",
+                "Spanish": "Chaleco de obsidiana",
+                "TraditionalChinese": "黑曜石皮甲",
+                "Japanese": "オブシディアン ベスト",
+                "Polish": "Obsydianowy kaftan",
+                "Russian": "Obsidian Vest",
+                "BorkBorkBork": "Oobseedeeun Fest"
+            },
+            "ItemType": "Chestpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "16171": {
             "ModelID": 16171,
@@ -73744,6 +74100,35 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "19845": {
+            "ModelID": 19845,
+            "Names": {
+                "English": "Obsidian Hose",
+                "German": "Obsidian-Beinkleider",
+                "Korean": "옵시디언 타이츠",
+                "French": "Collants d'obsidienne",
+                "Italian": "Calzamaglia d'Ossidiana",
+                "Spanish": "Calza de obsidiana",
+                "TraditionalChinese": "黑曜石緊身褲",
+                "Japanese": "オブシディアン ホーズ",
+                "Polish": "Obsydianowe spodnie",
+                "Russian": "Obsidian Hose",
+                "BorkBorkBork": "Oobseedeeun Huse-a"
+            },
+            "ItemType": "Leggings",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "19861": {
             "ModelID": 19861,
             "Names": {
@@ -76159,6 +76544,238 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "18986": {
+            "ModelID": 18986,
+            "Names": {
+                "English": "Obsidian Crest",
+                "German": "Obsidian-Haube",
+                "Korean": "옵시디언 티아라",
+                "French": "Ecu d'obsidienne",
+                "Italian": "Cimiero di Ossidiana",
+                "Spanish": "Cresta de obsidiana",
+                "TraditionalChinese": "黑曜石標記",
+                "Japanese": "オブシディアン クレスト",
+                "Polish": "Obsydianowy hełm",
+                "Russian": "Obsidian Crest",
+                "BorkBorkBork": "Oobseedeeun Crest"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_crests",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Paragon",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "18987": {
+            "ModelID": 18987,
+            "Names": {
+                "English": "Obsidian Crest",
+                "German": "Obsidian-Haube",
+                "Korean": "옵시디언 티아라",
+                "French": "Ecu d'obsidienne",
+                "Italian": "Cimiero di Ossidiana",
+                "Spanish": "Cresta de obsidiana",
+                "TraditionalChinese": "黑曜石標記",
+                "Japanese": "オブシディアン クレスト",
+                "Polish": "Obsydianowy hełm",
+                "Russian": "Obsidian Crest",
+                "BorkBorkBork": "Oobseedeeun Crest"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_crests",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Paragon",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "18988": {
+            "ModelID": 18988,
+            "Names": {
+                "English": "Obsidian Crest",
+                "German": "Obsidian-Haube",
+                "Korean": "옵시디언 티아라",
+                "French": "Ecu d'obsidienne",
+                "Italian": "Cimiero di Ossidiana",
+                "Spanish": "Cresta de obsidiana",
+                "TraditionalChinese": "黑曜石標記",
+                "Japanese": "オブシディアン クレスト",
+                "Polish": "Obsydianowy hełm",
+                "Russian": "Obsidian Crest",
+                "BorkBorkBork": "Oobseedeeun Crest"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_crests",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Paragon",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "18989": {
+            "ModelID": 18989,
+            "Names": {
+                "English": "Obsidian Crest",
+                "German": "Obsidian-Haube",
+                "Korean": "옵시디언 티아라",
+                "French": "Ecu d'obsidienne",
+                "Italian": "Cimiero di Ossidiana",
+                "Spanish": "Cresta de obsidiana",
+                "TraditionalChinese": "黑曜石標記",
+                "Japanese": "オブシディアン クレスト",
+                "Polish": "Obsydianowy hełm",
+                "Russian": "Obsidian Crest",
+                "BorkBorkBork": "Oobseedeeun Crest"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_crests",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Paragon",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "19955": {
+            "ModelID": 19955,
+            "Names": {
+                "English": "Obsidian Headwrap",
+                "German": "Obsidian-Kopfbandage",
+                "Korean": "옵시디언 터번",
+                "French": "Bande d'obsidienne",
+                "Italian": "Benda d'Ossidiana",
+                "Spanish": "Muñequera de obsidiana",
+                "TraditionalChinese": "黑曜石頭巾",
+                "Japanese": "オブシディアン ヘッドラップ",
+                "Polish": "Obsydianowa opaska",
+                "Russian": "Obsidian Headwrap",
+                "BorkBorkBork": "Oobseedeeun Heaedvraep"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_headwraps",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "19956": {
+            "ModelID": 19956,
+            "Names": {
+                "English": "Obsidian Headwrap",
+                "German": "Obsidian-Kopfbandage",
+                "Korean": "옵시디언 터번",
+                "French": "Bande d'obsidienne",
+                "Italian": "Benda d'Ossidiana",
+                "Spanish": "Muñequera de obsidiana",
+                "TraditionalChinese": "黑曜石頭巾",
+                "Japanese": "オブシディアン ヘッドラップ",
+                "Polish": "Obsydianowa opaska",
+                "Russian": "Obsidian Headwrap",
+                "BorkBorkBork": "Oobseedeeun Heaedvraep"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_headwraps",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "19957": {
+            "ModelID": 19957,
+            "Names": {
+                "English": "Obsidian Headwrap",
+                "German": "Obsidian-Kopfbandage",
+                "Korean": "옵시디언 터번",
+                "French": "Bande d'obsidienne",
+                "Italian": "Benda d'Ossidiana",
+                "Spanish": "Muñequera de obsidiana",
+                "TraditionalChinese": "黑曜石頭巾",
+                "Japanese": "オブシディアン ヘッドラップ",
+                "Polish": "Obsydianowa opaska",
+                "Russian": "Obsidian Headwrap",
+                "BorkBorkBork": "Oobseedeeun Heaedvraep"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_headwraps",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
+        "19958": {
+            "ModelID": 19958,
+            "Names": {
+                "English": "Obsidian Headwrap",
+                "German": "Obsidian-Kopfbandage",
+                "Korean": "옵시디언 터번",
+                "French": "Bande d'obsidienne",
+                "Italian": "Benda d'Ossidiana",
+                "Spanish": "Muñequera de obsidiana",
+                "TraditionalChinese": "黑曜石頭巾",
+                "Japanese": "オブシディアン ヘッドラップ",
+                "Polish": "Obsydianowa opaska",
+                "Russian": "Obsidian Headwrap",
+                "BorkBorkBork": "Oobseedeeun Heaedvraep"
+            },
+            "ItemType": "Headpiece",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ritualist_headwraps",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "16331": {
             "ModelID": 16331,
             "Names": {
@@ -77126,6 +77743,35 @@
             "SubCategory": null,
             "WikiScraped": false
         },
+        "17840": {
+            "ModelID": 17840,
+            "Names": {
+                "English": "Obsidian Armguards",
+                "German": "Obsidian-Armschienen",
+                "Korean": "옵시디언 글러브",
+                "French": "Garde-bras d'obsidienne",
+                "Italian": "Parabraccia d'Ossidiana",
+                "Spanish": "Guardabrazos de obsidiana",
+                "TraditionalChinese": "黑曜石護手",
+                "Japanese": "オブシディアン アームガード",
+                "Polish": "Obsydianowe karwasze",
+                "Russian": "Obsidian Armguards",
+                "BorkBorkBork": "Oobseedeeun Aermgooaerds"
+            },
+            "ItemType": "Gloves",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Paragon_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Paragon",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "19961": {
             "ModelID": 19961,
             "Names": {
@@ -77155,6 +77801,35 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "19844": {
+            "ModelID": 19844,
+            "Names": {
+                "English": "Obsidian Gloves",
+                "German": "Obsidian-Handschuhe",
+                "Korean": "옵시디언 글러브",
+                "French": "Gants d'obsidienne",
+                "Italian": "Guanti d'Ossidiana",
+                "Spanish": "Par de guantes de obsidiana",
+                "TraditionalChinese": "黑曜石手套",
+                "Japanese": "オブシディアン グローブ",
+                "Polish": "Obsydianowe rękawice",
+                "Russian": "Obsidian Gloves",
+                "BorkBorkBork": "Oobseedeeun Glufes"
+            },
+            "ItemType": "Gloves",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Mesmer_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "19860": {
             "ModelID": 19860,
             "Names": {
@@ -77183,6 +77858,35 @@
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "19925": {
+            "ModelID": 19925,
+            "Names": {
+                "German": "Obsidian-Handschuhe",
+                "Korean": "옵시디언 글러브",
+                "English": "Obsidian Gloves",
+                "French": "Gants d'obsidienne",
+                "Italian": "Guanti d'Ossidiana",
+                "Spanish": "Par de guantes de obsidiana",
+                "TraditionalChinese": "黑曜石手套",
+                "Japanese": "オブシディアン グローブ",
+                "Polish": "Obsydianowe rękawice",
+                "Russian": "Obsidian Gloves",
+                "BorkBorkBork": "Oobseedeeun Glufes"
+            },
+            "ItemType": "Gloves",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Ranger_Obsidian_armor",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ranger",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "19808": {
             "ModelID": 19808,

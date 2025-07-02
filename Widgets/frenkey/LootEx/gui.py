@@ -120,7 +120,7 @@ class UI:
             enum.ItemAction.LOOT: os.path.join(self.item_textures_path, "Bag.png"),       
             enum.ItemAction.COLLECT_DATA: os.path.join(self.icon_textures_path, "wiki_logo.png"),      
             enum.ItemAction.IDENTIFY: os.path.join(self.item_textures_path, "Identification_Kit.png"),      
-            enum.ItemAction.STASH: os.path.join(self.item_textures_path, "xunlai_chest.png"),      
+            enum.ItemAction.STASH: os.path.join(self.icon_textures_path, "xunlai_chest.png"),      
             enum.ItemAction.SALVAGE_MODS: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
             enum.ItemAction.SALVAGE: os.path.join(self.item_textures_path, "Salvage_Kit.png"),
             enum.ItemAction.SALVAGE_SMART: os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png"),
@@ -889,6 +889,22 @@ class UI:
                         PyImGui.table_next_column()
                         PyImGui.text(str(cached_item.quantity) if cached_item.quantity > 0 else "N/A")
                         
+                        if cached_item.weapon_mods_to_keep and len(cached_item.weapon_mods_to_keep) > 1:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Mods to Keep")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.weapon_mods_to_keep:
+                                PyImGui.text(mod.name)
+                                
+                        if cached_item.runes_to_keep and len(cached_item.runes_to_keep) > 1:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Runes to Keep")
+                            
+                            PyImGui.table_next_column()
+                            for mod in cached_item.runes_to_keep:
+                                PyImGui.text(mod.name)
+                        
                         if cached_item.runes:
                             PyImGui.table_next_column()
                             PyImGui.text("Runes")
@@ -1019,22 +1035,12 @@ class UI:
                         pass
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
-                        all_items_with_type = [
-                            item for item in data.Items.All if item.item_type != ItemType.Unknown
-                        ] 
-                        
-                        for item in data.Items[ItemType.Unknown].values():
-                            existing_item = next((
-                                i for i in all_items_with_type if i.model_id == item.model_id and i.item_type == item.item_type
-                            ), None)
-                            
-                            if existing_item:
-                                ConsoleLog(
-                                    "LootEx",
-                                    f"Item {item.name} [{item.model_id}] already exists in {existing_item.item_type.name} as {existing_item.name} [{existing_item.model_id}].",
-                                    Console.MessageType.Warning,
-                                )
-                            
+                                    
+                        # if identifier == ModifierIdentifier.Requirement:
+                        #     self.requirements = arg1 if arg1 is not None else 0
+                        #     self.attribute = Attribute(
+                        #         arg2) if arg2 is not None else Attribute.None_ 
+                        pass  
                                                  
                 PyImGui.end_child()
             

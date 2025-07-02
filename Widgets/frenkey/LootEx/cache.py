@@ -250,9 +250,9 @@ class Cached_Item:
                     arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
 
             if identifier == ModifierIdentifier.Requirement:
-                self.requirements = arg1 if arg1 is not None else 0
+                self.requirements = arg2 if arg2 is not None else 0
                 self.attribute = Attribute(
-                    arg2) if arg2 is not None else Attribute.None_
+                    arg1) if arg1 is not None else Attribute.None_
             
             if identifier == ModifierIdentifier.ImprovedVendorValue:
                 self.has_increased_value = True

@@ -1340,8 +1340,8 @@ class InventoryHandler:
                 continue
                         
             if ShouldDepositItem(item):
-                # ConsoleLog(
-                #     "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
+                ConsoleLog(
+                    "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
                 item.action = ItemAction.STASH
                 continue
                             
@@ -1387,6 +1387,8 @@ class InventoryHandler:
                         item.salvage_requires_confirmation = True
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
+                    elif item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) > 1:
+                        item.action = ItemAction.STASH
 
                 elif item.is_armor:
                     if item.runes_to_keep and len(item.runes_to_keep) == 1:
@@ -1397,7 +1399,7 @@ class InventoryHandler:
                         
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
-                    else:
+                    elif item.runes_to_keep and len(item.runes_to_keep) > 1:
                         item.action = ItemAction.STASH
                 
                 # ConsoleLog(

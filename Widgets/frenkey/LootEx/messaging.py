@@ -23,7 +23,6 @@ start : datetime.datetime = datetime.datetime.now()
 is_collecting = False
 
 def ResetMessages():
-    ConsoleLog("LootEx", "ages...")
     messages = sharedMemoryManager.GetAllMessages()
     messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
     
