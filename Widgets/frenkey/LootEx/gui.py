@@ -453,7 +453,7 @@ class UI:
                 settings.current.window_size[0], settings.current.window_size[1]
             )
             PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
-        
+                
         if not settings.current.window_visible:
             return
         

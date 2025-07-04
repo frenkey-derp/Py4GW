@@ -66,7 +66,7 @@ class LootHandler:
                 self.lootconfig.AddItemIDToBlacklist(item_id)
                         
     def Should_Loot_Item(self, item_id: int) -> bool:
-        # ConsoleLog("LootEx", f"Checking if item {item_id} should be looted.", Console.MessageType.Debug)
+        ConsoleLog("LootEx", f"Checking if item {item_id} should be looted.", Console.MessageType.Debug)
         
         if settings.current.profile is None:
             ConsoleLog("LootEx", "No profile selected. Cannot determine loot action.", Console.MessageType.Warning)

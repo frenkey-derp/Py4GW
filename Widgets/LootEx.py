@@ -156,11 +156,7 @@ def main():
 
     data_collector.instance.run_v2()  
     inventory_handler.Run()    
-
-    if not settings.current.profile or not settings.current.automatic_inventory_handling:
-        return
-    
-    loot_handler.CheckExisingLoot()                          
-                        
+    loot_handler.CheckExisingLoot()       
+                      
 
 __all__ = ['main', 'configure']

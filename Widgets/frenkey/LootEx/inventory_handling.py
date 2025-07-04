@@ -1340,8 +1340,8 @@ class InventoryHandler:
                 continue
                         
             if ShouldDepositItem(item):
-                ConsoleLog(
-                    "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
+                # ConsoleLog(
+                #     "LootEx", f"Item '{item.model_name}' ({item.id}) should be deposited to storage.", Console.MessageType.Info)
                 item.action = ItemAction.STASH
                 continue
                             
