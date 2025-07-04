@@ -3619,6 +3619,46 @@ class UI:
                         utility.Util.reformat_string(selected_item_type.name), None, texture_height
                     )
                     PyImGui.separator()
+                    
+                
+                    requirement = 0
+                    max_requirement = 13
+                                                        
+                    value = PyImGui.slider_int(
+                        "Max Requirement", requirement, 0, max_requirement)
+                    pass
+                
+                    width_remaining = PyImGui.get_content_region_avail()[0] - 10
+                    
+                    if PyImGui.begin_child("Old School Child Mods", (width_remaining / 2, 0), True, PyImGui.WindowFlags.NoFlag):
+                        for mod in data.Weapon_Mods.values():
+                            if mod.mod_type == enum.ModType.Inherent:
+                                if not mod.has_item_type(selected_item_type):
+                                    continue
+                                
+                                selected = PyImGui.selectable(mod.description, False, PyImGui.SelectableFlags.NoFlag, (0,0))
+                        pass
+                    
+                    PyImGui.end_child()
+                    
+                    PyImGui.same_line(0, 5)
+                    
+                    if PyImGui.begin_child("Old School Child Skins", (width_remaining / 2, 0), True, PyImGui.WindowFlags.NoFlag):
+                        for skin, items in data.ItemsBySkins.items():
+                            if any(item.item_type == selected_item_type for item in items):
+                                ImGui.DrawTexture(os.path.join(self.item_textures_path, skin), 32, 32)
+                                PyImGui.same_line(0, 5)
+                                self.vertical_centered_text(
+                                    utility.Util.reformat_string(skin), None, 32
+                                )
+                        pass
+                    
+                    PyImGui.end_child()
+                    
+                    
+                    
+                    
+                    
             
             PyImGui.end_child()
             

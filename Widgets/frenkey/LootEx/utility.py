@@ -30,6 +30,7 @@ class Util:
     merchant_threshold = 10
     merchantwindow_coords: list[tuple[int, int, int, int]] = []
     @staticmethod
+    ##TODO: Make this more robust to handle different parent folder names
     def GetPy4GWPath() -> str:
         file_path = os.path.abspath(__file__)
         marker = os.sep + "Py4GW" + os.sep
