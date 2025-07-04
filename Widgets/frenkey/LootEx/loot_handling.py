@@ -66,7 +66,7 @@ class LootHandler:
                 self.lootconfig.AddItemIDToBlacklist(item_id)
                         
     def Should_Loot_Item(self, item_id: int) -> bool:
-        ConsoleLog("LootEx", f"Checking if item {item_id} should be looted.", Console.MessageType.Debug)
+        # ConsoleLog("LootEx", f"Checking if item {item_id} should be looted.", Console.MessageType.Debug)
         
         if settings.current.profile is None:
             ConsoleLog("LootEx", "No profile selected. Cannot determine loot action.", Console.MessageType.Warning)
@@ -79,8 +79,10 @@ class LootHandler:
         
         if cached_item.model_id == ModelID.Vial_Of_Dye:
             if cached_item.IsVial_Of_DyeToKeep():
+                ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we want to keep.", Console.MessageType.Debug)
                 return True
             else:
+                ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we do not want to keep.", Console.MessageType.Debug)
                 return False
         
         if cached_item.config:
@@ -104,4 +106,4 @@ class LootHandler:
             if cached_item.weapon_mods_to_keep:
                 return True
             
-        return True
+        return False

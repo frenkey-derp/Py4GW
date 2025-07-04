@@ -104,6 +104,9 @@ def main():
     if not settings.current.character_profiles.get(current_character, False):        
         if settings.current.profiles:
             settings.current.character_profiles[current_character] = settings.current.profiles[0].name
+        
+        if not settings.current.character_profiles[current_character]:
+            return
             
         settings.current.SetProfile(settings.current.character_profiles[current_character])
         ConsoleLog(MODULE_NAME, f"First time using {MODULE_NAME} on '{current_character}'.{"\nDisabling inventory handling to prevent unwanted actions." if settings.current.automatic_inventory_handling else ""}\nSet Profile to '{settings.current.profile.name if settings.current.profile else "Unkown Profile"}'.", Console.MessageType.Warning)          

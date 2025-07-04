@@ -334,6 +334,20 @@ class UI:
             action.name for action in self.item_actions]
                 
         
+        self.os_low_req_itemtype_selectables: list[SelectableWrapper] = [
+            SelectableWrapper(ItemType.Axe, False),
+            SelectableWrapper(ItemType.Bow, False),
+            SelectableWrapper(ItemType.Daggers, False),
+            SelectableWrapper(ItemType.Hammer, False),
+            SelectableWrapper(ItemType.Scythe, False),
+            SelectableWrapper(ItemType.Spear, False),
+            SelectableWrapper(ItemType.Sword, False),
+            SelectableWrapper(ItemType.Staff, False),
+            SelectableWrapper(ItemType.Wand, False),
+            SelectableWrapper(ItemType.Offhand, False),
+            SelectableWrapper(ItemType.Shield, False),
+        ]
+        
         self.mod_heights: dict[str, float] = {}
         self.sharedMemoryManager = Py4GWSharedMemoryManager()
         self.filter_popup = False
@@ -537,6 +551,7 @@ class UI:
                 self.draw_loot_items()
                 self.draw_weapon_mods()
                 self.draw_runes()
+                self.draw_old_school_tab()
                 self.draw_blacklist()
                 self.draw_data_collector_tab()
 
@@ -975,6 +990,10 @@ class UI:
             
             if PyImGui.begin_child("DataCollectorChild", tab1_size, True, PyImGui.WindowFlags.NoFlag):
                 PyImGui.text("Data Collector")
+                PyImGui.separator()
+                
+                PyImGui.input_text("Textures Path", self.item_textures_path,
+                                 PyImGui.InputTextFlags.ReadOnly)
                 PyImGui.separator()
 
                 child_size = PyImGui.get_content_region_avail()
@@ -3510,6 +3529,102 @@ class UI:
 
                 item.is_selected = True
 
+    def draw_old_school_selectable(self, item: SelectableWrapper) -> bool:
+             # Apply background color for selected or hovered items
+        if item.is_selected:
+            selected_color = Utils.RGBToColor(34, 34, 34, 255)
+            PyImGui.push_style_color(
+                PyImGui.ImGuiCol.ChildBg, Utils.ColorToTuple(selected_color))
+
+        if item.is_hovered:
+            hovered_color = Utils.RGBToColor(63, 63, 63, 255)
+            PyImGui.push_style_color(
+                PyImGui.ImGuiCol.ChildBg, Utils.ColorToTuple(hovered_color))
+
+        PyImGui.push_style_var2(ImGui.ImGuiStyleVar.ItemSpacing, 0, 0)
+        texture_height = 30
+        PyImGui.begin_child(
+            f"SelectableItem{item.object}",
+            (0, texture_height),
+            False,
+            PyImGui.WindowFlags.NoFlag,
+        )
+        
+        texture = self.item_type_textures.get(item.object, None)
+        if texture:
+            ImGui.DrawTexture(texture, texture_height, texture_height)
+        else:
+            PyImGui.dummy(texture_height, texture_height)
+            
+        PyImGui.same_line(0, 5)
+        
+        self.vertical_centered_text(
+            utility.Util.reformat_string(item.object.name), None, texture_height
+        )
+        
+        PyImGui.end_child()
+        PyImGui.pop_style_var(1)
+        
+        # Pop background color styles if applied
+        if item.is_selected:
+            PyImGui.pop_style_color(1)
+
+        if item.is_hovered:
+            PyImGui.pop_style_color(1)
+        
+        
+        item.is_hovered = PyImGui.is_item_hovered()
+        clicked = PyImGui.is_item_clicked(0)
+        
+        if clicked:
+            item.is_selected = not item.is_selected            
+
+        return clicked
+        
+    def draw_old_school_tab(self):
+        if PyImGui.begin_tab_item("Old School"):
+            selected_item_type = None
+            texture_height = 30
+            
+            tab_size = PyImGui.get_content_region_avail()
+
+            # Left panel: Loot Items Selection
+            if PyImGui.begin_child("Old School Child Left", (tab_size[0] * 0.15, 0), True, PyImGui.WindowFlags.NoFlag):
+                    
+                for selectable in self.os_low_req_itemtype_selectables:
+                    if self.draw_old_school_selectable(selectable):
+                        for other_selectable in self.os_low_req_itemtype_selectables:
+                            if other_selectable != selectable:
+                                other_selectable.is_selected = False
+                    
+                    if selectable.is_selected:
+                        selected_item_type = selectable.object
+                                
+                    PyImGui.spacing()
+            PyImGui.end_child()
+            
+            PyImGui.same_line(0, 5)
+            # Right panel: Loot Items
+            if PyImGui.begin_child("Old School Child Right", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                if selected_item_type:                                
+                    texture = self.item_type_textures.get(selected_item_type, None)
+                    if texture:
+                        ImGui.DrawTexture(texture, texture_height, texture_height)
+                    else:
+                        PyImGui.dummy(texture_height, texture_height)
+                        
+                    PyImGui.same_line(0, 5)
+                    
+                    self.vertical_centered_text(
+                        utility.Util.reformat_string(selected_item_type.name), None, texture_height
+                    )
+                    PyImGui.separator()
+            
+            PyImGui.end_child()
+            
+            PyImGui.end_tab_item()
+        
+    
     # region general ui elements
     @staticmethod
     def ImageToggle(path : str, width : float, height : float, is_selected : bool) -> bool:

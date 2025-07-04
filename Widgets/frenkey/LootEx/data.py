@@ -251,6 +251,7 @@ Item_Attributes: dict[ItemType, list[Attribute]] = {
 }
 
 Items: models.ItemsByType = models.ItemsByType()
+ItemsBySkins: dict[str, list[models.Item]] = {}
 Nick_Items: dict[int, models.Item] = {}
 Nick_Cycle: list[models.Item] = []
 
@@ -654,10 +655,19 @@ def LoadItems():
                         Items.add_item(item)
                     else:
                         Items[item_type][model_id].update(item)
-
+                        
+    ItemsBySkins.clear()
+    Nick_Items.clear()
+    
     Items.sort_items()
     for item_type, items in Items.items():
         for model_id, item in items.items():
+            if item.inventory_icon:
+                if item.inventory_icon not in ItemsBySkins:
+                    ItemsBySkins[item.inventory_icon] = []
+                    
+                ItemsBySkins[item.inventory_icon].append(item)
+            
             if item.is_nick_item and item.nick_index is not None:
                 Nick_Items[item.nick_index] = item
                 Nick_Cycle.append(item)
