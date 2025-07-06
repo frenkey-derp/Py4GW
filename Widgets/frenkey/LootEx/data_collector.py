@@ -184,6 +184,28 @@ class DataCollector:
             
         return False, "All mods are collected or unnecessary to collect"
     
+    def is_missing_localization(self, item_id: int) -> tuple[bool, str]:        
+        if not item_id or item_id <= 0:
+            return False, "Invalid item ID"
+        
+        model_id = self.get_model_id(item_id)
+        item_type = self.get_item_type(item_id)
+        item = data.Items.get_item(item_type, model_id)
+        
+        if item is None or not item.names:
+            return False, "Item names are empty" if item is None else "Item not found in data"
+        
+        for server_language in ServerLanguage:
+            if server_language == ServerLanguage.Unknown:
+                continue
+            
+            if server_language not in item.names or item.names[server_language] is None:
+                # ConsoleLog(
+                #     "LootEx", f"Missing {server_language} | {item.name} | {item.names}", Console.MessageType.Warning)
+                return True, f"Missing {server_language.name}"
+
+        return False, "All localizations are present"
+    
     def is_item_collected(self, item_id: int) -> tuple[bool, str]:
         if not item_id or item_id <= 0:
             return False, "Invalid item ID"
@@ -202,7 +224,7 @@ class DataCollector:
             # ConsoleLog(
             #     "LootEx", f"Item names are empty for item {item_id} ({model_id})", Console.MessageType.Warning)
             return False, "Item names are empty" if item is None else "Item not found in data"
-    
+            
         for server_language in ServerLanguage:
             if server_language == ServerLanguage.Unknown:
                 continue

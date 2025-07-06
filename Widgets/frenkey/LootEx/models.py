@@ -353,6 +353,7 @@ class Item():
     category: enum.ItemCategory = enum.ItemCategory.None_
     sub_category: enum.ItemSubCategory = enum.ItemSubCategory.None_    
     wiki_scraped: bool = False
+    is_account_data : bool = False
     
     @property
     def is_nick_item(self) -> bool:
@@ -394,13 +395,13 @@ class Item():
                 return date(nick_date.year, nick_date.month, nick_date.day)
        
     def has_missing_names(self) -> ServerLanguage | bool:
-        if not self.names:
+        if not self.names or not self.names.get(ServerLanguage.English, False):
             return ServerLanguage.English
         
-        for lang in ServerLanguage:
-            if lang != ServerLanguage.Unknown:
-                if lang not in self.names or not self.names[lang]:
-                    return lang
+        # for lang in ServerLanguage:
+        #     if lang != ServerLanguage.Unknown:
+        #         if lang not in self.names or not self.names[lang]:
+        #             return lang
         
         return False
     

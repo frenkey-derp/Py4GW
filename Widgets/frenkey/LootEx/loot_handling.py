@@ -96,10 +96,10 @@ class LootHandler:
         
         if cached_item.model_id == ModelID.Vial_Of_Dye:
             if cached_item.IsVial_Of_DyeToKeep():
-                ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we want to keep.", Console.MessageType.Debug)
+                # ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we want to keep.", Console.MessageType.Debug)
                 return True
             else:
-                ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we do not want to keep.", Console.MessageType.Debug)
+                # ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we do not want to keep.", Console.MessageType.Debug)
                 return False
         
         if cached_item.config:

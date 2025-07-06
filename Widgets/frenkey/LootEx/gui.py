@@ -2,7 +2,7 @@ from argparse import Action
 import re
 import webbrowser
 
-from Widgets.frenkey.LootEx import profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
+from Widgets.frenkey.LootEx import loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -786,15 +786,25 @@ class UI:
                     Utils.ColorToTuple(Utils.RGBToColor(255, 0, 0, 125))
                 )
             
+            localization_missing, language = self.data_collector.is_missing_localization(cached_item.id)
             collected, missing = self.data_collector.is_item_collected(cached_item.id) if cached_item.id != 0 else (True, "")
             mods_missing, mod_missing = self.data_collector.has_uncollected_mods(cached_item.id) if cached_item.id != 0 else (False, "")
+            complete = True
             
-            complete = (collected and not mods_missing)
-            if not complete:
+            if not localization_missing:
+                complete = (collected and not mods_missing)
+                
+                if not complete:
+                    PyImGui.push_style_color(
+                        PyImGui.ImGuiCol.ChildBg,
+                        Utils.ColorToTuple(Utils.RGBToColor(255, 255, 0, 125))
+                    )
+            else:
                 PyImGui.push_style_color(
                     PyImGui.ImGuiCol.ChildBg,
-                    Utils.ColorToTuple(Utils.RGBToColor(255, 255, 0, 125))
+                    Utils.ColorToTuple(Utils.RGBToColor(255, 178, 102, 125))
                 )
+                
             
             PyImGui.push_style_color(
                 PyImGui.ImGuiCol.Border,
@@ -859,7 +869,7 @@ class UI:
             if cached_item.id > 0 and (not cached_item.data or not cached_item.data.wiki_scraped):
                 PyImGui.pop_style_color(1)
                 
-            if not complete:
+            if not complete or localization_missing:
                 PyImGui.pop_style_color(1)
             
             PyImGui.end_child()
@@ -871,14 +881,18 @@ class UI:
                 
                 if item and not item.wiki_scraped:
                     wiki_scraper.WikiScraper.scrape_multiple_entries([item])
+                    # messaging.SendMergingMessage()
+                    
             
                 
-            if cached_item and cached_item.data:
+            if cached_item:
                 if PyImGui.is_item_hovered():
                     PyImGui.set_next_window_size(400, 0)
                     
                     PyImGui.begin_tooltip()
-                    self.draw_item_header(item_info=cached_item.data)
+                    if cached_item.data:
+                        self.draw_item_header(item_info=cached_item.data)
+                        
                     if PyImGui.is_rect_visible(0, 20):
                         PyImGui.begin_table("ItemInfoTable", 2, PyImGui.TableFlags.Borders)
                         PyImGui.table_setup_column("Property")
@@ -966,12 +980,15 @@ class UI:
                         PyImGui.end_table()
                     
                     if not collected:
-                        PyImGui.text_colored(missing, (255, 0, 0, 255))
+                        PyImGui.text_colored(language or missing, (255, 0, 0, 255))
+                        
+                    if localization_missing:
+                        PyImGui.text_colored(language, (255, 0, 0, 255))
                         
                     if mods_missing:
                         PyImGui.text_colored(mod_missing, (255, 0, 0, 255))
                     
-                    if not cached_item.data.wiki_scraped:
+                    if cached_item.data and not cached_item.data.wiki_scraped:
                         PyImGui.text_colored("Wiki data not scraped yet", (255, 0, 0, 255))
                         
                         
@@ -1347,6 +1364,7 @@ class UI:
                     
                     if loot_range != settings.current.profile.loot_range:
                         settings.current.profile.loot_range = loot_range
+                        loot_handling.LootHandler().SetLootRange(loot_range)
                         settings.current.profile.save()
                 PyImGui.end_child()
                 

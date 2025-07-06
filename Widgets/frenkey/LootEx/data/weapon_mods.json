@@ -138,38 +138,28 @@
             }
         ]
     },
-    "AQAiqAAPJQ==": {
-        "Identifier": "AQAiqAAPJQ==",
+    "AQAhuDIKDA==": {
+        "Identifier": "AQAhuDIKDA==",
         "Descriptions": {
-            "English": "Damage +{arg2}% (while in a Stance)"
+            "English": "Armor +{arg2} (while Health is below +{arg1}%)"
         },
         "Names": {
-            "English": "\"Dance with Death\"",
-            "German": "\"Tanz mit dem Tod\"",
-            "Korean": "마력석: 죽음과 함께 춤을",
-            "French": "\"Danse avec la mort\"",
-            "Italian": "\"Balla coi Lutti\"",
-            "Spanish": "\"Baila con la muerte\"",
-            "TraditionalChinese": "\"與死亡共舞\"",
-            "Japanese": "ダンス ウィズ デス",
-            "BorkBorkBork": "\"Dunce-a veet Deaet\"",
-            "Polish": "\"Taniec ze śmiercią\"",
-            "Russian": "\"Танец со смертью\""
+            "English": "\"Down But Not Out\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
-            "Weapon"
+            "Offhand"
         ],
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 8872,
-                "Arg1": 0,
-                "Arg2": 15,
-                "Arg": 15,
+                "Identifier": 8632,
+                "Arg1": 50,
+                "Arg2": 10,
+                "Arg": 12810,
                 "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 15
+                "Min": 5,
+                "Max": 10
             }
         ]
     },
@@ -278,28 +268,38 @@
             }
         ]
     },
-    "AQAhuDIKDA==": {
-        "Identifier": "AQAhuDIKDA==",
+    "AQAiqAAPJQ==": {
+        "Identifier": "AQAiqAAPJQ==",
         "Descriptions": {
-            "English": "Armor +{arg2} (while Health is below +{arg1}%)"
+            "English": "Damage +{arg2}% (while in a Stance)"
         },
         "Names": {
-            "English": "\"Down But Not Out\""
+            "English": "\"Dance with Death\"",
+            "German": "\"Tanz mit dem Tod\"",
+            "Korean": "마력석: 죽음과 함께 춤을",
+            "French": "\"Danse avec la mort\"",
+            "Italian": "\"Balla coi Lutti\"",
+            "Spanish": "\"Baila con la muerte\"",
+            "TraditionalChinese": "\"與死亡共舞\"",
+            "Japanese": "ダンス ウィズ デス",
+            "BorkBorkBork": "\"Dunce-a veet Deaet\"",
+            "Polish": "\"Taniec ze śmiercią\"",
+            "Russian": "\"Танец со смертью\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
-            "Offhand"
+            "Weapon"
         ],
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 8632,
-                "Arg1": 50,
-                "Arg2": 10,
-                "Arg": 12810,
+                "Identifier": 8872,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
                 "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
+                "Min": 10,
+                "Max": 15
             }
         ]
     },
@@ -370,6 +370,41 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
+            }
+        ]
+    },
+    "AQAiiDIUJQ==": {
+        "Identifier": "AQAiiDIUJQ==",
+        "Descriptions": {
+            "English": "Damage +{arg2}% (while Health is below +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Vengeance is Mine\"",
+            "German": "\"Die Rache ist mein\"",
+            "Korean": "복수는 나의 것",
+            "French": "\"La vengeance sera mienne\"",
+            "Italian": "\"La Vendetta è Mia\"",
+            "Spanish": "\"La venganza será mía\"",
+            "TraditionalChinese": "\"我要報仇\"",
+            "Japanese": "ヴェンジャンス イズ マイン",
+            "Polish": "\"Zemsta należy do mnie\"",
+            "Russian": "\"Аз воздам\"",
+            "BorkBorkBork": "\"Fengeunce-a is Meene-a\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Weapon"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 8840,
+                "Arg1": 50,
+                "Arg2": 20,
+                "Arg": 12820,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
             }
         ]
     },
@@ -478,41 +513,6 @@
             }
         ]
     },
-    "AQAjCDIFKQ==": {
-        "Identifier": "AQAjCDIFKQ==",
-        "Descriptions": {
-            "English": "Energy +{arg2} (while health is above +{arg1}%)"
-        },
-        "Names": {
-            "English": "\"Hale and Hearty\"",
-            "German": "\"Gesund und munter\"",
-            "Korean": "마력석: 원기왕성하게!",
-            "French": "\"En pleine santé\"",
-            "Italian": "\"Vivo e Vegeto\"",
-            "Spanish": "\"Viejo pero joven\"",
-            "TraditionalChinese": "\"健壯的\"",
-            "Japanese": "ヘイル アンド ハーティー",
-            "BorkBorkBork": "\"Haele-a und Heaerty\"",
-            "Polish": "\"Zdrowy i krzepki\"",
-            "Russian": "\"Сильный и здоровый\""
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "SpellcastingWeapon"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 8968,
-                "Arg1": 50,
-                "Arg2": 5,
-                "Arg": 12805,
-                "ModifierValueArg": "Arg2",
-                "Min": 4,
-                "Max": 5
-            }
-        ]
-    },
     "AQAi-AAFKQ==": {
         "Identifier": "AQAi-AAFKQ==",
         "Descriptions": {
@@ -542,6 +542,41 @@
                 "Arg1": 0,
                 "Arg2": 5,
                 "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
+    },
+    "AQAjCDIFKQ==": {
+        "Identifier": "AQAjCDIFKQ==",
+        "Descriptions": {
+            "English": "Energy +{arg2} (while health is above +{arg1}%)"
+        },
+        "Names": {
+            "English": "\"Hale and Hearty\"",
+            "German": "\"Gesund und munter\"",
+            "Korean": "마력석: 원기왕성하게!",
+            "French": "\"En pleine santé\"",
+            "Italian": "\"Vivo e Vegeto\"",
+            "Spanish": "\"Viejo pero joven\"",
+            "TraditionalChinese": "\"健壯的\"",
+            "Japanese": "ヘイル アンド ハーティー",
+            "BorkBorkBork": "\"Haele-a und Heaerty\"",
+            "Polish": "\"Zdrowy i krzepki\"",
+            "Russian": "\"Сильный и здоровый\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 8968,
+                "Arg1": 50,
+                "Arg2": 5,
+                "Arg": 12805,
                 "ModifierValueArg": "Arg2",
                 "Min": 4,
                 "Max": 5
@@ -757,6 +792,129 @@
             }
         ]
     },
+    "AQAgyAABDAAi2AAPDA==": {
+        "Identifier": "AQAgyAABDAAi2AAPDA==",
+        "Descriptions": {
+            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
+        },
+        "Names": {
+            "English": "\"Live for Today\"",
+            "BorkBorkBork": "\"Leefe-a fur Tudaey\"",
+            "Polish": "\"Żyj dniem dzisiejszym\"",
+            "Russian": "\"Живи сегодняшним днем\"",
+            "German": "\"Lebt den Tag\"",
+            "TraditionalChinese": "\"活在當下\"",
+            "Spanish": "\"Vive el presente\"",
+            "Korean": "오늘을 위해 최선을",
+            "French": "\"Aujourd'hui, la vie\"",
+            "Italian": "\"Vivi alla Giornata\"",
+            "Japanese": "リブ フォー トゥデイ"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 8920,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8392,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    "AQAgyAABKQAi2AAPKQ==": {
+        "Identifier": "AQAgyAABKQAi2AAPKQ==",
+        "Descriptions": {
+            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
+        },
+        "Names": {
+            "English": "\"Seize the Day\"",
+            "BorkBorkBork": "\"Leefe-a fur Tudaey\"",
+            "Polish": "\"Żyj dniem dzisiejszym\"",
+            "Russian": "\"Живи сегодняшним днем\"",
+            "German": "\"Lebt den Tag\"",
+            "TraditionalChinese": "\"活在當下\"",
+            "Spanish": "\"Vive el presente\"",
+            "Korean": "오늘을 위해 최선을",
+            "French": "\"Aujourd'hui, la vie\"",
+            "Italian": "\"Vivi alla Giornata\"",
+            "Japanese": "リブ フォー トゥデイ"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "SpellcastingWeapon"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 8920,
+                "Arg1": 0,
+                "Arg2": 15,
+                "Arg": 15,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
+            },
+            {
+                "Identifier": 8392,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    "AQChGAsKJw==": {
+        "Identifier": "AQChGAsKJw==",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs. Earth damage)"
+        },
+        "Names": {
+            "English": "\"Like a Rolling Stone\"",
+            "BorkBorkBork": "\"Leeke-a a Rulleeng Stune-a\"",
+            "Polish": "\"Jak wędrowiec\"",
+            "Russian": "\"Как перекати-поле\"",
+            "German": "\"Marmor, Stein und Erde bricht\"",
+            "TraditionalChinese": "\"漂泊者\"",
+            "Spanish": "\"Like a Rolling Stone\"",
+            "Korean": "구르는 돌처럼",
+            "French": "\"Solide comme le roc\"",
+            "Italian": "\"Come Una Pietra Scalciata\"",
+            "Japanese": "ライク ア ローリング ストーン"
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "OffhandOrShield"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 41240,
+                "Arg1": 11,
+                "Arg2": 10,
+                "Arg": 2826,
+                "ModifierValueArg": "Arg2",
+                "Min": 5,
+                "Max": 10
+            }
+        ]
+    },
     "AQAjqAoAJg==": {
         "Identifier": "AQAjqAoAJg==",
         "Descriptions": {
@@ -826,85 +984,6 @@
             }
         ]
     },
-    "AQChGAsKJw==": {
-        "Identifier": "AQChGAsKJw==",
-        "Descriptions": {
-            "English": "Armor +{arg2} (vs. Earth damage)"
-        },
-        "Names": {
-            "English": "\"Like a Rolling Stone\"",
-            "BorkBorkBork": "\"Leeke-a a Rulleeng Stune-a\"",
-            "Polish": "\"Jak wędrowiec\"",
-            "Russian": "\"Как перекати-поле\"",
-            "German": "\"Marmor, Stein und Erde bricht\"",
-            "TraditionalChinese": "\"漂泊者\"",
-            "Spanish": "\"Like a Rolling Stone\"",
-            "Korean": "구르는 돌처럼",
-            "French": "\"Solide comme le roc\"",
-            "Italian": "\"Come Una Pietra Scalciata\"",
-            "Japanese": "ライク ア ローリング ストーン"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 41240,
-                "Arg1": 11,
-                "Arg2": 10,
-                "Arg": 2826,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
-            }
-        ]
-    },
-    "AQAgyAABDAAi2AAPDA==": {
-        "Identifier": "AQAgyAABDAAi2AAPDA==",
-        "Descriptions": {
-            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
-        },
-        "Names": {
-            "English": "\"Live for Today\"",
-            "BorkBorkBork": "\"Leefe-a fur Tudaey\"",
-            "Polish": "\"Żyj dniem dzisiejszym\"",
-            "Russian": "\"Живи сегодняшним днем\"",
-            "German": "\"Lebt den Tag\"",
-            "TraditionalChinese": "\"活在當下\"",
-            "Spanish": "\"Vive el presente\"",
-            "Korean": "오늘을 위해 최선을",
-            "French": "\"Aujourd'hui, la vie\"",
-            "Italian": "\"Vivi alla Giornata\"",
-            "Japanese": "リブ フォー トゥデイ"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "Offhand"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 8920,
-                "Arg1": 0,
-                "Arg2": 15,
-                "Arg": 15,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 15
-            },
-            {
-                "Identifier": 8392,
-                "Arg1": 0,
-                "Arg2": 1,
-                "Arg": 1,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 1
-            }
-        ]
-    },
     "AQAgeBQFJw==": {
         "Identifier": "AQAgeBQFJw==",
         "Descriptions": {
@@ -940,31 +1019,6 @@
             }
         ]
     },
-    "AQAhKAAFDA==": {
-        "Identifier": "AQAhKAAFDA==",
-        "Descriptions": {
-            "English": "Armor +{arg2} (vs. Elemental damage)"
-        },
-        "Names": {
-            "English": "\"Man for All Seasons\""
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "Offhand"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 8488,
-                "Arg1": 0,
-                "Arg2": 5,
-                "Arg": 5,
-                "ModifierValueArg": "Arg2",
-                "Min": 4,
-                "Max": 5
-            }
-        ]
-    },
     "AQAoOBQAJw==": {
         "Identifier": "AQAoOBQAJw==",
         "Descriptions": {
@@ -997,6 +1051,31 @@
                 "ModifierValueArg": "Arg1",
                 "Min": 11,
                 "Max": 20
+            }
+        ]
+    },
+    "AQAhKAAFDA==": {
+        "Identifier": "AQAhKAAFDA==",
+        "Descriptions": {
+            "English": "Armor +{arg2} (vs. Elemental damage)"
+        },
+        "Names": {
+            "English": "\"Man for All Seasons\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 8488,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
             }
         ]
     },
@@ -1270,50 +1349,6 @@
             }
         ]
     },
-    "AQAgyAABKQAi2AAPKQ==": {
-        "Identifier": "AQAgyAABKQAi2AAPKQ==",
-        "Descriptions": {
-            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
-        },
-        "Names": {
-            "English": "\"Seize the Day\"",
-            "BorkBorkBork": "\"Leefe-a fur Tudaey\"",
-            "Polish": "\"Żyj dniem dzisiejszym\"",
-            "Russian": "\"Живи сегодняшним днем\"",
-            "German": "\"Lebt den Tag\"",
-            "TraditionalChinese": "\"活在當下\"",
-            "Spanish": "\"Vive el presente\"",
-            "Korean": "오늘을 위해 최선을",
-            "French": "\"Aujourd'hui, la vie\"",
-            "Italian": "\"Vivi alla Giornata\"",
-            "Japanese": "リブ フォー トゥデイ"
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "SpellcastingWeapon"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 8920,
-                "Arg1": 0,
-                "Arg2": 15,
-                "Arg": 15,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 15
-            },
-            {
-                "Identifier": 8392,
-                "Arg1": 0,
-                "Arg2": 1,
-                "Arg": 1,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 1
-            }
-        ]
-    },
     "AQAjqAoADA==": {
         "Identifier": "AQAjqAoADA==",
         "Descriptions": {
@@ -1454,23 +1489,58 @@
             }
         ]
     },
-    "AQAoWAcAJw==": {
-        "Identifier": "AQAoWAcAJw==",
+    "AQAhWAAFDA==": {
+        "Identifier": "AQAhWAAFDA==",
         "Descriptions": {
-            "English": "Reduces Dazed duration on you by 20%"
+            "English": "Armor +{arg2} (vs. Physical damage)"
         },
         "Names": {
-            "English": "\"Soundness of Mind\"",
-            "BorkBorkBork": "\"Suoondness ooff Meend\"",
-            "Polish": "\"Mądrość umysłu\"",
-            "Russian": "\"Здравый рассудок\"",
-            "German": "\"Ein gesunder Geist ...\"",
-            "TraditionalChinese": "\"堅定意念\"",
-            "Spanish": "\"Sano juicio\"",
-            "Korean": "마음의 소리",
-            "French": "\"Bon sens\"",
-            "Italian": "\"Mente Sana\"",
-            "Japanese": "サウンドネス オブ マインド"
+            "English": "\"Survival of the Fittest\"",
+            "German": "\"Hart wie Stahl\"",
+            "Korean": "적자생존",
+            "French": "\"La survie du plus fort\"",
+            "Italian": "\"Sopravvivenza Integrale\"",
+            "Spanish": "\"Supervivencia del más fuerte\"",
+            "TraditionalChinese": "\"適者生存\"",
+            "Japanese": "サバイバル オブ ザ フィッテスト",
+            "Polish": "\"Przetrwają najsilniejsi\"",
+            "Russian": "\"Естественный отбор\"",
+            "BorkBorkBork": "\"Soorfeefael ooff zee Feettest\""
+        },
+        "ModType": "Inherent",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 8536,
+                "Arg1": 0,
+                "Arg2": 5,
+                "Arg": 5,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
+    },
+    "AQAoWAQAJw==": {
+        "Identifier": "AQAoWAQAJw==",
+        "Descriptions": {
+            "English": "Reduces Deep Wound duration on you by 20%"
+        },
+        "Names": {
+            "English": "\"Strength of Body\"",
+            "BorkBorkBork": "\"Strengt ooff Budy\"",
+            "Polish": "\"Siła ciała\"",
+            "Russian": "\"Сила тела\"",
+            "German": "\"Hart im Nehmen\"",
+            "TraditionalChinese": "\"力貫全身\"",
+            "Spanish": "\"Fuerza bruta\"",
+            "Korean": "육체의 힘",
+            "French": "\"La Force réside du corps\"",
+            "Italian": "\"Corpo Gagliardo\"",
+            "Japanese": "ストレングス オブ ボディ"
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1480,9 +1550,9 @@
         "Modifiers": [
             {
                 "Identifier": 10328,
-                "Arg1": 7,
+                "Arg1": 4,
                 "Arg2": 0,
-                "Arg": 1792,
+                "Arg": 1024,
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
@@ -1524,23 +1594,23 @@
             }
         ]
     },
-    "AQAoWAQAJw==": {
-        "Identifier": "AQAoWAQAJw==",
+    "AQAoWAcAJw==": {
+        "Identifier": "AQAoWAcAJw==",
         "Descriptions": {
-            "English": "Reduces Deep Wound duration on you by 20%"
+            "English": "Reduces Dazed duration on you by 20%"
         },
         "Names": {
-            "English": "\"Strength of Body\"",
-            "BorkBorkBork": "\"Strengt ooff Budy\"",
-            "Polish": "\"Siła ciała\"",
-            "Russian": "\"Сила тела\"",
-            "German": "\"Hart im Nehmen\"",
-            "TraditionalChinese": "\"力貫全身\"",
-            "Spanish": "\"Fuerza bruta\"",
-            "Korean": "육체의 힘",
-            "French": "\"La Force réside du corps\"",
-            "Italian": "\"Corpo Gagliardo\"",
-            "Japanese": "ストレングス オブ ボディ"
+            "English": "\"Soundness of Mind\"",
+            "BorkBorkBork": "\"Suoondness ooff Meend\"",
+            "Polish": "\"Mądrość umysłu\"",
+            "Russian": "\"Здравый рассудок\"",
+            "German": "\"Ein gesunder Geist ...\"",
+            "TraditionalChinese": "\"堅定意念\"",
+            "Spanish": "\"Sano juicio\"",
+            "Korean": "마음의 소리",
+            "French": "\"Bon sens\"",
+            "Italian": "\"Mente Sana\"",
+            "Japanese": "サウンドネス オブ マインド"
         },
         "ModType": "Inherent",
         "TargetTypes": [
@@ -1550,47 +1620,12 @@
         "Modifiers": [
             {
                 "Identifier": 10328,
-                "Arg1": 4,
+                "Arg1": 7,
                 "Arg2": 0,
-                "Arg": 1024,
+                "Arg": 1792,
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
-            }
-        ]
-    },
-    "AQAhWAAFDA==": {
-        "Identifier": "AQAhWAAFDA==",
-        "Descriptions": {
-            "English": "Armor +{arg2} (vs. Physical damage)"
-        },
-        "Names": {
-            "English": "\"Survival of the Fittest\"",
-            "German": "\"Hart wie Stahl\"",
-            "Korean": "적자생존",
-            "French": "\"La survie du plus fort\"",
-            "Italian": "\"Sopravvivenza Integrale\"",
-            "Spanish": "\"Supervivencia del más fuerte\"",
-            "TraditionalChinese": "\"適者生存\"",
-            "Japanese": "サバイバル オブ ザ フィッテスト",
-            "Polish": "\"Przetrwają najsilniejsi\"",
-            "Russian": "\"Естественный отбор\"",
-            "BorkBorkBork": "\"Soorfeefael ooff zee Feettest\""
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "Offhand"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 8536,
-                "Arg1": 0,
-                "Arg2": 5,
-                "Arg": 5,
-                "ModifierValueArg": "Arg2",
-                "Min": 4,
-                "Max": 5
             }
         ]
     },
@@ -1626,41 +1661,6 @@
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
-            }
-        ]
-    },
-    "AQChGAIKJw==": {
-        "Identifier": "AQChGAIKJw==",
-        "Descriptions": {
-            "English": "Armor +{arg2} (vs. Slashing damage)"
-        },
-        "Names": {
-            "English": "\"The Riddle of Steel\"",
-            "German": "\"Hieb-und stahlfest\"",
-            "Japanese": "ザ リドル オブ スチール",
-            "Korean": "강철의 수수께끼",
-            "French": "\"L'énigme de l'acier\"",
-            "Italian": "\"Enigma d'Acciaio\"",
-            "Spanish": "\"El enigma de acero\"",
-            "TraditionalChinese": "\"鋼鐵之謎\"",
-            "Polish": "\"Zagadka stali\"",
-            "Russian": "\"Стальной щит\"",
-            "BorkBorkBork": "\"Zee Reeddle-a ooff Steel\""
-        },
-        "ModType": "Inherent",
-        "TargetTypes": [
-            "OffhandOrShield"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 41240,
-                "Arg1": 2,
-                "Arg2": 10,
-                "Arg": 522,
-                "ModifierValueArg": "Arg2",
-                "Min": 5,
-                "Max": 10
             }
         ]
     },
@@ -1778,38 +1778,38 @@
             }
         ]
     },
-    "AQAiiDIUJQ==": {
-        "Identifier": "AQAiiDIUJQ==",
+    "AQChGAIKJw==": {
+        "Identifier": "AQChGAIKJw==",
         "Descriptions": {
-            "English": "Damage +{arg2}% (while Health is below +{arg1}%)"
+            "English": "Armor +{arg2} (vs. Slashing damage)"
         },
         "Names": {
-            "English": "\"Vengeance is Mine\"",
-            "German": "\"Die Rache ist mein\"",
-            "Korean": "복수는 나의 것",
-            "French": "\"La vengeance sera mienne\"",
-            "Italian": "\"La Vendetta è Mia\"",
-            "Spanish": "\"La venganza será mía\"",
-            "TraditionalChinese": "\"我要報仇\"",
-            "Japanese": "ヴェンジャンス イズ マイン",
-            "Polish": "\"Zemsta należy do mnie\"",
-            "Russian": "\"Аз воздам\"",
-            "BorkBorkBork": "\"Fengeunce-a is Meene-a\""
+            "English": "\"The Riddle of Steel\"",
+            "German": "\"Hieb-und stahlfest\"",
+            "Japanese": "ザ リドル オブ スチール",
+            "Korean": "강철의 수수께끼",
+            "French": "\"L'énigme de l'acier\"",
+            "Italian": "\"Enigma d'Acciaio\"",
+            "Spanish": "\"El enigma de acero\"",
+            "TraditionalChinese": "\"鋼鐵之謎\"",
+            "Polish": "\"Zagadka stali\"",
+            "Russian": "\"Стальной щит\"",
+            "BorkBorkBork": "\"Zee Reeddle-a ooff Steel\""
         },
         "ModType": "Inherent",
         "TargetTypes": [
-            "Weapon"
+            "OffhandOrShield"
         ],
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 8840,
-                "Arg1": 50,
-                "Arg2": 20,
-                "Arg": 12820,
+                "Identifier": 41240,
+                "Arg1": 2,
+                "Arg2": 10,
+                "Arg": 522,
                 "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
+                "Min": 5,
+                "Max": 10
             }
         ]
     },
@@ -3021,38 +3021,96 @@
             }
         ]
     },
-    "AgAkuAsAJg==": {
-        "Identifier": "AgAkuAsAJg==",
+    "AgAg6AABAhsgJAAlKAMAAhsgJA==": {
+        "Identifier": "AgAg6AABAhsgJAAlKAMAAhsgJA==",
         "Descriptions": {
-            "English": "Changes Damage to {arg1}"
+            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
         },
         "Names": {
-            "English": "Ebon",
-            "German": "Ebon-",
-            "Korean": "흑단",
-            "French": "terrestre",
-            "Italian": "per danno d'ebano",
-            "Spanish": "con daño de granito",
-            "TraditionalChinese": "黑檀",
-            "Japanese": "エボン",
-            "Polish": "z Hebanu",
-            "Russian": "Ebon",
-            "BorkBorkBork": "Ibun"
+            "English": "Vampiric",
+            "German": "Vampir-",
+            "Korean": "흡혈의 단검자루",
+            "French": "vampirique",
+            "Italian": "del Vampiro",
+            "Spanish": "de vampiro",
+            "TraditionalChinese": "吸血鬼 匕首刃",
+            "Japanese": "ヴァンピリック ダガーのグリップ",
+            "Polish": "Wampiryzmu",
+            "Russian": "Vampiric",
+            "BorkBorkBork": "Faempureec"
         },
         "ModType": "Prefix",
         "TargetTypes": [
-            "MartialWeapon"
+            "Axe",
+            "Sword",
+            "Daggers",
+            "Spear"
         ],
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 9400,
-                "Arg1": 11,
+                "Identifier": 9512,
+                "Arg1": 3,
                 "Arg2": 0,
-                "Arg": 2816,
+                "Arg": 768,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 3
+            },
+            {
+                "Identifier": 8424,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
                 "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    "AgAg6AABDwUjACUoBQAPBSM=": {
+        "Identifier": "AgAg6AABDwUjACUoBQAPBSM=",
+        "Descriptions": {
+            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
+        },
+        "Names": {
+            "English": "Vampiric",
+            "German": "Vampir-",
+            "Korean": "흡혈의 단검자루",
+            "French": "vampirique",
+            "Italian": "del Vampiro",
+            "Spanish": "de vampiro",
+            "TraditionalChinese": "吸血鬼 匕首刃",
+            "Japanese": "ヴァンピリック ダガーのグリップ",
+            "Polish": "Wampiryzmu",
+            "Russian": "Vampiric",
+            "BorkBorkBork": "Faempureec"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Hammer",
+            "Bow",
+            "Scythe"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9512,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 5
+            },
+            {
+                "Identifier": 8424,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
             }
         ]
     },
@@ -3204,6 +3262,41 @@
             }
         ]
     },
+    "AgAkuAsAJg==": {
+        "Identifier": "AgAkuAsAJg==",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Ebon",
+            "German": "Ebon-",
+            "Korean": "흑단",
+            "French": "terrestre",
+            "Italian": "per danno d'ebano",
+            "Spanish": "con daño de granito",
+            "TraditionalChinese": "黑檀",
+            "Japanese": "エボン",
+            "Polish": "z Hebanu",
+            "Russian": "Ebon",
+            "BorkBorkBork": "Ibun"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9400,
+                "Arg1": 11,
+                "Arg2": 0,
+                "Arg": 2816,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
     "AgAkuAMAJg==": {
         "Identifier": "AgAkuAMAJg==",
         "Descriptions": {
@@ -3314,41 +3407,6 @@
             }
         ]
     },
-    "AgAkuAQAJg==": {
-        "Identifier": "AgAkuAQAJg==",
-        "Descriptions": {
-            "English": "Changes Damage to {arg1}"
-        },
-        "Names": {
-            "English": "Shocking",
-            "German": "Schock-",
-            "Korean": "충격의",
-            "French": "de foudre",
-            "Italian": "per danno da shock",
-            "Spanish": "con daño de descarga",
-            "TraditionalChinese": "電擊",
-            "Japanese": "ショック",
-            "Polish": "Porażenia",
-            "Russian": "Shocking",
-            "BorkBorkBork": "Shuckeeng"
-        },
-        "ModType": "Prefix",
-        "TargetTypes": [
-            "MartialWeapon"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9400,
-                "Arg1": 4,
-                "Arg2": 0,
-                "Arg": 1024,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            }
-        ]
-    },
     "AgAkaAHlIAUk": {
         "Identifier": "AgAkaAHlIAUk",
         "Descriptions": {
@@ -3380,6 +3438,41 @@
                 "Arg1": 1,
                 "Arg2": 229,
                 "Arg": 485,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            }
+        ]
+    },
+    "AgAkuAQAJg==": {
+        "Identifier": "AgAkuAQAJg==",
+        "Descriptions": {
+            "English": "Changes Damage to {arg1}"
+        },
+        "Names": {
+            "English": "Shocking",
+            "German": "Schock-",
+            "Korean": "충격의",
+            "French": "de foudre",
+            "Italian": "per danno da shock",
+            "Spanish": "con daño de descarga",
+            "TraditionalChinese": "電擊",
+            "Japanese": "ショック",
+            "Polish": "Porażenia",
+            "Russian": "Shocking",
+            "BorkBorkBork": "Shuckeeng"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "MartialWeapon"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9400,
+                "Arg1": 4,
+                "Arg2": 0,
+                "Arg": 1024,
                 "ModifierValueArg": "Fixed",
                 "Min": 0,
                 "Max": 0
@@ -3456,99 +3549,6 @@
             }
         ]
     },
-    "AgAg6AABAhsgJAAlKAMAAhsgJA==": {
-        "Identifier": "AgAg6AABAhsgJAAlKAMAAhsgJA==",
-        "Descriptions": {
-            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
-        },
-        "Names": {
-            "English": "Vampiric",
-            "German": "Vampir-",
-            "Korean": "흡혈의 단검자루",
-            "French": "vampirique",
-            "Italian": "del Vampiro",
-            "Spanish": "de vampiro",
-            "TraditionalChinese": "吸血鬼 匕首刃",
-            "Japanese": "ヴァンピリック ダガーのグリップ",
-            "Polish": "Wampiryzmu",
-            "Russian": "Vampiric",
-            "BorkBorkBork": "Faempureec"
-        },
-        "ModType": "Prefix",
-        "TargetTypes": [
-            "Axe",
-            "Sword",
-            "Daggers",
-            "Spear"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9512,
-                "Arg1": 3,
-                "Arg2": 0,
-                "Arg": 768,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 3
-            },
-            {
-                "Identifier": 8424,
-                "Arg1": 0,
-                "Arg2": 1,
-                "Arg": 1,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 1
-            }
-        ]
-    },
-    "AgAg6AABDwUjACUoBQAPBSM=": {
-        "Identifier": "AgAg6AABDwUjACUoBQAPBSM=",
-        "Descriptions": {
-            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
-        },
-        "Names": {
-            "English": "Vampiric",
-            "German": "Vampir-",
-            "Korean": "흡혈의 단검자루",
-            "French": "vampirique",
-            "Italian": "del Vampiro",
-            "Spanish": "de vampiro",
-            "TraditionalChinese": "吸血鬼 匕首刃",
-            "Japanese": "ヴァンピリック ダガーのグリップ",
-            "Polish": "Wampiryzmu",
-            "Russian": "Vampiric",
-            "BorkBorkBork": "Faempureec"
-        },
-        "ModType": "Prefix",
-        "TargetTypes": [
-            "Hammer",
-            "Bow",
-            "Scythe"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9512,
-                "Arg1": 5,
-                "Arg2": 0,
-                "Arg": 1280,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 5
-            },
-            {
-                "Identifier": 8424,
-                "Arg1": 0,
-                "Arg2": 1,
-                "Arg": 1,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 1
-            }
-        ]
-    },
     "AgAgyAABJgAlGAABJg==": {
         "Identifier": "AgAgyAABJgAlGAABJg==",
         "Descriptions": {
@@ -3593,101 +3593,6 @@
             }
         ]
     },
-    "AwAkGAgUGg==": {
-        "Identifier": "AwAkGAgUGg==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Air Magic"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 8,
-                "Arg2": 20,
-                "Arg": 2068,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAoCBQADA==": {
-        "Identifier": "AwAoCBQADA==",
-        "Descriptions": {
-            "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
-        },
-        "Names": {
-            "English": "of Aptitude",
-            "BorkBorkBork": "ooff Aepteetoode-a",
-            "Russian": "of Aptitude",
-            "Polish": "(Uzdolnienia)",
-            "Japanese": "(アプティテュード)",
-            "TraditionalChinese": "天賦",
-            "Spanish": "(de aptitud)",
-            "Italian": "della Perspicacia",
-            "French": "(d'aptitude)",
-            "Korean": "(총명)",
-            "German": "d. Begabung"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Offhand"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 10248,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAkGBIUAg==": {
-        "Identifier": "AwAkGBIUAg==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Axe Mastery",
-            "German": "d. Axtbeherrschung",
-            "BorkBorkBork": "ooff Aexe-a Maestery",
-            "Russian": "of Axe Mastery",
-            "Polish": "(Biegłość w Toporach)",
-            "Japanese": "(アックス マスタリー)",
-            "TraditionalChinese": "精通斧術",
-            "Spanish": "(Dominio del hacha)",
-            "Italian": "Abilità con l'Ascia",
-            "French": "(Maîtrise de la hache)",
-            "Korean": "(도끼술)"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 18,
-                "Arg2": 20,
-                "Arg": 4628,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
     "AwAkGAQUGg==": {
         "Identifier": "AwAkGAQUGg==",
         "Descriptions": {
@@ -3707,41 +3612,6 @@
                 "Arg1": 4,
                 "Arg2": 20,
                 "Arg": 1044,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAkGCIUGg==": {
-        "Identifier": "AwAkGCIUGg==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Channeling Magic",
-            "German": "d. Kanalisierungsmagie",
-            "Korean": "(마력 증폭)",
-            "French": "(Magie de la canalisation)",
-            "Italian": "del bastone Magia di Incanalamento",
-            "Spanish": "(Magia de canalización)",
-            "TraditionalChinese": "導引魔法",
-            "Japanese": "(チャネリング)",
-            "Polish": "(Magia Połączeń)",
-            "Russian": "of Channeling Magic",
-            "BorkBorkBork": "ooff Chunneleeng Maegeec"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 34,
-                "Arg2": 20,
-                "Arg": 8724,
                 "ModifierValueArg": "Arg2",
                 "Min": 10,
                 "Max": 20
@@ -3836,41 +3706,6 @@
             }
         ]
     },
-    "AwAkGB0UIA==": {
-        "Identifier": "AwAkGB0UIA==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Dagger Mastery",
-            "BorkBorkBork": "ooff Daegger Maestery",
-            "German": "d. Dolchbeherrschung",
-            "Korean": "(단검술)",
-            "French": "(Maîtrise de la dague)",
-            "Italian": "Abilità con il Pugnale",
-            "Spanish": "(Dominio de la daga)",
-            "TraditionalChinese": "匕首精通",
-            "Japanese": "(ダガー マスタリー)",
-            "Polish": "(Biegłość w Sztyletach)",
-            "Russian": "of Dagger Mastery"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Daggers"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 29,
-                "Arg2": 20,
-                "Arg": 7444,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
     "AwAkGAUUGg==": {
         "Identifier": "AwAkGAUUGg==",
         "Descriptions": {
@@ -3893,175 +3728,6 @@
                 "ModifierValueArg": "Arg2",
                 "Min": 10,
                 "Max": 20
-            }
-        ]
-    },
-    "AwCAgAAAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAAAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Deathbane",
-            "German": "d. Todesfluches",
-            "Korean": "(언데드 상대 무기)",
-            "French": "(anti-mort)",
-            "Italian": "del Flagello Mortale",
-            "Spanish": "(matamuertos)",
-            "TraditionalChinese": "不死族剋星",
-            "Japanese": "(デスベイン)",
-            "Polish": "(Zabijania Nieumarłych)",
-            "Russian": "of Deathbane",
-            "BorkBorkBork": "ooff Deaethbune-a"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 0,
-                "Arg2": 0,
-                "Arg": 0,
-                "ModifierValueArg": "Fixed",
-                "Min": 0,
-                "Max": 0
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAhCAAFJho=": {
-        "Identifier": "AwAhCAAFJho=",
-        "Descriptions": {
-            "English": "Armor +{arg2}"
-        },
-        "Names": {
-            "English": "of Defense",
-            "German": "d. Verteidigung",
-            "BorkBorkBork": "ooff Deffense-a",
-            "Russian": "of Defense",
-            "Polish": "(Obrony)",
-            "Japanese": "(ディフェンス)",
-            "TraditionalChinese": "防衛",
-            "Spanish": "(de protección)",
-            "Italian": "di Difesa",
-            "French": "(de Défense)",
-            "Korean": "(방어)"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "MartialWeapon",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 8456,
-                "Arg1": 0,
-                "Arg2": 5,
-                "Arg": 5,
-                "ModifierValueArg": "Arg2",
-                "Min": 1,
-                "Max": 5
-            }
-        ]
-    },
-    "AwCAgAgAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAgAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Demonslaying",
-            "German": "d. Dämonentötung",
-            "Korean": "(데몬 상대 무기)",
-            "French": "(anti-démons)",
-            "Italian": "dell'arco Ammazza-demoni",
-            "Spanish": "(matademonios)",
-            "TraditionalChinese": "惡魔殺手",
-            "Japanese": "(デーモン キラー)",
-            "Polish": "(Zabijania Demonów)",
-            "Russian": "of Demonslaying",
-            "BorkBorkBork": "ooff Demunslaeyeeng"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 8,
-                "Arg2": 0,
-                "Arg": 2048,
-                "ModifierValueArg": "Fixed",
-                "Min": 8,
-                "Max": 8
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAjaC0AGBoM": {
-        "Identifier": "AwAjaC0AGBoM",
-        "Descriptions": {
-            "English": "+{arg1} Health while Enchanted"
-        },
-        "Names": {
-            "English": "of Devotion",
-            "German": "d. Hingabe",
-            "BorkBorkBork": "ooff Defushun",
-            "Russian": "of Devotion",
-            "Polish": "(Oddania)",
-            "Japanese": "(ディボーション)",
-            "TraditionalChinese": "奉獻",
-            "Spanish": "(de devoción)",
-            "Italian": "della Devozione",
-            "French": "(de dévotion)",
-            "Korean": "(헌신)"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Shield",
-            "Staff",
-            "Offhand"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9064,
-                "Arg1": 45,
-                "Arg2": 0,
-                "Arg": 11520,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 45
             }
         ]
     },
@@ -4216,23 +3882,588 @@
             }
         ]
     },
-    "AwAiuAAUJho=": {
-        "Identifier": "AwAiuAAUJho=",
+    "AwCAgAUAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAUAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
-            "English": "+{arg2}% Enchantment Duration"
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
         "Names": {
-            "English": "of Enchanting",
-            "German": "d. Verzauberung",
-            "BorkBorkBork": "ooff Inchunteeng",
-            "Russian": "of Enchanting",
-            "Polish": "(Zaklinania)",
-            "Japanese": "(エンチャント)",
-            "TraditionalChinese": "附魔",
-            "Spanish": "(de encantamientos)",
-            "Italian": "dell'Incantesimo",
-            "French": "(d'Enchantement)",
-            "Korean": "(강화)"
+            "English": "of Giantslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 5
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGA0UGg==": {
+        "Identifier": "AwAkGA0UGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Healing Prayers"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 13,
+                "Arg2": 20,
+                "Arg": 3348,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGAEUGg==": {
+        "Identifier": "AwAkGAEUGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Illusion Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 1,
+                "Arg2": 20,
+                "Arg": 276,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwCAgAoAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAoAAgUPGxoAokgUAAIFDxsa",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Ogreslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 10,
+                "Arg2": 0,
+                "Arg": 2560,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 10
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGA8UGg==": {
+        "Identifier": "AwAkGA8UGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Protection Prayers"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 15,
+                "Arg2": 20,
+                "Arg": 3860,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwCAgAQAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAQAAgUPGxoAokgUAAIFDxsa",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Skeletonslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 4,
+                "Arg2": 0,
+                "Arg": 1024,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 4
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGAYUGg==": {
+        "Identifier": "AwAkGAYUGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Soul Reaping"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 6,
+                "Arg2": 20,
+                "Arg": 1556,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwCAgAcAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAcAAgUPGxoAokgUAAIFDxsa",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Tenguslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 7,
+                "Arg2": 0,
+                "Arg": 1792,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 7
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwCAgAIAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAIAAgUPGxoAokgUAAIFDxsa",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Trollslaying"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 2,
+                "Arg2": 0,
+                "Arg": 512,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 2
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGAsUGg==": {
+        "Identifier": "AwAkGAsUGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Water Magic"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 11,
+                "Arg2": 20,
+                "Arg": 2836,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAoqAwFJhYa": {
+        "Identifier": "AwAoqAwFJhYa",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Elementalist"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 12,
+                "Arg2": 5,
+                "Arg": 3077,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
+    },
+    "AwAoCBQADA==": {
+        "Identifier": "AwAoCBQADA==",
+        "Descriptions": {
+            "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
+        },
+        "Names": {
+            "English": "of Aptitude",
+            "BorkBorkBork": "ooff Aepteetoode-a",
+            "Russian": "of Aptitude",
+            "Polish": "(Uzdolnienia)",
+            "Japanese": "(アプティテュード)",
+            "TraditionalChinese": "天賦",
+            "Spanish": "(de aptitud)",
+            "Italian": "della Perspicacia",
+            "French": "(d'aptitude)",
+            "Korean": "(총명)",
+            "German": "d. Begabung"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Offhand"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 10248,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGAgUGg==": {
+        "Identifier": "AwAkGAgUGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Air Magic",
+            "French": "(Magie de l'air)",
+            "German": "d. Luftmagie",
+            "Korean": "(바람)",
+            "Italian": "dell'Aria",
+            "Spanish": "(Magia de aire)",
+            "TraditionalChinese": "風系魔法",
+            "Japanese": "(エアー)",
+            "Polish": "(Magia Powietrza)",
+            "Russian": "of Air Magic",
+            "BorkBorkBork": "ooff Aeur Maegeec"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 8,
+                "Arg2": 20,
+                "Arg": 2068,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGBIUAg==": {
+        "Identifier": "AwAkGBIUAg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Axe Mastery",
+            "German": "d. Axtbeherrschung",
+            "BorkBorkBork": "ooff Aexe-a Maestery",
+            "Russian": "of Axe Mastery",
+            "Polish": "(Biegłość w Toporach)",
+            "Japanese": "(アックス マスタリー)",
+            "TraditionalChinese": "精通斧術",
+            "Spanish": "(Dominio del hacha)",
+            "Italian": "Abilità con l'Ascia",
+            "French": "(Maîtrise de la hache)",
+            "Korean": "(도끼술)"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 18,
+                "Arg2": 20,
+                "Arg": 4628,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGCIUGg==": {
+        "Identifier": "AwAkGCIUGg==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Channeling Magic",
+            "German": "d. Kanalisierungsmagie",
+            "Korean": "(마력 증폭)",
+            "French": "(Magie de la canalisation)",
+            "Italian": "del bastone Magia di Incanalamento",
+            "Spanish": "(Magia de canalización)",
+            "TraditionalChinese": "導引魔法",
+            "Japanese": "(チャネリング)",
+            "Polish": "(Magia Połączeń)",
+            "Russian": "of Channeling Magic",
+            "BorkBorkBork": "ooff Chunneleeng Maegeec"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 34,
+                "Arg2": 20,
+                "Arg": 8724,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAkGB0UIA==": {
+        "Identifier": "AwAkGB0UIA==",
+        "Descriptions": {
+            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+        },
+        "Names": {
+            "English": "of Dagger Mastery",
+            "BorkBorkBork": "ooff Daegger Maestery",
+            "German": "d. Dolchbeherrschung",
+            "Korean": "(단검술)",
+            "French": "(Maîtrise de la dague)",
+            "Italian": "Abilità con il Pugnale",
+            "Spanish": "(Dominio de la daga)",
+            "TraditionalChinese": "匕首精通",
+            "Japanese": "(ダガー マスタリー)",
+            "Polish": "(Biegłość w Sztyletach)",
+            "Russian": "of Dagger Mastery"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Daggers"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9240,
+                "Arg1": 29,
+                "Arg2": 20,
+                "Arg": 7444,
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwCAgAAAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAAAAgUPGxoAokgUAAIFDxsa",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Deathbane",
+            "German": "d. Todesfluches",
+            "Korean": "(언데드 상대 무기)",
+            "French": "(anti-mort)",
+            "Italian": "del Flagello Mortale",
+            "Spanish": "(matamuertos)",
+            "TraditionalChinese": "不死族剋星",
+            "Japanese": "(デスベイン)",
+            "Polish": "(Zabijania Nieumarłych)",
+            "Russian": "of Deathbane",
+            "BorkBorkBork": "ooff Deaethbune-a"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 0,
+                "Arg2": 0,
+                "Arg": 0,
+                "ModifierValueArg": "Fixed",
+                "Min": 0,
+                "Max": 0
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAhCAAFJho=": {
+        "Identifier": "AwAhCAAFJho=",
+        "Descriptions": {
+            "English": "Armor +{arg2}"
+        },
+        "Names": {
+            "English": "of Defense",
+            "German": "d. Verteidigung",
+            "BorkBorkBork": "ooff Deffense-a",
+            "Russian": "of Defense",
+            "Polish": "(Obrony)",
+            "Japanese": "(ディフェンス)",
+            "TraditionalChinese": "防衛",
+            "Spanish": "(de protección)",
+            "Italian": "di Difesa",
+            "French": "(de Défense)",
+            "Korean": "(방어)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -4242,33 +4473,33 @@
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 8888,
+                "Identifier": 8456,
                 "Arg1": 0,
-                "Arg2": 20,
-                "Arg": 20,
+                "Arg2": 5,
+                "Arg": 5,
                 "ModifierValueArg": "Arg2",
                 "Min": 1,
-                "Max": 20
+                "Max": 5
             }
         ]
     },
-    "AwAjiC0AGBoM": {
-        "Identifier": "AwAjiC0AGBoM",
+    "AwAjaC0AGBoM": {
+        "Identifier": "AwAjaC0AGBoM",
         "Descriptions": {
-            "English": "+{arg1} Health while in a Stance"
+            "English": "+{arg1} Health while Enchanted"
         },
         "Names": {
-            "English": "of Endurance",
-            "German": "d. Ausdauer",
-            "BorkBorkBork": "ooff Indoorunce-a",
-            "Russian": "of Endurance",
-            "Polish": "(Wytrzymałości)",
-            "Japanese": "(インデュランス)",
-            "TraditionalChinese": "忍耐",
-            "Spanish": "(de resistencia)",
-            "Italian": "della Resistenza",
-            "French": "(d'endurance)",
-            "Korean": "(인내)"
+            "English": "of Devotion",
+            "German": "d. Hingabe",
+            "BorkBorkBork": "ooff Defushun",
+            "Russian": "of Devotion",
+            "Polish": "(Oddania)",
+            "Japanese": "(ディボーション)",
+            "TraditionalChinese": "奉獻",
+            "Spanish": "(de devoción)",
+            "Italian": "della Devozione",
+            "French": "(de dévotion)",
+            "Korean": "(헌신)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -4279,13 +4510,98 @@
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 9096,
+                "Identifier": 9064,
                 "Arg1": 45,
                 "Arg2": 0,
                 "Arg": 11520,
                 "ModifierValueArg": "Arg1",
                 "Min": 1,
                 "Max": 45
+            }
+        ]
+    },
+    "AwCAgAgAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAgAAgUPGxoAokgUAAIFDxsa",
+        "Descriptions": {
+            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
+        },
+        "Names": {
+            "English": "of Demonslaying",
+            "German": "d. Dämonentötung",
+            "Korean": "(데몬 상대 무기)",
+            "French": "(anti-démons)",
+            "Italian": "dell'arco Ammazza-demoni",
+            "Spanish": "(matademonios)",
+            "TraditionalChinese": "惡魔殺手",
+            "Japanese": "(デーモン キラー)",
+            "Polish": "(Zabijania Demonów)",
+            "Russian": "of Demonslaying",
+            "BorkBorkBork": "ooff Demunslaeyeeng"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Axe",
+            "Bow",
+            "Hammer",
+            "Sword",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 32896,
+                "Arg1": 8,
+                "Arg2": 0,
+                "Arg": 2048,
+                "ModifierValueArg": "Fixed",
+                "Min": 8,
+                "Max": 8
+            },
+            {
+                "Identifier": 41544,
+                "Arg1": 20,
+                "Arg2": 0,
+                "Arg": 5120,
+                "ModifierValueArg": "Arg1",
+                "Min": 10,
+                "Max": 20
+            }
+        ]
+    },
+    "AwAjeDwAGBoM": {
+        "Identifier": "AwAjeDwAGBoM",
+        "Descriptions": {
+            "English": "+{arg1} Health while Hexed"
+        },
+        "Names": {
+            "English": "of Valor",
+            "German": "d. Wertschätzung",
+            "BorkBorkBork": "ooff Faelur",
+            "Russian": "of Valor",
+            "Polish": "(Odwagi)",
+            "Japanese": "(ヴァラー)",
+            "TraditionalChinese": "英勇",
+            "Spanish": "(de valor)",
+            "Italian": "del Valore",
+            "French": "(de valeur)",
+            "Korean": "(용맹)"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "Shield",
+            "Staff",
+            "Offhand"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9080,
+                "Arg1": 60,
+                "Arg2": 0,
+                "Arg": 15360,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 60
             }
         ]
     },
@@ -4362,44 +4678,6 @@
             }
         ]
     },
-    "AwCAgAUAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAUAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Giantslaying"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 5,
-                "Arg2": 0,
-                "Arg": 1280,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 5
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
     "AwAkGBMUDw==": {
         "Identifier": "AwAkGBMUDw==",
         "Descriptions": {
@@ -4435,53 +4713,76 @@
             }
         ]
     },
-    "AwAkGA0UGg==": {
-        "Identifier": "AwAkGA0UGg==",
+    "AwAiuAAUJho=": {
+        "Identifier": "AwAiuAAUJho=",
         "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+            "English": "+{arg2}% Enchantment Duration"
         },
         "Names": {
-            "English": "of Healing Prayers"
+            "English": "of Enchanting",
+            "German": "d. Verzauberung",
+            "BorkBorkBork": "ooff Inchunteeng",
+            "Russian": "of Enchanting",
+            "Polish": "(Zaklinania)",
+            "Japanese": "(エンチャント)",
+            "TraditionalChinese": "附魔",
+            "Spanish": "(de encantamientos)",
+            "Italian": "dell'Incantesimo",
+            "French": "(d'Enchantement)",
+            "Korean": "(강화)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
+            "MartialWeapon",
             "Staff"
         ],
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 9240,
-                "Arg1": 13,
+                "Identifier": 8888,
+                "Arg1": 0,
                 "Arg2": 20,
-                "Arg": 3348,
+                "Arg": 20,
                 "ModifierValueArg": "Arg2",
-                "Min": 10,
+                "Min": 1,
                 "Max": 20
             }
         ]
     },
-    "AwAkGAEUGg==": {
-        "Identifier": "AwAkGAEUGg==",
+    "AwAjiC0AGBoM": {
+        "Identifier": "AwAjiC0AGBoM",
         "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
+            "English": "+{arg1} Health while in a Stance"
         },
         "Names": {
-            "English": "of Illusion Magic"
+            "English": "of Endurance",
+            "German": "d. Ausdauer",
+            "BorkBorkBork": "ooff Indoorunce-a",
+            "Russian": "of Endurance",
+            "Polish": "(Wytrzymałości)",
+            "Japanese": "(インデュランス)",
+            "TraditionalChinese": "忍耐",
+            "Spanish": "(de resistencia)",
+            "Italian": "della Resistenza",
+            "French": "(d'endurance)",
+            "Korean": "(인내)"
         },
         "ModType": "Suffix",
         "TargetTypes": [
-            "Staff"
+            "Shield",
+            "Staff",
+            "Offhand"
         ],
         "UpgradeExists": true,
         "Modifiers": [
             {
-                "Identifier": 9240,
-                "Arg1": 1,
-                "Arg2": 20,
-                "Arg": 276,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
+                "Identifier": 9096,
+                "Arg1": 45,
+                "Arg2": 0,
+                "Arg": 11520,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 45
             }
         ]
     },
@@ -4625,69 +4926,6 @@
             }
         ]
     },
-    "AwCAgAoAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAoAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Ogreslaying"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 10,
-                "Arg2": 0,
-                "Arg": 2560,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 10
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAkGA8UGg==": {
-        "Identifier": "AwAkGA8UGg==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Protection Prayers"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 15,
-                "Arg2": 20,
-                "Arg": 3860,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
     "AwCAgAMAAgUPGxoAokgUAAIFDxsa": {
         "Identifier": "AwCAgAMAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
@@ -4777,7 +5015,17 @@
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Restoration Magic"
+            "English": "of Restoration Magic",
+            "French": "(Magie de restauration)",
+            "German": "d. Wiederherstellungsmagie",
+            "Korean": "(마력 회복)",
+            "Italian": "del Ripristino",
+            "Spanish": "(Magia de restauración)",
+            "TraditionalChinese": "復原魔法",
+            "Japanese": "(レストレーション)",
+            "Polish": "(Magia Odnowy)",
+            "Russian": "of Restoration Magic",
+            "BorkBorkBork": "ooff Resturaeshun Maegeec"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -4867,44 +5115,6 @@
             }
         ]
     },
-    "AwCAgAQAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAQAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Skeletonslaying"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 4,
-                "Arg2": 0,
-                "Arg": 1024,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 4
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
     "AwAkGA4UGg==": {
         "Identifier": "AwAkGA4UGg==",
         "Descriptions": {
@@ -4940,38 +5150,23 @@
             }
         ]
     },
-    "AwAkGAYUGg==": {
-        "Identifier": "AwAkGAYUGg==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Soul Reaping"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 6,
-                "Arg2": 20,
-                "Arg": 1556,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
     "AwAkGCQUGg==": {
         "Identifier": "AwAkGCQUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
         "Names": {
-            "English": "of Spawning Power"
+            "English": "of Spawning Power",
+            "French": "(Puissance de l'Invocation)",
+            "German": "d. Macht des Herbeirufens",
+            "Korean": "(생성)",
+            "Italian": "del bastone Riti Sacrificali",
+            "Spanish": "(Engendramiento)",
+            "TraditionalChinese": "召喚",
+            "Japanese": "(スポーン パワー)",
+            "Polish": "(Moc Przywoływania)",
+            "Russian": "of Spawning Power",
+            "BorkBorkBork": "ooff Spaevneeng Pooer"
         },
         "ModType": "Suffix",
         "TargetTypes": [
@@ -5095,119 +5290,6 @@
             }
         ]
     },
-    "AwCAgAcAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAcAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Tenguslaying"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 7,
-                "Arg2": 0,
-                "Arg": 1792,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 7
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwCAgAIAAgUPGxoAokgUAAIFDxsa": {
-        "Identifier": "AwCAgAIAAgUPGxoAokgUAAIFDxsa",
-        "Descriptions": {
-            "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
-        },
-        "Names": {
-            "English": "of Trollslaying"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Axe",
-            "Bow",
-            "Hammer",
-            "Sword",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 32896,
-                "Arg1": 2,
-                "Arg2": 0,
-                "Arg": 512,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 2
-            },
-            {
-                "Identifier": 41544,
-                "Arg1": 20,
-                "Arg2": 0,
-                "Arg": 5120,
-                "ModifierValueArg": "Arg1",
-                "Min": 10,
-                "Max": 20
-            }
-        ]
-    },
-    "AwAjeDwAGBoM": {
-        "Identifier": "AwAjeDwAGBoM",
-        "Descriptions": {
-            "English": "+{arg1} Health while Hexed"
-        },
-        "Names": {
-            "English": "of Valor",
-            "German": "d. Wertschätzung",
-            "BorkBorkBork": "ooff Faelur",
-            "Russian": "of Valor",
-            "Polish": "(Odwagi)",
-            "Japanese": "(ヴァラー)",
-            "TraditionalChinese": "英勇",
-            "Spanish": "(de valor)",
-            "Italian": "del Valore",
-            "French": "(de valeur)",
-            "Korean": "(용맹)"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Shield",
-            "Staff",
-            "Offhand"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9080,
-                "Arg1": 60,
-                "Arg2": 0,
-                "Arg": 15360,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 60
-            }
-        ]
-    },
     "AwAhKAAHJho=": {
         "Identifier": "AwAhKAAHJho=",
         "Descriptions": {
@@ -5241,31 +5323,6 @@
                 "ModifierValueArg": "Arg2",
                 "Min": 4,
                 "Max": 7
-            }
-        ]
-    },
-    "AwAkGAsUGg==": {
-        "Identifier": "AwAkGAsUGg==",
-        "Descriptions": {
-            "English": "{arg1} +1 ({arg2}% chance while using skills)"
-        },
-        "Names": {
-            "English": "of Water Magic"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9240,
-                "Arg1": 11,
-                "Arg2": 20,
-                "Arg": 2836,
-                "ModifierValueArg": "Arg2",
-                "Min": 10,
-                "Max": 20
             }
         ]
     },
@@ -5337,33 +5394,6 @@
                 "Arg1": 44,
                 "Arg2": 5,
                 "Arg": 11269,
-                "ModifierValueArg": "Arg2",
-                "Min": 4,
-                "Max": 5
-            }
-        ]
-    },
-    "AwAoqAwFJhYa": {
-        "Identifier": "AwAoqAwFJhYa",
-        "Descriptions": {
-            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
-        },
-        "Names": {
-            "English": "of the Elementalist"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "MartialWeapon",
-            "Wand",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 10408,
-                "Arg1": 12,
-                "Arg2": 5,
-                "Arg": 3077,
                 "ModifierValueArg": "Arg2",
                 "Min": 4,
                 "Max": 5
@@ -5518,43 +5548,6 @@
             }
         ]
     },
-    "AwAoqBcFJhYa": {
-        "Identifier": "AwAoqBcFJhYa",
-        "Descriptions": {
-            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
-        },
-        "Names": {
-            "English": "of the Ranger",
-            "German": "d. des Waldläufers",
-            "Korean": "(레인저)",
-            "French": "(le Rôdeur)",
-            "Italian": "della Bacchetta il ranger",
-            "Spanish": "(el guardabosques)",
-            "TraditionalChinese": "the",
-            "Japanese": "(レンジャー)",
-            "Polish": "(Łowcy)",
-            "Russian": "of рейнджер",
-            "BorkBorkBork": "ooff zee Runger"
-        },
-        "ModType": "Suffix",
-        "TargetTypes": [
-            "MartialWeapon",
-            "Wand",
-            "Staff"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 10408,
-                "Arg1": 23,
-                "Arg2": 5,
-                "Arg": 5893,
-                "ModifierValueArg": "Arg2",
-                "Min": 4,
-                "Max": 5
-            }
-        ]
-    },
     "AwAoqCQFJhYa": {
         "Identifier": "AwAoqCQFJhYa",
         "Descriptions": {
@@ -5586,6 +5579,43 @@
                 "Arg1": 36,
                 "Arg2": 5,
                 "Arg": 9221,
+                "ModifierValueArg": "Arg2",
+                "Min": 4,
+                "Max": 5
+            }
+        ]
+    },
+    "AwAoqBcFJhYa": {
+        "Identifier": "AwAoqBcFJhYa",
+        "Descriptions": {
+            "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
+        },
+        "Names": {
+            "English": "of the Ranger",
+            "German": "d. des Waldläufers",
+            "Korean": "(레인저)",
+            "French": "(le Rôdeur)",
+            "Italian": "della Bacchetta il ranger",
+            "Spanish": "(el guardabosques)",
+            "TraditionalChinese": "the",
+            "Japanese": "(レンジャー)",
+            "Polish": "(Łowcy)",
+            "Russian": "of рейнджер",
+            "BorkBorkBork": "ooff zee Runger"
+        },
+        "ModType": "Suffix",
+        "TargetTypes": [
+            "MartialWeapon",
+            "Wand",
+            "Staff"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 10408,
+                "Arg1": 23,
+                "Arg2": 5,
+                "Arg": 5893,
                 "ModifierValueArg": "Arg2",
                 "Min": 4,
                 "Max": 5

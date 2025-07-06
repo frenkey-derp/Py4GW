@@ -651,6 +651,8 @@ def LoadItems():
                     Items[item_type] = {}
                     
                 for model_id, item in items.items():
+                    item.is_account_data = True
+                    
                     if model_id not in Items[item_type]:
                         Items.add_item(item)
                     else:

@@ -257,7 +257,7 @@ class WikiScraper:
         
         if os.path.exists(path):
             item.inventory_icon = filename
-            data.SaveItems(True)
+            data.SaveItems(False)
             return True
         
         try:
@@ -271,7 +271,7 @@ class WikiScraper:
                 
                 
             ConsoleLog("LootEx", f"Downloaded image for {item.name} from {item.inventory_icon_url} to {path}.")
-            data.SaveItems(True)
+            data.SaveItems(False)
             return True
         
         except requests.RequestException as e:
@@ -296,7 +296,7 @@ class WikiScraper:
                 WikiScraper.scrape_info_from_wiki(entry)
                 
                 if not entry.inventory_icon_url or not WikiScraper.download_image(entry):
-                    data.SaveItems(True)
+                    data.SaveItems(False)
                     
                 
                 if i >= total:

@@ -1299,7 +1299,11 @@ class InventoryHandler:
                 
                 if item.mods != existing_item.mods:
                     return False
-                                     
+
+                if item.action == ItemAction.COLLECT_DATA:
+                    if not ShouldCollectData(item):
+                        return False
+                                                         
                 item.action = existing_item.action
                 item.salvage_option = existing_item.salvage_option
                 item.salvage_requires_confirmation = existing_item.salvage_requires_confirmation
