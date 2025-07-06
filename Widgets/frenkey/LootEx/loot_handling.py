@@ -3,7 +3,7 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Widgets.frenkey.LootEx import settings
 from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.enum import ItemAction
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, LootConfig
+from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager, ConsoleLog, LootConfig
 from Py4GWCoreLib.enums import Console, ItemType, ModelID, Range, SharedCommandType
 
 
@@ -30,6 +30,19 @@ class LootHandler:
             return
         
         pass
+    
+    def SetLootRange(self, loot_range: int):
+        if settings.current.profile is None:
+            ConsoleLog("LootEx", "No profile selected. Cannot set loot range.", Console.MessageType.Warning)
+            return
+                
+        for index, message in GLOBAL_CACHE.ShMem.GetAllMessages():            
+            if message.Command == SharedCommandType.PickUpLoot:
+                GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+                
+        self.lootconfig.ClearItemIDWhitelist()
+        self.lootconfig.ClearItemIDBlacklist()
+        ActionQueueManager().ResetAllQueues()        
     
     def LootingRoutineActive(self):
         account_email = GLOBAL_CACHE.Player.GetAccountEmail()
