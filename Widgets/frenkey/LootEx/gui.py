@@ -1335,12 +1335,18 @@ class UI:
 
                 PyImGui.text("General")
                 PyImGui.separator()
-                if PyImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 50), True, PyImGui.WindowFlags.NoBackground):
+                if PyImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 75), True, PyImGui.WindowFlags.NoBackground):
                     polling_interval = PyImGui.slider_float("Polling Interval (sec)", settings.current.profile.polling_interval, 0.1, 5)
                     
                     if polling_interval != settings.current.profile.polling_interval:
                         settings.current.profile.polling_interval = polling_interval
                         inventory_handling.InventoryHandler().SetPollingInterval(polling_interval)
+                        settings.current.profile.save()
+                        
+                    loot_range = PyImGui.slider_int("Loot Range", settings.current.profile.loot_range, 125, 5000)
+                    
+                    if loot_range != settings.current.profile.loot_range:
+                        settings.current.profile.loot_range = loot_range
                         settings.current.profile.save()
                 PyImGui.end_child()
                 

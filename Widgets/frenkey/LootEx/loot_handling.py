@@ -50,7 +50,11 @@ class LootHandler:
         
         # ConsoleLog("LootEx", "Checking existing loot in the world.", Console.MessageType.Debug)        
         loot_array = GLOBAL_CACHE.AgentArray.GetItemArray()
-        loot_array = AgentArray.Filter.ByDistance(loot_array, Player.GetXY(), Range.SafeCompass.value)
+        distance = settings.current.profile.loot_range if settings.current.profile else Range.SafeCompass.value
+        loot_array = AgentArray.Filter.ByDistance(loot_array, Player.GetXY(), distance)
+        
+        self.lootconfig.ClearItemIDWhitelist()
+        self.lootconfig.ClearItemIDBlacklist()
         
         for agent_id in loot_array:
             item_data = GLOBAL_CACHE.Agent.GetItemAgent(agent_id)

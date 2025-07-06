@@ -85,6 +85,7 @@ class Profile:
         self.nick_items_to_keep: int = 0
         self.changed : bool = False
         self.polling_interval : float = 1  # Default polling interval in seconds
+        self.loot_range : int = 4800
 
         # Collection of Filters
         self.filters: list[filter.Filter] = []
@@ -112,6 +113,7 @@ class Profile:
             "nick_items_to_keep": self.nick_items_to_keep,
             "filters": [Filter.to_dict(filter) for filter in self.filters],
             "polling_interval": self.polling_interval,
+            "loot_range": self.loot_range,
             "runes":  {
                 rune_identifier: rune_config.to_dict()
                 for rune_identifier, rune_config in self.runes.items()
@@ -156,6 +158,7 @@ class Profile:
                 profile_dict = json.load(file)
                 self.name = profile_dict.get("name", self.name)
                 self.polling_interval = profile_dict.get("polling_interval", self.polling_interval)
+                self.loot_range = profile_dict.get("loot_range", self.loot_range)
                 self.nick_weeks_to_keep = profile_dict.get(
                     "nick_weeks_to_keep", self.nick_weeks_to_keep)
                 self.nick_items_to_keep = profile_dict.get(
