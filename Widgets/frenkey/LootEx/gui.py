@@ -458,7 +458,10 @@ class UI:
     def hide_main_window(self):        
         settings.current.window_visible = False
     
-    def draw_window(self):        
+    def draw_window(self):    
+        if not settings.current.window_visible:
+            return
+            
         if self.first_draw:
             PyImGui.set_next_window_pos(
                 settings.current.window_position[0], settings.current.window_position[1]
@@ -468,8 +471,6 @@ class UI:
             )
             PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
                 
-        if not settings.current.window_visible:
-            return
         
         expanded, gui_open = PyImGui.begin_with_close(
             "Loot Ex", settings.current.window_visible, PyImGui.WindowFlags.NoFlag)
