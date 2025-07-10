@@ -2,6 +2,7 @@ from argparse import Action
 import re
 import webbrowser
 
+from Widgets.frenkey.Core.iterable import chunked
 from Widgets.frenkey.LootEx import loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
@@ -235,6 +236,50 @@ class UI:
             ItemType.Dye: os.path.join(self.item_textures_path, "White_Dye.png"),
             ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood_Plank.png"),
             ItemType.Offhand: os.path.join(self.item_textures_path, "Channeling_Focus.png"),
+            # ItemType.Gloves: os.path.join(self.item_textures_path, "Gloves.png"),
+            ItemType.Hammer: os.path.join(self.item_textures_path, "PvP_Hammer.png"),
+            # ItemType.Headpiece: os.path.join(self.item_textures_path, "Headpiece.png"),
+            ItemType.CC_Shards: os.path.join(self.item_textures_path, "Candy_Cane_Shard.png"),
+            ItemType.Key: os.path.join(self.item_textures_path, "Zaishen_Key.png"),
+            # ItemType.Leggings: os.path.join(self.item_textures_path, "Leggings.png"),
+            ItemType.Gold_Coin: os.path.join(self.item_textures_path, "Gold.png"),
+            ItemType.Quest_Item: os.path.join(self.item_textures_path, "Top_Right_Map_Piece.png"),
+            ItemType.Wand: os.path.join(self.item_textures_path, "Shaunur%27s_Scepter.png"),
+            ItemType.Shield: os.path.join(self.item_textures_path, "Crude_Shield.png"),
+            ItemType.Staff : os.path.join(self.item_textures_path, "Holy_Staff.png"),
+            ItemType.Sword: os.path.join(self.item_textures_path, "Short_Sword.png"),
+            ItemType.Kit: os.path.join(self.item_textures_path, "Superior_Salvage_Kit.png"),
+            ItemType.Trophy: os.path.join(self.item_textures_path, "Destroyer_Core.png"),
+            ItemType.Scroll: os.path.join(self.item_textures_path, "Scroll_of_the_Lightbringer.png"),
+            ItemType.Daggers: os.path.join(self.item_textures_path, "Kris_Daggers.png"),
+            ItemType.Present: os.path.join(self.item_textures_path, "Birthday_Present.png"),
+            ItemType.Minipet: os.path.join(self.item_textures_path, "Miniature_Celestial_Tiger.png"),
+            ItemType.Scythe: os.path.join(self.item_textures_path, "Suntouched_Scythe.png"),
+            ItemType.Spear: os.path.join(self.item_textures_path, "Suntouched_Spear.png"),
+            ItemType.Weapon: os.path.join(self.item_textures_path, "Inscription_weapons.png"),
+            ItemType.MartialWeapon: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
+            ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription_focus_items_or_shields.png"),
+            ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
+            ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription_spellcasting_weapons.png"),
+            # ItemType.Storybook: os.path.join(self.item_textures_path, "Young_Heroes_of_Tyria.png"),
+            # ItemType.Costume: os.path.join(self.item_textures_path, "134px-Shining_Blade_costume.png"),
+            # ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine_Halo.png"),
+            # ItemType.Unknown: os.path.join(self.item_textures_path, "Unknown_Item.png"),
+        }
+        
+        self.inscription_type_textures: dict[ItemType, str] = {
+            ItemType.Salvage: os.path.join(self.item_textures_path, "Salvage_Heavy_Armor.png"),
+            ItemType.Axe: os.path.join(self.item_textures_path, "Great_Axe.png"),
+            ItemType.Bag: os.path.join(self.item_textures_path, "Bag.png"),
+            # ItemType.Boots: os.path.join(self.item_textures_path, "Boots.png"),
+            ItemType.Bow: os.path.join(self.item_textures_path, "Ivory_Bow.png"),
+            # ItemType.Bundle: os.path.join(self.item_textures_path, "Bundle.png"),
+            # ItemType.Chestpiece: os.path.join(self.item_textures_path, "Chestpiece.png"),
+            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
+            ItemType.Usable: os.path.join(self.item_textures_path, "Cr%C3%A8me_Br%C3%BBl%C3%A9e.png"),
+            ItemType.Dye: os.path.join(self.item_textures_path, "White_Dye.png"),
+            ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood_Plank.png"),
+            ItemType.Offhand: os.path.join(self.item_textures_path, "Inscription_focus_items.png"),
             # ItemType.Gloves: os.path.join(self.item_textures_path, "Gloves.png"),
             ItemType.Hammer: os.path.join(self.item_textures_path, "PvP_Hammer.png"),
             # ItemType.Headpiece: os.path.join(self.item_textures_path, "Headpiece.png"),
@@ -1491,7 +1536,7 @@ class UI:
                             hover_color = utility.Util.GetDyeColor(dye)
                             PyImGui.push_style_color(
                                 PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(hover_color))                            
-                            UI.ImageToggle(file_path, 16.25, 20, 
+                            UI.ImageToggleXX(file_path, 16.25, 20, 
                                            settings.current.profile.dyes[dye]
                             )
                             
@@ -2534,15 +2579,17 @@ class UI:
                         if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
                     ]
 
-    def _calc_mod_description_height(self, mod, tab_width: float) -> float:
+    def _calc_mod_description_height(self, mod : models.WeaponMod, tab_width: float) -> float:
         base_height = 48
-        weapon_types_height = 32
+        
+        weapon_types_height = 36
         text_size_x, text_size_y = PyImGui.calc_text_size(mod.description)
 
         lines_of_text = math.ceil(text_size_x / (tab_width - 60))
         required_text_height = (lines_of_text * text_size_y)
 
-        height = base_height + required_text_height + weapon_types_height
+        height = base_height + required_text_height + (0 if mod.is_inscription else weapon_types_height)
+                
         return height
 
     def filter_weapon_mods(self):
@@ -2598,152 +2645,191 @@ class UI:
             self.draw_info_icon(draw_action=draw_hint, width=500)
             
             selection_width = tab_size[0]  # max(255, tab_size[0] * 0.3)
-            edit_width = tab_size[0] - selection_width - 20
+            
             PyImGui.dummy(0, 0)
             PyImGui.begin_child(
                 "ModSelectionsChild", (selection_width, 0), True, PyImGui.WindowFlags.NoFlag)
-            first_mod = False
-            last_mod = False
+
             selected_weapon_mod = None
+            
+            remaining_size = PyImGui.get_content_region_avail()
+            columns = max(1, math.floor(int(remaining_size[0] / 350)))
+            column_width = int(remaining_size[0] / columns)
+            
+            for chunk in chunked(self.filtered_weapon_mods, columns):
+                max_height_in_row = max(self._calc_mod_description_height(
+                    selectable.object, column_width) for selectable in chunk)
+                
+                for selectable in chunk:
+                    m: models.WeaponMod = selectable.object
+                    self.mod_heights[m.identifier] = max_height_in_row
+            
+            
+            if PyImGui.is_rect_visible(1, 20):
+                PyImGui.begin_table(
+                    "Weapon Mods Table",
+                    columns,
+                    PyImGui.TableFlags.NoBordersInBody |PyImGui.TableFlags.ScrollY,
+                )          
+                
+                PyImGui.table_next_column()                  
 
-            for selectable in self.filtered_weapon_mods:
-                m: models.WeaponMod = selectable.object
-                selected_weapon_mod = m if selectable.is_selected else selected_weapon_mod
+                for selectable in self.filtered_weapon_mods:
+                    m: models.WeaponMod = selectable.object
+                    selected_weapon_mod = m if selectable.is_selected else selected_weapon_mod
 
-                if not m.identifier in self.mod_heights:
-                    self.mod_heights[m.identifier] = self._calc_mod_description_height(
-                        m, selection_width)
+                    is_in_profile = settings.current.profile.contains_weapon_mod(
+                        m.identifier) if settings.current.profile else None
 
-                first_mod = PyImGui.is_rect_visible(
-                    1, self.mod_heights[m.identifier]) if not first_mod else first_mod
+                    def get_frame_color():
+                        base_color = (255, 255, 255, 255) if not is_in_profile else (
+                            255, 204, 85, 255)
+                        return Utils.RGBToColor(base_color[0], base_color[1], base_color[2], 150)
 
-                if not first_mod or last_mod:
-                    PyImGui.dummy(0, int(self.mod_heights[m.identifier]))
-                    continue
-
-                last_mod = (first_mod and not PyImGui.is_rect_visible(
-                    1, self.mod_heights[m.identifier])) if not last_mod else last_mod
-
-                is_in_profile = settings.current.profile.contains_weapon_mod(
-                    m.identifier) if settings.current.profile else None
-
-                def get_frame_color():
-                    base_color = (255, 255, 255, 255) if not is_in_profile else (
-                        255, 204, 85, 255)
-                    return Utils.RGBToColor(base_color[0], base_color[1], base_color[2], 150)
-
-                if is_in_profile:
-                    color = Utils.RGBToColor(255, 204, 85, 255)
-                    PyImGui.push_style_color(
-                        PyImGui.ImGuiCol.Text,
-                        Utils.ColorToTuple(color),
-                    )
-
-                color = get_frame_color()
-                PyImGui.push_style_color(
-                    PyImGui.ImGuiCol.Border,
-                    Utils.ColorToTuple(color),
-                )
-
-                if selectable.is_hovered:
-                    color = Utils.RGBToColor(255, 255, 255, 15)
-                    PyImGui.push_style_color(
-                        PyImGui.ImGuiCol.ChildBg,
-                        Utils.ColorToTuple(color),
-                    )
-
-                PyImGui.begin_child(
-                    id=f"ModSelectable{m.identifier}", size=(0.0, self.mod_heights[m.identifier]), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
-
-                UI.vertical_centered_text(
-                    IconsFontAwesome5.ICON_SHIELD_ALT, 35, 24)
-                UI.vertical_centered_text(m.applied_name, None, 24)
-
-                if is_in_profile:
-                    PyImGui.pop_style_color(1)
-
-                PyImGui.pop_style_color(1)
-
-                if selectable.is_hovered:
-                    PyImGui.pop_style_color(1)
-
-                PyImGui.separator()
-
-                # PyImGui.dummy(0, 0)
-                # PyImGui.same_line(0, 28)
-
-                PyImGui.push_style_color(
-                    PyImGui.ImGuiCol.Text,
-                    (1, 1, 1, 0.75),
-                )
-                PyImGui.text_wrapped(m.description)
-                PyImGui.pop_style_color(1)
-
-                is_tooltip_visible = False
-                if settings.current.profile:
-                    for weapon_type in ItemType:
-                        if not m.has_item_type(weapon_type) or weapon_type >= ItemType.Weapon:
-                            continue
-
-                        is_selected = m.identifier in settings.current.profile.weapon_mods and weapon_type.name in settings.current.profile.weapon_mods[
-                            m.identifier] and settings.current.profile.weapon_mods[m.identifier][weapon_type.name] or False
-
-                        # textures = self.mod_textures.get(weapon_type, None)
-                        # texture = textures.get(m.mod_type, None) if textures else None
-                        texture = self.item_type_textures.get(weapon_type, None)
-                        if texture:
-                            ImGui.DrawTexture(texture, 24, 24)
-                        else:
-                            PyImGui.dummy(24, 24)
-                            
-                        PyImGui.same_line(0, 0)
-                        
-                        selected = UI.toggle_button(
-                            label = f"{utility.Util.reformat_string(weapon_type.name)}##{m.identifier}{weapon_type.name}", v = is_selected, width= 100, height= 20,
-                            default_color=Utils.ColorToTuple(Utils.RGBToColor(255, 204, 85, 155)),
-                            hover_color=Utils.ColorToTuple(Utils.RGBToColor(255, 204, 85, 180)),
-                            active_color=Utils.ColorToTuple(Utils.RGBToColor(2255, 204, 85, 180))
-                            )
-                        if selected != is_selected:
-                            if not settings.current.profile.weapon_mods.get(m.identifier, None):
-                                settings.current.profile.weapon_mods[m.identifier] = {
-                                }
-
-                            if self.py_io.key_ctrl:
-                                for weapon_type in ItemType:
-                                    settings.current.profile.weapon_mods[
-                                        m.identifier][weapon_type.name] = selected
-                            else:
-                                settings.current.profile.weapon_mods[m.identifier][weapon_type.name] = selected
-
-                            settings.current.profile.save()
-                            self.filter_weapon_mods()
-
-                        is_tooltip_visible = is_tooltip_visible or PyImGui.is_item_hovered()
-
-                        ImGui.show_tooltip(
-                            f"Toggle {utility.Util.reformat_string(weapon_type.name)} for this mod.\n" +
-                            "If selected, the mod will be picked up and stored when found." +
-                            "\nHold CTRL to toggle all weapon types at once."
+                    if is_in_profile:
+                        color = Utils.RGBToColor(255, 204, 85, 255)
+                        PyImGui.push_style_color(
+                            PyImGui.ImGuiCol.Text,
+                            Utils.ColorToTuple(color),
                         )
 
-                        PyImGui.same_line(0, 5)
+                    color = get_frame_color()
+                    PyImGui.push_style_color(
+                        PyImGui.ImGuiCol.Border,
+                        Utils.ColorToTuple(color),
+                    )
 
-                PyImGui.end_child()
-                selectable.is_hovered = PyImGui.is_item_hovered()
+                    if selectable.is_hovered:
+                        color = Utils.RGBToColor(255, 255, 255, 15)
+                        PyImGui.push_style_color(
+                            PyImGui.ImGuiCol.ChildBg,
+                            Utils.ColorToTuple(color),
+                        )
 
-                if PyImGui.is_item_clicked(0) and settings.current.profile:
-                    selectable.is_selected = not selectable.is_selected
-                    for s in self.filtered_weapon_mods:
-                        if s != selectable:
-                            s.is_selected = False
+                    PyImGui.begin_child(
+                        id=f"ModSelectable{m.identifier}", size=(0.0, self.mod_heights[m.identifier]), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
+                                        
+                    if m.is_inscription:
+                        texture = self.inscription_type_textures.get(m.target_types[0], None)
+                        if texture:
+                            ImGui.DrawTextureExtended(texture_path=os.path.join(self.item_textures_path, texture), size=(16, 16), tint=(255,255,255,255) if is_in_profile else (150,150,150, 255) if selectable.is_hovered else (100, 100, 100, 255))
+                            PyImGui.same_line(0, 5)
+                        pass
+                        
+                    ImGui.push_font("Regular", 16)
+                    PyImGui.text(m.applied_name)
+                    ImGui.pop_font()
 
-                if is_in_profile:
-                    PyImGui.pop_style_color(2)
+                    if is_in_profile:
+                        PyImGui.pop_style_color(1)
 
-                if not is_tooltip_visible:
-                    UI.weapon_mod_tooltip(m)
+                    PyImGui.pop_style_color(1)
 
+                    if selectable.is_hovered:
+                        PyImGui.pop_style_color(1)
+
+                    PyImGui.separator()
+
+                    # PyImGui.dummy(0, 0)
+                    # PyImGui.same_line(0, 28)
+
+                    PyImGui.push_style_color(
+                        PyImGui.ImGuiCol.Text,
+                        (1, 1, 1, 0.75),
+                    )
+                    PyImGui.text_wrapped(m.description)
+                    PyImGui.pop_style_color(1)
+
+                    is_tooltip_visible = False
+                    if settings.current.profile:               
+                        texture_size = 32
+                        offset_y = (PyImGui.get_content_region_avail()[1] - texture_size) / 2
+                        cursor_y = PyImGui.get_cursor_pos_y()
+                        
+                        PyImGui.set_cursor_pos_y(self.mod_heights[m.identifier] - 8 - texture_size)
+                        
+                        if m.is_inscription:
+                            pass
+                        else:
+                            for weapon_type in ItemType:
+                                if not m.has_item_type(weapon_type) or weapon_type >= ItemType.Weapon:
+                                    continue
+
+                                is_selected = m.identifier in settings.current.profile.weapon_mods and weapon_type.name in settings.current.profile.weapon_mods[
+                                    m.identifier] and settings.current.profile.weapon_mods[m.identifier][weapon_type.name] or False
+
+                                # textures = self.mod_textures.get(weapon_type, None)
+                                # texture = textures.get(m.mod_type, None) if textures else None
+                                texture = self.item_type_textures.get(weapon_type, None)         
+                                                                
+                                cursor = PyImGui.get_cursor_screen_pos() 
+                                rect = (cursor[0], cursor[1], texture_size, texture_size)
+                                hovered = UI.is_mouse_in_rect(rect)
+                                if texture:
+                                    # ImGui.DrawTexture(texture, 24, 24)
+                                    # tint = (255,255,255,255) if is_selected else (150,150,150, 255) if hovered else (64, 64,64, 255)
+                                    # ImGui.DrawTextureExtended(texture_path=texture, size=(texture_size, texture_size), tint = tint)
+                                    background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
+                                    selected = UI.ImageToggle(id=f"{m.identifier}{weapon_type.name}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255,255,255,255), background=background)
+                                    if selected != is_selected:
+                                        if not settings.current.profile.weapon_mods.get(m.identifier, None):
+                                            settings.current.profile.weapon_mods[m.identifier] = {
+                                            }
+
+                                        if self.py_io.key_ctrl:
+                                            for weapon_type in ItemType:
+                                                settings.current.profile.weapon_mods[
+                                                    m.identifier][weapon_type.name] = selected
+                                        else:
+                                            settings.current.profile.weapon_mods[m.identifier][weapon_type.name] = selected
+
+                                        settings.current.profile.save()
+                                        self.filter_weapon_mods()
+                                else:
+                                    PyImGui.dummy(texture_size, texture_size)                            
+                                    
+                                is_tooltip_visible = is_tooltip_visible or PyImGui.is_item_hovered()
+
+                                ImGui.show_tooltip(
+                                    f"Toggle {utility.Util.reformat_string(weapon_type.name)} for this mod.\n" +
+                                    "If selected, the mod will be picked up and stored when found." +
+                                    "\nHold CTRL to toggle all weapon types at once."
+                                )
+
+                                PyImGui.same_line(0, 5)
+                                
+                    PyImGui.new_line()
+                    PyImGui.dummy(10, 12)  
+                    PyImGui.end_child()
+                
+                    if m.is_inscription:
+                        if PyImGui.is_item_clicked(0):
+                            selectable.is_selected = not selectable.is_selected
+                            
+                            if selectable.is_selected:
+                                if not settings.current.profile.weapon_mods.get(m.identifier, None):
+                                    settings.current.profile.weapon_mods[m.identifier] = {}
+                                    
+                                for weapon_type in ItemType:                                        
+                                    settings.current.profile.weapon_mods[
+                                        m.identifier][weapon_type.name] = selectable.is_selected
+                            else:
+                                settings.current.profile.weapon_mods.pop(m.identifier, None)
+                            
+                            settings.current.profile.save()
+                            
+                    selectable.is_hovered = PyImGui.is_item_hovered()
+
+                    if is_in_profile:
+                        PyImGui.pop_style_color(2)
+
+                    if not is_tooltip_visible:
+                        UI.weapon_mod_tooltip(m)
+                    
+                    PyImGui.table_next_column()
+                
+                PyImGui.end_table()
+                
             PyImGui.end_child()
 
             # PyImGui.same_line(0, 5)
@@ -3692,7 +3778,37 @@ class UI:
     
     # region general ui elements
     @staticmethod
-    def ImageToggle(path : str, width : float, height : float, is_selected : bool) -> bool:
+    def ImageToggle(id : str, selected : bool, texture_path: str, size : tuple[float, float], padding : tuple[float, float] = (2, 2), tint: tuple[int, int, int, int] = (255, 255, 255, 255), background : tuple[int, int, int, int] = (255, 255, 255, 0)) -> bool:
+        cursor = PyImGui.get_cursor_screen_pos()
+        rect = (cursor[0], cursor[1], size[0], size[1])
+        hovered = UI.is_mouse_in_rect(rect)
+        texture_size = (size[0] - padding[0] * 2, size[1] - padding[1] * 2)
+                
+        tint = (255,255,255,255) if selected else (150,150,150,255) if hovered else (64,64,64,255)
+        background_color = Utils.RGBToColor(background[0], background[1], background[2], background[3])
+        
+        # PyImGui.push_style_color(PyImGui.ImGuiCol.ChildBg, Utils.ColorToTuple(
+        #     Utils.RGBToColor(background[0], background[1], background[2], background[3])))
+        
+        # cursor = PyImGui.get_cursor_pos()
+        PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + size[0],  cursor[1] + size[1], background_color, 3.0, 0)
+        
+        PyImGui.begin_child(f"ImageToggle{id}", size, False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
+        cursor = PyImGui.get_cursor_pos()
+        PyImGui.set_cursor_pos(cursor[0] + padding[0], cursor[1] + padding[1])
+        ImGui.DrawTextureExtended(texture_path = texture_path, size=texture_size, tint=tint)
+        
+        PyImGui.end_child()
+        
+        # PyImGui.pop_style_color(1)
+                        
+        if PyImGui.is_item_clicked(0):
+            selected = not selected
+            
+        return selected
+                        
+    @staticmethod
+    def ImageToggleXX(path : str, width : float, height : float, is_selected : bool) -> bool:
         """
         Draws an image toggle button with the specified icon and width.
         
