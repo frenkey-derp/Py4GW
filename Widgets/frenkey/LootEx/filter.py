@@ -39,7 +39,7 @@ class Filter:
             if item.value <= 0:
                 return False
 
-        if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_SMART or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:
+        if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:
             if self.materials:
                 if not item.data:
                     return False

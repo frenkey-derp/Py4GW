@@ -100,6 +100,15 @@ def main():
     if not current_character: 
         return
     
+    language = utility.Util.get_server_language()
+    english_languages = [ServerLanguage.English, ServerLanguage.Japanese, ServerLanguage.Korean, ServerLanguage.TraditionalChinese, ServerLanguage.Russian]
+    language = language if language not in english_languages else ServerLanguage.English
+    
+    if (language != settings.current.language):
+        settings.current.language = language if language not in english_languages else ServerLanguage.English
+        data.UpdateLanguage(language)
+        settings.current.save()
+        
     settings.current.current_character = current_character
     if not settings.current.character_profiles.get(current_character, False):        
         if settings.current.profiles:
@@ -123,11 +132,6 @@ def main():
     if settings.current.parent_frame_id is None or settings.current.parent_frame_id == 0:
         settings.current.parent_frame_id = UIManager.GetFrameIDByHash(inventory_frame_hash)
     
-    language = utility.Util.get_server_language()
-    if (language != settings.current.language):
-        settings.current.language = language
-        data.UpdateLanguage(language)
-        settings.current.save()
     
     ui.py_io = PyImGui.get_io()
     ui.draw_vault_controls()        

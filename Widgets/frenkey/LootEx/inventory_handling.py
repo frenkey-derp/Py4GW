@@ -147,7 +147,7 @@ class InventoryHandler:
             ui_manager_extensions.UIManagerExtensions.CancelLesserSalvage()
 
     def GetSalvageOption(self, item: cache.Cached_Item) -> Optional[SalvageOption]:
-        if item.action == ItemAction.SALVAGE_SMART:
+        if item.action == ItemAction.SALVAGE:
             if item.data is None:
                 return None
 
@@ -849,7 +849,7 @@ class InventoryHandler:
                     return
        
     def IsSalvageAction(self, action: ItemAction) -> bool:
-        return action in (ItemAction.SALVAGE_COMMON_MATERIALS, ItemAction.SALVAGE_RARE_MATERIALS, ItemAction.SALVAGE_SMART, ItemAction.SALVAGE_MODS, ItemAction.SALVAGE)
+        return action in (ItemAction.SALVAGE_COMMON_MATERIALS, ItemAction.SALVAGE_RARE_MATERIALS, ItemAction.SALVAGE, ItemAction.SALVAGE_MODS, ItemAction.SALVAGE)
 
     def ProcessSalvageList(self):
         if self.salvage_queue and len(self.salvage_queue) > 0:
@@ -1611,7 +1611,7 @@ class InventoryHandler:
                             self.DepositItem(item)
                             self.inventory_changed = True
                             
-                    case ItemAction.SALVAGE_SMART | ItemAction.SALVAGE | ItemAction.SALVAGE_COMMON_MATERIALS | ItemAction.SALVAGE_RARE_MATERIALS:
+                    case ItemAction.SALVAGE | ItemAction.SALVAGE | ItemAction.SALVAGE_COMMON_MATERIALS | ItemAction.SALVAGE_RARE_MATERIALS:
                         ## This is handled in the salvage queue
                         continue
 

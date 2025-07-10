@@ -124,7 +124,7 @@ class UI:
             enum.ItemAction.STASH: os.path.join(self.icon_textures_path, "xunlai_chest.png"),      
             enum.ItemAction.SALVAGE_MODS: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
             enum.ItemAction.SALVAGE: os.path.join(self.item_textures_path, "Salvage_Kit.png"),
-            enum.ItemAction.SALVAGE_SMART: os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png"),
+            enum.ItemAction.SALVAGE: os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png"),
             enum.ItemAction.SALVAGE_RARE_MATERIALS: os.path.join(self.item_textures_path, "Steel_Ingot.png"),  
             enum.ItemAction.SALVAGE_COMMON_MATERIALS: os.path.join(self.item_textures_path, "Iron_Ingot.png"),
             enum.ItemAction.SELL_TO_MERCHANT: os.path.join(self.item_textures_path, "Gold.png"),
@@ -227,21 +227,21 @@ class UI:
             ItemType.Salvage: os.path.join(self.item_textures_path, "Salvage_Heavy_Armor.png"),
             ItemType.Axe: os.path.join(self.item_textures_path, "Great_Axe.png"),
             ItemType.Bag: os.path.join(self.item_textures_path, "Bag.png"),
-            # ItemType.Boots: os.path.join(self.item_textures_path, "Boots.png"),
+            ItemType.Boots: os.path.join(self.icon_textures_path, "templar_armor_feet.png"),
             ItemType.Bow: os.path.join(self.item_textures_path, "Ivory_Bow.png"),
-            # ItemType.Bundle: os.path.join(self.item_textures_path, "Bundle.png"),
-            # ItemType.Chestpiece: os.path.join(self.item_textures_path, "Chestpiece.png"),
-            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
+            ItemType.Bundle: os.path.join(self.item_textures_path, "War_Supplies.png"),
+            ItemType.Chestpiece: os.path.join(self.icon_textures_path, "templar_armor_chestpiece.png"),
+            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Rune_All_Sup.png"),
             ItemType.Usable: os.path.join(self.item_textures_path, "Cr%C3%A8me_Br%C3%BBl%C3%A9e.png"),
             ItemType.Dye: os.path.join(self.item_textures_path, "White_Dye.png"),
             ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood_Plank.png"),
             ItemType.Offhand: os.path.join(self.item_textures_path, "Channeling_Focus.png"),
-            # ItemType.Gloves: os.path.join(self.item_textures_path, "Gloves.png"),
+            ItemType.Gloves: os.path.join(self.icon_textures_path, "templar_armor_gloves.png"),
             ItemType.Hammer: os.path.join(self.item_textures_path, "PvP_Hammer.png"),
-            # ItemType.Headpiece: os.path.join(self.item_textures_path, "Headpiece.png"),
+            ItemType.Headpiece: os.path.join(self.icon_textures_path, "templar_armor_helmet.png"),
             ItemType.CC_Shards: os.path.join(self.item_textures_path, "Candy_Cane_Shard.png"),
             ItemType.Key: os.path.join(self.item_textures_path, "Zaishen_Key.png"),
-            # ItemType.Leggings: os.path.join(self.item_textures_path, "Leggings.png"),
+            ItemType.Leggings: os.path.join(self.icon_textures_path, "templar_armor_leggins.png"),
             ItemType.Gold_Coin: os.path.join(self.item_textures_path, "Gold.png"),
             ItemType.Quest_Item: os.path.join(self.item_textures_path, "Top_Right_Map_Piece.png"),
             ItemType.Wand: os.path.join(self.item_textures_path, "Shaunur%27s_Scepter.png"),
@@ -251,7 +251,7 @@ class UI:
             ItemType.Kit: os.path.join(self.item_textures_path, "Superior_Salvage_Kit.png"),
             ItemType.Trophy: os.path.join(self.item_textures_path, "Destroyer_Core.png"),
             ItemType.Scroll: os.path.join(self.item_textures_path, "Scroll_of_the_Lightbringer.png"),
-            ItemType.Daggers: os.path.join(self.item_textures_path, "Kris_Daggers.png"),
+            ItemType.Daggers: os.path.join(self.item_textures_path, "Balthazar%27s_Daggers.png"),
             ItemType.Present: os.path.join(self.item_textures_path, "Birthday_Present.png"),
             ItemType.Minipet: os.path.join(self.item_textures_path, "Miniature_Celestial_Tiger.png"),
             ItemType.Scythe: os.path.join(self.item_textures_path, "Suntouched_Scythe.png"),
@@ -261,54 +261,18 @@ class UI:
             ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription_focus_items_or_shields.png"),
             ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
             ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription_spellcasting_weapons.png"),
-            # ItemType.Storybook: os.path.join(self.item_textures_path, "Young_Heroes_of_Tyria.png"),
-            # ItemType.Costume: os.path.join(self.item_textures_path, "134px-Shining_Blade_costume.png"),
-            # ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine_Halo.png"),
-            # ItemType.Unknown: os.path.join(self.item_textures_path, "Unknown_Item.png"),
+            ItemType.Storybook: os.path.join(self.item_textures_path, "Young_Heroes_of_Tyria.png"),
+            ItemType.Costume: os.path.join(self.item_textures_path, "134px-Shining_Blade_costume.png"),
+            ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine_Halo.png"),
+            ItemType.Unknown: "",
         }
         
         self.inscription_type_textures: dict[ItemType, str] = {
-            ItemType.Salvage: os.path.join(self.item_textures_path, "Salvage_Heavy_Armor.png"),
-            ItemType.Axe: os.path.join(self.item_textures_path, "Great_Axe.png"),
-            ItemType.Bag: os.path.join(self.item_textures_path, "Bag.png"),
-            # ItemType.Boots: os.path.join(self.item_textures_path, "Boots.png"),
-            ItemType.Bow: os.path.join(self.item_textures_path, "Ivory_Bow.png"),
-            # ItemType.Bundle: os.path.join(self.item_textures_path, "Bundle.png"),
-            # ItemType.Chestpiece: os.path.join(self.item_textures_path, "Chestpiece.png"),
-            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
-            ItemType.Usable: os.path.join(self.item_textures_path, "Cr%C3%A8me_Br%C3%BBl%C3%A9e.png"),
-            ItemType.Dye: os.path.join(self.item_textures_path, "White_Dye.png"),
-            ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood_Plank.png"),
-            ItemType.Offhand: os.path.join(self.item_textures_path, "Inscription_focus_items.png"),
-            # ItemType.Gloves: os.path.join(self.item_textures_path, "Gloves.png"),
-            ItemType.Hammer: os.path.join(self.item_textures_path, "PvP_Hammer.png"),
-            # ItemType.Headpiece: os.path.join(self.item_textures_path, "Headpiece.png"),
-            ItemType.CC_Shards: os.path.join(self.item_textures_path, "Candy_Cane_Shard.png"),
-            ItemType.Key: os.path.join(self.item_textures_path, "Zaishen_Key.png"),
-            # ItemType.Leggings: os.path.join(self.item_textures_path, "Leggings.png"),
-            ItemType.Gold_Coin: os.path.join(self.item_textures_path, "Gold.png"),
-            ItemType.Quest_Item: os.path.join(self.item_textures_path, "Top_Right_Map_Piece.png"),
-            ItemType.Wand: os.path.join(self.item_textures_path, "Shaunur%27s_Scepter.png"),
-            ItemType.Shield: os.path.join(self.item_textures_path, "Crude_Shield.png"),
-            ItemType.Staff : os.path.join(self.item_textures_path, "Holy_Staff.png"),
-            ItemType.Sword: os.path.join(self.item_textures_path, "Short_Sword.png"),
-            ItemType.Kit: os.path.join(self.item_textures_path, "Superior_Salvage_Kit.png"),
-            ItemType.Trophy: os.path.join(self.item_textures_path, "Destroyer_Core.png"),
-            ItemType.Scroll: os.path.join(self.item_textures_path, "Scroll_of_the_Lightbringer.png"),
-            ItemType.Daggers: os.path.join(self.item_textures_path, "Kris_Daggers.png"),
-            ItemType.Present: os.path.join(self.item_textures_path, "Birthday_Present.png"),
-            ItemType.Minipet: os.path.join(self.item_textures_path, "Miniature_Celestial_Tiger.png"),
-            ItemType.Scythe: os.path.join(self.item_textures_path, "Suntouched_Scythe.png"),
-            ItemType.Spear: os.path.join(self.item_textures_path, "Suntouched_Spear.png"),
             ItemType.Weapon: os.path.join(self.item_textures_path, "Inscription_weapons.png"),
             ItemType.MartialWeapon: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
             ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription_focus_items_or_shields.png"),
             ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
             ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription_spellcasting_weapons.png"),
-            # ItemType.Storybook: os.path.join(self.item_textures_path, "Young_Heroes_of_Tyria.png"),
-            # ItemType.Costume: os.path.join(self.item_textures_path, "134px-Shining_Blade_costume.png"),
-            # ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine_Halo.png"),
-            # ItemType.Unknown: os.path.join(self.item_textures_path, "Unknown_Item.png"),
         }
         
         self.bag_ranges : dict[str, tuple[Bag, Bag]] = {
@@ -344,16 +308,164 @@ class UI:
             elif mod.mod_type == enum.ModType.Inherent:
                 self.inherent_names.append(mod.name)
 
+        sorted_item_types = [
+            ItemType.Axe,
+            ItemType.Bow,
+            ItemType.Daggers,
+            ItemType.Hammer,
+            ItemType.Scythe,
+            ItemType.Spear,
+            ItemType.Sword,
+            ItemType.Staff,
+            ItemType.Wand,
+            ItemType.Offhand,
+            ItemType.Shield,
+            
+            ItemType.Headpiece,
+            ItemType.Chestpiece,
+            ItemType.Gloves,
+            ItemType.Leggings,
+            ItemType.Boots,
+            
+            ItemType.Scroll,
+            ItemType.Usable,
+            ItemType.Dye,
+            ItemType.Key,
+            ItemType.Gold_Coin,
+            ItemType.Quest_Item,
+            ItemType.Kit,
+            ItemType.Rune_Mod,
+            ItemType.CC_Shards,
+            ItemType.Materials_Zcoins,
+            ItemType.Salvage,
+            ItemType.Present,
+            ItemType.Minipet,
+            ItemType.Trophy,
+            
+            ItemType.Weapon,
+            ItemType.MartialWeapon,
+            ItemType.OffhandOrShield,
+            ItemType.EquippableItem,
+            ItemType.SpellcastingWeapon,
+            ItemType.Costume,
+            ItemType.Costume_Headpiece,
+            ItemType.Storybook,
+            ItemType.Bundle,
+            ItemType.Unknown,
+        ]
+        
         self.filter_actions = [
             enum.ItemAction.LOOT,
             enum.ItemAction.STASH,
-            enum.ItemAction.SALVAGE_SMART,
+            enum.ItemAction.SALVAGE,
             enum.ItemAction.SALVAGE_COMMON_MATERIALS,
             enum.ItemAction.SALVAGE_RARE_MATERIALS,
             enum.ItemAction.SELL_TO_MERCHANT,
             enum.ItemAction.SELL_TO_TRADER,
             enum.ItemAction.DESTROY,
         ]
+        
+        default_item_types = [
+            item_type for item_type in sorted_item_types if item_type not in [
+                ItemType.Unknown,
+                ItemType.Weapon,
+                ItemType.MartialWeapon,
+                ItemType.OffhandOrShield,
+                ItemType.EquippableItem,
+                ItemType.SpellcastingWeapon,
+                ItemType.Costume,
+                ItemType.Costume_Headpiece,
+                ItemType.Storybook,
+                ItemType.Bundle,                
+                    
+                ItemType.Headpiece,
+                ItemType.Chestpiece,
+                ItemType.Gloves,
+                ItemType.Leggings,
+                ItemType.Boots,
+            ]
+        ]
+        
+        self.action_item_types_map : dict[enum.ItemAction, list[ItemType]] = {            
+            enum.ItemAction.LOOT : [
+                item_type for item_type in sorted_item_types if item_type not in [
+                    ItemType.Weapon,
+                    ItemType.MartialWeapon,
+                    ItemType.OffhandOrShield,
+                    ItemType.EquippableItem,
+                    ItemType.SpellcastingWeapon,
+                ]
+            ],
+            enum.ItemAction.STASH : [
+                item_type for item_type in sorted_item_types if item_type not in [
+                    ItemType.Weapon,
+                    ItemType.MartialWeapon,
+                    ItemType.OffhandOrShield,
+                    ItemType.EquippableItem,
+                    ItemType.SpellcastingWeapon,
+                    ItemType.Bundle,
+                ]
+            ],
+            enum.ItemAction.SALVAGE : [
+                ItemType.Axe,
+                ItemType.Bow,
+                ItemType.Daggers,
+                ItemType.Hammer,
+                ItemType.Scythe,
+                ItemType.Spear,
+                ItemType.Sword,
+                ItemType.Staff,
+                ItemType.Wand,
+                ItemType.Offhand,
+                ItemType.Shield,
+                ItemType.CC_Shards,
+                ItemType.Materials_Zcoins,
+                ItemType.Salvage,
+                ItemType.Trophy,
+            ],
+            enum.ItemAction.SALVAGE_COMMON_MATERIALS : [
+                ItemType.Axe,
+                ItemType.Bow,
+                ItemType.Daggers,
+                ItemType.Hammer,
+                ItemType.Scythe,
+                ItemType.Spear,
+                ItemType.Sword,
+                ItemType.Staff,
+                ItemType.Wand,
+                ItemType.Offhand,
+                ItemType.Shield,
+                ItemType.CC_Shards,
+                ItemType.Materials_Zcoins,
+                ItemType.Salvage,
+                ItemType.Trophy,
+            ],
+            enum.ItemAction.SALVAGE_RARE_MATERIALS : [
+                ItemType.Axe,
+                ItemType.Bow,
+                ItemType.Daggers,
+                ItemType.Hammer,
+                ItemType.Scythe,
+                ItemType.Spear,
+                ItemType.Sword,
+                ItemType.Staff,
+                ItemType.Wand,
+                ItemType.Offhand,
+                ItemType.Shield,
+                ItemType.CC_Shards,
+                ItemType.Materials_Zcoins,
+                ItemType.Salvage,
+                ItemType.Trophy,
+            ],
+            enum.ItemAction.SELL_TO_MERCHANT : default_item_types,
+            enum.ItemAction.SELL_TO_TRADER : [
+                ItemType.Scroll,
+                ItemType.Dye,
+                ItemType.Materials_Zcoins,
+                ItemType.Rune_Mod,
+            ],
+            enum.ItemAction.DESTROY : default_item_types,
+        }
         
         self.filter_action_names = [
             "Loot (Pick Up)",
@@ -370,7 +482,7 @@ class UI:
             enum.ItemAction.LOOT,
             enum.ItemAction.STASH,
             enum.ItemAction.SELL_TO_MERCHANT,
-            enum.ItemAction.SALVAGE_SMART,
+            enum.ItemAction.SALVAGE,
             enum.ItemAction.SALVAGE_COMMON_MATERIALS,
             enum.ItemAction.SALVAGE_RARE_MATERIALS,
             enum.ItemAction.DESTROY,
@@ -1733,62 +1845,66 @@ class UI:
                             PyImGui.text_wrapped(f"Salvage only items which are worth less than {utility.Util.format_currency(filter.salvage_item_max_vendorvalue)} and which salvage for")
                             
                             width, height = PyImGui.get_content_region_avail()
-                            width = width - 20
-                            item_width = 200
-                            columns = min(max(1, math.floor(width / item_width)), 10)
-                            rows = math.ceil(len(data.Common_Materials) / columns) + math.ceil(len(data.Rare_Materials) / columns)
+                            width = width - 50
+                            item_width = 36
+                            columns = max(1, math.floor(width / item_width))
+                            
+                            has_common_materials = len(data.Common_Materials) > 0 if filter.action in [enum.ItemAction.SALVAGE, enum.ItemAction.SALVAGE_COMMON_MATERIALS] else False
+                            has_rare_materials = len(data.Rare_Materials) > 0 if filter.action in [enum.ItemAction.SALVAGE, enum.ItemAction.SALVAGE_RARE_MATERIALS] else False
+                            
+                            rows = (math.ceil(len(data.Common_Materials) / columns) if has_common_materials else 0) + (math.ceil(len(data.Rare_Materials) / columns) if has_rare_materials else 0)
                                                             
-                            self.action_heights[enum.ItemAction.SALVAGE] = min(
-                                max(153, (remaining_size[1] - 20) / 2), 
-                                (rows * 30) + 123 + 8)
-                            self.action_heights[enum.ItemAction.SALVAGE_RARE_MATERIALS] = self.action_heights[enum.ItemAction.SALVAGE]
-                            self.action_heights[enum.ItemAction.SALVAGE_COMMON_MATERIALS] = self.action_heights[enum.ItemAction.SALVAGE]
-                            self.action_heights[enum.ItemAction.SALVAGE_SMART] = self.action_heights[enum.ItemAction.SALVAGE]
+                            self.action_heights[enum.ItemAction.SALVAGE_RARE_MATERIALS] = (rows * item_width) + 123 + 8
+                            self.action_heights[enum.ItemAction.SALVAGE_COMMON_MATERIALS] = (rows * item_width) + 125 + 8
+                            self.action_heights[enum.ItemAction.SALVAGE] = (rows * item_width) + 123 + 8 + 20
                             
                             PyImGui.begin_child("salvage_materials", (0, 0), True, PyImGui.WindowFlags.NoFlag)      
-                                            
-                                            
+                                                                                        
                             if PyImGui.is_rect_visible(0, self.action_heights[enum.ItemAction.SALVAGE] - 20):
-                                PyImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)
+                                PyImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)                                
+                                if filter.action == enum.ItemAction.SALVAGE or filter.action == enum.ItemAction.SALVAGE_COMMON_MATERIALS:
+                                    for material in data.Common_Materials.values():
+                                        PyImGui.table_next_column()
+                                        changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
+                                    
+                                        if changed:
+                                            if not selected:
+                                                if material.model_id in filter.materials:
+                                                    del filter.materials[material.model_id]
+                                            else:
+                                                filter.materials[material.model_id] = selected
+                                            
+                                            settings.current.profile.save()
+                                    
+                                    PyImGui.table_next_row()
                                 
-                                for material in data.Common_Materials.values():
-                                    PyImGui.table_next_column()
-                                    changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
                                 
-                                    if changed:
-                                        if not selected:
-                                            if material.model_id in filter.materials:
-                                                del filter.materials[material.model_id]
-                                        else:
-                                            filter.materials[material.model_id] = selected
-                                        
-                                        settings.current.profile.save()
-                                
-                                PyImGui.table_next_row()
-                                for _ in range(columns):
-                                    PyImGui.table_next_column()
-                                    PyImGui.dummy(0, 2)
-                                    PyImGui.separator()
-                                    PyImGui.dummy(0, 2)
-                                
-                                for material in data.Rare_Materials.values():
-                                    PyImGui.table_next_column()
-                                    changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
-                                
-                                    if changed:
-                                        if not selected:
-                                            if material.model_id in filter.materials:
-                                                del filter.materials[material.model_id]
-                                        else:
-                                            filter.materials[material.model_id] = selected
-                                        
-                                        settings.current.profile.save()
-                                
+                                if filter.action == enum.ItemAction.SALVAGE:
+                                    for _ in range(columns):
+                                        PyImGui.table_next_column()
+                                        PyImGui.dummy(0, 2)
+                                        PyImGui.separator()
+                                        PyImGui.dummy(0, 2)
+                                    
+                                if filter.action == enum.ItemAction.SALVAGE_RARE_MATERIALS or filter.action == enum.ItemAction.SALVAGE:    
+                                    for material in data.Rare_Materials.values():
+                                        PyImGui.table_next_column()
+                                        changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
+                                    
+                                        if changed:
+                                            if not selected:
+                                                if material.model_id in filter.materials:
+                                                    del filter.materials[material.model_id]
+                                            else:
+                                                filter.materials[material.model_id] = selected
+                                            
+                                            settings.current.profile.save()
+                                    
                                 PyImGui.end_table()
                             PyImGui.end_child()
                                 
                         match filter.action:
-                            case enum.ItemAction.SALVAGE_SMART:
+                            case enum.ItemAction.SALVAGE:
                                 draw_salvage_options()                                        
                                 pass
                             case enum.ItemAction.SALVAGE_COMMON_MATERIALS:
@@ -1806,38 +1922,37 @@ class UI:
                     # Filter item types
                     sub_subtab_size = PyImGui.get_content_region_avail()
                     if PyImGui.begin_child("loot_item_types_filter_table", (sub_subtab_size[0] / 3 * 2, 0), True, PyImGui.WindowFlags.NoFlag) and PyImGui.is_rect_visible(0, 20):  
+                        PyImGui.text("Item Types")
+                        PyImGui.separator()
                         width, height = PyImGui.get_content_region_avail()
                         width = width - 20
-                        item_width = 200
-                        columns = min(max(1, math.floor(width / item_width)), 10)
+                        item_width = 36
+                        columns = max(1, math.floor(width / item_width))
                                                 
                         PyImGui.begin_table(
                             "filter_table", columns, PyImGui.TableFlags.ScrollY)
 
-                        count = 0
-                        chunk_size = math.ceil(len(self.item_type_textures) / columns)
                         PyImGui.table_next_column()
 
-                        sorted_item_types = sorted(
-                            ItemType, key=lambda x: x.name)
-
-                        for item_type in sorted_item_types:
+                        for item_type in self.action_item_types_map[filter.action]:
                             if item_type in self.item_type_textures:
-                                count += 1
-
-                                if count > chunk_size:
-                                    PyImGui.table_next_column()
-                                    count = 1
-
                                 if filter.item_types[item_type] is None:
                                     continue
 
                                 changed, filter.item_types[item_type] = self.draw_item_type_selectable(
                                     item_type, filter.item_types[item_type])
+                                PyImGui.table_next_column()
+                                    
                                 if changed:
+                                    if self.py_io.key_ctrl:
+                                        selected = filter.item_types[item_type]
+                                        # Toggle all item types
+                                        for it in self.action_item_types_map[filter.action] or ItemType:
+                                            if it in filter.item_types:
+                                                filter.item_types[it] = selected
+                                                
                                     settings.current.profile.save()
-                                ImGui.show_tooltip(
-                                f"Item Type: {item_type.name}")
+                                    
                         PyImGui.end_table()
 
                     PyImGui.end_child()
@@ -1846,6 +1961,9 @@ class UI:
 
                     # Filter rarities
                     if PyImGui.begin_child("loot_rarity_filter_table", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                        PyImGui.text("Rarities")
+                        PyImGui.separator()
+                        
                         for rarity in Rarity:
                             if rarity not in filter.rarities:
                                 filter.rarities[rarity] = False
@@ -1859,7 +1977,7 @@ class UI:
                             PyImGui.push_style_color(
                                 PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(color["frame"]))
 
-                            label = f"Rarity: {rarity.name}"
+                            label = f"{rarity.name}"
                             unique_id = f"##{rarity.value}"
                             rarity_selected = PyImGui.checkbox(
                                 IconsFontAwesome5.ICON_SHIELD_ALT + " " + label + unique_id, filter.rarities[rarity])
@@ -2752,7 +2870,7 @@ class UI:
                             pass
                         else:
                             for weapon_type in ItemType:
-                                if not m.has_item_type(weapon_type) or weapon_type >= ItemType.Weapon:
+                                if not m.has_item_type(weapon_type) or weapon_type in self.inscription_type_textures:
                                     continue
 
                                 is_selected = m.identifier in settings.current.profile.weapon_mods and weapon_type.name in settings.current.profile.weapon_mods[
@@ -2765,12 +2883,15 @@ class UI:
                                 cursor = PyImGui.get_cursor_screen_pos() 
                                 rect = (cursor[0], cursor[1], texture_size, texture_size)
                                 hovered = UI.is_mouse_in_rect(rect)
+                                
                                 if texture:
                                     # ImGui.DrawTexture(texture, 24, 24)
                                     # tint = (255,255,255,255) if is_selected else (150,150,150, 255) if hovered else (64, 64,64, 255)
-                                    # ImGui.DrawTextureExtended(texture_path=texture, size=(texture_size, texture_size), tint = tint)
+                                    # ImGui.DrawTextureExtended(texture_path=texture, size=(texture_size, texture_size))
                                     background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
                                     selected = UI.ImageToggle(id=f"{m.identifier}{weapon_type.name}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255,255,255,255), background=background)
+                                    # PyImGui.text(weapon_type.name)
+                                
                                     if selected != is_selected:
                                         if not settings.current.profile.weapon_mods.get(m.identifier, None):
                                             settings.current.profile.weapon_mods[m.identifier] = {
@@ -3293,51 +3414,22 @@ class UI:
         if settings.current.profile is None:
             return False, False
 
-        text_color = Utils.RGBToColor(
-            255, 255, 255, 255) if is_selected else Utils.RGBToColor(255, 255, 255, 125)
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
-                                Utils.ColorToTuple(text_color))
-
         texture = os.path.join(self.item_textures_path, material.inventory_icon) if material.inventory_icon else None
+       
+        texture_size = 32
+        cursor = PyImGui.get_cursor_screen_pos()
+        rect = (cursor[0], cursor[1], texture_size, texture_size)        
+        hovered = UI.is_mouse_in_rect(rect)        
+        background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
+        is_now_selected = is_selected
+        
         if texture:
-            ImGui.DrawTexture(texture, 20, 20)
+            is_now_selected = UI.ImageToggle(id=f"{texture}{material.model_id}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255, 255, 255, 255) if is_selected else (200, 200, 200, 255) if hovered else (125, 125, 125, 255), background=background)
         else:
-            PyImGui.dummy(20, 20)
-        
-        PyImGui.same_line(0, 5)
-        
-        is_now_selected = PyImGui.checkbox(
-            f"{utility.Util.reformat_string(material.name)}", is_selected
-        )
-        PyImGui.pop_style_color(1)
-        
-        if PyImGui.is_item_hovered():
-            PyImGui.begin_tooltip()
-            if PyImGui.is_rect_visible(0, 20):
-                if PyImGui.begin_table(str(material.model_id), 2, PyImGui.TableFlags.Borders):
-                    PyImGui.table_setup_column(
-                        material.name, PyImGui.TableColumnFlags.WidthFixed, 150)
-                    PyImGui.table_headers_row()
-
-                    PyImGui.table_next_row()
-                    
-                    PyImGui.table_next_column()
-                    PyImGui.text(f"Vendor Value")
-                    
-                    PyImGui.table_next_column()
-                    PyImGui.text(utility.Util.format_currency(material.vendor_value))
-                                
-                    PyImGui.table_next_column()
-                    PyImGui.text(f"Last Checked")
-                    PyImGui.table_next_column()
-                    time_ago = f"{utility.Util.format_time_ago(datetime.now() - material.vendor_updated)}\n" if material.vendor_updated else ""
-                    PyImGui.text(f"{time_ago}")
-                    
-                PyImGui.end_table()
+            PyImGui.dummy(texture_size, texture_size)
             
-            PyImGui.end_tooltip()
+        ImGui.show_tooltip(f"{material.name}")
             
-
         return is_selected != is_now_selected, is_now_selected
 
     def draw_item_type_selectable(self, item_type, is_selected) -> tuple[bool, bool]:
@@ -3355,25 +3447,18 @@ class UI:
         """
         if settings.current.profile is None:
             return False, False
-
-        text_color = Utils.RGBToColor(
-            255, 255, 255, 255) if is_selected else Utils.RGBToColor(255, 255, 255, 125)
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
-                                Utils.ColorToTuple(text_color))
         
         texture = self.item_type_textures.get(item_type, None)
-        if texture:
-            ImGui.DrawTexture(texture, 20, 20)
-        else:
-            PyImGui.dummy(20, 20)
-            
-        PyImGui.same_line(0, 5)
-
-        is_now_selected = PyImGui.checkbox(
-            f"{utility.Util.reformat_string(item_type.name)}", is_selected
-        )
-        PyImGui.pop_style_color(1)
-
+        texture_size = 32
+        cursor = PyImGui.get_cursor_screen_pos()
+        rect = (cursor[0], cursor[1], texture_size, texture_size)        
+        hovered = UI.is_mouse_in_rect(rect)        
+        background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
+        is_now_selected = is_selected
+        
+        is_now_selected = UI.ImageToggle(id=f"{texture}{item_type.name}", selected=is_selected, texture_path=texture or "", size=(texture_size, texture_size), tint=(255, 255, 255, 255) if is_selected else (200, 200, 200, 255) if hovered else (125, 125, 125, 255), background=background)
+                
+        ImGui.show_tooltip(f"Item Type: {utility.Util.reformat_string(item_type.name)}")
         return is_selected != is_now_selected, is_now_selected
 
     def draw_blacklist_selectable_item(self, item: SelectableItem):
@@ -3778,11 +3863,17 @@ class UI:
     
     # region general ui elements
     @staticmethod
-    def ImageToggle(id : str, selected : bool, texture_path: str, size : tuple[float, float], padding : tuple[float, float] = (2, 2), tint: tuple[int, int, int, int] = (255, 255, 255, 255), background : tuple[int, int, int, int] = (255, 255, 255, 0)) -> bool:
+    def ImageToggle(id : str, selected : bool, texture_path: str, size : tuple[float, float], label : str = "",  padding : tuple[float, float] = (2, 2), tint: tuple[int, int, int, int] = (255, 255, 255, 255), background : tuple[int, int, int, int] = (255, 255, 255, 0)) -> bool:
         cursor = PyImGui.get_cursor_screen_pos()
-        rect = (cursor[0], cursor[1], size[0], size[1])
-        hovered = UI.is_mouse_in_rect(rect)
+        
+        label_size = PyImGui.calc_text_size(label) if label else (0, 0)
         texture_size = (size[0] - padding[0] * 2, size[1] - padding[1] * 2)
+        
+        width = size[0] + 5 + label_size[0] if label else size[0]
+        height = size[1]
+        
+        rect = (cursor[0], cursor[1], size[0] + 5 + label_size[0], size[1])
+        hovered = UI.is_mouse_in_rect(rect)
                 
         tint = (255,255,255,255) if selected else (150,150,150,255) if hovered else (64,64,64,255)
         background_color = Utils.RGBToColor(background[0], background[1], background[2], background[3])
@@ -3793,10 +3884,26 @@ class UI:
         # cursor = PyImGui.get_cursor_pos()
         PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + size[0],  cursor[1] + size[1], background_color, 3.0, 0)
         
-        PyImGui.begin_child(f"ImageToggle{id}", size, False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
-        cursor = PyImGui.get_cursor_pos()
-        PyImGui.set_cursor_pos(cursor[0] + padding[0], cursor[1] + padding[1])
-        ImGui.DrawTextureExtended(texture_path = texture_path, size=texture_size, tint=tint)
+        PyImGui.begin_child(f"ImageToggle{id}{texture_path}", (width, height), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
+        
+        # cursor = PyImGui.get_cursor_pos()
+        PyImGui.set_cursor_pos(padding[0], padding[1])
+        
+        if texture_path:
+            ImGui.DrawTextureExtended(texture_path=texture_path, size=texture_size, tint=tint)
+        else:
+            ImGui.push_font("Bold", 28)
+            text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
+            PyImGui.set_cursor_pos((size[0] - text_size[0]) / 2, (size[1] - (28 - 6)) / 2)
+            PyImGui.text(IconsFontAwesome5.ICON_QUESTION)
+            ImGui.pop_font()
+            pass
+                
+        if label:
+            PyImGui.push_style_color(PyImGui.ImGuiCol.Text, Utils.ColorToTuple(Utils.RGBToColor(255, 255, 255, 255 if selected else 200 if hovered else 125)))
+            PyImGui.set_cursor_pos(size[0] + 5, (size[1] - label_size[1]) / 2 + 3)
+            PyImGui.text(label)
+            PyImGui.pop_style_color(1)
         
         PyImGui.end_child()
         

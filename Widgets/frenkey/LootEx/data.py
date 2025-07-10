@@ -391,6 +391,9 @@ def UpdateLanguage(server_language: ServerLanguage):
 
     for weapon_mod in Weapon_Mods.values():
         weapon_mod.update_language(server_language)
+        
+    for material in Materials.values():
+        material.update_language(server_language)
 
 @staticmethod
 def Reload():
