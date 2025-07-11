@@ -1,6 +1,6 @@
 {
-    "Blessed Insignia": {
-        "Identifier": "Blessed Insignia",
+    "AgAkCAHp": {
+        "Identifier": "AgAkCAHp",
         "Descriptions": {
             "English": "Armor +10 (while affected by an Enchantment Spell)"
         },
@@ -37,8 +37,8 @@
             }
         ]
     },
-    "Brawler's Insignia": {
-        "Identifier": "Brawler's Insignia",
+    "AgAkCAHo": {
+        "Identifier": "AgAkCAHo",
         "Descriptions": {
             "English": "Armor +10 (while attacking)"
         },
@@ -75,8 +75,8 @@
             }
         ]
     },
-    "Herald's Insignia": {
-        "Identifier": "Herald's Insignia",
+    "AgAkCAHq": {
+        "Identifier": "AgAkCAHq",
         "Descriptions": {
             "English": "Armor +10 (while holding an item)"
         },
@@ -113,8 +113,8 @@
             }
         ]
     },
-    "Radiant Insignia": {
-        "Identifier": "Radiant Insignia",
+    "AgAkCAHl": {
+        "Identifier": "AgAkCAHl",
         "Descriptions": {
             "English": "Energy +3 (on chest armor)\nEnergy +2 (on leg armor)\nEnergy +1 (on other armor)"
         },
@@ -151,8 +151,8 @@
             }
         ]
     },
-    "Sentry's Insignia": {
-        "Identifier": "Sentry's Insignia",
+    "AgAkCAHr": {
+        "Identifier": "AgAkCAHr",
         "Descriptions": {
             "English": "Armor +10 (while in a stance)"
         },
@@ -189,8 +189,8 @@
             }
         ]
     },
-    "Stalwart Insignia": {
-        "Identifier": "Stalwart Insignia",
+    "AgAkCAHn": {
+        "Identifier": "AgAkCAHn",
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)"
         },
@@ -227,8 +227,8 @@
             }
         ]
     },
-    "Survivor Insignia": {
-        "Identifier": "Survivor Insignia",
+    "AgAkCAHm": {
+        "Identifier": "AgAkCAHm",
         "Descriptions": {
             "English": "Health +15 (on chest armor)\nHealth +10 (on leg armor)\nHealth +5 (on other armor)"
         },
@@ -265,8 +265,8 @@
             }
         ]
     },
-    "Rune of Attunement": {
-        "Identifier": "Rune of Attunement",
+    "AwAkCAIR": {
+        "Identifier": "AwAkCAIR",
         "Descriptions": {
             "English": "Energy +2"
         },
@@ -303,8 +303,8 @@
             }
         ]
     },
-    "Rune of Minor Vigor": {
-        "Identifier": "Rune of Minor Vigor",
+    "AwAkCAD_": {
+        "Identifier": "AwAkCAD_",
         "Descriptions": {
             "English": "Health +30 (Non-stacking)"
         },
@@ -341,8 +341,8 @@
             }
         ]
     },
-    "Rune of Vitae": {
-        "Identifier": "Rune of Vitae",
+    "AwAkCAIS": {
+        "Identifier": "AwAkCAIS",
         "Descriptions": {
             "English": "Health +10"
         },
@@ -379,8 +379,8 @@
             }
         ]
     },
-    "Rune of Clarity": {
-        "Identifier": "Rune of Clarity",
+    "AwAkCAIV": {
+        "Identifier": "AwAkCAIV",
         "Descriptions": {
             "English": "Reduces Blind duration on you by 20% (Non-stacking)\nReduces Weakness duration on you by 20% (Non-stacking)"
         },
@@ -417,8 +417,8 @@
             }
         ]
     },
-    "Rune of Major Vigor": {
-        "Identifier": "Rune of Major Vigor",
+    "AwAkCAEA": {
+        "Identifier": "AwAkCAEA",
         "Descriptions": {
             "English": "Health +41 (Non-stacking)"
         },
@@ -455,8 +455,8 @@
             }
         ]
     },
-    "Rune of Purity": {
-        "Identifier": "Rune of Purity",
+    "AwAkCAIW": {
+        "Identifier": "AwAkCAIW",
         "Descriptions": {
             "English": "Reduces Disease duration on you by 20% (Non-stacking)\nReduces Poison duration on you by 20% (Non-stacking)"
         },
@@ -493,8 +493,8 @@
             }
         ]
     },
-    "Rune of Recovery": {
-        "Identifier": "Rune of Recovery",
+    "AwAkCAIT": {
+        "Identifier": "AwAkCAIT",
         "Descriptions": {
             "English": "Reduces Dazed duration on you by 20% (Non-stacking)\nReduces Deep Wound duration on you by 20% (Non-stacking)"
         },
@@ -531,8 +531,8 @@
             }
         ]
     },
-    "Rune of Restoration": {
-        "Identifier": "Rune of Restoration",
+    "AwAkCAIU": {
+        "Identifier": "AwAkCAIU",
         "Descriptions": {
             "English": "Reduces Bleeding duration on you by 20% (Non-stacking)\nReduces Crippled duration on you by 20% (Non-stacking)"
         },
@@ -569,8 +569,8 @@
             }
         ]
     },
-    "Rune of Superior Vigor": {
-        "Identifier": "Rune of Superior Vigor",
+    "AwAkCAEB": {
+        "Identifier": "AwAkCAEB",
         "Descriptions": {
             "English": "Health +50 (Non-stacking)"
         },
@@ -607,8 +607,8 @@
             }
         ]
     },
-    "Dreadnought Insignia [Warrior]": {
-        "Identifier": "Dreadnought Insignia [Warrior]",
+    "AgAkCAH6": {
+        "Identifier": "AgAkCAH6",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)"
         },
@@ -645,8 +645,8 @@
             }
         ]
     },
-    "Knight's Insignia [Warrior]": {
-        "Identifier": "Knight's Insignia [Warrior]",
+    "AgAkCAH5": {
+        "Identifier": "AgAkCAH5",
         "Descriptions": {
             "English": "Received physical damage -3"
         },
@@ -683,8 +683,8 @@
             }
         ]
     },
-    "Lieutenant's Insignia [Warrior]": {
-        "Identifier": "Lieutenant's Insignia [Warrior]",
+    "AgAkCAII": {
+        "Identifier": "AgAkCAII",
         "Descriptions": {
             "English": "Reduces Hex durations on you by 20% and damage dealt by you by 5% (Non-stacking)\nArmor -20"
         },
@@ -721,8 +721,8 @@
             }
         ]
     },
-    "Sentinel's Insignia [Warrior]": {
-        "Identifier": "Sentinel's Insignia [Warrior]",
+    "AgAkCAH7": {
+        "Identifier": "AgAkCAH7",
         "Descriptions": {
             "English": "Armor +20 (Requires 13 Strength, vs. elemental damage)"
         },
@@ -759,8 +759,8 @@
             }
         ]
     },
-    "Stonefist Insignia [Warrior]": {
-        "Identifier": "Stonefist Insignia [Warrior]",
+    "AgAkCAIJ": {
+        "Identifier": "AgAkCAIJ",
         "Descriptions": {
             "English": "Increases knockdown time on foes by 1 second.\n(Maximum: 3 seconds)"
         },
@@ -797,8 +797,8 @@
             }
         ]
     },
-    "Warrior Rune of Minor Absorption": {
-        "Identifier": "Warrior Rune of Minor Absorption",
+    "AwAkCAD8": {
+        "Identifier": "AwAkCAD8",
         "Descriptions": {
             "English": "Reduces physical damage by 1 (Non-stacking)"
         },
@@ -835,8 +835,8 @@
             }
         ]
     },
-    "Warrior Rune of Minor Axe Mastery": {
-        "Identifier": "Warrior Rune of Minor Axe Mastery",
+    "AwAh6BIB": {
+        "Identifier": "AwAh6BIB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -873,8 +873,8 @@
             }
         ]
     },
-    "Warrior Rune of Minor Hammer Mastery": {
-        "Identifier": "Warrior Rune of Minor Hammer Mastery",
+    "AwAh6BMB": {
+        "Identifier": "AwAh6BMB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -911,8 +911,8 @@
             }
         ]
     },
-    "Warrior Rune of Minor Strength": {
-        "Identifier": "Warrior Rune of Minor Strength",
+    "AwAh6BEB": {
+        "Identifier": "AwAh6BEB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -949,8 +949,8 @@
             }
         ]
     },
-    "Warrior Rune of Minor Swordsmanship": {
-        "Identifier": "Warrior Rune of Minor Swordsmanship",
+    "AwAh6BQB": {
+        "Identifier": "AwAh6BQB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -987,8 +987,8 @@
             }
         ]
     },
-    "Warrior Rune of Minor Tactics": {
-        "Identifier": "Warrior Rune of Minor Tactics",
+    "AwAh6BUB": {
+        "Identifier": "AwAh6BUB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1025,8 +1025,8 @@
             }
         ]
     },
-    "Warrior Rune of Major Absorption": {
-        "Identifier": "Warrior Rune of Major Absorption",
+    "AwAkCAD9": {
+        "Identifier": "AwAkCAD9",
         "Descriptions": {
             "English": "Reduces physical damage by 2 (Non-stacking)"
         },
@@ -1063,8 +1063,8 @@
             }
         ]
     },
-    "Warrior Rune of Major Axe Mastery": {
-        "Identifier": "Warrior Rune of Major Axe Mastery",
+    "AwAg2AAjACHoEgI=": {
+        "Identifier": "AwAg2AAjACHoEgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1110,8 +1110,8 @@
             }
         ]
     },
-    "Warrior Rune of Major Hammer Mastery": {
-        "Identifier": "Warrior Rune of Major Hammer Mastery",
+    "AwAg2AAjACHoEwI=": {
+        "Identifier": "AwAg2AAjACHoEwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1157,8 +1157,8 @@
             }
         ]
     },
-    "Warrior Rune of Major Strength": {
-        "Identifier": "Warrior Rune of Major Strength",
+    "AwAg2AAjACHoEQI=": {
+        "Identifier": "AwAg2AAjACHoEQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1204,8 +1204,8 @@
             }
         ]
     },
-    "Warrior Rune of Major Swordsmanship": {
-        "Identifier": "Warrior Rune of Major Swordsmanship",
+    "AwAg2AAjACHoFAI=": {
+        "Identifier": "AwAg2AAjACHoFAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1251,8 +1251,8 @@
             }
         ]
     },
-    "Warrior Rune of Major Tactics": {
-        "Identifier": "Warrior Rune of Major Tactics",
+    "AwAg2AAjACHoFQI=": {
+        "Identifier": "AwAg2AAjACHoFQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1298,8 +1298,8 @@
             }
         ]
     },
-    "Warrior Rune of Superior Absorption": {
-        "Identifier": "Warrior Rune of Superior Absorption",
+    "AwAkCAD-": {
+        "Identifier": "AwAkCAD-",
         "Descriptions": {
             "English": "Reduces physical damage by 3 (Non-stacking)"
         },
@@ -1336,8 +1336,8 @@
             }
         ]
     },
-    "Warrior Rune of Superior Axe Mastery": {
-        "Identifier": "Warrior Rune of Superior Axe Mastery",
+    "AwAg2ABLACHoEgM=": {
+        "Identifier": "AwAg2ABLACHoEgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1383,8 +1383,8 @@
             }
         ]
     },
-    "Warrior Rune of Superior Hammer Mastery": {
-        "Identifier": "Warrior Rune of Superior Hammer Mastery",
+    "AwAg2ABLACHoEwM=": {
+        "Identifier": "AwAg2ABLACHoEwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1430,8 +1430,8 @@
             }
         ]
     },
-    "Warrior Rune of Superior Strength": {
-        "Identifier": "Warrior Rune of Superior Strength",
+    "AwAg2ABLACHoEQM=": {
+        "Identifier": "AwAg2ABLACHoEQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1477,8 +1477,8 @@
             }
         ]
     },
-    "Warrior Rune of Superior Swordsmanship": {
-        "Identifier": "Warrior Rune of Superior Swordsmanship",
+    "AwAg2ABLACHoFAM=": {
+        "Identifier": "AwAg2ABLACHoFAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1524,8 +1524,8 @@
             }
         ]
     },
-    "Warrior Rune of Superior Tactics": {
-        "Identifier": "Warrior Rune of Superior Tactics",
+    "AwAg2ABLACHoFQM=": {
+        "Identifier": "AwAg2ABLACHoFQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1571,8 +1571,8 @@
             }
         ]
     },
-    "Beastmaster's Insignia [Ranger]": {
-        "Identifier": "Beastmaster's Insignia [Ranger]",
+    "AgAkCAIA": {
+        "Identifier": "AgAkCAIA",
         "Descriptions": {
             "English": "Armor +10 (while your pet is alive)"
         },
@@ -1609,8 +1609,8 @@
             }
         ]
     },
-    "Earthbound Insignia [Ranger]": {
-        "Identifier": "Earthbound Insignia [Ranger]",
+    "AgAkCAH9": {
+        "Identifier": "AgAkCAH9",
         "Descriptions": {
             "English": "Armor +15 (vs. Earth damage)"
         },
@@ -1647,8 +1647,8 @@
             }
         ]
     },
-    "Frostbound Insignia [Ranger]": {
-        "Identifier": "Frostbound Insignia [Ranger]",
+    "AgAkCAH8": {
+        "Identifier": "AgAkCAH8",
         "Descriptions": {
             "English": "Armor +15 (vs. Cold damage)"
         },
@@ -1685,8 +1685,8 @@
             }
         ]
     },
-    "Pyrebound Insignia [Ranger]": {
-        "Identifier": "Pyrebound Insignia [Ranger]",
+    "AgAkCAH-": {
+        "Identifier": "AgAkCAH-",
         "Descriptions": {
             "English": "Armor +15 (vs. Fire damage)"
         },
@@ -1723,8 +1723,8 @@
             }
         ]
     },
-    "Scout's Insignia [Ranger]": {
-        "Identifier": "Scout's Insignia [Ranger]",
+    "AgAkCAIB": {
+        "Identifier": "AgAkCAIB",
         "Descriptions": {
             "English": "Armor +10 (while using a Preparation)"
         },
@@ -1761,8 +1761,8 @@
             }
         ]
     },
-    "Stormbound Insignia [Ranger]": {
-        "Identifier": "Stormbound Insignia [Ranger]",
+    "AgAkCAH_": {
+        "Identifier": "AgAkCAH_",
         "Descriptions": {
             "English": "Armor +15 (vs. Lightning damage)"
         },
@@ -1799,8 +1799,8 @@
             }
         ]
     },
-    "Ranger Rune of Minor Beast Mastery": {
-        "Identifier": "Ranger Rune of Minor Beast Mastery",
+    "AwAh6BYB": {
+        "Identifier": "AwAh6BYB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1837,8 +1837,8 @@
             }
         ]
     },
-    "Ranger Rune of Minor Expertise": {
-        "Identifier": "Ranger Rune of Minor Expertise",
+    "AwAh6BcB": {
+        "Identifier": "AwAh6BcB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1875,8 +1875,8 @@
             }
         ]
     },
-    "Ranger Rune of Minor Marksmanship": {
-        "Identifier": "Ranger Rune of Minor Marksmanship",
+    "AwAh6BkB": {
+        "Identifier": "AwAh6BkB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1913,8 +1913,8 @@
             }
         ]
     },
-    "Ranger Rune of Minor Wilderness Survival": {
-        "Identifier": "Ranger Rune of Minor Wilderness Survival",
+    "AwAh6BgB": {
+        "Identifier": "AwAh6BgB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -1951,8 +1951,8 @@
             }
         ]
     },
-    "Ranger Rune of Major Beast Mastery": {
-        "Identifier": "Ranger Rune of Major Beast Mastery",
+    "AwAg2AAjACHoFgI=": {
+        "Identifier": "AwAg2AAjACHoFgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -1998,8 +1998,8 @@
             }
         ]
     },
-    "Ranger Rune of Major Expertise": {
-        "Identifier": "Ranger Rune of Major Expertise",
+    "AwAg2AAjACHoFwI=": {
+        "Identifier": "AwAg2AAjACHoFwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2045,8 +2045,8 @@
             }
         ]
     },
-    "Ranger Rune of Major Marksmanship": {
-        "Identifier": "Ranger Rune of Major Marksmanship",
+    "AwAg2AAjACHoGQI=": {
+        "Identifier": "AwAg2AAjACHoGQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2092,8 +2092,8 @@
             }
         ]
     },
-    "Ranger Rune of Major Wilderness Survival": {
-        "Identifier": "Ranger Rune of Major Wilderness Survival",
+    "AwAg2AAjACHoGAI=": {
+        "Identifier": "AwAg2AAjACHoGAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2139,8 +2139,8 @@
             }
         ]
     },
-    "Ranger Rune of Superior Beast Mastery": {
-        "Identifier": "Ranger Rune of Superior Beast Mastery",
+    "AwAg2ABLACHoFgM=": {
+        "Identifier": "AwAg2ABLACHoFgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2186,8 +2186,8 @@
             }
         ]
     },
-    "Ranger Rune of Superior Expertise": {
-        "Identifier": "Ranger Rune of Superior Expertise",
+    "AwAg2ABLACHoFwM=": {
+        "Identifier": "AwAg2ABLACHoFwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2233,8 +2233,8 @@
             }
         ]
     },
-    "Ranger Rune of Superior Marksmanship": {
-        "Identifier": "Ranger Rune of Superior Marksmanship",
+    "AwAg2ABLACHoGQM=": {
+        "Identifier": "AwAg2ABLACHoGQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2280,8 +2280,8 @@
             }
         ]
     },
-    "Ranger Rune of Superior Wilderness Survival": {
-        "Identifier": "Ranger Rune of Superior Wilderness Survival",
+    "AwAg2ABLACHoGAM=": {
+        "Identifier": "AwAg2ABLACHoGAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2327,8 +2327,8 @@
             }
         ]
     },
-    "Anchorite's Insignia [Monk]": {
-        "Identifier": "Anchorite's Insignia [Monk]",
+    "AgAkCAH4": {
+        "Identifier": "AgAkCAH4",
         "Descriptions": {
             "English": "Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
         },
@@ -2365,8 +2365,8 @@
             }
         ]
     },
-    "Disciple's Insignia [Monk]": {
-        "Identifier": "Disciple's Insignia [Monk]",
+    "AgAkCAH3": {
+        "Identifier": "AgAkCAH3",
         "Descriptions": {
             "English": "Armor +15 (while affected by a Condition)"
         },
@@ -2403,8 +2403,8 @@
             }
         ]
     },
-    "Wanderer's Insignia [Monk]": {
-        "Identifier": "Wanderer's Insignia [Monk]",
+    "AgAkCAH2": {
+        "Identifier": "AgAkCAH2",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)"
         },
@@ -2441,8 +2441,8 @@
             }
         ]
     },
-    "Monk Rune of Minor Divine Favor": {
-        "Identifier": "Monk Rune of Minor Divine Favor",
+    "AwAh6BAB": {
+        "Identifier": "AwAh6BAB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2479,8 +2479,8 @@
             }
         ]
     },
-    "Monk Rune of Minor Healing Prayers": {
-        "Identifier": "Monk Rune of Minor Healing Prayers",
+    "AwAh6A0B": {
+        "Identifier": "AwAh6A0B",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2517,8 +2517,8 @@
             }
         ]
     },
-    "Monk Rune of Minor Protection Prayers": {
-        "Identifier": "Monk Rune of Minor Protection Prayers",
+    "AwAh6A8B": {
+        "Identifier": "AwAh6A8B",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2555,8 +2555,8 @@
             }
         ]
     },
-    "Monk Rune of Minor Smiting Prayers": {
-        "Identifier": "Monk Rune of Minor Smiting Prayers",
+    "AwAh6A4B": {
+        "Identifier": "AwAh6A4B",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -2593,8 +2593,8 @@
             }
         ]
     },
-    "Monk Rune of Major Divine Favor": {
-        "Identifier": "Monk Rune of Major Divine Favor",
+    "AwAg2AAjACHoEAI=": {
+        "Identifier": "AwAg2AAjACHoEAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2640,8 +2640,8 @@
             }
         ]
     },
-    "Monk Rune of Major Healing Prayers": {
-        "Identifier": "Monk Rune of Major Healing Prayers",
+    "AwAg2AAjACHoDQI=": {
+        "Identifier": "AwAg2AAjACHoDQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2687,8 +2687,8 @@
             }
         ]
     },
-    "Monk Rune of Major Protection Prayers": {
-        "Identifier": "Monk Rune of Major Protection Prayers",
+    "AwAg2AAjACHoDwI=": {
+        "Identifier": "AwAg2AAjACHoDwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2734,8 +2734,8 @@
             }
         ]
     },
-    "Monk Rune of Major Smiting Prayers": {
-        "Identifier": "Monk Rune of Major Smiting Prayers",
+    "AwAg2AAjACHoDgI=": {
+        "Identifier": "AwAg2AAjACHoDgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2781,8 +2781,8 @@
             }
         ]
     },
-    "Monk Rune of Superior Divine Favor": {
-        "Identifier": "Monk Rune of Superior Divine Favor",
+    "AwAg2ABLACHoEAM=": {
+        "Identifier": "AwAg2ABLACHoEAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2828,8 +2828,8 @@
             }
         ]
     },
-    "Monk Rune of Superior Healing Prayers": {
-        "Identifier": "Monk Rune of Superior Healing Prayers",
+    "AwAg2ABLACHoDQM=": {
+        "Identifier": "AwAg2ABLACHoDQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2875,8 +2875,8 @@
             }
         ]
     },
-    "Monk Rune of Superior Protection Prayers": {
-        "Identifier": "Monk Rune of Superior Protection Prayers",
+    "AwAg2ABLACHoDwM=": {
+        "Identifier": "AwAg2ABLACHoDwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2922,8 +2922,8 @@
             }
         ]
     },
-    "Monk Rune of Superior Smiting Prayers": {
-        "Identifier": "Monk Rune of Superior Smiting Prayers",
+    "AwAg2ABLACHoDgM=": {
+        "Identifier": "AwAg2ABLACHoDgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -2969,8 +2969,8 @@
             }
         ]
     },
-    "Blighter's Insignia [Necromancer]": {
-        "Identifier": "Blighter's Insignia [Necromancer]",
+    "AgAkCAHw": {
+        "Identifier": "AgAkCAHw",
         "Descriptions": {
             "English": "Armor +20 (while affected by a Hex Spell)"
         },
@@ -3007,8 +3007,8 @@
             }
         ]
     },
-    "Bloodstained Insignia [Necromancer]": {
-        "Identifier": "Bloodstained Insignia [Necromancer]",
+    "AgAkCAIK": {
+        "Identifier": "AgAkCAIK",
         "Descriptions": {
             "English": "Reduces casting time of spells that exploit corpses by 25% (Non-stacking)"
         },
@@ -3045,8 +3045,8 @@
             }
         ]
     },
-    "Bonelace Insignia [Necromancer]": {
-        "Identifier": "Bonelace Insignia [Necromancer]",
+    "AgAkCAHu": {
+        "Identifier": "AgAkCAHu",
         "Descriptions": {
             "English": "Armor +15 (vs. Piercing damage)"
         },
@@ -3083,8 +3083,8 @@
             }
         ]
     },
-    "Minion Master's Insignia [Necromancer]": {
-        "Identifier": "Minion Master's Insignia [Necromancer]",
+    "AgAkCAHv": {
+        "Identifier": "AgAkCAHv",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3121,8 +3121,8 @@
             }
         ]
     },
-    "Tormentor's Insignia [Necromancer]": {
-        "Identifier": "Tormentor's Insignia [Necromancer]",
+    "AgAkCAHs": {
+        "Identifier": "AgAkCAHs",
         "Descriptions": {
             "English": "Holy damage you receive increased by 6 (on chest armor)\nHoly damage you receive increased by 4 (on leg armor)\nHoly damage you receive increased by 2 (on other armor)\nArmor +10"
         },
@@ -3159,8 +3159,8 @@
             }
         ]
     },
-    "Undertaker's Insignia [Necromancer]": {
-        "Identifier": "Undertaker's Insignia [Necromancer]",
+    "AgAkCAHt": {
+        "Identifier": "AgAkCAHt",
         "Descriptions": {
             "English": "Armor +5 (while health is below 80%)\nArmor +5 (while health is below 60%)\nArmor +5 (while health is below 40%)\nArmor +5 (while health is below 20%)"
         },
@@ -3197,8 +3197,8 @@
             }
         ]
     },
-    "Necromancer Rune of Minor Blood Magic": {
-        "Identifier": "Necromancer Rune of Minor Blood Magic",
+    "AwAh6AQB": {
+        "Identifier": "AwAh6AQB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3235,8 +3235,8 @@
             }
         ]
     },
-    "Necromancer Rune of Minor Curses": {
-        "Identifier": "Necromancer Rune of Minor Curses",
+    "AwAh6AcB": {
+        "Identifier": "AwAh6AcB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3273,8 +3273,8 @@
             }
         ]
     },
-    "Necromancer Rune of Minor Death Magic": {
-        "Identifier": "Necromancer Rune of Minor Death Magic",
+    "AwAh6AUB": {
+        "Identifier": "AwAh6AUB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3311,8 +3311,8 @@
             }
         ]
     },
-    "Necromancer Rune of Minor Soul Reaping": {
-        "Identifier": "Necromancer Rune of Minor Soul Reaping",
+    "AwAh6AYB": {
+        "Identifier": "AwAh6AYB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3349,8 +3349,8 @@
             }
         ]
     },
-    "Necromancer Rune of Major Blood Magic": {
-        "Identifier": "Necromancer Rune of Major Blood Magic",
+    "AwAg2AAjACHoBAI=": {
+        "Identifier": "AwAg2AAjACHoBAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3396,8 +3396,8 @@
             }
         ]
     },
-    "Necromancer Rune of Major Curses": {
-        "Identifier": "Necromancer Rune of Major Curses",
+    "AwAg2AAjACHoBwI=": {
+        "Identifier": "AwAg2AAjACHoBwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3443,8 +3443,8 @@
             }
         ]
     },
-    "Necromancer Rune of Major Death Magic": {
-        "Identifier": "Necromancer Rune of Major Death Magic",
+    "AwAg2AAjACHoBQI=": {
+        "Identifier": "AwAg2AAjACHoBQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3490,8 +3490,8 @@
             }
         ]
     },
-    "Necromancer Rune of Major Soul Reaping": {
-        "Identifier": "Necromancer Rune of Major Soul Reaping",
+    "AwAg2AAjACHoBgI=": {
+        "Identifier": "AwAg2AAjACHoBgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3537,8 +3537,8 @@
             }
         ]
     },
-    "Necromancer Rune of Superior Blood Magic": {
-        "Identifier": "Necromancer Rune of Superior Blood Magic",
+    "AwAg2ABLACHoBAM=": {
+        "Identifier": "AwAg2ABLACHoBAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3584,8 +3584,8 @@
             }
         ]
     },
-    "Necromancer Rune of Superior Curses": {
-        "Identifier": "Necromancer Rune of Superior Curses",
+    "AwAg2ABLACHoBwM=": {
+        "Identifier": "AwAg2ABLACHoBwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3631,8 +3631,8 @@
             }
         ]
     },
-    "Necromancer Rune of Superior Death Magic": {
-        "Identifier": "Necromancer Rune of Superior Death Magic",
+    "AwAg2ABLACHoBQM=": {
+        "Identifier": "AwAg2ABLACHoBQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3678,8 +3678,8 @@
             }
         ]
     },
-    "Necromancer Rune of Superior Soul Reaping": {
-        "Identifier": "Necromancer Rune of Superior Soul Reaping",
+    "AwAg2ABLACHoBgM=": {
+        "Identifier": "AwAg2ABLACHoBgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -3725,8 +3725,8 @@
             }
         ]
     },
-    "Artificer's Insignia [Mesmer]": {
-        "Identifier": "Artificer's Insignia [Mesmer]",
+    "AgAkCAHi": {
+        "Identifier": "AgAkCAHi",
         "Descriptions": {
             "English": "Armor +3 (for each equipped Signet)"
         },
@@ -3763,8 +3763,8 @@
             }
         ]
     },
-    "Prodigy's Insignia [Mesmer]": {
-        "Identifier": "Prodigy's Insignia [Mesmer]",
+    "AgAkCAHj": {
+        "Identifier": "AgAkCAHj",
         "Descriptions": {
             "English": "Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
         },
@@ -3801,8 +3801,8 @@
             }
         ]
     },
-    "Virtuoso's Insignia [Mesmer]": {
-        "Identifier": "Virtuoso's Insignia [Mesmer]",
+    "AgAkCAHk": {
+        "Identifier": "AgAkCAHk",
         "Descriptions": {
             "English": "Armor +15 (while activating skills)"
         },
@@ -3839,8 +3839,8 @@
             }
         ]
     },
-    "Mesmer Rune of Minor Domination Magic": {
-        "Identifier": "Mesmer Rune of Minor Domination Magic",
+    "AwAh6AIB": {
+        "Identifier": "AwAh6AIB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3877,8 +3877,8 @@
             }
         ]
     },
-    "Mesmer Rune of Minor Fast Casting": {
-        "Identifier": "Mesmer Rune of Minor Fast Casting",
+    "AwAh6AAB": {
+        "Identifier": "AwAh6AAB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3915,8 +3915,8 @@
             }
         ]
     },
-    "Mesmer Rune of Minor Illusion Magic": {
-        "Identifier": "Mesmer Rune of Minor Illusion Magic",
+    "AwAh6AEB": {
+        "Identifier": "AwAh6AEB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3953,8 +3953,8 @@
             }
         ]
     },
-    "Mesmer Rune of Minor Inspiration Magic": {
-        "Identifier": "Mesmer Rune of Minor Inspiration Magic",
+    "AwAh6AMB": {
+        "Identifier": "AwAh6AMB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -3991,8 +3991,8 @@
             }
         ]
     },
-    "Mesmer Rune of Major Domination Magic": {
-        "Identifier": "Mesmer Rune of Major Domination Magic",
+    "AwAg2AAjACHoAgI=": {
+        "Identifier": "AwAg2AAjACHoAgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4038,8 +4038,8 @@
             }
         ]
     },
-    "Mesmer Rune of Major Fast Casting": {
-        "Identifier": "Mesmer Rune of Major Fast Casting",
+    "AwAg2AAjACHoAAI=": {
+        "Identifier": "AwAg2AAjACHoAAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4085,8 +4085,8 @@
             }
         ]
     },
-    "Mesmer Rune of Major Illusion Magic": {
-        "Identifier": "Mesmer Rune of Major Illusion Magic",
+    "AwAg2AAjACHoAQI=": {
+        "Identifier": "AwAg2AAjACHoAQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4132,8 +4132,8 @@
             }
         ]
     },
-    "Mesmer Rune of Major Inspiration Magic": {
-        "Identifier": "Mesmer Rune of Major Inspiration Magic",
+    "AwAg2AAjACHoAwI=": {
+        "Identifier": "AwAg2AAjACHoAwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4179,8 +4179,8 @@
             }
         ]
     },
-    "Mesmer Rune of Superior Domination Magic": {
-        "Identifier": "Mesmer Rune of Superior Domination Magic",
+    "AwAg2ABLACHoAgM=": {
+        "Identifier": "AwAg2ABLACHoAgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4226,8 +4226,8 @@
             }
         ]
     },
-    "Mesmer Rune of Superior Fast Casting": {
-        "Identifier": "Mesmer Rune of Superior Fast Casting",
+    "AwAg2ABLACHoAAM=": {
+        "Identifier": "AwAg2ABLACHoAAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4273,8 +4273,8 @@
             }
         ]
     },
-    "Mesmer Rune of Superior Illusion Magic": {
-        "Identifier": "Mesmer Rune of Superior Illusion Magic",
+    "AwAg2ABLACHoAQM=": {
+        "Identifier": "AwAg2ABLACHoAQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4320,8 +4320,8 @@
             }
         ]
     },
-    "Mesmer Rune of Superior Inspiration Magic": {
-        "Identifier": "Mesmer Rune of Superior Inspiration Magic",
+    "AwAg2ABLACHoAwM=": {
+        "Identifier": "AwAg2ABLACHoAwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4367,8 +4367,8 @@
             }
         ]
     },
-    "Aeromancer Insignia [Elementalist]": {
-        "Identifier": "Aeromancer Insignia [Elementalist]",
+    "AgAkCAH1": {
+        "Identifier": "AgAkCAH1",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Lightning damage)"
         },
@@ -4405,8 +4405,8 @@
             }
         ]
     },
-    "Geomancer Insignia [Elementalist]": {
-        "Identifier": "Geomancer Insignia [Elementalist]",
+    "AgAkCAHz": {
+        "Identifier": "AgAkCAHz",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Earth damage)"
         },
@@ -4443,8 +4443,8 @@
             }
         ]
     },
-    "Hydromancer Insignia [Elementalist]": {
-        "Identifier": "Hydromancer Insignia [Elementalist]",
+    "AgAkCAHy": {
+        "Identifier": "AgAkCAHy",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Cold damage)"
         },
@@ -4481,8 +4481,8 @@
             }
         ]
     },
-    "Prismatic Insignia [Elementalist]": {
-        "Identifier": "Prismatic Insignia [Elementalist]",
+    "AgAkCAHx": {
+        "Identifier": "AgAkCAHx",
         "Descriptions": {
             "English": "Armor +5 (requires 9 Air Magic)\nArmor +5 (requires 9 Earth Magic)\nArmor +5 (requires 9 Fire Magic)\nArmor +5 (requires 9 Water Magic)"
         },
@@ -4519,8 +4519,8 @@
             }
         ]
     },
-    "Pyromancer Insignia [Elementalist]": {
-        "Identifier": "Pyromancer Insignia [Elementalist]",
+    "AgAkCAH0": {
+        "Identifier": "AgAkCAH0",
         "Descriptions": {
             "English": "Armor +10 (vs. elemental damage)\nArmor +10 (vs. Fire damage)"
         },
@@ -4557,8 +4557,8 @@
             }
         ]
     },
-    "Elementalist Rune of Minor Air Magic": {
-        "Identifier": "Elementalist Rune of Minor Air Magic",
+    "AwAh6AgB": {
+        "Identifier": "AwAh6AgB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4595,8 +4595,8 @@
             }
         ]
     },
-    "Elementalist Rune of Minor Earth Magic": {
-        "Identifier": "Elementalist Rune of Minor Earth Magic",
+    "AwAh6AkB": {
+        "Identifier": "AwAh6AkB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4633,8 +4633,8 @@
             }
         ]
     },
-    "Elementalist Rune of Minor Energy Storage": {
-        "Identifier": "Elementalist Rune of Minor Energy Storage",
+    "AwAh6AwB": {
+        "Identifier": "AwAh6AwB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4671,8 +4671,8 @@
             }
         ]
     },
-    "Elementalist Rune of Minor Fire Magic": {
-        "Identifier": "Elementalist Rune of Minor Fire Magic",
+    "AwAh6AoB": {
+        "Identifier": "AwAh6AoB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4709,8 +4709,8 @@
             }
         ]
     },
-    "Elementalist Rune of Minor Water Magic": {
-        "Identifier": "Elementalist Rune of Minor Water Magic",
+    "AwAh6AsB": {
+        "Identifier": "AwAh6AsB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -4747,8 +4747,8 @@
             }
         ]
     },
-    "Elementalist Rune of Major Air Magic": {
-        "Identifier": "Elementalist Rune of Major Air Magic",
+    "AwAg2AAjACHoCAI=": {
+        "Identifier": "AwAg2AAjACHoCAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4794,8 +4794,8 @@
             }
         ]
     },
-    "Elementalist Rune of Major Earth Magic": {
-        "Identifier": "Elementalist Rune of Major Earth Magic",
+    "AwAg2AAjACHoCQI=": {
+        "Identifier": "AwAg2AAjACHoCQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4841,8 +4841,8 @@
             }
         ]
     },
-    "Elementalist Rune of Major Energy Storage": {
-        "Identifier": "Elementalist Rune of Major Energy Storage",
+    "AwAg2AAjACHoDAI=": {
+        "Identifier": "AwAg2AAjACHoDAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4888,8 +4888,8 @@
             }
         ]
     },
-    "Elementalist Rune of Major Fire Magic": {
-        "Identifier": "Elementalist Rune of Major Fire Magic",
+    "AwAg2AAjACHoCgI=": {
+        "Identifier": "AwAg2AAjACHoCgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4935,8 +4935,8 @@
             }
         ]
     },
-    "Elementalist Rune of Major Water Magic": {
-        "Identifier": "Elementalist Rune of Major Water Magic",
+    "AwAg2AAjACHoCwI=": {
+        "Identifier": "AwAg2AAjACHoCwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -4982,8 +4982,8 @@
             }
         ]
     },
-    "Elementalist Rune of Superior Air Magic": {
-        "Identifier": "Elementalist Rune of Superior Air Magic",
+    "AwAg2ABLACHoCAM=": {
+        "Identifier": "AwAg2ABLACHoCAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5029,8 +5029,8 @@
             }
         ]
     },
-    "Elementalist Rune of Superior Earth Magic": {
-        "Identifier": "Elementalist Rune of Superior Earth Magic",
+    "AwAg2ABLACHoCQM=": {
+        "Identifier": "AwAg2ABLACHoCQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5076,8 +5076,8 @@
             }
         ]
     },
-    "Elementalist Rune of Superior Energy Storage": {
-        "Identifier": "Elementalist Rune of Superior Energy Storage",
+    "AwAg2ABLACHoDAM=": {
+        "Identifier": "AwAg2ABLACHoDAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5123,8 +5123,8 @@
             }
         ]
     },
-    "Elementalist Rune of Superior Fire Magic": {
-        "Identifier": "Elementalist Rune of Superior Fire Magic",
+    "AwAg2ABLACHoCgM=": {
+        "Identifier": "AwAg2ABLACHoCgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5170,8 +5170,8 @@
             }
         ]
     },
-    "Elementalist Rune of Superior Water Magic": {
-        "Identifier": "Elementalist Rune of Superior Water Magic",
+    "AwAg2ABLACHoCwM=": {
+        "Identifier": "AwAg2ABLACHoCwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5217,8 +5217,8 @@
             }
         ]
     },
-    "Infiltrator's Insignia [Assassin]": {
-        "Identifier": "Infiltrator's Insignia [Assassin]",
+    "AgAkCAHf": {
+        "Identifier": "AgAkCAHf",
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Piercing damage)"
         },
@@ -5255,8 +5255,8 @@
             }
         ]
     },
-    "Nightstalker's Insignia [Assassin]": {
-        "Identifier": "Nightstalker's Insignia [Assassin]",
+    "AgAkCAHh": {
+        "Identifier": "AgAkCAHh",
         "Descriptions": {
             "English": "Armor +15 (while attacking)"
         },
@@ -5293,8 +5293,8 @@
             }
         ]
     },
-    "Saboteur's Insignia [Assassin]": {
-        "Identifier": "Saboteur's Insignia [Assassin]",
+    "AgAkCAHg": {
+        "Identifier": "AgAkCAHg",
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Slashing damage)"
         },
@@ -5331,8 +5331,8 @@
             }
         ]
     },
-    "Vanguard's Insignia [Assassin]": {
-        "Identifier": "Vanguard's Insignia [Assassin]",
+    "AgAkCAHe": {
+        "Identifier": "AgAkCAHe",
         "Descriptions": {
             "English": "Armor +10 (vs. physical damage)\nArmor +10 (vs. Blunt damage)"
         },
@@ -5369,8 +5369,8 @@
             }
         ]
     },
-    "Assassin Rune of Minor Critical Strikes": {
-        "Identifier": "Assassin Rune of Minor Critical Strikes",
+    "AwAh6CMB": {
+        "Identifier": "AwAh6CMB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5407,8 +5407,8 @@
             }
         ]
     },
-    "Assassin Rune of Minor Dagger Mastery": {
-        "Identifier": "Assassin Rune of Minor Dagger Mastery",
+    "AwAh6B0B": {
+        "Identifier": "AwAh6B0B",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5445,8 +5445,8 @@
             }
         ]
     },
-    "Assassin Rune of Minor Deadly Arts": {
-        "Identifier": "Assassin Rune of Minor Deadly Arts",
+    "AwAh6B4B": {
+        "Identifier": "AwAh6B4B",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5483,8 +5483,8 @@
             }
         ]
     },
-    "Assassin Rune of Minor Shadow Arts": {
-        "Identifier": "Assassin Rune of Minor Shadow Arts",
+    "AwAh6B8B": {
+        "Identifier": "AwAh6B8B",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -5521,8 +5521,8 @@
             }
         ]
     },
-    "Assassin Rune of Major Critical Strikes": {
-        "Identifier": "Assassin Rune of Major Critical Strikes",
+    "AwAg2AAjACHoIwI=": {
+        "Identifier": "AwAg2AAjACHoIwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5568,8 +5568,8 @@
             }
         ]
     },
-    "Assassin Rune of Major Dagger Mastery": {
-        "Identifier": "Assassin Rune of Major Dagger Mastery",
+    "AwAg2AAjACHoHQI=": {
+        "Identifier": "AwAg2AAjACHoHQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5615,8 +5615,8 @@
             }
         ]
     },
-    "Assassin Rune of Major Deadly Arts": {
-        "Identifier": "Assassin Rune of Major Deadly Arts",
+    "AwAg2AAjACHoHgI=": {
+        "Identifier": "AwAg2AAjACHoHgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5662,8 +5662,8 @@
             }
         ]
     },
-    "Assassin Rune of Major Shadow Arts": {
-        "Identifier": "Assassin Rune of Major Shadow Arts",
+    "AwAg2AAjACHoHwI=": {
+        "Identifier": "AwAg2AAjACHoHwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5709,8 +5709,8 @@
             }
         ]
     },
-    "Assassin Rune of Superior Critical Strikes": {
-        "Identifier": "Assassin Rune of Superior Critical Strikes",
+    "AwAg2ABLACHoIwM=": {
+        "Identifier": "AwAg2ABLACHoIwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5756,8 +5756,8 @@
             }
         ]
     },
-    "Assassin Rune of Superior Dagger Mastery": {
-        "Identifier": "Assassin Rune of Superior Dagger Mastery",
+    "AwAg2ABLACHoHQM=": {
+        "Identifier": "AwAg2ABLACHoHQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5803,8 +5803,8 @@
             }
         ]
     },
-    "Assassin Rune of Superior Deadly Arts": {
-        "Identifier": "Assassin Rune of Superior Deadly Arts",
+    "AwAg2ABLACHoHgM=": {
+        "Identifier": "AwAg2ABLACHoHgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5850,8 +5850,8 @@
             }
         ]
     },
-    "Assassin Rune of Superior Shadow Arts": {
-        "Identifier": "Assassin Rune of Superior Shadow Arts",
+    "AwAg2ABLACHoHwM=": {
+        "Identifier": "AwAg2ABLACHoHwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -5897,8 +5897,8 @@
             }
         ]
     },
-    "Ghost Forge Insignia [Ritualist]": {
-        "Identifier": "Ghost Forge Insignia [Ritualist]",
+    "AgAkCAIF": {
+        "Identifier": "AgAkCAIF",
         "Descriptions": {
             "English": "Armor +15 (while affected by a Weapon Spell)"
         },
@@ -5935,8 +5935,8 @@
             }
         ]
     },
-    "Mystic's Insignia [Ritualist]": {
-        "Identifier": "Mystic's Insignia [Ritualist]",
+    "AgAkCAIG": {
+        "Identifier": "AgAkCAIG",
         "Descriptions": {
             "English": "Armor +15 (while activating skills)"
         },
@@ -5973,8 +5973,8 @@
             }
         ]
     },
-    "Shaman's Insignia [Ritualist]": {
-        "Identifier": "Shaman's Insignia [Ritualist]",
+    "AgAkCAIE": {
+        "Identifier": "AgAkCAIE",
         "Descriptions": {
             "English": "Armor +5 (while you control 1 or more Spirits)\nArmor +5 (while you control 2 or more Spirits)\nArmor +5 (while you control 3 or more Spirits)"
         },
@@ -6011,8 +6011,8 @@
             }
         ]
     },
-    "Ritualist Rune of Minor Channeling Magic": {
-        "Identifier": "Ritualist Rune of Minor Channeling Magic",
+    "AwAh6CIB": {
+        "Identifier": "AwAh6CIB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6049,8 +6049,8 @@
             }
         ]
     },
-    "Ritualist Rune of Minor Communing": {
-        "Identifier": "Ritualist Rune of Minor Communing",
+    "AwAh6CAB": {
+        "Identifier": "AwAh6CAB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6087,8 +6087,8 @@
             }
         ]
     },
-    "Ritualist Rune of Minor Restoration Magic": {
-        "Identifier": "Ritualist Rune of Minor Restoration Magic",
+    "AwAh6CEB": {
+        "Identifier": "AwAh6CEB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6125,8 +6125,8 @@
             }
         ]
     },
-    "Ritualist Rune of Minor Spawning Power": {
-        "Identifier": "Ritualist Rune of Minor Spawning Power",
+    "AwAh6CQB": {
+        "Identifier": "AwAh6CQB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6163,8 +6163,8 @@
             }
         ]
     },
-    "Ritualist Rune of Major Channeling Magic": {
-        "Identifier": "Ritualist Rune of Major Channeling Magic",
+    "AwAg2AAjACHoIgI=": {
+        "Identifier": "AwAg2AAjACHoIgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6210,8 +6210,8 @@
             }
         ]
     },
-    "Ritualist Rune of Major Communing": {
-        "Identifier": "Ritualist Rune of Major Communing",
+    "AwAg2AAjACHoIAI=": {
+        "Identifier": "AwAg2AAjACHoIAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6257,8 +6257,8 @@
             }
         ]
     },
-    "Ritualist Rune of Major Restoration Magic": {
-        "Identifier": "Ritualist Rune of Major Restoration Magic",
+    "AwAg2AAjACHoIQI=": {
+        "Identifier": "AwAg2AAjACHoIQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6304,8 +6304,8 @@
             }
         ]
     },
-    "Ritualist Rune of Major Spawning Power": {
-        "Identifier": "Ritualist Rune of Major Spawning Power",
+    "AwAg2AAjACHoJAI=": {
+        "Identifier": "AwAg2AAjACHoJAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6351,8 +6351,8 @@
             }
         ]
     },
-    "Ritualist Rune of Superior Channeling Magic": {
-        "Identifier": "Ritualist Rune of Superior Channeling Magic",
+    "AwAg2ABLACHoIgM=": {
+        "Identifier": "AwAg2ABLACHoIgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6398,8 +6398,8 @@
             }
         ]
     },
-    "Ritualist Rune of Superior Communing": {
-        "Identifier": "Ritualist Rune of Superior Communing",
+    "AwAg2ABLACHoIAM=": {
+        "Identifier": "AwAg2ABLACHoIAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6445,8 +6445,8 @@
             }
         ]
     },
-    "Ritualist Rune of Superior Restoration Magic": {
-        "Identifier": "Ritualist Rune of Superior Restoration Magic",
+    "AwAg2ABLACHoIQM=": {
+        "Identifier": "AwAg2ABLACHoIQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6492,8 +6492,8 @@
             }
         ]
     },
-    "Ritualist Rune of Superior Spawning Power": {
-        "Identifier": "Ritualist Rune of Superior Spawning Power",
+    "AwAg2ABLACHoJAM=": {
+        "Identifier": "AwAg2ABLACHoJAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6539,8 +6539,8 @@
             }
         ]
     },
-    "Centurion's Insignia [Paragon]": {
-        "Identifier": "Centurion's Insignia [Paragon]",
+    "AgAkCAIH": {
+        "Identifier": "AgAkCAIH",
         "Descriptions": {
             "English": "Armor +10 (while affected by a Shout, Echo, or Chant)"
         },
@@ -6577,8 +6577,8 @@
             }
         ]
     },
-    "Paragon Rune of Minor Command": {
-        "Identifier": "Paragon Rune of Minor Command",
+    "AwAh6CYB": {
+        "Identifier": "AwAh6CYB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6615,8 +6615,8 @@
             }
         ]
     },
-    "Paragon Rune of Minor Leadership": {
-        "Identifier": "Paragon Rune of Minor Leadership",
+    "AwAh6CgB": {
+        "Identifier": "AwAh6CgB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6653,8 +6653,8 @@
             }
         ]
     },
-    "Paragon Rune of Minor Motivation": {
-        "Identifier": "Paragon Rune of Minor Motivation",
+    "AwAh6CcB": {
+        "Identifier": "AwAh6CcB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6691,8 +6691,8 @@
             }
         ]
     },
-    "Paragon Rune of Minor Spear Mastery": {
-        "Identifier": "Paragon Rune of Minor Spear Mastery",
+    "AwAh6CUB": {
+        "Identifier": "AwAh6CUB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -6729,8 +6729,8 @@
             }
         ]
     },
-    "Paragon Rune of Major Command": {
-        "Identifier": "Paragon Rune of Major Command",
+    "AwAg2AAjACHoJgI=": {
+        "Identifier": "AwAg2AAjACHoJgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6776,8 +6776,8 @@
             }
         ]
     },
-    "Paragon Rune of Major Leadership": {
-        "Identifier": "Paragon Rune of Major Leadership",
+    "AwAg2AAjACHoKAI=": {
+        "Identifier": "AwAg2AAjACHoKAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6823,8 +6823,8 @@
             }
         ]
     },
-    "Paragon Rune of Major Motivation": {
-        "Identifier": "Paragon Rune of Major Motivation",
+    "AwAg2AAjACHoJwI=": {
+        "Identifier": "AwAg2AAjACHoJwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6870,8 +6870,8 @@
             }
         ]
     },
-    "Paragon Rune of Major Spear Mastery": {
-        "Identifier": "Paragon Rune of Major Spear Mastery",
+    "AwAg2AAjACHoJQI=": {
+        "Identifier": "AwAg2AAjACHoJQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6917,8 +6917,8 @@
             }
         ]
     },
-    "Paragon Rune of Superior Command": {
-        "Identifier": "Paragon Rune of Superior Command",
+    "AwAg2ABLACHoJgM=": {
+        "Identifier": "AwAg2ABLACHoJgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -6964,8 +6964,8 @@
             }
         ]
     },
-    "Paragon Rune of Superior Leadership": {
-        "Identifier": "Paragon Rune of Superior Leadership",
+    "AwAg2ABLACHoKAM=": {
+        "Identifier": "AwAg2ABLACHoKAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7011,8 +7011,8 @@
             }
         ]
     },
-    "Paragon Rune of Superior Motivation": {
-        "Identifier": "Paragon Rune of Superior Motivation",
+    "AwAg2ABLACHoJwM=": {
+        "Identifier": "AwAg2ABLACHoJwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7058,8 +7058,8 @@
             }
         ]
     },
-    "Paragon Rune of Superior Spear Mastery": {
-        "Identifier": "Paragon Rune of Superior Spear Mastery",
+    "AwAg2ABLACHoJQM=": {
+        "Identifier": "AwAg2ABLACHoJQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7105,8 +7105,8 @@
             }
         ]
     },
-    "Forsaken Insignia [Dervish]": {
-        "Identifier": "Forsaken Insignia [Dervish]",
+    "AgAkCAID": {
+        "Identifier": "AgAkCAID",
         "Descriptions": {
             "English": "Armor +10 (while not affected by an Enchantment Spell)"
         },
@@ -7143,8 +7143,8 @@
             }
         ]
     },
-    "Windwalker Insignia [Dervish]": {
-        "Identifier": "Windwalker Insignia [Dervish]",
+    "AgAkCAIC": {
+        "Identifier": "AgAkCAIC",
         "Descriptions": {
             "English": "Armor +5 (while affected by 1 or more Enchantment Spells)\nArmor +5 (while affected by 2 or more Enchantment Spells)\nArmor +5 (while affected by 3 or more Enchantment Spells)\nArmor +5 (while affected by 4 or more Enchantment Spells)"
         },
@@ -7181,8 +7181,8 @@
             }
         ]
     },
-    "Dervish Rune of Minor Earth Prayers": {
-        "Identifier": "Dervish Rune of Minor Earth Prayers",
+    "AwAh6CsB": {
+        "Identifier": "AwAh6CsB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7219,8 +7219,8 @@
             }
         ]
     },
-    "Dervish Rune of Minor Mysticism": {
-        "Identifier": "Dervish Rune of Minor Mysticism",
+    "AwAh6CwB": {
+        "Identifier": "AwAh6CwB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7257,8 +7257,8 @@
             }
         ]
     },
-    "Dervish Rune of Minor Scythe Mastery": {
-        "Identifier": "Dervish Rune of Minor Scythe Mastery",
+    "AwAh6CkB": {
+        "Identifier": "AwAh6CkB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7295,8 +7295,8 @@
             }
         ]
     },
-    "Dervish Rune of Minor Wind Prayers": {
-        "Identifier": "Dervish Rune of Minor Wind Prayers",
+    "AwAh6CoB": {
+        "Identifier": "AwAh6CoB",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)"
         },
@@ -7333,8 +7333,8 @@
             }
         ]
     },
-    "Dervish Rune of Major Earth Prayers": {
-        "Identifier": "Dervish Rune of Major Earth Prayers",
+    "AwAg2AAjACHoKwI=": {
+        "Identifier": "AwAg2AAjACHoKwI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7380,8 +7380,8 @@
             }
         ]
     },
-    "Dervish Rune of Major Mysticism": {
-        "Identifier": "Dervish Rune of Major Mysticism",
+    "AwAg2AAjACHoLAI=": {
+        "Identifier": "AwAg2AAjACHoLAI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7427,8 +7427,8 @@
             }
         ]
     },
-    "Dervish Rune of Major Scythe Mastery": {
-        "Identifier": "Dervish Rune of Major Scythe Mastery",
+    "AwAg2AAjACHoKQI=": {
+        "Identifier": "AwAg2AAjACHoKQI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7474,8 +7474,8 @@
             }
         ]
     },
-    "Dervish Rune of Major Wind Prayers": {
-        "Identifier": "Dervish Rune of Major Wind Prayers",
+    "AwAg2AAjACHoKgI=": {
+        "Identifier": "AwAg2AAjACHoKgI=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7521,8 +7521,8 @@
             }
         ]
     },
-    "Dervish Rune of Superior Earth Prayers": {
-        "Identifier": "Dervish Rune of Superior Earth Prayers",
+    "AwAg2ABLACHoKwM=": {
+        "Identifier": "AwAg2ABLACHoKwM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7568,8 +7568,8 @@
             }
         ]
     },
-    "Dervish Rune of Superior Mysticism": {
-        "Identifier": "Dervish Rune of Superior Mysticism",
+    "AwAg2ABLACHoLAM=": {
+        "Identifier": "AwAg2ABLACHoLAM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7615,8 +7615,8 @@
             }
         ]
     },
-    "Dervish Rune of Superior Scythe Mastery": {
-        "Identifier": "Dervish Rune of Superior Scythe Mastery",
+    "AwAg2ABLACHoKQM=": {
+        "Identifier": "AwAg2ABLACHoKQM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },
@@ -7662,8 +7662,8 @@
             }
         ]
     },
-    "Dervish Rune of Superior Wind Prayers": {
-        "Identifier": "Dervish Rune of Superior Wind Prayers",
+    "AwAg2ABLACHoKgM=": {
+        "Identifier": "AwAg2ABLACHoKgM=",
         "Descriptions": {
             "English": "+{arg2[8680]} {arg1[8680]} (Non-stacking)\n-{arg2[8408]} Health"
         },

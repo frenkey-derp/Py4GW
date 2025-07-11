@@ -1,6 +1,6 @@
 {
-    "\"Aptitude not Attitude\"": {
-        "Identifier": "\"Aptitude not Attitude\"",
+    "AQAoCBQAKQ==": {
+        "Identifier": "AQAoCBQAKQ==",
         "Descriptions": {
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
         },
@@ -34,8 +34,8 @@
             }
         ]
     },
-    "\"Be Just and Fear Not\"": {
-        "Identifier": "\"Be Just and Fear Not\"",
+    "AQAhyAAKDA==": {
+        "Identifier": "AQAhyAAKDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (while Hexed)"
         },
@@ -59,8 +59,8 @@
             }
         ]
     },
-    "\"Brawn over Brains\"": {
-        "Identifier": "\"Brawn over Brains\"",
+    "AQAguAAFJQAiOAAPJQ==": {
+        "Identifier": "AQAguAAFJQAiOAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2[8760]}%\nEnergy -{arg2[8376]}"
         },
@@ -103,8 +103,8 @@
             }
         ]
     },
-    "\"Cast Out the Unclean\"": {
-        "Identifier": "\"Cast Out the Unclean\"",
+    "AQAoWAUAJw==": {
+        "Identifier": "AQAoWAUAJw==",
         "Descriptions": {
             "English": "Reduces Disease duration on you by 20%"
         },
@@ -138,8 +138,8 @@
             }
         ]
     },
-    "\"Dance with Death\"": {
-        "Identifier": "\"Dance with Death\"",
+    "AQAiqAAPJQ==": {
+        "Identifier": "AQAiqAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2}% (while in a Stance)"
         },
@@ -173,8 +173,8 @@
             }
         ]
     },
-    "\"Don't Fear the Reaper\"": {
-        "Identifier": "\"Don't Fear the Reaper\"",
+    "AQAimAAUJQ==": {
+        "Identifier": "AQAimAAUJQ==",
         "Descriptions": {
             "English": "Damage +{arg2}% (while Hexed)"
         },
@@ -208,8 +208,8 @@
             }
         ]
     },
-    "\"Don't Think Twice\"": {
-        "Identifier": "\"Don't Think Twice\"",
+    "AQAiCAoAJQ==": {
+        "Identifier": "AQAiCAoAJQ==",
         "Descriptions": {
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
@@ -243,8 +243,8 @@
             }
         ]
     },
-    "\"Don't call it a comeback!\"": {
-        "Identifier": "\"Don't call it a comeback!\"",
+    "AQAjGDIHKQ==": {
+        "Identifier": "AQAjGDIHKQ==",
         "Descriptions": {
             "English": "Energy +{arg2} (while Health is below +{arg1}%)"
         },
@@ -278,8 +278,8 @@
             }
         ]
     },
-    "\"Down But Not Out\"": {
-        "Identifier": "\"Down But Not Out\"",
+    "AQAhuDIKDA==": {
+        "Identifier": "AQAhuDIKDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (while Health is below +{arg1}%)"
         },
@@ -303,8 +303,8 @@
             }
         ]
     },
-    "\"Faith is My Shield\"": {
-        "Identifier": "\"Faith is My Shield\"",
+    "AQAhmAAFDA==": {
+        "Identifier": "AQAhmAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (while Enchanted)"
         },
@@ -338,8 +338,8 @@
             }
         ]
     },
-    "\"Fear Cuts Deeper\"": {
-        "Identifier": "\"Fear Cuts Deeper\"",
+    "AQAoWAAAJw==": {
+        "Identifier": "AQAoWAAAJw==",
         "Descriptions": {
             "English": "Reduces Bleeding duration on you by 20%"
         },
@@ -373,8 +373,8 @@
             }
         ]
     },
-    "\"Forget Me Not\"": {
-        "Identifier": "\"Forget Me Not\"",
+    "AQAoKBQADA==": {
+        "Identifier": "AQAoKBQADA==",
         "Descriptions": {
             "English": "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"
         },
@@ -408,8 +408,8 @@
             }
         ]
     },
-    "\"Guided by Fate\"": {
-        "Identifier": "\"Guided by Fate\"",
+    "AQAiaAAPJQ==": {
+        "Identifier": "AQAiaAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2}% (while Enchanted)"
         },
@@ -443,8 +443,8 @@
             }
         ]
     },
-    "\"Hail to the King\"": {
-        "Identifier": "\"Hail to the King\"",
+    "AQAhqDIFDA==": {
+        "Identifier": "AQAhqDIFDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (while Health is above +{arg1}%)"
         },
@@ -478,8 +478,8 @@
             }
         ]
     },
-    "\"Hale and Hearty\"": {
-        "Identifier": "\"Hale and Hearty\"",
+    "AQAjCDIFKQ==": {
+        "Identifier": "AQAjCDIFKQ==",
         "Descriptions": {
             "English": "Energy +{arg2} (while health is above +{arg1}%)"
         },
@@ -513,8 +513,8 @@
             }
         ]
     },
-    "\"Have Faith\"": {
-        "Identifier": "\"Have Faith\"",
+    "AQAi-AAFKQ==": {
+        "Identifier": "AQAi-AAFKQ==",
         "Descriptions": {
             "English": "Energy +{arg2} (while Enchanted)"
         },
@@ -548,8 +548,8 @@
             }
         ]
     },
-    "\"I Can See Clearly Now\"": {
-        "Identifier": "\"I Can See Clearly Now\"",
+    "AQAoWAEAJw==": {
+        "Identifier": "AQAoWAEAJw==",
         "Descriptions": {
             "English": "Reduces Blind duration on you by 20%"
         },
@@ -583,8 +583,8 @@
             }
         ]
     },
-    "\"I am Sorrow.\"": {
-        "Identifier": "\"I am Sorrow.\"",
+    "AQAjKAAHKQ==": {
+        "Identifier": "AQAjKAAHKQ==",
         "Descriptions": {
             "English": "Energy +{arg2} (while hexed)"
         },
@@ -618,8 +618,8 @@
             }
         ]
     },
-    "\"I have the power!\"": {
-        "Identifier": "\"I have the power!\"",
+    "AQAi2AAFJg==": {
+        "Identifier": "AQAi2AAFJg==",
         "Descriptions": {
             "English": "Energy +{arg2}"
         },
@@ -653,8 +653,8 @@
             }
         ]
     },
-    "\"Ignorance is Bliss\"": {
-        "Identifier": "\"Ignorance is Bliss\"",
+    "AQAguAAFDAAhCAAFDA==": {
+        "Identifier": "AQAguAAFDAAhCAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2[8456]}\nEnergy -{arg2[8376]}"
         },
@@ -697,8 +697,8 @@
             }
         ]
     },
-    "\"Knowing is Half the Battle\"": {
-        "Identifier": "\"Knowing is Half the Battle\"",
+    "AQAhiAAFDA==": {
+        "Identifier": "AQAhiAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (while casting)"
         },
@@ -722,8 +722,8 @@
             }
         ]
     },
-    "\"Leaf on the Wind\"": {
-        "Identifier": "\"Leaf on the Wind\"",
+    "AQChGAMKJw==": {
+        "Identifier": "AQChGAMKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Cold damage)"
         },
@@ -757,8 +757,8 @@
             }
         ]
     },
-    "\"Let the Memory Live Again\"": {
-        "Identifier": "\"Let the Memory Live Again\"",
+    "AQAjqAoAJg==": {
+        "Identifier": "AQAjqAoAJg==",
         "Descriptions": {
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
@@ -792,8 +792,8 @@
             }
         ]
     },
-    "\"Life is Pain\"": {
-        "Identifier": "\"Life is Pain\"",
+    "AQAg2AAUDAAhCAAFDA==": {
+        "Identifier": "AQAg2AAUDAAhCAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2[8456]}\nHealth -{arg2[8408]}"
         },
@@ -826,8 +826,8 @@
             }
         ]
     },
-    "\"Like a Rolling Stone\"": {
-        "Identifier": "\"Like a Rolling Stone\"",
+    "AQChGAsKJw==": {
+        "Identifier": "AQChGAsKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Earth damage)"
         },
@@ -861,8 +861,8 @@
             }
         ]
     },
-    "\"Live for Today\"": {
-        "Identifier": "\"Live for Today\"",
+    "AQAgyAABDAAi2AAPDA==": {
+        "Identifier": "AQAgyAABDAAi2AAPDA==",
         "Descriptions": {
             "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
         },
@@ -905,8 +905,8 @@
             }
         ]
     },
-    "\"Luck of the Draw\"": {
-        "Identifier": "\"Luck of the Draw\"",
+    "AQAgeBQFJw==": {
+        "Identifier": "AQAgeBQFJw==",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (Chance: {arg1}%)"
         },
@@ -940,8 +940,8 @@
             }
         ]
     },
-    "\"Man for All Seasons\"": {
-        "Identifier": "\"Man for All Seasons\"",
+    "AQAhKAAFDA==": {
+        "Identifier": "AQAhKAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Elemental damage)"
         },
@@ -965,8 +965,8 @@
             }
         ]
     },
-    "\"Master of My Domain!\"": {
-        "Identifier": "\"Master of My Domain!\"",
+    "AQAoOBQAJw==": {
+        "Identifier": "AQAoOBQAJw==",
         "Descriptions": {
             "English": "Item's attribute +1 (Chance: {arg1}%)"
         },
@@ -1000,8 +1000,8 @@
             }
         ]
     },
-    "\"Measure for Measure\"": {
-        "Identifier": "\"Measure for Measure\"",
+    "AQAmCAAeKA==": {
+        "Identifier": "AQAmCAAeKA==",
         "Descriptions": {
             "English": "Highly salvageable"
         },
@@ -1035,8 +1035,8 @@
             }
         ]
     },
-    "\"Might Makes Right\"": {
-        "Identifier": "\"Might Makes Right\"",
+    "AQAheAAFDA==": {
+        "Identifier": "AQAheAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (while attacking)"
         },
@@ -1060,8 +1060,8 @@
             }
         ]
     },
-    "\"Not the Face!\"": {
-        "Identifier": "\"Not the Face!\"",
+    "AQChGAAKJw==": {
+        "Identifier": "AQChGAAKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Blunt damage)"
         },
@@ -1095,8 +1095,8 @@
             }
         ]
     },
-    "\"Nothing to Fear\"": {
-        "Identifier": "\"Nothing to Fear\"",
+    "AQAgmAADJw==": {
+        "Identifier": "AQAgmAADJw==",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (while Hexed)"
         },
@@ -1130,8 +1130,8 @@
             }
         ]
     },
-    "\"Only the Strong Survive\"": {
-        "Identifier": "\"Only the Strong Survive\"",
+    "AQAoWAgAJw==": {
+        "Identifier": "AQAoWAgAJw==",
         "Descriptions": {
             "English": "Reduces Weakness duration on you by 20%"
         },
@@ -1165,8 +1165,8 @@
             }
         ]
     },
-    "\"Pure of Heart\"": {
-        "Identifier": "\"Pure of Heart\"",
+    "AQAoWAYAJw==": {
+        "Identifier": "AQAoWAYAJw==",
         "Descriptions": {
             "English": "Reduces Poison duration on you by 20%"
         },
@@ -1200,8 +1200,8 @@
             }
         ]
     },
-    "\"Riders on the Storm\"": {
-        "Identifier": "\"Riders on the Storm\"",
+    "AQChGAQKJw==": {
+        "Identifier": "AQChGAQKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Lightning damage)"
         },
@@ -1235,8 +1235,8 @@
             }
         ]
     },
-    "\"Run For Your Life!\"": {
-        "Identifier": "\"Run For Your Life!\"",
+    "AQAgqAACJw==": {
+        "Identifier": "AQAgqAACJw==",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (while in a Stance)"
         },
@@ -1270,8 +1270,8 @@
             }
         ]
     },
-    "\"Seize the Day\"": {
-        "Identifier": "\"Seize the Day\"",
+    "AQAgyAABKQAi2AAPKQ==": {
+        "Identifier": "AQAgyAABKQAi2AAPKQ==",
         "Descriptions": {
             "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
         },
@@ -1314,8 +1314,8 @@
             }
         ]
     },
-    "\"Serenity Now\"": {
-        "Identifier": "\"Serenity Now\"",
+    "AQAjqAoADA==": {
+        "Identifier": "AQAjqAoADA==",
         "Descriptions": {
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
@@ -1349,8 +1349,8 @@
             }
         ]
     },
-    "\"Sheltered by Faith\"": {
-        "Identifier": "\"Sheltered by Faith\"",
+    "AQAgiAACJw==": {
+        "Identifier": "AQAgiAACJw==",
         "Descriptions": {
             "English": "Received physical damage -{arg2} (while Enchanted)"
         },
@@ -1384,8 +1384,8 @@
             }
         ]
     },
-    "\"Show me the money!\"": {
-        "Identifier": "\"Show me the money!\"",
+    "AQAl-AAvKA==": {
+        "Identifier": "AQAl-AAvKA==",
         "Descriptions": {
             "English": "Improved sale value"
         },
@@ -1419,8 +1419,8 @@
             }
         ]
     },
-    "\"Sleep Now in the Fire\"": {
-        "Identifier": "\"Sleep Now in the Fire\"",
+    "AQChGAUKJw==": {
+        "Identifier": "AQChGAUKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Fire damage)"
         },
@@ -1454,8 +1454,8 @@
             }
         ]
     },
-    "\"Soundness of Mind\"": {
-        "Identifier": "\"Soundness of Mind\"",
+    "AQAoWAcAJw==": {
+        "Identifier": "AQAoWAcAJw==",
         "Descriptions": {
             "English": "Reduces Dazed duration on you by 20%"
         },
@@ -1489,8 +1489,8 @@
             }
         ]
     },
-    "\"Strength and Honor\"": {
-        "Identifier": "\"Strength and Honor\"",
+    "AQAieDIPJQ==": {
+        "Identifier": "AQAieDIPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2}% (while Health is above +{arg1}%)"
         },
@@ -1524,8 +1524,8 @@
             }
         ]
     },
-    "\"Strength of Body\"": {
-        "Identifier": "\"Strength of Body\"",
+    "AQAoWAQAJw==": {
+        "Identifier": "AQAoWAQAJw==",
         "Descriptions": {
             "English": "Reduces Deep Wound duration on you by 20%"
         },
@@ -1559,8 +1559,8 @@
             }
         ]
     },
-    "\"Survival of the Fittest\"": {
-        "Identifier": "\"Survival of the Fittest\"",
+    "AQAhWAAFDA==": {
+        "Identifier": "AQAhWAAFDA==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Physical damage)"
         },
@@ -1594,8 +1594,8 @@
             }
         ]
     },
-    "\"Swift as the Wind\"": {
-        "Identifier": "\"Swift as the Wind\"",
+    "AQAoWAMAJw==": {
+        "Identifier": "AQAoWAMAJw==",
         "Descriptions": {
             "English": "Reduces Crippled duration on you by 20%"
         },
@@ -1629,8 +1629,8 @@
             }
         ]
     },
-    "\"The Riddle of Steel\"": {
-        "Identifier": "\"The Riddle of Steel\"",
+    "AQChGAIKJw==": {
+        "Identifier": "AQChGAIKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Slashing damage)"
         },
@@ -1664,8 +1664,8 @@
             }
         ]
     },
-    "\"Through Thick and Thin\"": {
-        "Identifier": "\"Through Thick and Thin\"",
+    "AQChGAEKJw==": {
+        "Identifier": "AQChGAEKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} (vs. Piercing damage)"
         },
@@ -1699,8 +1699,8 @@
             }
         ]
     },
-    "\"To the Pain!\"": {
-        "Identifier": "\"To the Pain!\"",
+    "AQAgGAAKJQAiOAAPJQ==": {
+        "Identifier": "AQAgGAAKJQAiOAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2[8760]}%\nArmor -{arg2[8216]} (while attacking)"
         },
@@ -1743,8 +1743,8 @@
             }
         ]
     },
-    "\"Too Much Information\"": {
-        "Identifier": "\"Too Much Information\"",
+    "AQAiWAAPJQ==": {
+        "Identifier": "AQAiWAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2}% (vs. Hexed Foes)"
         },
@@ -1778,8 +1778,8 @@
             }
         ]
     },
-    "\"Vengeance is Mine\"": {
-        "Identifier": "\"Vengeance is Mine\"",
+    "AQAiiDIUJQ==": {
+        "Identifier": "AQAiiDIUJQ==",
         "Descriptions": {
             "English": "Damage +{arg2}% (while Health is below +{arg1}%)"
         },
@@ -1813,8 +1813,8 @@
             }
         ]
     },
-    "Air Magic +1": {
-        "Identifier": "Air Magic +1",
+    "AQAkGAgUGg==": {
+        "Identifier": "AQAkGAgUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1838,8 +1838,8 @@
             }
         ]
     },
-    "Axe Mastery +1": {
-        "Identifier": "Axe Mastery +1",
+    "AQAkGBIUAg==": {
+        "Identifier": "AQAkGBIUAg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1863,8 +1863,8 @@
             }
         ]
     },
-    "Blood Magic +1": {
-        "Identifier": "Blood Magic +1",
+    "AQAkGAQUGg==": {
+        "Identifier": "AQAkGAQUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1888,8 +1888,8 @@
             }
         ]
     },
-    "Channeling Magic +1": {
-        "Identifier": "Channeling Magic +1",
+    "AQAkGCIUGg==": {
+        "Identifier": "AQAkGCIUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1913,8 +1913,8 @@
             }
         ]
     },
-    "Communing +1": {
-        "Identifier": "Communing +1",
+    "AQAkGCAUGg==": {
+        "Identifier": "AQAkGCAUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1938,8 +1938,8 @@
             }
         ]
     },
-    "Curses +1": {
-        "Identifier": "Curses +1",
+    "AQAkGAcUGg==": {
+        "Identifier": "AQAkGAcUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1963,8 +1963,8 @@
             }
         ]
     },
-    "Dagger Mastery +1": {
-        "Identifier": "Dagger Mastery +1",
+    "AQAkGB0UIA==": {
+        "Identifier": "AQAkGB0UIA==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -1988,8 +1988,8 @@
             }
         ]
     },
-    "Death Magic +1": {
-        "Identifier": "Death Magic +1",
+    "AQAkGAUUGg==": {
+        "Identifier": "AQAkGAUUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2013,8 +2013,8 @@
             }
         ]
     },
-    "Divine Favor +1": {
-        "Identifier": "Divine Favor +1",
+    "AQAkGBAUGg==": {
+        "Identifier": "AQAkGBAUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2038,8 +2038,8 @@
             }
         ]
     },
-    "Domination Magic +1": {
-        "Identifier": "Domination Magic +1",
+    "AQAkGAIUGg==": {
+        "Identifier": "AQAkGAIUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2063,8 +2063,8 @@
             }
         ]
     },
-    "Earth Magic +1": {
-        "Identifier": "Earth Magic +1",
+    "AQAkGAkUGg==": {
+        "Identifier": "AQAkGAkUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2088,8 +2088,8 @@
             }
         ]
     },
-    "Fire Magic +1": {
-        "Identifier": "Fire Magic +1",
+    "AQAkGAoUGg==": {
+        "Identifier": "AQAkGAoUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2113,8 +2113,8 @@
             }
         ]
     },
-    "Hammer Mastery +1": {
-        "Identifier": "Hammer Mastery +1",
+    "AQAkGBMUDw==": {
+        "Identifier": "AQAkGBMUDw==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2138,8 +2138,8 @@
             }
         ]
     },
-    "Healing Prayers +1": {
-        "Identifier": "Healing Prayers +1",
+    "AQAkGA0UGg==": {
+        "Identifier": "AQAkGA0UGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2163,8 +2163,8 @@
             }
         ]
     },
-    "Illusion Magic +1": {
-        "Identifier": "Illusion Magic +1",
+    "AQAkGAEUGg==": {
+        "Identifier": "AQAkGAEUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2188,8 +2188,8 @@
             }
         ]
     },
-    "Inspiration Magic +1": {
-        "Identifier": "Inspiration Magic +1",
+    "AQAkGAMUGg==": {
+        "Identifier": "AQAkGAMUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2213,8 +2213,8 @@
             }
         ]
     },
-    "Marksmanship +1": {
-        "Identifier": "Marksmanship +1",
+    "AQAkGBkUBQ==": {
+        "Identifier": "AQAkGBkUBQ==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2238,8 +2238,8 @@
             }
         ]
     },
-    "Protection Prayers +1": {
-        "Identifier": "Protection Prayers +1",
+    "AQAkGA8UGg==": {
+        "Identifier": "AQAkGA8UGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2263,8 +2263,8 @@
             }
         ]
     },
-    "Reduces Disease duration on you by 20%": {
-        "Identifier": "Reduces Disease duration on you by 20%",
+    "AQAkeAHjJw==": {
+        "Identifier": "AQAkeAHjJw==",
         "Descriptions": {
             "English": "Reduces Disease duration on you by 20%\n[Old School] Shield, Staff or Offhand"
         },
@@ -2288,8 +2288,8 @@
             }
         ]
     },
-    "Restoration Magic +1": {
-        "Identifier": "Restoration Magic +1",
+    "AQAkGCEUGg==": {
+        "Identifier": "AQAkGCEUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2313,8 +2313,8 @@
             }
         ]
     },
-    "Scythe Mastery +1": {
-        "Identifier": "Scythe Mastery +1",
+    "AQAkGCkUIw==": {
+        "Identifier": "AQAkGCkUIw==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2338,8 +2338,8 @@
             }
         ]
     },
-    "Smiting Prayers +1": {
-        "Identifier": "Smiting Prayers +1",
+    "AQAkGA4UGg==": {
+        "Identifier": "AQAkGA4UGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2363,8 +2363,8 @@
             }
         ]
     },
-    "Soul Reaping +1": {
-        "Identifier": "Soul Reaping +1",
+    "AQAkGAYUGg==": {
+        "Identifier": "AQAkGAYUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2388,8 +2388,8 @@
             }
         ]
     },
-    "Spawning Power +1": {
-        "Identifier": "Spawning Power +1",
+    "AQAkGCQUGg==": {
+        "Identifier": "AQAkGCQUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2413,8 +2413,8 @@
             }
         ]
     },
-    "Spear Mastery +1": {
-        "Identifier": "Spear Mastery +1",
+    "AQAkGCUUJA==": {
+        "Identifier": "AQAkGCUUJA==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2438,8 +2438,8 @@
             }
         ]
     },
-    "Swordsmanship +1": {
-        "Identifier": "Swordsmanship +1",
+    "AQAkGBQUGw==": {
+        "Identifier": "AQAkGBQUGw==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2463,8 +2463,8 @@
             }
         ]
     },
-    "Vampiric Strength": {
-        "Identifier": "Vampiric Strength",
+    "AQAg6AABJQAiOAAPJQ==": {
+        "Identifier": "AQAg6AABJQAiOAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2[8760]}%\nHealth regeneration -{arg2[8424]}"
         },
@@ -2497,8 +2497,8 @@
             }
         ]
     },
-    "Water Magic +1": {
-        "Identifier": "Water Magic +1",
+    "AQAkGAsUGg==": {
+        "Identifier": "AQAkGAsUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -2522,8 +2522,8 @@
             }
         ]
     },
-    "Zealous Strength": {
-        "Identifier": "Zealous Strength",
+    "AQAgyAABJQAiOAAPJQ==": {
+        "Identifier": "AQAgyAABJQAiOAAPJQ==",
         "Descriptions": {
             "English": "Damage +{arg2[8760]}%\nEnergy regeneration -{arg2[8392]}"
         },
@@ -2556,8 +2556,8 @@
             }
         ]
     },
-    "vs. Charr": {
-        "Identifier": "vs. Charr",
+    "AQAhSAEKJw==": {
+        "Identifier": "AQAhSAEKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Charr"
         },
@@ -2581,8 +2581,8 @@
             }
         ]
     },
-    "vs. Demons": {
-        "Identifier": "vs. Demons",
+    "AQAhSAgKJw==": {
+        "Identifier": "AQAhSAgKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Demons"
         },
@@ -2606,8 +2606,8 @@
             }
         ]
     },
-    "vs. Dragons": {
-        "Identifier": "vs. Dragons",
+    "AQAhSAkKJw==": {
+        "Identifier": "AQAhSAkKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Dragons"
         },
@@ -2631,8 +2631,8 @@
             }
         ]
     },
-    "vs. Dwarves": {
-        "Identifier": "vs. Dwarves",
+    "AQAhSAYKJw==": {
+        "Identifier": "AQAhSAYKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Dwarves"
         },
@@ -2656,8 +2656,8 @@
             }
         ]
     },
-    "vs. Giants": {
-        "Identifier": "vs. Giants",
+    "AQAhSAUKJw==": {
+        "Identifier": "AQAhSAUKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Giants"
         },
@@ -2681,8 +2681,8 @@
             }
         ]
     },
-    "vs. Ogres": {
-        "Identifier": "vs. Ogres",
+    "AQAhSAoKJw==": {
+        "Identifier": "AQAhSAoKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Ogres"
         },
@@ -2706,8 +2706,8 @@
             }
         ]
     },
-    "vs. Plants": {
-        "Identifier": "vs. Plants",
+    "AQAhSAMKJw==": {
+        "Identifier": "AQAhSAMKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Plants"
         },
@@ -2731,8 +2731,8 @@
             }
         ]
     },
-    "vs. Skeletons": {
-        "Identifier": "vs. Skeletons",
+    "AQAhSAQKJw==": {
+        "Identifier": "AQAhSAQKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Skeletons"
         },
@@ -2756,8 +2756,8 @@
             }
         ]
     },
-    "vs. Tengu": {
-        "Identifier": "vs. Tengu",
+    "AQAhSAcKJw==": {
+        "Identifier": "AQAhSAcKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Tengu"
         },
@@ -2781,8 +2781,8 @@
             }
         ]
     },
-    "vs. Trolls": {
-        "Identifier": "vs. Trolls",
+    "AQAhSAIKJw==": {
+        "Identifier": "AQAhSAIKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Trolls"
         },
@@ -2806,8 +2806,8 @@
             }
         ]
     },
-    "vs. Undead": {
-        "Identifier": "vs. Undead",
+    "AQAhSAAKJw==": {
+        "Identifier": "AQAhSAAKJw==",
         "Descriptions": {
             "English": "Armor +{arg2} vs. Undead"
         },
@@ -2831,8 +2831,8 @@
             }
         ]
     },
-    "Adept": {
-        "Identifier": "Adept",
+    "AgAoCBQAGg==": {
+        "Identifier": "AgAoCBQAGg==",
         "Descriptions": {
             "English": "Halves casting time of spells of item's attribute (Chance: {arg1}%)"
         },
@@ -2866,8 +2866,8 @@
             }
         ]
     },
-    "Barbed": {
-        "Identifier": "Barbed",
+    "AgAkaAHeAhsgIwUk": {
+        "Identifier": "AgAkaAHeAhsgIwUk",
         "Descriptions": {
             "English": "Lengthens Bleeding duration on foes by 33%"
         },
@@ -2906,8 +2906,8 @@
             }
         ]
     },
-    "Crippling": {
-        "Identifier": "Crippling",
+    "AgAkaAHhAhsgIwUk": {
+        "Identifier": "AgAkaAHhAhsgIwUk",
         "Descriptions": {
             "English": "Lengthens Crippled duration on foes by 33%"
         },
@@ -2946,8 +2946,8 @@
             }
         ]
     },
-    "Cruel": {
-        "Identifier": "Cruel",
+    "AgAkaAHiAg8bICMk": {
+        "Identifier": "AgAkaAHiAg8bICMk",
         "Descriptions": {
             "English": "Lengthens Deep Wound duration on foes by 33%"
         },
@@ -2986,8 +2986,8 @@
             }
         ]
     },
-    "Defensive": {
-        "Identifier": "Defensive",
+    "AgAhCAAFGg==": {
+        "Identifier": "AgAhCAAFGg==",
         "Descriptions": {
             "English": "Armor +{arg2}"
         },
@@ -3021,8 +3021,8 @@
             }
         ]
     },
-    "Ebon": {
-        "Identifier": "Ebon",
+    "AgAkuAsAJg==": {
+        "Identifier": "AgAkuAsAJg==",
         "Descriptions": {
             "English": "Changes Damage to {arg1}"
         },
@@ -3056,8 +3056,8 @@
             }
         ]
     },
-    "Fiery": {
-        "Identifier": "Fiery",
+    "AgAkuAUAJg==": {
+        "Identifier": "AgAkuAUAJg==",
         "Descriptions": {
             "English": "Changes Damage to {arg1}"
         },
@@ -3091,8 +3091,8 @@
             }
         ]
     },
-    "Furious": {
-        "Identifier": "Furious",
+    "AgAjuAAKAg8bICMk": {
+        "Identifier": "AgAjuAAKAg8bICMk",
         "Descriptions": {
             "English": "Double Adrenaline on hit (Chance: +{arg2}%)"
         },
@@ -3131,8 +3131,8 @@
             }
         ]
     },
-    "Hale": {
-        "Identifier": "Hale",
+    "AgAjSB4AGg==": {
+        "Identifier": "AgAjSB4AGg==",
         "Descriptions": {
             "English": "+{arg1} Health"
         },
@@ -3166,8 +3166,8 @@
             }
         ]
     },
-    "Heavy": {
-        "Identifier": "Heavy",
+    "AgAkaAHmAg8jJA==": {
+        "Identifier": "AgAkaAHmAg8jJA==",
         "Descriptions": {
             "English": "Lengthens Weakness duration on foes by 33%"
         },
@@ -3204,8 +3204,8 @@
             }
         ]
     },
-    "Icy": {
-        "Identifier": "Icy",
+    "AgAkuAMAJg==": {
+        "Identifier": "AgAkuAMAJg==",
         "Descriptions": {
             "English": "Changes Damage to {arg1}"
         },
@@ -3239,8 +3239,8 @@
             }
         ]
     },
-    "Insightful": {
-        "Identifier": "Insightful",
+    "AgAi2AAFGg==": {
+        "Identifier": "AgAi2AAFGg==",
         "Descriptions": {
             "English": "Energy +{arg2}"
         },
@@ -3274,8 +3274,8 @@
             }
         ]
     },
-    "Poisonous": {
-        "Identifier": "Poisonous",
+    "AgAkaAHkAhsgIwUk": {
+        "Identifier": "AgAkaAHkAhsgIwUk",
         "Descriptions": {
             "English": "Lengthens Poison duration on foes by 33%"
         },
@@ -3314,8 +3314,8 @@
             }
         ]
     },
-    "Shocking": {
-        "Identifier": "Shocking",
+    "AgAkuAQAJg==": {
+        "Identifier": "AgAkuAQAJg==",
         "Descriptions": {
             "English": "Changes Damage to {arg1}"
         },
@@ -3349,8 +3349,8 @@
             }
         ]
     },
-    "Silencing": {
-        "Identifier": "Silencing",
+    "AgAkaAHlIAUk": {
+        "Identifier": "AgAkaAHlIAUk",
         "Descriptions": {
             "English": "Lengthens Dazed duration on foes by 33%"
         },
@@ -3386,8 +3386,8 @@
             }
         ]
     },
-    "Sundering": {
-        "Identifier": "Sundering",
+    "AgAj-BQUJg==": {
+        "Identifier": "AgAj-BQUJg==",
         "Descriptions": {
             "English": "Armor penetration +20% (Chance: {arg1}%)"
         },
@@ -3421,8 +3421,8 @@
             }
         ]
     },
-    "Swift": {
-        "Identifier": "Swift",
+    "AgAiCAoAGg==": {
+        "Identifier": "AgAiCAoAGg==",
         "Descriptions": {
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
@@ -3456,54 +3456,8 @@
             }
         ]
     },
-    "Vampiric (Major)": {
-        "Identifier": "Vampiric (Major)",
-        "Descriptions": {
-            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
-        },
-        "Names": {
-            "English": "Vampiric",
-            "German": "Vampir-",
-            "Korean": "흡혈의 단검자루",
-            "French": "vampirique",
-            "Italian": "del Vampiro",
-            "Spanish": "de vampiro",
-            "TraditionalChinese": "吸血鬼 匕首刃",
-            "Japanese": "ヴァンピリック ダガーのグリップ",
-            "Polish": "Wampiryzmu",
-            "Russian": "Vampiric",
-            "BorkBorkBork": "Faempureec"
-        },
-        "ModType": "Prefix",
-        "TargetTypes": [
-            "Hammer",
-            "Bow",
-            "Scythe"
-        ],
-        "UpgradeExists": true,
-        "Modifiers": [
-            {
-                "Identifier": 9512,
-                "Arg1": 5,
-                "Arg2": 0,
-                "Arg": 1280,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 5
-            },
-            {
-                "Identifier": 8424,
-                "Arg1": 0,
-                "Arg2": 1,
-                "Arg": 1,
-                "ModifierValueArg": "Fixed",
-                "Min": 1,
-                "Max": 1
-            }
-        ]
-    },
-    "Vampiric (Minor)": {
-        "Identifier": "Vampiric (Minor)",
+    "AgAg6AABAhsgJAAlKAMAAhsgJA==": {
+        "Identifier": "AgAg6AABAhsgJAAlKAMAAhsgJA==",
         "Descriptions": {
             "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
         },
@@ -3549,8 +3503,54 @@
             }
         ]
     },
-    "Zealous": {
-        "Identifier": "Zealous",
+    "AgAg6AABDwUjACUoBQAPBSM=": {
+        "Identifier": "AgAg6AABDwUjACUoBQAPBSM=",
+        "Descriptions": {
+            "English": "Vampiric +{arg1[9512]}\nHealth regeneration -{arg2[8424]}"
+        },
+        "Names": {
+            "English": "Vampiric",
+            "German": "Vampir-",
+            "Korean": "흡혈의 단검자루",
+            "French": "vampirique",
+            "Italian": "del Vampiro",
+            "Spanish": "de vampiro",
+            "TraditionalChinese": "吸血鬼 匕首刃",
+            "Japanese": "ヴァンピリック ダガーのグリップ",
+            "Polish": "Wampiryzmu",
+            "Russian": "Vampiric",
+            "BorkBorkBork": "Faempureec"
+        },
+        "ModType": "Prefix",
+        "TargetTypes": [
+            "Hammer",
+            "Bow",
+            "Scythe"
+        ],
+        "UpgradeExists": true,
+        "Modifiers": [
+            {
+                "Identifier": 9512,
+                "Arg1": 5,
+                "Arg2": 0,
+                "Arg": 1280,
+                "ModifierValueArg": "Arg1",
+                "Min": 1,
+                "Max": 5
+            },
+            {
+                "Identifier": 8424,
+                "Arg1": 0,
+                "Arg2": 1,
+                "Arg": 1,
+                "ModifierValueArg": "Fixed",
+                "Min": 1,
+                "Max": 1
+            }
+        ]
+    },
+    "AgAgyAABJgAlGAABJg==": {
+        "Identifier": "AgAgyAABJgAlGAABJg==",
         "Descriptions": {
             "English": "Zeal +{arg2[9496]}\nEnergy regeneration -{arg2[8392]}"
         },
@@ -3593,8 +3593,8 @@
             }
         ]
     },
-    "of Air Magic": {
-        "Identifier": "of Air Magic",
+    "AwAkGAgUGg==": {
+        "Identifier": "AwAkGAgUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3628,8 +3628,8 @@
             }
         ]
     },
-    "of Aptitude": {
-        "Identifier": "of Aptitude",
+    "AwAoCBQADA==": {
+        "Identifier": "AwAoCBQADA==",
         "Descriptions": {
             "English": "Halves casting time on spells of item's attribute (Chance: {arg1}%)"
         },
@@ -3663,8 +3663,8 @@
             }
         ]
     },
-    "of Axe Mastery": {
-        "Identifier": "of Axe Mastery",
+    "AwAkGBIUAg==": {
+        "Identifier": "AwAkGBIUAg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3698,8 +3698,8 @@
             }
         ]
     },
-    "of Blood Magic": {
-        "Identifier": "of Blood Magic",
+    "AwAkGAQUGg==": {
+        "Identifier": "AwAkGAQUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3723,8 +3723,8 @@
             }
         ]
     },
-    "of Channeling Magic": {
-        "Identifier": "of Channeling Magic",
+    "AwAkGCIUGg==": {
+        "Identifier": "AwAkGCIUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3758,8 +3758,8 @@
             }
         ]
     },
-    "of Charrslaying": {
-        "Identifier": "of Charrslaying",
+    "AwCAgAEAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAEAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -3796,8 +3796,8 @@
             }
         ]
     },
-    "of Communing": {
-        "Identifier": "of Communing",
+    "AwAkGCAUGg==": {
+        "Identifier": "AwAkGCAUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3821,8 +3821,8 @@
             }
         ]
     },
-    "of Curses": {
-        "Identifier": "of Curses",
+    "AwAkGAcUGg==": {
+        "Identifier": "AwAkGAcUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3846,8 +3846,8 @@
             }
         ]
     },
-    "of Dagger Mastery": {
-        "Identifier": "of Dagger Mastery",
+    "AwAkGB0UIA==": {
+        "Identifier": "AwAkGB0UIA==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3881,8 +3881,8 @@
             }
         ]
     },
-    "of Death Magic": {
-        "Identifier": "of Death Magic",
+    "AwAkGAUUGg==": {
+        "Identifier": "AwAkGAUUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -3906,8 +3906,8 @@
             }
         ]
     },
-    "of Deathbane": {
-        "Identifier": "of Deathbane",
+    "AwCAgAAAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAAAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -3954,8 +3954,8 @@
             }
         ]
     },
-    "of Defense": {
-        "Identifier": "of Defense",
+    "AwAhCAAFJho=": {
+        "Identifier": "AwAhCAAFJho=",
         "Descriptions": {
             "English": "Armor +{arg2}"
         },
@@ -3990,8 +3990,8 @@
             }
         ]
     },
-    "of Demonslaying": {
-        "Identifier": "of Demonslaying",
+    "AwCAgAgAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAgAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4038,8 +4038,8 @@
             }
         ]
     },
-    "of Devotion": {
-        "Identifier": "of Devotion",
+    "AwAjaC0AGBoM": {
+        "Identifier": "AwAjaC0AGBoM",
         "Descriptions": {
             "English": "+{arg1} Health while Enchanted"
         },
@@ -4075,8 +4075,8 @@
             }
         ]
     },
-    "of Divine Favor": {
-        "Identifier": "of Divine Favor",
+    "AwAkGBAUGg==": {
+        "Identifier": "AwAkGBAUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4100,8 +4100,8 @@
             }
         ]
     },
-    "of Domination Magic": {
-        "Identifier": "of Domination Magic",
+    "AwAkGAIUGg==": {
+        "Identifier": "AwAkGAIUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4125,8 +4125,8 @@
             }
         ]
     },
-    "of Dragonslaying": {
-        "Identifier": "of Dragonslaying",
+    "AwCAgAkAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAkAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4163,8 +4163,8 @@
             }
         ]
     },
-    "of Dwarfslaying": {
-        "Identifier": "of Dwarfslaying",
+    "AwCAgAYAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAYAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4201,8 +4201,8 @@
             }
         ]
     },
-    "of Earth Magic": {
-        "Identifier": "of Earth Magic",
+    "AwAkGAkUGg==": {
+        "Identifier": "AwAkGAkUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4226,8 +4226,8 @@
             }
         ]
     },
-    "of Enchanting": {
-        "Identifier": "of Enchanting",
+    "AwAiuAAUJho=": {
+        "Identifier": "AwAiuAAUJho=",
         "Descriptions": {
             "English": "+{arg2}% Enchantment Duration"
         },
@@ -4262,8 +4262,8 @@
             }
         ]
     },
-    "of Endurance": {
-        "Identifier": "of Endurance",
+    "AwAjiC0AGBoM": {
+        "Identifier": "AwAjiC0AGBoM",
         "Descriptions": {
             "English": "+{arg1} Health while in a Stance"
         },
@@ -4299,8 +4299,8 @@
             }
         ]
     },
-    "of Fire Magic": {
-        "Identifier": "of Fire Magic",
+    "AwAkGAoUGg==": {
+        "Identifier": "AwAkGAoUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4334,8 +4334,8 @@
             }
         ]
     },
-    "of Fortitude": {
-        "Identifier": "of Fortitude",
+    "AwAjSB4AJhoYDA==": {
+        "Identifier": "AwAjSB4AJhoYDA==",
         "Descriptions": {
             "English": "+{arg1} Health"
         },
@@ -4372,8 +4372,8 @@
             }
         ]
     },
-    "of Giantslaying": {
-        "Identifier": "of Giantslaying",
+    "AwCAgAUAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAUAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4410,8 +4410,8 @@
             }
         ]
     },
-    "of Hammer Mastery": {
-        "Identifier": "of Hammer Mastery",
+    "AwAkGBMUDw==": {
+        "Identifier": "AwAkGBMUDw==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4445,8 +4445,8 @@
             }
         ]
     },
-    "of Healing Prayers": {
-        "Identifier": "of Healing Prayers",
+    "AwAkGA0UGg==": {
+        "Identifier": "AwAkGA0UGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4470,8 +4470,8 @@
             }
         ]
     },
-    "of Illusion Magic": {
-        "Identifier": "of Illusion Magic",
+    "AwAkGAEUGg==": {
+        "Identifier": "AwAkGAEUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4495,8 +4495,8 @@
             }
         ]
     },
-    "of Inspiration Magic": {
-        "Identifier": "of Inspiration Magic",
+    "AwAkGAMUGg==": {
+        "Identifier": "AwAkGAMUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4530,8 +4530,8 @@
             }
         ]
     },
-    "of Marksmanship": {
-        "Identifier": "of Marksmanship",
+    "AwAkGBkUBQ==": {
+        "Identifier": "AwAkGBkUBQ==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4565,8 +4565,8 @@
             }
         ]
     },
-    "of Mastery": {
-        "Identifier": "of Mastery",
+    "AwAoOBQAGg==": {
+        "Identifier": "AwAoOBQAGg==",
         "Descriptions": {
             "English": "Item's attribute +1 (Chance: {arg1}%)"
         },
@@ -4600,8 +4600,8 @@
             }
         ]
     },
-    "of Memory": {
-        "Identifier": "of Memory",
+    "AwAoKBQAFg==": {
+        "Identifier": "AwAoKBQAFg==",
         "Descriptions": {
             "English": "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"
         },
@@ -4635,8 +4635,8 @@
             }
         ]
     },
-    "of Ogreslaying": {
-        "Identifier": "of Ogreslaying",
+    "AwCAgAoAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAoAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4673,8 +4673,8 @@
             }
         ]
     },
-    "of Protection Prayers": {
-        "Identifier": "of Protection Prayers",
+    "AwAkGA8UGg==": {
+        "Identifier": "AwAkGA8UGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4698,8 +4698,8 @@
             }
         ]
     },
-    "of Pruning": {
-        "Identifier": "of Pruning",
+    "AwCAgAMAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAMAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4746,8 +4746,8 @@
             }
         ]
     },
-    "of Quickening": {
-        "Identifier": "of Quickening",
+    "AwAjqAoAFg==": {
+        "Identifier": "AwAjqAoAFg==",
         "Descriptions": {
             "English": "Halves skill recharge of spells (Chance: {arg1}%)"
         },
@@ -4781,8 +4781,8 @@
             }
         ]
     },
-    "of Restoration Magic": {
-        "Identifier": "of Restoration Magic",
+    "AwAkGCEUGg==": {
+        "Identifier": "AwAkGCEUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4816,8 +4816,8 @@
             }
         ]
     },
-    "of Scythe Mastery": {
-        "Identifier": "of Scythe Mastery",
+    "AwAkGCkUIw==": {
+        "Identifier": "AwAkGCkUIw==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4851,8 +4851,8 @@
             }
         ]
     },
-    "of Shelter": {
-        "Identifier": "of Shelter",
+    "AwAhWAAHJho=": {
+        "Identifier": "AwAhWAAHJho=",
         "Descriptions": {
             "English": "+{arg2} Armor vs Physical"
         },
@@ -4887,8 +4887,8 @@
             }
         ]
     },
-    "of Skeletonslaying": {
-        "Identifier": "of Skeletonslaying",
+    "AwCAgAQAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAQAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -4925,8 +4925,8 @@
             }
         ]
     },
-    "of Smiting Prayers": {
-        "Identifier": "of Smiting Prayers",
+    "AwAkGA4UGg==": {
+        "Identifier": "AwAkGA4UGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4960,8 +4960,8 @@
             }
         ]
     },
-    "of Soul Reaping": {
-        "Identifier": "of Soul Reaping",
+    "AwAkGAYUGg==": {
+        "Identifier": "AwAkGAYUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -4985,8 +4985,8 @@
             }
         ]
     },
-    "of Spawning Power": {
-        "Identifier": "of Spawning Power",
+    "AwAkGCQUGg==": {
+        "Identifier": "AwAkGCQUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -5020,8 +5020,8 @@
             }
         ]
     },
-    "of Spear Mastery": {
-        "Identifier": "of Spear Mastery",
+    "AwAkGCUUJA==": {
+        "Identifier": "AwAkGCUUJA==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -5055,8 +5055,8 @@
             }
         ]
     },
-    "of Swiftness": {
-        "Identifier": "of Swiftness",
+    "AwAiCAoADA==": {
+        "Identifier": "AwAiCAoADA==",
         "Descriptions": {
             "English": "Halves casting time of spells (Chance: +{arg1}%)"
         },
@@ -5090,8 +5090,8 @@
             }
         ]
     },
-    "of Swordsmanship": {
-        "Identifier": "of Swordsmanship",
+    "AwAkGBQUGw==": {
+        "Identifier": "AwAkGBQUGw==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -5125,8 +5125,8 @@
             }
         ]
     },
-    "of Tenguslaying": {
-        "Identifier": "of Tenguslaying",
+    "AwCAgAcAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAcAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -5163,8 +5163,8 @@
             }
         ]
     },
-    "of Trollslaying": {
-        "Identifier": "of Trollslaying",
+    "AwCAgAIAAgUPGxoAokgUAAIFDxsa": {
+        "Identifier": "AwCAgAIAAgUPGxoAokgUAAIFDxsa",
         "Descriptions": {
             "English": "Damage +{arg1[41544]}% (vs. {arg1[32896]})"
         },
@@ -5201,8 +5201,8 @@
             }
         ]
     },
-    "of Valor": {
-        "Identifier": "of Valor",
+    "AwAjeDwAGBoM": {
+        "Identifier": "AwAjeDwAGBoM",
         "Descriptions": {
             "English": "+{arg1} Health while Hexed"
         },
@@ -5238,8 +5238,8 @@
             }
         ]
     },
-    "of Warding": {
-        "Identifier": "of Warding",
+    "AwAhKAAHJho=": {
+        "Identifier": "AwAhKAAHJho=",
         "Descriptions": {
             "English": "+{arg2} Armor vs Elemental"
         },
@@ -5274,8 +5274,8 @@
             }
         ]
     },
-    "of Water Magic": {
-        "Identifier": "of Water Magic",
+    "AwAkGAsUGg==": {
+        "Identifier": "AwAkGAsUGg==",
         "Descriptions": {
             "English": "{arg1} +1 ({arg2}% chance while using skills)"
         },
@@ -5299,8 +5299,8 @@
             }
         ]
     },
-    "of the Assassin": {
-        "Identifier": "of the Assassin",
+    "AwAoqCMFJhYa": {
+        "Identifier": "AwAoqCMFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5336,8 +5336,8 @@
             }
         ]
     },
-    "of the Dervish": {
-        "Identifier": "of the Dervish",
+    "AwAoqCwFJhYa": {
+        "Identifier": "AwAoqCwFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5373,8 +5373,8 @@
             }
         ]
     },
-    "of the Elementalist": {
-        "Identifier": "of the Elementalist",
+    "AwAoqAwFJhYa": {
+        "Identifier": "AwAoqAwFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5400,8 +5400,8 @@
             }
         ]
     },
-    "of the Mesmer": {
-        "Identifier": "of the Mesmer",
+    "AwAoqAAFJhYa": {
+        "Identifier": "AwAoqAAFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5437,8 +5437,8 @@
             }
         ]
     },
-    "of the Monk": {
-        "Identifier": "of the Monk",
+    "AwAoqBAFJhYa": {
+        "Identifier": "AwAoqBAFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5474,8 +5474,8 @@
             }
         ]
     },
-    "of the Necromancer": {
-        "Identifier": "of the Necromancer",
+    "AwAoqAYFJhYa": {
+        "Identifier": "AwAoqAYFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5511,8 +5511,8 @@
             }
         ]
     },
-    "of the Paragon": {
-        "Identifier": "of the Paragon",
+    "AwAoqCgFJhYa": {
+        "Identifier": "AwAoqCgFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5548,8 +5548,8 @@
             }
         ]
     },
-    "of the Ranger": {
-        "Identifier": "of the Ranger",
+    "AwAoqBcFJhYa": {
+        "Identifier": "AwAoqBcFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5585,8 +5585,8 @@
             }
         ]
     },
-    "of the Ritualist": {
-        "Identifier": "of the Ritualist",
+    "AwAoqCQFJhYa": {
+        "Identifier": "AwAoqCQFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },
@@ -5622,8 +5622,8 @@
             }
         ]
     },
-    "of the Warrior": {
-        "Identifier": "of the Warrior",
+    "AwAoqBEFJhYa": {
+        "Identifier": "AwAoqBEFJhYa",
         "Descriptions": {
             "English": "{arg1}: {arg2} (if your rank is lower. No effects in PvP.)"
         },

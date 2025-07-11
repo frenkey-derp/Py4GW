@@ -621,7 +621,6 @@ def SaveRunes(debug : bool = False):
             
         json.dump({rune.identifier: rune.to_json() for rune in Runes.values()}, file, indent=4, ensure_ascii=False)
 
-
 @staticmethod
 def LoadItems():
     global Items

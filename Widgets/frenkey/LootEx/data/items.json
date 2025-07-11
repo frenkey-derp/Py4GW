@@ -5506,44 +5506,6 @@
         }
     },
     "Trophy": {
-        "17081": {
-            "ModelID": 17081,
-            "Names": {
-                "English": "250 Battle Commendations"
-            },
-            "ItemType": "Trophy",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/250_Battle_Commendations",
-            "InventoryIcon": "",
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
-        "6068": {
-            "ModelID": 6068,
-            "Names": {
-                "English": "250 Imperial Commendations"
-            },
-            "ItemType": "Trophy",
-            "DropInfo": "",
-            "Attributes": [],
-            "CommonSalvage": {},
-            "RareSalvage": {},
-            "WikiURL": "https://wiki.guildwars.com/wiki/250_Imperial_Commendations",
-            "InventoryIcon": "",
-            "InventoryIconURL": null,
-            "NickIndex": null,
-            "Profession": null,
-            "Category": null,
-            "SubCategory": null,
-            "WikiScraped": false
-        },
         "442": {
             "ModelID": 442,
             "Names": {
@@ -5951,6 +5913,25 @@
             "Category": "Trophy",
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "17081": {
+            "ModelID": 17081,
+            "Names": {
+                "English": "Battle Commendation"
+            },
+            "ItemType": "Trophy",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Battle_Commendation",
+            "InventoryIcon": "",
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "27066": {
             "ModelID": 27066,
@@ -9036,6 +9017,25 @@
             "Category": "Trophy",
             "SubCategory": null,
             "WikiScraped": true
+        },
+        "6068": {
+            "ModelID": 6068,
+            "Names": {
+                "English": "Imperial Commendation"
+            },
+            "ItemType": "Trophy",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Imperial_Commendation",
+            "InventoryIcon": "",
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
         },
         "29108": {
             "ModelID": 29108,
@@ -14561,7 +14561,7 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Axes_\"Rival_Skies\"",
-            "InventoryIcon": "Decade Axes _Rival Skies_.png",
+            "InventoryIcon": "Decade Axes Rival Skies.png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/f/f2/Decade_Axes_%22Rival_Skies%22.png",
             "NickIndex": null,
             "Profession": null,
@@ -56440,7 +56440,7 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Sword_\"Distant_Horizon\"",
-            "InventoryIcon": "Decade Sword _Distant Horizon_.png",
+            "InventoryIcon": "Decade Sword  Distant Horizon .png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/8/82/Decade_Sword_%22Distant_Horizon%22.png",
             "NickIndex": null,
             "Profession": null,
@@ -60666,7 +60666,7 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Dagger_\"Dragon's_Restraint\"",
-            "InventoryIcon": "Decade Dagger _Dragon's Restraint_.png",
+            "InventoryIcon": "Decade Dagger  Dragon's Restraint .png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/9/9d/Decade_Dagger_%22Dragon%27s_Restraint%22.png",
             "NickIndex": null,
             "Profession": null,
@@ -60697,7 +60697,7 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Daggers_\"High_Noon\"",
-            "InventoryIcon": "Decade Daggers _High Noon_.png",
+            "InventoryIcon": "Decade Daggers  High Noon .png",
             "InventoryIconURL": "https://wiki.guildwars.com/images/d/d3/Decade_Daggers_%22High_Noon%22.png",
             "NickIndex": null,
             "Profession": null,
@@ -72305,7 +72305,7 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Decade_Scythe_\"Funeral_Fang\"",
-            "InventoryIcon": "Decade Scythe _Funeral Fang_.jpg",
+            "InventoryIcon": "Decade Scythe Funeral Fang.jpg",
             "InventoryIconURL": "https://wiki.guildwars.com/images/thumb/0/0f/Decade_Scythe_%22Funeral_Fang%22.jpg/250px-Decade_Scythe_%22Funeral_Fang%22.jpg",
             "NickIndex": null,
             "Profession": null,

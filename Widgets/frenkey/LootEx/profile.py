@@ -1,6 +1,6 @@
 import os
 import json
-from Widgets.frenkey.LootEx import filter, item_configuration, messaging
+from Widgets.frenkey.LootEx import action_rule, filter, item_configuration, messaging
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.item_configuration import *
 from Py4GWCoreLib import Console
@@ -89,14 +89,62 @@ class Profile:
 
         # Collection of Filters
         self.filters: list[filter.Filter] = []
+        self.filters_by_item_type: dict[ItemType, list[filter.Filter]] = {}
+                
+        # Collection of Action Rules
+        self.rules: list[action_rule.ActionRule] = []
+        self.rules_by_model: dict[ItemType, dict[int, list[action_rule.ActionRule]]] = {}        
 
         self.runes: dict[str, RuneConfiguration] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
         self.items: ItemConfigurations = ItemConfigurations()
         self.blacklist: dict[ItemType, dict[int, bool]] = {}
 
+    def setup_lookups(self):
+        self.filters_by_item_type.clear()
+        self.rules_by_model.clear()
+        
+        for filter in self.filters:
+            for item_type in filter.item_types:
+                if item_type not in self.filters_by_item_type:
+                    self.filters_by_item_type[item_type] = []
+                    
+                self.filters_by_item_type[item_type].append(filter)
+        
+        for rule in self.rules:
+            if rule.models:
+                for model_info in rule.models:
+                    if model_info.item_type not in self.rules_by_model:
+                        self.rules_by_model[model_info.item_type] = {}
+                        
+                    if model_info.model_id not in self.rules_by_model[model_info.item_type]:
+                        self.rules_by_model[model_info.item_type][model_info.model_id] = []
+                    
+                    if rule not in self.rules_by_model[model_info.item_type][model_info.model_id]:
+                        self.rules_by_model[model_info.item_type][model_info.model_id].append(rule)
+            else:
+                from Widgets.frenkey.LootEx import data
+                ## Get all items from data.Items.All which have item.inventory_icon == rule.skin
+                items_with_skin = [
+                    item for item in data.Items.All
+                    if item.inventory_icon == rule.skin
+                ]
+                
+                for item in items_with_skin:
+                    if item.item_type not in self.rules_by_model:
+                        self.rules_by_model[item.item_type] = {}
+                        
+                    if item.model_id not in self.rules_by_model[item.item_type]:
+                        self.rules_by_model[item.item_type][item.model_id] = []
+                        
+                    if rule not in self.rules_by_model[item.item_type][item.model_id]:
+                        self.rules_by_model[item.item_type][item.model_id].append(rule)
+                        
+        pass
+
     def save(self):
         from Widgets.frenkey.LootEx import settings
+        self.setup_lookups()
         
         """Save the profile as a JSON file."""
         self.changed = True
@@ -112,6 +160,9 @@ class Profile:
             "nick_weeks_to_keep": self.nick_weeks_to_keep,
             "nick_items_to_keep": self.nick_items_to_keep,
             "filters": [Filter.to_dict(filter) for filter in self.filters],
+            "rules": [
+                rule.to_dict() for rule in self.rules
+            ],
             "polling_interval": self.polling_interval,
             "loot_range": self.loot_range,
             "runes":  {
@@ -176,6 +227,9 @@ class Profile:
                     "sell_threshold", self.sell_threshold)
                 self.filters = [Filter.from_dict(
                     filter) for filter in profile_dict.get("filters", [])]
+                self.rules = [
+                    action_rule.ActionRule.from_dict(rule) for rule in profile_dict.get("rules", [])
+                ]
                 self.runes =  {
                     rune_identifier: RuneConfiguration.from_dict(rune_config)
                     for rune_identifier, rune_config in profile_dict.get("runes", {}).items()
@@ -200,8 +254,10 @@ class Profile:
                         if item_type not in self.items:
                             self.items[item_type] = {}
                         
-                        self.items[item_type][int(item_id)] = item_config                
-
+                        self.items[item_type][int(item_id)] = item_config        
+                                
+            self.setup_lookups()
+            
         except FileNotFoundError:
             ConsoleLog(
                 "LootEx", f"Profile file {file_path} not found. Using default settings.", Console.MessageType.Warning)
@@ -219,6 +275,42 @@ class Profile:
         else:
             ConsoleLog(
                 "LootEx", f"Profile file {file_path} not found.", Console.MessageType.Warning)
+
+    def add_filter(self, filter: Filter):
+        """Add a filter to the profile."""
+        if filter not in self.filters:
+            self.filters.append(filter)
+            self.changed = True
+            
+    def remove_filter(self, filter: Filter):
+        """Remove a filter from the profile."""
+        if filter in self.filters:
+            self.filters.remove(filter)
+            self.changed = True
+    
+    def move_filter(self, filter: Filter, new_index: int):
+        """Move a filter to a new index in the profile."""
+        if filter in self.filters:
+            current_index = self.filters.index(filter)
+            
+            if current_index != new_index:
+                self.filters.pop(current_index)
+                self.filters.insert(new_index, filter)
+                self.changed = True
+
+    def add_rule(self, rule: action_rule.ActionRule):
+        """Add an action rule to the profile."""
+        if any(existing_rule.skin == rule.skin for existing_rule in self.rules):
+            return
+        
+        self.rules.append(rule)
+        self.changed = True
+            
+    def remove_rule(self, rule: action_rule.ActionRule):
+        """Remove an action rule from the profile."""
+        if rule in self.rules:
+            self.rules.remove(rule)
+            self.changed = True
 
     def set_rune(self, rune_identifier: str, is_valuable: bool, should_sell: bool | None = None):
         """Set the value of a rune in the profile."""
@@ -239,7 +331,6 @@ class Profile:
         if not self.runes[rune_identifier].valuable and not self.runes[rune_identifier].should_sell:
             if rune_identifier in self.runes:
                 del self.runes[rune_identifier]
-        
         
     def contains_weapon_mod(self, mod_name: str) -> bool:
         """Check if the profile contains a specific weapon mod."""

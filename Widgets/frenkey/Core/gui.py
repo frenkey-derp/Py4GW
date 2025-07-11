@@ -3,11 +3,23 @@ from typing import Optional
 import PyImGui
 
 from Py4GWCoreLib import ImGui
-from Py4GWCoreLib.enums import Profession
+from Py4GWCoreLib.enums import Profession, Rarity
 from Widgets.frenkey.Core.texture_map import CoreTextures
 
 class GUI:
-    
+    @staticmethod
+    def get_rarity_rgba_color(rarity : Rarity, alpha: int = 255) -> tuple[int, int, int, int]:        
+        rarity_colors = {
+            Rarity.White: (255, 255, 255, 255),
+            Rarity.Blue: (153, 238, 255, 255),
+            Rarity.Green: (0, 255, 0, 255),
+            Rarity.Purple: (187, 136, 238, 255),
+            Rarity.Gold: (255, 204, 85, 255),
+        }
+        
+        col = rarity_colors.get(rarity, (255, 255, 255, alpha))
+        return (col[0], col[1], col[2], alpha)
+        
     @staticmethod
     def profession_square_texture(profession: Profession, size: int = 32, hovered : bool = False, tint : tuple[int, int, int, int] = (255, 255, 255, 255)) -> None:
         """

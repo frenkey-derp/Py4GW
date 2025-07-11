@@ -17,6 +17,8 @@ import importlib
 importlib.reload(enum)
 
 class IntRange:
+    Zero = field(default_factory=lambda: IntRange(0, 0))
+    
     def __init__(self, min: int = 0, max: Optional[int] = None):
         self.min: int = min
         self.max: int = max if max is not None else min
@@ -586,6 +588,7 @@ class ModifierInfo:
     
 @dataclass
 class ItemMod():
+    identifier : str = ""
     descriptions: dict[ServerLanguage, str] = field(default_factory=dict)
     names: dict[ServerLanguage, str] = field(default_factory=dict)
     mod_type: ModType = ModType.None_    
@@ -596,8 +599,15 @@ class ItemMod():
         self.name : str = self.get_name()
         self.full_name : str = self.get_full_name()
         self.description: str  = self.get_description()
-        self.identifier : str = self.generate_binary_identifier()
         self.applied_name : str = self.get_applied_name()
+        
+    def get_modifier_range(self) -> IntRange:
+        if not self.modifiers:
+            return IntRange(0, 0)
+        
+        modifier_info = next((mod for mod in self.modifiers if mod.modifier_value_arg != ModifierValueArg.Fixed and mod.modifier_value_arg != ModifierValueArg.None_), None)
+        
+        return IntRange(modifier_info.min, modifier_info.max) if modifier_info else IntRange.Zero
         
     def set_name(self, name: str, language: ServerLanguage = ServerLanguage.English):
         self.names[language] = name        
@@ -614,19 +624,6 @@ class ItemMod():
         
         return False
     
-    def generate_binary_identifier(self) -> str:
-        # Start with mod_type (1 byte)
-        data = bytearray()
-        data.append(self.mod_type.value)
-
-        # Append each modifier's identifier (3 bytes) and arg (2 bytes)
-        for mod in sorted(self.modifiers, key=lambda m: m.identifier):
-            data.extend(mod.identifier.to_bytes(3, byteorder='big'))
-            data.extend(mod.arg.to_bytes(2, byteorder='big'))
-
-        # Encode as base64 for safe printable format
-        return base64.urlsafe_b64encode(data).decode('ascii')
-
     @staticmethod
     def decode_binary_identifier(encoded: str) -> tuple[ModType, list[tuple[int, int]]]:
         """
@@ -904,7 +901,8 @@ class Rune(ItemMod):
     
     @staticmethod
     def from_json(json: dict) -> 'Rune':
-        return Rune(           
+        return Rune(       
+            identifier=json["Identifier"],    
             descriptions={ServerLanguage[lang]: name for lang, name in json["Descriptions"].items()},
             names={ServerLanguage[lang]: name for lang, name in json["Names"].items()},
             mod_type=ModType[json["ModType"]],
@@ -936,22 +934,6 @@ class WeaponMod(ItemMod):
 
     ## extracted weapon mods share the same modelid, thus we need to check the item type it belongs to through ModifierIdentifier.ItemType which gives us a ModTargetType
 
-    def generate_binary_identifier(self) -> str:
-        # Start with mod_type (1 byte)
-        data = bytearray()
-        data.append(self.mod_type.value)
-
-        # Append each modifier's identifier (3 bytes) and arg (2 bytes)
-        for mod in sorted(self.modifiers, key=lambda m: m.identifier):
-            data.extend(mod.identifier.to_bytes(3, byteorder='big'))
-            data.extend(mod.arg.to_bytes(2, byteorder='big'))
-            
-            for target_type in self.target_types:
-                data.extend(target_type.value.to_bytes(1, byteorder='big'))
-
-        # Encode as base64 for safe printable format
-        return base64.urlsafe_b64encode(data).decode('ascii')
-    
     def __post_init__(self):
         ItemMod.__post_init__(self)
         self.is_inscription : bool = self.names.get(ServerLanguage.English, "").startswith("\"") if self.names else False
@@ -1112,6 +1094,7 @@ class WeaponMod(ItemMod):
     @staticmethod
     def from_json(json: dict) -> 'WeaponMod':
         return WeaponMod(            
+            identifier=json["Identifier"],
             descriptions={ServerLanguage[lang]: name for lang, name in json["Descriptions"].items()},
             names={ServerLanguage[lang]: name for lang, name in json["Names"].items()},
             mod_type=ModType[json["ModType"]],

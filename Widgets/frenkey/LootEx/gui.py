@@ -3,7 +3,8 @@ import re
 import webbrowser
 
 from Widgets.frenkey.Core.iterable import chunked
-from Widgets.frenkey.LootEx import loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
+from Widgets.frenkey.Core import texture_map, gui
+from Widgets.frenkey.LootEx import action_rule, loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -16,7 +17,10 @@ from ctypes import windll
 import importlib
 
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
+importlib.reload(gui)
 importlib.reload(settings)
+importlib.reload(action_rule)
+importlib.reload(texture_map)
 importlib.reload(data)
 importlib.reload(enum)
 importlib.reload(models)
@@ -29,6 +33,8 @@ importlib.reload(ui_manager_extensions)
 importlib.reload(inventory_handling)
 importlib.reload(wiki_scraper)
 importlib.reload(filter)
+
+GUI = gui.GUI()
 
 
 class SelectableItem:
@@ -89,6 +95,25 @@ class ItemFilter:
         
         return self.lambda_function(item)
     
+class RuleFilter:
+    def __init__(self, name: str, lambda_function: Callable[[action_rule.ActionRule], bool]):
+        self.name: str = name
+        self.lambda_function: Callable[[action_rule.ActionRule], bool] = lambda_function
+        pass
+    
+    def match(self, rule: action_rule.ActionRule) -> bool:
+        """
+        Checks if the rule matches the filter criteria.
+        
+        Args:
+            rule (action_rule.ActionRule): The rule to check against the filter.
+        
+        Returns:
+            bool: True if the rule matches the filter, False otherwise.
+        """
+        
+        return self.lambda_function(rule)
+    
 class UI:
     _instance = None
     
@@ -102,7 +127,9 @@ class UI:
         LOW_REQ_WEAPONS_FRAME_HOVERED = Utils.RGBToColor(242, 136, 22, 125)
         INFO_ICON = Utils.RGBToColor(245,172,
                                      47, 255)
-    
+        SELECTED_ITEM_BG = Utils.RGBToColor(100,100,100, 150)
+        HOVERED_ITEM_BG = Utils.RGBToColor(128,128,128, 100)
+        
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(UI, cls).__new__(cls)
@@ -118,26 +145,33 @@ class UI:
         self.action_summary: inventory_handling.InventoryHandler.ActionsSummary | None = None
         self.action_textures: dict[enum.ItemAction, str] = {   
             # enum.ItemAction.NONE: os.path.join(self.item_textures_path, "Data_Collector.png"),        
-            enum.ItemAction.LOOT: os.path.join(self.item_textures_path, "Bag.png"),       
+            enum.ItemAction.LOOT: texture_map.CoreTextures.UI_Reward_Bag_Hovered.value,    
             enum.ItemAction.COLLECT_DATA: os.path.join(self.icon_textures_path, "wiki_logo.png"),      
             enum.ItemAction.IDENTIFY: os.path.join(self.item_textures_path, "Identification_Kit.png"),      
             enum.ItemAction.STASH: os.path.join(self.icon_textures_path, "xunlai_chest.png"),      
             enum.ItemAction.SALVAGE_MODS: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
-            enum.ItemAction.SALVAGE: os.path.join(self.item_textures_path, "Salvage_Kit.png"),
             enum.ItemAction.SALVAGE: os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png"),
-            enum.ItemAction.SALVAGE_RARE_MATERIALS: os.path.join(self.item_textures_path, "Steel_Ingot.png"),  
-            enum.ItemAction.SALVAGE_COMMON_MATERIALS: os.path.join(self.item_textures_path, "Iron_Ingot.png"),
+            enum.ItemAction.SALVAGE_COMMON_MATERIALS: os.path.join(self.item_textures_path, "Salvage Kit.png"),  
+            enum.ItemAction.SALVAGE_RARE_MATERIALS: os.path.join(self.item_textures_path, "Expert Salvage Kit.png"),
             enum.ItemAction.SELL_TO_MERCHANT: os.path.join(self.item_textures_path, "Gold.png"),
             enum.ItemAction.SELL_TO_TRADER: os.path.join(self.item_textures_path, "Gold.png"),
-            enum.ItemAction.DESTROY: os.path.join(self.icon_textures_path, "destroy.png"),
+            enum.ItemAction.DESTROY: texture_map.CoreTextures.UI_Destroy.value,
             enum.ItemAction.DEPOSIT_MATERIAL: os.path.join(self.icon_textures_path, "xunlai_chest.png"),
         }
         self.py_io = PyImGui.get_io()
         self.selected_loot_items: list[SelectableItem] = []
         
+        
+        self.rule_search: str = ""
+        self.selected_rule_changed: bool = True
+        self.selected_rule: action_rule.ActionRule | None = None
+        self.selectable_rules: list[SelectableWrapper] = []
+        self.selectable_items : list[models.Item] = []
+        
         self.inventory_view: bool = True
         self.item_search: str = ""
         self.filtered_loot_items: list[SelectableItem] = []        
+        self.filtered_skins: list[SelectableItem] = []        
         self.filtered_blacklist_items: list[SelectableItem] = []       
         
         self.selected_condition: Optional[ConfigurationCondition] = None
@@ -484,7 +518,7 @@ class UI:
             enum.ItemAction.DESTROY,
         ]
         self.item_action_names = [
-            action.name for action in self.item_actions]
+            utility.Util.reformat_string(action.name) for action in self.item_actions]
                 
         
         self.os_low_req_itemtype_selectables: list[SelectableWrapper] = [
@@ -536,11 +570,59 @@ class UI:
             ItemFilter("Reward Trophies", lambda item: item.category == enum.ItemCategory.RewardTrophy),
             ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem),    
         ]
-        
+            
+        self.skin_search = ""
+        self.skin_select_popup = False
+        self.show_add_rule_popup = False
+        self.rule_name = ""        
+        self.rule_filter_popup = False
+        self.selected_rule_filter: Optional[RuleFilter] = None
+        self.rule_filters : list[RuleFilter] = [
+            RuleFilter("All Items", lambda rule: True),   
+            RuleFilter("Weapons", lambda rule: any(item_type in self.weapon_types for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Axe", lambda rule: any(item_type == ItemType.Axe for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Bow", lambda rule: any(item_type == ItemType.Bow for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Daggers", lambda rule: any(item_type == ItemType.Daggers for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Hammer", lambda rule: any(item_type == ItemType.Hammer for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Scythe", lambda rule: any(item_type == ItemType.Scythe for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Spear", lambda rule: any(item_type == ItemType.Spear for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Sword", lambda rule: any(item_type == ItemType.Sword for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Staff", lambda rule: any(item_type == ItemType.Staff for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Wand", lambda rule: any(item_type == ItemType.Wand for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Offhand", lambda rule: any(item_type == ItemType.Offhand for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Shield", lambda rule: any(item_type == ItemType.Shield for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Armor", lambda rule: any(item_type in [
+                ItemType.Chestpiece,
+                ItemType.Headpiece,
+                ItemType.Leggings,
+                ItemType.Boots,
+                ItemType.Gloves,
+            ] for item_type in [item.item_type for item in rule.get_items()])),
+            RuleFilter("Upgrades", lambda rule: any(item.item_type == ItemType.Rune_Mod for item in rule.get_items())),
+            RuleFilter("Consumables", lambda rule: any(item.category in [
+                enum.ItemCategory.Alcohol,
+                enum.ItemCategory.Sweet,
+                enum.ItemCategory.Party,
+                enum.ItemCategory.DeathPenaltyRemoval
+            ] for item in rule.get_items())),
+            RuleFilter("Alcohol", lambda rule: any(item.category == enum.ItemCategory.Alcohol for item in rule.get_items())),
+            RuleFilter("Sweets", lambda rule: any(item.category == enum.ItemCategory.Sweet for item in rule.get_items())),
+            RuleFilter("Party", lambda rule: any(item.category == enum.ItemCategory.Party for item in rule.get_items())),
+            RuleFilter("Death Penalty Removal", lambda rule: any(item.category == enum.ItemCategory .DeathPenaltyRemoval for item in rule.get_items())),
+            RuleFilter("Scrolls", lambda rule: any(item.category == enum.ItemCategory.Scroll for item in rule.get_items())),
+            RuleFilter("Tomes", lambda rule: any(item.category == enum.ItemCategory.Tome for item in rule.get_items())),
+            RuleFilter("Keys", lambda rule: any(item.category == enum.ItemCategory.Key for item in rule.get_items())),
+            RuleFilter("Materials", lambda rule: any(item.category == enum.ItemCategory.Material for item in rule.get_items())),
+            RuleFilter("Trophies", lambda rule: any(item.category == enum.ItemCategory.Trophy for item in rule.get_items())),
+            RuleFilter("Reward Trophies", lambda rule: any(item.category == enum.ItemCategory.RewardTrophy for item in rule.get_items())),
+            RuleFilter("Quest Items", lambda rule: any(item.category == enum.ItemCategory.QuestItem for item in rule.get_items())),            
+        ]
+                
         self.data_collector = data_collector.DataCollector()
         self.filter_weapon_mods()        
         self.filter_items()    
-    
+        self.filter_rules()
+        
     def ensure_on_screen(self) -> bool:   
         if not self.py_io:
             return False
@@ -701,8 +783,9 @@ class UI:
 
             if PyImGui.begin_tab_bar("LootExTabBar"):
                 self.draw_general_settings()
-                self.draw_filters()
-                self.draw_loot_items()
+                self.draw_by_item_type()
+                self.draw_by_item_skin()
+                self.draw_by_model_id()
                 self.draw_weapon_mods()
                 self.draw_runes()
                 self.draw_old_school_tab()
@@ -1225,15 +1308,8 @@ class UI:
                         pass
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
-                        for material in data.Materials.values():
-                            material.inventory_icon = wiki_scraper.WikiScraper.get_image_name(material.inventory_icon or "")
-                        pass  
-                    
-                        data.SaveMaterials()
-                        
-                        for rune in data.Runes.values():
-                            rune.inventory_icon = wiki_scraper.WikiScraper.get_image_name(rune.inventory_icon or "")
                         data.SaveRunes()
+                        data.SaveWeaponMods(True)
                         
                         
                                                  
@@ -1713,8 +1789,8 @@ class UI:
         PyImGui.same_line(0, 5)
         PyImGui.text(label)
 
-    def draw_filters(self):
-        if PyImGui.begin_tab_item("Filter Based Actions") and settings.current.profile:
+    def draw_by_item_type(self):
+        if PyImGui.begin_tab_item("By Item Type") and settings.current.profile:
             # Get size of the tab
             tab_size = PyImGui.get_content_region_avail()
 
@@ -1762,17 +1838,15 @@ class UI:
                                 ImGui.show_tooltip(name)
                             
                             PyImGui.same_line(0, 10)
-                            if UI.transparent_button(text=IconsFontAwesome5.ICON_ARROW_UP+ "##" +filter.name, enabled=False, width=button_size[0], height=button_size[1], draw_background=False):
-                                if i > 0:
-                                    settings.current.profile.filters.insert(
-                                        i - 1, settings.current.profile.filters.pop(i))
+                            if UI.transparent_button(text=IconsFontAwesome5.ICON_ARROW_UP + "##" +filter.name, enabled=False, width=button_size[0], height=button_size[1], draw_background=False):
+                                if i > 0:                                    
+                                    settings.current.profile.move_filter(filter, i - 1)
                                     settings.current.profile.save()
                                     
                             PyImGui.same_line(0, 10)
-                            if UI.transparent_button(text=IconsFontAwesome5.ICON_ARROW_DOWN+ "##" +filter.name, enabled=False, width=button_size[0], height=button_size[1], draw_background=False):
+                            if UI.transparent_button(text=IconsFontAwesome5.ICON_ARROW_DOWN + "##" +filter.name, enabled=False, width=button_size[0], height=button_size[1], draw_background=False):
                                 if i < len(settings.current.profile.filters) - 1:
-                                    settings.current.profile.filters.insert(
-                                        i + 1, settings.current.profile.filters.pop(i))
+                                    settings.current.profile.move_filter(filter, i + 1)
                                     settings.current.profile.save()
 
                 PyImGui.end_child()
@@ -1803,7 +1877,7 @@ class UI:
 
                     # Delete filter button
                     if PyImGui.button(IconsFontAwesome5.ICON_TRASH):
-                        settings.current.profile.filters.remove(
+                        settings.current.profile.remove_filter(
                             filter)
                         settings.current.profile.save()
                         settings.current.selected_filter = settings.current.profile.filters[
@@ -2093,8 +2167,9 @@ class UI:
 
             if PyImGui.button("Create", 100, 0) and not filter_exists:
                 if self.filter_name != "" and not filter_exists:
-                    settings.current.profile.filters.append(
-                        Filter(self.filter_name))
+                    settings.current.profile.add_filter(
+                        Filter(self.filter_name)
+                    )
                     settings.current.profile.save()
 
                     self.filter_name = ""
@@ -2146,9 +2221,544 @@ class UI:
             if self.filter_popup:
                 PyImGui.close_current_popup()
                 self.filter_popup = False        
+    
+    #region By Skin Tab    
+    def draw_rule_filter_popup(self):
+        if self.rule_filter_popup:
+            PyImGui.open_popup("Filter Rules")
+
+        if PyImGui.begin_popup("Filter Rules"):
+            
+            remaining_size = PyImGui.get_content_region_avail()
+            
+            for filter in self.rule_filters:
+                if filter:
+                    if PyImGui.selectable(filter.name, self.selected_rule_filter == filter, PyImGui.SelectableFlags.NoFlag, (remaining_size[0], 0)):
+                        self.selected_rule_filter = filter
+                        self.filter_rules()
+                        
+                        self.rule_filter_popup = False
+                        PyImGui.close_current_popup()
         
-    def draw_loot_items(self):
-        if PyImGui.begin_tab_item("Item Actions") and settings.current.profile:
+            PyImGui.end_popup()
+        
+        if PyImGui.is_mouse_clicked(0) and not PyImGui.is_item_hovered():
+            if self.rule_filter_popup:
+                PyImGui.close_current_popup()
+                self.rule_filter_popup = False        
+    
+    def filter_rules(self):
+        if not settings.current.profile:
+            return
+        
+        self.selectable_rules = []
+        search = self.rule_search.lower()
+        
+        for rule in settings.current.profile.rules:
+            if self.selected_rule_filter is None or self.selected_rule_filter.match(rule):
+                if not search or \
+                    search in rule.skin.lower() or \
+                    any(search in str(model_id) for model_id in [
+                            model_info.model_id for model_info in rule.models
+                    ]):
+                    
+                    self.selectable_rules.append(SelectableWrapper(rule, self.selected_rule == rule))                
+
+        pass
+    
+    def draw_selectable_rule(self, rule: action_rule.ActionRule, is_selected: bool, is_hovered: bool = False) -> tuple[bool, bool]:
+        size = 32        
+        skin_size = size - 6        
+        padding = (size - skin_size) / 2
+        
+        if PyImGui.is_rect_visible(1, size):
+
+            if PyImGui.begin_child(f"rule_{rule.skin}", (0, size), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar):
+                texture = os.path.join(self.item_textures_path, f"{rule.skin}")   
+                remaining_size = PyImGui.get_content_region_avail()
+                
+                cursor = PyImGui.get_cursor_screen_pos()   
+                is_visible = PyImGui.is_rect_visible(10, 1)      
+                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible
+                
+                if is_hovered:
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                    
+                if is_selected:
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                
+                cursor = PyImGui.get_cursor_pos()
+                PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
+                
+                PyImGui.begin_child(f"skin_texture_child{rule.skin}", (skin_size, skin_size), False, PyImGui.WindowFlags.NoFlag| PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                if texture.endswith(((".jpg",".png"))) and os.path.exists(texture):
+                    ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size))                    
+                else:            
+                    ImGui.push_font("Bold", 28)
+                    text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
+                    PyImGui.set_cursor_pos((((skin_size - text_size[0])) / 2), 4 + ((skin_size - text_size[1]) / 2))
+                    PyImGui.text(IconsFontAwesome5.ICON_QUESTION)
+                    ImGui.pop_font()
+                PyImGui.end_child()
+                            
+                PyImGui.same_line(0, 5)
+                without_file_ending = rule.skin.split(".")[0]
+                
+                GUI.vertical_centered_text(text=without_file_ending or "No Skin Selected", desired_height=skin_size + 4)
+                                
+            PyImGui.end_child()
+            
+        else:
+            PyImGui.dummy(0, skin_size)
+        
+        is_hovered = PyImGui.is_item_hovered()
+        
+        if PyImGui.is_item_clicked(0):
+            is_selected = not is_selected
+        
+        return is_selected, is_hovered
+    
+    def draw_skin_selectable(self, skin: str, is_selected: bool) -> tuple[bool, bool]:
+        size = 38
+        padding = 4
+        skin_size = size - (padding * 2)
+        
+        if PyImGui.is_rect_visible(0, size):            
+            if PyImGui.begin_child(f"skin_{skin}", (0, size), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar):
+                texture = os.path.join(self.item_textures_path, f"{skin}")   
+                remaining_size = PyImGui.get_content_region_avail()
+                
+                cursor = PyImGui.get_cursor_screen_pos()   
+                is_visible = PyImGui.is_rect_visible(10, 1)      
+                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible
+                
+                if is_hovered:
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                    
+                if is_selected:
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                
+                cursor = PyImGui.get_cursor_pos()
+                PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
+                
+                PyImGui.begin_child(f"skin_texture_child{skin}", (skin_size, skin_size), False, PyImGui.WindowFlags.NoFlag| PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                if texture.endswith((".jpg",".png")) and os.path.exists(texture):
+                    ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size))                    
+                else:            
+                    ImGui.push_font("Bold", 28)
+                    text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
+                    PyImGui.set_cursor_pos((((skin_size - text_size[0])) / 2), 4 + ((skin_size - text_size[1]) / 2))
+                    PyImGui.text(IconsFontAwesome5.ICON_QUESTION)
+                    ImGui.pop_font()
+                PyImGui.end_child()
+                            
+                PyImGui.same_line(0, 5)
+                without_file_ending = skin.split(".")[0]
+                
+                GUI.vertical_centered_text(text=without_file_ending or "No Skin Selected", desired_height=skin_size + 4)
+                                
+            PyImGui.end_child()
+            
+        else:
+            PyImGui.dummy(0, skin_size)
+        
+        is_hovered = PyImGui.is_item_hovered()
+        
+        if PyImGui.is_item_clicked(0):
+            is_selected = not is_selected
+        
+        return is_selected, is_hovered
+            
+    def draw_skin_select_popup(self):
+        if not settings.current.profile or not self.selected_rule:
+            return
+        
+        if self.skin_select_popup:
+            PyImGui.open_popup("Select Skin")
+
+        if PyImGui.begin_popup("Select Skin"):
+            changed, search = UI.search_field("##search_skin", self.skin_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for skin name or model id ...", 250)
+            if changed:
+                self.skin_search = search.lower()
+
+            existing_skins_from_rules = [
+                rule.skin for rule in settings.current.profile.rules if rule.skin and rule != self.selected_rule
+            ]
+            if PyImGui.begin_child("skin_selection_list", (0, 500), True, PyImGui.WindowFlags.NoFlag):
+                sorted_skins = sorted(data.ItemsBySkins.items(), key=lambda x: x[0].lower())
+                
+                for skin, items in sorted_skins:
+                    if skin in existing_skins_from_rules:
+                        continue
+                    
+                    if not self.skin_search or self.skin_search in skin.lower():
+                        selected, hovered = self.draw_skin_selectable(skin, skin == self.selected_rule.skin if self.selected_rule else False)
+                        
+                        if self.selected_rule_changed and selected:
+                            self.selected_rule_changed = False
+                            PyImGui.set_scroll_here_y(0.5)
+                                                        
+                        if selected and skin != self.selected_rule.skin:
+                            if self.selected_rule:
+                                self.selected_rule.skin = skin                                   
+                                self.selectable_items = data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
+                                
+                                self.skin_search = ""            
+                                settings.current.profile.save()     
+                                           
+                                PyImGui.close_current_popup()
+                                self.skin_select_popup = False  
+                                
+            PyImGui.end_child()
+            PyImGui.end_popup()
+            
+                                
+            if PyImGui.is_mouse_clicked(0) and not PyImGui.is_item_hovered():
+                if self.skin_select_popup:
+                    PyImGui.close_current_popup()
+                    self.skin_select_popup = False  
+    
+    def draw_item_selectable(self, item: models.Item, is_selected: bool) -> tuple[bool, bool]:
+        size = 38
+        padding = 4
+        skin_size = size - (padding * 2)
+        
+        if PyImGui.is_rect_visible(size, size):            
+            if PyImGui.begin_child(f"item_{item.model_id}_{item.inventory_icon or ""}", (0, size), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.AlwaysAutoResize):
+                texture = os.path.join(self.item_textures_path, f"{item.inventory_icon}")   
+                remaining_size = PyImGui.get_content_region_avail()
+                
+                cursor = PyImGui.get_cursor_screen_pos()   
+                is_visible = PyImGui.is_rect_visible(10, 1)      
+                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible
+                
+                if is_hovered:
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                    
+                if is_selected:
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                
+                cursor = PyImGui.get_cursor_pos()
+                PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
+                
+                PyImGui.begin_child(f"skin_texture_child{item.model_id}_{item.inventory_icon or ""}", (skin_size, skin_size), False, PyImGui.WindowFlags.NoFlag| PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                if texture.endswith((".jpg",".png")) and os.path.exists(texture):
+                    ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size))                    
+                else:            
+                    ImGui.push_font("Bold", 28)
+                    text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
+                    PyImGui.set_cursor_pos((((skin_size - text_size[0])) / 2), 4 + ((skin_size - text_size[1]) / 2))
+                    PyImGui.text(IconsFontAwesome5.ICON_QUESTION)
+                    ImGui.pop_font()
+                PyImGui.end_child()
+                            
+                PyImGui.same_line(0, 5)
+                
+                GUI.vertical_centered_text(text=item.name + ("\n" + "\n".join([utility.Util.reformat_string(attribute.name) for attribute in item.attributes]) if len(item.attributes) == 1 else ""), desired_height=skin_size + 4)
+                                
+            PyImGui.end_child()
+            
+        else:
+            PyImGui.dummy(size, size)
+        
+        is_hovered = PyImGui.is_item_hovered()
+        
+        if is_hovered:
+            PyImGui.set_next_window_size(400, 0)
+            PyImGui.begin_tooltip()
+            
+            self.draw_item_header(item_info=item, border=False, image_size=50)
+            PyImGui.dummy(50, 0)
+            PyImGui.same_line(0, 10)
+            height = len(item.attributes) * PyImGui.get_text_line_height() + (28 if item.attributes else 0)
+            PyImGui.begin_child("advanced details", (0, height), False, PyImGui.WindowFlags.NoFlag)
+            if item.attributes:
+                PyImGui.text("Attributes")
+                PyImGui.separator()
+                PyImGui.text("\n".join([utility.Util.reformat_string(attribute.name) for attribute in item.attributes]) if item.attributes else "")
+                
+            PyImGui.end_child()
+            
+            PyImGui.end_tooltip()
+            
+        
+        clicked = False
+        
+        if PyImGui.is_item_clicked(0):
+            is_selected = not is_selected
+            clicked = True
+        
+        return is_selected, clicked
+    
+    def draw_by_item_skin(self):
+        if self.first_draw:
+            self.filter_rules()
+            
+        if PyImGui.begin_tab_item("By Skin") and settings.current.profile:
+                        # Get size of the tab
+            tab_size = PyImGui.get_content_region_avail()
+
+            # Left panel: Loot Items Selection
+            if PyImGui.begin_child("skin_selection_child", (tab_size[0] * 0.3, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
+                child_size = PyImGui.get_content_region_avail()
+
+                changed, search = UI.search_field("##search_rule", self.rule_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for rule name, skin name or model id ...", child_size[0] - 60)
+                if changed:
+                    self.rule_search = search
+                    self.filter_rules()            
+
+                PyImGui.same_line(0, 5)
+                if PyImGui.button(IconsFontAwesome5.ICON_FILTER):
+                    self.rule_filter_popup = not self.rule_filter_popup
+                    if self.rule_filter_popup:
+                        PyImGui.open_popup("Filter Rules")
+                    pass
+                
+                def draw_hint():
+                    PyImGui.text_wrapped(
+                        "Select item skins to manage their actions in your inventory.\n" +
+                        "You can filter skins by name or model ID and filter them through the filter popup.\n\n" +
+                        "To select multiple items click on the first item, hold down the SHIFT key and click on the last item.\n" +
+                        "All items in between will be selected.")
+                                           
+                PyImGui.same_line(0, 5)
+                self.draw_info_icon(
+                    draw_action=draw_hint,                 
+                    width=500
+                )            
+                
+                if PyImGui.begin_child("skin selection region", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                    subtab_size = PyImGui.get_content_region_avail()
+                    
+                    if PyImGui.begin_child("selectable_skins", (subtab_size[0], subtab_size[1] - 30), False, PyImGui.WindowFlags.NoFlag):
+                        for selectable_rule in self.selectable_rules:
+                            rule : action_rule.ActionRule = selectable_rule.object
+                            
+                            is_selected, is_hovered = self.draw_selectable_rule(rule, selectable_rule.is_selected, selectable_rule.is_hovered)
+                            selectable_rule.is_hovered = is_hovered
+                            
+                            if is_selected != selectable_rule.is_selected:
+                                selectable_rule.is_selected = is_selected
+                                
+                                if is_selected:
+                                    self.selected_rule = selectable_rule.object
+                                    self.selectable_items = data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
+                                    
+                                    for sel_rule in self.selectable_rules:
+                                        if sel_rule.object != self.selected_rule:
+                                            sel_rule.is_selected = False
+                                else:
+                                    self.selected_rule = None
+                                
+                                self.selected_rule_changed = True
+
+                    PyImGui.end_child()
+                    
+                    if PyImGui.button("Add Rule", subtab_size[0]):
+                        settings.current.profile.add_rule(
+                            action_rule.ActionRule()
+                        )
+                        self.filter_rules()
+                        settings.current.profile.save()
+                                        
+                PyImGui.end_child()
+                
+            PyImGui.end_child()
+
+            PyImGui.same_line(tab_size[0] * 0.3 + 20, 0)
+
+            # Right panel: Loot Item Details
+            if PyImGui.begin_child("skin_child", (tab_size[0] - (tab_size[0] * 0.3) - 10, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
+                if self.selected_rule:
+                    rule : action_rule.ActionRule = self.selected_rule
+                    texture = os.path.join(self.item_textures_path, f"{rule.skin}")
+                    texture_exists = texture.endswith(((".jpg",".png"))) and os.path.exists(texture)
+                    
+                    remaingng_size = PyImGui.get_content_region_avail()
+                    
+                    if PyImGui.begin_child("skin_selection", ((remaingng_size[0] - 235 - 5), 73), True, PyImGui.WindowFlags.NoFlag):
+                        size = 52
+                        padding = 8
+                        skin_size = size - (padding * 2)
+                        
+                        cursor = PyImGui.get_cursor_screen_pos()
+                        is_texture_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], size, size))
+                        is_mouse_down = PyImGui.is_mouse_down(0)
+                        
+                        rect = (cursor[0], cursor[1], cursor[0] + size, cursor[1] + size)   
+                        if is_texture_hovered and not is_mouse_down:
+                            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
+                            PyImGui.draw_list_add_rect(rect[0], rect[1], rect[2], rect[3], UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                            
+                        elif is_texture_hovered and is_mouse_down:
+                            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
+                            PyImGui.draw_list_add_rect(rect[0], rect[1], rect[2], rect[3], UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                            
+                        PyImGui.begin_child(f"selected_rule {rule.skin}", (size, size), False, PyImGui.WindowFlags.NoFlag| PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                        if texture_exists:
+                            cursor = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
+                            ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size))                    
+                        else:            
+                            ImGui.push_font("Bold", 28)
+                            text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
+                            PyImGui.set_cursor_pos((((size - text_size[0])) / 2), 4 + ((size - text_size[1]) / 2))
+                            PyImGui.text(IconsFontAwesome5.ICON_QUESTION)
+                            ImGui.pop_font()
+                            
+                        PyImGui.end_child()
+                        
+                        PyImGui.same_line(0, 20)
+                        if PyImGui.is_item_clicked(0):
+                            self.skin_select_popup = not self.skin_select_popup
+                            self.selected_rule_changed = True
+                            
+                        ImGui.push_font("Bold", 22)
+                        GUI.vertical_centered_text(text=rule.skin.split(".")[0] or "No Skin Selected", desired_height=size + padding)
+                        ImGui.pop_font()
+                        
+                        
+                    PyImGui.end_child()
+                    
+                    PyImGui.same_line(0, 5)
+            
+                    if PyImGui.begin_child("rule rarities", (235, 73), True, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar):   
+                        count = 0
+                        none_selected = False
+                        
+                        for rarity, selected in rule.rarities.items():  
+                            factor = 52 / 64
+                            skin_size = 48
+                            frame_size = (skin_size * factor, skin_size)
+                            screen_cursor = PyImGui.get_cursor_screen_pos()
+                            is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], frame_size[0], frame_size[1]))
+                            alpha = 255 if is_hovered else 225 if (selected) else 50
+                            texture_alpha = 255 if is_hovered else 225 if (selected) else 100
+                            frame_color =  GUI.get_rarity_rgba_color(rarity, 255) if selected else (100,100,100, 125)
+                            texture_color =  (255 ,255,255 , texture_alpha) if selected else (100,100,100, 200 if is_hovered else 125 )
+                            
+                            PyImGui.begin_child(f"rarity_{rarity}", (frame_size[0], frame_size[1]), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                                                            
+                            cursor = PyImGui.get_cursor_pos()
+                            # PyImGui.set_cursor_pos(cursor[0] + (frame_size * count), cursor[1])
+                            ImGui.DrawTextureExtended(texture_path=texture_map.CoreTextures.UI_Inventory_Slot.value, size=(frame_size[0], frame_size[1]), tint=frame_color)
+                            PyImGui.set_cursor_pos(cursor[0], cursor[1] + ((frame_size[1] - skin_size) / 2))
+                            
+                            if texture_exists:                                        
+                                ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size), tint=texture_color)
+                            else:
+                                PyImGui.dummy(skin_size, skin_size)  
+                            PyImGui.end_child()
+                            
+                            if PyImGui.is_item_clicked(0):
+                                
+                                if self.py_io.key_ctrl:
+                                    for r in rule.rarities.keys():
+                                        rule.rarities[r] = not selected
+                                else:
+                                    rule.rarities[rarity] = not selected
+                                    
+                                settings.current.profile.save()
+                            
+                            ImGui.show_tooltip(f"Rarity: {rarity.name}")
+                            PyImGui.same_line(0, 5)
+                            
+                            # count += 1  
+                        PyImGui.end_child()                                
+                            
+                    
+                    if PyImGui.begin_child("rule_settings", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                        remaining_size = PyImGui.get_content_region_avail()
+                        items_width = remaining_size[0] / 3
+                        if PyImGui.begin_child("rule items", (items_width, 0), True, PyImGui.WindowFlags.NoFlag):                            
+                            for item in self.selectable_items:
+                                if item:
+                                    existing_model_info = next((
+                                        model_info for model_info in rule.models
+                                        if model_info.model_id == item.model_id and model_info.item_type == item.item_type
+                                    ), None)
+                                    
+                                    is_selected = existing_model_info is not None
+                                    none_selected = rule.models is None or len(rule.models) == 0
+                                    
+                                    selected, clicked = self.draw_item_selectable(item, none_selected or is_selected)
+                                    if clicked:
+                                        if self.py_io.key_ctrl:
+                                            if existing_model_info:
+                                                rule.models.clear()
+                                                
+                                            else:
+                                                rule.models.clear()
+                                                rule.models.append(
+                                                    action_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
+                                                )
+                                        else:
+                                            if existing_model_info:
+                                                rule.models.remove(existing_model_info)
+                                                
+                                            else:
+                                                rule.models.append(
+                                                    action_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
+                                                )
+                        
+                        PyImGui.end_child()
+                        
+                        PyImGui.same_line(0, 10)
+                        if PyImGui.begin_child("rule configs", (0, 0), False, PyImGui.WindowFlags.NoFlag):    
+                            if PyImGui.begin_child("rule action", (0, 45), True, PyImGui.WindowFlags.NoFlag):    
+                                action_texture = self.action_textures.get(rule.action, None)
+                                height = 24
+                                if action_texture:
+                                    ImGui.DrawTexture(action_texture, height, height)
+                                else:
+                                    PyImGui.dummy(height, height)
+                                PyImGui.same_line(0, 5)            
+                                PyImGui.push_item_width(PyImGui.get_content_region_avail()[0])
+                                action = PyImGui.combo("##RuleAction", self.item_actions.index(
+                                    rule.action) if rule.action in self.item_actions else 0, self.item_action_names)
+                                
+                                if self.item_actions[action] != rule.action:
+                                    rule.action = self.item_actions[action]
+                                    settings.current.profile.save()
+                                
+                            PyImGui.end_child()
+                                   
+                            remaingng_size = PyImGui.get_content_region_avail()
+                            
+                            if PyImGui.begin_child("rule requirements", (0, (remaingng_size[1] - 10) / 2), True, PyImGui.WindowFlags.NoFlag):
+                                PyImGui.text("Requirements")
+                                
+                            PyImGui.end_child()
+                            
+                            if PyImGui.begin_child("rule mods", (0, (remaingng_size[1] - 10) / 2), True, PyImGui.WindowFlags.NoFlag):
+                                PyImGui.text("Mods")
+                                
+                            PyImGui.end_child()
+                            
+                        PyImGui.end_child()
+                    
+                    PyImGui.end_child()
+                    
+                    
+                pass
+            
+            PyImGui.end_child()
+            
+            # self.draw_rule_filter_popup()
+            self.draw_skin_select_popup()
+            
+            PyImGui.end_tab_item()
+    
+    #endregion
+    
+    def draw_by_model_id(self):
+        if PyImGui.begin_tab_item("By Model ID") and settings.current.profile:
             # Get size of the tab
             tab_size = PyImGui.get_content_region_avail()
 
@@ -2181,7 +2791,7 @@ class UI:
                     width=500
                 )            
                 
-                if PyImGui.begin_child("selectable_items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                if PyImGui.begin_child("selectable items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                     for item in self.filtered_loot_items:
                         if item and not settings.current.profile.is_blacklisted(item.item_info.item_type, item.item_info.model_id):
                             if PyImGui.is_rect_visible(1, 20):
@@ -2687,12 +3297,11 @@ class UI:
                 
         return (lines * PyImGui.get_text_line_height_with_spacing()) + 0
 
-    def filter_items(self):        
+    def filter_items(self):       
         self.filtered_loot_items = [
                         SelectableItem(item) for item in data.Items.All
                         if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
                     ]
-        
         self.filtered_blacklist_items = [
                         SelectableItem(item) for item in data.Items.All
                         if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))

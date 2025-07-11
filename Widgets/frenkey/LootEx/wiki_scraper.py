@@ -239,6 +239,7 @@ class WikiScraper:
 
         # Remove px size prefix like "134px-"
         last_part = re.sub(r'^\d+px-', '', last_part)
+        last_part = last_part.replace("%22", "")  # Remove URL-encoded quotes
 
         # Decode URL-encoded characters
         decoded = urllib.parse.unquote(last_part)

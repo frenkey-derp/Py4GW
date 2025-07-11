@@ -114,7 +114,7 @@ def main():
         if settings.current.profiles:
             settings.current.character_profiles[current_character] = settings.current.profiles[0].name
         
-        if not settings.current.character_profiles[current_character]:
+        if not settings.current.character_profiles.get(current_character, False):
             return
             
         settings.current.SetProfile(settings.current.character_profiles[current_character])
