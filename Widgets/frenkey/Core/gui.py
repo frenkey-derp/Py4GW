@@ -1,7 +1,31 @@
+import os
 from typing import Optional
 import PyImGui
 
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib.enums import Profession
+from Widgets.frenkey.Core.texture_map import CoreTextures
+
 class GUI:
+    
+    @staticmethod
+    def profession_square_texture(profession: Profession, size: int = 32, hovered : bool = False, tint : tuple[int, int, int, int] = (255, 255, 255, 255)) -> None:
+        """
+        Draws the texture for a given profession.
+
+        Args:
+            profession (str): The profession name.
+            size (int): The size of the texture.
+        """
+        
+        if profession != Profession._None:
+            texture = CoreTextures.get_profession_texture(profession, hovered)
+            
+            if texture:
+                ImGui.DrawTextureExtended(texture_path=texture, size=(size, size), tint=tint)
+            else:
+                PyImGui.dummy(size, size)
+    
     @staticmethod
     def vertical_centered_text(text: str, same_line_spacing: Optional[float] = None, desired_height: int = 24, color : tuple[float, float, float, float] | None = None) -> float:
         """

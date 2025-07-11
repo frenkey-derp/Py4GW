@@ -224,55 +224,51 @@ class UI:
         }
         
         self.item_type_textures: dict[ItemType, str] = {
-            ItemType.Salvage: os.path.join(self.item_textures_path, "Salvage_Heavy_Armor.png"),
-            ItemType.Axe: os.path.join(self.item_textures_path, "Great_Axe.png"),
+            ItemType.Salvage: os.path.join(self.item_textures_path, "Salvage Heavy Armor.png"),
+            ItemType.Axe: os.path.join(self.item_textures_path, "Great Axe.png"),
             ItemType.Bag: os.path.join(self.item_textures_path, "Bag.png"),
             ItemType.Boots: os.path.join(self.icon_textures_path, "templar_armor_feet.png"),
-            ItemType.Bow: os.path.join(self.item_textures_path, "Ivory_Bow.png"),
-            ItemType.Bundle: os.path.join(self.item_textures_path, "War_Supplies.png"),
+            ItemType.Bow: os.path.join(self.item_textures_path, "Ivory Bow.png"),
+            ItemType.Bundle: os.path.join(self.item_textures_path, "War Supplies.png"),
             ItemType.Chestpiece: os.path.join(self.icon_textures_path, "templar_armor_chestpiece.png"),
-            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Rune_All_Sup.png"),
-            ItemType.Usable: os.path.join(self.item_textures_path, "Cr%C3%A8me_Br%C3%BBl%C3%A9e.png"),
-            ItemType.Dye: os.path.join(self.item_textures_path, "White_Dye.png"),
-            ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood_Plank.png"),
-            ItemType.Offhand: os.path.join(self.item_textures_path, "Channeling_Focus.png"),
+            ItemType.Rune_Mod: os.path.join(self.item_textures_path, "Rune All Sup.png"),
+            ItemType.Usable: os.path.join(self.item_textures_path, "Crème Brûlée.png"),
+            ItemType.Dye: os.path.join(self.item_textures_path, "White Dye.png"),
+            ItemType.Materials_Zcoins: os.path.join(self.item_textures_path, "Wood Plank.png"),
+            ItemType.Offhand: os.path.join(self.item_textures_path, "Channeling Focus.png"),
             ItemType.Gloves: os.path.join(self.icon_textures_path, "templar_armor_gloves.png"),
-            ItemType.Hammer: os.path.join(self.item_textures_path, "PvP_Hammer.png"),
+            ItemType.Hammer: os.path.join(self.item_textures_path, "PvP Hammer.png"),
             ItemType.Headpiece: os.path.join(self.icon_textures_path, "templar_armor_helmet.png"),
-            ItemType.CC_Shards: os.path.join(self.item_textures_path, "Candy_Cane_Shard.png"),
-            ItemType.Key: os.path.join(self.item_textures_path, "Zaishen_Key.png"),
+            ItemType.CC_Shards: os.path.join(self.item_textures_path, "Candy Cane Shard.png"),
+            ItemType.Key: os.path.join(self.item_textures_path, "Zaishen Key.png"),
             ItemType.Leggings: os.path.join(self.icon_textures_path, "templar_armor_leggins.png"),
             ItemType.Gold_Coin: os.path.join(self.item_textures_path, "Gold.png"),
-            ItemType.Quest_Item: os.path.join(self.item_textures_path, "Top_Right_Map_Piece.png"),
-            ItemType.Wand: os.path.join(self.item_textures_path, "Shaunur%27s_Scepter.png"),
-            ItemType.Shield: os.path.join(self.item_textures_path, "Crude_Shield.png"),
-            ItemType.Staff : os.path.join(self.item_textures_path, "Holy_Staff.png"),
-            ItemType.Sword: os.path.join(self.item_textures_path, "Short_Sword.png"),
-            ItemType.Kit: os.path.join(self.item_textures_path, "Superior_Salvage_Kit.png"),
-            ItemType.Trophy: os.path.join(self.item_textures_path, "Destroyer_Core.png"),
-            ItemType.Scroll: os.path.join(self.item_textures_path, "Scroll_of_the_Lightbringer.png"),
-            ItemType.Daggers: os.path.join(self.item_textures_path, "Balthazar%27s_Daggers.png"),
-            ItemType.Present: os.path.join(self.item_textures_path, "Birthday_Present.png"),
-            ItemType.Minipet: os.path.join(self.item_textures_path, "Miniature_Celestial_Tiger.png"),
-            ItemType.Scythe: os.path.join(self.item_textures_path, "Suntouched_Scythe.png"),
-            ItemType.Spear: os.path.join(self.item_textures_path, "Suntouched_Spear.png"),
-            ItemType.Weapon: os.path.join(self.item_textures_path, "Inscription_weapons.png"),
-            ItemType.MartialWeapon: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
-            ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription_focus_items_or_shields.png"),
-            ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
-            ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription_spellcasting_weapons.png"),
-            ItemType.Storybook: os.path.join(self.item_textures_path, "Young_Heroes_of_Tyria.png"),
-            ItemType.Costume: os.path.join(self.item_textures_path, "134px-Shining_Blade_costume.png"),
+            ItemType.Quest_Item: os.path.join(self.item_textures_path, "Top Right Map Piece.png"),
+            ItemType.Wand: os.path.join(self.item_textures_path, "Shaunur's Scepter.png"),
+            ItemType.Shield: os.path.join(self.item_textures_path, "Crude Shield.png"),
+            ItemType.Staff : os.path.join(self.item_textures_path, "Holy Staff.png"),
+            ItemType.Sword: os.path.join(self.item_textures_path, "Short Sword.png"),
+            ItemType.Kit: os.path.join(self.item_textures_path, "Superior Salvage Kit.png"),
+            ItemType.Trophy: os.path.join(self.item_textures_path, "Destroyer Core.png"),
+            ItemType.Scroll: os.path.join(self.item_textures_path, "Scroll of the Lightbringer.png"),
+            ItemType.Daggers: os.path.join(self.item_textures_path, "Balthazar's Daggers.png"),
+            ItemType.Present: os.path.join(self.item_textures_path, "Birthday Present.png"),
+            ItemType.Minipet: os.path.join(self.item_textures_path, "Miniature Celestial Tiger.png"),
+            ItemType.Scythe: os.path.join(self.item_textures_path, "Suntouched Scythe.png"),
+            ItemType.Spear: os.path.join(self.item_textures_path, "Suntouched Spear.png"),
+            ItemType.Storybook: os.path.join(self.item_textures_path, "Young Heroes of Tyria.png"),
+            ItemType.Costume: os.path.join(self.item_textures_path, "Shining Blade costume.png"),
             ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine_Halo.png"),
             ItemType.Unknown: "",
         }
         
         self.inscription_type_textures: dict[ItemType, str] = {
-            ItemType.Weapon: os.path.join(self.item_textures_path, "Inscription_weapons.png"),
-            ItemType.MartialWeapon: os.path.join(self.item_textures_path, "Inscription_martial_weapons.png"),
-            ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription_focus_items_or_shields.png"),
-            ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription_equippable_items.png"),
-            ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription_spellcasting_weapons.png"),
+            ItemType.Weapon: os.path.join(self.item_textures_path, "Inscription weapons.png"),
+            ItemType.MartialWeapon: os.path.join(self.item_textures_path, "Inscription martial weapons.png"),
+            ItemType.Offhand: os.path.join(self.item_textures_path, "Inscription focus items.png"),
+            ItemType.OffhandOrShield: os.path.join(self.item_textures_path, "Inscription focus items or shields.png"),
+            ItemType.EquippableItem: os.path.join(self.item_textures_path, "Inscription equippable items.png"),
+            ItemType.SpellcastingWeapon: os.path.join(self.item_textures_path, "Inscription spellcasting weapons.png"),
         }
         
         self.bag_ranges : dict[str, tuple[Bag, Bag]] = {
@@ -1229,12 +1225,17 @@ class UI:
                         pass
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
-                                    
-                        # if identifier == ModifierIdentifier.Requirement:
-                        #     self.requirements = arg1 if arg1 is not None else 0
-                        #     self.attribute = Attribute(
-                        #         arg2) if arg2 is not None else Attribute.None_ 
+                        for material in data.Materials.values():
+                            material.inventory_icon = wiki_scraper.WikiScraper.get_image_name(material.inventory_icon or "")
                         pass  
+                    
+                        data.SaveMaterials()
+                        
+                        for rune in data.Runes.values():
+                            rune.inventory_icon = wiki_scraper.WikiScraper.get_image_name(rune.inventory_icon or "")
+                        data.SaveRunes()
+                        
+                        
                                                  
                 PyImGui.end_child()
             
@@ -1537,9 +1538,9 @@ class UI:
                                         
                 PyImGui.separator()
                 if PyImGui.begin_child("GeneralSettings_Merchant", (subtab_size[0], 150), True, PyImGui.WindowFlags.NoBackground) and settings.current.profile:
-                    self._input_int_setting("Identification Kits", settings.current.profile.identification_kits, os.path.join(self.item_textures_path, "Superior_Identification_Kit.png"))
-                    self._input_int_setting("Salvage Kits", settings.current.profile.salvage_kits, os.path.join(self.item_textures_path, "Salvage_Kit.png"))
-                    self._input_int_setting("Expert Salvage Kits", settings.current.profile.expert_salvage_kits, os.path.join(self.item_textures_path, "Expert_Salvage_Kit.png"))
+                    self._input_int_setting("Identification Kits", settings.current.profile.identification_kits, os.path.join(self.item_textures_path, "Superior Identification Kit.png"))
+                    self._input_int_setting("Salvage Kits", settings.current.profile.salvage_kits, os.path.join(self.item_textures_path, "Salvage Kit.png"))
+                    self._input_int_setting("Expert Salvage Kits", settings.current.profile.expert_salvage_kits, os.path.join(self.item_textures_path, "Expert Salvage Kit.png"))
                     self._input_int_setting("Lockpicks", settings.current.profile.lockpicks, os.path.join(self.item_textures_path, "Lockpick.png"))
 
                 PyImGui.end_child()
@@ -1637,7 +1638,7 @@ class UI:
                 if PyImGui.begin_child("DyesSelection", (dye_section_width - 20, 0), True, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoBackground):
                     for dye in DyeColor:
                         if dye != DyeColor.NoColor:
-                            file_path = os.path.join(self.item_textures_path, f"{dye.name}_Dye.png")
+                            file_path = os.path.join(self.item_textures_path, f"{dye.name} Dye.png")
                             if dye not in settings.current.profile.dyes:
                                 settings.current.profile.dyes[dye] = False
 

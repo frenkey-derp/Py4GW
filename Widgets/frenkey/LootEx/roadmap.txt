@@ -97,3 +97,9 @@ IsInventoryFull(itemid = -1) --> bool, check if the inventory is full for a give
 
 AddItemTemporary(LootItem) --> Add a Loot Item which is used while your bot is running
 AddFilterTemporary(Filter) --> Add a Loot Filter which is used while your bot is running
+
+________________________________________
+
+Texture Name
+- replace %27 with '-'
+- replace )

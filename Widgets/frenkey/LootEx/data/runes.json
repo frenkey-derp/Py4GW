@@ -23,7 +23,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:51.870374",
         "VendorValue": 380,
-        "InventoryIcon": "Blessed_Insignia.png",
+        "InventoryIcon": "Blessed Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/ff/Blessed_Insignia.png",
         "Modifiers": [
             {
@@ -61,7 +61,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:51.679385",
         "VendorValue": 170,
-        "InventoryIcon": "Brawler%27s_Insignia.png",
+        "InventoryIcon": "Brawler's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/a/a2/Brawler%27s_Insignia.png",
         "Modifiers": [
             {
@@ -99,7 +99,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:52.058727",
         "VendorValue": 100,
-        "InventoryIcon": "Herald%27s_Insignia.png",
+        "InventoryIcon": "Herald's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/96/Herald%27s_Insignia.png",
         "Modifiers": [
             {
@@ -137,7 +137,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:51.285841",
         "VendorValue": 130,
-        "InventoryIcon": "Radiant_Insignia.png",
+        "InventoryIcon": "Radiant Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/00/Radiant_Insignia.png",
         "Modifiers": [
             {
@@ -175,7 +175,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:52.248384",
         "VendorValue": 100,
-        "InventoryIcon": "Sentry%27s_Insignia.png",
+        "InventoryIcon": "Sentry's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/a/a3/Sentry%27s_Insignia.png",
         "Modifiers": [
             {
@@ -213,7 +213,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:51.490282",
         "VendorValue": 130,
-        "InventoryIcon": "Stalwart_Insignia.png",
+        "InventoryIcon": "Stalwart Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Stalwart_Insignia.png",
         "Modifiers": [
             {
@@ -251,7 +251,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:51.082598",
         "VendorValue": 210,
-        "InventoryIcon": "Survivor_Insignia.png",
+        "InventoryIcon": "Survivor Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/b/b7/Survivor_Insignia.png",
         "Modifiers": [
             {
@@ -289,7 +289,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:00.312319",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_All_Minor.png",
+        "InventoryIcon": "Rune All Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
         "Modifiers": [
             {
@@ -327,7 +327,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:59.918187",
         "VendorValue": 1800,
-        "InventoryIcon": "Rune_All_Minor.png",
+        "InventoryIcon": "Rune All Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
         "Modifiers": [
             {
@@ -365,7 +365,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:00.124025",
         "VendorValue": 380,
-        "InventoryIcon": "Rune_All_Minor.png",
+        "InventoryIcon": "Rune All Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fb/Rune_All_Minor.png",
         "Modifiers": [
             {
@@ -403,7 +403,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:09.514946",
         "VendorValue": 150,
-        "InventoryIcon": "Rune_All_Major.png",
+        "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
             {
@@ -441,7 +441,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:08.911134",
         "VendorValue": 9500,
-        "InventoryIcon": "Rune_All_Major.png",
+        "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
             {
@@ -479,7 +479,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:09.719193",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_All_Major.png",
+        "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
             {
@@ -517,7 +517,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:09.116494",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_All_Major.png",
+        "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
             {
@@ -555,7 +555,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:09.325633",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_All_Major.png",
+        "InventoryIcon": "Rune All Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f6/Rune_All_Major.png",
         "Modifiers": [
             {
@@ -593,7 +593,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:18.371653",
         "VendorValue": 60000,
-        "InventoryIcon": "Rune_All_Sup.png",
+        "InventoryIcon": "Rune All Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9e/Rune_All_Sup.png",
         "Modifiers": [
             {
@@ -631,7 +631,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:53.048052",
         "VendorValue": 100,
-        "InventoryIcon": "Dreadnought_Insignia.png",
+        "InventoryIcon": "Dreadnought Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/ce/Dreadnought_Insignia.png",
         "Modifiers": [
             {
@@ -669,7 +669,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:52.435996",
         "VendorValue": 120,
-        "InventoryIcon": "Knight%27s_Insignia.png",
+        "InventoryIcon": "Knight's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/79/Knight%27s_Insignia.png",
         "Modifiers": [
             {
@@ -707,7 +707,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:52.640227",
         "VendorValue": 100,
-        "InventoryIcon": "Lieutenant%27s_Insignia.png",
+        "InventoryIcon": "Lieutenant's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/5/57/Lieutenant%27s_Insignia.png",
         "Modifiers": [
             {
@@ -745,7 +745,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:53.252719",
         "VendorValue": 210,
-        "InventoryIcon": "Sentinel%27s_Insignia.png",
+        "InventoryIcon": "Sentinel's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/1e/Sentinel%27s_Insignia.png",
         "Modifiers": [
             {
@@ -783,7 +783,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:52.844237",
         "VendorValue": 100,
-        "InventoryIcon": "Stonefist_Insignia.png",
+        "InventoryIcon": "Stonefist Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/1f/Stonefist_Insignia.png",
         "Modifiers": [
             {
@@ -821,7 +821,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:00.501612",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Minor.png",
+        "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
             {
@@ -859,7 +859,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:01.087222",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Minor.png",
+        "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
             {
@@ -897,7 +897,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:01.275536",
         "VendorValue": 150,
-        "InventoryIcon": "Rune_Warrior_Minor.png",
+        "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
             {
@@ -935,7 +935,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:00.881110",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Minor.png",
+        "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
             {
@@ -973,7 +973,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:01.464057",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Minor.png",
+        "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
             {
@@ -1011,7 +1011,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:00.692098",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Minor.png",
+        "InventoryIcon": "Rune Warrior Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2f/Rune_Warrior_Minor.png",
         "Modifiers": [
             {
@@ -1049,7 +1049,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:09.923885",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Major.png",
+        "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
         "Modifiers": [
             {
@@ -1087,7 +1087,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:10.504464",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Major.png",
+        "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
         "Modifiers": [
             {
@@ -1134,7 +1134,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:10.710792",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Major.png",
+        "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
         "Modifiers": [
             {
@@ -1181,7 +1181,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:10.315786",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Major.png",
+        "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
         "Modifiers": [
             {
@@ -1228,7 +1228,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:10.899117",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Major.png",
+        "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
         "Modifiers": [
             {
@@ -1275,7 +1275,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:10.112221",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Warrior_Major.png",
+        "InventoryIcon": "Rune Warrior Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/46/Rune_Warrior_Major.png",
         "Modifiers": [
             {
@@ -1322,7 +1322,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:18.576928",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Warrior_Sup.png",
+        "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
         "Modifiers": [
             {
@@ -1360,7 +1360,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:19.158338",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Warrior_Sup.png",
+        "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
         "Modifiers": [
             {
@@ -1407,7 +1407,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:19.347337",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Warrior_Sup.png",
+        "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
         "Modifiers": [
             {
@@ -1454,7 +1454,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:18.969417",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Warrior_Sup.png",
+        "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
         "Modifiers": [
             {
@@ -1501,7 +1501,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:19.550768",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Warrior_Sup.png",
+        "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
         "Modifiers": [
             {
@@ -1548,7 +1548,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:18.766021",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Warrior_Sup.png",
+        "InventoryIcon": "Rune Warrior Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/31/Rune_Warrior_Sup.png",
         "Modifiers": [
             {
@@ -1595,7 +1595,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:54.450917",
         "VendorValue": 700,
-        "InventoryIcon": "Beastmaster%27s_Insignia.png",
+        "InventoryIcon": "Beastmaster's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d3/Beastmaster%27s_Insignia.png",
         "Modifiers": [
             {
@@ -1633,7 +1633,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:54.261001",
         "VendorValue": 100,
-        "InventoryIcon": "Earthbound_Insignia.png",
+        "InventoryIcon": "Earthbound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/a/a3/Earthbound_Insignia.png",
         "Modifiers": [
             {
@@ -1671,7 +1671,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:53.457018",
         "VendorValue": 100,
-        "InventoryIcon": "Frostbound_Insignia.png",
+        "InventoryIcon": "Frostbound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/91/Frostbound_Insignia.png",
         "Modifiers": [
             {
@@ -1709,7 +1709,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:53.645702",
         "VendorValue": 100,
-        "InventoryIcon": "Pyrebound_Insignia.png",
+        "InventoryIcon": "Pyrebound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/7c/Pyrebound_Insignia.png",
         "Modifiers": [
             {
@@ -1747,7 +1747,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:54.054543",
         "VendorValue": 100,
-        "InventoryIcon": "Scout%27s_Insignia.png",
+        "InventoryIcon": "Scout's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Scout%27s_Insignia.png",
         "Modifiers": [
             {
@@ -1785,7 +1785,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:53.849655",
         "VendorValue": 100,
-        "InventoryIcon": "Stormbound_Insignia.png",
+        "InventoryIcon": "Stormbound Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6a/Stormbound_Insignia.png",
         "Modifiers": [
             {
@@ -1823,7 +1823,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:02.029994",
         "VendorValue": 270,
-        "InventoryIcon": "Rune_Ranger_Minor.png",
+        "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
             {
@@ -1861,7 +1861,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:01.841242",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ranger_Minor.png",
+        "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
             {
@@ -1899,7 +1899,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:02.220872",
         "VendorValue": 320,
-        "InventoryIcon": "Rune_Ranger_Minor.png",
+        "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
             {
@@ -1937,7 +1937,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:01.652800",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ranger_Minor.png",
+        "InventoryIcon": "Rune Ranger Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/15/Rune_Ranger_Minor.png",
         "Modifiers": [
             {
@@ -1975,7 +1975,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:11.465311",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ranger_Major.png",
+        "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
         "Modifiers": [
             {
@@ -2022,7 +2022,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:11.277356",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ranger_Major.png",
+        "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
         "Modifiers": [
             {
@@ -2069,7 +2069,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:11.654143",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ranger_Major.png",
+        "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
         "Modifiers": [
             {
@@ -2116,7 +2116,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:11.088816",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ranger_Major.png",
+        "InventoryIcon": "Rune Ranger Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Ranger_Major.png",
         "Modifiers": [
             {
@@ -2163,7 +2163,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:20.147304",
         "VendorValue": 230,
-        "InventoryIcon": "Rune_Ranger_Sup.png",
+        "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
         "Modifiers": [
             {
@@ -2210,7 +2210,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:19.943690",
         "VendorValue": 250,
-        "InventoryIcon": "Rune_Ranger_Sup.png",
+        "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
         "Modifiers": [
             {
@@ -2257,7 +2257,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:20.351228",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Ranger_Sup.png",
+        "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
         "Modifiers": [
             {
@@ -2304,7 +2304,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:19.738968",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Ranger_Sup.png",
+        "InventoryIcon": "Rune Ranger Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4d/Rune_Ranger_Sup.png",
         "Modifiers": [
             {
@@ -2351,7 +2351,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:55.049782",
         "VendorValue": 130,
-        "InventoryIcon": "Anchorite%27s_Insignia.png",
+        "InventoryIcon": "Anchorite's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2c/Anchorite%27s_Insignia.png",
         "Modifiers": [
             {
@@ -2389,7 +2389,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:54.861381",
         "VendorValue": 100,
-        "InventoryIcon": "Disciple%27s_Insignia.png",
+        "InventoryIcon": "Disciple's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/df/Disciple%27s_Insignia.png",
         "Modifiers": [
             {
@@ -2427,7 +2427,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:54.656824",
         "VendorValue": 100,
-        "InventoryIcon": "Wanderer%27s_Insignia.png",
+        "InventoryIcon": "Wanderer's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c1/Wanderer%27s_Insignia.png",
         "Modifiers": [
             {
@@ -2465,7 +2465,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:02.978988",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Minor.png",
+        "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
             {
@@ -2503,7 +2503,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:02.411003",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Minor.png",
+        "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
             {
@@ -2541,7 +2541,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:02.789589",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Minor.png",
+        "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
             {
@@ -2579,7 +2579,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:02.599663",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Minor.png",
+        "InventoryIcon": "Rune Monk Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/28/Rune_Monk_Minor.png",
         "Modifiers": [
             {
@@ -2617,7 +2617,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:12.469617",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Major.png",
+        "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
         "Modifiers": [
             {
@@ -2664,7 +2664,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:11.858684",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Major.png",
+        "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
         "Modifiers": [
             {
@@ -2711,7 +2711,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:12.266586",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Major.png",
+        "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
         "Modifiers": [
             {
@@ -2758,7 +2758,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:12.062692",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Monk_Major.png",
+        "InventoryIcon": "Rune Monk Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/27/Rune_Monk_Major.png",
         "Modifiers": [
             {
@@ -2805,7 +2805,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:21.155137",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Monk_Sup.png",
+        "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
         "Modifiers": [
             {
@@ -2852,7 +2852,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:20.556860",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Monk_Sup.png",
+        "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
         "Modifiers": [
             {
@@ -2899,7 +2899,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:20.966278",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Monk_Sup.png",
+        "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
         "Modifiers": [
             {
@@ -2946,7 +2946,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:20.761817",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Monk_Sup.png",
+        "InventoryIcon": "Rune Monk Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e5/Rune_Monk_Sup.png",
         "Modifiers": [
             {
@@ -2993,7 +2993,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:56.014086",
         "VendorValue": 100,
-        "InventoryIcon": "Blighter%27s_Insignia.png",
+        "InventoryIcon": "Blighter's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d7/Blighter%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3031,7 +3031,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:55.255703",
         "VendorValue": 160,
-        "InventoryIcon": "Bloodstained_Insignia.png",
+        "InventoryIcon": "Bloodstained Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/88/Bloodstained_Insignia.png",
         "Modifiers": [
             {
@@ -3069,7 +3069,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:55.634487",
         "VendorValue": 100,
-        "InventoryIcon": "Bonelace_Insignia.png",
+        "InventoryIcon": "Bonelace Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Bonelace_Insignia.png",
         "Modifiers": [
             {
@@ -3107,7 +3107,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:55.823264",
         "VendorValue": 160,
-        "InventoryIcon": "Minion_Master%27s_Insignia.png",
+        "InventoryIcon": "Minion Master's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/81/Minion_Master%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3145,7 +3145,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:55.444703",
         "VendorValue": 450,
-        "InventoryIcon": "Tormentor%27s_Insignia.png",
+        "InventoryIcon": "Tormentor's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/8e/Tormentor%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3183,7 +3183,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:56.203119",
         "VendorValue": 100,
-        "InventoryIcon": "Undertaker%27s_Insignia.png",
+        "InventoryIcon": "Undertaker's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fc/Undertaker%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3221,7 +3221,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:03.167504",
         "VendorValue": 120,
-        "InventoryIcon": "Rune_Necromancer_Minor.png",
+        "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
         "Modifiers": [
             {
@@ -3259,7 +3259,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:03.563207",
         "VendorValue": 140,
-        "InventoryIcon": "Rune_Necromancer_Minor.png",
+        "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
         "Modifiers": [
             {
@@ -3297,7 +3297,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:03.372065",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Necromancer_Minor.png",
+        "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
         "Modifiers": [
             {
@@ -3335,7 +3335,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:03.752048",
         "VendorValue": 260,
-        "InventoryIcon": "Rune_Necromancer_Minor.png",
+        "InventoryIcon": "Rune Necromancer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/c5/Rune_Necromancer_Minor.png",
         "Modifiers": [
             {
@@ -3373,7 +3373,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:12.674502",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Necromancer_Major.png",
+        "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
         "Modifiers": [
             {
@@ -3420,7 +3420,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:13.067883",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Necromancer_Major.png",
+        "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
         "Modifiers": [
             {
@@ -3467,7 +3467,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:12.862842",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Necromancer_Major.png",
+        "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
         "Modifiers": [
             {
@@ -3514,7 +3514,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:13.271556",
         "VendorValue": 370,
-        "InventoryIcon": "Rune_Necromancer_Major.png",
+        "InventoryIcon": "Rune Necromancer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/85/Rune_Necromancer_Major.png",
         "Modifiers": [
             {
@@ -3561,7 +3561,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:21.360802",
         "VendorValue": 270,
-        "InventoryIcon": "Rune_Necromancer_Sup.png",
+        "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
             {
@@ -3608,7 +3608,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:21.738273",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Necromancer_Sup.png",
+        "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
             {
@@ -3655,7 +3655,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:21.548687",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Necromancer_Sup.png",
+        "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
             {
@@ -3702,7 +3702,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:21.926223",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Necromancer_Sup.png",
+        "InventoryIcon": "Rune Necromancer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/d9/Rune_Necromancer_Sup.png",
         "Modifiers": [
             {
@@ -3749,7 +3749,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:56.581205",
         "VendorValue": 100,
-        "InventoryIcon": "Artificer%27s_Insignia.png",
+        "InventoryIcon": "Artificer's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/fd/Artificer%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3787,7 +3787,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:56.769942",
         "VendorValue": 10000,
-        "InventoryIcon": "Prodigy%27s_Insignia.png",
+        "InventoryIcon": "Prodigy's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/72/Prodigy%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3825,7 +3825,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:56.392428",
         "VendorValue": 440,
-        "InventoryIcon": "Virtuoso%27s_Insignia.png",
+        "InventoryIcon": "Virtuoso's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cf/Virtuoso%27s_Insignia.png",
         "Modifiers": [
             {
@@ -3863,7 +3863,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:04.129994",
         "VendorValue": 130,
-        "InventoryIcon": "Rune_Mesmer_Minor.png",
+        "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
             {
@@ -3901,7 +3901,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:03.940764",
         "VendorValue": 1000,
-        "InventoryIcon": "Rune_Mesmer_Minor.png",
+        "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
             {
@@ -3939,7 +3939,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:04.317944",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Mesmer_Minor.png",
+        "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
             {
@@ -3977,7 +3977,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:04.523841",
         "VendorValue": 5500,
-        "InventoryIcon": "Rune_Mesmer_Minor.png",
+        "InventoryIcon": "Rune Mesmer Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Rune_Mesmer_Minor.png",
         "Modifiers": [
             {
@@ -4015,7 +4015,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:13.679961",
         "VendorValue": 210,
-        "InventoryIcon": "Rune_Mesmer_Major.png",
+        "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
         "Modifiers": [
             {
@@ -4062,7 +4062,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:13.475045",
         "VendorValue": 180,
-        "InventoryIcon": "Rune_Mesmer_Major.png",
+        "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
         "Modifiers": [
             {
@@ -4109,7 +4109,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:13.868849",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Mesmer_Major.png",
+        "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
         "Modifiers": [
             {
@@ -4156,7 +4156,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:14.072857",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Mesmer_Major.png",
+        "InventoryIcon": "Rune Mesmer Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f9/Rune_Mesmer_Major.png",
         "Modifiers": [
             {
@@ -4203,7 +4203,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:22.304088",
         "VendorValue": 2700,
-        "InventoryIcon": "Rune_Mesmer_Sup.png",
+        "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
             {
@@ -4250,7 +4250,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:22.115329",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Mesmer_Sup.png",
+        "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
             {
@@ -4297,7 +4297,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:22.509802",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Mesmer_Sup.png",
+        "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
             {
@@ -4344,7 +4344,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:22.714442",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Mesmer_Sup.png",
+        "InventoryIcon": "Rune Mesmer Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/08/Rune_Mesmer_Sup.png",
         "Modifiers": [
             {
@@ -4391,7 +4391,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:57.544252",
         "VendorValue": 100,
-        "InventoryIcon": "Aeromancer_Insignia.png",
+        "InventoryIcon": "Aeromancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f3/Aeromancer_Insignia.png",
         "Modifiers": [
             {
@@ -4429,7 +4429,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:57.147628",
         "VendorValue": 100,
-        "InventoryIcon": "Geomancer_Insignia.png",
+        "InventoryIcon": "Geomancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Geomancer_Insignia.png",
         "Modifiers": [
             {
@@ -4467,7 +4467,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:56.958848",
         "VendorValue": 100,
-        "InventoryIcon": "Hydromancer_Insignia.png",
+        "InventoryIcon": "Hydromancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/b/be/Hydromancer_Insignia.png",
         "Modifiers": [
             {
@@ -4505,7 +4505,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:57.732542",
         "VendorValue": 130,
-        "InventoryIcon": "Prismatic_Insignia.png",
+        "InventoryIcon": "Prismatic Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/f/f8/Prismatic_Insignia.png",
         "Modifiers": [
             {
@@ -4543,7 +4543,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:57.353768",
         "VendorValue": 100,
-        "InventoryIcon": "Pyromancer_Insignia.png",
+        "InventoryIcon": "Pyromancer Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/4f/Pyromancer_Insignia.png",
         "Modifiers": [
             {
@@ -4581,7 +4581,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:05.123256",
         "VendorValue": 150,
-        "InventoryIcon": "Rune_Elementalist_Minor.png",
+        "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
             {
@@ -4619,7 +4619,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:05.328706",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Minor.png",
+        "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
             {
@@ -4657,7 +4657,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:04.729232",
         "VendorValue": 210,
-        "InventoryIcon": "Rune_Elementalist_Minor.png",
+        "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
             {
@@ -4695,7 +4695,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:04.917821",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Minor.png",
+        "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
             {
@@ -4733,7 +4733,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:05.519247",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Minor.png",
+        "InventoryIcon": "Rune Elementalist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Rune_Elementalist_Minor.png",
         "Modifiers": [
             {
@@ -4771,7 +4771,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:14.653587",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Major.png",
+        "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
         "Modifiers": [
             {
@@ -4818,7 +4818,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:14.857329",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Major.png",
+        "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
         "Modifiers": [
             {
@@ -4865,7 +4865,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:14.277404",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Major.png",
+        "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
         "Modifiers": [
             {
@@ -4912,7 +4912,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:14.465144",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Major.png",
+        "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
         "Modifiers": [
             {
@@ -4959,7 +4959,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:15.046217",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Elementalist_Major.png",
+        "InventoryIcon": "Rune Elementalist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/14/Rune_Elementalist_Major.png",
         "Modifiers": [
             {
@@ -5006,7 +5006,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:23.326687",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Elementalist_Sup.png",
+        "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
             {
@@ -5053,7 +5053,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:23.530891",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Elementalist_Sup.png",
+        "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
             {
@@ -5100,7 +5100,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:22.918130",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Elementalist_Sup.png",
+        "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
             {
@@ -5147,7 +5147,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:23.122102",
         "VendorValue": 300,
-        "InventoryIcon": "Rune_Elementalist_Sup.png",
+        "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
             {
@@ -5194,7 +5194,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:23.734940",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Elementalist_Sup.png",
+        "InventoryIcon": "Rune Elementalist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/8/83/Rune_Elementalist_Sup.png",
         "Modifiers": [
             {
@@ -5241,7 +5241,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:58.110563",
         "VendorValue": 100,
-        "InventoryIcon": "Infiltrator%27s_Insignia.png",
+        "InventoryIcon": "Infiltrator's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Infiltrator%27s_Insignia.png",
         "Modifiers": [
             {
@@ -5279,7 +5279,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:58.490271",
         "VendorValue": 800,
-        "InventoryIcon": "Nightstalker%27s_Insignia.png",
+        "InventoryIcon": "Nightstalker's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/a/a1/Nightstalker%27s_Insignia.png",
         "Modifiers": [
             {
@@ -5317,7 +5317,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:58.300998",
         "VendorValue": 100,
-        "InventoryIcon": "Saboteur%27s_Insignia.png",
+        "InventoryIcon": "Saboteur's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/6/6c/Saboteur%27s_Insignia.png",
         "Modifiers": [
             {
@@ -5355,7 +5355,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:57.921478",
         "VendorValue": 100,
-        "InventoryIcon": "Vanguard%27s_Insignia.png",
+        "InventoryIcon": "Vanguard's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/0/03/Vanguard%27s_Insignia.png",
         "Modifiers": [
             {
@@ -5393,7 +5393,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:05.724038",
         "VendorValue": 110,
-        "InventoryIcon": "Rune_Assassin_Minor.png",
+        "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
         "Modifiers": [
             {
@@ -5431,7 +5431,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:05.914281",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Minor.png",
+        "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
         "Modifiers": [
             {
@@ -5469,7 +5469,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:06.120066",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Minor.png",
+        "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
         "Modifiers": [
             {
@@ -5507,7 +5507,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:06.324864",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Minor.png",
+        "InventoryIcon": "Rune Assassin Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dd/Rune_Assassin_Minor.png",
         "Modifiers": [
             {
@@ -5545,7 +5545,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:15.235824",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Major.png",
+        "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
         "Modifiers": [
             {
@@ -5592,7 +5592,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:15.424770",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Major.png",
+        "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
         "Modifiers": [
             {
@@ -5639,7 +5639,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:15.628408",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Major.png",
+        "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
         "Modifiers": [
             {
@@ -5686,7 +5686,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:15.832215",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Assassin_Major.png",
+        "InventoryIcon": "Rune Assassin Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Rune_Assassin_Major.png",
         "Modifiers": [
             {
@@ -5733,7 +5733,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:23.923351",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Assassin_Sup.png",
+        "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
         "Modifiers": [
             {
@@ -5780,7 +5780,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:24.129041",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Assassin_Sup.png",
+        "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
         "Modifiers": [
             {
@@ -5827,7 +5827,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:24.333655",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Assassin_Sup.png",
+        "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
         "Modifiers": [
             {
@@ -5874,7 +5874,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:24.538100",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Assassin_Sup.png",
+        "InventoryIcon": "Rune Assassin Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/7/75/Rune_Assassin_Sup.png",
         "Modifiers": [
             {
@@ -5921,7 +5921,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:58.929634",
         "VendorValue": 100,
-        "InventoryIcon": "Ghost_Forge_Insignia.png",
+        "InventoryIcon": "Ghost Forge Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/2/2b/Ghost_Forge_Insignia.png",
         "Modifiers": [
             {
@@ -5959,7 +5959,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:59.129279",
         "VendorValue": 100,
-        "InventoryIcon": "Mystic%27s_Insignia.png",
+        "InventoryIcon": "Mystic's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/10/Mystic%27s_Insignia.png",
         "Modifiers": [
             {
@@ -5997,7 +5997,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:58.680901",
         "VendorValue": 6000,
-        "InventoryIcon": "Shaman%27s_Insignia.png",
+        "InventoryIcon": "Shaman's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/d/dc/Shaman%27s_Insignia.png",
         "Modifiers": [
             {
@@ -6035,7 +6035,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:06.529575",
         "VendorValue": 120,
-        "InventoryIcon": "Rune_Ritualist_Minor.png",
+        "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
             {
@@ -6073,7 +6073,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:06.938244",
         "VendorValue": 180,
-        "InventoryIcon": "Rune_Ritualist_Minor.png",
+        "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
             {
@@ -6111,7 +6111,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:06.733143",
         "VendorValue": 3000,
-        "InventoryIcon": "Rune_Ritualist_Minor.png",
+        "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
             {
@@ -6149,7 +6149,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:07.126792",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ritualist_Minor.png",
+        "InventoryIcon": "Rune Ritualist Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/c/cb/Rune_Ritualist_Minor.png",
         "Modifiers": [
             {
@@ -6187,7 +6187,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:16.036770",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ritualist_Major.png",
+        "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
             {
@@ -6234,7 +6234,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:16.429803",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ritualist_Major.png",
+        "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
             {
@@ -6281,7 +6281,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:16.240725",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ritualist_Major.png",
+        "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
             {
@@ -6328,7 +6328,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:16.618829",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Ritualist_Major.png",
+        "InventoryIcon": "Rune Ritualist Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/90/Rune_Ritualist_Major.png",
         "Modifiers": [
             {
@@ -6375,7 +6375,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:24.741322",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Ritualist_Sup.png",
+        "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
         "Modifiers": [
             {
@@ -6422,7 +6422,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:25.134237",
         "VendorValue": 360,
-        "InventoryIcon": "Rune_Ritualist_Sup.png",
+        "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
         "Modifiers": [
             {
@@ -6469,7 +6469,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:24.945767",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Ritualist_Sup.png",
+        "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
         "Modifiers": [
             {
@@ -6516,7 +6516,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:25.338823",
         "VendorValue": 260,
-        "InventoryIcon": "Rune_Ritualist_Sup.png",
+        "InventoryIcon": "Rune Ritualist Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Rune_Ritualist_Sup.png",
         "Modifiers": [
             {
@@ -6563,7 +6563,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:59.319370",
         "VendorValue": 380,
-        "InventoryIcon": "Centurion%27s_Insignia.png",
+        "InventoryIcon": "Centurion's Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/91/Centurion%27s_Insignia.png",
         "Modifiers": [
             {
@@ -6601,7 +6601,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:07.724473",
         "VendorValue": 370,
-        "InventoryIcon": "Rune_Paragon_Minor.png",
+        "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
             {
@@ -6639,7 +6639,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:07.331440",
         "VendorValue": 170,
-        "InventoryIcon": "Rune_Paragon_Minor.png",
+        "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
             {
@@ -6677,7 +6677,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:07.535501",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Paragon_Minor.png",
+        "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
             {
@@ -6715,7 +6715,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:07.928996",
         "VendorValue": 550,
-        "InventoryIcon": "Rune_Paragon_Minor.png",
+        "InventoryIcon": "Rune Paragon Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e8/Rune_Paragon_Minor.png",
         "Modifiers": [
             {
@@ -6753,7 +6753,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:17.206641",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Paragon_Major.png",
+        "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
         "Modifiers": [
             {
@@ -6800,7 +6800,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:16.826128",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Paragon_Major.png",
+        "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
         "Modifiers": [
             {
@@ -6847,7 +6847,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:17.016885",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Paragon_Major.png",
+        "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
         "Modifiers": [
             {
@@ -6894,7 +6894,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:17.395356",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Paragon_Major.png",
+        "InventoryIcon": "Rune Paragon Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/9a/Rune_Paragon_Major.png",
         "Modifiers": [
             {
@@ -6941,7 +6941,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:25.922077",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Paragon_Sup.png",
+        "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
         "Modifiers": [
             {
@@ -6988,7 +6988,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:25.527126",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Paragon_Sup.png",
+        "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
         "Modifiers": [
             {
@@ -7035,7 +7035,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:25.715734",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Paragon_Sup.png",
+        "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
         "Modifiers": [
             {
@@ -7082,7 +7082,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:26.110698",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Paragon_Sup.png",
+        "InventoryIcon": "Rune Paragon Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/3/35/Rune_Paragon_Sup.png",
         "Modifiers": [
             {
@@ -7129,7 +7129,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:59.712578",
         "VendorValue": 100,
-        "InventoryIcon": "Forsaken_Insignia.png",
+        "InventoryIcon": "Forsaken Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/1/13/Forsaken_Insignia.png",
         "Modifiers": [
             {
@@ -7167,7 +7167,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:11:59.507384",
         "VendorValue": 750,
-        "InventoryIcon": "Windwalker_Insignia.png",
+        "InventoryIcon": "Windwalker Insignia.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/9/97/Windwalker_Insignia.png",
         "Modifiers": [
             {
@@ -7205,7 +7205,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:08.313059",
         "VendorValue": 700,
-        "InventoryIcon": "Rune_Dervish_Minor.png",
+        "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
             {
@@ -7243,7 +7243,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:08.118398",
         "VendorValue": 1900,
-        "InventoryIcon": "Rune_Dervish_Minor.png",
+        "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
             {
@@ -7281,7 +7281,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:08.502132",
         "VendorValue": 1400,
-        "InventoryIcon": "Rune_Dervish_Minor.png",
+        "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
             {
@@ -7319,7 +7319,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:08.706268",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Dervish_Minor.png",
+        "InventoryIcon": "Rune Dervish Minor.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/45/Rune_Dervish_Minor.png",
         "Modifiers": [
             {
@@ -7357,7 +7357,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:17.790007",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Dervish_Major.png",
+        "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
         "Modifiers": [
             {
@@ -7404,7 +7404,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:17.600868",
         "VendorValue": 110,
-        "InventoryIcon": "Rune_Dervish_Major.png",
+        "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
         "Modifiers": [
             {
@@ -7451,7 +7451,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:17.978445",
         "VendorValue": 160,
-        "InventoryIcon": "Rune_Dervish_Major.png",
+        "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
         "Modifiers": [
             {
@@ -7498,7 +7498,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:18.167012",
         "VendorValue": 100,
-        "InventoryIcon": "Rune_Dervish_Major.png",
+        "InventoryIcon": "Rune Dervish Major.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/4/44/Rune_Dervish_Major.png",
         "Modifiers": [
             {
@@ -7545,7 +7545,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:26.487772",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Dervish_Sup.png",
+        "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
         "Modifiers": [
             {
@@ -7592,7 +7592,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:26.299381",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Dervish_Sup.png",
+        "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
         "Modifiers": [
             {
@@ -7639,7 +7639,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:26.676489",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Dervish_Sup.png",
+        "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
         "Modifiers": [
             {
@@ -7686,7 +7686,7 @@
         "UpgradeExists": true,
         "VendorUpdated": "2025-06-25T12:12:26.881091",
         "VendorValue": 200,
-        "InventoryIcon": "Rune_Dervish_Sup.png",
+        "InventoryIcon": "Rune Dervish Sup.png",
         "InventoryIconURL": "https://wiki.guildwars.com/images/e/e1/Rune_Dervish_Sup.png",
         "Modifiers": [
             {
