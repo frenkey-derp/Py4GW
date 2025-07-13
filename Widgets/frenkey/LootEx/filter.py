@@ -11,7 +11,7 @@ class Filter:
         self.rarities: dict[Rarity, bool] = {
             rarity: False for rarity in Rarity}
         self.materials: dict[int, bool] = {}
-        self.action: ItemAction = ItemAction.STASH
+        self.action: ItemAction = ItemAction.Stash
         self.exclude_low_req: bool = False
         self.exclude_rare_weapons: bool = False
         self.exclude_rare_items: bool = False
@@ -35,11 +35,11 @@ class Filter:
         if self.exclude_low_req and item.is_low_requirement_item:
             return False
         
-        if self.action == ItemAction.SELL_TO_MERCHANT:
+        if self.action == ItemAction.Sell_To_Merchant:
             if item.value <= 0:
                 return False
 
-        if self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE or self.action == ItemAction.SALVAGE_RARE_MATERIALS or self.action == ItemAction.SALVAGE_COMMON_MATERIALS:
+        if self.action == ItemAction.Salvage or self.action == ItemAction.Salvage or self.action == ItemAction.Salvage_Rare_Materials or self.action == ItemAction.Salvage_Common_Materials:
             if self.materials:
                 if not item.data:
                     return False
@@ -95,7 +95,7 @@ class Filter:
 
         loot_filter = Filter(name)
 
-        action = ItemAction[data.get("action", "STASH")]
+        action = ItemAction[data.get("action", "Stash")]
         loot_filter.action = action
 
         loot_filter.exclude_rare_weapons = data.get(

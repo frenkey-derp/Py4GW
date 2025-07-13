@@ -97,22 +97,22 @@ class MerchantType(IntEnum):
 
 class ItemAction(IntEnum):
     NONE = 0
-    LOOT = 1
-    COLLECT_DATA = 2
-    IDENTIFY = 3
-    STASH = 4
-    SALVAGE_MODS = 5
-    SALVAGE = 6
-    SALVAGE_RARE_MATERIALS = 7
-    SALVAGE_COMMON_MATERIALS = 8
-    SELL_TO_MERCHANT = 10
-    SELL_TO_TRADER = 11
-    DESTROY = 12
-    DEPOSIT_MATERIAL = 13
+    Loot = 1
+    Collect_Data = 2
+    Identify = 3
+    Stash = 4
+    Salvage_Mods = 5
+    Salvage = 6
+    Salvage_Rare_Materials = 7
+    Salvage_Common_Materials = 8
+    Sell_To_Merchant = 10
+    Sell_To_Trader = 11
+    Destroy = 12
+    Deposit_Material = 13
     
 class LootAction(IntEnum):
     NONE = 0
-    LOOT = 1
+    Loot = 1
     IGNORE = 2
     LOOT_IF_STACKABLE = 3
 

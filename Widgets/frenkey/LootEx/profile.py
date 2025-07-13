@@ -40,7 +40,7 @@ class ItemConfigurations(dict[ItemType, dict[int, ItemConfiguration]]):
     def __init__(self):
         super().__init__()
 
-    def add_item(self, item: models.Item, action: ItemAction = ItemAction.STASH):
+    def add_item(self, item: models.Item, action: ItemAction = ItemAction.Stash):
         """Add an item configuration to the dictionary."""
         if item.item_type not in self:
             self[item.item_type] = {}
@@ -336,7 +336,7 @@ class Profile:
         """Check if the profile contains a specific weapon mod."""
         return mod_name in self.weapon_mods and any(self.weapon_mods[mod_name].values())
 
-    def add_item_by_model(self, item_type : ItemType, model_id: int, action: ItemAction = ItemAction.STASH):
+    def add_item_by_model(self, item_type : ItemType, model_id: int, action: ItemAction = ItemAction.Stash):
         """Add an item to the profile by model ID."""
         if item_type not in self.items:
             self.items[item_type] = {}
@@ -347,7 +347,7 @@ class Profile:
             if len(self.items[item_type][model_id].conditions) == 1:
                 self.items[item_type][model_id].conditions[0].action = action
             
-    def add_item(self, item: models.Item, action: ItemAction = ItemAction.STASH):
+    def add_item(self, item: models.Item, action: ItemAction = ItemAction.Stash):
         """Add an item to the profile."""
         if item.item_type not in self.items:
             self.items[item.item_type] = {}

@@ -864,7 +864,7 @@
     "\"Live for Today\"": {
         "Identifier": "\"Live for Today\"",
         "Descriptions": {
-            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
+            "English": "Energy +{arg2[8920]}\nEnergy regeneration -{arg2[8392]}"
         },
         "Names": {
             "English": "\"Live for Today\"",
@@ -1273,7 +1273,7 @@
     "\"Seize the Day\"": {
         "Identifier": "\"Seize the Day\"",
         "Descriptions": {
-            "English": "Energy +{arg2}\nEnergy regeneration -{arg2[8392]}"
+            "English": "Energy +{arg2[8920]}\nEnergy regeneration -{arg2[8392]}"
         },
         "Names": {
             "English": "\"Seize the Day\"",
@@ -2483,7 +2483,7 @@
                 "Arg2": 15,
                 "Arg": 15,
                 "ModifierValueArg": "Arg2",
-                "Min": 10,
+                "Min": 14,
                 "Max": 15
             },
             {
@@ -2542,7 +2542,7 @@
                 "Arg2": 15,
                 "Arg": 15,
                 "ModifierValueArg": "Arg2",
-                "Min": 10,
+                "Min": 14,
                 "Max": 15
             },
             {

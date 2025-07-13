@@ -104,13 +104,13 @@ class LootHandler:
         
         if cached_item.config:
             action = cached_item.config.get_action(cached_item)
-            if action == ItemAction.LOOT:
+            if action == ItemAction.Loot:
                 return True
 
         for filter in settings.current.profile.filters:
             action = filter.get_action(cached_item)
 
-            if action == ItemAction.LOOT:
+            if action == ItemAction.Loot:
                 return True
         
         # If the item is a salvage item we check for runes we want to pick up and sell

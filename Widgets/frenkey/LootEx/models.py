@@ -3,7 +3,7 @@ import json
 import re
 import base64
 from dataclasses import dataclass, field
-from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex
+from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex, overload
 
 from PyItem import ItemModifier
 from Widgets.frenkey.LootEx import settings
@@ -17,8 +17,6 @@ import importlib
 importlib.reload(enum)
 
 class IntRange:
-    Zero = field(default_factory=lambda: IntRange(0, 0))
-    
     def __init__(self, min: int = 0, max: Optional[int] = None):
         self.min: int = min
         self.max: int = max if max is not None else min
@@ -607,7 +605,7 @@ class ItemMod():
         
         modifier_info = next((mod for mod in self.modifiers if mod.modifier_value_arg != ModifierValueArg.Fixed and mod.modifier_value_arg != ModifierValueArg.None_), None)
         
-        return IntRange(modifier_info.min, modifier_info.max) if modifier_info else IntRange.Zero
+        return IntRange(modifier_info.min, modifier_info.max) if modifier_info else IntRange(0, 0)
         
     def set_name(self, name: str, language: ServerLanguage = ServerLanguage.English):
         self.names[language] = name        
@@ -733,6 +731,110 @@ class ItemMod():
 
         return description
     
+    def get_custom_description(self, language: Optional[ServerLanguage] = None, *, arg1_min: Optional[int] = None, arg1_max: Optional[int] = None, arg2_min: Optional[int] = None, arg2_max: Optional[int] = None) -> str:
+        if language is None:
+            language = settings.current.language
+
+        description = self.descriptions.get(
+            language, self.descriptions.get(ServerLanguage.English, "")
+        )
+
+        if not description:
+            return ""
+                
+        def get_modifier_by_id(identifier: int) -> Optional[ModifierInfo]:
+            for mod in self.modifiers:
+                if mod.identifier == identifier:
+                    return mod
+            return None
+
+        def get_single_modifier() -> Optional[ModifierInfo]:
+            return self.modifiers[0] if len(self.modifiers) == 1 else None
+
+        def format_enum_name(name: str) -> str:
+            parts = []
+            for char in name:
+                if char.isupper() and parts:
+                    parts.append(' ')
+                parts.append(char)
+            name = ''.join(parts)
+            return name.replace("_", " ")
+
+        def get_formatted_value(mod: ModifierInfo, arg_type: str) -> str:
+            if arg_type == "arg1":
+                if mod.identifier in (9240, 10408, 8680):
+                    return format_enum_name(Attribute(mod.arg1).name)
+                if mod.identifier in (9400, 41240):
+                    return format_enum_name(DamageType(mod.arg1).name)
+                if mod.identifier in (8520, 32896):
+                    return format_enum_name(EnemyType(mod.arg1).name)
+                
+            return str(getattr(mod, arg_type, f"{{{arg_type}}}"))
+
+        def replace_indexed(match: re.Match) -> str:
+            arg_type, id_str = match.group(1), match.group(2)
+            modifier = get_modifier_by_id(int(id_str))
+            
+            if not modifier:
+                return f"{{{arg_type}[{id_str}]}}"
+            
+            valid_arg1_min = min(modifier.max, max(modifier.min, arg1_min)) if arg1_min is not None else modifier.min
+            valid_arg1_max = max(modifier.min, min(modifier.max, arg1_max)) if arg1_max is not None else modifier.max
+            valid_arg2_min = min(modifier.max, max(modifier.min, arg2_min)) if arg2_min is not None else modifier.min
+            valid_arg2_max = max(modifier.min, min(modifier.max, arg2_max)) if arg2_max is not None else modifier.max
+            
+            if modifier.modifier_value_arg == ModifierValueArg.Arg1 and arg_type == "arg1" and arg1_min is not None and arg1_max is not None:
+                if valid_arg1_min != valid_arg1_max:
+                    return f"{valid_arg1_min}...{valid_arg1_max}"
+                else:
+                    return str(valid_arg1_min)
+            
+            if modifier.modifier_value_arg == ModifierValueArg.Arg2 and arg_type == "arg2" and arg2_min is not None and arg2_max is not None:
+                if valid_arg2_min != valid_arg2_max:    
+                    return f"{valid_arg2_min}...{valid_arg2_max}"
+                else:
+                    return str(valid_arg2_min)
+            
+            return get_formatted_value(modifier, arg_type)
+
+        def replace_simple(match: re.Match) -> str:
+            arg_type = match.group(1)
+            modifier = get_single_modifier()
+            
+            if not modifier:
+                return f"{{{arg_type}}}"
+            
+            valid_arg1_min = min(modifier.max, max(modifier.min, arg1_min)) if arg1_min is not None else modifier.min
+            valid_arg1_max = max(modifier.min, min(modifier.max, arg1_max)) if arg1_max is not None else modifier.max
+            valid_arg2_min = min(modifier.max, max(modifier.min, arg2_min)) if arg2_min is not None else modifier.min
+            valid_arg2_max = max(modifier.min, min(modifier.max, arg2_max)) if arg2_max is not None else modifier.max
+
+            if modifier.modifier_value_arg == ModifierValueArg.Arg1 and arg_type == "arg1" and arg1_min is not None and arg1_max is not None:
+                if valid_arg1_min != valid_arg1_max:
+                    return f"{valid_arg1_min}...{valid_arg1_max}"
+                else:
+                    return str(valid_arg1_min)
+            
+            if modifier.modifier_value_arg == ModifierValueArg.Arg2 and arg_type == "arg2" and arg2_min is not None and arg2_max is not None:
+                if valid_arg2_min != valid_arg2_max:    
+                    return f"{valid_arg2_min}...{valid_arg2_max}"
+                else:
+                    return str(valid_arg2_min)
+
+            return get_formatted_value(modifier, arg_type)
+
+        
+        # Replace indexed arguments: {arg1[42]}, {arg2[12]}, etc.
+        # description = re.sub(r"\{(arg1|arg2|arg|min|max)\[(\d+)\]\}", replace_indexed, description)
+        description = re.sub(r"\{(arg1|arg2|arg|min|max)\[(\d+)\]\}", replace_indexed, description, flags=re.DOTALL)
+
+
+        # Replace simple arguments: {arg1}, {arg2}, etc.
+        if get_single_modifier():
+            description = re.sub(r"\{(arg1|arg2|arg|min|max)\}", replace_simple, description, flags=re.DOTALL)
+
+        return description
+
 @dataclass
 class Rune(ItemMod):
     _rune_identifier_lookup: dict[str, str] = field(default_factory=dict)

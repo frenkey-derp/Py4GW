@@ -6,7 +6,7 @@ import importlib
 importlib.reload(models)
 
 class ConfigurationCondition:
-    def __init__(self, name: str = "New Condition", action: ItemAction = ItemAction.STASH):
+    def __init__(self, name: str = "New Condition", action: ItemAction = ItemAction.Stash):
         self.name: str = name
         self.damage_range: Optional[models.IntRange] = None
         self.requirements: Optional[dict[Attribute, models.IntRange]] = None
@@ -25,7 +25,7 @@ class ConfigurationCondition:
 
 
 class ItemConfiguration:
-    def __init__(self, model_id: int, item_type : ItemType, action: ItemAction = ItemAction.STASH):
+    def __init__(self, model_id: int, item_type : ItemType, action: ItemAction = ItemAction.Stash):
         self.model_id: int = model_id
         self.item_type: ItemType = item_type
         self.conditions: list[ConfigurationCondition] = [ConfigurationCondition("Default", action)]
@@ -77,7 +77,7 @@ class ItemConfiguration:
                 raise ValueError("Condition name is required")
                         
             condition = ConfigurationCondition(name)            
-            condition.action = ItemAction[condition_data.get("action", "STASH")]
+            condition.action = ItemAction[condition_data.get("action", "Stash")]
             
             condition.keep_in_inventory = condition_data.get("keep_in_inventory", 0)
             
@@ -165,7 +165,7 @@ class ItemConfiguration:
                 
                 return condition            
             else:
-                if condition.action == ItemAction.STASH:
+                if condition.action == ItemAction.Stash:
                     if item.quantity <= condition.keep_in_inventory:                     
                         continue
                 
