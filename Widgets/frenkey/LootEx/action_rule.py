@@ -85,7 +85,7 @@ class ActionRule:
         self.action : ItemAction = action
         self.models: list[ItemModelInfo] = []
         self.rarities: dict[Rarity, bool] = {
-            rarity: False for rarity in Rarity
+            rarity: True for rarity in Rarity
             }
         
         self.mods_type: ActionModsType = ActionModsType.Any

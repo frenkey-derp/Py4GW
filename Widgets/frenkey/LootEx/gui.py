@@ -3,7 +3,7 @@ import re
 import webbrowser
 
 from Widgets.frenkey.Core.iterable import chunked
-from Widgets.frenkey.Core import texture_map, gui
+from Widgets.frenkey.Core import style, texture_map, gui
 from Widgets.frenkey.LootEx import action_rule, loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
@@ -18,6 +18,7 @@ import importlib
 
 from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 importlib.reload(gui)
+importlib.reload(style)
 importlib.reload(settings)
 importlib.reload(action_rule)
 importlib.reload(texture_map)
@@ -185,22 +186,7 @@ class UI:
                 return default
             
             return self[action].description
-        
-    class COLORS(IntEnum):
-        TEXT = Utils.RGBToColor(255, 255, 255, 255)
-        RARE_WEAPONS_TEXT = Utils.RGBToColor(251, 62, 141, 255)
-        RARE_WEAPONS_FRAME = Utils.RGBToColor(251, 62, 141, 75)
-        RARE_WEAPONS_FRAME_HOVERED = Utils.RGBToColor(251, 62, 141, 125)
-        LOW_REQ_WEAPONS_TEXT = Utils.RGBToColor(242, 136, 22, 255)
-        LOW_REQ_WEAPONS_FRAME = Utils.RGBToColor(242, 136, 22, 75)
-        LOW_REQ_WEAPONS_FRAME_HOVERED = Utils.RGBToColor(242, 136, 22, 125)
-        INFO_ICON = Utils.RGBToColor(245,172,
-                                     47, 255)
-        SELECTED_ITEM_BG = Utils.RGBToColor(100,100,100, 150)
-        HOVERED_ITEM_BG = Utils.RGBToColor(128,128,128, 100)
-        SELECTED_COLORED_ITEM_BG = Utils.RGBToColor(255, 204, 85, 100)
-        HOVERED_COLORED_ITEM_BG = Utils.RGBToColor(255, 204, 85, 25)
-        
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(UI, cls).__new__(cls)
@@ -209,6 +195,7 @@ class UI:
     
     def __init__(self):       
         # self.cached_item = cache.Cached_Item(1401) 
+        self.style = style.Style()
         file_directory = os.path.dirname(os.path.abspath(__file__))
         self.icon_textures_path = os.path.join(file_directory, "textures")
         self.item_textures_path = "Textures\\Items"
@@ -660,7 +647,20 @@ class UI:
         self.selected_filter: Optional[ItemFilter] = None
         self.filters : list[ItemFilter] = [
             ItemFilter("All Items", lambda item: True),
+            
             ItemFilter("Weapons", lambda item: item.item_type in self.weapon_types),
+            ItemFilter("Axe", lambda item: item.item_type == ItemType.Axe),
+            ItemFilter("Bow", lambda item: item.item_type == ItemType.Bow),
+            ItemFilter("Daggers", lambda item: item.item_type == ItemType.Daggers),            
+            ItemFilter("Hammer", lambda item: item.item_type == ItemType.Hammer),
+            ItemFilter("Scythe", lambda item: item.item_type == ItemType.Scythe),
+            ItemFilter("Spear", lambda item: item.item_type == ItemType.Spear),
+            ItemFilter("Sword", lambda item: item.item_type == ItemType.Sword),
+            ItemFilter("Staff", lambda item: item.item_type == ItemType.Staff),
+            ItemFilter("Wand", lambda item: item.item_type == ItemType.Wand),
+            ItemFilter("Offhand", lambda item: item.item_type == ItemType.Offhand),
+            ItemFilter("Shield", lambda item: item.item_type == ItemType.Shield),
+            
             ItemFilter("Armor", lambda item: item.item_type in [
                 ItemType.Chestpiece,
                 ItemType.Headpiece,
@@ -685,9 +685,10 @@ class UI:
             ItemFilter("Reward Trophies", lambda item: item.category == enum.ItemCategory.RewardTrophy),
             ItemFilter("Quest Items", lambda item: item.category == enum.ItemCategory.QuestItem),    
         ]
-            
+        self.selected_skin_filter: Optional[ItemFilter] = None
         self.skin_search = ""
         self.skin_select_popup = False
+        self.skin_select_popup_open = False
         self.show_add_rule_popup = False
         self.rule_name = ""        
         self.rule_filter_popup = False
@@ -820,8 +821,10 @@ class UI:
                 settings.current.window_size[0], settings.current.window_size[1]
             )
             PyImGui.set_next_window_collapsed(settings.current.window_collapsed, 0)
-                
         
+        window_style = style.Style()
+        window_style.push_style()
+            
         expanded, gui_open = PyImGui.begin_with_close(
             "Loot Ex", settings.current.window_visible, PyImGui.WindowFlags.NoFlag)
         
@@ -936,6 +939,8 @@ class UI:
 
             PyImGui.end()
 
+        window_style.pop_style()
+        
         collapsed = not expanded
 
         if collapsed != settings.current.window_collapsed:
@@ -1747,29 +1752,30 @@ class UI:
                     PyImGui.spacing()
                      
                     height = 20                    
-                    nick_gradient = UI.get_gradient_colors((0.5, 1, 0, 0.5), (1, 0, 0, 0.5), settings.current.profile.nick_weeks_to_keep)
+                    nick_gradient = UI.get_gradient_colors((0.5, 1, 0, 0.5), (1, 0, 0, 0.5), settings.current.profile.nick_weeks_to_keep + 1)
+                    nick_item_size = PyImGui.get_content_region_avail()
                     
-                    if PyImGui.is_rect_visible(0, 20):
-                        PyImGui.begin_table("NickItemsTable", 3, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.BordersOuterV | PyImGui.TableFlags.BordersOuterH, 0, 0)    
+                    if PyImGui.is_rect_visible(1, height + 4):
+                        PyImGui.begin_table("NickItemsTable", 3, PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.BordersOuterV | PyImGui.TableFlags.BordersOuterH, nick_item_size[0], nick_item_size[1])    
                         # PyImGui.table_setup_column("Index", PyImGui.TableColumnFlags.WidthFixed, 25)
                         PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 20)
                         PyImGui.table_setup_column("Name")
                         PyImGui.table_setup_column("Weeks Until Next Nick", PyImGui.TableColumnFlags.WidthFixed, 85)   
-                             
-                        PyImGui.table_next_column()                
-                        PyImGui.table_next_column()                
                         
                         for i, nick_item in enumerate(data.Nick_Cycle):
+                             
                             if nick_item.weeks_until_next_nick is None:
                                 continue
                             
                             if nick_item.weeks_until_next_nick > settings.current.profile.nick_weeks_to_keep:
                                 continue
                             
-                            PyImGui.table_next_row()
-                            if not PyImGui.is_rect_visible(0, height):
-                                PyImGui.dummy(0, height)
-                                PyImGui.table_next_row()
+                            # PyImGui.table_next_row()
+                            if not PyImGui.is_rect_visible(1, height):
+                                PyImGui.dummy(1, height)
+                                PyImGui.table_next_column()
+                                PyImGui.table_next_column()
+                                PyImGui.table_next_column()
                                 continue
                             
                             # PyImGui.table_next_column()
@@ -1781,7 +1787,8 @@ class UI:
                                 ImGui.DrawTexture(
                                     os.path.join(self.item_textures_path, nick_item.inventory_icon), height, height)
                             else:
-                                PyImGui.dummy(height, height)                            
+                                PyImGui.dummy(height, height)    
+                                                        
                             hovered = PyImGui.is_item_hovered()
                             
                             PyImGui.table_next_column()                                                    
@@ -2183,11 +2190,11 @@ class UI:
                         PyImGui.dummy(0,5)
 
                         PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.Text, Utils.ColorToTuple(UI.COLORS.RARE_WEAPONS_TEXT))
+                            PyImGui.ImGuiCol.Text, self.style.Rare_Weapons_Text.color_tuple)
                         PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.FrameBg, Utils.ColorToTuple(UI.COLORS.RARE_WEAPONS_FRAME))
+                            PyImGui.ImGuiCol.FrameBg, self.style.Rare_Weapons_Frame.color_tuple)
                         PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(UI.COLORS.RARE_WEAPONS_FRAME_HOVERED))
+                            PyImGui.ImGuiCol.FrameBgHovered, self.style.Rare_Weapons_Frame_Hovered.color_tuple)
 
                         label = f"Exclude Rare Weapons"
                         unique_id = f"##{label}"
@@ -2205,11 +2212,11 @@ class UI:
                         PyImGui.pop_style_color(3)
                         
                         PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.Text, Utils.ColorToTuple(UI.COLORS.LOW_REQ_WEAPONS_TEXT))
+                            PyImGui.ImGuiCol.Text, self.style.Low_Req_Weapons_Text.color_tuple)
                         PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.FrameBg, Utils.ColorToTuple(UI.COLORS.LOW_REQ_WEAPONS_FRAME))
+                            PyImGui.ImGuiCol.FrameBg, self.style.Low_Req_Weapons_Frame.color_tuple)
                         PyImGui.push_style_color(
-                            PyImGui.ImGuiCol.FrameBgHovered, Utils.ColorToTuple(UI.COLORS.LOW_REQ_WEAPONS_FRAME_HOVERED))
+                            PyImGui.ImGuiCol.FrameBgHovered, self.style.Low_Req_Weapons_Frame_Hovered.color_tuple)
 
                         label = f"Exclude Low Req"
                         unique_id = f"##{label}"
@@ -2394,15 +2401,15 @@ class UI:
                 
                 screen_cursor = PyImGui.get_cursor_screen_pos()   
                 is_visible = PyImGui.is_rect_visible(10, 1)      
-                is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], remaining_size[0], remaining_size[1])) and is_visible
+                is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], remaining_size[0], remaining_size[1])) and is_visible and PyImGui.is_window_hovered()
                 
                 if is_hovered:
-                    PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
-                    PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                    PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, self.style.Hovered_Item.color_int, 1.0, 0)
+                    PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, self.style.Hovered_Item.color_int, 1.0, 0, 2.0)
                     
                 if is_selected:
-                    PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
-                    PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                    PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, self.style.Selected_Item.color_int, 1.0, 0)
+                    PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + remaining_size[0], screen_cursor[1] + size, self.style.Selected_Item.color_int, 1.0, 0, 2.0)
                 
                 cursor = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
@@ -2469,15 +2476,15 @@ class UI:
                 
                 cursor = PyImGui.get_cursor_screen_pos()   
                 is_visible = PyImGui.is_rect_visible(10, 1)      
-                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible
+                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible and PyImGui.is_window_hovered()
                 
                 if is_hovered:
-                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
-                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, self.style.Hovered_Item.color_int, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, self.style.Hovered_Item.color_int, 1.0, 0, 2.0)
                     
                 if is_selected:
-                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
-                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, self.style.Selected_Item.color_int, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + size, self.style.Selected_Item.color_int, 1.0, 0, 2.0)
                 
                 cursor = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
@@ -2514,18 +2521,39 @@ class UI:
         if not settings.current.profile or not self.selected_rule:
             return
         
+        opened = False
+        is_mouse_over = False
         if self.skin_select_popup:
-            PyImGui.open_popup("Select Skin")
-
-        if PyImGui.begin_popup("Select Skin"):
-            changed, search = UI.search_field("##search_skin", self.skin_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for skin name or model id ...", 250)
+            if not self.skin_select_popup_open:
+                PyImGui.set_next_window_size(300, 600)
+                PyImGui.set_next_window_pos(self.py_io.mouse_pos_x, self.py_io.mouse_pos_y)
+                opened = True
+        else:
+            self.skin_select_popup_open = False
+            return
+            
+        self.skin_select_popup_open = PyImGui.begin("Select Skin", PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoMove)
+        
+        if self.skin_select_popup_open:     
+            popup_size = PyImGui.get_content_region_avail()       
+            changed, search = UI.search_field("##search_skin", self.skin_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for skin name or model id ...", popup_size[0] - 30)
             if changed:
                 self.skin_search = search.lower()
-
+        
+            PyImGui.same_line(0, 5)
+            
+            if PyImGui.button(IconsFontAwesome5.ICON_FILTER):
+                self.filter_popup = not self.filter_popup
+                if self.filter_popup:
+                    PyImGui.open_popup("Filter Loot Items")
+                pass
+                
+            
             existing_skins_from_rules = [
                 rule.skin for rule in settings.current.profile.rules if rule.skin and rule != self.selected_rule
             ]
-            if PyImGui.begin_child("skin_selection_list", (0, 500), True, PyImGui.WindowFlags.NoFlag):
+            
+            if PyImGui.begin_child("skin_selection_list", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 sorted_skins = sorted(data.ItemsBySkins.items(), key=lambda x: x[0].lower())
                 
                 for skin, items in sorted_skins:
@@ -2533,31 +2561,39 @@ class UI:
                         continue
                     
                     if not self.skin_search or self.skin_search in skin.lower():
-                        selected, hovered = self.draw_skin_selectable(skin, skin == self.selected_rule.skin if self.selected_rule else False)
-                        
-                        if self.selected_rule_changed and selected:
-                            self.selected_rule_changed = False
-                            PyImGui.set_scroll_here_y(0.5)
-                                                        
-                        if selected and skin != self.selected_rule.skin:
-                            if self.selected_rule:
-                                self.selected_rule.skin = skin                                   
-                                self.selectable_items = data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
-                                
-                                self.skin_search = ""            
-                                settings.current.profile.save()     
-                                           
-                                PyImGui.close_current_popup()
-                                self.skin_select_popup = False  
+                        if not self.selected_filter or any(self.selected_filter.match(item) for item in items):
+                            selected, hovered = self.draw_skin_selectable(skin, skin == self.selected_rule.skin if self.selected_rule else False)
+                            
+                            if self.selected_rule_changed and selected:
+                                self.selected_rule_changed = False
+                                PyImGui.set_scroll_here_y(0.5)
+                                                            
+                            if selected and skin != self.selected_rule.skin:
+                                if self.selected_rule:
+                                    self.selected_rule.skin = skin                                   
+                                    self.selectable_items = data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
+                                    
+                                    self.skin_search = ""            
+                                    settings.current.profile.save()     
+                                    
+                                    self.skin_select_popup = False  
                                 
             PyImGui.end_child()
-            PyImGui.end_popup()
-            
-                                
-            if PyImGui.is_mouse_clicked(0) and not PyImGui.is_item_hovered():
-                if self.skin_select_popup:
-                    PyImGui.close_current_popup()
-                    self.skin_select_popup = False  
+                
+            window_pos = PyImGui.get_window_pos()
+            window_size = PyImGui.get_window_size()
+            window_rect = (window_pos[0], window_pos[1], window_size[0], window_size[1])
+            is_mouse_over = UI.is_mouse_in_rect(window_rect)
+        
+        PyImGui.end()   
+
+        if self.skin_select_popup_open and not is_mouse_over:
+            if not self.filter_popup:
+                if PyImGui.is_mouse_clicked(0):
+                    self.skin_select_popup_open = False
+                    self.skin_select_popup = False
+                
+        self.draw_filter_popup()
     
     def draw_item_selectable(self, item: models.Item, is_selected: bool) -> tuple[bool, bool]:
         size = 38
@@ -2571,15 +2607,15 @@ class UI:
                 
                 cursor = PyImGui.get_cursor_screen_pos()   
                 is_visible = PyImGui.is_rect_visible(10, 1)      
-                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible
+                is_hovered = UI.is_mouse_in_rect((cursor[0], cursor[1], remaining_size[0], remaining_size[1])) and is_visible and PyImGui.is_window_hovered()
                 
                 if is_hovered:
-                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.HOVERED_COLORED_ITEM_BG, 1.0, 0)
-                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.HOVERED_COLORED_ITEM_BG, 1.0, 0, 2.0)
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], self.style.Hovered_Colored_Item.color_int, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], self.style.Hovered_Colored_Item.color_int, 1.0, 0, 2.0)
                     
                 if is_selected:
-                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.SELECTED_COLORED_ITEM_BG, 1.0, 0)
-                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], UI.COLORS.SELECTED_COLORED_ITEM_BG, 1.0, 0, 2.0)
+                    PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], self.style.Selected_Colored_Item.color_int, 1.0, 0)
+                    PyImGui.draw_list_add_rect(cursor[0], cursor[1], cursor[0] + remaining_size[0], cursor[1] + remaining_size[1], self.style.Selected_Colored_Item.color_int, 1.0, 0, 2.0)
                 
                 cursor = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(cursor[0] + padding, cursor[1] + padding)
@@ -2597,7 +2633,8 @@ class UI:
                             
                 PyImGui.same_line(0, 5)
                 
-                GUI.vertical_centered_text(text=item.name + ("\n" + "\n".join([utility.Util.reformat_string(attribute.name) for attribute in item.attributes]) if len(item.attributes) == 1 else ""), desired_height=skin_size + 4)
+                color = (1, 1, 1, (255 / 255 if is_selected else 100 / 255))
+                GUI.vertical_centered_text(text=item.name + ("\n" + "\n".join([utility.Util.reformat_string(attribute.name) for attribute in item.attributes]) if len(item.attributes) == 1 else ""), desired_height=skin_size + 4, color=color)
                                 
             PyImGui.end_child()
             
@@ -2642,20 +2679,21 @@ class UI:
         if PyImGui.begin_child(f"mod_{mod.identifier}_selectable", (0, 32), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
             size = PyImGui.get_content_region_avail()
             screen_cursor = PyImGui.get_cursor_screen_pos()
-            is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], size[0], size[1]))
+            is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], size[0], size[1])) and PyImGui.is_window_hovered()
             
             if is_hovered:
-                PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], UI.COLORS.HOVERED_COLORED_ITEM_BG, 1.0, 0)
-                PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], UI.COLORS.HOVERED_COLORED_ITEM_BG, 1.0, 0, 2.0)
+                PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], self.style.Hovered_Colored_Item.color_int, 1.0, 0)
+                PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], self.style.Hovered_Colored_Item.color_int, 1.0, 0, 2.0)
                 
             if is_selected:
-                PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], UI.COLORS.SELECTED_COLORED_ITEM_BG, 1.0, 0)
-                PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], UI.COLORS.SELECTED_COLORED_ITEM_BG, 1.0, 0, 2.0)
+                PyImGui.draw_list_add_rect_filled(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], self.style.Selected_Colored_Item.color_int, 1.0, 0)
+                PyImGui.draw_list_add_rect(screen_cursor[0], screen_cursor[1], screen_cursor[0] + size[0], screen_cursor[1] + size[1], self.style.Selected_Colored_Item.color_int, 1.0, 0, 2.0)
             
             PyImGui.set_cursor_screen_pos(screen_cursor[0] + 5, screen_cursor[1] + 4)
             mod_range = mod.get_modifier_range()
             args = (mod_info.min, mod_info.max) if mod_info else (mod_range.max, mod_range.max)
-            UI.vertical_centered_text(mod.get_custom_description(arg1_min=args[0], arg1_max=args[1], arg2_min=args[0], arg2_max=args[1]), None, int(size[1] - 4))
+            color = (1, 1, 1, (255 / 255 if is_selected else 100 / 255))
+            GUI.vertical_centered_text(text=mod.get_custom_description(arg1_min=args[0], arg1_max=args[1], arg2_min=args[0], arg2_max=args[1]), desired_height=int(size[1] - 4), color=color)
             # UI.vertical_centered_text(mod.get_description(), None, int(size[1] - 4))
             
             if is_hovered and is_selected:
@@ -2727,31 +2765,30 @@ class UI:
         if PyImGui.begin_tab_item("By Skin") and settings.current.profile:
                         # Get size of the tab
             tab_size = PyImGui.get_content_region_avail()
+            tab_hovered = PyImGui.is_item_hovered()
 
             # Left panel: Loot Items Selection
             if PyImGui.begin_child("skin_selection_child", (tab_size[0] * 0.3, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
                 child_size = PyImGui.get_content_region_avail()
 
-                changed, search = UI.search_field("##search_rule", self.rule_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for rule name, skin name or model id ...", child_size[0] - 60)
+                changed, search = UI.search_field("##search_rule", self.rule_search, f"{IconsFontAwesome5.ICON_SEARCH} Search for rule name, skin name or model id ...", child_size[0] - 30)
                 if changed:
                     self.rule_search = search
                     self.filter_rules()            
 
-                PyImGui.same_line(0, 5)
-                if PyImGui.button(IconsFontAwesome5.ICON_FILTER):
-                    self.rule_filter_popup = not self.rule_filter_popup
-                    if self.rule_filter_popup:
-                        PyImGui.open_popup("Filter Rules")
-                    pass
+                # PyImGui.same_line(0, 5)
+                # if PyImGui.button(IconsFontAwesome5.ICON_FILTER):
+                #     self.rule_filter_popup = not self.rule_filter_popup
+                #     if self.rule_filter_popup:
+                #         PyImGui.open_popup("Filter Rules")
+                #     pass
                 
                 def draw_hint():
                     PyImGui.text_wrapped(
-                        "Select item skins to manage their actions in your inventory.\n" +
-                        "You can filter skins by name or model ID and filter them through the filter popup.\n\n" +
-                        "To select multiple items click on the first item, hold down the SHIFT key and click on the last item.\n" +
-                        "All items in between will be selected.")
+                        "Select item skins to manage the actions performed on them once in your inventory.")
                                            
                 PyImGui.same_line(0, 5)
+                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() + 5)
                 self.draw_info_icon(
                     draw_action=draw_hint,                 
                     width=500
@@ -2808,8 +2845,9 @@ class UI:
 
                     has_rarities = any(item.item_type in self.rarity_item_types for item in self.selectable_items)
                     is_weapon = any(utility.Util.IsWeaponType(item.item_type) for item in self.selectable_items)
+                    rarity_width = 200 if has_rarities else 0
                     
-                    if PyImGui.begin_child("skin_selection", ((remaingng_size[0] - (215 if has_rarities else 0)), 73), True, PyImGui.WindowFlags.NoFlag):
+                    if PyImGui.begin_child("skin_selection", ((remaingng_size[0] - ((rarity_width + 5) if has_rarities else 0)), 73), True, PyImGui.WindowFlags.NoFlag):
                         size = 52
                         padding = 8
                         skin_size = size - (padding * 2)
@@ -2820,12 +2858,12 @@ class UI:
                         
                         rect = (cursor[0], cursor[1], cursor[0] + size, cursor[1] + size)   
                         if is_texture_hovered and not is_mouse_down:
-                            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], UI.COLORS.HOVERED_ITEM_BG, 1.0, 0)
-                            PyImGui.draw_list_add_rect(rect[0], rect[1], rect[2], rect[3], UI.COLORS.HOVERED_ITEM_BG, 1.0, 0, 2.0)
+                            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], self.style.Hovered_Item.color_int, 1.0, 0)
+                            PyImGui.draw_list_add_rect(rect[0], rect[1], rect[2], rect[3], self.style.Hovered_Item.color_int, 1.0, 0, 2.0)
                             
                         elif is_texture_hovered and is_mouse_down:
-                            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], UI.COLORS.SELECTED_ITEM_BG, 1.0, 0)
-                            PyImGui.draw_list_add_rect(rect[0], rect[1], rect[2], rect[3], UI.COLORS.SELECTED_ITEM_BG, 1.0, 0, 2.0)
+                            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], self.style.Selected_Item.color_int, 1.0, 0)
+                            PyImGui.draw_list_add_rect(rect[0], rect[1], rect[2], rect[3], self.style.Selected_Item.color_int, 1.0, 0, 2.0)
                             
                         PyImGui.begin_child(f"selected_rule {rule.skin}", (size, size), False, PyImGui.WindowFlags.NoFlag| PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
                         if texture_exists:
@@ -2855,7 +2893,7 @@ class UI:
                     if has_rarities: 
                         PyImGui.same_line(0, 5)
                         
-                        if PyImGui.begin_child("rule rarities", (210, 73), True, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar):   
+                        if PyImGui.begin_child("rule rarities", (rarity_width, 73), True, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar):   
                             count = 0
                             none_selected = False
                             
@@ -2868,13 +2906,17 @@ class UI:
                                 skin_size = 42
                                 frame_size = (skin_size * factor, skin_size)
                                 screen_cursor = PyImGui.get_cursor_screen_pos()
-                                is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], frame_size[0], frame_size[1]))
+                                is_hovered = UI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], frame_size[0], frame_size[1])) and PyImGui.is_window_hovered()
                                 alpha = 255 if is_hovered else 225 if (selected) else 50
                                 texture_alpha = 255 if is_hovered else 225 if (selected) else 100
-                                frame_color =  GUI.get_rarity_rgba_color(rarity, 255) if selected else (100,100,100, 125)
+                                frame_color =  GUI.get_rarity_rgba_color(rarity, texture_alpha) if selected else (100,100,100, texture_alpha)
                                 texture_color =  (255 ,255,255 , texture_alpha) if selected else (100,100,100, 200 if is_hovered else 125 )
                                 
-                                PyImGui.begin_child(f"rarity_{rarity}", (frame_size[0], frame_size[1]), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                                # PyImGui.begin_child(f"rarity_{rarity}", (frame_size[0], frame_size[1]), False, PyImGui.WindowFlags.NoFlag | PyImGui.WindowFlags.NoScrollWithMouse | PyImGui.WindowFlags.NoScrollbar)
+                                
+                                if is_hovered:
+                                    rect = (screen_cursor[0], screen_cursor[1], screen_cursor[0] + frame_size[0], screen_cursor[1] + frame_size[1])           
+                                    PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], Utils.RGBToColor(frame_color[0], frame_color[1], frame_color[2], 50), 1.0, 0)                                                     
                                                                 
                                 cursor = PyImGui.get_cursor_pos()
                                 # PyImGui.set_cursor_pos(cursor[0] + (frame_size * count), cursor[1])
@@ -2885,7 +2927,7 @@ class UI:
                                     ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size), tint=texture_color)
                                 else:
                                     PyImGui.dummy(skin_size, skin_size)  
-                                PyImGui.end_child()
+                                # PyImGui.end_child()
                                 
                                 if PyImGui.is_item_clicked(0):
                                     
@@ -2898,9 +2940,9 @@ class UI:
                                     settings.current.profile.save()
                                 
                                 ImGui.show_tooltip(f"Rarity: {rarity.name}")
-                                PyImGui.same_line(0, 5)
+                                count += 1  
+                                PyImGui.same_line(10 + ((frame_size[0] + 2) * count), 0)
                                 
-                                # count += 1  
                         PyImGui.end_child()                                
                                                                
                     if PyImGui.begin_child("rule action", (0, 45), True, PyImGui.WindowFlags.NoFlag):    
@@ -2931,7 +2973,7 @@ class UI:
                             if PyImGui.is_rect_visible(1, 20):
                                 ##TODO: FIX THIS AS ITS AN INVALID CALCULATION
                                 items = len(self.selectable_items)
-                                items_height = items * 50
+                                items_height = (items * 45) + 112
                                 columns = int(max(1, math.floor(items_width / 210) if items_height > remaingng_size[1] else 1))
                                 
                                 if PyImGui.begin_table("rule_items_table", columns, PyImGui.TableFlags.NoBordersInBody | PyImGui.TableFlags.ScrollY): 
@@ -2966,7 +3008,8 @@ class UI:
                                                         rule.models.append(
                                                             action_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
                                                         )
-                                            
+                                                settings.current.profile.save()
+                                                
                                             PyImGui.table_next_column()
                                     
                                     PyImGui.end_table()
@@ -3054,7 +3097,8 @@ class UI:
                                     
                                     if mod_index != 2:
                                         ImGui.push_font("Bold", 15)
-                                        PyImGui.text("Any old school version with")    
+                                        target_text = "any max inherent mod" if not rule.mods else f"one of {len(rule.mods)} inherent mods"
+                                        PyImGui.text(f"Any old school version with {target_text}")    
                                         ImGui.pop_font()
                                                                           
                                         selectable_mods : list[models.WeaponMod] = []
@@ -3083,9 +3127,16 @@ class UI:
                                                 
                                                 if selected != is_selected:             
                                                     if selected:
-                                                        rule.add_mod(selectable_mod)                                       
+                                                        if self.py_io.key_ctrl:
+                                                            for m in selectable_mods:
+                                                                rule.add_mod(m)
+                                                        else:
+                                                            rule.add_mod(selectable_mod)                                       
                                                     else:
-                                                        rule.remove_mod(selectable_mod)
+                                                        if self.py_io.key_ctrl:
+                                                            rule.mods.clear()
+                                                        else:
+                                                            rule.remove_mod(selectable_mod)
                                                     
                                                     settings.current.profile.save()
                                                 
@@ -3108,6 +3159,11 @@ class UI:
             self.draw_mod_range_popup(self.selected_rule_mod, self.selected_mod_info)
             
             PyImGui.end_tab_item()
+    
+    #endregion
+    
+    #region Low Req
+    ##TODO: Select requirements and damage, select OS mods ranges, rarities
     
     #endregion
     
@@ -3463,8 +3519,7 @@ class UI:
     
     def draw_info_icon(self, draw_action : Callable | None = None, text : str = "", width : float = 200):
         PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
-        PyImGui.text_colored(IconsFontAwesome5.ICON_QUESTION_CIRCLE, 
-                             Utils.ColorToTuple(UI.COLORS.INFO_ICON))
+        PyImGui.text_colored(IconsFontAwesome5.ICON_QUESTION_CIRCLE, self.style.Info_Icon.color_tuple)
         PyImGui.pop_style_var(1)
         
         if PyImGui.is_item_hovered():
@@ -3764,9 +3819,8 @@ class UI:
                         m.identifier) if settings.current.profile else None
 
                     def get_frame_color():
-                        base_color = (255, 255, 255, 255) if not is_in_profile else (
-                            255, 204, 85, 255)
-                        return Utils.RGBToColor(base_color[0], base_color[1], base_color[2], 150)
+                        base_color = self.style.Border if not is_in_profile else self.style.Selected_Colored_Item
+                        return Utils.RGBToColor(base_color.r, base_color.g, base_color.b, (150 if is_in_profile else base_color.a))
 
                     if is_in_profile:
                         color = Utils.RGBToColor(255, 204, 85, 255)
@@ -3852,8 +3906,9 @@ class UI:
                                     # ImGui.DrawTexture(texture, 24, 24)
                                     # tint = (255,255,255,255) if is_selected else (150,150,150, 255) if hovered else (64, 64,64, 255)
                                     # ImGui.DrawTextureExtended(texture_path=texture, size=(texture_size, texture_size))
-                                    background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
-                                    selected = UI.ImageToggle(id=f"{m.identifier}{weapon_type.name}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255,255,255,255), background=background)
+                                    # background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
+                                    background = self.style.Selected_Colored_Item if is_selected else self.style.ButtonHovered if hovered else self.style.Button
+                                    selected = UI.ImageToggle(id=f"{m.identifier}{weapon_type.name}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255,255,255,255), background=background.rgb_tuple)
                                     # PyImGui.text(weapon_type.name)
                                 
                                     if selected != is_selected:
@@ -4846,7 +4901,8 @@ class UI:
         #     Utils.RGBToColor(background[0], background[1], background[2], background[3])))
         
         # cursor = PyImGui.get_cursor_pos()
-        PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + size[0],  cursor[1] + size[1], background_color, 3.0, 0)
+        window_style = style.Style()
+        PyImGui.draw_list_add_rect_filled(cursor[0], cursor[1], cursor[0] + size[0],  cursor[1] + size[1], background_color, window_style.FrameRounding.value1, 0)
         
         PyImGui.begin_child(f"ImageToggle{id}{texture_path}", (width, height), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
         

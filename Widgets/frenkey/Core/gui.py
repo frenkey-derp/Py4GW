@@ -1,8 +1,10 @@
 import os
 from typing import Optional
+from Py4GW import Console
 import PyImGui
 
 from Py4GWCoreLib import ImGui
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Profession, Rarity
 from Widgets.frenkey.Core.texture_map import CoreTextures
 
@@ -79,10 +81,13 @@ class GUI:
         if textOffset > 0:
             PyImGui.set_cursor_pos_y(cursorY + textOffset)
 
-        if color:
-            PyImGui.text_colored(text, color)
-        else:
-            PyImGui.text(text)
+        if color is not None:
+            PyImGui.push_style_color(PyImGui.ImGuiCol.Text, color)
+
+        PyImGui.text(text)
+            
+        if color is not None:
+            PyImGui.pop_style_color(1)
 
         if same_line_spacing:
             if textOffset > 0:

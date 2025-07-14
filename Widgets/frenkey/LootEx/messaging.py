@@ -152,7 +152,7 @@ def HandleReceivedMessages():
     global is_collecting, current_account
     
     if not current_account or current_account != GLOBAL_CACHE.Player.GetAccountEmail():
-        ConsoleLog("LootEx", "No current account set, cannot handle messages.")
+        # ConsoleLog("LootEx", "No current account set, cannot handle messages.")
         current_account = GLOBAL_CACHE.Player.GetAccountEmail()
         return
     
