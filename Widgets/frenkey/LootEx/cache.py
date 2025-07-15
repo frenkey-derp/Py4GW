@@ -64,8 +64,8 @@ class Cached_Item:
         self.data: models.Item | None = data.Items.get_item(
             self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
         self.model_name: str = self.data.name if self.data else "Unknown Item"
-        self.config = settings.current.profile.items.get_item_config(
-            self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else None
+        # self.config = settings.current.profile.items.get_item_config(
+        #     self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else None
         self.is_blacklisted: bool = settings.current.profile.is_blacklisted(
             self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else False
 

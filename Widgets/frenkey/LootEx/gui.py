@@ -390,7 +390,7 @@ class UI:
             ItemType.Spear: os.path.join(self.item_textures_path, "Suntouched Spear.png"),
             ItemType.Storybook: os.path.join(self.item_textures_path, "Young Heroes of Tyria.png"),
             ItemType.Costume: os.path.join(self.item_textures_path, "Shining Blade costume.png"),
-            ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine_Halo.png"),
+            ItemType.Costume_Headpiece: os.path.join(self.item_textures_path, "Divine Halo.png"),
             ItemType.Unknown: "",
         }
         
@@ -2078,6 +2078,7 @@ class UI:
                             PyImGui.begin_child("salvage_materials", (0, 0), True, PyImGui.WindowFlags.NoFlag)      
                                                                                         
                             if PyImGui.is_rect_visible(0, self.action_heights[enum.ItemAction.Salvage] - 20):
+                                PyImGui.push_style_var2(ImGui.ImGuiStyleVar.CellPadding, 0, 2)
                                 PyImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)                                
                                 if filter.action == enum.ItemAction.Salvage or filter.action == enum.ItemAction.Salvage_Common_Materials:
                                     for material in data.Common_Materials.values():
@@ -2118,6 +2119,7 @@ class UI:
                                             settings.current.profile.save()
                                     
                                 PyImGui.end_table()
+                                PyImGui.pop_style_var(1)
                             PyImGui.end_child()
                                 
                         match filter.action:
@@ -2143,13 +2145,17 @@ class UI:
                         PyImGui.text("Item Types")
                         PyImGui.separator()
                         width, height = PyImGui.get_content_region_avail()
-                        width = width - 20
-                        item_width = 36
+                        width = width
+                        item_width = 48
                         columns = max(1, math.floor(width / item_width))
                         
-                        if PyImGui.is_rect_visible(1, 20):                                                    
+                        if PyImGui.is_rect_visible(1, 20):                           
+                            PyImGui.push_style_var2(ImGui.ImGuiStyleVar.CellPadding, 0, 2) 
+                                                    
                             PyImGui.begin_table(
                                 "filter_table", columns, PyImGui.TableFlags.ScrollY)
+                            for col in range(columns):
+                                PyImGui.table_setup_column(f"Column {col + 1}", PyImGui.TableColumnFlags.WidthFixed, item_width)
 
                             PyImGui.table_next_column()
 
@@ -2161,7 +2167,7 @@ class UI:
                                     changed, filter.item_types[item_type] = self.draw_item_type_selectable(
                                         item_type, filter.item_types[item_type])
                                     PyImGui.table_next_column()
-                                        
+                                     
                                     if changed:
                                         if self.py_io.key_ctrl:
                                             selected = filter.item_types[item_type]
@@ -2173,6 +2179,7 @@ class UI:
                                         settings.current.profile.save()
                                         
                             PyImGui.end_table()
+                            PyImGui.pop_style_var(1)
 
                     PyImGui.end_child()
 
@@ -3516,357 +3523,7 @@ class UI:
             PyImGui.end_tab_item()
     
     #endregion
-    
-    def draw_by_model_id(self):
-        if PyImGui.begin_tab_item("By Model ID") and settings.current.profile:
-            # Get size of the tab
-            tab_size = PyImGui.get_content_region_avail()
-
-            # Left panel: Loot Items Selection
-            if PyImGui.begin_child("loot_items_selection_child", (tab_size[0] * 0.3, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
-                child_size = PyImGui.get_content_region_avail()
-
-                changed, search = UI.search_field("##search_loot_items", self.item_search, f"Search for Item Name or Model ID...", child_size[0] - 60)
-                if changed:
-                    self.item_search = search
-                    self.filter_items()            
-
-                PyImGui.same_line(0, 5)
-                if PyImGui.button(IconsFontAwesome5.ICON_FILTER):
-                    self.filter_popup = not self.filter_popup
-                    if self.filter_popup:
-                        PyImGui.open_popup("Filter Loot Items")
-                    pass
-                
-                def draw_hint():
-                    PyImGui.text_wrapped(
-                        "Select items to manage their actions in your inventory.\n" +
-                        "You can filter items by name or model ID and filter them through the filter popup.\n\n" +
-                        "To select multiple items click on the first item, hold down the SHIFT key and click on the last item.\n" +
-                        "All items in between will be selected.")
-                                           
-                PyImGui.same_line(0, 5)
-                self.draw_info_icon(
-                    draw_action=draw_hint,
-                    width=500
-                )            
-                
-                if PyImGui.begin_child("selectable items", (0, 0), True, PyImGui.WindowFlags.NoFlag):
-                    for item in self.filtered_loot_items:
-                        if item and not settings.current.profile.is_blacklisted(item.item_info.item_type, item.item_info.model_id):
-                            if PyImGui.is_rect_visible(1, 20):
-                                self.draw_selectable_item(item)
-                            else:
-                                PyImGui.dummy(0, 20)
-
-                PyImGui.end_child()
-
-            PyImGui.end_child()
-
-            PyImGui.same_line(tab_size[0] * 0.3 + 20, 0)
-
-            # Right panel: Loot Item Details
-            if PyImGui.begin_child("loot_item_child", (tab_size[0] - (tab_size[0] * 0.3) - 10, tab_size[1]), False, PyImGui.WindowFlags.NoFlag):
-                selected_loot_item = self.selected_loot_items[0] if self.selected_loot_items and len(
-                    self.selected_loot_items) == 1 else None
-
-                if selected_loot_item:
-                    item_settings = settings.current.profile.items.get_item_config(selected_loot_item.item_info.item_type, selected_loot_item.item_info.model_id)
-                    has_settings = item_settings != None
-                    
-                    
-                    self.draw_item_header(selected_loot_item.item_info, True)
-
-                    if PyImGui.begin_child("item_settings", (0, 0), True, PyImGui.WindowFlags.NoFlag):
-                        if has_settings:
-                            loot_item = settings.current.profile.items.get_item_config(
-                                selected_loot_item.item_info.item_type, selected_loot_item.item_info.model_id)
-
-                            if PyImGui.begin_tab_bar("item_conditions") and loot_item:
-                                for condition in loot_item.conditions:
-                                    if PyImGui.begin_tab_item(condition.name) and condition and selected_loot_item:
-                                        if self.selected_condition != condition:
-                                            self.selected_condition = condition
-                                            self.condition_name = condition.name
-
-                                        remaining_size = PyImGui.get_content_region_avail()
-
-                                        PyImGui.begin_child(
-                                            "item_condition_details", (0, remaining_size[1] - 32), False, PyImGui.WindowFlags.NoFlag)
-                                        self.condition_name = PyImGui.input_text(
-                                            "##name_edit", self.condition_name)
-                                        PyImGui.same_line(0, 5)
-                                        if PyImGui.button("Rename") and self.condition_name and self.condition_name != condition.name:
-                                            condition.name = self.condition_name
-                                            settings.current.profile.save()
-
-                                        PyImGui.separator()
-
-                                        # Get the action names, replace underscores with spaces, split at space, all lowercase and first letter to upper case
-
-                                        action = PyImGui.combo("Action", self.item_actions.index(
-                                            condition.action) if condition.action in self.item_actions else 0, self.item_action_names)
-
-                                        if self.item_actions[action] != condition.action:
-                                            condition.action = self.item_actions[action]
-                                            settings.current.profile.save()
-
-                                        if loot_item:
-                                            label_spacing = 120
-                                            
-                                            if condition.action == enum.ItemAction.Stash:
-                                                keep_amount = PyImGui.slider_int(
-                                                    "Keep in Inventory", condition.keep_in_inventory, 0, 250) 
-                                                if keep_amount != condition.keep_in_inventory:
-                                                    condition.keep_in_inventory = keep_amount
-                                                    settings.current.profile.save()
-                                            
-                                            if (utility.Util.IsArmor(loot_item)):
-                                                PyImGui.text(
-                                                    "IsArmor Type: " + str(True))
-
-                                            elif utility.Util.IsWeapon(loot_item):
-                                                PyImGui.text("")
-                                                PyImGui.text("Item Stats")
-                                                PyImGui.separator()
-
-                                                available_attributes = selected_loot_item.item_info.attributes if selected_loot_item.item_info.attributes else utility.Util.GetAttributes(
-                                                    selected_loot_item.item_info.item_type)
-                                                if len(available_attributes) > 1:
-                                                    available_attributes.insert(
-                                                        0, Attribute.None_)
-
-                                                if not condition.requirements:
-                                                    condition.requirements = {attribute: models.IntRange(
-                                                        0, 13) for attribute in available_attributes}
-
-                                                min_requirement = min(
-                                                    [attribute.min for attribute in condition.requirements.values()])
-                                                max_requirement = max(
-                                                    [attribute.max for attribute in condition.requirements.values()])
-
-                                                min_damage_in_requirements = utility.Util.GetMaxDamage(
-                                                    min_requirement, selected_loot_item.item_info.item_type).min
-                                                max_damage_in_requirements = utility.Util.GetMaxDamage(
-                                                    max_requirement, selected_loot_item.item_info.item_type).max
-
-                                                if not condition.damage_range:
-                                                    condition.damage_range = models.IntRange(
-                                                        min_damage_in_requirements, max_damage_in_requirements)
-
-                                                GUI.vertical_centered_text(
-                                                    "Damage Range", label_spacing)
-                                                remaining_size = PyImGui.get_content_region_avail()
-                                                item_width = (
-                                                    remaining_size[0] - 10) / 2
-
-                                                if condition.damage_range.max > max_damage_in_requirements:
-                                                    condition.damage_range.max = max_damage_in_requirements
-                                                    settings.current.profile.save()
-
-                                                PyImGui.push_item_width(item_width)
-                                                value = PyImGui.slider_int(
-                                                    "##MinDamage", condition.damage_range.min, 0, min_damage_in_requirements)
-                                                if value > condition.damage_range.max:
-                                                    condition.damage_range.max = value
-                                                    settings.current.profile.save()
-                                                elif value != condition.damage_range.min:
-                                                    condition.damage_range.min = value
-                                                    settings.current.profile.save()
-
-                                                PyImGui.same_line(0, 5)
-                                                PyImGui.push_item_width(item_width)
-                                                value = PyImGui.slider_int(
-                                                    "##MaxDamage", condition.damage_range.max, min_damage_in_requirements, max_damage_in_requirements)
-                                                if value < condition.damage_range.min:
-                                                    condition.damage_range.min = value
-                                                    settings.current.profile.save()
-
-                                                elif value != condition.damage_range.max:
-                                                    condition.damage_range.max = value
-                                                    settings.current.profile.save()
-
-                                                GUI.vertical_centered_text(
-                                                    "Prefix|Suffix", label_spacing)
-                                                prefix_name = utility.Util.GetWeaponModName(
-                                                    condition.prefix_mod) if condition.prefix_mod else ""
-                                                PyImGui.push_item_width(item_width)
-                                                mod = PyImGui.combo("##Prefix", self.prefix_names.index(
-                                                    prefix_name) if condition.prefix_mod else 0, self.prefix_names)
-                                                if (self.prefix_names[mod] != prefix_name and mod > 0) or (condition.prefix_mod and mod == 0):
-                                                    modname = self.prefix_names[mod]
-                                                    if modname != None and modname != "Any":
-                                                        # Get the mod struct from data.WeaponMods
-                                                        for weapon_mod in data.Weapon_Mods.values():
-                                                            if weapon_mod.name == modname:
-                                                                condition.prefix_mod = weapon_mod.identifier
-                                                                settings.current.profile.save()
-                                                                break
-                                                    elif condition.prefix_mod and mod == 0:
-                                                        condition.prefix_mod = None
-                                                        settings.current.profile.save()
-
-                                                PyImGui.same_line(0, 5)
-                                                suffix_name = utility.Util.GetWeaponModName(
-                                                    condition.suffix_mod) if condition.suffix_mod else ""
-                                                PyImGui.push_item_width(item_width)
-                                                mod = PyImGui.combo("##Suffix", self.suffix_names.index(
-                                                    suffix_name) if condition.suffix_mod else 0, self.suffix_names)
-                                                if self.suffix_names[mod] != self.suffix_names and mod > 0 or (condition.suffix_mod and mod == 0):
-                                                    modname = self.suffix_names[mod]
-                                                    if modname != None and modname != "Any":
-                                                        # Get the mod struct from data.WeaponMods
-                                                        for weapon_mod in data.Weapon_Mods.values():
-                                                            if weapon_mod.name == modname:
-                                                                condition.suffix_mod = weapon_mod.identifier
-                                                                settings.current.profile.save()
-                                                                break
-                                                    elif condition.suffix_mod and mod == 0:
-                                                        condition.suffix_mod = None
-                                                        settings.current.profile.save()
-
-                                                GUI.vertical_centered_text(
-                                                    "Inherent", label_spacing)
-                                                inherent_name = utility.Util.GetWeaponModName(
-                                                    condition.inherent_mod) if condition.inherent_mod else ""
-                                                PyImGui.push_item_width(item_width)
-                                                mod = PyImGui.combo("##Inherent", self.inherent_names.index(utility.Util.GetWeaponModName(
-                                                    condition.inherent_mod)) if condition.inherent_mod else 0, self.inherent_names)
-                                                if self.inherent_names[mod] != inherent_name and mod > 0 or (condition.inherent_mod and mod == 0):
-                                                    modname = self.inherent_names[mod]
-                                                    if modname != None and modname != "Any":
-                                                        # Get the mod struct from data.WeaponMods
-                                                        for weapon_mod in data.Weapon_Mods.values():
-                                                            if weapon_mod.name == modname:
-                                                                condition.inherent_mod = weapon_mod.identifier
-                                                                settings.current.profile.save()
-                                                                break
-                                                    elif condition.inherent_mod and mod == 0:
-                                                        condition.inherent_mod = None
-                                                        settings.current.profile.save()
-
-                                                PyImGui.same_line(0, 5)
-                                                PyImGui.push_item_width(item_width)
-                                                checked = PyImGui.checkbox(
-                                                    "Old School Only", condition.old_school_only)
-                                                if condition.old_school_only != checked:
-                                                    condition.old_school_only = checked
-                                                    settings.current.profile.save()
-
-                                                PyImGui.text("")
-                                                PyImGui.text("Attribute Ranges")
-                                                PyImGui.separator()
-
-                                                for attribute, requirement in condition.requirements.items():
-                                                    if requirement == None:
-                                                        continue
-
-                                                    GUI.vertical_centered_text(
-                                                        utility.Util.GetAttributeName(attribute) if attribute != Attribute.None_ else "Any", label_spacing)
-
-                                                    remaining_size = PyImGui.get_content_region_avail()
-                                                    item_width = (
-                                                        remaining_size[0] - 10) / 2
-
-                                                    PyImGui.push_item_width(
-                                                        item_width)
-                                                    value = PyImGui.slider_int(
-                                                        "##MinRequirement", requirement.min, 0, 13)
-                                                    if value > requirement.max:
-                                                        requirement.max = value
-                                                        settings.current.profile.save()
-
-                                                    elif value != requirement.min:
-                                                        requirement.min = value
-                                                        settings.current.profile.save()
-
-                                                    PyImGui.same_line(0, 5)
-                                                    PyImGui.push_item_width(
-                                                        item_width)
-                                                    value = PyImGui.slider_int(
-                                                        "##MaxRequirement", requirement.max, 0, 13)
-                                                    if value < requirement.min:
-                                                        requirement.min = value
-                                                        settings.current.profile.save()
-
-                                                    elif value != requirement.max:
-                                                        requirement.max = value
-                                                        settings.current.profile.save()
-
-                                        PyImGui.end_child()
-
-                                        remaining_size = PyImGui.get_content_region_avail()
-                                        width = remaining_size[0] / 2
-
-                                        if PyImGui.button(IconsFontAwesome5.ICON_TRASH, width, 25):
-                                            if  len(loot_item.conditions) > 1:
-                                                loot_item.conditions.remove(condition)
-                                                settings.current.profile.save()
-                                                
-                                            elif loot_item:
-                                                settings.current.profile.items.delete_item_config(loot_item.item_type, loot_item.model_id)
-                                                settings.current.profile.save()
-                                                self.selected_loot_item = None
-                                                
-                                        ImGui.show_tooltip("Delete Condition")
-
-                                        PyImGui.same_line(0, 5)
-
-                                        if PyImGui.button(IconsFontAwesome5.ICON_PLUS, width, 25):
-                                            loot_item.conditions.append(
-                                                ConfigurationCondition("New Condition"))
-                                            settings.current.profile.save()
-                                        ImGui.show_tooltip("Add Condition")
-
-                                        PyImGui.end_tab_item()
-                                PyImGui.end_tab_bar()
-
-                        else:
-                            PyImGui.push_style_color(PyImGui.ImGuiCol.Text, Utils.ColorToTuple(
-                                Utils.RGBToColor(255, 0, 0, 255)))
-                            PyImGui.text_wrapped("Item is not yet configured.")
-                            PyImGui.pop_style_color(1)
-
-                            if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Add to Profile", 0, 25) and selected_loot_item and selected_loot_item.item_info.model_id not in settings.current.profile.items:
-                                settings.current.profile.items.add_item(selected_loot_item.item_info)
-                                settings.current.profile.save()
-
-                    PyImGui.end_child()
-
-                elif self.selected_loot_items and len(self.selected_loot_items) > 1:
-                    PyImGui.begin_child("multiple_items_selected",
-                                        (0, 0), True, PyImGui.WindowFlags.NoFlag)
-
-                    PyImGui.text("Multiple Items Selected")
-                    PyImGui.separator()
-                    PyImGui.text_wrapped(
-                        "You can create the default rule to stash them for all of them or delete all rules for these items.")
-
-                    if PyImGui.button(IconsFontAwesome5.ICON_PLUS + " Create Default Rule", 0, 25):
-                        for item in self.selected_loot_items:
-                            if item and item.item_info.model_id and item.item_info.model_id not in settings.current.profile.items:
-                                settings.current.profile.items.add_item(item.item_info)
-                                settings.current.profile.save()
-
-                    if PyImGui.button(IconsFontAwesome5.ICON_TRASH + " Delete All Rules", 0, 25):
-                        for item in self.selected_loot_items:
-                            if item and item.item_info.model_id and item.item_info.model_id in settings.current.profile.items:
-                                settings.current.profile.items.delete_item_config(item.item_info.item_type, item.item_info.model_id)
-                                settings.current.profile.save()
-
-                    PyImGui.end_child()
-                else:
-                    self.draw_item_header(None, True)
-                    
-                    PyImGui.begin_child("item_settings", (0, 0), True, PyImGui.WindowFlags.NoFlag)     
-                    PyImGui.text("No Item Selected")                   
-                    PyImGui.end_child()
-
-            PyImGui.end_child()
-
-            self.draw_filter_popup()
-            PyImGui.end_tab_item()
-    
+   
     def draw_info_icon(self, draw_action : Callable | None = None, text : str = "", width : float = 200):
         PyImGui.push_style_var2(ImGui.ImGuiStyleVar.FramePadding, 0, 0)
         screen_cursor = PyImGui.get_cursor_screen_pos()
@@ -4147,6 +3804,7 @@ class UI:
             remaining_size = PyImGui.get_content_region_avail()
             columns = max(1, math.floor(int(remaining_size[0] / 350)))
             column_width = int(remaining_size[0] / columns)
+            effective_column_width = 0
             
             for chunk in chunked(self.filtered_weapon_mods, columns):
                 max_height_in_row = max(self._calc_mod_description_height(
@@ -4164,12 +3822,18 @@ class UI:
                     PyImGui.TableFlags.NoBordersInBody |PyImGui.TableFlags.ScrollY,
                 )          
                 
-                PyImGui.table_next_column()                  
+                PyImGui.table_next_column()
+                if effective_column_width == 0:
+                    effective_column_width = int(PyImGui.get_content_region_avail()[0])                  
 
-                for selectable in self.filtered_weapon_mods:
+                for selectable in self.filtered_weapon_mods:                    
                     m: models.WeaponMod = selectable.object
                     selected_weapon_mod = m if selectable.is_selected else selected_weapon_mod
 
+                    if not PyImGui.is_rect_visible(effective_column_width, self.mod_heights[m.identifier]):
+                        PyImGui.dummy(effective_column_width, int(self.mod_heights[m.identifier]))
+                        continue
+                    
                     is_in_profile = settings.current.profile.contains_weapon_mod(
                         m.identifier) if settings.current.profile else None
 
@@ -4198,7 +3862,7 @@ class UI:
                         )
 
                     PyImGui.begin_child(
-                        id=f"ModSelectable{m.identifier}", size=(0.0, self.mod_heights[m.identifier]), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
+                        id=f"ModSelectable{m.identifier}", size=(effective_column_width, self.mod_heights[m.identifier]), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)
                                   
                     if m.is_inscription:
                         texture = self.inscription_type_textures.get(m.target_types[0], None)
@@ -4243,6 +3907,10 @@ class UI:
                             pass
                         else:
                             for weapon_type in ItemType:
+                                if not PyImGui.is_rect_visible(texture_size, texture_size):
+                                    PyImGui.dummy(texture_size, texture_size)
+                                    continue
+                                
                                 if not m.has_item_type(weapon_type) or weapon_type in self.inscription_type_textures:
                                     continue
 
@@ -4263,7 +3931,9 @@ class UI:
                                     # ImGui.DrawTextureExtended(texture_path=texture, size=(texture_size, texture_size))
                                     # background = (255, 204, 85, 180) if is_selected else (51, 77, 102, 255) if hovered else (26, 38, 51, 255)
                                     background = self.style.Selected_Colored_Item if is_selected else self.style.ButtonHovered if hovered else self.style.Button
-                                    selected = UI.ImageToggle(id=f"{m.identifier}{weapon_type.name}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255,255,255,255), background=background.rgb_tuple)
+                                    # selected = UI.ImageToggle(id=f"{m.identifier}{weapon_type.name}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255,255,255,255), background=background.rgb_tuple)
+                                    
+                                    selected, hovered = GUI.item_toggle_button(texture, texture_size, is_selected)
                                     # PyImGui.text(weapon_type.name)
                                 
                                     if selected != is_selected:
@@ -4804,12 +4474,16 @@ class UI:
         background = self.style.Selected_Colored_Item.rgb_tuple if is_selected else self.style.ButtonHovered.rgb_tuple if hovered else self.style.Button.rgb_tuple
         is_now_selected = is_selected
         
-        if texture:
-            is_now_selected = UI.ImageToggle(id=f"{texture}{material.model_id}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255, 255, 255, 255) if is_selected else (200, 200, 200, 255) if hovered else (125, 125, 125, 255), background=background)
-        else:
-            PyImGui.dummy(texture_size, texture_size)
-            
-        ImGui.show_tooltip(f"{material.name}")
+        
+        is_now_selected, hovered = GUI.item_toggle_button(texture, texture_size, is_selected)
+        
+        # if texture:
+        #     is_now_selected = UI.ImageToggle(id=f"{texture}{material.model_id}", selected=is_selected, texture_path=texture, size=(texture_size, texture_size), tint=(255, 255, 255, 255) if is_selected else (200, 200, 200, 255) if hovered else (125, 125, 125, 255), background=background)
+        # else:
+        #     PyImGui.dummy(texture_size, texture_size)
+        
+        if hovered:
+            ImGui.show_tooltip(f"{material.name}")
             
         return is_selected != is_now_selected, is_now_selected
 
@@ -4830,16 +4504,15 @@ class UI:
             return False, False
         
         texture = self.item_type_textures.get(item_type, None)
-        texture_size = 32
-        cursor = PyImGui.get_cursor_screen_pos()
-        rect = (cursor[0], cursor[1], texture_size, texture_size)        
-        hovered = GUI.is_mouse_in_rect(rect)        
-        background = self.style.Selected_Colored_Item.rgb_tuple if is_selected else self.style.ButtonHovered.rgb_tuple if hovered else self.style.Button.rgb_tuple
+        texture_size = 48
+    
         is_now_selected = is_selected
+      
+        is_now_selected, hovered = GUI.item_toggle_button(texture, texture_size, is_selected)
         
-        is_now_selected = UI.ImageToggle(id=f"{texture}{item_type.name}", selected=is_selected, texture_path=texture or "", size=(texture_size, texture_size), tint=(255, 255, 255, 255) if is_selected else (200, 200, 200, 255) if hovered else (125, 125, 125, 255), background=background)
-                
-        ImGui.show_tooltip(f"Item Type: {utility.Util.reformat_string(item_type.name)}")
+        if hovered:
+            ImGui.show_tooltip(f"Item Type: {utility.Util.reformat_string(item_type.name)}")
+            
         return is_selected != is_now_selected, is_now_selected
 
     def draw_blacklist_selectable_item(self, item: SelectableItem):
@@ -4902,21 +4575,10 @@ class UI:
 
         elif profession:
             item_name = f"{item_name} ({profession})"
-            
-        # Determine text color based on whether the item has settings
-        has_settings = item.item_info.model_id in settings.current.profile.items
-        text_color = (
-            utility.Util.GetRarityColor(Rarity.Gold)["text"]
-            if has_settings
-            else Utils.RGBToColor(255, 255, 255, 255)
-        )
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
-                                Utils.ColorToTuple(text_color))
-
+        
         # Draw item name with vertical centering
         PyImGui.set_cursor_pos_x(PyImGui.get_cursor_pos_x() + 5)
         GUI.vertical_centered_text(item_name, None, 20)
-        PyImGui.pop_style_color(1)
 
         PyImGui.end_child()
         PyImGui.pop_style_var(1)
@@ -4971,141 +4633,6 @@ class UI:
                 item.is_clicked = True
                 item.time_stamp = datetime.now()
 
-    def draw_selectable_item(self, item: SelectableItem):
-        """
-        Draws a selectable item in the GUI.
-
-        Args:
-            item (SelectableItem): The item to be displayed.
-        """
-
-        if settings.current.profile is None:
-            return
-
-        # Apply background color for selected or hovered items
-        if item.is_selected:
-            selected_color = Utils.RGBToColor(34, 34, 34, 255)
-            PyImGui.push_style_color(
-                PyImGui.ImGuiCol.ChildBg, Utils.ColorToTuple(selected_color))
-
-        if item.is_hovered:
-            hovered_color = Utils.RGBToColor(63, 63, 63, 255)
-            PyImGui.push_style_color(
-                PyImGui.ImGuiCol.ChildBg, Utils.ColorToTuple(hovered_color))
-
-        PyImGui.push_style_var2(ImGui.ImGuiStyleVar.ItemSpacing, 0, 0)
-        PyImGui.begin_child(
-            f"SelectableItem{item.item_info.model_id}",
-            (0, 20),
-            False,
-            PyImGui.WindowFlags.NoFlag,
-        )
-
-        # Construct item name with attributes if available
-        attributes = (
-            [utility.Util.GetAttributeName(
-                attr) + ", " for attr in item.item_info.attributes]
-            if item.item_info.attributes
-            else []
-        )
-        
-        profession = utility.Util.GetProfessionName(item.item_info.profession) if item.item_info.profession else ""
-
-        item_name = item.item_info.name
-        
-            
-        if item.item_info.attributes and len(item.item_info.attributes) > 0:
-            item_name = (
-                f"{item_name} ({''.join(attributes).removesuffix(',')})"
-                if len(item.item_info.attributes) > 1
-                else f"{item_name} ({utility.Util.GetAttributeName(item.item_info.attributes[0])})"
-            )
-        elif item.item_info.attributes and len(item.item_info.attributes) == 1:
-            item_name = f"{item_name} ({utility.Util.GetAttributeName(item.item_info.attributes[0])})"
-
-        elif profession:
-            item_name = f"{item_name} ({profession})"
-            
-        # Determine text color based on whether the item has settings
-        has_settings = settings.current.profile.items.get_item_config(item.item_info.item_type, item.item_info.model_id) is not None
-        text_color = (
-            utility.Util.GetRarityColor(Rarity.Gold)["text"]
-            if has_settings
-            else Utils.RGBToColor(255, 255, 255, 255)
-        )
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Text,
-                                Utils.ColorToTuple(text_color))
-
-        if item.item_info.inventory_icon:
-            ImGui.DrawTexture(os.path.join(self.item_textures_path, item.item_info.inventory_icon), 20, 20)
-        else:
-            PyImGui.dummy(20, 20)
-                    
-                    
-        PyImGui.same_line(0, 5)
-        # Draw item name with vertical centering
-        PyImGui.set_cursor_pos_x(PyImGui.get_cursor_pos_x() + 5)
-        GUI.vertical_centered_text(item_name, None, 20)
-        PyImGui.pop_style_color(1)
-
-        PyImGui.end_child()
-        PyImGui.pop_style_var(1)
-        
-        # Pop background color styles if applied
-        if item.is_selected:
-            PyImGui.pop_style_color(1)
-
-        if item.is_hovered:
-            PyImGui.pop_style_color(1)
-
-        # Update hover and selection states
-        item.is_hovered = PyImGui.is_item_hovered()
-
-        # Show tooltip with item name
-        if item.is_hovered:
-            PyImGui.set_next_window_size(400, 0)
-            PyImGui.begin_tooltip()
-            
-            self.draw_item_header(item_info=item.item_info, border=False, image_size=50)
-
-            PyImGui.separator()
-            PyImGui.text("Click to select the item.")
-            
-            PyImGui.end_tooltip()
-            
-            
-        if PyImGui.is_mouse_double_clicked(0) and item.is_hovered:
-            self.selected_loot_items = [item]
-            py_io = self.py_io
-            
-            if item.item_info.model_id in settings.current.profile.items:
-                settings.current.profile.remove_item(item.item_info.item_type, item.item_info.model_id)     
-                settings.current.profile.save()
-            else:
-                settings.current.profile.add_item(item.item_info)     
-                settings.current.profile.save()
-
-        elif PyImGui.is_mouse_clicked(0) and item.is_hovered:
-            if self.py_io.key_shift:
-                start = min(self.filtered_loot_items.index(item),
-                            self.filtered_loot_items.index(self.selected_loot_items[0]))
-                end = max(self.filtered_loot_items.index(item),
-                        self.filtered_loot_items.index(self.selected_loot_items[0]))
-                self.selected_loot_items = self.filtered_loot_items[start:end + 1]
-
-                for other_item in self.filtered_loot_items:
-                    other_item.is_selected = False
-
-                for selected_item in self.selected_loot_items:
-                    selected_item.is_selected = True
-            else:
-                self.selected_loot_items = [item]
-
-                for other_item in self.filtered_loot_items:
-                    other_item.is_selected = False
-
-                item.is_selected = True
-
     # region general ui elements
     @staticmethod
     def ImageToggle(id : str, selected : bool, texture_path: str, size : tuple[float, float], label : str = "",  padding : tuple[float, float] = (2, 2), tint: tuple[int, int, int, int] = (255, 255, 255, 255), background : tuple[int, int, int, int] = (255, 255, 255, 0)) -> bool:
@@ -5141,7 +4668,7 @@ class UI:
             ImGui.push_font("Bold", 28)
             text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
             PyImGui.set_cursor_pos((size[0] - text_size[0]) / 2, (size[1] - (28 - 6)) / 2)
-            PyImGui.text(IconsFontAwesome5.ICON_QUESTION)
+            PyImGui.text_colored(IconsFontAwesome5.ICON_QUESTION, (tint[0] / 255, tint[1] / 255, tint[2] / 255, tint[3] / 255))
             ImGui.pop_font()
             pass
                 

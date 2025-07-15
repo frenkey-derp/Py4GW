@@ -356,8 +356,8 @@ class InventoryHandler:
                     return True            
         
         if item.is_stackable:
-            config_condition = item.config.get_condition(
-                item) if item.config else None
+            ##TODO Implement the By Weapon Type etc here
+            config_condition = None
             keep_amount = 0 if not respect_keep_amount else (config_condition.keep_in_inventory if config_condition else 0)
 
             amount = item.quantity - keep_amount
@@ -1349,28 +1349,29 @@ class InventoryHandler:
                 item.action = ItemAction.Stash
                 continue
                             
-            if item.config:
-                action = item.config.get_action(item)
-                if action != ItemAction.NONE and (not item.is_inventory_item or action != ItemAction.Loot):
-                    item.action = action
-
-                    if self.IsSalvageAction(item.action):
-                        if not item.is_identified:
-                            item.action = ItemAction.Identify
-                            continue
-                        
-                        salvage_option = self.GetSalvageOption(item)
-
-                        if salvage_option is not None:
-                            item.salvage_option = salvage_option
-                            rarity_requires_confirmation = item.rarity >= Rarity.Blue
-                            mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
-                            item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-                            item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
                             
-                            if not item in result.salvage_queue:
-                                result.salvage_queue[item.id] = item
-                    continue
+            # if item.config:
+            #     action = item.config.get_action(item)
+            #     if action != ItemAction.NONE and (not item.is_inventory_item or action != ItemAction.Loot):
+            #         item.action = action
+
+            #         if self.IsSalvageAction(item.action):
+            #             if not item.is_identified:
+            #                 item.action = ItemAction.Identify
+            #                 continue
+                        
+            #             salvage_option = self.GetSalvageOption(item)
+
+            #             if salvage_option is not None:
+            #                 item.salvage_option = salvage_option
+            #                 rarity_requires_confirmation = item.rarity >= Rarity.Blue
+            #                 mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
+            #                 item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
+            #                 item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
+                            
+            #                 if not item in result.salvage_queue:
+            #                     result.salvage_queue[item.id] = item
+            #         continue
 
             if ShouldExtractMods(item):
                 # ConsoleLog(

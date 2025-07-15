@@ -115,7 +115,6 @@ class Profile:
 
         self.runes: dict[str, RuneConfiguration] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
-        self.items: ItemConfigurations = ItemConfigurations()
         self.blacklist: dict[ItemType, dict[int, bool]] = {}
 
     def setup_lookups(self):
@@ -196,13 +195,6 @@ class Profile:
                            is_active in types.items()}
                 for mod_name, types in self.weapon_mods.items()
             },
-            "items": {
-                item_type.name: {
-                    item_id: ItemConfiguration.to_dict(item_config)
-                    for item_id, item_config in items.items()
-                }
-                for item_type, items in self.items.items()                
-            },
             "blacklist": {
                 item_type.name: list(self.blacklist[item_type].keys())
                 for item_type in self.blacklist
@@ -273,18 +265,7 @@ class Profile:
                 self.blacklist = {
                     ItemType[item_type]: {int(model_id): True for model_id in model_ids}
                     for item_type, model_ids in profile_dict.get("blacklist", {}).items()
-                }
-                
-                configured_items = profile_dict.get("items", {})
-                for item_type_name, items in configured_items.items():
-                    for item_id, item in items.items():
-                        item_config = ItemConfiguration.from_dict(item)
-                        item_type = ItemType[item_type_name]
-                        
-                        if item_type not in self.items:
-                            self.items[item_type] = {}
-                        
-                        self.items[item_type][int(item_id)] = item_config        
+                }                     
                                 
             self.setup_lookups()
             
@@ -365,29 +346,7 @@ class Profile:
     def contains_weapon_mod(self, mod_name: str) -> bool:
         """Check if the profile contains a specific weapon mod."""
         return mod_name in self.weapon_mods and any(self.weapon_mods[mod_name].values())
-
-    def add_item_by_model(self, item_type : ItemType, model_id: int, action: ItemAction = ItemAction.Stash):
-        """Add an item to the profile by model ID."""
-        if item_type not in self.items:
-            self.items[item_type] = {}
-        
-        if model_id not in self.items[item_type]:
-            self.items[item_type][model_id] = ItemConfiguration(model_id, item_type, action)
-        else:
-            if len(self.items[item_type][model_id].conditions) == 1:
-                self.items[item_type][model_id].conditions[0].action = action
             
-    def add_item(self, item: models.Item, action: ItemAction = ItemAction.Stash):
-        """Add an item to the profile."""
-        if item.item_type not in self.items:
-            self.items[item.item_type] = {}
-        
-        if item.model_id not in self.items[item.item_type]:
-            self.items[item.item_type][item.model_id] = ItemConfiguration(item.model_id, item.item_type, action)
-        else:
-            if len(self.items[item.item_type][item.model_id].conditions) == 1:
-                self.items[item.item_type][item.model_id].conditions[0].action = action
-
     def blacklist_item(self, item_type : ItemType, model_id: int):
         """Blacklist an item in the profile."""      
         if item_type not in self.blacklist:
@@ -409,11 +368,3 @@ class Profile:
     def is_blacklisted(self, item_type : ItemType, model_id: int) -> bool:
         """Check if an item is blacklisted in the profile."""
         return item_type in self.blacklist and model_id in self.blacklist[item_type]
-
-    def remove_item(self, item_type : ItemType, model_id: int):
-        """Remove an item from the profile."""
-        if item_type in self.items:
-            if model_id in self.items[item_type]:
-                del self.items[item_type][model_id]
-                if not self.items[item_type]:
-                    del self.items[item_type]

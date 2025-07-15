@@ -3,10 +3,11 @@ from typing import Optional
 from Py4GW import Console
 import PyImGui
 
-from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import IconsFontAwesome5, ImGui
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Profession, Rarity
 from Widgets.frenkey.Core import style
+from Widgets.frenkey.Core import texture_map
 from Widgets.frenkey.Core.texture_map import CoreTextures
 
 class GUI:
@@ -98,6 +99,52 @@ class GUI:
         rect = (screen_cursor[0], screen_cursor[1], width, height)
         
         return GUI.is_mouse_in_rect(rect)
+    
+    @staticmethod
+    def item_toggle_button(texture: str | None, skin_size : float = 42, selected : bool = False, background: bool = True, padding : tuple[float, float] = (0, 0), selected_color : tuple[int, int, int, int] | None = None) -> tuple[bool, bool]:
+        if not PyImGui.is_rect_visible(skin_size, skin_size):
+            PyImGui.dummy(int(skin_size), int(skin_size))
+            return selected, False
+        
+        factor = 34 / 42 ## Width / Height ratio of the frame texture
+        padding = (0, 0)
+        frame_reduce = 0.85
+        frame_size = (skin_size * frame_reduce + (padding[0] * 2), (skin_size * frame_reduce / factor) + (padding[1] * 2))
+        
+        screen_cursor = PyImGui.get_cursor_screen_pos()
+        is_hovered = GUI.is_mouse_in_rect((screen_cursor[0], screen_cursor[1], frame_size[0], frame_size[1])) and PyImGui.is_window_hovered()
+        
+        window_style = style.Style()
+        alpha = 255 if is_hovered else 225 if (selected) else 50
+        texture_alpha = 255 if is_hovered else 225 if (selected) else 100
+        frame_color =  selected_color if selected_color else window_style.Selected_Colored_Item.rgb_tuple if selected else (100,100,100, texture_alpha)
+        texture_color =  (255, 255, 255, texture_alpha) if selected else (100,100,100, 200 if is_hovered else 125 )
+        
+        texture_exists = os.path.exists(texture) and os.path.isfile(texture) if texture else False
+        if is_hovered:
+            rect = (screen_cursor[0], screen_cursor[1], screen_cursor[0] + frame_size[0], screen_cursor[1] + frame_size[1])           
+            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[2], rect[3], Utils.RGBToColor(frame_color[0], frame_color[1], frame_color[2], 50), 1.0, 0)                                                     
+                                        
+        ImGui.DrawTextureExtended(texture_path=texture_map.CoreTextures.UI_Inventory_Slot.value, size=(frame_size[0], frame_size[1]), tint=frame_color)
+        
+        if texture_exists and texture:     
+            PyImGui.set_cursor_screen_pos(screen_cursor[0] + padding[0], screen_cursor[1] + padding[1])                                  
+            ImGui.DrawTextureExtended(texture_path=texture, size=(skin_size, skin_size), tint=texture_color)
+        else:
+            ImGui.push_font("Bold", int(skin_size * factor))        
+            text_size = PyImGui.calc_text_size(IconsFontAwesome5.ICON_QUESTION)
+            
+            PyImGui.set_cursor_screen_pos(screen_cursor[0] + ((frame_size[0] - text_size[0]) / 2), screen_cursor[1] + ((frame_size[1] - text_size[1]) / 2))
+            PyImGui.push_style_color(
+                PyImGui.ImGuiCol.Text, (texture_color[0] / 255, texture_color[1] / 255, texture_color[2] / 255, texture_color[3] / 255))
+            PyImGui.text(IconsFontAwesome5.ICON_QUESTION)  
+            PyImGui.pop_style_color(1)
+            ImGui.pop_font()
+
+        if PyImGui.is_item_clicked(0) and is_hovered: 
+            selected = not selected 
+                    
+        return selected, is_hovered
     
     @staticmethod
     def image_button(texture_path: str, texture_size : tuple[float, float], hovered_texture_path: Optional[str] = None, background: bool = True, padding : tuple[float, float] = (2, 2)) -> bool:
