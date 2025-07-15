@@ -1,4 +1,4 @@
-from Widgets.frenkey.LootEx import cache, models, enum
+from Widgets.frenkey.LootEx import models, enum
 from Widgets.frenkey.LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
@@ -53,7 +53,10 @@ class WeaponRule:
         if mod.identifier in self.mods:
             del self.mods[mod.identifier]
             
-    def matches(self, item: cache.Cached_Item) -> bool:
+    def matches(self, target_item) -> bool:
+        from Widgets.frenkey.LootEx import cache
+        item : cache.Cached_Item = target_item
+        
         if item.item_type != self.item_type:
             return False
         
@@ -70,10 +73,10 @@ class WeaponRule:
                     return False
         
         requirement = item.requirements
-        requirement_info = self.requirements.get(requirement, None)
+        requirement_info = self.requirements.get(requirement, None) if  self.requirements else None
         if not requirement_info:
             return False
-        
+                
         if (item.damage[0] < requirement_info.min or item.damage[1] > requirement_info.max):
             return False        
                 

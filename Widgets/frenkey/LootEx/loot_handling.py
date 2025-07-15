@@ -102,10 +102,11 @@ class LootHandler:
                 # ConsoleLog("LootEx", f"Item {item_id} is a Vial of Dye that we do not want to keep.", Console.MessageType.Debug)
                 return False
         
-        if cached_item.config:
-            action = cached_item.config.get_action(cached_item)
-            if action == ItemAction.Loot:
-                return True
+        if cached_item.matches_weapon_rule:
+            return True
+        
+        if cached_item.matches_skin_rule:
+            return True
 
         for filter in settings.current.profile.filters:
             action = filter.get_action(cached_item)

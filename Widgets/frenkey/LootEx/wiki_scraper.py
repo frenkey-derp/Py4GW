@@ -3,6 +3,8 @@ import re
 import string
 import sys
 import urllib.parse
+import difflib
+from typing import Optional
 
 from Widgets.frenkey.LootEx import data, models, module_import, utility
 import importlib
@@ -26,7 +28,37 @@ except ModuleNotFoundError as e:
 
 
 class WikiScraper:
-    
+    @staticmethod
+    def string_similarity(a: str, b: str) -> float:
+        """
+        Returns similarity ratio between two strings (0.0 to 1.0).
+        """
+        return difflib.SequenceMatcher(None, a.lower(), b.lower()).ratio()
+
+    @staticmethod
+    def get_best_match(query: str, candidates: list[str], min_score: float = 0.85) -> Optional[str]:
+        """
+        Returns the best matching string from candidates with a similarity above min_score.
+        
+        Args:
+            query (str): the input string to match.
+            candidates (list[str]): list of strings to search for a match.
+            min_score (float): minimum similarity required (0.0 to 1.0).
+
+        Returns:
+            Optional[str]: best match string, or None if none above threshold.
+        """
+        best = None
+        best_score = 0.0
+        
+        for candidate in candidates:
+            score = WikiScraper.string_similarity(query, candidate)
+            if score > best_score:
+                best_score = score
+                best = candidate
+
+        return best if best_score >= min_score else None
+
     @staticmethod
     def get_all_materials() -> dict[str, models.Item]:
         """
@@ -92,12 +124,24 @@ class WikiScraper:
         
         if materials:
             WikiScraper.MATERIALS = WikiScraper.get_all_materials()
+            fixed_materials = models.SalvageInfoCollection()
             
             for material_name, salvage_info in materials.items():
                 lower_name = material_name.lower()
+                best_match = WikiScraper.get_best_match(lower_name, [m.name for m in WikiScraper.MATERIALS.values()], 0.9)
                 
-                if lower_name in WikiScraper.MATERIALS:
-                    salvage_info.material_model_id = WikiScraper.MATERIALS[lower_name].model_id
+                ConsoleLog("LootEx", f"Found material {material_name} with best match {best_match} ({lower_name})")
+                
+                if best_match:
+                    material = next((m for m in WikiScraper.MATERIALS.values() if m.name.lower() == best_match.lower()), None)
+                    
+                    if material:
+                        salvage_info.material_name = material.names.get(ServerLanguage.English, material.name)
+                        salvage_info.material_model_id = material.model_id
+                    
+                    fixed_materials[salvage_info.material_name] = salvage_info
+                    
+            materials = fixed_materials
         
         return materials
     
@@ -280,7 +324,7 @@ class WikiScraper:
         
         if os.path.exists(path):
             item.inventory_icon = filename
-            data.SaveItems(False)
+            data.SaveItems(True)
             return True
         
         try:
@@ -291,10 +335,10 @@ class WikiScraper:
             with open(path, 'wb') as file:
                 file.write(response.content)
                 item.inventory_icon = filename
-                
+                y
                 
             ConsoleLog("LootEx", f"Downloaded image for {item.name} from {item.inventory_icon_url} to {path}.")
-            data.SaveItems(False)
+            data.SaveItems(True)
             return True
         
         except requests.RequestException as e:
@@ -319,7 +363,7 @@ class WikiScraper:
                 WikiScraper.scrape_info_from_wiki(entry)
                 
                 if not entry.inventory_icon_url or not WikiScraper.download_image(entry):
-                    data.SaveItems(False)
+                    data.SaveItems(True)
                     
                 
                 if i >= total:

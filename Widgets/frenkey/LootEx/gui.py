@@ -1319,6 +1319,13 @@ class UI:
 
                             PyImGui.table_next_column()
                             PyImGui.text_colored("Yes", (0, 1, 0, 1))
+                        
+                        if cached_item.is_customized:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Customized")
+
+                            PyImGui.table_next_column()
+                            PyImGui.text_colored("Yes", (0, 1, 0, 1))
                             
                                 
                         PyImGui.table_next_column()
@@ -1427,9 +1434,20 @@ class UI:
                         pass
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
-                        data.SaveRunes()
-                        data.SaveWeaponMods(True)
+                        for item in data.Items.All:
+                            if item.rare_salvage:
+                                for mat in item.rare_salvage.values():
+                                    material = next((m for m in data.Materials.values() if m.name == mat.material_name), None)
+                                    if material:
+                                        mat.material_model_id = material.model_id
+                                        
+                            if item.common_salvage:
+                                for mat in item.common_salvage.values():
+                                    material = next((m for m in data.Materials.values() if m.name == mat.material_name), None)
+                                    if material:
+                                        mat.material_model_id = material.model_id
                         
+                        data.SaveItems(True)
                         
                                                  
                 PyImGui.end_child()
@@ -3310,7 +3328,7 @@ class UI:
                     ImGui.DrawTextureExtended(texture_path=texture_map.CoreTextures.Cog.value, size=(16,16), tint=(150,150,150,255) if not cog_hovered else (255,255,255,255))
                     
                     if cog_hovered and PyImGui.is_item_clicked(0):
-                        ConsoleLog("LootEx", "Cog clicked for mod range selection.")
+                        # ConsoleLog("LootEx", "Cog clicked for mod range selection.")
                         cog_clicked = True
                         self.dmg_range_popup = True
                         

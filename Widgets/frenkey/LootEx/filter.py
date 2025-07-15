@@ -12,16 +12,14 @@ class Filter:
             rarity: False for rarity in Rarity}
         self.materials: dict[int, bool] = {}
         self.action: ItemAction = ItemAction.Stash
-        self.exclude_low_req: bool = False
-        self.exclude_rare_weapons: bool = False
-        self.exclude_rare_items: bool = False
         self.salvage_item_max_vendorvalue = 1500
 
-    def handles_item(self, item) -> bool:
+    def handles_item(self, target_item) -> bool:
+        from Widgets.frenkey.LootEx import cache
+        item : cache.Cached_Item = target_item
         
-        item_type_match = any(utility.Util.IsMatchingItemType(item.item_type, item_type_enum)
-                              for item_type_enum in self.item_types if self.item_types[item_type_enum])
-
+        item_type_match = self.item_types.get(item.item_type, False)
+        
         if not item_type_match:
             return False
 
@@ -29,12 +27,9 @@ class Filter:
         if not self.rarities.get(item.rarity, False) or self.rarities[item.rarity] is False:
             return False
 
-        if self.exclude_rare_weapons and item.is_rare_weapon:
+        if item.is_rare_weapon:
             return False
-        
-        if self.exclude_low_req and item.is_low_requirement_item:
-            return False
-        
+                
         if self.action == ItemAction.Sell_To_Merchant:
             if item.value <= 0:
                 return False
@@ -45,11 +40,13 @@ class Filter:
                     return False
 
                 material_match = False
+                
+                
                 common_materials = [
                     m.material_model_id for m in item.data.common_salvage.values()]
                 rare_materials = [
                     m.material_model_id for m in item.data.rare_salvage.values()]
-
+                
                 for material in self.materials:
                     if material in common_materials or material in rare_materials:
                         material_match = True
@@ -79,9 +76,6 @@ class Filter:
             "item_types": {item_type.name: value for item_type, value in data.item_types.items()},
             "rarities": {rarity.name: value for rarity, value in data.rarities.items()},
             "materials": {material: value for material, value in data.materials.items()},
-            "exclude_rare_weapons": data.exclude_rare_weapons,
-            "exclude_rare_items": data.exclude_rare_items,
-            "exclude_low_req": data.exclude_low_req,
             "salvage_item_max_vendorvalue": data.salvage_item_max_vendorvalue,
             "action": data.action.name
         }
@@ -97,13 +91,7 @@ class Filter:
 
         action = ItemAction[data.get("action", "Stash")]
         loot_filter.action = action
-
-        loot_filter.exclude_rare_weapons = data.get(
-            "exclude_rare_weapons", False)
-        loot_filter.exclude_rare_items = data.get("exclude_rare_items", False)
-        
-        loot_filter.exclude_low_req = data.get("exclude_low_req", False)
-
+       
         loot_filter.salvage_item_max_vendorvalue = data.get(
             "salvage_item_max_vendorvalue", 1500)
 

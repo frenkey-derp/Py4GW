@@ -1268,9 +1268,12 @@ class InventoryHandler:
                 result.inventory_changed = True
             
             if (not item.is_inventory_item or item.quantity <= 0):
+                ConsoleLog(
+                    "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item or has no quantity, skipping.", Console.MessageType.Debug)
                 continue
             
             if not self.CanProcessItem(item):
+                
                 continue
             
             if item.is_salvage_kit:
@@ -1328,6 +1331,8 @@ class InventoryHandler:
                     del result.actions[item_id]
 
                 result.cached_inventory.remove(item)
+                ConsoleLog(
+                    "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item, skipping.", Console.MessageType.Debug)
                 continue
             
             if has_empty_slot:
@@ -1416,26 +1421,27 @@ class InventoryHandler:
             for filter in settings.current.profile.filters:
                 action = filter.get_action(item)
 
-                if action != ItemAction.NONE and (not item.is_inventory_item or action != ItemAction.Loot):
-                    item.action = action
-
-                    if self.IsSalvageAction(item.action):
-                        if not item.is_identified:
-                            item.action = ItemAction.Identify
-                            continue
+                if action != ItemAction.NONE:
+                    if (item.is_inventory_item or action == ItemAction.Loot):
+                        item.action = action
                         
-                        salvage_option = self.GetSalvageOption(item)
-
-                        if salvage_option is not None:
-                            item.salvage_option = salvage_option
-                            rarity_requires_confirmation = item.rarity >= Rarity.Blue
-                            mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
-                            item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-                            item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
+                        if self.IsSalvageAction(item.action):
+                            if not item.is_identified:
+                                item.action = ItemAction.Identify
+                                break
                             
-                            if not item in result.salvage_queue:
-                                result.salvage_queue[item.id] = item
-                    break
+                            salvage_option = self.GetSalvageOption(item)
+
+                            if salvage_option is not None:
+                                item.salvage_option = salvage_option
+                                rarity_requires_confirmation = item.rarity >= Rarity.Blue
+                                mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
+                                item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
+                                item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
+                                
+                                if not item in result.salvage_queue:
+                                    result.salvage_queue[item.id] = item
+                        break
             
             if (self.IsSalvageAction(item.action) and not item.is_identified):
                 item.action = ItemAction.Identify

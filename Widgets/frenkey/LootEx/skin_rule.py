@@ -1,4 +1,4 @@
-from Widgets.frenkey.LootEx import cache, data, models, enum
+from Widgets.frenkey.LootEx import data, models, enum
 from Widgets.frenkey.LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
@@ -119,7 +119,10 @@ class SkinRule:
         if mod.identifier in self.mods:
             del self.mods[mod.identifier]
 
-    def matches(self, item: cache.Cached_Item) -> bool:
+    def matches(self, target_item) -> bool:
+        from Widgets.frenkey.LootEx import cache
+        item : cache.Cached_Item = target_item
+        
         if item.skin != self.skin:
             return False
 
@@ -127,7 +130,7 @@ class SkinRule:
             model for model in self.models if model.model_id == item.model_id and model.item_type == item.item_type
         ), None)
 
-        if not model_info:
+        if self.models and not model_info:
             return False
 
         if item.rarity not in self.rarities or not self.rarities[item.rarity]:

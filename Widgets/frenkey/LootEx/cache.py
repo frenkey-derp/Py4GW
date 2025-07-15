@@ -66,25 +66,6 @@ class Cached_Item:
         self.model_name: str = self.data.name if self.data else "Unknown Item"
         self.skin = self.data.inventory_icon if self.data else None
         
-        self.skin_rule: skin_rule.SkinRule | None = None
-        self.matches_skin_rule: bool = False
-        if settings.current.profile and settings.current.profile.skin_rules_by_model.get(self.item_type, {}).get(self.model_id, None):
-            self.skin_rule = next((
-                rule for rule in settings.current.profile.skin_rules_by_model[self.item_type][self.model_id]
-                if rule.skin == self.skin and self.skin is not None
-            ), None)      
-            
-            self.matches_skin_rule = self.skin_rule.matches(self) if self.skin_rule else False
-        
-        self.weapon_rule: weapon_rule.WeaponRule | None = None
-        self.matches_weapon_rule: bool = False
-        
-        if settings.current.profile and settings.current.profile.weapon_rules.get(self.item_type, {}):
-            self.weapon_rule = settings.current.profile.weapon_rules[self.item_type]
-        
-        if self.weapon_rule:
-            self.matches_weapon_rule = self.weapon_rule.matches(self)
-        
         # self.config = settings.current.profile.items.get_item_config(
         #     self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else None
         self.is_blacklisted: bool = settings.current.profile.is_blacklisted(
@@ -118,7 +99,25 @@ class Cached_Item:
         self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id) and self.rarity == Rarity.Gold
         
         self.GetModsFromModifiers()
+                
+        self.skin_rule: skin_rule.SkinRule | None = None
+        self.matches_skin_rule: bool = False
+        if settings.current.profile and settings.current.profile.skin_rules_by_model.get(self.item_type, {}).get(self.model_id, None):
+            self.skin_rule = next((
+                rule for rule in settings.current.profile.skin_rules_by_model[self.item_type][self.model_id]
+                if rule.skin == self.skin and self.skin is not None
+            ), None)      
+            
+            self.matches_skin_rule = self.skin_rule.matches(self) if self.skin_rule else False
         
+        self.weapon_rule: weapon_rule.WeaponRule | None = None
+        self.matches_weapon_rule: bool = False
+        
+        if settings.current.profile and settings.current.profile.weapon_rules.get(self.item_type, {}):
+            self.weapon_rule = settings.current.profile.weapon_rules[self.item_type]
+        
+        if self.weapon_rule:
+            self.matches_weapon_rule = self.weapon_rule.matches(self)
 
         pass
     
@@ -247,37 +246,37 @@ class Cached_Item:
                             self.weapon_mods_to_keep.append(weapon_mod)
                         
                     self.weapon_mods.append(weapon_mod)
-                        
+                                
         for identifier, arg1, arg2 in modifier_values:
             if identifier is None or arg1 is None or arg2 is None:
                 continue
 
-            if identifier == ModifierIdentifier.TargetItemType:
+            if identifier == ModifierIdentifier.TargetItemType.value:
                 self.target_item_type = ItemType(
                     arg1) if arg1 is not None else ItemType.Unknown
                 self.is_rune = arg1 == 0 and arg2 == 0 and self.is_upgrade
 
-            if identifier == ModifierIdentifier.Damage:
+            if identifier == ModifierIdentifier.Damage.value:
                 self.damage = (
-                    arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
+                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
 
-            if identifier == ModifierIdentifier.Damage_NoReq:
+            if identifier == ModifierIdentifier.Damage_NoReq.value:
                 self.damage = (
-                    arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
+                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
 
-            if identifier == ModifierIdentifier.ShieldArmor:
+            if identifier == ModifierIdentifier.ShieldArmor.value:
                 self.shield_armor = (
                     arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
 
-            if identifier == ModifierIdentifier.Requirement:
+            if identifier == ModifierIdentifier.Requirement.value:
                 self.requirements = arg2 if arg2 is not None else 0
                 self.attribute = Attribute(
                     arg1) if arg1 is not None else Attribute.None_
             
-            if identifier == ModifierIdentifier.ImprovedVendorValue:
+            if identifier == ModifierIdentifier.ImprovedVendorValue.value:
                 self.has_increased_value = True
                 
-            if identifier == ModifierIdentifier.HighlySalvageable:
+            if identifier == ModifierIdentifier.HighlySalvageable.value:
                 self.is_highly_salvageable = True
         
         self.mods = self.runes + self.weapon_mods
