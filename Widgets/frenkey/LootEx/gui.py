@@ -4,7 +4,7 @@ import webbrowser
 
 from Widgets.frenkey.Core.iterable import chunked
 from Widgets.frenkey.Core import style, texture_map, gui
-from Widgets.frenkey.LootEx import action_rule, loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
+from Widgets.frenkey.LootEx import skin_rule, loot_handling, profile, settings, data, price_check, item_configuration, utility, enum, cache, ui_manager_extensions, inventory_handling, wiki_scraper, filter, models, messaging, data_collector,wiki_scraper
 from Widgets.frenkey.LootEx.item_configuration import ItemConfiguration, ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -20,7 +20,7 @@ from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
 importlib.reload(gui)
 importlib.reload(style)
 importlib.reload(settings)
-importlib.reload(action_rule)
+importlib.reload(skin_rule)
 importlib.reload(texture_map)
 importlib.reload(data)
 importlib.reload(enum)
@@ -97,17 +97,17 @@ class ItemFilter:
         return self.lambda_function(item)
     
 class RuleFilter:
-    def __init__(self, name: str, lambda_function: Callable[[action_rule.ActionRule], bool]):
+    def __init__(self, name: str, lambda_function: Callable[[skin_rule.SkinRule], bool]):
         self.name: str = name
-        self.lambda_function: Callable[[action_rule.ActionRule], bool] = lambda_function
+        self.lambda_function: Callable[[skin_rule.SkinRule], bool] = lambda_function
         pass
     
-    def match(self, rule: action_rule.ActionRule) -> bool:
+    def match(self, rule: skin_rule.SkinRule) -> bool:
         """
         Checks if the rule matches the filter criteria.
         
         Args:
-            rule (action_rule.ActionRule): The rule to check against the filter.
+            rule (skin_rule.SkinRule): The rule to check against the filter.
         
         Returns:
             bool: True if the rule matches the filter, False otherwise.
@@ -241,7 +241,7 @@ class UI:
         self.rule_search: str = ""
         self.selected_rule_changed: bool = True
         self.mod_range_popup: bool = False
-        self.selected_rule: action_rule.ActionRule | None = None
+        self.selected_rule: skin_rule.SkinRule | None = None
         self.selected_rule_mod: models.WeaponMod | None = None
         self.selected_mod_info: models.ModInfo | None = None
         self.selectable_rules: list[SelectableWrapper] = []
@@ -880,17 +880,22 @@ class UI:
                             settings.current.profile.name + "'")
             PyImGui.same_line(0, 5)
 
-            btnColor = Utils.RGBToColor(
-                0, 255, 0, 255) if settings.current.automatic_inventory_handling else Utils.RGBToColor(255, 0, 0, 125)
-            PyImGui.push_style_color(
-                PyImGui.ImGuiCol.Text, Utils.ColorToTuple(btnColor))
 
-            if PyImGui.button((IconsFontAwesome5.ICON_PLAY_CIRCLE if settings.current.automatic_inventory_handling else
-                            IconsFontAwesome5.ICON_PAUSE_CIRCLE)):
-                settings.current.automatic_inventory_handling = not settings.current.automatic_inventory_handling
-                settings.current.save()
+            active = settings.current.automatic_inventory_handling
+            
+            if active:
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Text, Utils.ColorToTuple(Utils.RGBToColor(0, 255, 0, 255)))
+            
+            if PyImGui.button(IconsFontAwesome5.ICON_CHECK):
+                
+                if active:
+                    inventory_handling.InventoryHandler().Stop()
+                else:
+                    inventory_handling.InventoryHandler().Start()
 
-            PyImGui.pop_style_color(1)
+            if active:
+                PyImGui.pop_style_color(1)
+
             ImGui.show_tooltip(
                 ("Disable" if settings.current.automatic_inventory_handling else "Enable") + " Inventory Handling")
 
@@ -1308,9 +1313,9 @@ class UI:
                             PyImGui.table_next_column()
                             PyImGui.text_colored("Yes", (0, 1, 0, 1))
                             
-                        if cached_item.is_low_requirement_item:
+                        if cached_item.matches_weapon_rule:
                             PyImGui.table_next_column()
-                            PyImGui.text("Low Req")
+                            PyImGui.text("Weapon Rule Matched")
 
                             PyImGui.table_next_column()
                             PyImGui.text_colored("Yes", (0, 1, 0, 1))
@@ -2388,7 +2393,7 @@ class UI:
         self.selectable_rules = []
         search = self.rule_search.lower()
         
-        for rule in settings.current.profile.rules:
+        for rule in settings.current.profile.skin_rules:
             if self.selected_rule_filter is None or self.selected_rule_filter.match(rule):
                 if not search or \
                     search in rule.skin.lower() or \
@@ -2400,7 +2405,7 @@ class UI:
 
         pass
     
-    def draw_selectable_rule(self, rule: action_rule.ActionRule, is_selected: bool, is_hovered: bool = False) -> tuple[bool, bool]:
+    def draw_selectable_rule(self, rule: skin_rule.SkinRule, is_selected: bool, is_hovered: bool = False) -> tuple[bool, bool]:
         size = 32        
         skin_size = size - 6        
         padding = (size - skin_size) / 2
@@ -2562,7 +2567,7 @@ class UI:
                 
             
             existing_skins_from_rules = [
-                rule.skin for rule in settings.current.profile.rules if rule.skin and rule != self.selected_rule
+                rule.skin for rule in settings.current.profile.skin_rules if rule.skin and rule != self.selected_rule
             ]
             
             if PyImGui.begin_child("skin_selection_list", (0, 0), True, PyImGui.WindowFlags.NoFlag):
@@ -2812,7 +2817,7 @@ class UI:
                     
                     if PyImGui.begin_child("selectable_skins", (subtab_size[0], subtab_size[1] - 30), False, PyImGui.WindowFlags.NoFlag):
                         for selectable_rule in self.selectable_rules:
-                            rule : action_rule.ActionRule = selectable_rule.object
+                            rule : skin_rule.SkinRule = selectable_rule.object
                             
                             is_selected, is_hovered = self.draw_selectable_rule(rule, selectable_rule.is_selected, selectable_rule.is_hovered)
                             selectable_rule.is_hovered = is_hovered
@@ -2836,7 +2841,7 @@ class UI:
                     
                     if PyImGui.button("Add Rule", subtab_size[0]):
                         settings.current.profile.add_rule(
-                            action_rule.ActionRule()
+                            skin_rule.SkinRule()
                         )
                         self.filter_rules()
                         settings.current.profile.save()
@@ -2850,7 +2855,7 @@ class UI:
             # Right panel: Loot Item Details
             if PyImGui.begin_child("skin_child", (tab_size[0] - (tab_size[0] * 0.3) - 10, tab_size[1]), self.selected_rule is None, PyImGui.WindowFlags.NoFlag):
                 if self.selected_rule:
-                    rule : action_rule.ActionRule = self.selected_rule
+                    rule : skin_rule.SkinRule = self.selected_rule
                     texture = os.path.join(self.item_textures_path, f"{rule.skin}")
                     texture_exists = texture.endswith(((".jpg",".png"))) and os.path.exists(texture)
                     
@@ -3011,7 +3016,7 @@ class UI:
                                                     else:
                                                         rule.models.clear()
                                                         rule.models.append(
-                                                            action_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
+                                                            skin_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
                                                         )
                                                 else:
                                                     if existing_model_info:
@@ -3019,7 +3024,7 @@ class UI:
                                                         
                                                     else:
                                                         rule.models.append(
-                                                            action_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
+                                                            skin_rule.ItemModelInfo(item_type=item.item_type, model_id=item.model_id)
                                                         )
                                                 settings.current.profile.save()
                                                 
@@ -3389,7 +3394,7 @@ class UI:
             
             PyImGui.same_line(0, 5)
             
-            rule = settings.current.profile.low_req_rules.get(selected_item_type, None) if selected_item_type else None
+            rule = settings.current.profile.weapon_rules.get(selected_item_type, None) if selected_item_type else None
             if PyImGui.begin_child("Low Req Child Right", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 if selected_item_type and rule:                                
                     texture = self.item_type_textures.get(selected_item_type, None)

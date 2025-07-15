@@ -1148,7 +1148,7 @@ class InventoryHandler:
             if item.is_rare_weapon:
                 return True
             
-            if item.is_low_requirement_item:
+            if item.matches_weapon_rule:
                 return True
             
             return False
@@ -1349,30 +1349,28 @@ class InventoryHandler:
                 item.action = ItemAction.Stash
                 continue
                             
-                            
-            # if item.config:
-            #     action = item.config.get_action(item)
-            #     if action != ItemAction.NONE and (not item.is_inventory_item or action != ItemAction.Loot):
-            #         item.action = action
+            if item.matches_skin_rule and item.skin_rule:
+                if item.skin_rule.action != ItemAction.NONE and (not item.is_inventory_item or item.skin_rule.action != ItemAction.Loot):
+                    item.action = item.skin_rule.action
 
-            #         if self.IsSalvageAction(item.action):
-            #             if not item.is_identified:
-            #                 item.action = ItemAction.Identify
-            #                 continue
+                    if self.IsSalvageAction(item.action):
+                        if not item.is_identified:
+                            item.action = ItemAction.Identify
+                            continue
                         
-            #             salvage_option = self.GetSalvageOption(item)
+                        salvage_option = self.GetSalvageOption(item)
 
-            #             if salvage_option is not None:
-            #                 item.salvage_option = salvage_option
-            #                 rarity_requires_confirmation = item.rarity >= Rarity.Blue
-            #                 mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
-            #                 item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
-            #                 item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
+                        if salvage_option is not None:
+                            item.salvage_option = salvage_option
+                            rarity_requires_confirmation = item.rarity >= Rarity.Blue
+                            mods_require_confirmation = item.has_mods and salvage_option is not SalvageOption.LesserCraftingMaterials
+                            item.salvage_requires_confirmation = rarity_requires_confirmation or mods_require_confirmation
+                            item.salvage_requires_material_confirmation = item.has_mods and (salvage_option is SalvageOption.RareCraftingMaterials or salvage_option is SalvageOption.CraftingMaterials)
                             
-            #                 if not item in result.salvage_queue:
-            #                     result.salvage_queue[item.id] = item
-            #         continue
-
+                            if not item in result.salvage_queue:
+                                result.salvage_queue[item.id] = item
+                    continue
+            
             if ShouldExtractMods(item):
                 # ConsoleLog(
                 #     "LootEx", f"Item '{item.model_name}' ({item.id}) has mods to extract.", Console.MessageType.Info)

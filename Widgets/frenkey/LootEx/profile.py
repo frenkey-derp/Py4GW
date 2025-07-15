@@ -1,6 +1,6 @@
 import os
 import json
-from Widgets.frenkey.LootEx import action_rule, filter, item_configuration, low_req_rule, messaging
+from Widgets.frenkey.LootEx import skin_rule, filter, item_configuration, weapon_rule, messaging
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.item_configuration import *
 from Py4GWCoreLib import Console
@@ -10,7 +10,7 @@ from Py4GWCoreLib.enums import DyeColor
 
 import importlib
 importlib.reload(item_configuration)
-importlib.reload(low_req_rule)
+importlib.reload(weapon_rule)
 
 class RuneConfiguration:
     def __init__(self, identifier: str = "", valuable: bool = False, should_sell: bool = False):
@@ -93,11 +93,11 @@ class Profile:
         self.filters_by_item_type: dict[ItemType, list[filter.Filter]] = {}
                 
         # Collection of Action Rules
-        self.rules: list[action_rule.ActionRule] = []
-        self.rules_by_model: dict[ItemType, dict[int, list[action_rule.ActionRule]]] = {}        
+        self.skin_rules: list[skin_rule.SkinRule] = []
+        self.skin_rules_by_model: dict[ItemType, dict[int, list[skin_rule.SkinRule]]] = {}        
         
-        self.low_req_rules: dict[ItemType, low_req_rule.LowReqRule] = {
-            item_type: low_req_rule.LowReqRule(item_type)
+        self.weapon_rules: dict[ItemType, weapon_rule.WeaponRule] = {
+            item_type: weapon_rule.WeaponRule(item_type)
              for item_type in [
                 ItemType.Axe,
                 ItemType.Bow,
@@ -119,7 +119,7 @@ class Profile:
 
     def setup_lookups(self):
         self.filters_by_item_type.clear()
-        self.rules_by_model.clear()
+        self.skin_rules_by_model.clear()
         
         for filter in self.filters:
             for item_type in filter.item_types:
@@ -128,17 +128,17 @@ class Profile:
                     
                 self.filters_by_item_type[item_type].append(filter)
         
-        for rule in self.rules:
+        for rule in self.skin_rules:
             if rule.models:
                 for model_info in rule.models:
-                    if model_info.item_type not in self.rules_by_model:
-                        self.rules_by_model[model_info.item_type] = {}
+                    if model_info.item_type not in self.skin_rules_by_model:
+                        self.skin_rules_by_model[model_info.item_type] = {}
                         
-                    if model_info.model_id not in self.rules_by_model[model_info.item_type]:
-                        self.rules_by_model[model_info.item_type][model_info.model_id] = []
+                    if model_info.model_id not in self.skin_rules_by_model[model_info.item_type]:
+                        self.skin_rules_by_model[model_info.item_type][model_info.model_id] = []
                     
-                    if rule not in self.rules_by_model[model_info.item_type][model_info.model_id]:
-                        self.rules_by_model[model_info.item_type][model_info.model_id].append(rule)
+                    if rule not in self.skin_rules_by_model[model_info.item_type][model_info.model_id]:
+                        self.skin_rules_by_model[model_info.item_type][model_info.model_id].append(rule)
             else:
                 from Widgets.frenkey.LootEx import data
                 ## Get all items from data.Items.All which have item.inventory_icon == rule.skin
@@ -148,14 +148,14 @@ class Profile:
                 ]
                 
                 for item in items_with_skin:
-                    if item.item_type not in self.rules_by_model:
-                        self.rules_by_model[item.item_type] = {}
+                    if item.item_type not in self.skin_rules_by_model:
+                        self.skin_rules_by_model[item.item_type] = {}
                         
-                    if item.model_id not in self.rules_by_model[item.item_type]:
-                        self.rules_by_model[item.item_type][item.model_id] = []
+                    if item.model_id not in self.skin_rules_by_model[item.item_type]:
+                        self.skin_rules_by_model[item.item_type][item.model_id] = []
                         
-                    if rule not in self.rules_by_model[item.item_type][item.model_id]:
-                        self.rules_by_model[item.item_type][item.model_id].append(rule)
+                    if rule not in self.skin_rules_by_model[item.item_type][item.model_id]:
+                        self.skin_rules_by_model[item.item_type][item.model_id].append(rule)
                         
         pass
 
@@ -178,11 +178,11 @@ class Profile:
             "nick_items_to_keep": self.nick_items_to_keep,
             "filters": [Filter.to_dict(filter) for filter in self.filters],
             "rules": [
-                rule.to_dict() for rule in self.rules
+                rule.to_dict() for rule in self.skin_rules
             ],
-            "low_req_rules": {
-                item_type.name: low_req_rule.to_dict()
-                for item_type, low_req_rule in self.low_req_rules.items()
+            "weapon_rules": {
+                item_type.name: weapon_rule.to_dict()
+                for item_type, weapon_rule in self.weapon_rules.items()
             },
             "polling_interval": self.polling_interval,
             "loot_range": self.loot_range,
@@ -241,15 +241,15 @@ class Profile:
                     "sell_threshold", self.sell_threshold)
                 self.filters = [Filter.from_dict(
                     filter) for filter in profile_dict.get("filters", [])]
-                self.rules = [
-                    action_rule.ActionRule.from_dict(rule) for rule in profile_dict.get("rules", [])
+                self.skin_rules = [
+                    skin_rule.SkinRule.from_dict(rule) for rule in profile_dict.get("rules", [])
                 ]
                 
-                low_req_rules = profile_dict.get("low_req_rules", False)
-                if low_req_rules:
-                    self.low_req_rules = {
-                        ItemType[item_type]: low_req_rule.LowReqRule.from_dict(rule)
-                        for item_type, rule in low_req_rules.items()
+                weapon_rules = profile_dict.get("weapon_rules", False)
+                if weapon_rules:
+                    self.weapon_rules = {
+                        ItemType[item_type]: weapon_rule.WeaponRule.from_dict(rule)
+                        for item_type, rule in weapon_rules.items()
                     }
                     
                 self.runes =  {
@@ -309,18 +309,18 @@ class Profile:
                 self.filters.insert(new_index, filter)
                 self.changed = True
 
-    def add_rule(self, rule: action_rule.ActionRule):
+    def add_rule(self, rule: skin_rule.SkinRule):
         """Add an action rule to the profile."""
-        if any(existing_rule.skin == rule.skin for existing_rule in self.rules):
+        if any(existing_rule.skin == rule.skin for existing_rule in self.skin_rules):
             return
         
-        self.rules.append(rule)
+        self.skin_rules.append(rule)
         self.changed = True
             
-    def remove_rule(self, rule: action_rule.ActionRule):
+    def remove_rule(self, rule: skin_rule.SkinRule):
         """Remove an action rule from the profile."""
-        if rule in self.rules:
-            self.rules.remove(rule)
+        if rule in self.skin_rules:
+            self.skin_rules.remove(rule)
             self.changed = True
 
     def set_rune(self, rune_identifier: str, is_valuable: bool, should_sell: bool | None = None):

@@ -1,11 +1,11 @@
-from Widgets.frenkey.LootEx import models, enum
+from Widgets.frenkey.LootEx import cache, models, enum
 from Widgets.frenkey.LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
 import importlib
 importlib.reload(models)
 
-class LowReqRule:
+class WeaponRule:
     def __init__(self, item_type: ItemType):
         self.item_type: ItemType = item_type
         self.requirements: dict[int, models.IntRange] = {}
@@ -25,10 +25,10 @@ class LowReqRule:
         }
         
     @staticmethod
-    def from_dict(data: dict) -> "LowReqRule":
+    def from_dict(data: dict) -> "WeaponRule":
         item_type = ItemType[data["item_type"]]
         
-        rule = LowReqRule(item_type)
+        rule = WeaponRule(item_type)
         rule.mods_type = enum.ActionModsType[data.get("mods_type", "Any")]
         
         for req, (min_value, max_value) in data.get("requirements", {}).items():
@@ -52,3 +52,35 @@ class LowReqRule:
     def remove_mod(self, mod: models.ItemMod):
         if mod.identifier in self.mods:
             del self.mods[mod.identifier]
+            
+    def matches(self, item: cache.Cached_Item) -> bool:
+        if item.item_type != self.item_type:
+            return False
+        
+        match(self.mods_type):
+            case enum.ActionModsType.Any:
+                pass
+            
+            case enum.ActionModsType.Inscribable:
+                if not item.is_inscribable:
+                    return False
+                
+            case enum.ActionModsType.Old_School:
+                if item.is_inscribable:
+                    return False
+        
+        requirement = item.requirements
+        requirement_info = self.requirements.get(requirement, None)
+        if not requirement_info:
+            return False
+        
+        if (item.damage[0] < requirement_info.min or item.damage[1] > requirement_info.max):
+            return False        
+                
+        inherent_mods = [mod for mod in item.weapon_mods if mod.mod_type == enum.ModType.Inherent]
+        if self.mods and (not inherent_mods or not any(
+            mod.identifier in self.mods for mod in inherent_mods
+        )):
+            return False
+        
+        return True

@@ -1,7 +1,7 @@
 from datetime import datetime
 from PyItem import DyeInfo, ItemModifier, PyItem
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Widgets.frenkey.LootEx import data, models, settings, utility
+from Widgets.frenkey.LootEx import data, models, settings, skin_rule, utility, weapon_rule
 from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.Item import Bag
@@ -64,6 +64,27 @@ class Cached_Item:
         self.data: models.Item | None = data.Items.get_item(
             self.item_type, self.model_id) if self.model_id > -1 and self.item_type in data.Items else None
         self.model_name: str = self.data.name if self.data else "Unknown Item"
+        self.skin = self.data.inventory_icon if self.data else None
+        
+        self.skin_rule: skin_rule.SkinRule | None = None
+        self.matches_skin_rule: bool = False
+        if settings.current.profile and settings.current.profile.skin_rules_by_model.get(self.item_type, {}).get(self.model_id, None):
+            self.skin_rule = next((
+                rule for rule in settings.current.profile.skin_rules_by_model[self.item_type][self.model_id]
+                if rule.skin == self.skin and self.skin is not None
+            ), None)      
+            
+            self.matches_skin_rule = self.skin_rule.matches(self) if self.skin_rule else False
+        
+        self.weapon_rule: weapon_rule.WeaponRule | None = None
+        self.matches_weapon_rule: bool = False
+        
+        if settings.current.profile and settings.current.profile.weapon_rules.get(self.item_type, {}):
+            self.weapon_rule = settings.current.profile.weapon_rules[self.item_type]
+        
+        if self.weapon_rule:
+            self.matches_weapon_rule = self.weapon_rule.matches(self)
+        
         # self.config = settings.current.profile.items.get_item_config(
         #     self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else None
         self.is_blacklisted: bool = settings.current.profile.is_blacklisted(
@@ -94,7 +115,6 @@ class Cached_Item:
         self.is_highly_salvageable: bool = False
         self.has_increased_value: bool = False
         
-        self.is_low_requirement_item : bool = utility.Util.is_low_requirement_item(self.id)
         self.is_rare_weapon : bool = utility.Util.IsRareWeapon(self.model_id) and self.rarity == Rarity.Gold
         
         self.GetModsFromModifiers()
