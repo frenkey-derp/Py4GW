@@ -1,6 +1,6 @@
 import os
 import json
-from Widgets.frenkey.LootEx import action_rule, filter, item_configuration, messaging
+from Widgets.frenkey.LootEx import action_rule, filter, item_configuration, low_req_rule, messaging
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.item_configuration import *
 from Py4GWCoreLib import Console
@@ -10,6 +10,7 @@ from Py4GWCoreLib.enums import DyeColor
 
 import importlib
 importlib.reload(item_configuration)
+importlib.reload(low_req_rule)
 
 class RuneConfiguration:
     def __init__(self, identifier: str = "", valuable: bool = False, should_sell: bool = False):
@@ -94,6 +95,23 @@ class Profile:
         # Collection of Action Rules
         self.rules: list[action_rule.ActionRule] = []
         self.rules_by_model: dict[ItemType, dict[int, list[action_rule.ActionRule]]] = {}        
+        
+        self.low_req_rules: dict[ItemType, low_req_rule.LowReqRule] = {
+            item_type: low_req_rule.LowReqRule(item_type)
+             for item_type in [
+                ItemType.Axe,
+                ItemType.Bow,
+                ItemType.Daggers,
+                ItemType.Hammer,
+                ItemType.Offhand,
+                ItemType.Scythe,
+                ItemType.Shield,
+                ItemType.Spear,
+                ItemType.Staff,
+                ItemType.Sword,
+                ItemType.Wand
+                ]
+        }
 
         self.runes: dict[str, RuneConfiguration] = {}
         self.weapon_mods: dict[str, dict[str, bool]] = {}
@@ -163,6 +181,10 @@ class Profile:
             "rules": [
                 rule.to_dict() for rule in self.rules
             ],
+            "low_req_rules": {
+                item_type.name: low_req_rule.to_dict()
+                for item_type, low_req_rule in self.low_req_rules.items()
+            },
             "polling_interval": self.polling_interval,
             "loot_range": self.loot_range,
             "runes":  {
@@ -230,6 +252,14 @@ class Profile:
                 self.rules = [
                     action_rule.ActionRule.from_dict(rule) for rule in profile_dict.get("rules", [])
                 ]
+                
+                low_req_rules = profile_dict.get("low_req_rules", False)
+                if low_req_rules:
+                    self.low_req_rules = {
+                        ItemType[item_type]: low_req_rule.LowReqRule.from_dict(rule)
+                        for item_type, rule in low_req_rules.items()
+                    }
+                    
                 self.runes =  {
                     rune_identifier: RuneConfiguration.from_dict(rune_config)
                     for rune_identifier, rune_config in profile_dict.get("runes", {}).items()

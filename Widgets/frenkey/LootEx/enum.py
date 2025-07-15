@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 from Py4GWCoreLib.enums import ModelID
 
 COMMON_MATERIALS: list[int] = [
@@ -109,6 +109,11 @@ class ItemAction(IntEnum):
     Sell_To_Trader = 11
     Destroy = 12
     Deposit_Material = 13
+    
+class ActionModsType(IntEnum):
+    Any = 0
+    Old_School = 1
+    Inscribable = 2
     
 class LootAction(IntEnum):
     NONE = 0

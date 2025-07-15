@@ -1028,7 +1028,6 @@ class Rune(ItemMod):
             ]
         )
 
-
 @dataclass
 class WeaponMod(ItemMod):
     _mod_identifier_lookup: dict[str, str] = field(default_factory=dict)    
@@ -1214,3 +1213,33 @@ class WeaponMod(ItemMod):
                 ) for modifier in json["Modifiers"]
             ]
         )    
+
+class ModInfo:
+    def __init__(self, mod : ItemMod | None = None):
+        self.identifier: str = ""
+        self.min: int = 0
+        self.max: int = 0
+        
+        if mod:
+            self.identifier = mod.identifier
+            modifier_range = mod.get_modifier_range()
+            
+            self.min = modifier_range.max
+            self.max = modifier_range.max
+        
+    def to_dict(self) -> dict:
+        return {
+            "identifier": self.identifier,
+            "min": self.min,
+            "max": self.max
+        }
+        
+    @staticmethod
+    def from_dict(data: dict) -> "ModInfo":
+        mod = ModInfo()
+        
+        mod.identifier = data.get("identifier", "")
+        mod.min = data.get("min", 0)
+        mod.max = data.get("max", 0)
+        
+        return mod

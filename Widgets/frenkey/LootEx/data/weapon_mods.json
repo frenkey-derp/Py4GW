@@ -1518,9 +1518,9 @@
                 "Arg1": 50,
                 "Arg2": 15,
                 "Arg": 12815,
-                "ModifierValueArg": "Arg1",
-                "Min": 1,
-                "Max": 50
+                "ModifierValueArg": "Arg2",
+                "Min": 10,
+                "Max": 15
             }
         ]
     },

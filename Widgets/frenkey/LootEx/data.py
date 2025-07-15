@@ -157,6 +157,11 @@ DamageRanges: dict[ItemType, dict[int, models.IntRange]] = {
     },
 }
 
+for item_type, damage_ranges in DamageRanges.items():
+    for i in range(10, 14):
+        if i not in damage_ranges:
+            damage_ranges[i] = models.IntRange(damage_ranges[i-1].min, damage_ranges[i-1].max)
+
 ItemType_MetaTypes: dict[ItemType, list[ItemType]] = {
     ItemType.Weapon: [
         ItemType.Axe,

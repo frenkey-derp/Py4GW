@@ -4,8 +4,9 @@ from Py4GW import Console
 import PyImGui
 
 from Py4GWCoreLib import ImGui
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
+from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Utils
 from Py4GWCoreLib.enums import Profession, Rarity
+from Widgets.frenkey.Core import style
 from Widgets.frenkey.Core.texture_map import CoreTextures
 
 class GUI:
@@ -41,7 +42,102 @@ class GUI:
                 PyImGui.dummy(size, size)
     
     @staticmethod
-    def vertical_centered_text(text: str, same_line_spacing: Optional[float] = None, desired_height: int = 24, color : tuple[float, float, float, float] | None = None) -> float:
+    def get_gradient_colors(start_color: tuple[float, float, float, float], end_color: tuple[float, float, float, float], steps: int) -> list[tuple[float, float, float, float]]:
+        """
+        Generates a list of gradient colors between two specified colors.
+
+        Args:
+            start_color (tuple): The starting color in RGBA format.
+            end_color (tuple): The ending color in RGBA format.
+            steps (int): The number of gradient steps.
+
+        Returns:
+            list: A list of colors representing the gradient.
+        """
+        return [
+            (
+                start_color[0] + (end_color[0] - start_color[0]) * i / (steps - 1),
+                start_color[1] + (end_color[1] - start_color[1]) * i / (steps - 1),
+                start_color[2] + (end_color[2] - start_color[2]) * i / (steps - 1),
+                start_color[3] + (end_color[3] - start_color[3]) * i / (steps - 1)
+            )
+            for i in range(steps)
+        ] if  steps > 1 else [start_color, end_color]
+ 
+ 
+    @staticmethod
+    def is_mouse_in_rect(rect: tuple[float, float, float, float]) -> bool:
+        """
+        Checks if the mouse is within a specified rectangle.
+
+        Args:
+            rect (tuple[float, float, float, float]): The rectangle defined by (x, y, width, height).
+
+        Returns:
+            bool: True if the mouse is within the rectangle, False otherwise.
+        """
+        pyimgui_io = PyImGui.get_io()
+        mouse_pos = (pyimgui_io.mouse_pos_x, pyimgui_io.mouse_pos_y)
+        
+        return (rect[0] <= mouse_pos[0] <= rect[0] + rect[2] and
+                rect[1] <= mouse_pos[1] <= rect[1] + rect[3])
+
+    @staticmethod
+    def is_hovered(width : float, height : float) -> bool:
+        """
+        Checks if the current item is hovered.
+
+        Args:
+            width (float): The width of the item.
+            height (float): The height of the item.
+
+        Returns:
+            bool: True if the item is hovered, False otherwise.
+        """
+        screen_cursor = PyImGui.get_cursor_screen_pos()
+        rect = (screen_cursor[0], screen_cursor[1], width, height)
+        
+        return GUI.is_mouse_in_rect(rect)
+    
+    @staticmethod
+    def image_button(texture_path: str, texture_size : tuple[float, float], hovered_texture_path: Optional[str] = None, background: bool = True, padding : tuple[float, float] = (2, 2)) -> bool:
+        """
+        Draws an image button with a specified texture and size.
+
+        Args:
+            texture_path (str): The path to the texture.
+            width (float): The width of the button.
+            height (float): The height of the button.
+            hovered_texture_path (Optional[str]): The path to the texture when hovered.
+
+        Returns:
+            bool: True if the button is clicked, False otherwise.
+        """
+        size = (texture_size[0] + (padding[0] * 2), texture_size[1] + (padding[1] * 2))       
+        
+        screen_cursor = PyImGui.get_cursor_screen_pos()
+        rect = (screen_cursor[0], screen_cursor[1], size[0], size[1]) 
+        is_hovered = GUI.is_mouse_in_rect(rect)
+        is_clicked = PyImGui.is_mouse_clicked(0) and is_hovered
+        
+        if background:
+            window_style = style.Style()
+            color = window_style.ButtonActive if is_clicked else window_style.ButtonHovered if is_hovered else window_style.Button
+            
+            PyImGui.draw_list_add_rect_filled(rect[0], rect[1], rect[0] + rect[2], rect[1] + rect[3], color.color_int, window_style.FrameRounding.value1, 0)
+        
+        tint = (255, 255, 255, 255)  if is_hovered else (200, 200, 200, 255)         
+        
+        PyImGui.set_cursor_screen_pos(screen_cursor[0] + padding[0], screen_cursor[1] + padding[1])
+        if is_hovered and hovered_texture_path:
+            ImGui.DrawTextureExtended(hovered_texture_path, (texture_size[0], texture_size[1]))
+        else:
+            ImGui.DrawTextureExtended(texture_path, (texture_size[0], texture_size[1]), tint=tint)
+        
+        return is_clicked
+    
+    @staticmethod
+    def vertical_centered_text(text: str, same_line_spacing: Optional[float] = None, desired_height: float = 24, color : tuple[float, float, float, float] | None = None) -> float:
         """
         Draws text vertically centered within a specified height.
 
