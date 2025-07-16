@@ -1449,18 +1449,17 @@ class UI:
 
                     if settings.current.development_mode and PyImGui.button("Test", 160, 50):
                         for item in data.Items.All:
-                            if item.rare_salvage:
-                                for mat in item.rare_salvage.values():
-                                    material = next((m for m in data.Materials.values() if m.name == mat.material_name), None)
-                                    if material:
-                                        mat.material_model_id = material.model_id
-                                        
-                            if item.common_salvage:
-                                for mat in item.common_salvage.values():
-                                    material = next((m for m in data.Materials.values() if m.name == mat.material_name), None)
-                                    if material:
-                                        mat.material_model_id = material.model_id
-                        
+                            if item.inventory_icon:
+                                path = os.path.join(self.item_textures_path, item.inventory_icon)
+                                
+                                if not os.path.exists(path):
+                                    ConsoleLog(
+                                        "LootEx",
+                                        f"Downloading image for {item.name} from {item.inventory_icon_url}",
+                                        Console.MessageType.Info,
+                                    )
+                                    wiki_scraper.WikiScraper.download_image(item)     
+                                                       
                         data.SaveItems(True)
                         
                                                  

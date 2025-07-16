@@ -310,6 +310,7 @@ class WikiScraper:
         if not item.inventory_icon_url:
             ConsoleLog("LootEx", f"No URL provided for {item.name}. Cannot download image.")
             return False
+                
         filename = WikiScraper.get_image_name(item.inventory_icon_url)
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
@@ -335,7 +336,6 @@ class WikiScraper:
             with open(path, 'wb') as file:
                 file.write(response.content)
                 item.inventory_icon = filename
-                y
                 
             ConsoleLog("LootEx", f"Downloaded image for {item.name} from {item.inventory_icon_url} to {path}.")
             data.SaveItems(True)
