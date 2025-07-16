@@ -598,6 +598,7 @@ class ItemMod():
         self.full_name : str = self.get_full_name()
         self.description: str  = self.get_description()
         self.applied_name : str = self.get_applied_name()
+        # self.identifier : str = self.names.get(ServerLanguage.English, "")
         
     def get_modifier_range(self) -> IntRange:
         if not self.modifiers:

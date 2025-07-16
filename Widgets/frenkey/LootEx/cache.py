@@ -21,8 +21,8 @@ class Cached_Item:
         self.model_id: int = item.model_id if item else -1
         self.item_type: ItemType = ItemType(
             item.item_type.ToInt()) if item else ItemType.Unknown
-        self.rarity: Rarity = Rarity[
-            item.rarity.name] if item and item.rarity else Rarity.White
+        self.rarity: Rarity = Rarity(
+            item.rarity.value) if item and item.rarity and item.rarity.value in Rarity else Rarity.White
 
         self.is_identified: bool = item.is_identified if item else False
         self.value: int = item.value if item else 0
@@ -209,7 +209,39 @@ class Cached_Item:
 
         if not modifier_values:
             return
-        
+            
+        for identifier, arg1, arg2 in modifier_values:
+            if identifier is None or arg1 is None or arg2 is None:
+                continue
+
+            if identifier == ModifierIdentifier.TargetItemType.value:
+                self.target_item_type = ItemType(
+                    arg1) if arg1 is not None else ItemType.Unknown
+                self.is_rune = arg1 == 0 and arg2 == 0 and self.is_upgrade
+
+            if identifier == ModifierIdentifier.Damage.value:
+                self.damage = (
+                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
+
+            if identifier == ModifierIdentifier.Damage_NoReq.value:
+                self.damage = (
+                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
+
+            if identifier == ModifierIdentifier.ShieldArmor.value:
+                self.shield_armor = (
+                    arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
+
+            if identifier == ModifierIdentifier.Requirement.value:
+                self.requirements = arg2 if arg2 is not None else 0
+                self.attribute = Attribute(
+                    arg1) if arg1 is not None else Attribute.None_
+            
+            if identifier == ModifierIdentifier.ImprovedVendorValue.value:
+                self.has_increased_value = True
+                
+            if identifier == ModifierIdentifier.HighlySalvageable.value:
+                self.is_highly_salvageable = True
+                
         if self.is_armor or self.is_upgrade:
             for rune in data.Runes.values():
                 is_rune, is_max = rune.matches_modifiers(
@@ -246,47 +278,10 @@ class Cached_Item:
                             self.weapon_mods_to_keep.append(weapon_mod)
                         
                     self.weapon_mods.append(weapon_mod)
-                                
-        for identifier, arg1, arg2 in modifier_values:
-            if identifier is None or arg1 is None or arg2 is None:
-                continue
-
-            if identifier == ModifierIdentifier.TargetItemType.value:
-                self.target_item_type = ItemType(
-                    arg1) if arg1 is not None else ItemType.Unknown
-                self.is_rune = arg1 == 0 and arg2 == 0 and self.is_upgrade
-
-            if identifier == ModifierIdentifier.Damage.value:
-                self.damage = (
-                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
-
-            if identifier == ModifierIdentifier.Damage_NoReq.value:
-                self.damage = (
-                    arg2, arg1) if arg1 is not None and arg2 is not None else (0, 0)
-
-            if identifier == ModifierIdentifier.ShieldArmor.value:
-                self.shield_armor = (
-                    arg1, arg2) if arg1 is not None and arg2 is not None else (0, 0)
-
-            if identifier == ModifierIdentifier.Requirement.value:
-                self.requirements = arg2 if arg2 is not None else 0
-                self.attribute = Attribute(
-                    arg1) if arg1 is not None else Attribute.None_
-            
-            if identifier == ModifierIdentifier.ImprovedVendorValue.value:
-                self.has_increased_value = True
-                
-            if identifier == ModifierIdentifier.HighlySalvageable.value:
-                self.is_highly_salvageable = True
+                            
         
         self.mods = self.runes + self.weapon_mods
         self.has_mods = bool(self.runes or self.weapon_mods)
-        
-        # ConsoleLog(
-        #     "LootEx",
-        #     f"Item {self.model_name} ({self.id}) has mods: {[mod.name for mod in self.mods]}",
-        #     Console.MessageType.Debug
-        # )
 
     def GetModsX(self, tolerance: int = -1) -> tuple[list[models.Rune | models.WeaponMod], list[models.Rune], list[models.WeaponMod]]:
         if self.mods is None:

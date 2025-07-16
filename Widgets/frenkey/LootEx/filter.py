@@ -23,7 +23,6 @@ class Filter:
         if not item_type_match:
             return False
 
-
         if not self.rarities.get(item.rarity, False) or self.rarities[item.rarity] is False:
             return False
 

@@ -10395,13 +10395,13 @@
             "CommonSalvage": {},
             "RareSalvage": {},
             "WikiURL": "https://wiki.guildwars.com/wiki/Mirage_Iboga_Polymock_Piece",
-            "InventoryIcon": "",
-            "InventoryIconURL": null,
+            "InventoryIcon": "Mirage Iboga Polymock Piece.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/3/3a/Mirage_Iboga_Polymock_Piece.png",
             "NickIndex": null,
             "Profession": null,
             "Category": null,
             "SubCategory": null,
-            "WikiScraped": false
+            "WikiScraped": true
         },
         "27043": {
             "ModelID": 27043,

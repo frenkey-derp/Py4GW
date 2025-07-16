@@ -136,37 +136,38 @@ class SkinRule:
         if item.rarity not in self.rarities or not self.rarities[item.rarity]:
             return False
 
-        match(self.mods_type):
-            case enum.ActionModsType.Any:
-                pass
+        if item.is_weapon:
+            match(self.mods_type):
+                case enum.ActionModsType.Any:
+                    pass
 
-            case enum.ActionModsType.Inscribable:
-                if not item.is_inscribable:
+                case enum.ActionModsType.Inscribable:
+                    if not item.is_inscribable:
+                        return False
+
+                case enum.ActionModsType.Old_School:
+                    if item.is_inscribable:
+                        return False
+
+            if item.requirements not in range(self.requirements.min, self.requirements.max + 1):
+                return False
+
+            if self.requirements.max_damage_only:
+                max_damage_range = data.DamageRanges.get(
+                    item.item_type, {}).get(item.requirements, None)
+                if not max_damage_range:
                     return False
 
-            case enum.ActionModsType.Old_School:
-                if item.is_inscribable:
+                if item.damage[0] < max_damage_range.min or item.damage[1] < max_damage_range.max:
                     return False
 
-        if item.requirements not in range(self.requirements.min, self.requirements.max + 1):
-            return False
+            if self.mods:
+                inherent_mods = [
+                    mod for mod in item.weapon_mods if mod.mod_type == enum.ModType.Inherent]
 
-        if self.requirements.max_damage_only:
-            max_damage_range = data.DamageRanges.get(
-                item.item_type, {}).get(item.requirements, None)
-            if not max_damage_range:
-                return False
-
-            if item.damage[0] < max_damage_range.min or item.damage[1] < max_damage_range.max:
-                return False
-
-        if self.mods:
-            inherent_mods = [
-                mod for mod in item.weapon_mods if mod.mod_type == enum.ModType.Inherent]
-
-            if self.mods and (not inherent_mods or not any(
-                mod.identifier in self.mods for mod in inherent_mods
-            )):
-                return False
+                if self.mods and (not inherent_mods or not any(
+                    mod.identifier in self.mods for mod in inherent_mods
+                )):
+                    return False
 
         return True

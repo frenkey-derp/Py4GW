@@ -898,9 +898,9 @@ class InventoryHandler:
             salvage_item.salvage_started = datetime.now()
             Inventory.SalvageItem(salvage_item.id, kit.id)
             salvage_item.savlage_tries += 1
-            kit.uses -= 1
+            kit.uses -= 1            
             ConsoleLog(
-                "LootEx", f"Started salvaging on {salvage_item.quantity} {salvage_item.model_name} ({salvage_item.id}) with kit {kit.model_name} ({kit.id}) with salvage option {salvage_item.salvage_option.name}", Console.MessageType.Debug)
+                "LootEx", f"Salvage {salvage_item.quantity}x {salvage_item.model_name} ({salvage_item.id}) with kit {kit.model_name} ({kit.id}) with salvage option {salvage_item.salvage_option.name}", Console.MessageType.Info)
             return True
 
         elif salvage_item.salvage_started:
@@ -1188,8 +1188,16 @@ class InventoryHandler:
                     
                 elif item.item_type == ItemType.Salvage:
                     if item.runes_to_keep and len(item.runes_to_keep) >= 1:
-                        return True                  
-
+                        return True   
+                                   
+                                    
+            if item.item_type == ItemType.Rune_Mod:
+                if item.runes_to_keep:
+                    return True
+                
+                if item.weapon_mods_to_keep:
+                    return True
+                
             return False
 
         def ShouldSalvageItem(item: cache.Cached_Item) -> bool:
@@ -1268,8 +1276,8 @@ class InventoryHandler:
                 result.inventory_changed = True
             
             if (not item.is_inventory_item or item.quantity <= 0):
-                ConsoleLog(
-                    "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item or has no quantity, skipping.", Console.MessageType.Debug)
+                # ConsoleLog(
+                #     "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item or has no quantity, skipping.", Console.MessageType.Debug)
                 continue
             
             if not self.CanProcessItem(item):
@@ -1331,8 +1339,8 @@ class InventoryHandler:
                     del result.actions[item_id]
 
                 result.cached_inventory.remove(item)
-                ConsoleLog(
-                    "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item, skipping.", Console.MessageType.Debug)
+                # ConsoleLog(
+                #     "LootEx", f"Item {item.model_name} ({item.id}) is not an inventory item, skipping.", Console.MessageType.Debug)
                 continue
             
             if has_empty_slot:
@@ -1377,8 +1385,19 @@ class InventoryHandler:
                     continue
             
             if ShouldExtractMods(item):
-                # ConsoleLog(
-                #     "LootEx", f"Item '{item.model_name}' ({item.id}) has mods to extract.", Console.MessageType.Info)
+                if item.item_type == ItemType.Rune_Mod:
+                    if item.runes_to_sell:
+                        item.action = ItemAction.Sell_To_Trader
+                        continue
+                    
+                    if item.runes_to_keep:
+                        item.action = ItemAction.Stash
+                        continue
+                    
+                    if item.weapon_mods_to_keep:
+                        item.action = ItemAction.Stash
+                        continue
+                
                 if not item.is_salvageable:
                     item.action = ItemAction.NONE
                     continue

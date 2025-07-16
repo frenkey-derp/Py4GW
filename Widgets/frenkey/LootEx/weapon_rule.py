@@ -73,11 +73,11 @@ class WeaponRule:
                     return False
         
         requirement = item.requirements
-        requirement_info = self.requirements.get(requirement, None) if  self.requirements else None
+        requirement_info = self.requirements.get(requirement, None) if self.requirements else None
         if not requirement_info:
             return False
                 
-        if (item.damage[0] < requirement_info.min or item.damage[1] > requirement_info.max):
+        if (item.damage[0] < requirement_info.min or item.damage[1] < requirement_info.max):
             return False        
                 
         inherent_mods = [mod for mod in item.weapon_mods if mod.mod_type == enum.ModType.Inherent]

@@ -2379,7 +2379,13 @@ class LootConfig:
             if self.IsBlacklisted(model_id):
                 loot_array.remove(agent_id)
                 continue
+                        
+            if self.IsItemIDWhitelisted(item_id):
+                continue
             
+            if self.IsItemIDBlacklisted(item_id):
+                loot_array.remove(agent_id)
+                continue
             
             # Rarity filtering
             if Item.Rarity.IsWhite(item_id):
@@ -2406,14 +2412,6 @@ class LootConfig:
                 if not self.loot_greens:
                     loot_array.remove(agent_id)
                     continue
-
-            
-            if self.IsItemIDWhitelisted(item_id):
-                continue
-            
-            if self.IsItemIDBlacklisted(item_id):
-                loot_array.remove(agent_id)
-                continue
 
         loot_array = AgentArray.Sort.ByDistance(loot_array, Player.GetXY())
 

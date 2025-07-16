@@ -33,7 +33,7 @@ DamageRanges: dict[ItemType, dict[int, models.IntRange]] = {
         3:  models.IntRange(11, 18),
         4:  models.IntRange(12, 20),
         5:  models.IntRange(13, 22),
-        6:  models.IntRange(14, 24),
+        6:  models.IntRange(14, 25),
         7:  models.IntRange(14, 25),
         8:  models.IntRange(14, 27),
         9:  models.IntRange(14, 28),

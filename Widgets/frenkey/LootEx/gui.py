@@ -1313,12 +1313,26 @@ class UI:
                             PyImGui.table_next_column()
                             PyImGui.text_colored("Yes", (0, 1, 0, 1))
                             
-                        if cached_item.matches_weapon_rule:
+                        if cached_item.weapon_rule:
                             PyImGui.table_next_column()
-                            PyImGui.text("Weapon Rule Matched")
+                            PyImGui.text("Has Weapon Rule")
 
                             PyImGui.table_next_column()
                             PyImGui.text_colored("Yes", (0, 1, 0, 1))
+                            
+                        if cached_item.matches_weapon_rule:
+                            PyImGui.table_next_column()
+                            PyImGui.text("By Weapon Rule Matched")
+
+                            PyImGui.table_next_column()
+                            PyImGui.text_colored(cached_item.weapon_rule.item_type.name if cached_item.weapon_rule else "Unkown Weapon Rule", (0, 1, 0, 1))
+                                                    
+                        if cached_item.matches_skin_rule:
+                            PyImGui.table_next_column()
+                            PyImGui.text("Skin Rule Matched")
+
+                            PyImGui.table_next_column()
+                            PyImGui.text_colored(cached_item.skin_rule.skin if cached_item.skin_rule else "Unknown Rule Skin", (0, 1, 0, 1))
                         
                         if cached_item.is_customized:
                             PyImGui.table_next_column()
