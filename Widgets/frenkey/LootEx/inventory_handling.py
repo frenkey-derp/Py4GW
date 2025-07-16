@@ -1422,7 +1422,7 @@ class InventoryHandler:
                 action = filter.get_action(item)
 
                 if action != ItemAction.NONE:
-                    if (item.is_inventory_item or action == ItemAction.Loot):
+                    if ((item.is_inventory_item and action != ItemAction.Loot) or (not item.is_inventory_item and action == ItemAction.Loot)):
                         item.action = action
                         
                         if self.IsSalvageAction(item.action):

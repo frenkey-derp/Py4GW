@@ -1325,7 +1325,7 @@ class UI:
                             PyImGui.text("Customized")
 
                             PyImGui.table_next_column()
-                            PyImGui.text_colored("Yes", (0, 1, 0, 1))
+                            PyImGui.text_colored("Customized - Ignore!", (1, 0, 0, 1))
                             
                                 
                         PyImGui.table_next_column()
@@ -1984,8 +1984,9 @@ class UI:
                             down_rect = (screen_cursor[0], screen_cursor[1], button_size[0], button_size[1])
                             down_hovered = GUI.is_mouse_in_rect(down_rect)
                             is_clicked = PyImGui.is_mouse_clicked(0) and down_hovered
-                            texture = texture_map.CoreTextures.UI_Down_Active if is_clicked else texture_map.CoreTextures.UI_Down_Hovered if down_hovered else texture_map.CoreTextures.UI_Down
-                            ImGui.DrawTexture(texture_path=texture.value, width=button_size[0], height=button_size[1])
+                            state = texture_map.TextureState.Active if is_clicked else texture_map.TextureState.Hovered if down_hovered else texture_map.TextureState.Normal
+                            texture_map.CoreTextures.Down_Arrows.value.draw(size=button_size, state=state)
+                            # ImGui.DrawTexture(texture_path=texture.value, width=button_size[0], height=button_size[1])
                             
                             if is_clicked:
                                 if i < len(settings.current.profile.filters) - 1:
@@ -1998,8 +1999,8 @@ class UI:
                             up_rect = (screen_cursor[0], screen_cursor[1], button_size[0], button_size[1])
                             up_hovered = GUI.is_mouse_in_rect(up_rect)
                             is_clicked = PyImGui.is_mouse_clicked(0) and up_hovered
-                            texture = texture_map.CoreTextures.UI_Up_Active if is_clicked else texture_map.CoreTextures.UI_Up_Hovered if up_hovered else texture_map.CoreTextures.UI_Up
-                            ImGui.DrawTexture(texture_path=texture.value, width=button_size[0], height=button_size[1])
+                            state = texture_map.TextureState.Active if is_clicked else texture_map.TextureState.Hovered if up_hovered else texture_map.TextureState.Normal
+                            texture_map.CoreTextures.Up_Arrows.value.draw(size=button_size, state=state)
                             
                             if is_clicked:
                                 if i > 0:                                    
@@ -3855,6 +3856,7 @@ class UI:
 
                     if not PyImGui.is_rect_visible(effective_column_width, self.mod_heights[m.identifier]):
                         PyImGui.dummy(effective_column_width, int(self.mod_heights[m.identifier]))
+                        PyImGui.table_next_column()
                         continue
                     
                     is_in_profile = settings.current.profile.contains_weapon_mod(
@@ -3889,9 +3891,10 @@ class UI:
                                   
                     if m.is_inscription:
                         texture = self.inscription_type_textures.get(m.target_types[0], None)
-                        if texture:
-                            ImGui.DrawTextureExtended(texture_path=os.path.join(self.item_textures_path, texture), size=(16, 16), tint=(255,255,255,255) if is_in_profile else (150,150,150, 255) if selectable.is_hovered else (100, 100, 100, 255))
+                        if texture and os.path.exists(texture):
+                            ImGui.DrawTextureExtended(texture_path=texture, size=(16, 16), tint=(255,255,255,255) if is_in_profile else (150,150,150, 255) if selectable.is_hovered else (100, 100, 100, 255))
                             PyImGui.same_line(0, 5)
+                            
                         pass
                         
                     ImGui.push_font("Regular", 16)
