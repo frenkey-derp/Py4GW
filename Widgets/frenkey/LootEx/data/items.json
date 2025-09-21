@@ -6822,6 +6822,25 @@
         }
     },
     "Trophy": {
+        "27059": {
+            "ModelID": 27059,
+            "Names": {
+                "English": "250 Ashen Wurm Husks"
+            },
+            "ItemType": "Trophy",
+            "DropInfo": "",
+            "Attributes": [],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/250_Ashen_Wurm_Husks",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "442": {
             "ModelID": 442,
             "Names": {
@@ -41326,6 +41345,27 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "1865": {
+            "ModelID": 1865,
+            "Names": {
+                "English": "Spawning Wand"
+            },
+            "ItemType": "Wand",
+            "DropInfo": "",
+            "Attributes": [
+                "SpawningPower"
+            ],
+            "CommonSalvage": {},
+            "RareSalvage": {},
+            "WikiURL": "https://wiki.guildwars.com/wiki/Spawning_Wand",
+            "InventoryIcon": null,
+            "InventoryIconURL": null,
+            "NickIndex": null,
+            "Profession": "Ritualist",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": false
+        },
         "1016": {
             "ModelID": 1016,
             "Names": {
@@ -52178,6 +52218,50 @@
             "SubCategory": null,
             "WikiScraped": true
         },
+        "2093": {
+            "ModelID": 2093,
+            "Names": {
+                "English": "Dragon Spire Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "InspirationMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Dragon_Spire_Staff",
+            "InventoryIcon": "Dragon Spire Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/6/6f/Dragon_Spire_Staff.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
         "736": {
             "ModelID": 736,
             "Names": {
@@ -57213,6 +57297,50 @@
             "InventoryIconURL": "https://wiki.guildwars.com/images/1/10/Raven_Staff.png",
             "NickIndex": null,
             "Profession": null,
+            "Category": null,
+            "SubCategory": null,
+            "WikiScraped": true
+        },
+        "1495": {
+            "ModelID": 1495,
+            "Names": {
+                "English": "Scrying Glass Staff"
+            },
+            "ItemType": "Staff",
+            "DropInfo": "",
+            "Attributes": [
+                "InspirationMagic"
+            ],
+            "CommonSalvage": {
+                "Iron Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 948,
+                    "MaterialName": "Iron Ingot"
+                },
+                "Pile of Glittering Dust": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 929,
+                    "MaterialName": "Pile of Glittering Dust"
+                }
+            },
+            "RareSalvage": {
+                "Steel Ingot": {
+                    "Amount": -1,
+                    "MinAmount": -1,
+                    "MaxAmount": -1,
+                    "MaterialModelID": 949,
+                    "MaterialName": "Steel Ingot"
+                }
+            },
+            "WikiURL": "https://wiki.guildwars.com/wiki/Scrying_Glass_Staff",
+            "InventoryIcon": "Scrying Glass Staff.png",
+            "InventoryIconURL": "https://wiki.guildwars.com/images/c/cc/Scrying_Glass_Staff.png",
+            "NickIndex": null,
+            "Profession": "Mesmer",
             "Category": null,
             "SubCategory": null,
             "WikiScraped": true
