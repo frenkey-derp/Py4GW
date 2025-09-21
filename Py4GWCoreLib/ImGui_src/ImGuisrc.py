@@ -643,14 +643,6 @@ class ImGui:
 
         def end(self):
             PyImGui.end()
-            """ INI FILE ROUTINES NEED WORK 
-            if end_pos[0] != window_module.window_pos[0] or end_pos[1] != window_module.window_pos[1]:
-                ini_handler.write_key(module_name + " Config", "config_x", str(int(end_pos[0])))
-                ini_handler.write_key(module_name + " Config", "config_y", str(int(end_pos[1])))
-
-            if new_collapsed != window_module.collapse:
-                ini_handler.write_key(module_name + " Config", "collapsed", str(new_collapsed))
-            """
             
         def __draw_decorations(self):                  
             has_title_bar = (int(self.window_flags) & int(PyImGui.WindowFlags.NoTitleBar)) == 0
