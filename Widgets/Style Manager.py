@@ -17,6 +17,8 @@ from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 
 import sys
 
+from Py4GW_widget_manager import WidgetHandler
+
 MODULE_NAME = "Style Manager"
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -78,8 +80,8 @@ theme_compare = False
 match_style_vars = False
 is_first_run = True
 
-widget_handler = sys.modules["_Py4GW_GLOBAL_WIDGET_HANDLER"].handler
-module_info = widget_handler.widgets.get(MODULE_NAME, None)
+widget_handler = WidgetHandler()
+module_info = None
 
 class preview_states:
     def __init__(self):
@@ -327,7 +329,7 @@ def DrawThemeCompare():
     global match_style_vars, preview, themes, theme_compare
     name = "Theme Compare"
     
-    if theme_compare and not ImGui.WindowModule._windows[name].open:
+    if theme_compare and ImGui.WindowModule._windows.get(name, None) and not ImGui.WindowModule._windows[name].open:
         ImGui.WindowModule._windows[name].open = True
     
     if ImGui.begin_with_close(name):
@@ -428,7 +430,14 @@ def DrawThemeCompare():
         theme_compare = False
 
 def DrawControlCompare():
-    if PyImGui.begin("Control Compare"):
+    global theme_compare, control_compare, style, window_width, window_height, save_throttle_timer, save_throttle_time, module_info
+    
+    name = "Control Compare"
+    
+    if theme_compare and ImGui.WindowModule._windows.get(name, None) and not ImGui.WindowModule._windows[name].open:
+        ImGui.WindowModule._windows[name].open = True
+        
+    if ImGui.begin_with_close(name):
         window_size = PyImGui.get_window_size()
         
         if window_size[1] > 100:
@@ -455,7 +464,10 @@ def DrawControlCompare():
                 ImGui.end_table()
             PyImGui.pop_item_width()
             
-    PyImGui.end()
+    ImGui.end()
+    
+    if not ImGui.WindowModule._windows[name].open:
+        control_compare = False
 
 def OnLoad():
     global is_first_run, selected_theme, style, themes
@@ -466,7 +478,7 @@ def OnLoad():
         
 def DrawWindow():
     global theme_compare, control_compare, style, window_width, window_height, save_throttle_timer, save_throttle_time, module_info, widget_handler
-
+    
     if window_module.begin():
         if not PyImGui.is_any_item_active():
             style.apply_to_style_config()       
@@ -730,10 +742,7 @@ def DrawWindow():
     window_module.end()    
     
     if not window_module.open:
-        module_info = widget_handler.widgets.get(MODULE_NAME, None)
-                
-        if module_info:
-            module_info["configuring"] = not module_info["configuring"]
+        WidgetHandler().set_widget_configuring(MODULE_NAME, False)
 
     pass
 
@@ -769,9 +778,11 @@ def set_theme(theme):
     style = ImGui.Selected_Style.copy()
 
 def configure():
-    global window_module, window_open, module_info
-    module_info = widget_handler.widgets.get(MODULE_NAME, None)
-    window_module.open = True
+    global module_info
+    
+    if not module_info:
+        module_info = widget_handler.get_widget_info(MODULE_NAME)
+        
     pass
 
 def main():
