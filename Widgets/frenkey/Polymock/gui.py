@@ -19,17 +19,17 @@ class UI:
             cls.combat = combat.Combat()
             cls.widget_state = state.WidgetState()
             cls.expanded = False
-            cls.gui_open = True
+            cls.gui_open = True        
+            cls.item_textures_path = "Textures\\Item Models\\"
+            cls.window = ImGui.WindowModule("Polymock", "Polymock Assistant", (300, 20), (100, 100), PyImGui.WindowFlags.AlwaysAutoResize)
         
         return cls._instance
                     
     def draw(self):
     
-        expanded, gui_open = PyImGui.begin_with_close("Polymock Assistant", self.gui_open, PyImGui.WindowFlags.AlwaysAutoResize)
-        self.expanded = expanded
-        self.gui_open = gui_open
         
-        if gui_open:
+        
+        if self.window.begin():
             PyImGui.dummy(300, 0)
             # quest_index = PyImGui.combo("Quest", self.quest_index, self.quest_names)
             # if quest_index != self.quest_index:
@@ -56,10 +56,10 @@ class UI:
                     position = data.Polymock_Registration[1]
                     
                     if current_map_id == map_id:
-                        if PyImGui.button("Move to Polymock Registration", width):
+                        if ImGui.button("Move to Polymock Registration", width):
                             GLOBAL_CACHE.Player.Move(position[0], position[1])
                     else:
-                        if PyImGui.button("Travel to Rata Sum", width):
+                        if ImGui.button("Travel to Rata Sum", width):
                             GLOBAL_CACHE.Map.Travel(map_id)
                             
                 elif quest_data and (not self.widget_state.in_arena or quest_data.is_completed):
@@ -72,12 +72,12 @@ class UI:
                     
                         if current_map_id == quest_data.map_to:
                             if not self.widget_state.in_arena:
-                                if PyImGui.button("Move to Quest Marker", width):
+                                if ImGui.button("Move to Quest Marker", width):
                                     position = (quest_data.marker_x, quest_data.marker_y) if quest_data.marker_x < 100000 and quest_data.marker_y < 100000 else (self.widget_state.quest.marker_x, self.widget_state.quest.marker_y)
                                     # ConsoleLog("Polymock", f"Moving to quest marker at {position}")
                                     GLOBAL_CACHE.Player.Move(position[0], position[1])
                         else:
-                            if PyImGui.button(f"Travel to {map_name}", width):
+                            if ImGui.button(f"Travel to {map_name}", width):
                                 GLOBAL_CACHE.Map.Travel(quest_data.map_to)   
                                 
                 elif PyImGui.is_rect_visible(0, 20) and self.widget_state.quest and self.widget_state.in_arena:       
@@ -99,11 +99,11 @@ class UI:
                                         
                         PyImGui.table_next_column()                    
                         name = self.widget_state.quest.counter_pieces[i].value.name if i < len(self.widget_state.quest.counter_pieces) else "None"
-
-                        if self.widget_state.quest.counter_pieces[i].value.item_model_id != 0:
+                        
+                        if os.path.exists(os.path.join(self.item_textures_path, self.widget_state.quest.counter_pieces[i].value.item_texture)):
                             ImGui.DrawTexture(
-                                get_texture_for_model(self.widget_state.quest.counter_pieces[i].value.item_model_id),
-                                20, 20,
+                                os.path.join(self.item_textures_path, self.widget_state.quest.counter_pieces[i].value.item_texture), 
+                                20, 20, 
                             )
                         else:
                             PyImGui.dummy(20, 20)
@@ -118,11 +118,11 @@ class UI:
                 PyImGui.text_colored("Please grab your quests in Rata Sum!", (1.0, 0.0, 0.0, 1.0))      
                 
                 if current_map_id == data.Polymock_Registration[0]:
-                    if PyImGui.button("Move to Master Hoff", width):
+                    if ImGui.button("Move to Master Hoff", width):
                         position = data.Polymock_Registration[1]
                         GLOBAL_CACHE.Player.Move(data.Polymock_Quests.Master_Hoff.value.marker_x, data.Polymock_Quests.Master_Hoff.value.marker_y)
                 
-                elif PyImGui.button("Travel to Rata Sum", width):
+                elif ImGui.button("Travel to Rata Sum", width):
                     GLOBAL_CACHE.Map.Travel(data.Polymock_Registration[0])
                                                              
                 
@@ -229,7 +229,7 @@ class UI:
             
             PyImGui.separator()
             PyImGui.text_wrapped(self.widget_state.status_message if self.widget_state.status_message else "No status message")
-            PyImGui.end()
+            self.window.end()
        
         
         

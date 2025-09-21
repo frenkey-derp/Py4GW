@@ -1214,12 +1214,14 @@ class ImGui:
                 )
                 
                 frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
-                ThemeTextures.Button_Frame.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
                     button_rect[0], 
                     button_rect[1],
                     (button_rect[2], button_rect[3]),
                     tint=frame_tint,
                 )
+                
+                ##TODO: Add the missing frames
                 
                 font_size = int(PyImGui.get_text_line_height()) - 1
                 
@@ -1371,12 +1373,14 @@ class ImGui:
                 )
                 
                 frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
-                ThemeTextures.Button_Frame.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
                     button_rect[0], 
                     button_rect[1],
                     (button_rect[2], button_rect[3]),
                     tint=frame_tint,
                 )
+                
+                ##TODO: Add the missing frames
                 
                 PyImGui.push_clip_rect(
                     button_rect[0] + 6,
@@ -1486,12 +1490,13 @@ class ImGui:
                 )
                 
                 frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
-                ThemeTextures.Button_Frame.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
                     button_rect[0], 
                     button_rect[1],
                     (button_rect[2], button_rect[3]),
                     tint=frame_tint,
                 )
+                ##TODO: Add the missing frames
                 
                 text_size = PyImGui.calc_text_size(display_label)
                 text_x = button_rect[0] + (button_rect[2] - text_size[0]) / 2
@@ -1600,12 +1605,13 @@ class ImGui:
                 )
                 
                 frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
-                ThemeTextures.Button_Frame.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
                     button_rect[0], 
                     button_rect[1],
                     (button_rect[2], button_rect[3]),
                     tint=frame_tint,
                 )
+                ##TODO: Add the missing frames
                 
                 text_size = PyImGui.calc_text_size(display_label)
                 text_x = button_rect[0] + (button_rect[2] - text_size[0]) / 2
@@ -1715,12 +1721,14 @@ class ImGui:
                 )
                                 
                 frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
-                ThemeTextures.Button_Frame.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
                     button_rect[0], 
                     button_rect[1],
                     (button_rect[2], button_rect[3]),
                     tint=frame_tint,
                 )
+                ##TODO: Add the missing frames
+                
                 PyImGui.push_clip_rect(
                     button_rect[0] + 6,
                     button_rect[1] + 2,
@@ -1846,12 +1854,13 @@ class ImGui:
                 )
                                 
                 frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
-                ThemeTextures.Button_Frame.value.get_texture().draw_in_drawlist(
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
                     button_rect[0], 
                     button_rect[1],
                     (button_rect[2], button_rect[3]),
                     tint=frame_tint,
                 )
+                ##TODO: Add the missing frames
                 PyImGui.push_clip_rect(
                     button_rect[0] + 6,
                     button_rect[1] + 2,

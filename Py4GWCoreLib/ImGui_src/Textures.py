@@ -427,7 +427,73 @@ class ThemeTextures(Enum):
         ))
     )
 
-    Button_Frame = ThemeTexture(
+    Button_Frame_Top = ThemeTexture(
+        (StyleTheme.Minimalus, SplitTexture(
+            texture=os.path.join(MINIMALUS_FOLDER, "ui_button_frame.png"),
+            texture_size=(32, 32),
+            atlas_path=MINIMALUS_ATLAS,
+            atlas_index=3,
+            left=(6, 4, 7, 25),
+            mid=(8, 4, 24, 25),
+            right=(25, 4, 26, 25),
+        )),
+
+        (StyleTheme.Guild_Wars, SplitTexture(
+            texture=os.path.join(TEXTURE_FOLDER, "ui_button_frame.png"),
+            texture_size=(32, 32),
+            atlas_path=GUILD_WARS_ATLAS,
+            atlas_index=3,
+            left=(2, 4, 7, 25),
+            mid=(8, 4, 24, 25),
+            right=(24, 4, 30, 25),
+        ))
+    )
+    
+    Button_Frame_Left = ThemeTexture(
+        (StyleTheme.Minimalus, SplitTexture(
+            texture=os.path.join(MINIMALUS_FOLDER, "ui_button_frame.png"),
+            texture_size=(32, 32),
+            atlas_path=MINIMALUS_ATLAS,
+            atlas_index=3,
+            left=(6, 4, 7, 25),
+            mid=(8, 4, 24, 25),
+            right=(25, 4, 26, 25),
+        )),
+
+        (StyleTheme.Guild_Wars, SplitTexture(
+            texture=os.path.join(TEXTURE_FOLDER, "ui_button_frame.png"),
+            texture_size=(32, 32),
+            atlas_path=GUILD_WARS_ATLAS,
+            atlas_index=3,
+            left=(2, 4, 7, 25),
+            mid=(8, 4, 24, 25),
+            right=(24, 4, 30, 25),
+        ))
+    )
+    
+    Button_Frame_Right = ThemeTexture(
+        (StyleTheme.Minimalus, SplitTexture(
+            texture=os.path.join(MINIMALUS_FOLDER, "ui_button_frame.png"),
+            texture_size=(32, 32),
+            atlas_path=MINIMALUS_ATLAS,
+            atlas_index=3,
+            left=(6, 4, 7, 25),
+            mid=(8, 4, 24, 25),
+            right=(25, 4, 26, 25),
+        )),
+
+        (StyleTheme.Guild_Wars, SplitTexture(
+            texture=os.path.join(TEXTURE_FOLDER, "ui_button_frame.png"),
+            texture_size=(32, 32),
+            atlas_path=GUILD_WARS_ATLAS,
+            atlas_index=3,
+            left=(2, 4, 7, 25),
+            mid=(8, 4, 24, 25),
+            right=(24, 4, 30, 25),
+        ))
+    )
+    
+    Button_Frame_Bottom = ThemeTexture(
         (StyleTheme.Minimalus, SplitTexture(
             texture=os.path.join(MINIMALUS_FOLDER, "ui_button_frame.png"),
             texture_size=(32, 32),
