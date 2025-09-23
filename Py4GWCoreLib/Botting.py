@@ -21,7 +21,7 @@ from .botting_src.subclases_src.UI_src import _UI
 from .botting_src.subclases_src.MULTIBOX_src import _MULTIBOX
 from .botting_src.subclases_src.MERCHANT_src import _MERCHANTS
 from .botting_src.subclases_src.PLAYER_src import _PLAYER
-from .botting_src.subclases_src.CONFIG_TEMPLATES_src import _CONFIG_TEMPLATES
+from .botting_src.subclases_src.TEMPLATES_src import _TEMPLATES
 
 
 class BottingClass:
@@ -46,9 +46,9 @@ class BottingClass:
                  upkeep_alcohol_disable_visual: bool = True,
                  upkeep_armor_of_salvation_active: bool = False,
                  upkeep_armor_of_salvation_restock: int = 0,
-                 upkeep_auto_combat_active: bool = True,
-                 upkeep_auto_inventory_management_active = True,
-                 upkeep_auto_loot_active = True,
+                 upkeep_auto_combat_active: bool = False,
+                 upkeep_auto_inventory_management_active = False,
+                 upkeep_auto_loot_active = False,
                  #B
                  upkeep_birthday_cupcake_active: bool = False,
                  upkeep_birthday_cupcake_restock: int = 0,
@@ -102,9 +102,9 @@ class BottingClass:
                  upkeep_war_supplies_active: bool = False,
                  upkeep_war_supplies_restock: int = 0,
                     #merchants
-                 upkeep_identify_kits_active: bool = True,
+                 upkeep_identify_kits_active: bool = False,
                  upkeep_identify_kits_restock: int = 2,
-                 upkeep_salvage_kits_active: bool = True,
+                 upkeep_salvage_kits_active: bool = False,
                  upkeep_salvage_kits_restock: int = 4,
                  ):
         #internal configuration
@@ -210,7 +210,7 @@ class BottingClass:
         self.Target = _TARGET(self)
         self.SkillBar = _SKILLBAR(self)
         self.Multibox = _MULTIBOX(self)
-        self.ConfigTemplates = _CONFIG_TEMPLATES(self)
+        self.Templates = _TEMPLATES(self)
 
     #region internal Helpers
     def _start_coroutines(self):
@@ -239,7 +239,7 @@ class BottingClass:
         self.config.FSM.AddManagedCoroutine("keep_auto_combat",    H.upkeep_auto_combat())
         self.config.FSM.AddManagedCoroutine("keep_hero_ai",        H.upkeep_hero_ai())
         self.config.FSM.AddManagedCoroutine("keep_auto_inventory_management", H.upkeep_auto_inventory_management())
-        self.config.FSM.AddManagedCoroutine("keep_auto_loot",      H.upkeep_auto_loot())
+        #self.config.FSM.AddManagedCoroutine("keep_auto_loot",      H.upkeep_auto_loot())
         self.config.events.start()
 
         """if self.States.coroutines:

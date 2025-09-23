@@ -105,6 +105,17 @@ class Yield:
 #region Movement
     class Movement:
         @staticmethod
+        def StopMovement():
+            from ..UIManager import UIManager
+            from ..enums import ControlAction
+            UIManager.Keydown(ControlAction.ControlAction_MoveBackward.value, 0)
+            yield from Yield.wait(125)
+            UIManager.Keyup(ControlAction.ControlAction_MoveBackward.value, 0)
+            yield from Yield.wait(125)
+            
+            
+        
+        @staticmethod
         def FollowPath(
             path_points: List[Tuple[float, float]],
             custom_exit_condition: Callable[[], bool] = lambda: False,
@@ -363,50 +374,44 @@ class Yield:
 
 
         @staticmethod
-        def WaitforMapLoad(map_id, log=False, timeout:int=10000):
+        def WaitforMapLoad(map_id, log=False, timeout: int = 10000):
             from .Checks import Checks
-            
             from ..Py4GWcorelib import ConsoleLog, Utils
-            """
-            Purpose: Positions yourself safely on the map.
-            Args:
-                outpost_id (int): The ID of the map to travel to.
-                log (bool) Optional: Whether to log the action. Default is True.
-            Returns: None
-            """
+
             yield from Yield.wait(1000)
             start_time = Utils.GetBaseTimestamp()
             waiting_for_map_load = True
+
             while waiting_for_map_load:
-                if not Checks.Map.MapValid():
-                    yield from Yield.wait(1000)
-                    ConsoleLog("WaitforMapLoad", "Map not valid, waiting...", log=log)
-                    continue
-                
                 delta = Utils.GetBaseTimestamp() - start_time
                 if delta > timeout and timeout > 0:
                     ConsoleLog("WaitforMapLoad", "Timeout reached, stopping waiting for map load.", log=log)
                     return False
-                    
+
+                if not Checks.Map.MapValid():
+                    yield from Yield.wait(1000)
+                    ConsoleLog("WaitforMapLoad", "Map not valid, waiting...", log=log)
+                    continue
+
                 current_map = GLOBAL_CACHE.Map.GetMapID()
-                
+
                 if (GLOBAL_CACHE.Map.IsExplorable() or GLOBAL_CACHE.Map.IsOutpost()) and current_map != map_id:
                     ConsoleLog("WaitforMapLoad", f"Something went wrong, halting", log=log)
                     yield from Yield.wait(1000)
                     return False
-                
-                if not current_map == map_id:
+
+                if current_map != map_id:
                     yield from Yield.wait(1000)
                     ConsoleLog("WaitforMapLoad", f"Waiting for map load {map_id} (current: {current_map})", log=log)
                     continue
-            
+
                 waiting_for_map_load = False
 
-            
             ConsoleLog("WaitforMapLoad", f"Arrived at {GLOBAL_CACHE.Map.GetMapName(map_id)}", log=log)
-            yield from Yield.wait(1000)
+            yield from Yield.wait(500)
             return True
-    
+
+
 #region Agents        
     class Agents:
         @staticmethod
@@ -987,6 +992,12 @@ class Yield:
             if len(item_array) == 0:
                 return True
             
+            yield from Yield.wait(1000)
+            if not Checks.Map.MapValid():
+                item_array.clear()
+                ActionQueueManager().ResetAllQueues()
+                return False
+            
             total_items = len(item_array)
             while len (item_array) > 0:
                 item_id = item_array.pop(0)
@@ -1035,6 +1046,84 @@ class Yield:
                 ConsoleLog("LootItems", f"Looted {len(item_array)} items.", Console.MessageType.Info)
                 
             return True
+
+        @staticmethod
+        def LootItemsWithMaxAttempts(
+            item_array: list[int],
+            log: bool = False,
+            progress_callback: Optional[Callable[[float], None]] = None,
+            pickup_timeout: int = 5000,
+            max_attempts: int = 5,
+            attempts_timeout_seconds: int = 3,
+        ):
+            from ..AgentArray import AgentArray
+            from .Checks import Checks
+
+            if len(item_array) == 0:
+                return []
+
+            failed_items: list[int] = []
+            total_items = len(item_array)
+
+            while len(item_array) > 0:
+                item_id = item_array.pop(0)
+                if item_id == 0:
+                    continue
+
+                free_slots_in_inventory = GLOBAL_CACHE.Inventory.GetFreeSlotCount()
+                if free_slots_in_inventory <= 0:
+                    ConsoleLog("LootItems", "No free slots in inventory, stopping loot.", Console.MessageType.Warning)
+                    ActionQueueManager().ResetAllQueues()
+                    return failed_items + item_array
+
+                if not Checks.Map.MapValid():
+                    ActionQueueManager().ResetAllQueues()
+                    return failed_items + item_array
+
+                if not GLOBAL_CACHE.Agent.IsValid(item_id):
+                    continue
+
+                # Try to walk to item
+                item_x, item_y = GLOBAL_CACHE.Agent.GetXY(item_id)
+                item_reached = yield from Yield.Movement.FollowPath([(item_x, item_y)], timeout=pickup_timeout)
+                if not item_reached:
+                    ConsoleLog("LootItems", f"Failed to reach item {item_id}, skipping.", Console.MessageType.Warning)
+                    failed_items.append(item_id)
+                    continue
+
+                if GLOBAL_CACHE.Agent.IsValid(item_id):
+                    attempts = 0
+                    picked_up = False
+
+                    while attempts < max_attempts and not picked_up:
+                        if GLOBAL_CACHE.Agent.IsValid(item_id):
+                            yield from Yield.Player.InteractAgent(item_id)
+
+                        for _ in range(attempts_timeout_seconds * 10):  # default 3s
+                            yield from Yield.wait(100)
+                            live_items = AgentArray.GetItemArray()
+                            if item_id not in live_items:
+                                picked_up = True
+                                break
+
+                        if not picked_up:
+                            attempts += 1
+
+                    if not picked_up:
+                        ConsoleLog("Loot", f"Failed to pick up item {item_id} after {max_attempts} attempts.")
+                        failed_items.append(item_id)
+
+                if progress_callback and total_items > 0:
+                    progress_callback(1 - len(item_array) / total_items)
+
+            if log:
+                ConsoleLog(
+                    "LootItems",
+                    f"Looted {total_items - len(failed_items)} items. Failed: {len(failed_items)}",
+                    Console.MessageType.Info,
+                )
+
+            return failed_items
 
         @staticmethod
         def WithdrawItems(model_id:int, quantity:int) -> Generator[Any, Any, bool]:

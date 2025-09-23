@@ -1,23 +1,40 @@
-from Py4GWCoreLib import *
-import PyMap, PyImGui
+from __future__ import annotations
+from typing import List, Tuple
 
-MODULE_NAME = "destroy item"
+import PyImGui
+from Py4GWCoreLib import (GLOBAL_CACHE, Keystroke, Key, Py4GW, UIManager, ControlAction, Botting,
+                          AutoPathing, ImGui)
 
-model_id = 0
+started = False
+toggle = False
+last_toggle = False  # remember the previous state
+
 def main():
-    global model_id
+    global toggle, last_toggle, started
 
-    if PyImGui.begin(MODULE_NAME, PyImGui.WindowFlags.AlwaysAutoResize):
-        model_id = PyImGui.input_int("Item Model ID", model_id)
-        
-        item_id = GLOBAL_CACHE.Inventory.GetFirstModelID(model_id)
-        PyImGui.text(f"Found Item ID: {item_id}")
-        
-        if PyImGui.button("Destroy Item"):
-            GLOBAL_CACHE.Inventory.DestroyItem(item_id)
-            
-    PyImGui.end()
+    try:
+        if PyImGui.begin("key sender"):
+            if PyImGui.button("send key"):
+                toggle = not toggle
 
+            if PyImGui.button("send keypress/release"):
+                UIManager.Keypress(ControlAction.ControlAction_MoveBackward.value, 0)
+                #Keystroke.PressAndRelease(Key.S.value)
+
+
+            # Only act if the toggle value changed
+            if toggle != last_toggle:
+                if toggle:
+                    UIManager.Keydown(ControlAction.ControlAction_MoveBackward.value, 0)
+                    #Keystroke.Press(Key.S.value)
+                else:
+                    UIManager.Keyup(ControlAction.ControlAction_MoveBackward.value, 0)
+                    #Keystroke.Release(Key.S.value)
+                last_toggle = toggle
+
+    except Exception as e:
+        Py4GW.Console.Log("send key", f"Error: {str(e)}", Py4GW.Console.MessageType.Error)
+        raise
 
 if __name__ == "__main__":
     main()

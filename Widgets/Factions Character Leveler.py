@@ -8,6 +8,7 @@ bot = Botting("Factions Leveler",
               upkeep_birthday_cupcake_restock=50,
               upkeep_honeycomb_restock=100,
               upkeep_auto_inventory_management_active=False,
+              upkeep_auto_combat_active=False,
               upkeep_auto_loot_active=True)
 
 #region MainRoutine
@@ -50,14 +51,14 @@ def create_bot_routine(bot: Botting) -> None:
 
 #region Helpers
 def ConfigurePacifistEnv(bot: Botting) -> None:
-    bot.ConfigTemplates.Pacifist()
+    bot.Templates.Pacifist()
     bot.Properties.Enable("birthday_cupcake")
     bot.Properties.Disable("honeycomb")
     bot.Items.SpawnAndDestroyBonusItems()
     bot.Items.Restock.BirthdayCupcake()
     
 def ConfigureAggressiveEnv(bot: Botting) -> None:
-    bot.ConfigTemplates.Aggressive()
+    bot.Templates.Aggressive()
     bot.Properties.Enable("birthday_cupcake")
     bot.Properties.Enable("honeycomb")
     bot.Items.SpawnAndDestroyBonusItems()
