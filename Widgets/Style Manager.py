@@ -1,4 +1,5 @@
 # Reload imports
+from datetime import datetime
 import importlib
 import os
 from typing import Optional
@@ -8,8 +9,9 @@ import PyImGui
 
 from Py4GWCoreLib import IconsFontAwesome5, ImGui, Routines
 from Py4GWCoreLib.ImGui import Style
+from Py4GWCoreLib.ImGui_src.Textures import TextureState, ThemeTextures
 from Py4GWCoreLib.ImGui_src.Utility import ImGuiIniReader
-from Py4GWCoreLib.ImGui_src.types import ControlAppearance, StyleTheme
+from Py4GWCoreLib.ImGui_src.types import ControlAppearance, StyleColorType, StyleTheme
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
 from Py4GWCoreLib import Timer
@@ -66,9 +68,21 @@ window_module = ImGui.WindowModule(
 py4_gw_ini_handler = IniHandler("Py4GW.ini")
 selected_theme = Style.StyleTheme[py4_gw_ini_handler.read_key(
     "settings", "style_theme", Style.StyleTheme.ImGui.name)]
+
+force_theme_override = py4_gw_ini_handler.read_bool(
+    "settings", "force_theme_override", False)
+
+if force_theme_override:
+    for theme in Style.StyleTheme:
+        file_path = os.path.join("Styles", f"{theme.name}.json")
+        if os.path.exists(file_path):
+            time_stamp = datetime.now().strftime("%Y-%m-%d")
+            new_file_path = file_path[:-5] + "-" + time_stamp + ".backup.json"
+            os.rename(file_path, new_file_path)
+
 themes = [theme.name.replace("_", " ") for theme in Style.StyleTheme]
 
-style: Style.Style = ImGui.Selected_Style.copy()
+org_style: Style.Style = ImGui.Selected_Style.copy()
 mouse_down_timer = ThrottledTimer(125)
 input_int_value = 150
 input_float_value = 150.0
@@ -134,7 +148,7 @@ def draw_button(theme: Style.StyleTheme):
     ImGui.button("Danger" + "##" + theme.name,
                  appearance=ControlAppearance.Danger)
     PyImGui.same_line(0, 5)
-    ImGui.button("Disabled" + "##" + theme.name, enabled=False)
+    ImGui.button("Disabled" + "##" + theme.name, disabled=True)
 
 
 def draw_small_button(theme: Style.StyleTheme):
@@ -146,7 +160,7 @@ def draw_small_button(theme: Style.StyleTheme):
     ImGui.small_button("Danger" + "##" + theme.name,
                        appearance=ControlAppearance.Danger)
     PyImGui.same_line(0, 5)
-    ImGui.small_button("Disabled" + "##" + theme.name, enabled=False)
+    ImGui.small_button("Disabled" + "##" + theme.name, disabled=True)
 
 
 def draw_icon_button(theme: Style.StyleTheme):
@@ -161,35 +175,35 @@ def draw_icon_button(theme: Style.StyleTheme):
                       theme.name, appearance=ControlAppearance.Danger)
     PyImGui.same_line(0, 5)
     ImGui.icon_button(
-        IconsFontAwesome5.ICON_SYNC, enabled=False)
+        IconsFontAwesome5.ICON_SYNC, disabled=True)
 
 
 def draw_toggle_button(theme: Style.StyleTheme):
-    preview.toggle_button_1 = ImGui.toggle_button_TEXTURED(
+    preview.toggle_button_1 = ImGui.toggle_button(
         ("On" if preview.toggle_button_1 else "Off") + "##Toggle" + theme.name, preview.toggle_button_1)
     PyImGui.same_line(0, 5)
-    preview.toggle_button_2 = ImGui.toggle_button_TEXTURED(
+    preview.toggle_button_2 = ImGui.toggle_button(
         ("On" if preview.toggle_button_2 else "Off") + "##Toggle2" + theme.name, preview.toggle_button_2)
     PyImGui.same_line(0, 5)
-    preview.toggle_button_3 = ImGui.toggle_button_TEXTURED(
-        "Disabled" + "##Toggle3" + theme.name, preview.toggle_button_3, enabled=False)
+    preview.toggle_button_3 = ImGui.toggle_button(
+        "Disabled" + "##Toggle3" + theme.name, preview.toggle_button_3, disabled=True)
 
 
 def draw_image_toggle(theme: Style.StyleTheme):
-    preview.image_toggle_button_1 = ImGui.image_toggle_button_TEXTURED(
-        ("On" if preview.image_toggle_button_1 else "Off") + "##ImageToggle_1" + theme.name, textures[0][0], preview.image_toggle_button_1)
+    preview.image_toggle_button_1 = ImGui.image_toggle_button(
+        ("On" if preview.image_toggle_button_1 else "Off") + "##ImageToggle_1" + theme.name, texture_path=textures[0][0], v=preview.image_toggle_button_1)
     PyImGui.same_line(0, 5)
-    preview.image_toggle_button_2 = ImGui.image_toggle_button_TEXTURED(
-        ("On" if preview.image_toggle_button_2 else "Off") + "##ImageToggle_2" + theme.name, textures[1][0], preview.image_toggle_button_2)
+    preview.image_toggle_button_2 = ImGui.image_toggle_button(
+        ("On" if preview.image_toggle_button_2 else "Off") + "##ImageToggle_2" + theme.name, texture_path=textures[1][0], v=preview.image_toggle_button_2)
     PyImGui.same_line(0, 5)
-    preview.image_toggle_button_3 = ImGui.image_toggle_button_TEXTURED(
-        ("On" if preview.image_toggle_button_3 else "Off") + "##ImageToggle_3" + theme.name, textures[2][0], preview.image_toggle_button_3, enabled=False)
+    preview.image_toggle_button_3 = ImGui.image_toggle_button(
+        ("On" if preview.image_toggle_button_3 else "Off") + "##ImageToggle_3" + theme.name, texture_path=textures[2][0], v=preview.image_toggle_button_3, disabled=True)
 
 
 def draw_image_button(theme: Style.StyleTheme):
     for (texture, appearance, enabled) in textures:
         ImGui.image_button("Image Button" + "##" + theme.name +
-                           texture, texture, appearance=appearance, enabled=enabled)
+                           texture, texture, appearance=appearance, disabled=not enabled)
         PyImGui.same_line(0, 5)
 
 
@@ -479,9 +493,9 @@ def OnLoad():
 def DrawWindow():
     global theme_compare, control_compare, style, window_width, window_height, save_throttle_timer, save_throttle_time, module_info, widget_handler
     
-    if window_module.begin():
-        if not PyImGui.is_any_item_active():
-            style.apply_to_style_config()       
+    style = ImGui.get_style()
+    
+    if window_module.begin():   
     
         remaining = PyImGui.get_content_region_avail()
         button_width = (remaining[0] - 10) / 2
@@ -492,7 +506,7 @@ def DrawWindow():
         PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
         remaining = PyImGui.get_content_region_avail()
         PyImGui.push_item_width(remaining[0] - 30)
-        value = PyImGui.combo("##theme_selector",
+        value = ImGui.combo("##theme_selector",
                               ImGui.Selected_Style.Theme.value, themes)
 
         if value != ImGui.Selected_Style.Theme.value:
@@ -503,7 +517,7 @@ def DrawWindow():
 
         PyImGui.same_line(0, 5)
         PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
-        theme_compare = PyImGui.checkbox(
+        theme_compare = ImGui.checkbox(
             "##show_theme_compare", theme_compare)
         ImGui.show_tooltip(
             "Show Theme Compare window\nCurrently disabled.")
@@ -513,9 +527,9 @@ def DrawWindow():
         PyImGui.spacing()
 
         any_changed = is_style_modified()
-        if ImGui.button("Save Changes", button_width, enabled=any_changed):
-            style.save_to_json()    
-            set_theme(style.Theme)
+        if ImGui.button("Save Changes", button_width, disabled=not any_changed):
+            ImGui.Selected_Style.save_to_json()    
+            set_theme(ImGui.Selected_Style.Theme)
 
         PyImGui.same_line(0, 5)
 
@@ -558,9 +572,11 @@ def DrawWindow():
                 PyImGui.table_next_column()
 
         if ImGui.begin_tab_bar("Style Customization"):
-            if ImGui.begin_tab_item("Style Customization"):
-
+            if ImGui.begin_tab_item("Style Customization"):                    
                 if PyImGui.is_rect_visible(0, 10):
+                    style.CellPadding.push_style_var(4, 2)
+                    style.ItemInnerSpacing.push_style_var(4, 2)
+                    
                     if PyImGui.begin_table("Style Variables", 3, PyImGui.TableFlags.ScrollY):
                         PyImGui.table_setup_column(
                             "Variable", PyImGui.TableColumnFlags.WidthFixed, 250)
@@ -569,43 +585,12 @@ def DrawWindow():
                         PyImGui.table_setup_column(
                             "Undo", PyImGui.TableColumnFlags.WidthFixed, 35)
 
-                        PyImGui.table_next_row()
-                        PyImGui.table_next_column()
-                        table_separator_header("Control Colors")
-
-                        for col_name, col in style.Colors.items():
-                            ImGui.text(col_name)
-                            PyImGui.table_next_column()
-
-                            column_width = column_width or PyImGui.get_content_region_avail()[
-                                0]
-                            PyImGui.push_item_width(column_width)
-
-                            new_color = PyImGui.color_edit4(
-                                col_name, col.color_tuple)
-                            if new_color:
-                                col.set_tuple_color(new_color)
-
-                            PyImGui.pop_item_width()
-                            PyImGui.table_next_column()
-
-                            org_color = ImGui.Selected_Style.Colors.get(col_name, None)
-                            show_button = org_color is not None and (
-                                col.color_int != org_color.color_int)
-
-                            if show_button and col_name and ImGui.Selected_Style.Colors[col_name]:
-                                if ImGui.icon_button(IconsFontAwesome5.ICON_UNDO + "##" + col_name, 25, 25):
-                                    col.set_rgba(
-                                        *ImGui.Selected_Style.Colors[col_name].rgb_tuple)
-
-                            PyImGui.table_next_column()
-
                         table_separator_header("Style Vars")
 
-                        for enum, var in style.StyleVars.items():
+                        for enum, var in ImGui.Selected_Style.StyleVars.items():
                             PyImGui.set_cursor_pos_y(
                                 PyImGui.get_cursor_pos_y() + 5)
-                            ImGui.text(f"{enum}")
+                            ImGui.text(f"{var.display_name or enum}")
                             PyImGui.table_next_column()
 
                             column_width = column_width or PyImGui.get_content_region_avail()[
@@ -625,78 +610,65 @@ def DrawWindow():
 
                             PyImGui.table_next_column()
 
-                            changed = ImGui.Selected_Style.StyleVars[
-                                enum].value1 != var.value1 or ImGui.Selected_Style.StyleVars[enum].value2 != var.value2
+                            changed = org_style.StyleVars[
+                                enum].value1 != var.value1 or org_style.StyleVars[enum].value2 != var.value2
 
                             if changed:
                                 if ImGui.icon_button(f"{IconsFontAwesome5.ICON_UNDO}##{enum}_undo", 30):
-                                    var.value1 = ImGui.Selected_Style.StyleVars[enum].value1
-                                    var.value2 = ImGui.Selected_Style.StyleVars[enum].value2
+                                    var.value1 = org_style.StyleVars[enum].value1
+                                    var.value2 = org_style.StyleVars[enum].value2
 
                             PyImGui.table_next_column()
+                            
+                        table_separator_header("Colors")
+                        
+                        colors = {**ImGui.Selected_Style.Colors, **ImGui.Selected_Style.CustomColors, **ImGui.Selected_Style.TextureColors}
+                        colors = dict(sorted(colors.items(), key=lambda item: item[1].display_name or item[0]))
 
-                        table_separator_header("Custom Colors")
-
-                        for col_name, col in style.CustomColors.items():
-                            ImGui.text(col_name)
-                            PyImGui.table_next_column()
-
-                            column_width = column_width or PyImGui.get_content_region_avail()[
-                                0]
-                            PyImGui.push_item_width(column_width)
-
-                            new_color = ImGui.color_edit4(
-                                col_name, col.color_tuple)
-                            if new_color:
-                                col.set_tuple_color(new_color)
-
-                            PyImGui.pop_item_width()
-                            PyImGui.table_next_column()
-
-                            org_color = ImGui.Selected_Style.Colors.get(
-                                col_name, None)
-                            show_button = org_color is not None and (
-                                col.color_int != org_color.color_int)
-
-                            if show_button and col_name and ImGui.Selected_Style.Colors[col_name]:
-                                if ImGui.icon_button(IconsFontAwesome5.ICON_UNDO + "##" + col_name, 25, 25):
-                                    col.set_rgba(
-                                        *ImGui.Selected_Style.Colors[col_name].rgb_tuple)
-
-                            PyImGui.table_next_column()
-
-                        table_separator_header("Texture Colors")
-
-                        for col_name, col in style.TextureColors.items():
-                            ImGui.text(col_name)
+                        for col_name, col in colors.items():
+                            ImGui.text(col.display_name or col_name)
                             PyImGui.table_next_column()
 
                             column_width = column_width or PyImGui.get_content_region_avail()[
                                 0]
                             PyImGui.push_item_width(column_width)
 
-                            new_color = ImGui.color_edit4(
+                            new_color = PyImGui.color_edit4(
                                 col_name, col.color_tuple)
                             if new_color:
                                 col.set_tuple_color(new_color)
 
                             PyImGui.pop_item_width()
                             PyImGui.table_next_column()
+                            
+                            match(col.color_type):
+                                case StyleColorType.Default:
+                                    org_color = org_style.Colors.get(col_name, None)
+                                    
+                                case StyleColorType.Custom:
+                                    org_color = org_style.CustomColors.get(col_name, None)
+                                    
+                                case StyleColorType.Texture:
+                                    org_color = org_style.TextureColors.get(col_name, None)
 
-                            org_color = ImGui.Selected_Style.Colors.get(
-                                col_name, None)
-                            show_button = org_color is not None and (
-                                col.color_int != org_color.color_int)
+                            if org_color:
+                                show_button = col.color_int != org_color.color_int
 
-                            if show_button and col_name and ImGui.Selected_Style.Colors[col_name]:
-                                if ImGui.icon_button(IconsFontAwesome5.ICON_UNDO + "##" + col_name, 25, 25):
-                                    col.set_rgba(
-                                        *ImGui.Selected_Style.Colors[col_name].rgb_tuple)
+                                if show_button:
+                                    if ImGui.icon_button(IconsFontAwesome5.ICON_UNDO + "##" + col_name, 25, 25):
+                                        col.set_rgba(
+                                            *org_color.rgb_tuple)
 
                             PyImGui.table_next_column()
 
                         PyImGui.end_table()
-
+                    
+                    style.CellPadding.pop_style_var()
+                    style.ItemInnerSpacing.pop_style_var()
+                    
+                if not PyImGui.is_any_item_active():
+                    ImGui.Selected_Style.apply_to_style_config()    
+                    
                 ImGui.end_tab_item()
 
             if ImGui.begin_tab_item("Control Preview"):
@@ -747,23 +719,23 @@ def DrawWindow():
     pass
 
 def is_style_modified():
-    for k, col in style.Colors.items():
-        org_color = ImGui.Selected_Style.Colors.get(k, None)
+    for k, col in ImGui.Selected_Style.Colors.items():
+        org_color = org_style.Colors.get(k, None)
         if org_color and col.color_int != org_color.color_int:
             return True
         
-    for k, col in style.CustomColors.items():
-        org_color = ImGui.Selected_Style.CustomColors.get(k, None)
+    for k, col in ImGui.Selected_Style.CustomColors.items():
+        org_color = org_style.CustomColors.get(k, None)
         if org_color and col.color_int != org_color.color_int:
             return True
-        
-    for k, col in style.TextureColors.items():
-        org_color = ImGui.Selected_Style.TextureColors.get(k, None)
+
+    for k, col in ImGui.Selected_Style.TextureColors.items():
+        org_color = org_style.TextureColors.get(k, None)
         if org_color and col.color_int != org_color.color_int:
             return True
-        
-    for k, col in style.StyleVars.items():
-        org_var = ImGui.Selected_Style.StyleVars.get(k, None)
+
+    for k, col in ImGui.Selected_Style.StyleVars.items():
+        org_var = org_style.StyleVars.get(k, None)
         
         if org_var and col != org_var:
             return True
@@ -771,11 +743,11 @@ def is_style_modified():
     return False
 
 def set_theme(theme):
-    global style
+    global org_style
     
     ImGui.reload_theme(theme)
     ImGui.set_theme(theme)            
-    style = ImGui.Selected_Style.copy()
+    org_style = ImGui.Selected_Style.copy()
 
 def configure():
     global module_info
