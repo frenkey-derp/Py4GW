@@ -1,3 +1,4 @@
+from PyImGui import StyleConfig
 from Py4GWCoreLib import *
 import importlib.util
 import os
@@ -102,8 +103,12 @@ class WidgetHandler:
         return widget_module
         
     def execute_enabled_widgets(self):
+        style = ImGui.Selected_Style.pyimgui_style
+        alpha = style.Alpha
+        
         if not self.show_widget_ui:
-            PyImGui.push_clip_rect(0, 0, 0, 0, False)
+            style.Alpha = 0.0
+            style.Push()
         
         for widget_name, widget_info in self.widgets.items():
             if not widget_info["enabled"]:
@@ -115,7 +120,8 @@ class WidgetHandler:
                 ConsoleLog("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
 
         if not self.show_widget_ui:
-            PyImGui.pop_clip_rect()
+            style.Alpha = alpha
+            style.Push()
             
     def execute_configuring_widgets(self):
         for widget_name, widget_info in self.widgets.items():
@@ -219,37 +225,27 @@ def write_ini():
     write_timer.Reset()
 
 def draw_widget_ui():
-    global enable_all, show_module_uis
+    global enable_all, initialized
     
-    is_enabled = enable_all
-
-    if PyImGui.button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets"):
+    if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets"):
         ConsoleLog(module_name, "Reloading Widgets...", Py4GW.Console.MessageType.Info)
         initialized = False
         handler.discover_widgets()
-        initialized = True
+        initialized = True        
     ImGui.show_tooltip("Reloads all widgets")
-    PyImGui.same_line(0.0, 10)
+    PyImGui.same_line(0, 5)
+
+    new_enable_all = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_TOGGLE_ON if enable_all else IconsFontAwesome5.ICON_TOGGLE_OFF) + "##widget_disable", enable_all)
+    if new_enable_all != enable_all:
+        enable_all = new_enable_all
+        ini_handler.write_key(module_name, "enable_all", str(enable_all))        
+    ImGui.show_tooltip(f"{("Enable" if not enable_all else "Disable")} all widgets")
     
-    toggle_label = IconsFontAwesome5.ICON_TOGGLE_ON if enable_all else IconsFontAwesome5.ICON_TOGGLE_OFF
-    if is_enabled:
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Button, (0.153, 0.318, 0.929, 1.0))
-        PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, (0.6, 0.6, 0.9, 1.0))
-        PyImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, (0.6, 0.6, 0.6, 1.0))
-    if PyImGui.button(toggle_label + "##widget_disable"):
-        enable_all = not enable_all
-        ini_handler.write_key(module_name, "enable_all", str(enable_all))
-    if is_enabled:
-        PyImGui.pop_style_color(3)
-    ImGui.show_tooltip("Toggle all widgets")
-    
+    PyImGui.same_line(0, 5)
+    handler.show_widget_ui = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_EYE if handler.show_widget_ui else IconsFontAwesome5.ICON_EYE_SLASH) + "##Show Widget UIs", handler.show_widget_ui)
+    ImGui.show_tooltip(f"{("Show" if not handler.show_widget_ui else "Hide")} all widget UIs")
     PyImGui.separator()
     
-    if ImGui.button(f"{"Show" if show_module_uis else "Hide"} all windows"):
-        show_module_uis = not show_module_uis
-        get_widget_handler().show_widget_ui = show_module_uis
-
-
     categorized_widgets = {}
     for name, info in handler.widgets.items():
         data = handler.widget_data_cache.get(name, {})

@@ -48,6 +48,13 @@ class Settings:
             self.save_requested = False
     
     def load(self):
+        if not os.path.exists(os.path.join(script_directory, "Config")):
+            os.makedirs(os.path.join(script_directory, "Config"))
+            
+        if not os.path.exists(os.path.join(script_directory, "Config", "health.json")):
+            self.save()
+            return
+        
         with open(os.path.join(script_directory, "Config", "health.json"), "r") as f:
             data = json.load(f)
             self.positioning = Settings.Positioning(data["positioning"])

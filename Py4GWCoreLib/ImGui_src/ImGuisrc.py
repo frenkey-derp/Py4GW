@@ -1447,6 +1447,163 @@ class ImGui:
         return clicked
     
     @staticmethod
+    def toggle_icon_button(label: str, v : bool, width: float = 0, height: float = 0, enabled: bool = True) -> bool:
+        def group_text_with_icons(text: str):
+            """
+            Splits the string into groups of (is_icon, run_string).
+            Example: "Hi 123X" -> [(False, "Hi "), (True, "123"), (False, "X")]
+            """
+            if not text:
+                return []
+
+            groups = []
+            current_type = text[0] in IconsFontAwesome5.ALL_ICONS
+            current_run = [text[0]]
+
+            for ch in text[1:]:
+                is_icon = ch in IconsFontAwesome5.ALL_ICONS
+                if is_icon == current_type:
+                    # same type, continue current run
+                    current_run.append(ch)
+                else:
+                    # type switched, flush old run
+                    groups.append((current_type, ''.join(current_run)))
+                    current_run = [ch]
+                    current_type = is_icon
+
+            # flush last run
+            if current_run:
+                groups.append((current_type, ''.join(current_run)))
+
+            return groups
+
+        PyImGui.begin_disabled(not enabled)
+        style = ImGui.get_style()
+        style.ButtonPadding.get_current().push_style_var()
+
+        button_colors = [
+            style.ToggleButtonEnabled.get_current(),
+            style.ToggleButtonEnabledHovered.get_current(),
+            style.ToggleButtonEnabledActive.get_current(),
+        ] if v else [
+            style.ToggleButtonDisabled.get_current(),
+            style.ToggleButtonDisabledHovered.get_current(),
+            style.ToggleButtonDisabledActive.get_current(),
+        ]
+        
+        match(style.Theme):
+            case StyleTheme.Guild_Wars | StyleTheme.Minimalus:
+                ImGui.push_style_color(PyImGui.ImGuiCol.Button, (0, 0, 0, 0))
+                ImGui.push_style_color(PyImGui.ImGuiCol.ButtonHovered, (0, 0, 0, 0))
+                ImGui.push_style_color(PyImGui.ImGuiCol.ButtonActive, (0, 0, 0, 0))
+                ImGui.push_style_color(PyImGui.ImGuiCol.Text, (0, 0, 0, 0))
+                ImGui.push_style_color(PyImGui.ImGuiCol.TextDisabled, (0, 0, 0, 0))                
+                clicked = PyImGui.button(label, width, height)
+                ImGui.pop_style_color(5)
+
+                item_rect_min = PyImGui.get_item_rect_min()
+                item_rect_max = PyImGui.get_item_rect_max()
+                
+                width = item_rect_max[0] - item_rect_min[0] + 2
+                height = item_rect_max[1] - item_rect_min[1] + 2
+
+                x,y = item_rect_min
+                display_label = label.split("##")[0]
+
+                button_rect = (x, y, width, height)
+                
+                default_font_size = int(PyImGui.get_text_line_height())
+                fontawesome_font_size = int(height * 0.42)
+                
+                groups = group_text_with_icons(display_label)
+                font_awesome_string = "".join([run for is_icon, run in groups if is_icon])
+                text_string = "".join([run for is_icon, run in groups if not is_icon]) 
+                text_size = PyImGui.calc_text_size(text_string)
+                
+                
+                ImGui.push_font("Regular", fontawesome_font_size)
+                font_awesome_text_size = PyImGui.calc_text_size(font_awesome_string)
+                ImGui.pop_font()
+                
+                total_text_size = (text_size[0] + font_awesome_text_size[0], max(text_size[1], font_awesome_text_size[1]))
+
+                text_x = button_rect[0] + (button_rect[2] - total_text_size[0]) / 2
+                text_y = button_rect[1] + (button_rect[3] - total_text_size[1]) / 2
+                
+                text_color = style.TextDisabled.get_current().color_int if not enabled else style.Text.get_current().color_int
+                
+                tint = ((button_colors[2].get_current().rgb_tuple if PyImGui.is_item_active() else button_colors[1].get_current().rgb_tuple) if ImGui.is_mouse_in_rect(button_rect) else button_colors[0].get_current().rgb_tuple) if enabled else style.ButtonTextureBackgroundDisabled.get_current().rgb_tuple
+                                             
+                ThemeTextures.Button_Background.value.get_texture().draw_in_drawlist(
+                    button_rect[0], 
+                    button_rect[1],
+                    (button_rect[2], button_rect[3]),
+                    tint=tint,
+                )
+                
+                frame_tint = (255, 255, 255, 255) if ImGui.is_mouse_in_rect(button_rect) and enabled else (200, 200, 200, 255)
+                ThemeTextures.Button_Frame_Top.value.get_texture().draw_in_drawlist(
+                    button_rect[0], 
+                    button_rect[1],
+                    (button_rect[2], button_rect[3]),
+                    tint=frame_tint,
+                )
+                
+                ##TODO: Add the missing frames
+                
+                PyImGui.push_clip_rect(
+                    button_rect[0] + 6,
+                    button_rect[1] + 2,
+                    width - 12,
+                    height - 4,
+                    True
+                )
+                
+                offset = (0, 0)
+
+                for is_icon, run in groups:
+                    if is_icon:
+                        ImGui.push_font("Regular", fontawesome_font_size)
+                    else:
+                        ImGui.push_font("Regular", default_font_size)
+                    
+                    text_size = PyImGui.calc_text_size(run)    
+                    vertical_padding = 0 if is_icon else 1                
+                                    
+                    PyImGui.draw_list_add_text(
+                        text_x + offset[0],
+                        text_y + vertical_padding,
+                        style.TextDisabled.get_current().color_int if not enabled else style.Text.get_current().color_int,
+                        run,
+                    )
+                    
+                    offset = (offset[0] + text_size[0], vertical_padding)
+                    
+                    ImGui.pop_font()
+
+                PyImGui.pop_clip_rect()
+                
+            case _:
+                if enabled:
+                    for button_color in button_colors:
+                        button_color.push_color()
+                
+                clicked = PyImGui.button(label, width, height)
+
+                if enabled:
+                    for button_color in button_colors:
+                        button_color.pop_color()
+
+
+        style.ButtonPadding.pop_style_var()
+        PyImGui.end_disabled()
+        
+        if clicked:
+            v = not v
+        
+        return v
+    
+    @staticmethod
     def button(label: str, width: float = 0, height: float = 0, enabled: bool = True, appearance: ControlAppearance = ControlAppearance.Default) -> bool:
         PyImGui.begin_disabled(not enabled)
         style = ImGui.get_style()

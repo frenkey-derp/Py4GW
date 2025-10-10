@@ -15,16 +15,19 @@ from Py4GWCoreLib.enums import ItemType, ServerLanguage
 importlib.reload(models)
 importlib.reload(module_import)
 
+libraries_loaded : bool = False
+
 try:
     module_import.ModuleImporter.prepare_module_import()
     from bs4 import BeautifulSoup
     import requests
     print("Successfully imported BeautifulSoup and requests!")
+    libraries_loaded = True
 
 except ModuleNotFoundError as e:
     print(f"Error importing modules: {e}")
     print("Please ensure you have BeautifulSoup and requests installed in your Python environment.")
-    sys.exit(1)
+    # sys.exit(1)
 
 
 class WikiScraper:
@@ -147,6 +150,10 @@ class WikiScraper:
     
     @staticmethod
     def scrape_info_from_wiki(item: models.Item):
+        if not libraries_loaded:
+            ConsoleLog("LootEx", "Cannot scrape wiki info: Required libraries not loaded.")
+            return
+        
         url = item.wiki_url
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -307,6 +314,10 @@ class WikiScraper:
         Downloads an image from the given URL and saves it to the item's inventory_icon_url path.
         """
         
+        if not libraries_loaded:
+            ConsoleLog("LootEx", "Cannot download image: Required libraries not loaded.")
+            return False
+        
         if not item.inventory_icon_url:
             ConsoleLog("LootEx", f"No URL provided for {item.name}. Cannot download image.")
             return False
@@ -347,6 +358,10 @@ class WikiScraper:
     
     @staticmethod
     def scrape_multiple_entries(items: list[models.Item]):
+        if not libraries_loaded:
+            ConsoleLog("LootEx", "Cannot scrape wiki info: Required libraries not loaded.")
+            return
+        
         total = len(items)
         i  = 0
         
@@ -383,7 +398,11 @@ class WikiScraper:
             
 
     @staticmethod
-    def scrape_missing_entries():                
+    def scrape_missing_entries():   
+        if not libraries_loaded:
+            ConsoleLog("LootEx", "Cannot scrape wiki info: Required libraries not loaded.")
+            return
+                     
         # items_with_missing_info = [
         #     item for subdict in data.Items.values() for item in subdict.values() if not item.wiki_scraped
         # ]              

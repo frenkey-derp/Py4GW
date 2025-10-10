@@ -41,7 +41,16 @@ class Settings:
             self.save_requested = False
     
     def load(self):
-        with open(os.path.join(script_directory, "Config", f"{MODULE_NAME}.json"), "r") as f:
+        folder_path = os.path.join(script_directory, "Config")
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            
+        file_path = os.path.join(folder_path, f"{MODULE_NAME}.json")
+        if not os.path.exists(file_path):
+            self.save()
+            return
+
+        with open(file_path, "r") as f:
             data = json.load(f)
             self.drop_move_fullstack = data["drop_move_fullstack"]
             self.disable_gold_and_green_item_confirmation = data["disable_gold_and_green_item_confirmation"]
@@ -90,8 +99,8 @@ def OnItemConfirmationPopUp():
         if UIManager.FrameExists(confirm_frame_id):
             GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", UIManager.FrameClick, confirm_frame_id)
 
-item_amount_popup_event.set_callback(OnItemAmountPopUp)
-item_confirmation_popup_event.set_callback(OnItemConfirmationPopUp)
+# item_amount_popup_event.set_callback(OnItemAmountPopUp)
+# item_confirmation_popup_event.set_callback(OnItemConfirmationPopUp)
 
 def main():    
     global settings
