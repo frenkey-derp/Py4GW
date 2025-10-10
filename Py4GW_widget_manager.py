@@ -29,6 +29,7 @@ class WidgetHandler:
         base_dir = os.path.dirname(os.path.abspath(module_file)) if module_file else os.getcwd()
         resolved_path = widgets_path or os.path.join(base_dir, "Widgets")
         self.widgets_path = os.path.abspath(resolved_path)
+        self.show_widget_ui = True
         
         self.widgets = {}
         self.widget_data_cache = {}
@@ -101,6 +102,9 @@ class WidgetHandler:
         return widget_module
         
     def execute_enabled_widgets(self):
+        if not self.show_widget_ui:
+            PyImGui.push_clip_rect(0, 0, 0, 0, False)
+        
         for widget_name, widget_info in self.widgets.items():
             if not widget_info["enabled"]:
                 continue
@@ -110,6 +114,9 @@ class WidgetHandler:
                 ConsoleLog("WidgetHandler", f"Error executing widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 ConsoleLog("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
 
+        if not self.show_widget_ui:
+            PyImGui.pop_clip_rect()
+            
     def execute_configuring_widgets(self):
         for widget_name, widget_info in self.widgets.items():
             if not widget_info["configuring"]:
@@ -177,6 +184,7 @@ window_module.window_pos = (window_x, window_y)
 
 window_module.collapse = ini_handler.read_bool(module_name, "collapsed", True)
 current_window_collapsed = window_module.collapse
+show_module_uis = True
 
 
 write_timer = Timer()
@@ -211,7 +219,7 @@ def write_ini():
     write_timer.Reset()
 
 def draw_widget_ui():
-    global enable_all
+    global enable_all, show_module_uis
     
     is_enabled = enable_all
 
@@ -236,6 +244,10 @@ def draw_widget_ui():
     ImGui.show_tooltip("Toggle all widgets")
     
     PyImGui.separator()
+    
+    if ImGui.button(f"{"Show" if show_module_uis else "Hide"} all windows"):
+        show_module_uis = not show_module_uis
+        get_widget_handler().show_widget_ui = show_module_uis
 
 
     categorized_widgets = {}
@@ -300,11 +312,11 @@ def main():
         current_window_collapsed = True
         old_enable_all = enable_all
 
-        if PyImGui.begin(window_module.window_name, window_module.window_flags):
+        if ImGui.begin(window_module.window_name, None, window_module.window_flags):
             current_window_pos = PyImGui.get_window_pos()
             current_window_collapsed = False
             draw_widget_ui()
-        PyImGui.end()
+        ImGui.end()
 
         write_ini()
 
