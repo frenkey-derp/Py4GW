@@ -1,3 +1,4 @@
+import subprocess
 from imgui_bundle import hello_imgui, imgui
 import json
 import tkinter as tk
@@ -579,7 +580,8 @@ class Patcher:
         kernel32.CloseHandle(process_handle)
         return True
 
-    def get_hwnd_by_pid(self, pid: int) -> wintypes.HWND:
+    @staticmethod
+    def get_hwnd_by_pid(pid: int) -> wintypes.HWND:
         """
         Retrieve the HWND (window handle) associated with a given PID.
         """
@@ -811,6 +813,27 @@ class GWLauncher:
             if process_handle:
                 kernel32.CloseHandle(process_handle)
 
+    def rename_gw_window(self, pid, new_title):
+        try:            
+            hwnd = Patcher.get_hwnd_by_pid(pid).value
+            if not hwnd:
+                log_history.append("Rename GW Window - Could not find window handle")
+                return
+            
+            log_history.append(f"Renaming GW window (HWND: {hex(hwnd)}) to '{new_title}'")            
+            script = "Addons\\set_title.py"
+            _ = subprocess.run(
+                ["python", script, hex(hwnd), new_title],
+                creationflags=subprocess.CREATE_NO_WINDOW,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=2,
+            )
+            
+        except subprocess.TimeoutExpired:
+            pass
+        
     def inject_BlackBox(self, pid, dll_path):
         """Inject GWBlackBoxdll.dll into the process"""
         
@@ -895,6 +918,8 @@ class GWLauncher:
                             log_history.append("Py4GW DLL injection successful")
                         else:
                             log_history.append("Py4GW DLL injection failed")
+                    
+                    self.rename_gw_window(pid, account.gw_client_name)
                 else:
                     log_history.append("Failed to detect GW window")
             except Exception as e:
