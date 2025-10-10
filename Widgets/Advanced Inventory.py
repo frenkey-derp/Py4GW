@@ -8,6 +8,8 @@ from Py4GWCoreLib import ImGui, Routines
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
 from Py4GWCoreLib.UIManager import UIManager
+from Py4GWCoreLib.botting_src.config import BotConfig
+from Py4GWCoreLib.botting_src.event import Events, OnDeathEvent
 
 
 MODULE_NAME = "Advanced Inventory"
@@ -48,6 +50,9 @@ class Settings:
 settings = Settings()
 settings.load()
 
+item_amount_popup_event : OnDeathEvent 
+item_confirmation_popup_event : OnDeathEvent
+
 def configure():
     configure_window.open = True
     if configure_window.begin():
@@ -84,6 +89,9 @@ def OnItemConfirmationPopUp():
 
         if UIManager.FrameExists(confirm_frame_id):
             GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", UIManager.FrameClick, confirm_frame_id)
+
+item_amount_popup_event.set_callback(OnItemAmountPopUp)
+item_confirmation_popup_event.set_callback(OnItemConfirmationPopUp)
 
 def main():    
     global settings
