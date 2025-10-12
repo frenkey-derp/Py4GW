@@ -6,6 +6,8 @@ from ctypes import sizeof
 from datetime import datetime, timezone
 import time
 
+from Py4GWCoreLib.py4gwcorelib_src.Console import Console
+
 SHMEM_MAX_EMAIL_LEN = 64
 SHMEM_MAX_CHAR_LEN = 20
 SHMEM_MAX_NUMBER_OF_BUFFS = 240
@@ -36,6 +38,9 @@ class AccountData(Structure):
         ("MapRegion", c_int),
         ("MapDistrict", c_uint),
         ("PlayerID", c_uint),
+        ("PlayerLevel", c_uint),
+        ("PlayerProfession", c_uint),
+        ("PlayerSecondaryProfession", c_uint),
         ("PlayerHP", c_float),
         ("PlayerMaxHP", c_float),
         ("PlayerHealthRegen", c_float),
@@ -156,6 +161,9 @@ class Py4GWSharedMemoryManager:
             player.MapRegion = 0
             player.MapDistrict = 0
             player.PlayerID = 0
+            player.PlayerLevel = 0
+            player.PlayerProfession = 0
+            player.PlayerSecondaryProfession = 0
             player.PlayerHP = 0.0
             player.PlayerMaxHP = 0.0
             player.PlayerHealthRegen = 0.0
@@ -357,6 +365,9 @@ class Py4GWSharedMemoryManager:
             player.MapRegion = map_region
             player.MapDistrict = self.map_instance.district
             player.PlayerID = agent_id
+            player.PlayerLevel = self.player_instance.agent.living_agent.level
+            player.PlayerProfession = self.player_instance.agent.living_agent.profession.Get()
+            player.PlayerSecondaryProfession = self.player_instance.agent.living_agent.secondary_profession.Get()
             player.PlayerHP = self.player_instance.agent.living_agent.hp
             player.PlayerMaxHP = self.player_instance.agent.living_agent.max_hp
             player.PlayerHealthRegen = self.player_instance.agent.living_agent.hp_regen
@@ -440,6 +451,9 @@ class Py4GWSharedMemoryManager:
             hero.MapRegion = map_region
             hero.MapDistrict = self.map_instance.district
             hero.PlayerID = agent_id
+            hero.PlayerLevel = hero_agent_instance.living_agent.level
+            hero.PlayerProfession = hero_agent_instance.living_agent.profession.Get()
+            hero.PlayerSecondaryProfession = hero_agent_instance.living_agent.secondary_profession.Get()
             hero.PlayerHP = hero_agent_instance.living_agent.hp
             hero.PlayerMaxHP = hero_agent_instance.living_agent.max_hp
             hero.PlayerHealthRegen = hero_agent_instance.living_agent.hp_regen

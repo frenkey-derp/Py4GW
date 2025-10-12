@@ -161,6 +161,25 @@ class ImGui:
         ImGui._with_font(PyImGui.text, text, font_size, font_style)
 
     @staticmethod
+    def text_centered(text: str, width: float = 0, height: float = 0, font_size: int | None = None, font_style: str | None = None) -> None:
+        width = PyImGui.get_content_region_avail()[0] if width == 0 else width
+        
+        def _centered_text(text: str):
+            text_size = PyImGui.calc_text_size(text)
+            
+            if height > 0:
+                cursor_y = (height - text_size[1]) / 2
+                PyImGui.set_cursor_pos_y(cursor_y)
+                
+            if width >= 0:
+                cursor_x = (width - text_size[0]) / 2
+                PyImGui.set_cursor_pos_x(cursor_x)
+            
+            PyImGui.text(text)
+            
+        ImGui._with_font(_centered_text, text, font_size, font_style)        
+
+    @staticmethod
     def text_disabled(text: str, font_size: int | None = None, font_style: str | None = None) -> None:
         ImGui._with_font(PyImGui.text_disabled, text, font_size, font_style)
 
@@ -975,7 +994,16 @@ class ImGui:
             v = not v
         
         return v
-                                   
+               
+    @staticmethod
+    def image(texture_path: str, size: tuple[float, float],
+                            uv0: tuple[float, float] = (0.0, 0.0),
+                            uv1: tuple[float, float] = (1.0, 1.0),
+                            tint: tuple[int, int, int, int] = (255, 255, 255, 255),
+                            border_color: tuple[int, int, int, int] = (0, 0, 0, 0)):
+        
+        return ImGui.DrawTextureExtended(texture_path, size, uv0, uv1, tint, border_color)
+                         
     @staticmethod
     def image_button(label: str, texture_path: str, width: float=32, height: float=32, disabled: bool=False, appearance: ControlAppearance=ControlAppearance.Default) -> bool:
         #MATCHING IMGUI SIGNATURES AND USAGE

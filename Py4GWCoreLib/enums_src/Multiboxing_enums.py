@@ -25,6 +25,13 @@ class SharedCommandType(IntEnum):
     DonateToGuild = 20
     SendDialogToTarget = 21
     BruteForceUnstuck = 22
+    MoveClient = 23
+    ActivateClient = 24
+    BringToForground = 26
+    SetBorderless = 26
+    
+    
+    MultiBoxing = 998 # privately Handled Command, by Frenkey
     LootEx = 999 # privately Handled Command, by Frenkey
     
 

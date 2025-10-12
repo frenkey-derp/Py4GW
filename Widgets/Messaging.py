@@ -1,3 +1,4 @@
+import ctypes
 from email.mime import message
 import time
 from datetime import datetime
@@ -982,7 +983,56 @@ def UseSkillFromMessage(index, message):
     yield from Routines.Yield.wait(100)
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
 
+def MoveClient(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing MoveClient message: {message}", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
 
+    x = int(message.Params[0])
+    y = int(message.Params[1])
+    w = int(message.Params[2])
+    h = int(message.Params[3])
+    
+    Console.set_window_geometry(x, y, w, h)
+    yield from Routines.Yield.wait(10)
+    
+    Console.set_window_geometry(x, y, w, h)
+    yield from Routines.Yield.wait(10)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    
+def SetClientBorderless(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing SetClientBorderless message: {message}", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+
+    border_less : bool = int(message.Params[0]) == 1
+
+    Console.set_borderless(border_less)
+    yield from Routines.Yield.wait(10)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+
+def ActivateClient(index, message):
+    ConsoleLog(MODULE_NAME, f"Processing ActivateClient message: {message}", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+
+    ctypes.windll.user32.SetForegroundWindow(Console.get_gw_window_handle())
+    yield from Routines.Yield.wait(10)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    
+def BringToForground(index, message):   
+    ConsoleLog(MODULE_NAME, f"Processing BringToForground message: {message}", Console.MessageType.Info)
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+
+    hwnd_game = Console.get_gw_window_handle()
+    hwnd_active = ctypes.windll.user32.GetForegroundWindow()
+
+    # Bring the game client just below your active window
+    ctypes.windll.user32.SetWindowPos(
+        hwnd_game, hwnd_active, 0, 0, 0, 0,
+        0x0001 | 0x0002 | 0x0010 | 0x0040  # SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_SHOWWINDOW
+    )
+    yield from Routines.Yield.wait(10)
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)        
+    
 # region ProcessMessages
 def ProcessMessages():
     account_email = GLOBAL_CACHE.Player.GetAccountEmail()
@@ -1036,6 +1086,19 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(PressKey(index, message))
         case SharedCommandType.DonateToGuild:
             GLOBAL_CACHE.Coroutines.append(DonateToGuild(index, message))
+        case SharedCommandType.MoveClient:
+            GLOBAL_CACHE.Coroutines.append(MoveClient(index, message))
+        case SharedCommandType.ActivateClient:
+            GLOBAL_CACHE.Coroutines.append(ActivateClient(index, message))
+        case SharedCommandType.BringToForground:
+            GLOBAL_CACHE.Coroutines.append(BringToForground(index, message))
+        case SharedCommandType.SetBorderless:
+            GLOBAL_CACHE.Coroutines.append(SetClientBorderless(index, message))
+        
+        case SharedCommandType.MultiBoxing:
+            # privately Handled Command, by Frenkey
+            pass
+        
         case SharedCommandType.LootEx:
             # privately Handled Command, by Frenkey
             pass
