@@ -134,9 +134,6 @@ class Settings:
                 self.layout = settings_data.get("layout", "None")            
                 
             ConsoleLog(MODULE_NAME, f"Settings loaded from {file_path}")
-            
-            if self.layout != "None":
-                self.load_layout(self.layout)
                 
         except Exception as e:
             ConsoleLog(MODULE_NAME, f"Error loading settings: {e}", Console.MessageType.Error)
@@ -162,7 +159,9 @@ class Settings:
                 json.dump(json_data, f, indent=4)
                 
             ConsoleLog(MODULE_NAME, f"Layout '{name}' saved successfully.")
-            self.layouts.append(name)  # Add to layouts list if not already present
+            
+            if not name in self.layouts:
+                self.layouts.append(name)  # Add to layouts list if not already present
                 
         except Exception as e:
             ConsoleLog(MODULE_NAME, f"Error saving layout '{name}': {e}", Console.MessageType.Error)

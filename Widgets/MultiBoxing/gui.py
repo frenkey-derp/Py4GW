@@ -273,7 +273,9 @@ class GUI:
                                     self.layout_name = layout_name
                                     
                                 elif self.layout_name != layout_name:
-                                    self.layout_name = ""
+                                    self.layout_name = "None"
+                                    self.settings.layout = "None"
+                                    self.settings.save_settings()
 
 
                             PyImGui.push_item_width(avail - 105)
@@ -699,14 +701,14 @@ class GUI:
             level_text = f" {account.PlayerLevel}" if account.PlayerLevel else ""
             
             if level_text:
-                PyImGui.same_line(25, 0)
+                PyImGui.same_line(38, 0)
                 ImGui.text_centered(level_text, -1, avail[1] + 6)
                 
             name_text = f"{account.CharacterName}" if account.CharacterName else ""
             # name_text = f" frenkey {account.SlotNumber}"
             name_text = name_text if name_text else f"Pending ..."
             if name_text:
-                PyImGui.same_line(52, 0)
+                PyImGui.same_line(62, 0)
                 ImGui.text_centered(name_text, -1, avail[1] + 6)
 
         ImGui.end_child()
@@ -718,12 +720,7 @@ class GUI:
         return PyImGui.is_item_clicked(0)
 
     def draw_access_window(self):
-        if not self.access_window.open:
-            return
-
-        window_width = 200
-        
-        
+        window_width = 200               
         style = ImGui.get_style()
         
         style.WindowPadding.push_style_var(4, 2)        
@@ -733,8 +730,11 @@ class GUI:
         account_btn_size = (window_width - 7, 20)
         window_height = len(self.settings.accounts) * (account_btn_size[1] + (style.ItemSpacing.value2 or 0) / 2) + header_size
         
-        PyImGui.set_next_window_pos(self.screen_width - window_width - 2, 2)
-        PyImGui.set_next_window_size(window_width, window_height - (len(self.settings.accounts)))
+        self.access_window.window_pos = (self.screen_width - window_width - 2, 2)
+        self.access_window.window_size = (window_width, window_height)
+        
+        # PyImGui.set_next_window_pos(self.screen_width - window_width - 2, 2)
+        # PyImGui.set_next_window_size(window_width, window_height - (len(self.settings.accounts)))
 
         if self.access_window.begin(None, PyImGui.WindowFlags(PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoSavedSettings)):
             i = 0

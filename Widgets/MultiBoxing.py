@@ -9,6 +9,7 @@ from typing import Optional
 from Py4GW import Console
 import Py4GW
 import PyImGui
+import PyMap
 
 from Py4GWCoreLib import ImGui, Player, Routines
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -19,7 +20,6 @@ from Py4GWCoreLib.enums_src.IO_enums import Key
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GW_widget_manager import WidgetHandler
-from Widgets.MultiBoxing.messaging import HandleReceivedMessages, position_clients
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 
 MODULE_NAME = "MultiBoxing"
@@ -33,6 +33,7 @@ for module_name in list(sys.modules.keys()):
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}")
             
+from Widgets.MultiBoxing.messaging import HandleReceivedMessages, position_clients
 from Widgets.MultiBoxing.enum import RenameClientType
 from Widgets.MultiBoxing.settings import Settings
 from Widgets.MultiBoxing.region import Region
@@ -76,8 +77,10 @@ def draw():
     
 def on_enable():
     settings.load_layouts()
-    settings.load_settings()
-        
+    settings.load_settings()    
+    
+    if settings.layout != "None":
+        settings.load_layout(settings.layout)    
     pass
 
 def on_disable():
@@ -123,6 +126,17 @@ def set_client_to_region(region: Region | None):
 def main():    
     global throttle_timer, last_character_name, last_rename_type, last_append_gw, is_on_main, toggled_widget_ui, screen_size_changed, initial_resized, recently_moved, recently_moved_timer
     
+    try:        
+        if settings.accounts:
+            draw()
+        
+    except Exception as e:
+        Py4GW.Console.Log(MODULE_NAME, f"Error in draw(): {e}",  Console.MessageType.Error)
+    
+    if not Routines.Checks.Map.MapValid():
+        return 
+    
+    
     if throttle_timer.IsExpired():
         throttle_timer.Reset()
         
@@ -142,32 +156,16 @@ def main():
                 
                 desired_region = main_region if (is_main or (is_active and settings.move_slave_to_main)) else region
                 
-                if desired_region and not is_client_in_region(desired_region):
+                if desired_region and settings.move_on_focus and not is_client_in_region(desired_region):
                     if settings.move_on_focus:
                         set_client_to_region(desired_region)
         
                 if (is_main or is_active) and (not is_main or toggled_widget_ui):
                     set_widget_visibility(True)
                     
-                elif not is_active and settings.move_slave_to_main:
+                elif (not is_active and not is_main) and settings.move_slave_to_main:
                     set_widget_visibility(False)
-                    toggled_widget_ui = True
-                                                
-                if is_main:                    
-                    if is_main and not initial_resized and settings.accounts:
-                        Py4GW.Console.Log(MODULE_NAME, "Setting up clients based on regions and accounts.")
-                        initial_resized = True
-                        
-                        position_clients(settings.get_account_mail(), settings.regions, settings.accounts)
-
-    try:
-        draw()
-        
-    except Exception as e:
-        Py4GW.Console.Log(MODULE_NAME, f"Error in draw(): {e}",  Console.MessageType.Error)
-    
-    if not Routines.Checks.Map.MapValid():
-        return 
+                    toggled_widget_ui = True                                                    
 
 def set_client_title():
     global last_character_name, last_rename_type, last_append_gw

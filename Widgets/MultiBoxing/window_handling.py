@@ -36,6 +36,7 @@ def is_window_active() -> bool:
         foreground_window = user32.GetForegroundWindow()
         gw_window = Console.get_gw_window_handle()
         return foreground_window == gw_window
+    
     except Exception as e:
         ConsoleLog(MODULE_NAME, f"Error checking if window is active: {e}", Console.MessageType.Error)
         return False
