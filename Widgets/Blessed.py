@@ -232,7 +232,7 @@ def Get_Blessed():
     _running = True
 
 def main():
-    if not Routines.Checks.Map.MapValid():
+    if not Routines.Checks.Map.MapValid() or not Routines.Checks.Map.IsExplorable():
         return
     me = GLOBAL_CACHE.Player.GetAgentID()
     _scan_flag_files()

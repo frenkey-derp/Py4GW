@@ -2,6 +2,7 @@
 from datetime import datetime
 from enum import Enum
 import importlib
+import math
 import os
 from typing import Optional
 
@@ -11,7 +12,8 @@ import PyImGui
 from Py4GWCoreLib import IconsFontAwesome5, ImGui, Routines
 from Py4GWCoreLib.ImGui import Style
 from Py4GWCoreLib.ImGui_src.Textures import MapTexture, SplitTexture, TextureState, ThemeTexture, ThemeTextures
-from Py4GWCoreLib.ImGui_src.types import MINIMALUS_FOLDER, TEXTURE_FOLDER, ControlAppearance, StyleColorType, StyleTheme
+from Py4GWCoreLib.ImGui_src.types import MINIMALUS_FOLDER, TEXTURE_FOLDER, ControlAppearance, StyleColorType, StyleTheme, TextDecorator
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
 from Py4GWCoreLib import Timer
@@ -137,6 +139,7 @@ class ThemeTexturesDev(Enum):
 class ImGuiDev:
     pass
 
+
 preview = preview_states()
 
 textures = [
@@ -173,6 +176,7 @@ def draw_small_button(theme: Style.StyleTheme):
                        appearance=ControlAppearance.Danger)
     PyImGui.same_line(0, 5)
     ImGui.small_button("Disabled" + "##" + theme.name, disabled=True)
+
 
 def draw_icon_button(theme: Style.StyleTheme):
     ImGui.icon_button(IconsFontAwesome5.ICON_SYNC + " With Text" + "##" + theme.name)
@@ -281,6 +285,12 @@ def draw_text(theme: Style.StyleTheme):
     ImGui.text("This is some text.")
 
 
+def draw_text_decorated(theme: Style.StyleTheme):
+    ImGui.text_decorated("This is some underlined text.", decorator=TextDecorator.Underline)
+    ImGui.text_decorated("This is some strikethrough text.", decorator=TextDecorator.Strikethrough)
+    ImGui.text_decorated("This is some highlighted text.", decorator=TextDecorator.Highlight)
+
+
 def draw_hyperlink(theme: Style.StyleTheme):
     ImGui.hyperlink("Click Me")
 
@@ -350,6 +360,7 @@ controls = {
     "Separator": draw_separator,
     "Progress Bar": draw_progress_bar,
     "Text": draw_text,
+    "Text Decorated": draw_text_decorated,
     "Hyperlink": draw_hyperlink,
     "Bullet Text": draw_bullet_text,
     "Objective Text": draw_objective_text,
