@@ -74,6 +74,9 @@ class PriceCheck:
         
     @staticmethod
     def get_expensive_runes_from_merchant(threshold: int = 1000, mark_to_sell : bool = False, profession: int = 0) -> None:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         def format_currency(value: int) -> str:
             platinum = value // 1000
             gold = value % 1000
@@ -86,7 +89,7 @@ class PriceCheck:
 
             return " ".join(parts)
 
-        if settings.current.profile is None:
+        if settings.profile is None:
             ConsoleLog(
                 "LootEx", "No loot profile selected, skipping item check.", Console.MessageType.Error)
             return
@@ -104,7 +107,7 @@ class PriceCheck:
                 "LootEx", "No items found in merchant's inventory.", Console.MessageType.Error)
             return
 
-        settings.current.profile.runes.clear()
+        settings.profile.runes.clear()
         if profession is not None and profession != 0:
             ConsoleLog(
                 "LootEx", f"Checking for runes and insignias for profession {profession}...", Console.MessageType.Info)
@@ -137,7 +140,7 @@ class PriceCheck:
                     price = Merchant.Trading.Trader.GetQuotedValue()
 
                     if price is not None:
-                        if mod.identifier and settings.current.profile:
+                        if mod.identifier and settings.profile:
                             checked_items.append(mod.identifier)
                             rune = data.Runes.get(mod.identifier)
                             
@@ -152,8 +155,8 @@ class PriceCheck:
                                     f"{mod.full_name} is currently quoted at {format_currency(price)}. Marking it as valuable.",
                                     Console.MessageType.Info,
                                 )
-                                settings.current.profile.set_rune(mod.identifier, True, mark_to_sell)
-                                settings.current.profile.save()
+                                settings.profile.set_rune(mod.identifier, True, mark_to_sell)
+                                settings.profile.save()
 
                         trader_queue.execute_next()
                         return price
@@ -167,15 +170,15 @@ class PriceCheck:
             for rune in data.Runes.values():
                 profession_match = profession is not None and rune.profession == profession
 
-                if rune.identifier not in checked_items and settings.current.profile and profession_match:
+                if rune.identifier not in checked_items and settings.profile and profession_match:
                     ConsoleLog(
                         "LootEx",
                         f"{rune.full_name} is currently not available. Marking it as valuable.",
                         Console.MessageType.Info,
                     )
                     
-                    settings.current.profile.set_rune(rune.identifier, True)
-                    settings.current.profile.save()
+                    settings.profile.set_rune(rune.identifier, True)
+                    settings.profile.save()
             ConsoleLog(
                 "LootEx", "Finished checking for runes and insignias.", Console.MessageType.Success)
 

@@ -13,9 +13,11 @@ for module_name in list(sys.modules.keys()):
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}")
 
-from Widgets.frenkey.LootEx import loot_handling, profile, settings, price_check, cache, inventory_handling, data_collector, utility, messaging
+from Widgets.frenkey.LootEx import price_check, cache, inventory_handling, data_collector, utility, messaging
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.gui import UI
+from Widgets.frenkey.LootEx.settings import Settings
+from Widgets.frenkey.LootEx.loot_handling import LootHandler
 
 map_timer = Timer()
 throttle_timer = ThrottledTimer(250)
@@ -29,7 +31,7 @@ data.Load()
 ui = UI()
 
 inventory_handler = inventory_handling.InventoryHandler()
-loot_handler = loot_handling.LootHandler()
+loot_handler = LootHandler()
 
 # Load settings
     
@@ -47,22 +49,29 @@ def configure():
     pass
 
 def Initialize_And_Load():
-    settings.current.settings_file_path = os.path.join(
+    settings = Settings()
+    settings.settings_file_path = os.path.join(
         script_directory, "Config", "LootEx", f"{Player.GetAccountEmail()}.json")
-    settings.current.profiles_path = os.path.join(
+    settings.profiles_path = os.path.join(
         script_directory, "Config", "LootEx", "Profiles")
-    settings.current.data_collection_path = os.path.join(script_directory, "Config", "DataCollection")    
+    settings.data_collection_path = os.path.join(script_directory, "Config", "DataCollection")    
     
-    ConsoleLog(MODULE_NAME, f"Loading settings from {settings.current.settings_file_path}", Console.MessageType.Info)
-    settings.current.load()
+    ConsoleLog(MODULE_NAME, f"Loading settings from {settings.settings_file_path}", Console.MessageType.Info)
+    settings.load()    
+    
+    if settings.enable_loot_filters:
+        loot_handler.Start()
+    else:
+        loot_handler.Stop()
     
 
 def CreateDirectories():
-    if not os.path.exists(settings.current.profiles_path):
-        os.makedirs(settings.current.profiles_path)  
-        
-    if not os.path.exists(settings.current.data_collection_path):
-        os.makedirs(settings.current.data_collection_path)    
+    settings = Settings()
+    if not os.path.exists(settings.profiles_path):
+        os.makedirs(settings.profiles_path)
+
+    if not os.path.exists(settings.data_collection_path):
+        os.makedirs(settings.data_collection_path)
         
 VK_LBUTTON = 0x01  # Virtual-Key code for left mouse button
 
@@ -142,33 +151,34 @@ def main():
     language = utility.Util.get_server_language()
     english_languages = [ServerLanguage.English, ServerLanguage.Japanese, ServerLanguage.Korean, ServerLanguage.TraditionalChinese, ServerLanguage.Russian]
     language = language if language not in english_languages else ServerLanguage.English
-    
-    if (language != settings.current.language):
-        settings.current.language = language if language not in english_languages else ServerLanguage.English
+    settings = Settings()
+
+    if (language != settings.language):
+        settings.language = language if language not in english_languages else ServerLanguage.English
         data.UpdateLanguage(language)
-        settings.current.save()
+        settings.save()
+
+    settings.current_character = current_character
+    if not settings.character_profiles.get(current_character, False):        
+        if settings.profiles:
+            settings.character_profiles[current_character] = settings.profiles[0].name
         
-    settings.current.current_character = current_character
-    if not settings.current.character_profiles.get(current_character, False):        
-        if settings.current.profiles:
-            settings.current.character_profiles[current_character] = settings.current.profiles[0].name
-        
-        if not settings.current.character_profiles.get(current_character, False):
+        if not settings.character_profiles.get(current_character, False):
             return
             
-        settings.current.SetProfile(settings.current.character_profiles[current_character])
-        ConsoleLog(MODULE_NAME, f"First time using {MODULE_NAME} on '{current_character}'.{"\nDisabling inventory handling to prevent unwanted actions." if settings.current.automatic_inventory_handling else ""}\nSet Profile to '{settings.current.profile.name if settings.current.profile else "Unkown Profile"}'.", Console.MessageType.Warning)          
+        settings.SetProfile(settings.character_profiles[current_character])
+        ConsoleLog(MODULE_NAME, f"First time using {MODULE_NAME} on '{current_character}'.{"\nDisabling inventory handling to prevent unwanted actions." if settings.automatic_inventory_handling else ""}\nSet Profile to '{settings.profile.name if settings.profile else "Unkown Profile"}'.", Console.MessageType.Warning)          
         inventory_handler.Stop()
     
-    if not settings.current.profile:
-        settings.current.SetProfile(settings.current.character_profiles[current_character])
+    if not settings.profile:
+        settings.SetProfile(settings.character_profiles[current_character])
         return    
     
     if messaging.HandleMessages():
         return
         
-    if settings.current.parent_frame_id is None or settings.current.parent_frame_id == 0:
-        settings.current.parent_frame_id = UIManager.GetFrameIDByHash(inventory_frame_hash)
+    if settings.parent_frame_id is None or settings.parent_frame_id == 0:
+        settings.parent_frame_id = UIManager.GetFrameIDByHash(inventory_frame_hash)
     
     
     ui.py_io = PyImGui.get_io()

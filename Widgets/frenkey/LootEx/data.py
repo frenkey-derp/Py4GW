@@ -2,26 +2,30 @@ import datetime
 import json
 import os
 from typing import Optional
-from Widgets.frenkey.LootEx import models, settings, utility
+
+from Py4GW import Console
+from Widgets.frenkey.LootEx import models
 from Widgets.frenkey.LootEx.enum import ItemCategory
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
-from Py4GWCoreLib.enums import Attribute, Console, ServerLanguage
+from Py4GWCoreLib.enums import Attribute, ServerLanguage
 from Py4GWCoreLib.enums import ItemType, Profession
 
 class Data():
     _instance = None
     _initialized = False
-
+                    
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(Data, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self):
-        if self.__class__._initialized:
+        # only initialize once
+        if self._initialized:
             return
-        self.__class__._initialized = True
+        
+        self._initialized = True
     
         self.is_loaded: bool = False
         self.DamageRanges: dict[ItemType, dict[int, models.IntRange]] = {
@@ -497,7 +501,7 @@ class Data():
                     if not mod.identifier in self.Weapon_Mods:
                         self.Weapon_Mods[mod.identifier] = mod
 
-        account_file = os.path.join(utility.Util.GetPy4GWPath(), "Widgets", "Config", "DataCollection", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
+        account_file = os.path.join(Console.get_projects_path(), "Widgets", "Config", "DataCollection", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
         if os.path.exists(account_file):
             with open(account_file, 'r', encoding='utf-8') as file:
                 weapon_mods = json.load(file)
@@ -515,7 +519,12 @@ class Data():
         # sort the weapon mods by mod.mod_type, then by name
         self.Weapon_Mods = dict(sorted(self.Weapon_Mods.items(), key=lambda item: (item[1].mod_type, item[1].name)))
 
-
+    def get_data_collection_directory(self) -> str:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        return settings.data_collection_path
+    
     def SaveWeaponMods(self, shared_file: bool = False, mods: Optional[dict[str, models.WeaponMod]] = None):
         # Save weapon mods to data/weapon_mods.json
         file_directory = os.path.dirname(os.path.abspath(__file__))
@@ -523,7 +532,7 @@ class Data():
 
         if not shared_file:
             account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-            data_directory = os.path.join(settings.current.data_collection_path, account_name)
+            data_directory = os.path.join(self.get_data_collection_directory(), account_name)
 
         path = os.path.join(data_directory, "weapon_mods.json")
 
@@ -620,7 +629,7 @@ class Data():
         with open(path, 'r', encoding='utf-8') as file:
             self.Items = models.ItemsByType.from_dict(json.load(file))
 
-        account_file = os.path.join(settings.current.data_collection_path, GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
+        account_file = os.path.join(self.get_data_collection_directory(), GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
         if os.path.exists(account_file):
             with open(account_file, 'r', encoding='utf-8') as file:
                 account_items = models.ItemsByType.from_dict(json.load(file))
@@ -667,7 +676,7 @@ class Data():
 
         if not shared_file:
             account_name = GLOBAL_CACHE.Player.GetAccountEmail()
-            data_directory = os.path.join(settings.current.data_collection_path, account_name)
+            data_directory = os.path.join(self.get_data_collection_directory(), account_name)
 
         path = os.path.join(data_directory, "items.json")
 
@@ -692,9 +701,9 @@ class Data():
             json.dump(items.to_json(), file, indent=4, ensure_ascii=False)
 
     def MergeDiffItems(self):
-        dirs = os.listdir(settings.current.data_collection_path)
+        dirs = os.listdir(self.get_data_collection_directory())
         for dir_name in dirs:
-            file_path = os.path.join(settings.current.data_collection_path, dir_name, "items.json")
+            file_path = os.path.join(self.get_data_collection_directory(), dir_name, "items.json")
             
             if os.path.exists(file_path):            
                 with open(file_path, 'r', encoding='utf-8') as file:
@@ -729,7 +738,7 @@ class Data():
         
         
         for dir_name in dirs:
-            file_path = os.path.join(settings.current.data_collection_path, dir_name, "weapon_mods.json")
+            file_path = os.path.join(self.get_data_collection_directory(), dir_name, "weapon_mods.json")
             
             if os.path.exists(file_path):            
                 with open(file_path, 'r', encoding='utf-8') as file:

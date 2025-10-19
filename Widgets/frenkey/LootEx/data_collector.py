@@ -1065,8 +1065,11 @@ class DataCollector:
             self.clear()
             return
         
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         """Run the data collector."""
-        if settings.current.collect_items:
+        if settings.collect_items:
 
             current_language = self.get_server_language()
             map_id = GLOBAL_CACHE.Map.GetMapID()
@@ -1121,8 +1124,11 @@ class DataCollector:
     def stop_collection(self):
         global save_items, save_runes, save_weapon_mods
         
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         """Stop the data collection. And save any pending changes."""
-        settings.current.collect_items = False
+        settings.collect_items = False
         save_items = False
         save_runes = False
         save_weapon_mods = False
@@ -1135,13 +1141,16 @@ class DataCollector:
         data.SaveWeaponMods(shared_file=False, mods=self.modified_weapon_mods)
         
     def start_collection(self):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         """Start the data collection."""
         
         self.clear()
         
         self.load_account_files()
         
-        settings.current.collect_items = True
+        settings.collect_items = True
         
         ConsoleLog("LootEx", "Data collection started.")
         

@@ -1,9 +1,6 @@
 import datetime
 from typing import Optional
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Widgets.frenkey.LootEx import inventory_handling
-from Widgets.frenkey.LootEx.filter import Filter
-from Widgets.frenkey.LootEx.profile import Profile
 from Py4GWCoreLib import Player, UIManager
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, Console, LootConfig
 from Py4GWCoreLib.enums import ServerLanguage
@@ -22,17 +19,22 @@ class FrameCoords:
 
 class Settings:
     _instance = None
-    
+    _initialized = False
+
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(Settings, cls).__new__(cls)
-            cls._instance._initialized = False
-            
+            cls._instance = super().__new__(cls)
         return cls._instance
-    
+
     def __init__(self):
+        # only initialize once
         if self._initialized:
             return
+        
+        self._initialized = True
+
+        from Widgets.frenkey.LootEx.filter import Filter
+        from Widgets.frenkey.LootEx.profile import Profile
         
         self._initialized = True
         self.profile: Profile | None = None
@@ -69,6 +71,9 @@ class Settings:
         
     
     def ReloadProfiles(self):
+        from Widgets.frenkey.LootEx.filter import Filter
+        from Widgets.frenkey.LootEx.profile import Profile
+        
         """Reloads the profiles from the profiles directory."""
         self.profiles.clear()
         
@@ -86,6 +91,11 @@ class Settings:
             self.profiles.append(default_profile)
         
     def SetProfile(self, profile_name: str | None):
+        from Widgets.frenkey.LootEx import loot_handling
+        from Widgets.frenkey.LootEx import inventory_handling
+        from Widgets.frenkey.LootEx.filter import Filter
+        from Widgets.frenkey.LootEx.profile import Profile
+        
         self.profile = Profile("Default")
         
         if profile_name is not None:            
@@ -102,6 +112,11 @@ class Settings:
                 
         inventory_handling.InventoryHandler().reset()
         
+        if self.enable_loot_filters:
+            loot_handling.LootHandler().Start()
+        else:
+            loot_handling.LootHandler().Stop()
+
         if self.profile:
             inventory_handling.InventoryHandler().SetPollingInterval(self.profile.polling_interval)
 
@@ -130,6 +145,9 @@ class Settings:
             json.dump(settings_dict, file, indent=4)
 
     def load(self):
+        from Widgets.frenkey.LootEx.filter import Filter
+        from Widgets.frenkey.LootEx.profile import Profile
+        
         """Load the settings from a JSON file."""
 
         # Create the directory if it doesn't exist
@@ -178,5 +196,3 @@ class Settings:
                 f"Settings file for {GLOBAL_CACHE.Player.GetAccountEmail()} not found. Using default settings.",
                 Console.MessageType.Warning,
             )
-
-current = Settings()

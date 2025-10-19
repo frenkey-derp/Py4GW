@@ -89,10 +89,13 @@ class InventoryHandler:
         self.salvage_windows_updated = False
 
     def reset(self):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         self.ResetSalvageWindow()
         self.__init__(reset=True)
         self.SetPollingInterval(
-            settings.current.profile.polling_interval if settings.current.profile else 1)
+            settings.profile.polling_interval if settings.profile else 1)
 
     def SetPollingInterval(self, interval: float):
         self.inventory_timer.SetThrottleTime(interval * 1000)
@@ -627,25 +630,30 @@ class InventoryHandler:
         return False
 
     def HasModToKeep(self, item: cache.Cached_Item) -> tuple[bool, list[models.WeaponMod], list[models.Rune]]:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
         runes_to_keep: list[models.Rune] = []
         mods_to_keep: list[models.WeaponMod] = []
 
-        if settings.current.profile is not None and settings.current.profile.weapon_mods is not None:
+        if settings.profile is not None and settings.profile.weapon_mods is not None:
 
             for rune in item.max_runes:
-                if rune.identifier in settings.current.profile.runes:
-                    if settings.current.profile.runes[rune.identifier]:
+                if rune.identifier in settings.profile.runes:
+                    if settings.profile.runes[rune.identifier]:
                         runes_to_keep.append(rune)
 
             for mod in item.max_weapon_mods:
-                if mod.identifier in settings.current.profile.weapon_mods:
-                    if settings.current.profile.weapon_mods[mod.identifier].get(item.item_type.name, False):
+                if mod.identifier in settings.profile.weapon_mods:
+                    if settings.profile.weapon_mods[mod.identifier].get(item.item_type.name, False):
                         mods_to_keep.append(mod)
 
         return True if runes_to_keep or mods_to_keep else False, mods_to_keep, runes_to_keep
 
     def CanProcessItem(self, item: cache.Cached_Item) -> bool:
-        if settings.current.profile and settings.current.profile.is_blacklisted(item.item_type, item.model_id):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        if settings.profile and settings.profile.is_blacklisted(item.item_type, item.model_id):
             return False
 
         # Item is customized, do not process it
@@ -655,40 +663,43 @@ class InventoryHandler:
         return True
 
     def GetMissingItems(self) -> dict[int, tuple[ItemType, int]]:
-        if settings.current.profile is None:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        if settings.profile is None:
             return {}
 
         missing_items: dict[int, tuple[ItemType, int]] = {}
 
-        if settings.current.profile.identification_kits > 0:
+        if settings.profile.identification_kits > 0:
             identificationKits = Inventory.GetModelCount(
                 ModelID.Superior_Identification_Kit)
             identificationKits += Inventory.GetModelCount(
                 ModelID.Identification_Kit)
-            if identificationKits < settings.current.profile.identification_kits:
+            if identificationKits < settings.profile.identification_kits:
                 missing_items[ModelID.Superior_Identification_Kit] = (
-                    ItemType.Kit, settings.current.profile.identification_kits - identificationKits)
+                    ItemType.Kit, settings.profile.identification_kits - identificationKits)
 
-        if settings.current.profile.salvage_kits > 0:
+        if settings.profile.salvage_kits > 0:
             salvageKits = Inventory.GetModelCount(ModelID.Salvage_Kit)
-            if salvageKits < settings.current.profile.salvage_kits:
+            if salvageKits < settings.profile.salvage_kits:
                 missing_items[ModelID.Salvage_Kit] = (
-                    ItemType.Kit, settings.current.profile.salvage_kits - salvageKits)
+                    ItemType.Kit, settings.profile.salvage_kits - salvageKits)
 
-        if settings.current.profile.expert_salvage_kits > 0:
+        if settings.profile.expert_salvage_kits > 0:
             expertSalvageKits = Inventory.GetModelCount(
                 ModelID.Expert_Salvage_Kit)
             expertSalvageKits += Inventory.GetModelCount(
                 ModelID.Superior_Salvage_Kit)
-            if expertSalvageKits < settings.current.profile.expert_salvage_kits:
+            if expertSalvageKits < settings.profile.expert_salvage_kits:
                 missing_items[ModelID.Expert_Salvage_Kit] = (
-                    ItemType.Kit, settings.current.profile.expert_salvage_kits - expertSalvageKits)
+                    ItemType.Kit, settings.profile.expert_salvage_kits - expertSalvageKits)
 
-        if settings.current.profile.lockpicks > 0:
+        if settings.profile.lockpicks > 0:
             lockpicks = Inventory.GetModelCount(ModelID.Lockpick)
-            if lockpicks < settings.current.profile.lockpicks:
+            if lockpicks < settings.profile.lockpicks:
                 missing_items[ModelID.Lockpick] = (
-                    ItemType.Key, settings.current.profile.lockpicks - lockpicks)
+                    ItemType.Key, settings.profile.lockpicks - lockpicks)
 
         return missing_items
 
@@ -1122,15 +1133,18 @@ class InventoryHandler:
             self.actions: dict[int, cache.Cached_Item] = {}
                     
     def GetActions(self, start_bag : Bag = Bag.Backpack, end_bag : Bag = Bag.Bag_2, item_ids : list[int] = [], preview : bool = False) -> ActionsSummary:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         result = InventoryHandler.ActionsSummary(self)
-        if not settings.current.profile:
+        if not settings.profile:
             return result
         def ShouldHandleNickItem(item: cache.Cached_Item) -> bool:
             if item.data and item.data.next_nick_week:
                 weeks_until = (item.data.next_nick_week -
                                date.today()).days // 7
 
-                if weeks_until <= settings.current.profile.nick_weeks_to_keep if settings.current.profile else False:
+                if weeks_until <= settings.profile.nick_weeks_to_keep if settings.profile else False:
                     return True
             
             return False
@@ -1203,7 +1217,7 @@ class InventoryHandler:
             return False
 
         def ShouldSalvageItem(item: cache.Cached_Item) -> bool:
-            if not settings.current.profile:
+            if not settings.profile:
                 return False
 
             if item.is_blacklisted:
@@ -1215,7 +1229,7 @@ class InventoryHandler:
             return self.IsSalvageAction(item.action)
 
         def ShouldSellItemToMerchant(item: cache.Cached_Item) -> bool:
-            if not settings.current.profile:
+            if not settings.profile:
                 return False
 
             if item.is_blacklisted:
@@ -1236,7 +1250,7 @@ class InventoryHandler:
             return item.action == ItemAction.Sell_To_Merchant
 
         def ShouldDestroyItem(item: cache.Cached_Item) -> bool:
-            if not settings.current.profile:
+            if not settings.profile:
                 return False
 
             if item.is_blacklisted:
@@ -1245,7 +1259,7 @@ class InventoryHandler:
             return item.action == ItemAction.Destroy
         
         def ShouldSellToTrader(item: cache.Cached_Item) -> bool:
-            if not settings.current.profile:
+            if not settings.profile:
                 return False
 
             if item.is_blacklisted:
@@ -1359,7 +1373,7 @@ class InventoryHandler:
                 continue
             
             if ShouldHandleNickItem(item):
-                item.action = settings.current.profile.nick_action if settings.current.profile else ItemAction.Hold
+                item.action = settings.profile.nick_action if settings.profile else ItemAction.Hold
                 continue
                                     
             if ShouldDepositItem(item):
@@ -1397,11 +1411,11 @@ class InventoryHandler:
                         continue
                     
                     if item.runes_to_keep:
-                        item.action = settings.current.profile.rune_action if settings.current.profile else ItemAction.Hold
+                        item.action = settings.profile.rune_action if settings.profile else ItemAction.Hold
                         continue
                     
                     if item.weapon_mods_to_keep:
-                        item.action = settings.current.profile.weapon_mod_action if settings.current.profile else ItemAction.Hold
+                        item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
                         continue
                 
                 if not item.is_salvageable:
@@ -1421,7 +1435,7 @@ class InventoryHandler:
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
                     elif item.weapon_mods_to_keep and len(item.weapon_mods_to_keep) > 1:
-                        item.action = settings.current.profile.weapon_mod_action if settings.current.profile else ItemAction.Hold
+                        item.action = settings.profile.weapon_mod_action if settings.profile else ItemAction.Hold
 
                 elif item.is_armor:
                     if item.runes_to_keep and len(item.runes_to_keep) == 1:
@@ -1433,7 +1447,7 @@ class InventoryHandler:
                         if not item in result.salvage_queue:
                             result.salvage_queue[item.id] = item
                     elif item.runes_to_keep and len(item.runes_to_keep) > 1:
-                        item.action = settings.current.profile.rune_action if settings.current.profile else ItemAction.Hold
+                        item.action = settings.profile.rune_action if settings.profile else ItemAction.Hold
                 
                 # ConsoleLog(
                 #     "LootEx", f"Extracting mods from item {item.model_name} ({item.id}) with option {item.salvage_option.name}", Console.MessageType.Debug)
@@ -1443,7 +1457,7 @@ class InventoryHandler:
                 item.action = ItemAction.Sell_To_Trader
                 continue
                 
-            for filter in settings.current.profile.filters:
+            for filter in settings.profile.filters:
                 action = filter.get_action(item)
 
                 if action != ItemAction.NONE:
@@ -1552,6 +1566,9 @@ class InventoryHandler:
         return claimed
                     
     def Run(self):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         ## Disable auto inventory handler while manual inventory handler is active
         self.auto_inventory_handler.module_active = False
         
@@ -1564,11 +1581,11 @@ class InventoryHandler:
         if data_collector.instance.is_running():
             return
 
-        if not settings.current.profile or not settings.current.automatic_inventory_handling:
+        if not settings.profile or not settings.automatic_inventory_handling:
             return
 
-        if settings.current.profile.changed:
-            settings.current.profile.changed = False
+        if settings.profile.changed:
+            settings.profile.changed = False
             self.reset()
             return
 
@@ -1709,22 +1726,28 @@ class InventoryHandler:
             #     "LootEx", f"Processed {len(self.actions)} items in {time_delta.microseconds * 0.000001} sec.", Console.MessageType.Debug)
 
     def Stop(self):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         ConsoleLog("LootEx", "Stopping loot handling",
                    Console.MessageType.Info)
 
         # self.reset()
-        settings.current.automatic_inventory_handling = False
-        settings.current.save()
+        settings.automatic_inventory_handling = False
+        settings.save()
 
         return True
 
     def Start(self) -> bool:
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         ConsoleLog("LootEx", "Starting loot handling",
                    Console.MessageType.Info)
 
         self.reset()
-        settings.current.automatic_inventory_handling = True
-        settings.current.save()
+        settings.automatic_inventory_handling = True
+        settings.save()
 
         return True
 

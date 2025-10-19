@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from typing import ClassVar, Iterable, Iterator, List, Optional, SupportsIndex, overload
 
 from PyItem import ItemModifier
-from Widgets.frenkey.LootEx import settings
 from Widgets.frenkey.LootEx import enum
 from Widgets.frenkey.LootEx.enum import Campaign, EnemyType, MaterialType, ModType, ModifierIdentifier, ModifierValueArg
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -29,6 +28,12 @@ class IntRange:
             return self.min == other.min and self.max == other.max
         return False
     
+def get_server_language() -> ServerLanguage:
+    from Widgets.frenkey.LootEx import settings
+
+    language = settings.Settings().language
+    return language
+
 @dataclass
 class NickItemEntry:
     Week: date
@@ -413,7 +418,7 @@ class Item():
         
     def get_name(self, language : Optional[ServerLanguage] = None) -> str:
         if language is None:
-            language = settings.current.language
+            language = get_server_language()
         
         name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))
@@ -461,7 +466,7 @@ class Item():
             if self.profession is None or self.profession == Profession._None:
                 self.profession = item.profession
                 
-        self.update_language(settings.current.language)
+        self.update_language(get_server_language())
                 
     def to_json(self) -> dict:
         def get_wiki_url():
@@ -658,7 +663,7 @@ class ItemMod():
     
     def get_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
-            language = settings.current.language
+            language = get_server_language()
                                 
         name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))
@@ -667,7 +672,7 @@ class ItemMod():
     
     def get_full_name(self, language : Optional[ServerLanguage] = None) -> str:
         if language is None:
-            language = settings.current.language
+            language = get_server_language()
         
         name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))                
@@ -675,7 +680,7 @@ class ItemMod():
     
     def get_description(self, language : Optional[ServerLanguage] = None) -> str:
         if language is None:
-            language = settings.current.language
+            language = get_server_language()
             
         description = self.descriptions.get(
             language, self.descriptions.get(ServerLanguage.English, ""))
@@ -734,7 +739,7 @@ class ItemMod():
     
     def get_custom_description(self, language: Optional[ServerLanguage] = None, *, arg1_min: Optional[int] = None, arg1_max: Optional[int] = None, arg2_min: Optional[int] = None, arg2_max: Optional[int] = None) -> str:
         if language is None:
-            language = settings.current.language
+            language = get_server_language()
 
         description = self.descriptions.get(
             language, self.descriptions.get(ServerLanguage.English, "")
@@ -849,7 +854,7 @@ class Rune(ItemMod):
         
     def get_applied_name(self, language: Optional[ServerLanguage] = None) -> str:
         if language is None:
-            language = settings.current.language
+            language = get_server_language()
                                 
         name = self.names.get(
             language, self.names.get(ServerLanguage.English, ""))

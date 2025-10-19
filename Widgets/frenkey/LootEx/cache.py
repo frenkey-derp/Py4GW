@@ -1,7 +1,6 @@
 from datetime import datetime
 from PyItem import DyeInfo, ItemModifier, PyItem
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Widgets.frenkey.LootEx import models, settings, skin_rule, utility, weapon_rule
 from Py4GWCoreLib import ItemArray
 from Py4GWCoreLib import Item
 from Py4GWCoreLib.Item import Bag
@@ -9,14 +8,15 @@ from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, Console, DyeColor, ItemType, ModelID, Rarity
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.enum import ModifierIdentifier
-from Widgets.frenkey.LootEx.profile import RuneConfiguration
 
 
 data = Data()
 
 class Cached_Item:
     def __init__(self, item_id: int, slot: int = -1):
-        from Widgets.frenkey.LootEx import utility, settings, models, enum
+        from Widgets.frenkey.LootEx import utility, models, enum, skin_rule, weapon_rule
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
 
         item = Item.item_instance(item_id) if item_id > 0 else None
         
@@ -71,8 +71,8 @@ class Cached_Item:
         
         # self.config = settings.current.profile.items.get_item_config(
         #     self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else None
-        self.is_blacklisted: bool = settings.current.profile.is_blacklisted(
-            self.item_type, self.model_id) if settings.current.profile and self.model_id > -1 else False
+        self.is_blacklisted: bool = settings.profile.is_blacklisted(
+            self.item_type, self.model_id) if settings.profile and self.model_id > -1 else False
 
         self.action: enum.ItemAction = enum.ItemAction.NONE
         self.savlage_tries: int = 0
@@ -105,9 +105,9 @@ class Cached_Item:
                 
         self.skin_rule: skin_rule.SkinRule | None = None
         self.matches_skin_rule: bool = False
-        if settings.current.profile and settings.current.profile.skin_rules_by_model.get(self.item_type, {}).get(self.model_id, None):
+        if settings.profile and settings.profile.skin_rules_by_model.get(self.item_type, {}).get(self.model_id, None):
             self.skin_rule = next((
-                rule for rule in settings.current.profile.skin_rules_by_model[self.item_type][self.model_id]
+                rule for rule in settings.profile.skin_rules_by_model[self.item_type][self.model_id]
                 if rule.skin == self.skin and self.skin is not None
             ), None)      
             
@@ -116,8 +116,8 @@ class Cached_Item:
         self.weapon_rule: weapon_rule.WeaponRule | None = None
         self.matches_weapon_rule: bool = False
         
-        if settings.current.profile and settings.current.profile.weapon_rules.get(self.item_type, {}):
-            self.weapon_rule = settings.current.profile.weapon_rules[self.item_type]
+        if settings.profile and settings.profile.weapon_rules.get(self.item_type, {}):
+            self.weapon_rule = settings.profile.weapon_rules[self.item_type]
         
         if self.weapon_rule:
             self.matches_weapon_rule = self.weapon_rule.matches(self)
@@ -125,7 +125,10 @@ class Cached_Item:
         pass
     
     def IsVial_Of_DyeToKeep(self) -> bool:
-        Profile = settings.current.profile
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        Profile = settings.profile
 
         if Profile is None:
             return False
@@ -191,6 +194,11 @@ class Cached_Item:
         self.has_increased_value = False
 
     def GetModsFromModifiers(self):
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
+        from Widgets.frenkey.LootEx import utility
+        
         modifier_values: list[tuple[int, int, int]] = [
             (modifier.GetIdentifier(), modifier.GetArg1(), modifier.GetArg2())
             for modifier in self.modifiers if modifier is not None
@@ -241,7 +249,7 @@ class Cached_Item:
                     
                     if is_max:
                         self.max_runes.append(rune)
-                        setting = settings.current.profile.runes.get(rune.identifier, None) if settings.current.profile else None
+                        setting = settings.profile.runes.get(rune.identifier, None) if settings.profile else None
                         
                         if setting:
                             if setting.valuable:
@@ -263,7 +271,7 @@ class Cached_Item:
                     
                     if is_max:
                         self.max_weapon_mods.append(weapon_mod)
-                        if settings.current.profile and settings.current.profile.weapon_mods.get(weapon_mod.identifier, {}).get(self.item_type.name, False):
+                        if settings.profile and settings.profile.weapon_mods.get(weapon_mod.identifier, {}).get(self.item_type.name, False):
                             self.weapon_mods_to_keep.append(weapon_mod)
                         
                     self.weapon_mods.append(weapon_mod)
@@ -272,36 +280,7 @@ class Cached_Item:
         self.mods = self.runes + self.weapon_mods
         self.has_mods = bool(self.runes or self.weapon_mods)
 
-    def GetModsX(self, tolerance: int = -1) -> tuple[list[models.Rune | models.WeaponMod], list[models.Rune], list[models.WeaponMod]]:
-        if self.mods is None:
-            if self.is_weapon or self.is_armor or self.item_type == ItemType.Rune_Mod:
-                mods, runes, weapon_mods = utility.Util.GetMods(
-                    self.id, tolerance)
-
-                self.mods = mods
-                self.runes = runes
-                self.weapon_mods = weapon_mods
-                self.is_highly_salvageable = any(
-                    mod.identifier == "AQAmCAAeKA==" for mod in mods)
-                self.has_increased_value = any(
-                    mod.identifier == "AQAl-AAvKA==" for mod in mods)
-
-                if settings.current.profile is not None and settings.current.profile.weapon_mods is not None:
-                    self.max_runes = [
-                        rune for rune in runes if rune.identifier in settings.current.profile.runes and settings.current.profile.runes[rune.identifier]
-                    ]
-
-                    self.max_weapon_mods = [
-                        mod for mod in weapon_mods if mod.identifier in settings.current.profile.weapon_mods and settings.current.profile.weapon_mods[mod.identifier].get(self.item_type.name, False)
-                    ]
-
-        self.mods = self.mods or []
-        self.runes = self.runes or []
-        self.weapon_mods = self.weapon_mods or []
-
-        return self.mods, self.runes, self.weapon_mods
-
-    def HasModToKeep(self) -> tuple[bool, list[models.Rune], list[models.WeaponMod]]:
+    def HasModToKeep(self) -> tuple[bool, list, list]:
         return True if self.max_runes or self.max_weapon_mods else False, self.max_runes, self.max_weapon_mods
 
     def HasMods(self) -> bool:

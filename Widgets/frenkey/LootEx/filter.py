@@ -26,7 +26,7 @@ class Filter:
         if not self.rarities.get(item.rarity, False) or self.rarities[item.rarity] is False:
             return False
 
-        if item.is_rare_weapon:
+        if item.is_rare_weapon and self.action is not ItemAction.Loot:
             return False
                 
         if self.action == ItemAction.Sell_To_Merchant:

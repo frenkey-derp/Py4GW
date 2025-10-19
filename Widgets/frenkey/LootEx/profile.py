@@ -1,6 +1,6 @@
 import os
 import json
-from Widgets.frenkey.LootEx import skin_rule, filter, item_configuration, weapon_rule, messaging
+from Widgets.frenkey.LootEx import skin_rule, filter, weapon_rule, messaging
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.item_configuration import *
 from Py4GWCoreLib import Console
@@ -161,7 +161,9 @@ class Profile:
         pass
 
     def save(self):
-        from Widgets.frenkey.LootEx import settings
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        
         self.setup_lookups()
         
         """Save the profile as a JSON file."""
@@ -206,7 +208,7 @@ class Profile:
         }
         
         file_path = os.path.join(
-            settings.current.profiles_path, f"{self.name}.json")
+            settings.profiles_path, f"{self.name}.json")
 
         with open(file_path, 'w') as file:
             # ConsoleLog(
@@ -216,11 +218,12 @@ class Profile:
         messaging.SendReloadProfiles()
 
     def load(self):
-        from Widgets.frenkey.LootEx import settings
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
         
         """Load the profile from a JSON file."""
         file_path = os.path.join(
-            settings.current.profiles_path, f"{self.name}.json")
+            settings.profiles_path, f"{self.name}.json")
 
         try:
             with open(file_path, 'r') as file:
@@ -281,11 +284,12 @@ class Profile:
                 "LootEx", f"Profile file {file_path} not found. Using default settings.", Console.MessageType.Warning)
 
     def delete(self):
-        from Widgets.frenkey.LootEx import settings
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
         
         """Delete the profile file."""
         file_path = os.path.join(
-            settings.current.profiles_path, f"{self.name}.json")
+            settings.profiles_path, f"{self.name}.json")
         if os.path.exists(file_path):
             os.remove(file_path)
             ConsoleLog(

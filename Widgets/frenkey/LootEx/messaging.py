@@ -160,6 +160,9 @@ def HandleMessages():
     HandleReceivedMessages()
     
 def HandleReceivedMessages():
+    from Widgets.frenkey.LootEx.settings import Settings
+    settings = Settings()
+    
     global is_collecting, current_account
     
     if not current_account or current_account != GLOBAL_CACHE.Player.GetAccountEmail():
@@ -182,10 +185,10 @@ def HandleReceivedMessages():
                         case enum.MessageActions.ReloadProfiles:
                             sharedMemoryManager.MarkMessageAsRunning(current_account, index)
                             
-                            if settings.current.current_character:
+                            if settings.current_character:
                                 ConsoleLog("LootEx", "Reloading profiles...")
-                                settings.current.ReloadProfiles()
-                                settings.current.SetProfile(settings.current.character_profiles[settings.current.current_character])
+                                settings.ReloadProfiles()
+                                settings.SetProfile(settings.character_profiles[settings.current_character])
                             else:
                                 ConsoleLog("LootEx", "Reloading profiles failed because no current character is set ...")
                                 
@@ -193,7 +196,7 @@ def HandleReceivedMessages():
                             
                         case enum.MessageActions.PauseDataCollection:
                             sharedMemoryManager.MarkMessageAsRunning(current_account, index)     
-                            is_collecting = settings.current.collect_items
+                            is_collecting = settings.collect_items
                                                    
                             data_collector.instance.stop_collection()                            
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
@@ -237,11 +240,11 @@ def HandleReceivedMessages():
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
                             
                         case enum.MessageActions.ShowLootExWindow:
-                            settings.current.manual_window_visible = True
+                            settings.manual_window_visible = True
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
                             
                         case enum.MessageActions.HideLootExWindow:
-                            settings.current.manual_window_visible = False
+                            settings.manual_window_visible = False
                             sharedMemoryManager.MarkMessageAsFinished(current_account, index)
                             
                         case enum.MessageActions.OpenXunlai:    
