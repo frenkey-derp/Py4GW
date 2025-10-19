@@ -733,8 +733,8 @@ class GUI:
         self.access_window.window_pos = (self.screen_width - window_width - 2, 2)
         self.access_window.window_size = (window_width, window_height)
         
-        # PyImGui.set_next_window_pos(self.screen_width - window_width - 2, 2)
-        # PyImGui.set_next_window_size(window_width, window_height - (len(self.settings.accounts)))
+        PyImGui.set_next_window_pos(self.screen_width - window_width - 2, 2)
+        PyImGui.set_next_window_size(window_width, window_height - (len(self.settings.accounts)))
 
         if self.access_window.begin(None, PyImGui.WindowFlags(PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoSavedSettings)):
             i = 0
@@ -749,12 +749,13 @@ class GUI:
                 i += 1
 
                 is_current_account=account.AccountEmail == self.settings.get_account_mail()
-
+                ctrl_pressed = PyImGui.get_io().key_ctrl
+                
                 if self.draw_account_button(style=style, account=account, size=account_btn_size, is_current_account=is_current_account, index=i):
                     if not is_current_account:                            
-                        set_window_active(account, self.settings)
+                        set_window_active(account, self.settings, ctrl_pressed)
                         
-                        if own_region:
+                        if own_region and not ctrl_pressed:
                             ConsoleLog(MODULE_NAME, f"Moving own client to own region {own_region.name}.")
                             Console.set_window_geometry(own_region.x, own_region.y, own_region.w, own_region.h)
         

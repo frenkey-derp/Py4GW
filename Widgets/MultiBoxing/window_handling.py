@@ -10,14 +10,14 @@ from Widgets.MultiBoxing.settings import Settings
 
 MODULE_NAME = __file__.split("\\")[-2]
 
-def set_window_active(acc: AccountData, settings: Settings):
+def set_window_active(acc: AccountData, settings: Settings, ctrl_pressed: bool = False):
     try:
         ConsoleLog(MODULE_NAME, f"Setting window active for account: {acc.AccountEmail}", Console.MessageType.Info,False)
         account_mail = settings.get_account_mail()
         
         GLOBAL_CACHE.ShMem.SendMessage(account_mail, acc.AccountEmail, SharedCommandType.ActivateClient, (0,0,0,0))
         
-        if settings.move_slave_to_main:
+        if settings.move_slave_to_main and not ctrl_pressed:
             main_region = settings.main_region
             if main_region:
                 
