@@ -133,6 +133,18 @@ class DamageType(IntEnum):
     unknown_14 = 14
     unknown_15 = 15
 
+class EnemyType(IntEnum):
+    Undead = 0
+    Charr = 1
+    Troll = 2
+    Plant = 3
+    Skeleton = 4
+    Giant = 5
+    Dwarf = 6
+    Tengu = 7
+    Demon = 8
+    Dragon = 9
+    Ogre = 10
 
 #region WeaponType
 class Weapon(IntEnum):

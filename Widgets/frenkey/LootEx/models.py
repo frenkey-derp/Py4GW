@@ -1047,14 +1047,11 @@ class ItemMod():
         return description
 
 @dataclass
-class Rune(ItemMod):
-    _rune_identifier_lookup: dict[str, str] = field(default_factory=dict)
-    
+class Rune(ItemMod):    
     vendor_updated: datetime = datetime.min
     vendor_value: int = 0
     profession: Profession = Profession._None
     rarity: Rarity = Rarity.White
-    
     
     model_id: int = -1
     model_file_id: int = -1
