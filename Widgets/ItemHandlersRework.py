@@ -4,15 +4,19 @@ from Py4GWCoreLib import UIManager
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.Routines import Routines
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+from Widgets.ItemHandlersRework.Rules import ByModelIdRule, BySkinRule, RuneRule, WeaponModRule
 
 for mod in list(sys.modules.keys()):
     if "ItemHandlersRework" in mod:
         del sys.modules[mod]
                 
 from Widgets.ItemHandlersRework.Helpers import IsWeaponType
+from Widgets.ItemHandlersRework.types import ItemAction
 from Widgets.ItemHandlersRework.ItemData import ITEMS
 from Widgets.ItemHandlersRework.Mods import RUNES, WEAPON_MODS
 from Widgets.ItemHandlersRework.ItemCache import ITEM_CACHE
@@ -49,6 +53,17 @@ ConsoleLog(MODULE_NAME, "Module loaded.")
 ConsoleLog(MODULE_NAME, f"{len(RUNES)} Runes loaded.")
 ConsoleLog(MODULE_NAME, f"{len(WEAPON_MODS)} Weapon Upgrades loaded.")
 ConsoleLog(MODULE_NAME, f"{len(ITEMS.All)} Items loaded.")
+
+xunlai_vault_config.add_rule(ByModelIdRule(name="ToT Bags", action=ItemAction.Stash, item_type=ItemType.Usable, model_id=ModelID.Trick_Or_Treat_Bag.value))
+xunlai_vault_config.add_rule(RuneRule(name="Sup Vigor", action=ItemAction.Stash, rune_id="Rune of Superior Vigor"))
+xunlai_vault_config.add_rule(WeaponModRule(name="of Necromancer", action=ItemAction.Stash, weapon_mod_id="of the Necromancer", item_types={ItemType.Staff : True, ItemType.Wand : True}))
+xunlai_vault_config.add_rule(BySkinRule(name="Shadow Blades", action=ItemAction.Stash, skin_name="Shadow Blade.png"))
+
+xunlai_vault_config.save_config()
+xunlai_vault_config.load_config()
+
+for rule in xunlai_vault_config.rules:
+    ConsoleLog(MODULE_NAME, f"Xunlai Vault Rule: {rule.name} | Action: {rule.action.name} | Type: {type(rule).__name__}")
 
 
 def configure():

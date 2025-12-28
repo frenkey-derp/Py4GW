@@ -6,6 +6,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
+from Widgets.ItemHandlersRework.Helpers import IsWeaponType
 from Widgets.ItemHandlersRework.ItemCache import ITEM_CACHE
 from Widgets.ItemHandlersRework.types import InherentSlotType, ItemAction, RuleType
        
@@ -106,9 +107,8 @@ class RuleInterface:
 class DyeRule(RuleInterface):
     dye_colors : dict[DyeColor, bool] = field(default_factory=lambda: {dye_color: True for dye_color in DyeColor})
         
-    @override
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
         data.update({
             "dye_colors": {dye_color.name: enabled for dye_color, enabled in self.dye_colors.items()}
         })
@@ -140,9 +140,8 @@ class ByItemTypeRule(RuleInterface):
     item_type : ItemType
     rarities : Rarities = field(default_factory=Rarities)
         
-    @override
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
         data.update({
             "item_type": self.item_type.name,
             "rarities": self.rarities.to_dict()
@@ -180,9 +179,8 @@ class ByModelIdRule(RuleInterface):
     
     rarities : Rarities = field(default_factory=Rarities)
     
-    @override
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
         data.update({
             "item_type": self.item_type.name,
             "model_id": self.model_id,
@@ -225,9 +223,8 @@ class ByWeaponTypeRule(RuleInterface):
     inherent_slot : InherentSlotType = InherentSlotType.Any
     inherent_mods : dict[str, ModInfo] = field(default_factory=dict)
             
-    @override
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
         data.update({
             "weapon_type": self.weapon_type.name,
             "rarities": self.rarities.to_dict(),
@@ -274,9 +271,8 @@ class ByWeaponSkinRule(RuleInterface):
     inherent_slot : InherentSlotType = InherentSlotType.Any
     inherent_mods : dict[str, ModInfo] = field(default_factory=dict)
         
-    @override
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
         data.update({
             "skin_name": self.skin_name,
             "rarities": self.rarities.to_dict(),
@@ -330,9 +326,8 @@ class BySkinRule(RuleInterface):
     
     rarities : Rarities = field(default_factory=Rarities)
 
-    @override
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
         data.update({
             "skin_name": self.skin_name,
             "rarities": self.rarities.to_dict()
@@ -365,16 +360,25 @@ class BySkinRule(RuleInterface):
 @RuleInterface.register(RuleType.WeaponMod)
 @dataclass(slots=True)
 class WeaponModRule(RuleInterface):
-    weapon_mod_id : str 
-    
-    type : RuleType = RuleType.WeaponMod
+    weapon_mod_id : str
+    item_types : dict[ItemType, bool] = field(default_factory=dict)
 
-    @override
+    def __post_init__(self):
+        if not self.item_types:
+            for item_type in ItemType:
+                if IsWeaponType(item_type):
+                    self.item_types[item_type] = True
+
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
+        
+        data.update({
+            "weapon_mod_id": self.weapon_mod_id,
+            "item_types": {item_type.name: enabled for item_type, enabled in self.item_types.items()}
+        })
+        
         return data
     
-    @override
     @classmethod
     def _from_dict_internal(cls, data: dict):
         name = data.get("name", "Unnamed Rule")
@@ -383,8 +387,10 @@ class WeaponModRule(RuleInterface):
         action = ItemAction[action_str]
         
         weapon_mod_id = data.get("weapon_mod_id", "")
+        item_types_data = data.get("item_types", {})
+        item_types = {ItemType[item_type]: enabled for item_type, enabled in item_types_data.items()}
                 
-        return cls(name=name, action=action, weapon_mod_id=weapon_mod_id, type=RuleType.WeaponMod)
+        return cls(name=name, action=action, weapon_mod_id=weapon_mod_id, item_types=item_types)
     
     def IsMatch(self, item_id) -> bool:
         item = ITEM_CACHE.GetItem(item_id)
@@ -401,15 +407,16 @@ class WeaponModRule(RuleInterface):
 @dataclass(slots=True)
 class RuneRule(RuleInterface):        
     rune_id : str   
-    
-    type : RuleType = RuleType.Rune
-    
-    @override
+        
     def to_dict(self) -> dict:
-        data = super().to_dict()
+        data = RuleInterface.to_dict(self)
+        
+        data.update({
+            "rune_id": self.rune_id
+        })
+        
         return data
     
-    @override
     @classmethod
     def _from_dict_internal(cls, data: dict):
         name = data.get("name", "Unnamed Rule")
@@ -418,7 +425,7 @@ class RuneRule(RuleInterface):
         
         rune_id = data.get("rune_id", "")
                 
-        return cls(name=name, rune_id=rune_id, action=action, type=RuleType.Rune)
+        return cls(name=name, rune_id=rune_id, action=action)
     
     def IsMatch(self, item_id) -> bool:
         item = ITEM_CACHE.GetItem(item_id)
