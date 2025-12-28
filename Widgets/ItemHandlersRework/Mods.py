@@ -12,10 +12,7 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 
 from Widgets.ItemHandlersRework.Helpers import GetServerLanguage, IsMatchingItemType
-from Widgets.ItemHandlersRework.types import ModType, ModifierIdentifier, ModifierValueArg, ModsModels
-
-item_textures_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
-missing_texture_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "missing_texture.png")
+from Widgets.ItemHandlersRework.types import ITEM_TEXTURES_PATH, MISSING_TEXTURE_PATH, ModType, ModifierIdentifier, ModifierValueArg, ModsModels
 
 @dataclass(slots=True)
 class Modifier():        
@@ -70,12 +67,12 @@ class Rune(Mod):
     matching_modifiers : list[Modifier] = field(default_factory=list)
     
     def __post_init__(self):
-        texture_file = os.path.join(item_textures_path, f"{self.inventory_icon}")
+        texture_file = os.path.join(ITEM_TEXTURES_PATH, f"{self.inventory_icon}")
         
         if texture_file and os.path.exists(texture_file):
             self.texture_file = texture_file
         else:
-            self.texture_file = missing_texture_path
+            self.texture_file = MISSING_TEXTURE_PATH
             
         self.vendor_updated = datetime.min
         self.vendor_value = 0

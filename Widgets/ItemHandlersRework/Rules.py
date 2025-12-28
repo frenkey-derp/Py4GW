@@ -221,7 +221,9 @@ class WeaponModRule(RuleInterface):
         super().__init__()
         
         self.type = RuleType.WeaponMod
-        self.action = action        
+        self.action = action       
+        
+        self.weapon_mod_id : str = "" 
     
     @override
     def to_dict(self) -> dict:
@@ -241,5 +243,41 @@ class WeaponModRule(RuleInterface):
         
         if item is None:
             return False
+        
+        if item.state.weapon_mods and item.state.weapon_mods.get(self.weapon_mod_id, None) is not None:
+            return True
+        
+        return False
+    
+class RuneRule(RuleInterface):
+    def __init__(self, action: ItemAction = ItemAction.NONE):
+        super().__init__()
+        
+        self.type = RuleType.Rune
+        self.action = action   
+          
+        self.rune_id : str = ""   
+    
+    @override
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        return data
+    
+    @override
+    @classmethod
+    def from_dict(cls, data: dict):
+        action_str = data.get("action", "NONE")
+        action = ItemAction[action_str]
+        
+        return cls(action=action)
+    
+    def IsMatch(self, item_id) -> bool:
+        item = ITEM_CACHE.GetItem(item_id)
+        
+        if item is None:
+            return False
+        
+        if item.state.runes and item.state.runes.get(self.rune_id, None) is not None:
+            return True
         
         return False

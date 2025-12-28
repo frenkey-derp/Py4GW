@@ -8,7 +8,8 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor, Professio
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
-from Widgets.ItemHandlersRework.Helpers import IsArmorType, IsWeaponType
+from Widgets.ItemHandlersRework.Helpers import IsArmorType, IsWeaponType, GetColorFromDyeInfo
+from Widgets.ItemHandlersRework.ItemData import ITEMS, ItemData
 from Widgets.ItemHandlersRework.Mods import Rune, WeaponMod
 from Widgets.ItemHandlersRework.types import ModType
 
@@ -84,13 +85,15 @@ class ItemState:
     is_customized: bool
 
     dye_info: DyeInfo
+    color: DyeColor
+    
     modifiers: list[tuple[int, int, int]]  # List of (identifier, arg1, arg2)
     
-    runes : Optional[dict[ModType, Rune]] = None 
-    max_runes : Optional[dict[ModType, Rune]] = None 
+    runes : Optional[dict[str, Rune]] = None 
+    max_runes : Optional[dict[str, Rune]] = None 
     
-    weapon_mods : Optional[dict[ModType, WeaponMod]] = None     
-    max_weapon_mods : Optional[dict[ModType, WeaponMod]] = None
+    weapon_mods : Optional[dict[str, WeaponMod]] = None     
+    max_weapon_mods : Optional[dict[str, WeaponMod]] = None
 
     @classmethod
     def from_item(cls, item: PyItem):
@@ -112,14 +115,14 @@ class ItemState:
         ]
         
         contained_runes = Rune.get_from_modifiers(modifiers)
-        runes = {rune.mod_type: rune for rune in contained_runes} if contained_runes else {}        
-        max_runes = {mod_type: rune for mod_type, rune in runes.items() if rune.is_maxed} if runes else {}
+        runes = {rune.identifier: rune for rune in contained_runes} if contained_runes else {}        
+        max_runes = {identifier: rune for identifier, rune in runes.items() if rune.is_maxed} if runes else {}
         
         item_type = ItemType(item.item_type.ToInt())
         contained_weapon_mods = WeaponMod.get_from_modifiers(modifiers, item_type, item.model_id)      
           
-        weapon_mods = {upgrade.mod_type: upgrade for upgrade in contained_weapon_mods} if contained_weapon_mods else {}
-        max_weapon_mods = {mod_type: upgrade for mod_type, upgrade in weapon_mods.items() if upgrade.IsMaxed} if weapon_mods else {}
+        weapon_mods = {upgrade.identifier: upgrade for upgrade in contained_weapon_mods} if contained_weapon_mods else {}
+        max_weapon_mods = {identifier: upgrade for identifier, upgrade in weapon_mods.items() if upgrade.IsMaxed} if weapon_mods else {}
         
         return cls(
             quantity=quantity,
@@ -132,6 +135,7 @@ class ItemState:
             is_storage_item=is_storage_item,
             is_customized=is_customized,
             dye_info=dye_info,
+            color=GetColorFromDyeInfo(dye_info),
             modifiers=modifiers,
             runes=runes,
             max_runes=max_runes,
@@ -163,27 +167,27 @@ class ItemState:
         self.is_storage_item = is_storage_item
         self.is_customized = is_customized
         self.dye_info = dye_info
+        self.color = GetColorFromDyeInfo(dye_info)
         self.modifiers = [
             (modifier.GetIdentifier(), modifier.GetArg1(), modifier.GetArg2())
             for modifier in item.modifiers if modifier is not None
         ]
         
         contained_runes = Rune.get_from_modifiers(self.modifiers)
-        self.runes = {rune.mod_type: rune for rune in contained_runes} if contained_runes else {}        
-        self.max_runes = {mod_type: rune for mod_type, rune in self.runes.items() if rune.is_maxed} if self.runes else {}
+        self.runes = {rune.identifier: rune for rune in contained_runes} if contained_runes else {}        
+        self.max_runes = {identifier: rune for identifier, rune in self.runes.items() if rune.is_maxed} if self.runes else {}
         
         item_type = ItemType(item.item_type.ToInt())
         contained_weapon_mods = WeaponMod.get_from_modifiers(self.modifiers, item_type, item.model_id)          
           
-        self.weapon_mods = {upgrade.mod_type: upgrade for upgrade in contained_weapon_mods} if contained_weapon_mods else {}
-        self.max_weapon_mods = {mod_type: upgrade for mod_type, upgrade in self.weapon_mods.items() if upgrade.IsMaxed} if self.weapon_mods else {}
+        self.weapon_mods = {upgrade.identifier: upgrade for upgrade in contained_weapon_mods} if contained_weapon_mods else {}
+        self.max_weapon_mods = {identifier: upgrade for identifier, upgrade in self.weapon_mods.items() if upgrade.IsMaxed} if self.weapon_mods else {}
+        
+        
     
 @dataclass(slots=True)
 class ItemDerived:
-    data: object | None
-    material: object | None
-
-    color: DyeColor
+    data: ItemData | None
     skin: str | None
 
     target_item_type: ItemType
@@ -205,11 +209,12 @@ class ItemDerived:
     @classmethod
     def from_item(cls, item: PyItem):
         # Placeholder for derived data population
+        item_data = ITEMS.get(ItemType(item.item_type.ToInt()), {}).get(item.model_id, None)
+        
         return cls(
-            data=None,
-            material=None,
-            color=DyeColor.NoColor,
-            skin=None,
+            data=item_data,
+            skin=item_data.inventory_icon if item_data else None,
+            
             target_item_type=ItemType.Unknown,
             attribute=Attribute.None_,
             requirements=0,

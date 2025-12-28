@@ -1,4 +1,6 @@
+from PyItem import DyeInfo
 from Py4GWCoreLib.UIManager import UIManager
+from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
@@ -52,3 +54,19 @@ def IsMatchingItemType(item_type1: ItemType, item_type2: ItemType):
         bool: True if they are the same or one is a subtype of the other, False otherwise.
     """
     return item_type1 == item_type2 or item_type1 in ITEM_GROUP_ITEM_TYPES.get(item_type2, [])
+
+
+@staticmethod
+def GetColorFromDyeInfo(dye_info: DyeInfo) -> DyeColor:
+    """
+    Get the dye color associated with the dye info.
+    Args:
+        dye_info (DyeInfo): The dye information.
+    Returns:
+        DyeColor: The dye color of the item.
+    """
+
+    if dye_info is not None:
+        color_id = dye_info.dye1.ToInt() if dye_info.dye1 else -1
+        color = DyeColor(color_id) if color_id != -1 else None
+        return color if color is not None else DyeColor.NoColor

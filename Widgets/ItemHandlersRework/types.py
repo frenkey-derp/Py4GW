@@ -1,6 +1,52 @@
 from enum import IntEnum
+import os
+
+import Py4GW
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 
+
+ITEM_TEXTURES_PATH = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
+MISSING_TEXTURE_PATH = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "missing_texture.png")
+
+class MaterialType(IntEnum):
+    None_ = 0
+    Common = 1
+    Rare = 2
+
+class ItemCategory(IntEnum):
+    None_ = 0
+    Sweet = 1
+    Party = 2
+    Alcohol = 3
+    DeathPenaltyRemoval = 4
+    Scroll = 5
+    Tome = 6
+    Key = 7
+    Material = 8
+    Trophy = 9
+    RewardTrophy = 10
+    QuestItem = 11
+    RareWeapon = 12
+        
+class ItemSubCategory(IntEnum):
+    None_ = 0
+    Points_1 = 1
+    Points_2 = 2
+    Points_3 = 3
+    Points_50 = 4
+    LuckyPoint = 5
+    CommonXPScroll = 6
+    RareXPScroll = 7
+    PassageScroll = 8
+    NormalTome = 9
+    EliteTome = 10
+    CoreKey = 11
+    PropheciesKey = 12
+    FactionsKey = 13
+    NightfallKey = 14
+    CommonMaterial = 15
+    RareMaterial = 16
+    
 class ItemAction(IntEnum):
     NONE = 0
     Loot = 1
@@ -30,6 +76,7 @@ class RuleType(IntEnum):
     ByModelId = 1
     BySkin = 2
     WeaponMod = 3
+    Rune = 4
 
 class ModType(IntEnum):
     None_ = 0
