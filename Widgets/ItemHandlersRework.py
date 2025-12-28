@@ -7,27 +7,39 @@ from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
-from Widgets.ItemHandlersRework.Helpers import IsWeaponType
-from Widgets.ItemHandlersRework.Mods import RUNES, WEAPON_MODS
 
 for mod in list(sys.modules.keys()):
     if "ItemHandlersRework" in mod:
         del sys.modules[mod]
                 
+from Widgets.ItemHandlersRework.Helpers import IsWeaponType
+from Widgets.ItemHandlersRework.ItemData import ITEMS
+from Widgets.ItemHandlersRework.Mods import RUNES, WEAPON_MODS
 from Widgets.ItemHandlersRework.ItemCache import ITEM_CACHE
-from Widgets.ItemHandlersRework.DestroyHandler import DestroyHandler
-from Widgets.ItemHandlersRework.MerchantHandler import MerchantHandler
-from Widgets.ItemHandlersRework.XunlaiVaultHandler import XunlaiVaultHandler
-from Widgets.ItemHandlersRework.SalvageHandler import SalvageHandler
+from Widgets.ItemHandlersRework.DestroyHandler import DestroyConfig, DestroyHandler
+from Widgets.ItemHandlersRework.MerchantHandler import MerchantConfig, MerchantHandler
+from Widgets.ItemHandlersRework.XunlaiVaultHandler import XunlaiVaultConfig, XunlaiVaultConfig, XunlaiVaultHandler
+from Widgets.ItemHandlersRework.SalvageHandler import SalvageConfig, SalvageHandler
 
 MODULE_NAME = "Item Handlers Rework"
 
 update_throttle = ThrottledTimer(50)
 
 destroy_handler = DestroyHandler()
+destroy_config = DestroyConfig()
+destroy_config.load_config()
+
 merchant_handler = MerchantHandler()
+merchant_config = MerchantConfig()
+merchant_config.load_config()
+
 xunlai_vault_handler = XunlaiVaultHandler()
+xunlai_vault_config = XunlaiVaultConfig()
+xunlai_vault_config.load_config()
+
 salvage_handler = SalvageHandler()
+salvage_config = SalvageConfig()
+salvage_config.load_config()
 
 
 items_per_tick = 5
@@ -36,6 +48,7 @@ current_processor = None
 ConsoleLog(MODULE_NAME, "Module loaded.")
 ConsoleLog(MODULE_NAME, f"{len(RUNES)} Runes loaded.")
 ConsoleLog(MODULE_NAME, f"{len(WEAPON_MODS)} Weapon Upgrades loaded.")
+ConsoleLog(MODULE_NAME, f"{len(ITEMS.All)} Items loaded.")
 
 
 def configure():

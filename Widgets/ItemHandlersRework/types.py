@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import IntEnum, auto
 import os
 
 import Py4GW
@@ -71,13 +71,42 @@ class ActionState(IntEnum):
     Failed = 4
 
 class RuleType(IntEnum):
+    '''
+    Types of rules for item handling.
+    The rules are processed in order of their type's enum value. If one rule matches, subsequent rules are not evaluated.
+    '''
+    
     NONE = -1
-    ByItemType = 0
-    ByModelId = 1
-    BySkin = 2
-    WeaponMod = 3
-    Rune = 4
-
+        
+    '''Rule type that matches the item type and the model id to specify pretty accurately an item.'''
+    ByWeaponSkin = auto()   
+    
+    '''Rule type that matches the skin for an item as well as specific mods and requirements.'''
+    BySkin = auto()
+         
+    '''Rule type that matches the item type and the model id to specify pretty accurately an item.'''
+    ByModelId = auto()
+    
+    '''Rule type that matches the weapon type, specific mods and requirements.'''
+    ByWeaponType = auto()    
+    
+    '''Rule type that matches against the weapon mods on the item.'''
+    WeaponMod = auto()
+    
+    '''Rule type that matches against the runes on the item.'''
+    Rune = auto()
+    
+    '''Rule type that matches the item type and rarity only.'''
+    ByItemType = auto()
+    
+    '''Rule type that matches only vial of dyes based on their dye color.'''
+    Dye = auto()
+    
+class InherentSlotType(IntEnum):
+    Any = 0
+    Old_School = 1
+    Inscribable = 2
+    
 class ModType(IntEnum):
     None_ = 0
     Inherent = 1
