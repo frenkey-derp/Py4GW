@@ -9,7 +9,7 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 
 from Widgets.ItemHandlersRework.Helpers import IsArmorType, IsWeaponType
-from Widgets.ItemHandlersRework.Mods import Rune, WeaponUpgrade
+from Widgets.ItemHandlersRework.Mods import Rune, WeaponMod
 from Widgets.ItemHandlersRework.types import ModType
 
 @dataclass(slots=True)
@@ -89,8 +89,8 @@ class ItemState:
     runes : Optional[dict[ModType, Rune]] = None 
     max_runes : Optional[dict[ModType, Rune]] = None 
     
-    weapon_upgrades : Optional[dict[ModType, WeaponUpgrade]] = None     
-    max_weapon_upgrades : Optional[dict[ModType, WeaponUpgrade]] = None
+    weapon_mods : Optional[dict[ModType, WeaponMod]] = None     
+    max_weapon_mods : Optional[dict[ModType, WeaponMod]] = None
 
     @classmethod
     def from_item(cls, item: PyItem):
@@ -116,10 +116,10 @@ class ItemState:
         max_runes = {mod_type: rune for mod_type, rune in runes.items() if rune.is_maxed} if runes else {}
         
         item_type = ItemType(item.item_type.ToInt())
-        contained_weapon_upgrades = WeaponUpgrade.get_from_modifiers(modifiers, item_type, item.model_id)      
+        contained_weapon_mods = WeaponMod.get_from_modifiers(modifiers, item_type, item.model_id)      
           
-        weapon_upgrades = {upgrade.mod_type: upgrade for upgrade in contained_weapon_upgrades} if contained_weapon_upgrades else {}
-        max_weapon_upgrades = {mod_type: upgrade for mod_type, upgrade in weapon_upgrades.items() if upgrade.IsMaxed} if weapon_upgrades else {}
+        weapon_mods = {upgrade.mod_type: upgrade for upgrade in contained_weapon_mods} if contained_weapon_mods else {}
+        max_weapon_mods = {mod_type: upgrade for mod_type, upgrade in weapon_mods.items() if upgrade.IsMaxed} if weapon_mods else {}
         
         return cls(
             quantity=quantity,
@@ -135,8 +135,8 @@ class ItemState:
             modifiers=modifiers,
             runes=runes,
             max_runes=max_runes,
-            weapon_upgrades=weapon_upgrades,
-            max_weapon_upgrades=max_weapon_upgrades
+            weapon_mods=weapon_mods,
+            max_weapon_mods=max_weapon_mods
         )
         
     def update(self, item: PyItem):
@@ -173,10 +173,10 @@ class ItemState:
         self.max_runes = {mod_type: rune for mod_type, rune in self.runes.items() if rune.is_maxed} if self.runes else {}
         
         item_type = ItemType(item.item_type.ToInt())
-        contained_weapon_upgrades = WeaponUpgrade.get_from_modifiers(self.modifiers, item_type, item.model_id)          
+        contained_weapon_mods = WeaponMod.get_from_modifiers(self.modifiers, item_type, item.model_id)          
           
-        self.weapon_upgrades = {upgrade.mod_type: upgrade for upgrade in contained_weapon_upgrades} if contained_weapon_upgrades else {}
-        self.max_weapon_upgrades = {mod_type: upgrade for mod_type, upgrade in self.weapon_upgrades.items() if upgrade.IsMaxed} if self.weapon_upgrades else {}
+        self.weapon_mods = {upgrade.mod_type: upgrade for upgrade in contained_weapon_mods} if contained_weapon_mods else {}
+        self.max_weapon_mods = {mod_type: upgrade for mod_type, upgrade in self.weapon_mods.items() if upgrade.IsMaxed} if self.weapon_mods else {}
     
 @dataclass(slots=True)
 class ItemDerived:

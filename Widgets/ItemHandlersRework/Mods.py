@@ -189,7 +189,7 @@ class Rune(Mod):
         return mod_infos   
 
 @dataclass(slots=True)
-class WeaponUpgrade(Mod):
+class WeaponMod(Mod):
     target_types : list[ItemType] = field(default_factory=list)
     item_mods : dict[ItemType, ModsModels] = field(default_factory=dict)
     item_type_specific : dict[ItemType, ModifierInfo] = field(default_factory=dict)
@@ -201,34 +201,34 @@ class WeaponUpgrade(Mod):
     IsMaxed : bool = False
     Description : str = ""
          
-    def copy(self) -> "WeaponUpgrade":
-        weapon_upgrade_copy = WeaponUpgrade()
-        weapon_upgrade_copy.identifier = self.identifier
-        weapon_upgrade_copy.descriptions = self.descriptions.copy()
-        weapon_upgrade_copy.names = self.names.copy()
-        weapon_upgrade_copy.mod_type = self.mod_type
-        weapon_upgrade_copy.target_types = self.target_types.copy()
-        weapon_upgrade_copy.item_mods = self.item_mods.copy()
-        weapon_upgrade_copy.item_type_specific = self.item_type_specific.copy()
-        weapon_upgrade_copy.modifiers_definition = self.modifiers_definition.copy()
-        weapon_upgrade_copy.Value = self.Value
-        weapon_upgrade_copy.Modifiers = self.Modifiers.copy()
-        weapon_upgrade_copy.Arg1 = self.Arg1
-        weapon_upgrade_copy.Arg2 = self.Arg2
-        weapon_upgrade_copy.IsMaxed = self.IsMaxed
-        weapon_upgrade_copy.Description = self.Description
+    def copy(self) -> "WeaponMod":
+        weapon_mod = WeaponMod()
+        weapon_mod.identifier = self.identifier
+        weapon_mod.descriptions = self.descriptions.copy()
+        weapon_mod.names = self.names.copy()
+        weapon_mod.mod_type = self.mod_type
+        weapon_mod.target_types = self.target_types.copy()
+        weapon_mod.item_mods = self.item_mods.copy()
+        weapon_mod.item_type_specific = self.item_type_specific.copy()
+        weapon_mod.modifiers_definition = self.modifiers_definition.copy()
+        weapon_mod.Value = self.Value
+        weapon_mod.Modifiers = self.Modifiers.copy()
+        weapon_mod.Arg1 = self.Arg1
+        weapon_mod.Arg2 = self.Arg2
+        weapon_mod.IsMaxed = self.IsMaxed
+        weapon_mod.Description = self.Description
         
-        return weapon_upgrade_copy
+        return weapon_mod
          
     @staticmethod
-    def get_from_modifiers(modifiers: list[tuple[int, int, int]], item_type: ItemType = ItemType.Unknown, model_id: int = -1) -> list["WeaponUpgrade"] | None:
+    def get_from_modifiers(modifiers: list[tuple[int, int, int]], item_type: ItemType = ItemType.Unknown, model_id: int = -1) -> list["WeaponMod"] | None:
         if not modifiers:
             return None
     
-        mod_infos : list["WeaponUpgrade"] = []
+        mod_infos : list["WeaponMod"] = []
         
         identifiers = [identifier for identifier, _, _ in modifiers]                   
-        potential_weapon_mods = [weapon_mod for weapon_mod in WEAPON_UPGRADES.values() if any(mod.identifier in identifiers for mod in weapon_mod.modifiers_definition)] 
+        potential_weapon_mods = [weapon_mod for weapon_mod in WEAPON_MODS.values() if any(mod.identifier in identifiers for mod in weapon_mod.modifiers_definition)] 
         
         for weapon_mod in potential_weapon_mods:
             found = False
@@ -358,15 +358,15 @@ class WeaponUpgrade(Mod):
             if not mod_info:
                 continue
             
-            weapon_upgrade = weapon_mod.copy()
-            weapon_upgrade.Value = get_mod_value(mod_info)
-            weapon_upgrade.Modifiers = matched_Modifiers
-            weapon_upgrade.Arg1 = mod_info.arg1
-            weapon_upgrade.Arg2 = mod_info.arg2
-            weapon_upgrade.IsMaxed = weapon_upgrade.Value >= mod_info.max 
-            weapon_upgrade.Description = weapon_upgrade.get_description()
+            weapon_mod = weapon_mod.copy()
+            weapon_mod.Value = get_mod_value(mod_info)
+            weapon_mod.Modifiers = matched_Modifiers
+            weapon_mod.Arg1 = mod_info.arg1
+            weapon_mod.Arg2 = mod_info.arg2
+            weapon_mod.IsMaxed = weapon_mod.Value >= mod_info.max 
+            weapon_mod.Description = weapon_mod.get_description()
                             
-            mod_infos.append(weapon_upgrade)
+            mod_infos.append(weapon_mod)
             
         return mod_infos
     
@@ -466,25 +466,25 @@ class WeaponUpgrade(Mod):
     
     @classmethod
     def from_json(cls, data: dict):
-        weapon_upgrade = cls()
-        weapon_upgrade.identifier = data.get("Identifier", "")
+        weapon_mod = cls()
+        weapon_mod.identifier = data.get("Identifier", "")
         
-        weapon_upgrade.descriptions = {ServerLanguage[lang]: desc for lang,
+        weapon_mod.descriptions = {ServerLanguage[lang]: desc for lang,
                    desc in data.get("Descriptions", {}).items()}
         
-        weapon_upgrade.names = {ServerLanguage[lang]: name for lang,
+        weapon_mod.names = {ServerLanguage[lang]: name for lang,
                    name in data.get("Names", {}).items()}
         
-        weapon_upgrade.mod_type = ModType[data.get("ModType", ModType.None_.name)]
-        weapon_upgrade.item_mods = {ItemType[item_type]: ModsModels[mod_info] for item_type, mod_info in data.get("ItemMods", {}).items()}
-        weapon_upgrade.target_types = [ItemType[target_type] for target_type in data.get("TargetTypes", [])]
-        weapon_upgrade.upgrade_exists = data.get("UpgradeExists", True)
-        weapon_upgrade.item_type_specific = {ItemType[item_type]: ModifierInfo.from_dict(mod_info) for item_type, mod_info in data.get("ItemTypeSpecific", {}).items()}
-        weapon_upgrade.modifiers_definition = [ModifierInfo.from_dict(mod_info) for mod_info in data.get("Modifiers", [])]
-        return weapon_upgrade
+        weapon_mod.mod_type = ModType[data.get("ModType", ModType.None_.name)]
+        weapon_mod.item_mods = {ItemType[item_type]: ModsModels[mod_info] for item_type, mod_info in data.get("ItemMods", {}).items()}
+        weapon_mod.target_types = [ItemType[target_type] for target_type in data.get("TargetTypes", [])]
+        weapon_mod.upgrade_exists = data.get("UpgradeExists", True)
+        weapon_mod.item_type_specific = {ItemType[item_type]: ModifierInfo.from_dict(mod_info) for item_type, mod_info in data.get("ItemTypeSpecific", {}).items()}
+        weapon_mod.modifiers_definition = [ModifierInfo.from_dict(mod_info) for mod_info in data.get("Modifiers", [])]
+        return weapon_mod
 
 RUNES : dict[str, Rune] = {}
-WEAPON_UPGRADES : dict[str, WeaponUpgrade] = {}
+WEAPON_MODS : dict[str, WeaponMod] = {}
 
 file_directory = os.path.dirname(os.path.abspath(__file__))
 data_directory = os.path.join(file_directory, "data")
@@ -495,7 +495,7 @@ with open(path, 'r', encoding='utf-8') as file:
 
     RUNES = {rune_data["Identifier"]: Rune.from_json(rune_data) for rune_data in runes.values()}
     
-path = os.path.join(data_directory, "weapon_upgrades.json")
+path = os.path.join(data_directory, "weapon_mods.json")
 with open(path, 'r', encoding='utf-8') as file:
-    weapon_upgrades = json.load(file)
-    WEAPON_UPGRADES = {wu_data["Identifier"]: WeaponUpgrade.from_json(wu_data) for wu_data in weapon_upgrades.values()}
+    weapon_mods = json.load(file)
+    WEAPON_MODS = {wu_data["Identifier"]: WeaponMod.from_json(wu_data) for wu_data in weapon_mods.values()}

@@ -19,8 +19,7 @@ class test:
     def load_from_dict(self, data: dict):
         rules_data = data.get("rules", [])
         self.rules = [RuleInterface.from_dict(rule_data) for rule_data in rules_data]
-        
-
+       
 class Rarities:
     def __init__(self):
         self.White = True
@@ -222,7 +221,7 @@ class WeaponModRule(RuleInterface):
         super().__init__()
         
         self.type = RuleType.WeaponMod
-        self.action = action
+        self.action = action        
     
     @override
     def to_dict(self) -> dict:
@@ -238,4 +237,9 @@ class WeaponModRule(RuleInterface):
         return cls(action=action)
     
     def IsMatch(self, item_id) -> bool:
+        item = ITEM_CACHE.GetItem(item_id)
+        
+        if item is None:
+            return False
+        
         return False

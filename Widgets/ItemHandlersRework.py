@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Widgets.ItemHandlersRework.Helpers import IsWeaponType
-from Widgets.ItemHandlersRework.Mods import RUNES, WEAPON_UPGRADES
+from Widgets.ItemHandlersRework.Mods import RUNES, WEAPON_MODS
 
 for mod in list(sys.modules.keys()):
     if "ItemHandlersRework" in mod:
@@ -35,7 +35,7 @@ current_processor = None
 
 ConsoleLog(MODULE_NAME, "Module loaded.")
 ConsoleLog(MODULE_NAME, f"{len(RUNES)} Runes loaded.")
-ConsoleLog(MODULE_NAME, f"{len(WEAPON_UPGRADES)} Weapon Upgrades loaded.")
+ConsoleLog(MODULE_NAME, f"{len(WEAPON_MODS)} Weapon Upgrades loaded.")
 
 
 def configure():
@@ -54,7 +54,7 @@ def items_processor():
         if IsWeaponType(item_view.base.item_type) is False:
             continue
         
-        ConsoleLog(MODULE_NAME, f"Processed item [{item_id:04}] | {item_view.base.item_type.name} | {item_view.base.model_id} | Runes {", ".join(str(rune.names.get(ServerLanguage.English, f"No Name Found ('{rune.identifier}').")) for rune in item_view.state.runes.values()) if item_view.state.runes else 'None'} | Weapon Upgrades {", ".join(str(upgrade.names.get(ServerLanguage.English, f"No Name Found ('{upgrade.identifier}').")) for upgrade in item_view.state.weapon_upgrades.values()) if item_view.state.weapon_upgrades else 'None'}")
+        ConsoleLog(MODULE_NAME, f"Processed item [{item_id:04}] | {item_view.base.item_type.name} | {item_view.base.model_id} | Runes {", ".join(str(rune.names.get(ServerLanguage.English, f"No Name Found ('{rune.identifier}').")) for rune in item_view.state.runes.values()) if item_view.state.runes else 'None'} | Weapon Upgrades {", ".join(str(upgrade.names.get(ServerLanguage.English, f"No Name Found ('{upgrade.identifier}').")) for upgrade in item_view.state.weapon_mods.values()) if item_view.state.weapon_mods else 'None'}")
         
         count += 1
         
