@@ -12,7 +12,7 @@ def SameMapAsAccount(account : AccountData):
     own_language = GLOBAL_CACHE.Map.GetLanguage()[0]
     return own_map_id == account.MapID and own_region == account.MapRegion and own_district == account.MapDistrict and own_language == account.MapLanguage
 
-def DistanceFromLeader(cached_data:CacheData):
+def DistanceFromLeader(cached_data:CacheData):    
     return Utils.Distance(GLOBAL_CACHE.Agent.GetXY(GLOBAL_CACHE.Party.GetPartyLeaderID()),GLOBAL_CACHE.Agent.GetXY(GLOBAL_CACHE.Player.GetAgentID()))
 
 def DistanceFromWaypoint(posX,posY):
