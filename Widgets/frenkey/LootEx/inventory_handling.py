@@ -54,19 +54,6 @@ class LootExAutoInventoryHandler(AutoInventoryHandler):
 
         self.inventory_handler = inventory_handler
         self._initialized = True
-        
-        
-    @override
-    def AutoID(self, item_id):
-        # Let LootEx handle identification
-        ConsoleLog("LootExAutoInventoryHandler", f"AutoID called for item_id: {item_id}. Let LootEx handle identification.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
-        pass       
-    
-    @override
-    def AutoSalvage(self, item_id):
-        # Let LootEx handle salvaging
-        ConsoleLog("LootExAutoInventoryHandler", f"AutoSalvage called for item_id: {item_id}. Let LootEx handle salvaging.", Console.MessageType.Debug, self.LOG_LOOTEX_AUTO_INVENTORY_HANDLER)
-        pass
     
     @override
     def IdentifyItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False):

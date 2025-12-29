@@ -5124,7 +5124,7 @@ class UI:
                 ImGui.end_child()
                 return
             
-            if ImGui.begin_child(key + "Icon", (64, 0), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+            if ImGui.begin_child(key + "Icon", (64, 0), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                
                 if item.IconExists:
                     ImGui.image(item.IconPath, (64, 64))
                 else:

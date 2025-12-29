@@ -2,6 +2,8 @@
 import os
 from typing import Optional
 
+from Widgets.frenkey.Core.utility import get_image_name
+from Widgets.frenkey.LootEx.enum import ITEM_TEXTURE_FOLDER
 
 class ScrapedSalvageResult:
     def __init__(self, name: str, min_amount: int = -1, max_amount: int = -1, amount: int = -1):
@@ -46,6 +48,7 @@ class ScrapedItem:
         self.acquisition_tree : Optional[list[dict]] = None
         self.description : Optional[str] = None
         self._inventory_icon_exists : Optional[bool] = None
+        self.__texture_path : Optional[str] = None
     
     def compose_tree(self, tree, indent=0) -> str:
         if tree is None:
@@ -74,24 +77,20 @@ class ScrapedItem:
         if self.inventory_icon_url is None:
             return ""
         
+        if self.__texture_path:
+            return self.__texture_path
+        
         relative_file_path_from_url = self.inventory_icon_url.lstrip("/\\").replace("/", "\\")
         file_name = os.path.basename(relative_file_path_from_url)
-        path = os.path.join("C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\wiki_lookup\\images", file_name)
+        path = os.path.join(ITEM_TEXTURE_FOLDER, get_image_name(file_name))
+        self.__texture_path = path
         
         return path
     
     @property
     def IconExists(self) -> bool:
         if self._inventory_icon_exists is None:
-            relative_file_path_from_url = self.inventory_icon_url.lstrip("/\\").replace("/", "\\") if self.inventory_icon_url else None 
-            file_name = os.path.basename(relative_file_path_from_url ) if relative_file_path_from_url else None
-            if file_name is None:
-                self._inventory_icon_exists = False
-                return self._inventory_icon_exists
-            
-            path = os.path.join("C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\wiki_lookup\\images", file_name)
-            
-            self._inventory_icon_exists = os.path.exists(path) if path else False
+            self._inventory_icon_exists = os.path.exists(self.IconPath) if self.IconPath else False
         
         return bool(self._inventory_icon_exists)
         
