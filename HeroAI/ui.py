@@ -6,15 +6,13 @@ import os
 import random
 from typing import Optional
 from Py4GW import Console
-import Py4GW
 import PyImGui
-from PyUIManager import UIFrame
 from HeroAI import windows
 from HeroAI.cache_data import CacheData
 from HeroAI.commands import HeroAICommands
 from HeroAI.constants import NUMBER_OF_SKILLS, PARTY_WINDOW_HASH, SKILLBAR_WINDOW_HASH
 from HeroAI.settings import Settings
-from HeroAI.types import Docked, GameOptionStruct
+from HeroAI.types import Docked, GameOptionStruct, FramePosition
 from HeroAI.utils import IsHeroFlagged, SameMapAsAccount
 from HeroAI.windows import CompareAndSubmitGameOptions
 from Py4GWCoreLib import ImGui
@@ -22,7 +20,7 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, SharedMessage
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.Style import Style
-from Py4GWCoreLib.ImGui_src.Textures import GameTexture, GameTexture, RegionFlags, TextureSliceMode, TextureState, ThemeTexture, ThemeTextures
+from Py4GWCoreLib.ImGui_src.Textures import GameTexture, GameTexture, TextureState, ThemeTexture, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.ImGui_src.types import Alignment, HorizontalAlignment, ImGuiStyleVar, StyleTheme, VerticalAlignment
 from Py4GWCoreLib.Overlay import Overlay
@@ -33,7 +31,6 @@ from Py4GWCoreLib.enums_src.IO_enums import Key
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
-from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer, Timer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GW_widget_manager import WidgetHandler
@@ -86,7 +83,8 @@ casting_animation_timer.Start()
 
 dialog_throttle = ThrottledTimer(500)
 party_throttle = ThrottledTimer(500)
-party_member_frames = []
+party_search_throttle = ThrottledTimer(500)
+party_member_frames : list[FramePosition] = []
 
 commands = HeroAICommands()
 gray_color = Color(150, 150, 150, 255)
@@ -2223,21 +2221,20 @@ def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, Win
         party_members_hash = 3332025202 if GLOBAL_CACHE.Map.IsOutpost() else 3332025202
         offsets = [1,8,0,0,0,0] if GLOBAL_CACHE.Map.IsOutpost() else [0,0,0,0]
         
+        party_member_frames = []    
         fid = UIManager.GetChildFrameID(party_members_hash, offsets)
         if fid == 0 or not UIManager.FrameExists(fid):
             return
-            
-        party_member_frames = []        
+                
         for i in range(1, 12):
-            fid = UIManager.GetChildFrameID(party_members_hash, [1,8,0,0,0,0,i] if GLOBAL_CACHE.Map.IsOutpost() else [0,0,0,0,i])
+            fid = UIManager.GetChildFrameID(party_members_hash, [1,8,0,0,0,0,i,0] if GLOBAL_CACHE.Map.IsOutpost() else [0,0,0,0,i,0])
             if fid == 0 or not UIManager.FrameExists(fid):
                 continue
             
-            frame_coords = UIManager.GetFrameCoords(fid)
-            party_member_frames.append((fid, frame_coords))
+            party_member_frames.append(FramePosition(fid))
             
         ## sort frames by Y
-        party_member_frames.sort(key=lambda x: (x[1][1], x[1][0]))  # Sort by Y, then X
+        party_member_frames.sort(key=lambda x: (x.position.top_on_screen, x.position.left_on_screen))  # Sort by Y, then X
     
     style = ImGui.get_style()
     texture = ThemeTextures.Hero_Panel_Toggle_Base.value.get_texture()
@@ -2245,7 +2242,7 @@ def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, Win
     if not party_member_frames:
         return
     
-    for i, (fid, frame_coords) in enumerate(party_member_frames, start=1):      
+    for i, frame_info in enumerate(party_member_frames, start=1):      
         account = next((acc for acc in accounts if acc.PartyPosition == i - 1), None)
         
         if account and account.AccountEmail != GLOBAL_CACHE.Player.GetAccountEmail():
@@ -2256,16 +2253,16 @@ def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, Win
             
             if window_info:        
                 is_minimalus = style.Theme is StyleTheme.Minimalus  
-                button_size = frame_coords[3] - frame_coords[1] + (0 if is_minimalus else -4)   
+                button_size = frame_info.position.bottom_on_screen - frame_info.position.top_on_screen + (0 if is_minimalus else -4)   
                 button_rect = (
-                    frame_coords[2] - button_size + (0 if is_minimalus else 0), 
-                    frame_coords[3] - button_size + (-1 if is_minimalus else -2),
-                    frame_coords[2],
-                    frame_coords[3] + (-3 if is_minimalus else 0)
+                    frame_info.position.right_on_screen - button_size + (0 if is_minimalus else 0), 
+                    frame_info.position.bottom_on_screen - button_size + (-1 if is_minimalus else -2),
+                    frame_info.position.right_on_screen,
+                    frame_info.position.bottom_on_screen + (-3 if is_minimalus else 0)
                     )
                                             
-                PyImGui.set_next_window_pos((frame_coords[0] - 10, frame_coords[1] - 10), PyImGui.ImGuiCond.Always)
-                PyImGui.set_next_window_size((frame_coords[2] - frame_coords[0] + 20 , frame_coords[3] - frame_coords[1] +20), PyImGui.ImGuiCond.Always)
+                PyImGui.set_next_window_pos((frame_info.position.left_on_screen - 10, frame_info.position.top_on_screen - 10), PyImGui.ImGuiCond.Always)
+                PyImGui.set_next_window_size((frame_info.position.right_on_screen - frame_info.position.left_on_screen + 20 , frame_info.position.bottom_on_screen - frame_info.position.top_on_screen +20), PyImGui.ImGuiCond.Always)
                 flags = PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoSavedSettings | PyImGui.WindowFlags.NoFocusOnAppearing | PyImGui.WindowFlags.NoBackground
                 
                 if not ImGui.is_mouse_in_rect((*button_rect[:2], button_size, button_size)):
@@ -2336,11 +2333,18 @@ def draw_panel_toggle(i, account : AccountData, button_rect : tuple[float, float
         if PyImGui.is_mouse_clicked(0):  
             window_info.open = not window_info.open
             settings.save_settings()
-            
 
 show_accounts_in_party_search : bool = False
 last_active_tab : int = -1
 selected_account : str = ""
+
+party_search : Optional[FramePosition] = None
+player_tab : Optional[FramePosition] = None
+hero_tab : Optional[FramePosition] = None
+henchmen_tab : Optional[FramePosition] = None
+active_tab : Optional[FramePosition] = None
+active_tab_id : int = -1
+is_player_tab : bool = True
 
 def draw_tab_control(rect : tuple[float, float, float, float], label: str = "Accounts##PartySearchTab"):
     global show_accounts_in_party_search
@@ -2398,29 +2402,41 @@ def draw_tab_control(rect : tuple[float, float, float, float], label: str = "Acc
 
 def draw_party_search_overlay(accounts: list[AccountData], cached_data: CacheData):
     global show_accounts_in_party_search, last_active_tab, selected_account
+    global party_search, player_tab, hero_tab, henchmen_tab, active_tab, is_player_tab
     
-    party_search_id = UIManager.GetChildFrameID(3199024334, [14])
-    if party_search_id == 0 or not UIManager.FrameExists(party_search_id):
+    if party_search_throttle.IsExpired():
+        party_search_throttle.Reset()
+            
+        party_search_id = UIManager.GetChildFrameID(3199024334, [14])
+        if party_search_id == 0 or not UIManager.FrameExists(party_search_id):
+            party_search = None
+            party_search_throttle.SetThrottleTime(500)
+            return
+        
+        party_search = FramePosition(party_search_id)
+        
+        players_tab_id = UIManager.GetChildFrameID(3199024334, [14, 4294967295])    
+        player_tab = FramePosition(players_tab_id)
+            
+        heroes_tab_id = UIManager.GetChildFrameID(3199024334, [14, 4294967294])
+        hero_tab = FramePosition(heroes_tab_id)
+        
+        henchmen_tab_id = UIManager.GetChildFrameID(3199024334, [14, 4294967293])
+        henchmen_tab = FramePosition(henchmen_tab_id)
+            
+        active_tab = next((tab for tab in [player_tab, hero_tab, henchmen_tab] if tab.position.content_top == max(
+            player_tab.position.content_top,
+            hero_tab.position.content_top,
+            henchmen_tab.position.content_top
+        )), player_tab)
+        
+        is_player_tab = (active_tab == player_tab)
+               
+    
+    if not party_search or not player_tab or not hero_tab or not henchmen_tab or not active_tab:
         return
     
-    party_search = UIFrame(party_search_id)
-    
-    players_tab_id = UIManager.GetChildFrameID(3199024334, [14, 4294967295])    
-    player_tab : UIFrame = UIFrame(players_tab_id)
-        
-    heroes_tab_id = UIManager.GetChildFrameID(3199024334, [14, 4294967294])
-    hero_tab : UIFrame = UIFrame(heroes_tab_id)
-    
-    henchmen_tab_id = UIManager.GetChildFrameID(3199024334, [14, 4294967293])
-    henchmen_tab : UIFrame = UIFrame(henchmen_tab_id)
-    
-    active_tab = next((tab for tab in [player_tab, hero_tab, henchmen_tab] if tab.position.content_top == max(
-        player_tab.position.content_top,
-        hero_tab.position.content_top,
-        henchmen_tab.position.content_top
-    )), player_tab)
-    is_player_tab = (active_tab == player_tab)
-    
+    party_search_throttle.SetThrottleTime(0)
     style = ImGui.get_style()
     style.WindowPadding.push_style_var(20, 20)
     style.HeaderHovered.push_color((200, 200, 200, 30))
@@ -2460,7 +2476,7 @@ def draw_party_search_overlay(accounts: list[AccountData], cached_data: CacheDat
                         tab.position.width_on_screen,
                         tab.position.height_on_screen
                     )):
-                        active_tab = tab
+                        active_tab_id = tab
                         show_accounts_in_party_search = False
                         break
             
