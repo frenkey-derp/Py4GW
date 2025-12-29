@@ -54,6 +54,7 @@ ConsoleLog(MODULE_NAME, f"{len(RUNES)} Runes loaded.")
 ConsoleLog(MODULE_NAME, f"{len(WEAPON_MODS)} Weapon Upgrades loaded.")
 ConsoleLog(MODULE_NAME, f"{len(ITEMS.All)} Items loaded.")
 
+xunlai_vault_config.rules.clear()
 xunlai_vault_config.add_rule(ByModelIdRule(name="ToT Bags", action=ItemAction.Stash, item_type=ItemType.Usable, model_id=ModelID.Trick_Or_Treat_Bag.value))
 xunlai_vault_config.add_rule(RuneRule(name="Sup Vigor", action=ItemAction.Stash, rune_id="Rune of Superior Vigor"))
 xunlai_vault_config.add_rule(WeaponModRule(name="of Necromancer", action=ItemAction.Stash, weapon_mod_id="of the Necromancer", item_types={ItemType.Staff : True, ItemType.Wand : True}))
