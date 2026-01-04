@@ -1166,5 +1166,6 @@
     "3199024334,14,4294967294": "PartySearch.Heroes.Inactive",
     "3199024334,14,4294967293": "PartySearch.Henchmen.Active",
     "3199024334,14": "PartySearch.TabMenu",
-    "3332025202,1,8,0,0,0,0,2,0": "Party Formation.Party Members.Member"
+    "3332025202,1,8,0,0,0,0,2,0": "Party Formation.Party Members.Member",
+    "3332025202,1,8,0,0,0,0,12,0": "PartyMemberFrameX1"
 }
