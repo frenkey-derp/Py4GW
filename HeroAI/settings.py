@@ -116,7 +116,6 @@ class Settings:
         self.ShowCommandPanelOnlyOnLeaderAccount = True
         
         self.ShowPanelOnlyOnLeaderAccount = True
-        self.DisableAutomationOnLeaderAccount = False
         
         self.ShowDialogOverlay = True
         self.ShowControlPanelWindow = True
@@ -238,7 +237,6 @@ class Settings:
         self.ini_handler.write_key("General", "ShowPartySearchOverlay", str(self.ShowPartySearchOverlay))
         
         self.ini_handler.write_key("General", "ShowPanelOnlyOnLeaderAccount", str(self.ShowPanelOnlyOnLeaderAccount))
-        self.ini_handler.write_key("General", "DisableAutomationOnLeaderAccount", str(self.DisableAutomationOnLeaderAccount))
         self.ini_handler.write_key("General", "ShowDialogOverlay", str(self.ShowDialogOverlay))
         
         self.ini_handler.write_key("General", "CombinePanels", str(self.CombinePanels))
@@ -283,7 +281,6 @@ class Settings:
         self.ShowPartySearchOverlay = self.ini_handler.read_bool("General", "ShowPartySearchOverlay", True)
         
         self.ShowPanelOnlyOnLeaderAccount = self.ini_handler.read_bool("General", "ShowPanelOnlyOnLeaderAccount", True)
-        self.DisableAutomationOnLeaderAccount = self.ini_handler.read_bool("General", "DisableAutomationOnLeaderAccount", False)
         self.ShowDialogOverlay = self.ini_handler.read_bool("General", "ShowDialogOverlay", True)
         
         self.CombinePanels = self.ini_handler.read_bool("General", "CombinePanels", False)

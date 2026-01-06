@@ -8,6 +8,7 @@ def RegisterPlayer(cached_data:CacheData):
     if GLOBAL_CACHE.Party.GetOwnPartyNumber() == -1:
         return False
 
+    cached_data.HeroAI_vars.shared_memory_handler.set_player_property(GLOBAL_CACHE.Party.GetOwnPartyNumber(), "AccountEmail", GLOBAL_CACHE.Player.GetAccountEmail())
     cached_data.HeroAI_vars.shared_memory_handler.set_player_property(GLOBAL_CACHE.Party.GetOwnPartyNumber(), "PlayerID", GLOBAL_CACHE.Player.GetAgentID())
     cached_data.HeroAI_vars.shared_memory_handler.set_player_property(GLOBAL_CACHE.Party.GetOwnPartyNumber(), "Energy_Regen", Agent.GetEnergyRegen(GLOBAL_CACHE.Player.GetAgentID()))
     cached_data.HeroAI_vars.shared_memory_handler.set_player_property(GLOBAL_CACHE.Party.GetOwnPartyNumber(), "Energy", Agent.GetEnergy(GLOBAL_CACHE.Player.GetAgentID()))
@@ -22,6 +23,7 @@ def RegisterHeroes(cached_data:CacheData):
         hero_party_number = GLOBAL_CACHE.Party.GetPlayerCount() + index
         agent_id = hero.agent_id
         if hero.owner_player_id == Agent.GetLoginNumber(GLOBAL_CACHE.Player.GetAgentID()): 
+            cached_data.HeroAI_vars.shared_memory_handler.set_player_property(hero_party_number, "AccountEmail", "")
             cached_data.HeroAI_vars.shared_memory_handler.set_player_property(hero_party_number, "PlayerID", agent_id)
             cached_data.HeroAI_vars.shared_memory_handler.set_player_property(hero_party_number, "Energy_Regen", Agent.GetEnergyRegen(agent_id))
             cached_data.HeroAI_vars.shared_memory_handler.set_player_property(hero_party_number, "Energy", Agent.GetEnergy(agent_id))
@@ -42,6 +44,7 @@ def UpdatePlayers(cached_data:CacheData):
         if player_data is None:
             continue
 
+        cached_data.HeroAI_vars.all_player_struct[player].AccountEmail = player_data["AccountEmail"]
         cached_data.HeroAI_vars.all_player_struct[player].PlayerID = player_data["PlayerID"]
         cached_data.HeroAI_vars.all_player_struct[player].Energy_Regen = player_data["Energy_Regen"]
         cached_data.HeroAI_vars.all_player_struct[player].Energy = player_data["Energy"]

@@ -867,7 +867,7 @@ class Py4GWSharedMemoryManager:
            
     #region ResetHeroAIData 
     def ResetHeroAIData(self, index): 
-            option = self.GetStruct().HeroAIOptions[index]
+            option : HeroAIOptionStruct = self.GetStruct().HeroAIOptions[index]
             option.Following = True
             option.Avoidance = True
             option.Looting = True
