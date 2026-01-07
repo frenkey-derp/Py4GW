@@ -1308,7 +1308,7 @@ def get_conditioned(account_data: AccountData) -> tuple[HealthState, bool, bool,
     return HealthState.Normal, deep_wounded, enchanted, conditioned, hexed, has_weaponspell
 
 def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]], open: bool = True):
-    window_info = settings.HeroPanelPositions.get(account_data.AccountEmail, None)
+    window_info = settings.HeroPanelPositions.get(account_data.AccountEmail.lower(), None)
     if not window_info or not window_info.open:
         return
     
@@ -1377,7 +1377,7 @@ def draw_combined_hero_panel(account_data: AccountData, cached_data: CacheData, 
     draw_buffs_and_upkeeps(account_data, 28)    
 
 def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data: CacheData, messages: list[tuple[int, SharedMessage]]):   
-    window_info = settings.HeroPanelPositions.get(account_data.AccountEmail, None)
+    window_info = settings.HeroPanelPositions.get(account_data.AccountEmail.lower(), None)
     if not window_info or not window_info.open:
         return
     
@@ -2257,7 +2257,7 @@ def draw_party_overlay(accounts: list[AccountData], hero_windows : dict[str, Win
             if account.PartyID != main_account.PartyID or not SameMapAsAccount(account):
                 continue
             
-            window_info = settings.HeroPanelPositions.get(account.AccountEmail, None)
+            window_info = settings.HeroPanelPositions.get(account.AccountEmail.lower(), None)
             
             if window_info:        
                 is_minimalus = style.Theme is StyleTheme.Minimalus  
@@ -2512,7 +2512,7 @@ def draw_party_search_overlay(accounts: list[AccountData], cached_data: CacheDat
         mapid = Map.GetMapID()
         
         for i, account in enumerate(sorted_by_profession):
-            window_info = settings.HeroPanelPositions.get(account.AccountEmail, None)
+            window_info = settings.HeroPanelPositions.get(account.AccountEmail.lower(), None)
             
             if not window_info:
                 continue
