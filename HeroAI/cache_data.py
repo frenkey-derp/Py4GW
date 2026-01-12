@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Py4GWCoreLib.GlobalCache.SharedMemory import SHMEM_NUMBER_OF_SKILLS, HeroAIOptionStruct
+from Py4GWCoreLib.GlobalCache.SharedMemory import SHMEM_NUMBER_OF_SKILLS, AccountData, HeroAIOptionStruct
 
 from .constants import SHARED_MEMORY_FILE_NAME, STAY_ALERT_TIME, MAX_NUM_PLAYERS, NUMBER_OF_SKILLS
 from .globals import HeroAI_varsClass, HeroAI_Window_varsClass
@@ -123,8 +123,13 @@ class CacheData:
     def __init__(self, throttle_time=75):
         if not self._initialized:
             self.account_email = ""
+            
+            self.party_position : int = -1
+            self.account_data : AccountData = AccountData()
+            self.account_options : HeroAIOptionStruct = HeroAIOptionStruct()
+            
             self.combat_handler = CombatClass()
-            self.HeroAI_vars: HeroAI_varsClass = HeroAI_varsClass()
+            # self.HeroAI_vars: HeroAI_varsClass = HeroAI_varsClass()
             self.HeroAI_windows: HeroAI_Window_varsClass = HeroAI_Window_varsClass()
             self.name_refresh_throttle = ThrottledTimer(1000)
             self.game_throttle_time = throttle_time

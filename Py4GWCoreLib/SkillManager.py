@@ -5,6 +5,7 @@ from HeroAI.targeting import TargetLowestAlly, TargetLowestAllyEnergy, TargetClu
 from HeroAI.targeting import GetEnemyAttacking, GetEnemyCasting, GetEnemyCastingSpell, GetEnemyInjured, GetEnemyConditioned, GetEnemyHealthy
 from HeroAI.targeting import GetEnemyHexed, GetEnemyDegenHexed, GetEnemyEnchanted, GetEnemyMoving, GetEnemyKnockedDown
 from HeroAI.targeting import GetEnemyBleeding, GetEnemyPoisoned, GetEnemyCrippled
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 
 from .Agent import Agent
 from.AgentArray import AgentArray
@@ -19,7 +20,6 @@ from Py4GWCoreLib.enums import SPIRIT_BUFF_MAP, Weapon
 from .Routines import Routines
 from .enums import Range
 from .Effect import Effects
-from HeroAI.players import *
 
 MAX_SKILLS = 8
 MAX_NUM_PLAYERS = 8

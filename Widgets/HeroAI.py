@@ -17,7 +17,6 @@ from Py4GWCoreLib.Map import Map
 from HeroAI.cache_data import CacheData
 from HeroAI.constants import (FOLLOW_DISTANCE_OUT_OF_COMBAT, MELEE_RANGE_VALUE, RANGED_RANGE_VALUE)
 from HeroAI.globals import hero_formation
-from HeroAI.players import (RegisterHeroes, RegisterPlayer, UpdatePlayers)
 from HeroAI.utils import (DistanceFromWaypoint)
 from HeroAI.windows import (HeroAI_FloatingWindows ,HeroAI_Windows,)
 from HeroAI.ui import (draw_configure_window, draw_skip_cutscene_overlay)
@@ -47,19 +46,24 @@ def HandleCombatFlagging(cached_data: CacheData):
     # Suspends all activity until HeroAI has made it to the flagged position
     # Still goes into combat as long as its within the combat follow range value of the expected flag
     party_number = GLOBAL_CACHE.Party.GetOwnPartyNumber()
-    all_player_struct = cached_data.HeroAI_vars.all_player_struct
-    if all_player_struct[party_number].IsFlagged:
-        own_follow_x = all_player_struct[party_number].FlagPosX
-        own_follow_y = all_player_struct[party_number].FlagPosY
+    own_options = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(party_number)
+    leader_options = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(0)
+    
+    if not own_options:
+        return False    
+
+    if own_options.IsFlagged:
+        own_follow_x = own_options.FlagPosX
+        own_follow_y = own_options.FlagPosY
         own_flag_coords = (own_follow_x, own_follow_y)
         if (
             Utils.Distance(own_flag_coords, Agent.GetXY(GLOBAL_CACHE.Player.GetAgentID()))
             >= FOLLOW_COMBAT_DISTANCE
         ):
             return True  # Forces a reset on autoattack timer
-    elif all_player_struct[0].IsFlagged:
-        leader_follow_x = all_player_struct[0].FlagPosX
-        leader_follow_y = all_player_struct[0].FlagPosY
+    elif leader_options and leader_options.IsFlagged:
+        leader_follow_x = leader_options.FlagPosX
+        leader_follow_y = leader_options.FlagPosY
         leader_flag_coords = (leader_follow_x, leader_follow_y)
         if (
             Utils.Distance(leader_flag_coords, Agent.GetXY(GLOBAL_CACHE.Player.GetAgentID()))
@@ -279,15 +283,6 @@ def Follow(cached_data: CacheData):
     GLOBAL_CACHE.Player.Move(xx, yy)
     return True
 
-
-
-    
-
-def register_data(cached_data: CacheData):
-    RegisterPlayer(cached_data)
-    RegisterHeroes(cached_data)
-    UpdatePlayers(cached_data)
-
 def handle_UI (cached_data: CacheData):      
     if not cached_data.ui_state_data.show_classic_controls:   
         HeroAI_FloatingWindows.DrawEmbeddedWindow(cached_data)
@@ -299,8 +294,6 @@ def handle_UI (cached_data: CacheData):
    
 def initialize(cached_data: CacheData) -> bool:
     if Map.IsMapReady() and GLOBAL_CACHE.Party.IsPartyLoaded():
-    
-        register_data(cached_data)        
         handle_UI(cached_data)
         
         if not Map.IsExplorable():  # halt operation if not in explorable area
@@ -371,7 +364,9 @@ def main():
             UpdateStatus(cached_data)
         else:
             map_quads.clear()
-            
+        
+        if HeroAI_FloatingWindows.settings.ShowDebugWindow:
+            HeroAI_Windows.DrawMultiboxTools(cached_data)
 
 
     except ImportError as e:

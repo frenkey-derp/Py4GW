@@ -1791,7 +1791,7 @@ class Py4GWSharedMemoryManager:
             player = self.GetStruct().AccountData[i]
             if self._is_slot_active(i) and player.IsAccount:
                 players.append(player)
-
+                
         # Sort by PartyID, then PartyPosition, then PlayerLoginNumber, then CharacterName
         players.sort(key=lambda p: (
             p.MapID,
@@ -1823,7 +1823,8 @@ class Py4GWSharedMemoryManager:
             player = self.GetStruct().AccountData[i]
             if self._is_slot_active(i) and player.PartyPosition == party_number:
                 return player
-        ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error)
+            
+        ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error, log=False)
         return None
     
     def HasEffect(self, account_email: str, effect_id: int) -> bool:
@@ -1939,9 +1940,9 @@ class Py4GWSharedMemoryManager:
                 players.append(player)
         return players
     
-    def GetHeroesFromPlayers(self, owner_player_id: int):
+    def GetHeroesFromPlayers(self, owner_player_id: int) -> list[AccountData]:
         """Get a list of heroes owned by the specified player."""
-        heroes = []
+        heroes : list[AccountData] = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if (self._is_slot_active(i) and player.IsHero and
@@ -1953,9 +1954,9 @@ class Py4GWSharedMemoryManager:
         """Get the number of heroes owned by the specified player."""
         return self.GetHeroesFromPlayers(owner_player_id).__len__()
     
-    def GetPetsFromPlayers(self, owner_agent_id: int):
+    def GetPetsFromPlayers(self, owner_agent_id: int) -> list[AccountData]:
         """Get a list of pets owned by the specified player."""
-        pets = []
+        pets : list[AccountData] = []
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             if (self._is_slot_active(i) and player.IsPet and

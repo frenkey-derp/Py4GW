@@ -2822,6 +2822,21 @@ def draw_configure_window(module_name : str, configure_window : WindowModule):
                         
                 ImGui.end_child()
                 ImGui.end_tab_item()
+            
+            if ImGui.begin_tab_item("Debug"):
+                if ImGui.begin_child("##DebugSettingsChild", (0, 0)):
+                    show_debug = ImGui.checkbox("Show Debug Window", settings.ShowDebugWindow)
+                    if show_debug != settings.ShowDebugWindow:
+                        settings.ShowDebugWindow = show_debug
+                        settings.save_settings()
+                        
+                    print_debug = ImGui.checkbox("Print Debug Messages", settings.PrintDebug)
+                    if print_debug != settings.PrintDebug:
+                        settings.PrintDebug = print_debug
+                        settings.save_settings()
+                        
+                ImGui.end_child()
+                ImGui.end_tab_item()
                 
             ImGui.end_tab_bar()
             
