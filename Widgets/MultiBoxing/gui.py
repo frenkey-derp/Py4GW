@@ -179,6 +179,16 @@ class GUI:
                                     self.settings.snap_to_edges = snap_to_edges
                                     self.settings.save_settings()
                                     
+                                hide_widgets_on_slave = ImGui.checkbox("Hide widgets on slave", self.settings.hide_widgets_on_slave)
+                                if hide_widgets_on_slave != self.settings.hide_widgets_on_slave:
+                                    self.settings.hide_widgets_on_slave = hide_widgets_on_slave
+                                    self.settings.save_settings()
+                                    
+                                show_overview = ImGui.checkbox("Show Overlay", self.settings.show_overview)
+                                if show_overview != self.settings.show_overview:
+                                    self.settings.show_overview = show_overview
+                                    self.settings.save_settings()
+                                    
                             style.ChildBg.pop_color()
                             ImGui.end_child() 
 
@@ -756,6 +766,9 @@ class GUI:
         return PyImGui.is_item_clicked(0)
 
     def draw_access_window(self):
+        if not self.settings.show_overview:
+            return
+        
         window_width = 200               
         style = ImGui.get_style()
         

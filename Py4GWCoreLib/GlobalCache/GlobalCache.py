@@ -4,6 +4,7 @@ from Py4GWCoreLib.Py4GWcorelib import ActionQueueManager
 
 from Py4GWCoreLib import Map
 from Py4GWCoreLib import Agent
+from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 from .PlayerCache import PlayerCache
 
@@ -49,7 +50,7 @@ class GlobalCache:
         self.SkillBar = SkillbarCache(self._ActionQueueManager)
         self.ShMem = Py4GWSharedMemoryManager()
         self.Coroutines: List[Generator] = []
-        
+                
       
     def _reset(self):
         Agent._reset_cache()
@@ -58,7 +59,7 @@ class GlobalCache:
         self.Item._reset_cache()
         self._TrottleTimers.Reset()
         
-    def _update_cache(self):
+    def _update_cache(self):        
         #this block is forcing an update when loading or in cinematic
         #to default everything to 0 
         if Map.IsMapLoading() or Map.IsInCinematic():

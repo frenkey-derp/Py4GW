@@ -9,7 +9,7 @@ import Py4GW
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Widgets.frenkey.LootEx import models
-from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ItemCategory, ModType, ModsModels
+from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ITEM_TEXTURE_FOLDER, ItemCategory, ModType, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage
@@ -785,6 +785,8 @@ class Data():
         self.Reload()
         
     def LoadScrapedItems(self):        
+        from Widgets.frenkey.LootEx.utility import Util
+        
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
         path = os.path.join(data_directory, "scraped_items.json")
@@ -798,7 +800,8 @@ class Data():
             ## remove duplicates based on inventory icon and item name
             unique_items = {}
             for (file_name, item) in scraped_items.items():
-                key = (item.inventory_icon_url, item.name)
+                item.inventory_icon_path = os.path.join(ITEM_TEXTURE_FOLDER, (Util.get_image_name(item.inventory_icon_url or "") or item.inventory_icon_url or ""))
+                key = (item.inventory_icon_path, item.name)
                 
                 if key not in unique_items:
                     unique_items[key] = (file_name, item)

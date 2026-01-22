@@ -182,9 +182,7 @@ class HeroAICommands:
             delays = math.ceil(delay_ms // 50)
             for _ in range(delays):
                 GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", lambda: None)  # Adding a no-op to ensure spacing between invites
-        
-        party_members = GLOBAL_CACHE.Party.GetPlayers()
-        
+                
         for account in accounts:
             if account.AccountEmail == sender_email:
                 continue
@@ -198,7 +196,7 @@ class HeroAICommands:
                     Player.SendChatCommand("invite " + name)
                     
                 GLOBAL_CACHE._ActionQueueManager.AddAction("ACTION", send_invite)
-                SetWaitingActions(250)              
+                SetWaitingActions(350)              
                 
             GLOBAL_CACHE.ShMem.SendMessage(
                 sender_email,

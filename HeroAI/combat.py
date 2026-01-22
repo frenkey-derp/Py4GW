@@ -118,7 +118,7 @@ class CombatClass:
         self.expertise_exists = cached_data.data.expertise_exists
         self.expertise_level = cached_data.data.expertise_level
         
-        options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+        options = cached_data.account_options
         self.is_targeting_enabled = options.Targeting if options is not None else False
         self.is_combat_enabled = options.Combat if options is not None else False
         self.is_skill_enabled = options.Skills if options is not None else [False]*MAX_SKILLS

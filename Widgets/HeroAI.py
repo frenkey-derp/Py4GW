@@ -33,7 +33,7 @@ map_quads : list[Map.Pathing.Quad] = []
 
 #region Combat
 def HandleOutOfCombat(cached_data: CacheData):
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    options = cached_data.account_options
     
     if not options or not options.Combat:  # halt operation if combat is disabled
         return False
@@ -74,7 +74,7 @@ def HandleCombatFlagging(cached_data: CacheData):
 
 
 def HandleCombat(cached_data: CacheData):
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    options = cached_data.account_options
     
     if not options or not options.Combat:  # halt operation if combat is disabled
         return False
@@ -88,7 +88,7 @@ def HandleCombat(cached_data: CacheData):
     return cached_data.combat_handler.HandleCombat(ooc=False)
 
 def HandleAutoAttack(cached_data: CacheData) -> bool:
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    options = cached_data.account_options
     if not options:  # halt operation if combat is disabled
         return False
     
@@ -125,7 +125,7 @@ cached_data.in_looting_routine = False
 
 #region Looting
 def LootingRoutineActive():
-    account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    account_email = cached_data.account_email
     index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email)
 
     if index == -1 or message is None:
@@ -138,7 +138,7 @@ def LootingRoutineActive():
 
 def Loot(cached_data: CacheData):
     global LOOT_THROTTLE_CHECK
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    options = cached_data.account_options
 
     if not options or not options.Looting:
         return False
@@ -205,12 +205,12 @@ def Follow(cached_data: CacheData):
         return False
 
     party_number = GLOBAL_CACHE.Party.GetOwnPartyNumber()
-    options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(cached_data.account_email)
+    options = cached_data.account_options
     leader_options = GLOBAL_CACHE.ShMem.GetGerHeroAIOptionsByPartyNumber(0)
     
     if not options or not options.Following:  # halt operation if following is disabled
         return False
-
+    
     follow_x = 0.0
     follow_y = 0.0
     follow_angle = -1.0
@@ -277,8 +277,14 @@ def Follow(cached_data: CacheData):
             ## fallback to direct follow if calculated point is off-map to avoid getting stuck or falling behind
             xx = follow_x
             yy = follow_y
-            
-    if xx == 0.0 and yy == 0.0:
+    
+    point_zero = (0.0, 0.0)
+    if Utils.Distance((follow_x, follow_y), point_zero) <= 5:
+        ConsoleLog(MODULE_NAME, "Follow: Target position too close to point zero, skipping move.", Py4GW.Console.MessageType.Warning)
+        return False
+    
+    if not Agent.IsValid(GLOBAL_CACHE.Party.GetPartyLeaderID()):
+        ConsoleLog(MODULE_NAME, "Follow: Party leader agent is not valid, cannot follow.", Py4GW.Console.MessageType.Warning)
         return False
     
     cached_data.data.angle_changed = False

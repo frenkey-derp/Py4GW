@@ -1207,10 +1207,12 @@ class HeroAI_Windows():
                 match option_name:
                     case "Following" | "Avoidance" | "Looting" | "Targeting" | "Combat":
                         value = getattr(game_option, option_name)
+                        ConsoleLog("HeroAI", f"Setting {option_name} to {value} for account {account.AccountEmail}")
                         setattr(account_options, option_name, value)
                     
                     case "Skills":
                         if skill_index >= 0 and skill_index < NUMBER_OF_SKILLS:
+                            ConsoleLog("HeroAI", f"Setting Skills[{skill_index}] to {game_option.Skills[skill_index]} for account {account.AccountEmail}")
                             account_options.Skills[skill_index] = game_option.Skills[skill_index]         
         
         avail_x, avail_y = PyImGui.get_content_region_avail()
@@ -1256,6 +1258,7 @@ class HeroAI_Windows():
                 source_game_option.Targeting = Targeting
                 
                 if set_global:
+                    ConsoleLog("HeroAI", f"Setting Targeting to {Targeting} for all heroes in party.")
                     set_global_option(source_game_option, "Targeting")
                     
                 

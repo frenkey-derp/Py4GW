@@ -2,6 +2,9 @@
 import os
 from typing import Optional
 
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
+from Widgets.frenkey.LootEx.enum import ITEM_TEXTURE_FOLDER
+
 
 class ScrapedSalvageResult:
     def __init__(self, name: str, min_amount: int = -1, max_amount: int = -1, amount: int = -1):
@@ -40,6 +43,7 @@ class ScrapedItem:
     def __init__(self, name: str):
         self.name = name
         self.inventory_icon_url: Optional[str] = None
+        self.inventory_icon_path: Optional[str] = None
         self.common_salvage: list[ScrapedSalvageResult] = []
         self.rare_salvage: list[ScrapedSalvageResult] = []
         self.item_type: Optional[str] = None
@@ -71,25 +75,37 @@ class ScrapedItem:
     
     @property
     def IconPath(self) -> str:
+        if self.inventory_icon_path:
+            return self.inventory_icon_path
+        
         if self.inventory_icon_url is None:
             return ""
         
         relative_file_path_from_url = self.inventory_icon_url.lstrip("/\\").replace("/", "\\")
         file_name = os.path.basename(relative_file_path_from_url)
-        path = os.path.join("C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\wiki_lookup\\images", file_name)
+        path = os.path.join(ITEM_TEXTURE_FOLDER, file_name)
         
         return path
     
     @property
     def IconExists(self) -> bool:
         if self._inventory_icon_exists is None:
+            if self.inventory_icon_path:
+                self._inventory_icon_exists = os.path.exists(self.inventory_icon_path)
+                return self._inventory_icon_exists
+            
+            elif self.inventory_icon_url is None:
+                self._inventory_icon_exists = False
+                return self._inventory_icon_exists
+            
             relative_file_path_from_url = self.inventory_icon_url.lstrip("/\\").replace("/", "\\") if self.inventory_icon_url else None 
             file_name = os.path.basename(relative_file_path_from_url ) if relative_file_path_from_url else None
+            
             if file_name is None:
                 self._inventory_icon_exists = False
                 return self._inventory_icon_exists
             
-            path = os.path.join("C:\\Users\\lasse\\OneDrive\\Programmieren\\Frenkey\\Guild Wars\\wiki_lookup\\images", file_name)
+            path = os.path.join(ITEM_TEXTURE_FOLDER, file_name)
             
             self._inventory_icon_exists = os.path.exists(path) if path else False
         

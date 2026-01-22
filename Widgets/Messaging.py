@@ -153,6 +153,8 @@ def RestoreHeroAISnapshot(account_email):
     if hero_ai_options is None:
         return
 
+    ConsoleLog("Messaging", f"Restoring HeroAI options for account {account_email}")
+
     hero_ai_options.Following = hero_ai_snapshot.Following
     hero_ai_options.Avoidance = hero_ai_snapshot.Avoidance
     hero_ai_options.Looting = hero_ai_snapshot.Looting
@@ -178,6 +180,8 @@ def EnableHeroAIOptions(account_email):
     hero_ai_options = GLOBAL_CACHE.ShMem.GetHeroAIOptions(account_email)
     if hero_ai_options is None:
         return
+    
+    ConsoleLog("Messaging", f"Enabling HeroAI options for account {account_email}")
 
     hero_ai_options.Following = True
     hero_ai_options.Avoidance = True
@@ -1363,9 +1367,12 @@ def TravelToGuildHall(index, message):
 # region ProcessMessages
 def ProcessMessages():
     account_email = GLOBAL_CACHE.Player.GetAccountEmail()
-    index, message = GLOBAL_CACHE.ShMem.GetNextMessage(account_email)
+    index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email, include_running=True)
 
     if index == -1 or message is None:
+        return
+    
+    if message.Running:
         return
 
     match message.Command:

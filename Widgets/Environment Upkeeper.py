@@ -50,11 +50,16 @@ def reset_on_load():
 def configure():
     pass
 
+cached_account_email = ""
+
 def main():
-    global widget_config
+    global widget_config, cached_account_email
 
     GLOBAL_CACHE._update_cache()
-    account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    cached_account_email = account_email = GLOBAL_CACHE.Player.GetAccountEmail() or cached_account_email
+
+    # ConsoleLog(MODULE_NAME, f"Setting player data for account '{cached_account_email}'.", Py4GW.Console.MessageType.Debug)
+    GLOBAL_CACHE.ShMem.UpdateEpochTimeDelta()
     GLOBAL_CACHE.ShMem.SetPlayerData(account_email)
     GLOBAL_CACHE.ShMem.SetHeroesData()
     GLOBAL_CACHE.ShMem.SetPetData()
@@ -71,6 +76,8 @@ def main():
             GLOBAL_CACHE.Coroutines.remove(routine)
     
     if Map.IsMapLoading() or Map.IsInCinematic():
+        widget_config.action_queue_manager.ResetNonTransitionQueues()
+        
         if widget_config.throttle_transition_queue.IsExpired():
             widget_config.action_queue_manager.ProcessQueue("TRANSITION")
             widget_config.throttle_transition_queue.Reset()

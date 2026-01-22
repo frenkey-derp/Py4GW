@@ -1,7 +1,8 @@
 import Py4GW
+import PyImGui
 import PyPlayer
 import PyQuest
-from PyParty import HeroPartyMember
+from PyParty import HeroPartyMember, PetInfo
 from PyEffects import BuffType, EffectType
 from PyPlayer import LoginCharacterInfo
 from typing import Tuple, List
@@ -31,6 +32,7 @@ SMM_MODULE_NAME = "Py4GW - Shared Memory"
 SHMEM_SHARED_MEMORY_FILE_NAME = "Py4GW_Shared_Mem"
 SHMEM_ZERO_EPOCH = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
 SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS = 500 # milliseconds
+SHMEM_SUBSCRIBE_UI_FREEZE_MILLISECONDS = 10000 # milliseconds
 
 SHMEM_NUMBER_OF_SKILLS = 8
 SHMEM_NUMBER_OF_ATTRIBUTES = len(Attribute) #5 primary + 3 secondary + 1 from of Profession Mod
@@ -542,8 +544,8 @@ class AllAccounts(Structure):
     ]
     
     # Type hints for IntelliSense
-    AccountData: list[AccountData]
-    SharedMessage: list[SharedMessage]
+    AccountData: list["AccountData"]
+    SharedMessage: list["SharedMessage"]
     HeroAIOptions: list[HeroAIOptionStruct]
     
     
@@ -570,7 +572,10 @@ class Py4GWSharedMemoryManager:
             self._quest_instances: dict[int, PyQuest.PyQuest] = {}
             self.throttle_timer_150 = ThrottledTimer(150)
             self.throttle_timer_63 = ThrottledTimer(63) # 4 frames at 15 FPS
-        
+            
+            self.epoch_time_delta = 0
+            self.epoch_time = Utils.GetBaseTimestamp()
+            
         # Create or attach shared memory
         try:
             self.shm = shared_memory.SharedMemory(name=self.shm_name)
@@ -887,24 +892,31 @@ class Py4GWSharedMemoryManager:
         slot_active = self.GetStruct().AccountData[index].IsSlotActive    
         last_updated = self.GetStruct().AccountData[index].LastUpdated
         
-        base_timestamp = self.GetBaseTimestamp()
-        if slot_active and (base_timestamp - last_updated) < SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS:
+        base_timestamp = self.GetBaseTimestamp()        
+        update_delta = min(self.epoch_time_delta + SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS, SHMEM_SUBSCRIBE_UI_FREEZE_MILLISECONDS)
+        if slot_active and (base_timestamp - last_updated) <= update_delta:
             return True
         return False
 
     #region Find and Get Slot Methods
     def FindAccount(self, account_email: str) -> int:
         """Find the index of the account with the given email."""
+        if not account_email:
+            return -1
+        
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
             #if not player.IsSlotActive:
-            if not self._is_slot_active(i):
-                continue
             if self.GetStruct().AccountData[i].AccountEmail == account_email and player.IsAccount:
+                if not self._is_slot_active(i):
+                    ConsoleLog(SMM_MODULE_NAME, f"Found inactive slot for account '{account_email}' at index {i}.", Py4GW.Console.MessageType.Warning)
+                    continue
+                
                 return i
+            
         return -1
     
-    def FindHero(self, hero_data) -> int:
+    def FindHero(self, hero_data:HeroPartyMember) -> int:
         """Find the index of the hero with the given ID."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
@@ -915,7 +927,7 @@ class Py4GWSharedMemoryManager:
                 return i
         return -1
     
-    def FindPet(self, pet_data) -> int:
+    def FindPet(self, pet_data:PetInfo) -> int:
         """Find the index of the pet with the given ID."""
         for i in range(self.max_num_players):
             player = self.GetStruct().AccountData[i]
@@ -929,13 +941,9 @@ class Py4GWSharedMemoryManager:
     def FindEmptySlot(self) -> int:
         """Find the first empty slot in shared memory."""
         for i in range(self.max_num_players):
-            slot_active = self.GetStruct().AccountData[i].IsSlotActive    
-            last_updated = self.GetStruct().AccountData[i].LastUpdated
-            
-            base_timestamp = self.GetBaseTimestamp()
-            if ( not self.GetStruct().AccountData[i].IsSlotActive or 
-                (slot_active and (base_timestamp - last_updated) > SHMEM_SUBSCRIBE_TIMEOUT_MILLISECONDS)):
+            if not self._is_slot_active(i):
                 return i
+            
         return -1
     
     def GetAccountSlot(self, account_email: str) -> int:
@@ -949,9 +957,11 @@ class Py4GWSharedMemoryManager:
             player.IsSlotActive = True
             player.AccountEmail = account_email
             player.LastUpdated = self.GetBaseTimestamp()
+            ConsoleLog(SMM_MODULE_NAME, f"No existing slot found for account '{account_email}'.  Using empty slot at index {index}.", Py4GW.Console.MessageType.Info)
+            
         return index
     
-    def GetHeroSlot(self, hero_data) -> int:
+    def GetHeroSlot(self, hero_data:HeroPartyMember) -> int:
         """Get the slot index for the hero with the given owner ID and hero ID."""
         index = self.FindHero(hero_data)
         if index == -1:
@@ -964,7 +974,7 @@ class Py4GWSharedMemoryManager:
             hero.LastUpdated = self.GetBaseTimestamp()
         return index
     
-    def GetPetSlot(self, pet_data) -> int:
+    def GetPetSlot(self, pet_data:PetInfo) -> int:
         """Get the slot index for the pet with the given owner ID and agent ID."""
         index = self.FindPet(pet_data)
         if index == -1:
@@ -1084,8 +1094,6 @@ class Py4GWSharedMemoryManager:
                 player.PlayerBuffs[j].TargetAgentID = upkeep.target_agent_id if upkeep else 0
                 player.PlayerBuffs[j].Remaining = effect.time_remaining if effect else 0.0
                 
-                
-        
         def _set_attribute_data(index):
             player : AccountData = self.GetStruct().AccountData[index]
             if self.agent_instance is None:
@@ -1352,6 +1360,7 @@ class Py4GWSharedMemoryManager:
 
         if not account_email:
             return    
+        
         index = self.GetAccountSlot(account_email)
         if index != -1:
             self._updatechache()
@@ -1652,11 +1661,12 @@ class Py4GWSharedMemoryManager:
         owner_agent_id = self.player_instance.id if self.player_instance else 0
         
         pet_info = self.party_instance.GetPetInfo(owner_agent_id) if self.party_instance else None
-        if not pet_info:
+        # if not pet_info or pet_info.agent_id == 102298104:
+        if not pet_info or not self.party_instance or (not pet_info.agent_id in self.party_instance.others):
             return
         
         index = self.GetPetSlot(pet_info)
-        if index != -1:
+        if index != -1:            
             pet = self.GetStruct().AccountData[index]
             pet.SlotNumber = index
             pet.IsSlotActive = True
@@ -1766,6 +1776,7 @@ class Py4GWSharedMemoryManager:
             agent_from_login = self.party_instance.GetAgentIDByLoginNumber(hero_data.owner_player_id) if self.party_instance else 0
             if agent_from_login != owner_id:
                 continue
+            
             self.SetHeroData(hero_data)
          
     #region GetAllActivePlayers   
@@ -1979,7 +1990,12 @@ class Py4GWSharedMemoryManager:
         """Get the number of pets owned by the specified player."""
         return self.GetPetsFromPlayers(owner_agent_id).__len__()
     
-    def UpdateTimeouts(self):
+    def UpdateEpochTimeDelta(self):        
+        epoch_time = Utils.GetBaseTimestamp()
+        self.epoch_time_delta = epoch_time - self.epoch_time
+        self.epoch_time = epoch_time
+        
+    def UpdateTimeouts(self):        
         return
         current_time = self.GetBaseTimestamp()
 
