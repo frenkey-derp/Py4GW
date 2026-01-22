@@ -66,29 +66,26 @@ class WeaponRule:
             return False        
             
         match(self.mods_type):
-            case enum.ActionModsType.Any:
+            case enum.ActionModsType.Any | enum.ActionModsType.Inscribable:
                 if item.is_inscribable:
                     return True
 
-            case enum.ActionModsType.Inscribable:
-                if not item.is_inscribable:
-                    return False
-
             case enum.ActionModsType.Old_School:
                 if item.is_inscribable:
-                    return False   
+                    return False
 
         ## get the inherent mod from item.weapon_mods
         inherent_mod = next((mod for mod in item.weapon_mods if mod.WeaponMod.mod_type == enum.ModType.Inherent), None)
         
         if not inherent_mod:
             return False
-                
+                        
         if self.mods:
             for mod_id, mod_info in self.mods.items():
-                if inherent_mod.WeaponMod.identifier == mod_id:
-                    
+                if inherent_mod.WeaponMod.identifier == mod_id:                    
                     if inherent_mod.Value < mod_info.min or inherent_mod.Value > mod_info.max:
                         return False
+                    
+                    return True
             
-        return True  
+        return False
