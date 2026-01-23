@@ -1,39 +1,20 @@
 from Py4GWCoreLib import IconsFontAwesome5, PyImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Widgets.CustomBehaviors.primitives.custom_behavior_loader import CustomBehaviorLoader
-from Py4GWCoreLib import Agent
+from Py4GWCoreLib import Agent, Player
 import math
 
 from Widgets.CustomBehaviors.primitives.parties.party_flagging_manager import PartyFlaggingManager
 
 
 class FlagsUI:
-    # Persistent UI state for expansion of the flags configuration
-    expanded: bool = False
-
-    @staticmethod
-    def is_expanded() -> bool:
-        return FlagsUI.expanded
-
-    @staticmethod
-    def render_expand_toggle(label_prefix: str = "", id_suffix: str = "expand_flagging") -> bool:
-        toggle_label = "[-]" if FlagsUI.expanded else "[+]"
-        label = f"{label_prefix} {toggle_label}##{id_suffix}" if label_prefix else f"{toggle_label}##{id_suffix}"
-        if PyImGui.small_button(label):
-            FlagsUI.expanded = not FlagsUI.expanded
-        return FlagsUI.expanded
-
     @staticmethod
     def render_configuration() -> None:
         """
-        Render the configurable flags/formation UI previously inline in party.py.
-        Expects a PartyFlaggingManager instance (flag_manager).
+        Render the configurable flags/formation UI.
+        Note: The caller should check if the section is expanded before calling this method.
         """
         flag_manager = PartyFlaggingManager()
-
-
-        if not FlagsUI.expanded:
-            return
 
         PyImGui.separator()
         PyImGui.text("[FLAGGING] configure party flag formation :")
@@ -72,8 +53,8 @@ class FlagsUI:
             PyImGui.set_tooltip("Distance between flags in the grid preset (game units)")
         if new_spacing != current_spacing:
             flag_manager.spacing_radius = new_spacing
-            leader_x, leader_y = GLOBAL_CACHE.Player.GetXY()
-            leader_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+            leader_x, leader_y = Player.GetXY()
+            leader_agent_id = Player.GetAgentID()
             leader_angle = Agent.GetRotationAngle(leader_agent_id)
             flag_manager.update_formation_positions(leader_x, leader_y, leader_angle, "preset_1")
 
@@ -88,7 +69,7 @@ class FlagsUI:
         PyImGui.spacing()
 
         # Get all party members for dropdown
-        account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_email = Player.GetAccountEmail()
         all_accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
 
         # Build list of available party members (same map)
@@ -120,8 +101,8 @@ class FlagsUI:
                     break
                 flag_manager.set_flag_account_email(i, email)
             # Also place flags at leader position so overlay updates immediately
-            leader_x, leader_y = GLOBAL_CACHE.Player.GetXY()
-            leader_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+            leader_x, leader_y = Player.GetXY()
+            leader_agent_id = Player.GetAgentID()
             leader_angle = Agent.GetRotationAngle(leader_agent_id)
             flag_manager.update_formation_positions(leader_x, leader_y, leader_angle, "preset_1")
         if PyImGui.is_item_hovered():
@@ -146,8 +127,8 @@ class FlagsUI:
         ]
 
         # Get current leader position for applying changes
-        leader_x, leader_y = GLOBAL_CACHE.Player.GetXY()
-        leader_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+        leader_x, leader_y = Player.GetXY()
+        leader_agent_id = Player.GetAgentID()
         leader_angle = Agent.GetRotationAngle(leader_agent_id)
 
         # Draw the grid

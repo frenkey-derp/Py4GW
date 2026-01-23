@@ -29,19 +29,19 @@ def SendReloadProfiles():
     ResetMessages()
     
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if acc.AccountEmail == Player.GetAccountEmail():
             continue
         
         if not acc.AccountEmail:
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadProfiles, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadProfiles, 0, 0))
 
 def SendMergingMessage():
     global is_collecting
     
     ResetMessages()
-    account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    account_email = Player.GetAccountEmail()
     
     if not account_email:
         ConsoleLog("LootEx", "No current account set, cannot send merging message.", False)
@@ -58,7 +58,7 @@ def SendMergingMessage():
 def MergeWhenCollectionPaused():    
     messages = GLOBAL_CACHE.ShMem.GetAllMessages()
     messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
-    account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    account_email = Player.GetAccountEmail()
     
     for index, message in messages:
         if message.Command == SharedCommandType.LootEx:
@@ -91,77 +91,77 @@ def MergeWhenCollectionPaused():
 
 def SendStart(exclude_self: bool = False):    
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Start, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Start, 0, 0))
 
 def SendStop(exclude_self: bool = False):    
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Stop, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.Stop, 0, 0))
 
 def SendLootingStart(exclude_self: bool = False):    
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.LootStart, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.LootStart, 0, 0))
 
 def SendLootingStop(exclude_self: bool = False):    
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.LootStop, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.LootStop, 0, 0))
 
 def SendShowLootExWindow(exclude_self: bool = False):
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ShowLootExWindow, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ShowLootExWindow, 0, 0))
         
 def SendHideLootExWindow(exclude_self: bool = False):
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.HideLootExWindow, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.HideLootExWindow, 0, 0))
 
 def SendOpenXunlai(exclude_self: bool = False):
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.OpenXunlai, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.OpenXunlai, 0, 0))
 
 def SendStartDataCollection(exclude_self: bool = False):
     global is_collecting
     
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartDataCollection, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.StartDataCollection, 0, 0))
     
 def SendPauseDataCollection(exclude_self: bool = False):
     global is_collecting
     
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.PauseDataCollection, 0, 0))
         
 def SendReloadWidgets(exclude_self: bool = False):
     for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-        if exclude_self and acc.AccountEmail == GLOBAL_CACHE.Player.GetAccountEmail():
+        if exclude_self and acc.AccountEmail == Player.GetAccountEmail():
             continue
     
-        GLOBAL_CACHE.ShMem.SendMessage(GLOBAL_CACHE.Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadWidgets, 0, 0))
+        GLOBAL_CACHE.ShMem.SendMessage(Player.GetAccountEmail(), acc.AccountEmail, SharedCommandType.LootEx, (enum.MessageActions.ReloadWidgets, 0, 0))
 
 def ReloadWidgets():    
     widgetHandler = WidgetHandler()
@@ -176,7 +176,7 @@ def HandleReceivedMessages():
     settings = Settings()
     
     global is_collecting
-    account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+    account_email = Player.GetAccountEmail()
     
     if not account_email:
         ConsoleLog("LootEx", "No current account set, cannot handle messages.", False)
@@ -195,7 +195,7 @@ def HandleReceivedMessages():
                     
                     match param:
                         case enum.MessageActions.ReloadProfiles:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(Player.GetAccountEmail(), index)
                             
                             if settings.current_character:
                                 ConsoleLog("LootEx", "Reloading profiles...")
@@ -204,65 +204,65 @@ def HandleReceivedMessages():
                             else:
                                 ConsoleLog("LootEx", "Reloading profiles failed because no current character is set ...")
                                 
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.PauseDataCollection:
                             ConsoleLog("LootEx", f"Pausing data collection as requested by account '{message.SenderEmail}'...", Console.MessageType.Info)
                             
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index) 
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(Player.GetAccountEmail(), index) 
                             is_collecting = settings.collect_items    
                             settings.collect_items = False
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.ResumeDataCollection:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)                           
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(Player.GetAccountEmail(), index)                           
                             settings.collect_items = is_collecting                            
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.StartDataCollection:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(Player.GetAccountEmail(), index)
                             settings.collect_items = True                            
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                         
                         case enum.MessageActions.Start:
                             inventory_handling.InventoryHandler().Start()
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.Stop:
                             inventory_handling.InventoryHandler().Stop()
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.LootStart:
                             inventory_handling.loot_handling.LootHandler().Start()
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.LootStop:
                             inventory_handling.loot_handling.LootHandler().Stop()
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                                 
                         case enum.MessageActions.ReloadData:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsRunning(Player.GetAccountEmail(), index)
                             
                             ConsoleLog("LootEx", "Reloading data...")
                             data.Reload()
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.ShowLootExWindow:
                             settings.window_visible = True
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.HideLootExWindow:
                             settings.window_visible = False
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             
                         case enum.MessageActions.OpenXunlai:    
                             Inventory.OpenXunlaiWindow()                            
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                                                 
                         case enum.MessageActions.ReloadWidgets:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             ReloadWidgets()
                         
                         case _:
-                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(GLOBAL_CACHE.Player.GetAccountEmail(), index)
+                            GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             return

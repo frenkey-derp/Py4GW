@@ -21,8 +21,6 @@ from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
-from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
-
 data = Data()
 
 class SelectableItem:
@@ -228,7 +226,7 @@ class UI:
         self.actions_timer = ThrottledTimer()
         self.action_summary: inventory_handling.InventoryHandler.ActionsSummary | None = None
         
-        self.filtered_scraped_items = {}
+        self.filtered_scraped_items : dict[str, ScrapedItem]= {}
         self.data_collection_item : models.Item | None = None
         self.scraped_item : ScrapedItem | None = None
         
@@ -682,7 +680,6 @@ class UI:
         ]
         
         self.mod_heights: dict[str, float] = {}
-        self.sharedMemoryManager = Py4GWSharedMemoryManager()
         self.filter_popup = False
 
         self.action_heights: dict[ItemAction, float] = {
@@ -5129,6 +5126,11 @@ class UI:
                     ImGui.image(item.IconPath, (64, 64))
                 else:
                     ImGui.dummy(64, 64)
+                
+                ImGui.show_tooltip("Path: " + item.IconPath + "\n" +
+                                   "Exists: " + str(item.IconExists)  + "\n" +
+                                      "Url: " + str(item.inventory_icon_url)
+                                   )
                     
                 if ImGui.button("Assign") and self.data_collection_item is not None:
                     self.assign_scraped_data(self.data_collection_item, item)

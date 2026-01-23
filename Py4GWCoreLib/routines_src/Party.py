@@ -7,6 +7,8 @@ class _RProxy:
 
 Routines = _RProxy()
 
+from ..Player import Player
+
 #region Agents
 class Party:   
     @staticmethod
@@ -58,15 +60,16 @@ class Party:
 
         for player in players:
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            if Agent.IsDead(agent_id):
+            if Agent.IsValid(agent_id) and Agent.IsDead(agent_id):
                 return agent_id
 
         for henchman in henchmen:
-            if Agent.IsDead(henchman.agent_id):
+            if Agent.IsValid(henchman.agent_id) and Agent.IsDead(henchman.agent_id):
                 return henchman.agent_id
-            
+
         for hero in heroes:
-            if Agent.IsDead(hero.agent_id):
+            # Heroes may have agent_id=0 in outposts before spawning
+            if Agent.IsValid(hero.agent_id) and Agent.IsDead(hero.agent_id):
                 return hero.agent_id
 
         return 0
@@ -80,7 +83,7 @@ class Party:
         if not Checks.Map.MapValid():
             return 0
 
-        player_pos = GLOBAL_CACHE.Player.GetXY()
+        player_pos = Player.GetXY()
         players = GLOBAL_CACHE.Party.GetPlayers()
         henchmen = GLOBAL_CACHE.Party.GetHenchmen()
         heroes = GLOBAL_CACHE.Party.GetHeroes()
@@ -88,21 +91,22 @@ class Party:
         # check players
         for player in players:
             agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-            if not Agent.IsDead(agent_id):
+            if Agent.IsValid(agent_id) and not Agent.IsDead(agent_id):
                 agent_pos = Agent.GetXY(agent_id)
                 if Utils.Distance(player_pos, agent_pos) > range_value:
                     return agent_id
 
         # check henchmen
         for henchman in henchmen:
-            if not Agent.IsDead(henchman.agent_id):
+            if Agent.IsValid(henchman.agent_id) and not Agent.IsDead(henchman.agent_id):
                 agent_pos = Agent.GetXY(henchman.agent_id)
                 if Utils.Distance(player_pos, agent_pos) > range_value:
                     return henchman.agent_id
 
         # check heroes
         for hero in heroes:
-            if not Agent.IsDead(hero.agent_id):
+            # Heroes may have agent_id=0 in outposts before spawning
+            if Agent.IsValid(hero.agent_id) and not Agent.IsDead(hero.agent_id):
                 agent_pos = Agent.GetXY(hero.agent_id)
                 if Utils.Distance(player_pos, agent_pos) > range_value:
                     return hero.agent_id

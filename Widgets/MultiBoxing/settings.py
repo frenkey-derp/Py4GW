@@ -33,6 +33,8 @@ class Settings:
         self.move_slave_to_main : bool = True
         self.move_on_focus : bool = False
         
+        self.show_overview : bool = True
+        
         self.screen_size : tuple[int, int] = screen_size
         self.screen_size_changed : bool = False
         

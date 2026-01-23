@@ -6,10 +6,11 @@ from typing import Optional
 
 from Py4GW import Console
 import Py4GW
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Widgets.frenkey.LootEx import models
-from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ItemCategory, ModType, ModsModels
+from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ITEM_TEXTURE_FOLDER, ItemCategory, ModType, ModsModels
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ConsoleLog
 from Py4GWCoreLib.enums import Attribute, ServerLanguage
@@ -785,6 +786,8 @@ class Data():
         self.Reload()
         
     def LoadScrapedItems(self):        
+        from Widgets.frenkey.LootEx.utility import Util
+        
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
         path = os.path.join(data_directory, "scraped_items.json")
@@ -798,7 +801,8 @@ class Data():
             ## remove duplicates based on inventory icon and item name
             unique_items = {}
             for (file_name, item) in scraped_items.items():
-                key = (item.inventory_icon_url, item.name)
+                item.inventory_icon_path = os.path.join(ITEM_TEXTURE_FOLDER, (Util.get_image_name(item.inventory_icon_url or "") or item.inventory_icon_url or ""))
+                key = (item.inventory_icon_path, item.name)
                 
                 if key not in unique_items:
                     unique_items[key] = (file_name, item)
@@ -881,7 +885,7 @@ class Data():
                     if not mod.identifier in self.Weapon_Mods:
                         self.Weapon_Mods[mod.identifier] = mod
 
-        account_file = os.path.join(Console.get_projects_path(), "Widgets", "Config", "DataCollection", GLOBAL_CACHE.Player.GetAccountEmail(), "weapon_mods.json")
+        account_file = os.path.join(Console.get_projects_path(), "Widgets", "Config", "DataCollection", Player.GetAccountEmail(), "weapon_mods.json")
         if os.path.exists(account_file):
             with open(account_file, 'r', encoding='utf-8') as file:
                 weapon_mods = json.load(file)
@@ -911,7 +915,7 @@ class Data():
         data_directory = os.path.join(file_directory, "data")
 
         if not shared_file:
-            account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+            account_name = Player.GetAccountEmail()
             data_directory = os.path.join(self.get_data_collection_directory(), account_name)
 
         path = os.path.join(data_directory, "weapon_mods.json")
@@ -1011,7 +1015,7 @@ class Data():
         with open(path, 'r', encoding='utf-8') as file:
             self.Items = models.ItemsByType.from_dict(json.load(file))
 
-        account_file = os.path.join(self.get_data_collection_directory(), GLOBAL_CACHE.Player.GetAccountEmail(), "items.json")
+        account_file = os.path.join(self.get_data_collection_directory(), Player.GetAccountEmail(), "items.json")
         if os.path.exists(account_file):
             with open(account_file, 'r', encoding='utf-8') as file:
                 account_items = models.ItemsByType.from_dict(json.load(file))
@@ -1073,7 +1077,7 @@ class Data():
         file_directory = os.path.dirname(os.path.abspath(__file__))
         data_directory = os.path.join(file_directory, "data")
         
-        account_name = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_name = Player.GetAccountEmail()
         account_directory = os.path.join(self.get_data_collection_directory(), account_name)
     
         data_directory = data_directory if shared_file else account_directory

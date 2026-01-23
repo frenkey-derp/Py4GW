@@ -61,7 +61,6 @@ class Widget:
     
     def save_widget_state(self):
         ini_handler.write_key(self.name, "enabled", str(self.enabled))
-        ini_handler.write_key(self.name, "optional", str(self.optional))
 
 class WidgetHandler:
     _instance = None
@@ -111,7 +110,6 @@ class WidgetHandler:
                 "category": ini_handler.read_key(section, "category", "Miscellaneous"),
                 "subcategory": ini_handler.read_key(section, "subcategory", "Others"),
                 "enabled": ini_handler.read_bool(section, "enabled", True),
-                "optional": ini_handler.read_bool(section, "optional", True),
             }
 
     def _load_all_from_dir(self):
@@ -358,7 +356,7 @@ def draw_widget_ui():
         else:
             handler.resume_widgets()
             
-        own_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        own_email = Player.GetAccountEmail()
         for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
             if acc.AccountEmail == own_email:
                 continue

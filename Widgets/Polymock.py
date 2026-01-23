@@ -5,9 +5,7 @@ import os
 from Widgets.frenkey.Polymock import gui, combat, state
 
 from Py4GWCoreLib import Map, Routines
-from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
-from Py4GWCoreLib.Py4GWcorelib import ConsoleLog, ThrottledTimer
+from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
 
 importlib.reload(gui)
 importlib.reload(combat)
@@ -16,9 +14,6 @@ importlib.reload(state)
 MODULE_NAME = "Polymock"
 throttle_timer = ThrottledTimer(250)
 script_directory = os.path.dirname(os.path.abspath(__file__))
-
-
-sharedMemoryManager = Py4GWSharedMemoryManager()
 
 combat_handler = combat.Combat()
 widget_state = state.WidgetState()

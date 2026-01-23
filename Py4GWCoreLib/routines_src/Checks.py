@@ -9,6 +9,7 @@ class _RProxy:
         return getattr(root_pkg.Routines, name)
 
 Routines = _RProxy()
+from ..Player import Player
 
 class Checks:
 #region Player
@@ -29,19 +30,19 @@ class Checks:
         def IsDead():
             from ..GlobalCache import GLOBAL_CACHE
             from ..Agent import Agent
-            return Agent.IsDead(GLOBAL_CACHE.Player.GetAgentID())
+            return Agent.IsDead(Player.GetAgentID())
         
         @staticmethod
         def IsCasting():
             from ..GlobalCache import GLOBAL_CACHE
             from ..Agent import Agent
-            return Agent.IsCasting(GLOBAL_CACHE.Player.GetAgentID())
+            return Agent.IsCasting(Player.GetAgentID())
         
         @staticmethod
         def IsKnockedDown():
             from ..GlobalCache import GLOBAL_CACHE
             from ..Agent import Agent
-            return Agent.IsKnockedDown(GLOBAL_CACHE.Player.GetAgentID())
+            return Agent.IsKnockedDown(Player.GetAgentID())
 
 #region Party
     class Party:
@@ -55,19 +56,19 @@ class Checks:
             players = GLOBAL_CACHE.Party.GetPlayers()
             henchmen = GLOBAL_CACHE.Party.GetHenchmen()
             heroes = GLOBAL_CACHE.Party.GetHeroes()
-    
+
             for player in players:
                 agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-                if Agent.IsDead(agent_id):
+                if Agent.IsValid(agent_id) and Agent.IsDead(agent_id):
                     is_someone_dead = True
                     break
             for henchman in henchmen:
-                if Agent.IsDead(henchman.agent_id):
+                if Agent.IsValid(henchman.agent_id) and Agent.IsDead(henchman.agent_id):
                     is_someone_dead = True
                     break
-                
+
             for hero in heroes:
-                if Agent.IsDead(hero.agent_id):
+                if Agent.IsValid(hero.agent_id) and Agent.IsDead(hero.agent_id):
                     is_someone_dead = True
                     break
 
@@ -84,23 +85,23 @@ class Checks:
             players = GLOBAL_CACHE.Party.GetPlayers()
             henchmen = GLOBAL_CACHE.Party.GetHenchmen()
             heroes = GLOBAL_CACHE.Party.GetHeroes()
-            player_pos = GLOBAL_CACHE.Player.GetXY()
-    
+            player_pos = Player.GetXY()
+
             for player in players:
                 agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-                if not Agent.IsDead(agent_id):
+                if Agent.IsValid(agent_id) and not Agent.IsDead(agent_id):
                     agent_pos = Agent.GetXY(agent_id)
                     if Utils.Distance(player_pos, agent_pos) > range_value:
                         return True
 
             for henchman in henchmen:
-                if not Agent.IsDead(henchman.agent_id):
+                if Agent.IsValid(henchman.agent_id) and not Agent.IsDead(henchman.agent_id):
                     agent_pos = Agent.GetXY(henchman.agent_id)
                     if Utils.Distance(player_pos, agent_pos) > range_value:
                         return True
-                
+
             for hero in heroes:
-                if not Agent.IsDead(hero.agent_id):
+                if Agent.IsValid(hero.agent_id) and not Agent.IsDead(hero.agent_id):
                     agent_pos = Agent.GetXY(hero.agent_id)
                     if Utils.Distance(player_pos, agent_pos) > range_value:
                         return True
@@ -121,23 +122,23 @@ class Checks:
             players = GLOBAL_CACHE.Party.GetPlayers()
             henchmen = GLOBAL_CACHE.Party.GetHenchmen()
             heroes = GLOBAL_CACHE.Party.GetHeroes()
-            player_pos = GLOBAL_CACHE.Player.GetXY()
+            player_pos = Player.GetXY()
 
             for player in players:
                 agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-                if Agent.IsDead(agent_id):
+                if Agent.IsValid(agent_id) and Agent.IsDead(agent_id):
                     agent_pos = Agent.GetXY(agent_id)
                     if Utils.Distance(player_pos, agent_pos) > Range.Earshot.value:
                         return True
 
             for henchman in henchmen:
-                if Agent.IsDead(henchman.agent_id):
+                if Agent.IsValid(henchman.agent_id) and Agent.IsDead(henchman.agent_id):
                     agent_pos = Agent.GetXY(henchman.agent_id)
                     if Utils.Distance(player_pos, agent_pos) > Range.Earshot.value:
                         return True
 
             for hero in heroes:
-                if Agent.IsDead(hero.agent_id):
+                if Agent.IsValid(hero.agent_id) and Agent.IsDead(hero.agent_id):
                     agent_pos = Agent.GetXY(hero.agent_id)
                     if Utils.Distance(player_pos, agent_pos) > Range.Earshot.value:
                         return True
@@ -151,7 +152,7 @@ class Checks:
             from ..Agent import Agent
             if not Checks.Map.MapValid():
                 return False
-            
+
             if not Checks.Party.IsPartyLoaded():
                 return False
 
@@ -159,20 +160,20 @@ class Checks:
             players = GLOBAL_CACHE.Party.GetPlayers()
             henchmen = GLOBAL_CACHE.Party.GetHenchmen()
             heroes = GLOBAL_CACHE.Party.GetHeroes()
-            
+
             for player in players:
-                agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number) 
-                if not Agent.IsDead(agent_id):
+                agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
+                if Agent.IsValid(agent_id) and not Agent.IsDead(agent_id):
                     all_dead = False
                     break
-            
+
             for henchman in henchmen:
-                if not Agent.IsDead(henchman.agent_id):
+                if Agent.IsValid(henchman.agent_id) and not Agent.IsDead(henchman.agent_id):
                     all_dead = False
                     break
-            
+
             for hero in heroes:
-                if not Agent.IsDead(hero.agent_id):
+                if Agent.IsValid(hero.agent_id) and not Agent.IsDead(hero.agent_id):
                     all_dead = False
                     break
 
@@ -198,25 +199,25 @@ class Checks:
             players = GLOBAL_CACHE.Party.GetPlayers()
             henchmen = GLOBAL_CACHE.Party.GetHenchmen()
             heroes = GLOBAL_CACHE.Party.GetHeroes()
-            player_pos = GLOBAL_CACHE.Player.GetXY()
-    
+            player_pos = Player.GetXY()
+
             for player in players:
                 agent_id = GLOBAL_CACHE.Party.Players.GetAgentIDByLoginNumber(player.login_number)
-                if not Agent.IsDead(agent_id):
+                if Agent.IsValid(agent_id) and not Agent.IsDead(agent_id):
                     agent_pos = Agent.GetXY(agent_id)
                     if Utils.Distance(player_pos, agent_pos) > range_value:
                         all_in_range = False
                         break
 
             for henchman in henchmen:
-                if not Agent.IsDead(henchman.agent_id):
+                if Agent.IsValid(henchman.agent_id) and not Agent.IsDead(henchman.agent_id):
                     agent_pos = Agent.GetXY(henchman.agent_id)
                     if Utils.Distance(player_pos, agent_pos) > range_value:
                         all_in_range = False
                         break
 
             for hero in heroes:
-                if not Agent.IsDead(hero.agent_id):
+                if Agent.IsValid(hero.agent_id) and not Agent.IsDead(hero.agent_id):
                     agent_pos = Agent.GetXY(hero.agent_id)
                     if Utils.Distance(player_pos, agent_pos) > range_value:
                         all_in_range = False
@@ -231,16 +232,17 @@ class Checks:
         @staticmethod
         def MapValid():
             from ..Map import Map
-            import PyParty
+            from ..Party import Party
 
             if not Map.IsMapReady():
                 return False
             
-            party = PyParty.PyParty()
-            if not party.is_party_loaded:
+            if Map.IsInCinematic():
                 return False
-            if  Map.IsInCinematic():
+            
+            if not Party.IsPartyLoaded():
                 return False
+            
             return True
         
         @staticmethod
@@ -349,19 +351,19 @@ class Checks:
             from ..Agent import Agent
             if not Checks.Map.MapValid():
                 return False
-            
+
             enemy_array = AgentArray.GetEnemyArray()
             if len(enemy_array) == 0:
                 return False
-            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Utils.Distance(GLOBAL_CACHE.Player.GetXY(), Agent.GetXY(agent_id)) <= aggro_area.value)
+            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Utils.Distance(Player.GetXY(), Agent.GetXY(agent_id)) <= aggro_area.value)
             enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Agent.IsAlive(agent_id))
-            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: GLOBAL_CACHE.Player.GetAgentID() != agent_id)
+            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Player.GetAgentID() != agent_id)
             if aggressive_only:
                 enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Agent.IsAggressive(agent_id))
             if len(enemy_array) > 0:
                 return True
             return False
-        
+
         @staticmethod
         def InAggro(aggro_area=Range.Earshot.value, aggressive_only = False):
             from ..AgentArray import AgentArray
@@ -370,13 +372,13 @@ class Checks:
             from ..Agent import Agent
             if not Checks.Map.MapValid():
                 return False
-            
+
             enemy_array = AgentArray.GetEnemyArray()
             if len(enemy_array) == 0:
                 return False
-            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Utils.Distance(GLOBAL_CACHE.Player.GetXY(), Agent.GetXY(agent_id)) <= aggro_area)
+            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Utils.Distance(Player.GetXY(), Agent.GetXY(agent_id)) <= aggro_area)
             enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Agent.IsAlive(agent_id))
-            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: GLOBAL_CACHE.Player.GetAgentID() != agent_id)
+            enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Player.GetAgentID() != agent_id)
             if aggressive_only:
                 enemy_array = AgentArray.Filter.ByCondition(enemy_array, lambda agent_id: Agent.IsAggressive(agent_id))
             if len(enemy_array) > 0:
@@ -389,13 +391,13 @@ class Checks:
             from ..GlobalCache import GLOBAL_CACHE
             from ..Agent import Agent
             import math
-            player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
-            target = GLOBAL_CACHE.Player.GetTargetID()
+            player_agent_id = Player.GetAgentID()
+            target = Player.GetTargetID()
             player_x, player_y = Agent.GetXY(player_agent_id)
             player_angle = Agent.GetRotationAngle(player_agent_id)  # Player's facing direction
             nearest_enemy = agent_id
             if target == 0:
-                GLOBAL_CACHE.Player.ChangeTarget(nearest_enemy)
+                Player.ChangeTarget(nearest_enemy)
                 target = nearest_enemy
             nearest_enemy_x, nearest_enemy_y = Agent.GetXY(nearest_enemy)
                         
@@ -419,7 +421,7 @@ class Checks:
             from ..GlobalCache import GLOBAL_CACHE
             from ..Agent import Agent
             owner = Agent.GetItemAgentOwnerID(item_id)
-            return (owner == GLOBAL_CACHE.Player.GetAgentID()) or (owner == 0)
+            return (owner == Player.GetAgentID()) or (owner == 0)
         
         @staticmethod
         def HasEffect(agent_id, skill_id, exact_weapon_spell=False):
@@ -533,7 +535,7 @@ class Checks:
                 return False
             
             from ..GlobalCache import GLOBAL_CACHE
-            player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+            player_agent_id = Player.GetAgentID()
 
             if (
                 Checks.Player.IsCasting() or
@@ -548,7 +550,7 @@ class Checks:
         def InCastingProcess():
             from ..GlobalCache import GLOBAL_CACHE
             from ..Agent import Agent
-            player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+            player_agent_id = Player.GetAgentID()
             if Agent.IsCasting(player_agent_id) or GLOBAL_CACHE.SkillBar.GetCasting() != 0:
                 return True
             return False
