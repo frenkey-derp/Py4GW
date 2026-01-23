@@ -130,7 +130,8 @@ class Settings:
                 "snap_to_edges": self.snap_to_edges,
                 "edge_snap_distance": self.edge_snap_distance,
                 "layout": self.layout,
-                "accounts_order": self.accounts_order
+                "accounts_order": self.accounts_order,
+                "show_overview": self.show_overview
             }
             
             with open(f"{folder_path}\\settings.json", "w") as f:
@@ -162,7 +163,7 @@ class Settings:
                 self.edge_snap_distance = settings_data.get("edge_snap_distance", 15)
                 self.layout = settings_data.get("layout", "None")      
                 self.accounts_order = settings_data.get("accounts_order", [])      
-                
+                self.show_overview = settings_data.get("show_overview", True)
             ConsoleLog(MODULE_NAME, f"Settings loaded from {file_path}")
                 
         except Exception as e:
