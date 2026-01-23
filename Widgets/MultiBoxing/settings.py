@@ -1,6 +1,7 @@
 import ctypes
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Widgets.MultiBoxing.enum import RenameClientType
 from Widgets.MultiBoxing.messaging import position_clients
@@ -93,7 +94,7 @@ class Settings:
         from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 
         if not self.account:
-            self.account = GLOBAL_CACHE.Player.GetAccountEmail()
+            self.account = Player.GetAccountEmail()
             
         return self.account
 

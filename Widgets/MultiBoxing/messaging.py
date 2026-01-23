@@ -1,5 +1,6 @@
 import enum
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Widgets.MultiBoxing.enum import MultiBoxingMessageType
@@ -58,8 +59,8 @@ def handle_reload_settings(index, message):
 def HandleReceivedMessages():
     global current_account
     
-    if not current_account or current_account != GLOBAL_CACHE.Player.GetAccountEmail():
-        current_account = GLOBAL_CACHE.Player.GetAccountEmail()
+    if not current_account or current_account != Player.GetAccountEmail():
+        current_account = Player.GetAccountEmail()
         
         if not current_account:
             return
