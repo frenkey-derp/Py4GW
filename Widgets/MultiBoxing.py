@@ -1,6 +1,4 @@
 
-import ctypes
-from enum import IntEnum
 import os
 import sys
 import time
@@ -8,19 +6,12 @@ from typing import Optional
 
 from Py4GW import Console
 import Py4GW
-import PyImGui
-import PyMap
 
-from Py4GWCoreLib import ImGui, Player, Routines
+from Py4GWCoreLib import ImGui, Routines
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData, Py4GWSharedMemoryManager
-from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.Py4GWcorelib import ThrottledTimer
-from Py4GWCoreLib.enums_src.IO_enums import Key
-from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
-from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GW_widget_manager import WidgetHandler
-from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
+from Py4GWCoreLib.py4gwcorelib_src.Console import Console
 
 MODULE_NAME = "MultiBoxing"
 for module_name in list(sys.modules.keys()):
@@ -33,11 +24,11 @@ for module_name in list(sys.modules.keys()):
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error reloading module {module_name}: {e}")
             
-from Widgets.MultiBoxing.messaging import HandleReceivedMessages, position_clients
+from Widgets.MultiBoxing.messaging import HandleReceivedMessages
 from Widgets.MultiBoxing.enum import RenameClientType
 from Widgets.MultiBoxing.settings import Settings
 from Widgets.MultiBoxing.region import Region
-from Widgets.MultiBoxing.window_handling import is_window_active, set_window_active, set_window_title
+from Widgets.MultiBoxing.window_handling import is_window_active, set_window_title
 from Widgets.MultiBoxing.gui import GUI
 
 throttle_timer = ThrottledTimer(250)

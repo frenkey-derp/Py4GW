@@ -21,8 +21,6 @@ from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
-from Py4GWCoreLib.GlobalCache.SharedMemory import Py4GWSharedMemoryManager
-
 data = Data()
 
 class SelectableItem:
@@ -682,7 +680,6 @@ class UI:
         ]
         
         self.mod_heights: dict[str, float] = {}
-        self.sharedMemoryManager = Py4GWSharedMemoryManager()
         self.filter_popup = False
 
         self.action_heights: dict[ItemAction, float] = {
