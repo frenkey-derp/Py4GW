@@ -1383,7 +1383,6 @@ class Py4GWSharedMemoryManager:
             return    
         index = self.GetAccountSlot(account_email)
         if index != -1:
-            ConsoleLog(SMM_MODULE_NAME, f"Setting player data for account '{account_email}' in slot {index}.", Py4GW.Console.MessageType.Info)
             self._updatechache()
             player = self.GetStruct().AccountData[index]
             player.SlotNumber = index

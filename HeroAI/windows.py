@@ -608,31 +608,31 @@ class HeroAI_Windows():
                 PyImGui.table_next_row()
                 PyImGui.table_next_column()
                 if party_size >= 2:
-                    HeroAI_Windows.HeroFlags[0], _ = ImGui.toggle_button("1", IsHeroFlagged(1), 30, 30)
+                    HeroAI_Windows.HeroFlags[0] = ImGui.toggle_button("1", IsHeroFlagged(1), 30, 30)
                 PyImGui.table_next_column()
                 if party_size >= 3:
-                    HeroAI_Windows.HeroFlags[1], _ = ImGui.toggle_button("2", IsHeroFlagged(2),30,30)
+                    HeroAI_Windows.HeroFlags[1] = ImGui.toggle_button("2", IsHeroFlagged(2),30,30)
                 PyImGui.table_next_column()
                 if party_size >= 4:
-                    HeroAI_Windows.HeroFlags[2], _ = ImGui.toggle_button("3", IsHeroFlagged(3),30,30)
+                    HeroAI_Windows.HeroFlags[2] = ImGui.toggle_button("3", IsHeroFlagged(3),30,30)
                 PyImGui.table_next_row()
                 PyImGui.table_next_column()
                 if party_size >= 5:
-                    HeroAI_Windows.HeroFlags[3], _ = ImGui.toggle_button("4", IsHeroFlagged(4),30,30)
+                    HeroAI_Windows.HeroFlags[3] = ImGui.toggle_button("4", IsHeroFlagged(4),30,30)
                 PyImGui.table_next_column()
-                HeroAI_Windows.AllFlag, _ = ImGui.toggle_button("All", IsHeroFlagged(0), 30, 30)
+                HeroAI_Windows.AllFlag = ImGui.toggle_button("All", IsHeroFlagged(0), 30, 30)
                 PyImGui.table_next_column()
                 if party_size >= 6:
-                    HeroAI_Windows.HeroFlags[4], _ = ImGui.toggle_button("5", IsHeroFlagged(5),30,30)
+                    HeroAI_Windows.HeroFlags[4] = ImGui.toggle_button("5", IsHeroFlagged(5),30,30)
                 PyImGui.table_next_row()
                 PyImGui.table_next_column()
                 if party_size >= 7:
-                    HeroAI_Windows.HeroFlags[5], _ = ImGui.toggle_button("6", IsHeroFlagged(6),30,30)
+                    HeroAI_Windows.HeroFlags[5] = ImGui.toggle_button("6", IsHeroFlagged(6),30,30)
                 PyImGui.table_next_column()
                 if party_size >= 8:
-                    HeroAI_Windows.HeroFlags[6], _ = ImGui.toggle_button("7", IsHeroFlagged(7), 30, 30)
+                    HeroAI_Windows.HeroFlags[6] = ImGui.toggle_button("7", IsHeroFlagged(7), 30, 30)
                 PyImGui.table_next_column()
-                HeroAI_Windows.ClearFlags, _ = ImGui.toggle_button("X", HeroAI_Windows.HeroFlags[7],30,30)
+                HeroAI_Windows.ClearFlags = ImGui.toggle_button("X", HeroAI_Windows.HeroFlags[7],30,30)
                 PyImGui.end_table()
                     
                     
@@ -1226,8 +1226,8 @@ class HeroAI_Windows():
         if PyImGui.begin_table(f"GameOptionTable##{identifier}", 5, 0, table_width, btn_size + 2):
             PyImGui.table_next_row()
             PyImGui.table_next_column()
-            Following, clicked = ImGui.toggle_button(IconsFontAwesome5.ICON_RUNNING + "##Following" + identifier, source_game_option.Following, btn_size, btn_size)
-            if clicked and Following != source_game_option.Following:
+            Following = ImGui.toggle_button(IconsFontAwesome5.ICON_RUNNING + "##Following" + identifier, source_game_option.Following, btn_size, btn_size)
+            if Following != source_game_option.Following:
                 source_game_option.Following = Following
                 
                 if set_global:
@@ -1235,8 +1235,8 @@ class HeroAI_Windows():
                 
             ImGui.show_tooltip("Following")
             PyImGui.table_next_column()
-            Avoidance, clicked = ImGui.toggle_button(IconsFontAwesome5.ICON_PODCAST + "##Avoidance" + identifier, source_game_option.Avoidance, btn_size, btn_size)
-            if clicked and Avoidance != source_game_option.Avoidance:
+            Avoidance = ImGui.toggle_button(IconsFontAwesome5.ICON_PODCAST + "##Avoidance" + identifier, source_game_option.Avoidance, btn_size, btn_size)
+            if Avoidance != source_game_option.Avoidance:
                 source_game_option.Avoidance = Avoidance
                 
                 if set_global:
@@ -1244,8 +1244,8 @@ class HeroAI_Windows():
                 
             ImGui.show_tooltip("Avoidance")
             PyImGui.table_next_column()
-            Looting, clicked = ImGui.toggle_button(IconsFontAwesome5.ICON_COINS + "##Looting" + identifier, source_game_option.Looting, btn_size, btn_size)
-            if clicked and Looting != source_game_option.Looting:
+            Looting = ImGui.toggle_button(IconsFontAwesome5.ICON_COINS + "##Looting" + identifier, source_game_option.Looting, btn_size, btn_size)
+            if Looting != source_game_option.Looting:
                 source_game_option.Looting = Looting
                 
                 if set_global:
@@ -1253,8 +1253,8 @@ class HeroAI_Windows():
                 
             ImGui.show_tooltip("Looting")
             PyImGui.table_next_column()
-            Targeting, clicked = ImGui.toggle_button(IconsFontAwesome5.ICON_BULLSEYE + "##Targeting" + identifier    , source_game_option.Targeting, btn_size, btn_size)
-            if clicked and Targeting != source_game_option.Targeting:
+            Targeting = ImGui.toggle_button(IconsFontAwesome5.ICON_BULLSEYE + "##Targeting" + identifier    , source_game_option.Targeting, btn_size, btn_size)
+            if Targeting != source_game_option.Targeting:
                 source_game_option.Targeting = Targeting
                 
                 if set_global:
@@ -1264,8 +1264,8 @@ class HeroAI_Windows():
                 
             ImGui.show_tooltip("Targeting")
             PyImGui.table_next_column()
-            Combat, clicked = ImGui.toggle_button(IconsFontAwesome5.ICON_SKULL_CROSSBONES + "##Combat" + identifier, source_game_option.Combat, btn_size, btn_size)
-            if clicked and Combat != source_game_option.Combat:
+            Combat = ImGui.toggle_button(IconsFontAwesome5.ICON_SKULL_CROSSBONES + "##Combat" + identifier, source_game_option.Combat, btn_size, btn_size)
+            if Combat != source_game_option.Combat:
                 source_game_option.Combat = Combat
                 
                 if set_global:
@@ -1279,9 +1279,9 @@ class HeroAI_Windows():
             PyImGui.table_next_row()
             for i in range(NUMBER_OF_SKILLS):
                 PyImGui.table_next_column()
-                skill_active, clicked = ImGui.toggle_button(f"{i + 1}##Skill{i}" + identifier, source_game_option.Skills[i], skill_size, skill_size)
+                skill_active = ImGui.toggle_button(f"{i + 1}##Skill{i}" + identifier, source_game_option.Skills[i], skill_size, skill_size)
                 
-                if clicked and skill_active != source_game_option.Skills[i]:
+                if skill_active != source_game_option.Skills[i]:
                     source_game_option.Skills[i] = skill_active
                     
                     if set_global:

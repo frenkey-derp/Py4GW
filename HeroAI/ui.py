@@ -1479,10 +1479,10 @@ def draw_hero_panel(window: WindowModule, account_data: AccountData, cached_data
             
             for name, value in opt_dict.items():
                 ImGui.push_font("Regular", 10)
-                active, clicked = ImGui.toggle_button(name + f"##{account_data.AccountEmail}", value, 319 / len(opt_dict) - 3, 20)
+                active = ImGui.toggle_button(name + f"##{account_data.AccountEmail}", value, 319 / len(opt_dict) - 3, 20)
                 ImGui.pop_font()
                 
-                if clicked and active != value:
+                if active != value:
                     ConsoleLog("HeroAI", f"Set {name} to {active} for hero {account_data.CharacterName} | Party Position {account_data.PartyPosition}")
                     setattr(options, name, active)
                 
