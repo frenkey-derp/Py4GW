@@ -7,6 +7,7 @@ from typing import Optional, Sequence
 from Py4GW import Console
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
@@ -391,7 +392,7 @@ class DataCollector:
         if self.ready:
             return
         
-        account_mail = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_mail = Player.GetAccountEmail()
         ready = self.settings.data_collection_path != "" and account_mail != ""
         
         if not ready:

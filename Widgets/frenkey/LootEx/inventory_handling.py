@@ -310,7 +310,7 @@ class LootEx_Merchant_Handler(MerchantHandler):
 
 
 def DefensiveActions(self):
-    player_agent_id = GLOBAL_CACHE.Player.GetAgentID()
+    player_agent_id = Player.GetAgentID()
     has_deadly_paradox = Routines.Checks.Effects.HasBuff(player_agent_id, self.deadly_paradox)
     has_shroud_of_distress = Routines.Checks.Effects.HasBuff(player_agent_id, self.shroud_of_distress)
     

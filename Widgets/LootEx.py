@@ -24,7 +24,6 @@ for name in module_names:
         continue
 
     try:
-        ConsoleLog(MODULE_NAME, f"Reloading module: {name}", Console.MessageType.Info)
         del sys.modules[name]
         
     except Exception as e:
@@ -172,7 +171,7 @@ def main():
     if messaging.HandleMessages():
         return
     
-    show_ui = not UIManager.IsWorldMapShowing() and not Map.IsMapLoading() and not Map.IsInCinematic() and not Player.InCharacterSelectScreen()
+    show_ui = not UIManager.IsWorldMapShowing() and not Map.IsMapLoading() and not Map.IsInCinematic() and not Map.Pregame.InCharacterSelectScreen()
     
     conflicting_widgets = ["InventoryPlus"]
     active_conflicting_inventory_widgets = [w for w in conflicting_widgets if widget_handler.is_widget_enabled(w)]
@@ -189,7 +188,7 @@ def main():
         ui.draw_data_collection()
     
     if not current_account:
-        current_account = GLOBAL_CACHE.Player.GetAccountEmail()
+        current_account = Player.GetAccountEmail()
         
         if current_account:            
             Initialize_And_Load()
@@ -198,15 +197,7 @@ def main():
         return
         
     if not current_character:
-        agent_id = Player.GetAgentID()
-        
-        if not current_character_requested:
-            Agent.RequestName(agent_id)
-            current_character_requested = True
-            return
-        
-        if Agent.IsNameReady(agent_id):
-            current_character = Agent.GetNameByID(agent_id)        
+        current_character = Player.GetName()        
             
     if current_character == "Timeout":
         ConsoleLog(MODULE_NAME, "Character name request timed out. Try again...", Console.MessageType.Error)

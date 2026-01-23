@@ -68,7 +68,7 @@ class LootHandler:
                 GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)                  
     
     def LootingRoutineActive(self):
-        account_email = GLOBAL_CACHE.Player.GetAccountEmail()
+        account_email = Player.GetAccountEmail()
         index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email)
         
         if index == -1 or message is None:

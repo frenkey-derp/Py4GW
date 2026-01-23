@@ -197,6 +197,6 @@ class Settings:
         except FileNotFoundError:
             ConsoleLog(
                 "LootEx",
-                f"Settings file for {GLOBAL_CACHE.Player.GetAccountEmail()} not found. Using default settings.",
+                f"Settings file for {Player.GetAccountEmail()} not found. Using default settings.",
                 Console.MessageType.Warning,
             )
