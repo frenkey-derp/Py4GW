@@ -105,7 +105,10 @@ def main():
     
     if fetch_and_handle_quests:    
         quest_cache.quest_data.update()
-        
+    
+    if Map.WorldMap.IsWindowOpen():
+        return
+    
     UI.draw_log(quest_cache.quest_data, accounts)
     settings.write_settings()            
     

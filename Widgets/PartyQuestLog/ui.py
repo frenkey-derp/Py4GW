@@ -220,8 +220,6 @@ class UI():
             if UI.ActiveQuest is not None:
                 UI.draw_quest_details(UI.ActiveQuest, accounts)
             ImGui.end_child()
-                
-            
             
         if UI.QuestLogWindow.changed or (not UI.QuestLogWindow.open):
             pos = UI.QuestLogWindow.window_pos
