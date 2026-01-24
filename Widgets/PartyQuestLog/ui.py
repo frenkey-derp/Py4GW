@@ -5,15 +5,18 @@ from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.Textures import TextureState, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
+from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.GameData_enums import ProfessionShort
+from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GW_widget_manager import WidgetHandler
 from Widgets.PartyQuestLog.settings import Settings
 from account_data_src.quest_data_src import QuestData, QuestNode
 
@@ -35,12 +38,20 @@ class UI():
     gray_color = Color(150, 150, 150, 255)
     
     Settings : "Settings" = Settings()
-    QuestLogWindow : WindowModule = WindowModule("Party Quest Log", "Party Quest Log", window_size=(Settings.LogPosWidth, Settings.LogPosHeight), window_pos=(Settings.LogPosX, Settings.LogPosY), can_close=True)
+    QuestLogWindow : WindowModule = WindowModule("PartyQuestLog", "Party Quest Log", window_size=(Settings.LogPosWidth, Settings.LogPosHeight), window_pos=(Settings.LogPosX, Settings.LogPosY), can_close=True)
+    ConfigWindow : WindowModule = WindowModule("PartyQuestLog#Config", "Party Quest Log - Settings", window_size=(500, 300), can_close=True)
     ActiveQuest : QuestNode | None = None
-    
+        
     @staticmethod
     def draw_log(quest_data : QuestData, accounts: dict[int, AccountData]):
+        UI.QuestLogWindow.open = UI.Settings.LogOpen
+        
+        if not UI.QuestLogWindow.open:
+            return
+        
+        UI.QuestLogWindow.window_name = f"Party Quest Log [{ModifierKey.Ctrl.name}+{Key.L.name.replace('VK_','')}]"
         open = UI.QuestLogWindow.begin()
+        
         if open:
             style = ImGui.get_style()
             grouped_quests : dict[str, list[QuestNode]] = {}
@@ -201,18 +212,19 @@ class UI():
             
             
             UI.QuestLogWindow.process_window()
-            if UI.QuestLogWindow.changed:
-                
-                pos = UI.QuestLogWindow.end_pos
-                UI.Settings.LogPosX = pos[0]
-                UI.Settings.LogPosY = pos[1]
-                
-                size = UI.QuestLogWindow.window_size
-                UI.Settings.LogPosWidth = size[0]
-                UI.Settings.LogPosHeight = size[1]
-                
-                UI.Settings.save_settings()
-        
+            
+        if UI.QuestLogWindow.changed or (not UI.QuestLogWindow.open):
+            pos = UI.QuestLogWindow.end_pos
+            UI.Settings.LogPosX = pos[0]
+            UI.Settings.LogPosY = pos[1]
+            
+            size = UI.QuestLogWindow.window_size
+            UI.Settings.LogPosWidth = size[0]
+            UI.Settings.LogPosHeight = size[1]
+            
+            UI.Settings.LogOpen = UI.QuestLogWindow.open
+            UI.Settings.save_settings()
+                                            
         UI.QuestLogWindow.end()
         
     
@@ -263,4 +275,41 @@ class UI():
 
     @staticmethod
     def draw_modal():
+        pass
+    
+    @staticmethod
+    def draw_configure():
+        if not UI.ConfigWindow.open:
+            return
+        
+        open = UI.ConfigWindow.begin()
+        
+        if open:
+            style = ImGui.get_style()
+            avail = PyImGui.get_content_region_avail()
+            _, height = avail[0], avail[1]
+            
+            ImGui.text_aligned("Quest Log Hotkey", height=22, alignment=Alignment.MidLeft)
+            PyImGui.same_line(0, 5)
+            width_avail = PyImGui.get_content_region_avail()[0]
+            PyImGui.push_item_width(width_avail - 5)
+            key, modifiers = ImGui.keybinding("##HotkeyInfo", key=UI.Settings.HotKeyKey, modifiers=UI.Settings.Modifiers)
+            PyImGui.pop_item_width()
+            
+            if key != UI.Settings.HotKeyKey or modifiers != UI.Settings.Modifiers:
+                ConsoleLog("Party Quest Log", f"Setting new hotkey: {modifiers.name}+{key.name.replace('VK_','')}")
+                UI.Settings.set_questlog_hotkey_keys(key, modifiers)
+                
+                if UI.Settings.hotkey:
+                    UI.Settings.hotkey.key = key
+                    UI.Settings.hotkey.modifiers = modifiers
+                    
+            UI.ConfigWindow.process_window()
+        
+        
+        if UI.ConfigWindow.changed or not UI.ConfigWindow.open:
+            WidgetHandler().set_widget_configuring("PartyQuestLog", UI.ConfigWindow.open)
+        
+        UI.ConfigWindow.end()
+        
         pass
