@@ -1,7 +1,7 @@
 from time import time
 
 import PyImGui
-from HeroAI.utils import SameMapAsAccount
+from HeroAI.utils import SameMapAsAccount, SameMapOrPartyAsAccount
 from Py4GWCoreLib import Quest
 from Py4GWCoreLib import Utils
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -72,16 +72,14 @@ def main():
     
     if not Map.IsMapReady():
         return
-    
+        
     shmem_accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
-    party_id = GLOBAL_CACHE.Party.GetPartyID()
     accounts : dict[int, AccountData] = {}
     quest_log = Quest.GetQuestLog()
     acc_mail = Player.GetAccountEmail()
     new_quest_ids = [q.quest_id for q in quest_log]
     
     if previous_quest_log != new_quest_ids:
-        ConsoleLog(MODULE_NAME, "Quest log changed, updating UI.")
         deleted_ids = [qid for qid in previous_quest_log if qid not in new_quest_ids]
         fresh_ids = [qid for qid in new_quest_ids if qid not in previous_quest_log]
             
@@ -94,10 +92,17 @@ def main():
         previous_quest_log.clear()
         previous_quest_log.extend(new_quest_ids)
         
-    for acc in shmem_accounts:
-        if acc.AccountEmail != acc_mail and acc.IsSlotActive and acc.PartyID == party_id and SameMapAsAccount(acc):
-            accounts[acc.PlayerID] = acc               
+    for acc in shmem_accounts:        
+        if acc.AccountEmail != acc_mail and acc.IsSlotActive:
+            if  SameMapOrPartyAsAccount(acc):
+                accounts[acc.PlayerID] = acc     
 
+    if settings.ShowOnlyInParty and not accounts:
+        return
+    
+    if settings.ShowOnlyOnLeader and not GLOBAL_CACHE.Party.GetPartyLeaderID() == Player.GetAgentID():
+        return
+    
     if fetch_and_handle_quests:    
         quest_cache.quest_data.update()
         

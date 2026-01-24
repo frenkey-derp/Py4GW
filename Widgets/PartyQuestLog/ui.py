@@ -49,6 +49,11 @@ class UI():
         if not UI.QuestLogWindow.open:
             return
         
+        active_quest_id = Quest.GetActiveQuest()
+        has_mission = quest_data.mission_map_quest is not None
+
+        UI.ActiveQuest = quest_data.quest_log.get(active_quest_id, quest_data.mission_map_quest if quest_data.mission_map_quest is not None and quest_data.mission_map_quest_loaded else None)
+        
         UI.QuestLogWindow.window_name = f"Party Quest Log [{ModifierKey.Ctrl.name}+{Key.L.name.replace('VK_','')}]"
         open = UI.QuestLogWindow.begin()
         
@@ -57,7 +62,7 @@ class UI():
             grouped_quests : dict[str, list[QuestNode]] = {}
             avail = PyImGui.get_content_region_avail()
             _, height = avail[0], avail[1] / 2
-            
+                    
             if quest_data.mission_map_quest is not None:
                 grouped_quests.setdefault(quest_data.mission_map_quest.quest_location, []).append(quest_data.mission_map_quest)
             
@@ -80,6 +85,11 @@ class UI():
             og_item_spacing = style.ItemSpacing.get_current()
             
             for location, quests in grouped_quests.items():
+                contains_active_quest = any(quest == UI.ActiveQuest for quest in quests)
+                
+                if contains_active_quest:
+                    PyImGui.set_next_item_open(True, PyImGui.ImGuiCond.Always)
+                
                 ImGui.push_font("Regular", 16)
                 location_open = ImGui.tree_node(f"{location}")
                 ImGui.pop_font()
@@ -90,7 +100,7 @@ class UI():
                     for quest in quests:  
                         max_width = max(1, width - (len(accounts) * 10) - 30)
                         tokenized_lines = Utils.TokenizeMarkupText(f"{quest.name}{(" <c=@completed>(Completed)</c>") if quest.is_completed else ""}", max_width=max_width)     
-                                 
+                                
                         posY = PyImGui.get_cursor_pos_y()               
                         cursor = PyImGui.get_cursor_screen_pos()
                         height_selectable = len(tokenized_lines) * PyImGui.get_text_line_height() + 4
@@ -104,11 +114,11 @@ class UI():
                             
                         style.Border.push_color(color.opacify(0.1).rgb_tuple if color else (0,0,0,0))
                         style.WindowPadding.push_style_var(4, 4)
-                        ImGui.begin_child(f"QuestSelectable_{quest.quest_id}", (0, height_selectable), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)      
+                        ImGui.begin_child(f"QuestSelectable_{quest.quest_id}", (0, height_selectable), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)  
                         ImGui.render_tokenized_markup(tokenized_lines, max_width=max_width, COLOR_MAP=UI.COLOR_MAP)
                         ImGui.end_child()
                         style.WindowPadding.pop_style_var()
-                                     
+                                    
                         style.Border.pop_color()
                         
                         if color:
@@ -123,6 +133,7 @@ class UI():
                                     ConsoleLog("Party Quest Log", f"Cannot travel to locked map '{Map.GetMapName(quest.map_to)}' ({quest.map_to}).")
                             else:
                                 UI.ActiveQuest = quest
+                                Quest.SetActiveQuest(quest.quest_id)
                             
                         if PyImGui.is_item_hovered():
                             if accounts: 
@@ -209,12 +220,11 @@ class UI():
             if UI.ActiveQuest is not None:
                 UI.draw_quest_details(UI.ActiveQuest, accounts)
             ImGui.end_child()
+                
             
-            
-            UI.QuestLogWindow.process_window()
             
         if UI.QuestLogWindow.changed or (not UI.QuestLogWindow.open):
-            pos = UI.QuestLogWindow.end_pos
+            pos = UI.QuestLogWindow.window_pos
             UI.Settings.LogPosX = pos[0]
             UI.Settings.LogPosY = pos[1]
             
@@ -224,6 +234,7 @@ class UI():
             
             UI.Settings.LogOpen = UI.QuestLogWindow.open
             UI.Settings.save_settings()
+            UI.QuestLogWindow.changed = False
                                             
         UI.QuestLogWindow.end()
         
@@ -299,13 +310,16 @@ class UI():
             if key != UI.Settings.HotKeyKey or modifiers != UI.Settings.Modifiers:
                 ConsoleLog("Party Quest Log", f"Setting new hotkey: {modifiers.name}+{key.name.replace('VK_','')}")
                 UI.Settings.set_questlog_hotkey_keys(key, modifiers)
+            
+            show_only_in_party = ImGui.checkbox("Show Quest Log only when in a Party", UI.Settings.ShowOnlyInParty)
+            if show_only_in_party != UI.Settings.ShowOnlyInParty:
+                UI.Settings.ShowOnlyInParty = show_only_in_party
+                UI.Settings.save_settings()
                 
-                if UI.Settings.hotkey:
-                    UI.Settings.hotkey.key = key
-                    UI.Settings.hotkey.modifiers = modifiers
-                    
-            UI.ConfigWindow.process_window()
-        
+            show_only_on_leader = ImGui.checkbox("Show Quest Log only when Party Leader", UI.Settings.ShowOnlyOnLeader)
+            if show_only_on_leader != UI.Settings.ShowOnlyOnLeader:
+                UI.Settings.ShowOnlyOnLeader = show_only_on_leader
+                UI.Settings.save_settings()
         
         if UI.ConfigWindow.changed or not UI.ConfigWindow.open:
             WidgetHandler().set_widget_configuring("PartyQuestLog", UI.ConfigWindow.open)
