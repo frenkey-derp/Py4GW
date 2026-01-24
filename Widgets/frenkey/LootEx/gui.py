@@ -1887,7 +1887,7 @@ class UI:
 
                 ImGui.text("General")
                 ImGui.separator()
-                if ImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 75), True, PyImGui.WindowFlags.NoBackground):                    
+                if ImGui.begin_child("GeneralSettingsChildInner", (subtab_size[0], 110), True, PyImGui.WindowFlags.NoBackground):                    
                     # deposit_full_stacks = ImGui.checkbox("Deposit Full Stacks", self.settings.profile.deposit_full_stacks)
                     # if deposit_full_stacks != self.settings.profile.deposit_full_stacks:
                     #     self.settings.profile.deposit_full_stacks = deposit_full_stacks
