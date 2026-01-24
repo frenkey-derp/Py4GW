@@ -1,6 +1,9 @@
 
 import os
+from typing import Optional
 
+from Py4GWCoreLib.HotkeyManager import HotKey
+from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
 from Py4GWCoreLib.py4gwcorelib_src.Console import Console, ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
@@ -33,6 +36,7 @@ class Settings:
         self.save_throttle_timer = ThrottledTimer(1000)
         self.ini_handler = IniHandler(self.ini_path)
         
+        self.LogOpen : bool = False
         self.LogPosX : float = 0
         self.LogPosY : float = 0
         self.LogPosHeight : float = 800
@@ -40,6 +44,11 @@ class Settings:
             
         self.ShowOnlyInParty : bool = True
         self.ShowOnlyOnLeader : bool = True
+        
+        self.HotKeyKey : Key = Key.L
+        self.Modifiers : ModifierKey = ModifierKey.Ctrl
+        
+        self.hotkey : Optional[HotKey] = None
             
     def save_settings(self):
         self.save_requested = True
@@ -54,14 +63,50 @@ class Settings:
         self.save_throttle_timer.Reset()
         self.save_requested = False
         
+        self.ini_handler.write_key("Window", "LogOpen", str(self.LogOpen))
         self.ini_handler.write_key("Window", "LogPosX", str(self.LogPosX))
         self.ini_handler.write_key("Window", "LogPosY", str(self.LogPosY))
         self.ini_handler.write_key("Window", "LogPosHeight", str(self.LogPosHeight))
         self.ini_handler.write_key("Window", "LogPosWidth", str(self.LogPosWidth))
+        self.ini_handler.write_key("Hotkey", "HotKeyKey", self.HotKeyKey.name.replace('VK_',''))
+        self.ini_handler.write_key("Hotkey", "Modifiers", self.Modifiers.name)
         
     def load_settings(self):
+        self.LogOpen = self.ini_handler.read_bool("Window", "LogOpen", self.LogOpen)
         self.LogPosX = self.ini_handler.read_float("Window", "LogPosX", self.LogPosX)
         self.LogPosY = self.ini_handler.read_float("Window", "LogPosY", self.LogPosY)
         self.LogPosHeight = self.ini_handler.read_float("Window", "LogPosHeight", self.LogPosHeight)
         self.LogPosWidth = self.ini_handler.read_float("Window", "LogPosWidth", self.LogPosWidth)
+        
+        hotkeykey = self.ini_handler.read_key("Hotkey", "HotKeyKey", "VK_L")
+        modifiers = self.ini_handler.read_key("Hotkey", "Modifiers", "Ctrl")
+        
+        try:
+            self.HotKeyKey = Key[hotkeykey]
+            ConsoleLog("Party Quest Log", f"Loaded HotKeyKey '{hotkeykey}' from settings.")
+            
+        except KeyError:
+            ConsoleLog("Party Quest Log", f"Invalid HotKeyKey '{hotkeykey}' in settings. Using default 'VK_L'.")
+            self.HotKeyKey = Key.L
+            
+        try:
+            self.Modifiers = ModifierKey[modifiers]
+            ConsoleLog("Party Quest Log", f"Loaded Modifiers '{modifiers}' from settings.")
+            
+        except KeyError:
+            ConsoleLog("Party Quest Log", f"Invalid Modifiers '{modifiers}' in settings. Using default 'Ctrl'.")
+            self.Modifiers = ModifierKey.Ctrl
+            
         pass
+
+    def set_questlog_hotkey_keys(self, key: Key, modifiers: ModifierKey):
+        self.HotKeyKey = key
+        self.Modifiers = modifiers
+        
+        if self.hotkey:
+            self.hotkey.key = key
+            self.hotkey.modifiers = modifiers
+            
+        self.save_settings()
+    
+    
