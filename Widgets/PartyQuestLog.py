@@ -94,7 +94,7 @@ def main():
         
     for acc in shmem_accounts:        
         if acc.AccountEmail != acc_mail and acc.IsSlotActive:
-            if  SameMapOrPartyAsAccount(acc):
+            if  SameMapOrPartyAsAccount(acc) and acc.PartyID == GLOBAL_CACHE.Party.GetPartyID():
                 accounts[acc.PlayerID] = acc     
 
     if settings.ShowOnlyInParty and not accounts:
@@ -105,6 +105,8 @@ def main():
     
     if fetch_and_handle_quests:    
         quest_cache.quest_data.update()
+    
+    UI.draw_overlays(accounts)
     
     if Map.WorldMap.IsWindowOpen():
         return

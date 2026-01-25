@@ -1,4 +1,6 @@
+import math
 import PyImGui
+import PyOverlay
 from HeroAI.ui import get_display_name
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
@@ -7,6 +9,7 @@ from Py4GWCoreLib.ImGui_src.Textures import TextureState, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.Quest import Quest
@@ -285,6 +288,188 @@ class UI():
     @staticmethod
     def draw_modal():
         pass
+        
+    @staticmethod
+    def ConvertQuestMarkerCoordinates(marker_x, marker_y) -> tuple[float, float] | None:
+        """Convert quest marker coordinates from unsigned to signed if needed.
+
+        Returns None if coordinates are invalid, otherwise returns (x, y) as floats.
+        """
+        # Check for sentinel values
+        if marker_x == 2147483648 or marker_y == 2147483648:
+            return None
+        if marker_x == 0 and marker_y == 0:
+            return None
+
+        # Convert unsigned to signed
+        if marker_y > 2147483647:
+            marker_y = marker_y - 4294967296
+        if marker_x > 2147483647:
+            marker_x = marker_x - 4294967296
+
+        return float(marker_x), float(marker_y)
+    
+    @staticmethod
+    def draw_edge_arrow(
+        overlay: Overlay,
+        target_x: float,
+        target_y: float,
+        rect: tuple[float, float, float, float],  # (x1, y1, x2, y2)
+        color: int,
+        size: float = 12.0,
+        thickness: float = 2.0,
+        rotation: float = 0.0,  # radians
+    ):
+        x1, y1, x2, y2 = rect
+        cx = (x1 + x2) * 0.5
+        cy = (y1 + y2) * 0.5
+
+        dx = target_x - cx
+        dy = target_y - cy
+
+        if dx == 0 and dy == 0:
+            return
+
+        # Apply minimap rotation
+        if rotation != 0.0:
+            dx, dy = UI.rotate_vector(dx, dy, -rotation)
+
+        length = math.hypot(dx, dy)
+        dx /= length
+        dy /= length
+
+        # Edge intersection
+        t_vals = []
+
+        if dx != 0:
+            t_vals.append((x1 - cx) / dx)
+            t_vals.append((x2 - cx) / dx)
+        if dy != 0:
+            t_vals.append((y1 - cy) / dy)
+            t_vals.append((y2 - cy) / dy)
+
+        t = min(t for t in t_vals if t > 0)
+        ix = cx + dx * t
+        iy = cy + dy * t
+
+        angle = math.atan2(dy, dx)
+        left = angle + math.radians(150)
+        right = angle - math.radians(150)
+
+        tip_x = ix
+        tip_y = iy
+
+        left_x = tip_x + math.cos(left) * size
+        left_y = tip_y + math.sin(left) * size
+
+        right_x = tip_x + math.cos(right) * size
+        right_y = tip_y + math.sin(right) * size
+
+        overlay.DrawLine(tip_x, tip_y, left_x, left_y, color, thickness)
+        overlay.DrawLine(tip_x, tip_y, right_x, right_y, color, thickness)
+
+    @staticmethod
+    def rotate_vector(x: float, y: float, angle: float) -> tuple[float, float]:
+        cos_a = math.cos(angle)
+        sin_a = math.sin(angle)
+        return (
+            x * cos_a - y * sin_a,
+            x * sin_a + y * cos_a,
+        )
+        
+    @staticmethod
+    def draw_overlays(accounts : dict[int, AccountData]):
+        if not UI.Settings.ShowFollowerActiveQuestOnMinimap and not UI.Settings.ShowFollowerActiveQuestOnMissionMap:
+            return
+
+        active_quests = [acc.PlayerData.QuestsData.ActiveQuest for acc in accounts.values() if acc.PlayerData.QuestsData.ActiveQuest.QuestID != 0]
+        
+        if not active_quests:
+            return
+        
+        overlay = Overlay()
+        overlay.BeginDraw()
+        
+        color = Color(152, 251, 152, 255)
+     
+        mission_map_open = Map.MissionMap.IsWindowOpen()
+        mini_map_open = Map.MiniMap.IsWindowOpen()
+        
+        if not mission_map_open and not mini_map_open:
+            overlay.EndDraw()
+            return
+        
+        map_coords = Map.MissionMap.GetMissionMapContentsCoords() # (x1, y1, x2, y2)
+        mini_map_coords = Map.MiniMap.GetWindowCoords() # (x1, y1, x2, y2)  
+        compass_center = Map.MiniMap.GetMapScreenCenter() # (x, y)  
+        
+        for active_quest in active_quests:  
+            marker_pos = UI.ConvertQuestMarkerCoordinates(active_quest.MarkerX, active_quest.MarkerY)       
+            if marker_pos is None:
+                continue
+            
+            if not mission_map_open or UI.Settings.ShowFollowerActiveQuestOnMissionMap:   
+                
+                mission_map_pos = Map.MissionMap.MapProjection.GameMapToScreen(marker_pos[0], marker_pos[1])       
+                
+                if not Utils.IsPointInRect(mission_map_pos[0], mission_map_pos[1], map_coords[0], map_coords[1], map_coords[2] - map_coords[0], map_coords[3] - map_coords[1]):
+                    ## Draw arrow pointing to the quest marker at the edge of the mission map
+                    UI.draw_edge_arrow(
+                        overlay=overlay,
+                        target_x=mission_map_pos[0],
+                        target_y=mission_map_pos[1],
+                        rect=map_coords,
+                        color=color.to_color(),
+                        size=14.0,
+                        thickness=3.0,
+                    )
+                    pass
+                else:            
+                    overlay.DrawStarFilled(mission_map_pos[0], mission_map_pos[1], 10.0, 5.0, color.to_color(), 8)
+                
+            if not mini_map_open or UI.Settings.ShowFollowerActiveQuestOnMinimap:
+                mini_map_pos = Map.MiniMap.MapProjection.GamePosToScreen(marker_pos[0], marker_pos[1])  
+                        
+                radius = ((mini_map_coords[2] - mini_map_coords[0]) * 0.81) / 2
+                                        
+                if not Utils.point_in_circle(mini_map_pos[0], mini_map_pos[1], compass_center[0], compass_center[1], radius):
+                    dx = mini_map_pos[0] - compass_center[0]
+                    dy = mini_map_pos[1] - compass_center[1]
+
+                    length = math.hypot(dx, dy)
+                    if length > 0:
+                        dx /= length
+                        dy /= length
+
+                        tip_x = compass_center[0] + dx * radius
+                        tip_y = compass_center[1] + dy * radius
+
+                        angle = math.atan2(dy, dx)
+                        size = 15.0
+
+                        left = angle + math.radians(150)
+                        right = angle - math.radians(150)
+
+                        overlay.DrawLine(
+                            tip_x, tip_y,
+                            tip_x + math.cos(left) * size,
+                            tip_y + math.sin(left) * size,
+                            color.to_color(), 3.0
+                        )
+
+                        overlay.DrawLine(
+                            tip_x, tip_y,
+                            tip_x + math.cos(right) * size,
+                            tip_y + math.sin(right) * size,
+                            color.to_color(), 3.0
+                        )
+                    pass
+                else:    
+                    overlay.DrawStarFilled(mini_map_pos[0], mini_map_pos[1], 6.0, 3.0, color.to_color(), 8)
+                
+            
+        overlay.EndDraw()
+        
     
     @staticmethod
     def draw_configure():
@@ -317,6 +502,16 @@ class UI():
             show_only_on_leader = ImGui.checkbox("Show Quest Log only when Party Leader", UI.Settings.ShowOnlyOnLeader)
             if show_only_on_leader != UI.Settings.ShowOnlyOnLeader:
                 UI.Settings.ShowOnlyOnLeader = show_only_on_leader
+                UI.Settings.save_settings()
+        
+            show_follower_on_minimap = ImGui.checkbox("Show Follower Active Quest on Minimap", UI.Settings.ShowFollowerActiveQuestOnMinimap)
+            if show_follower_on_minimap != UI.Settings.ShowFollowerActiveQuestOnMinimap:
+                UI.Settings.ShowFollowerActiveQuestOnMinimap = show_follower_on_minimap
+                UI.Settings.save_settings()
+                
+            show_follower_on_mission_map = ImGui.checkbox("Show Follower Active Quest on Mission Map", UI.Settings.ShowFollowerActiveQuestOnMissionMap)
+            if show_follower_on_mission_map != UI.Settings.ShowFollowerActiveQuestOnMissionMap:
+                UI.Settings.ShowFollowerActiveQuestOnMissionMap = show_follower_on_mission_map
                 UI.Settings.save_settings()
         
         if UI.ConfigWindow.changed or not UI.ConfigWindow.open:

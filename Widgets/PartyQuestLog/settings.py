@@ -44,6 +44,8 @@ class Settings:
             
         self.ShowOnlyInParty : bool = True
         self.ShowOnlyOnLeader : bool = True
+        self.ShowFollowerActiveQuestOnMinimap : bool = True
+        self.ShowFollowerActiveQuestOnMissionMap : bool = True
         
         self.HotKeyKey : Key = Key.L
         self.Modifiers : ModifierKey = ModifierKey.Ctrl
@@ -68,6 +70,13 @@ class Settings:
         self.ini_handler.write_key("Window", "LogPosY", str(self.LogPosY))
         self.ini_handler.write_key("Window", "LogPosHeight", str(self.LogPosHeight))
         self.ini_handler.write_key("Window", "LogPosWidth", str(self.LogPosWidth))
+        
+        self.ini_handler.write_key("QuestLog", "ShowOnlyInParty", str(self.ShowOnlyInParty))
+        self.ini_handler.write_key("QuestLog", "ShowOnlyOnLeader", str(self.ShowOnlyOnLeader))
+        
+        self.ini_handler.write_key("Overlays", "ShowFollowerActiveQuestOnMinimap", str(self.ShowFollowerActiveQuestOnMinimap))
+        self.ini_handler.write_key("Overlays", "ShowFollowerActiveQuestOnMissionMap", str(self.ShowFollowerActiveQuestOnMissionMap))
+        
         self.ini_handler.write_key("Hotkey", "HotKeyKey", self.HotKeyKey.name.replace('VK_',''))
         self.ini_handler.write_key("Hotkey", "Modifiers", self.Modifiers.name)
         
@@ -77,6 +86,11 @@ class Settings:
         self.LogPosY = self.ini_handler.read_float("Window", "LogPosY", self.LogPosY)
         self.LogPosHeight = self.ini_handler.read_float("Window", "LogPosHeight", self.LogPosHeight)
         self.LogPosWidth = self.ini_handler.read_float("Window", "LogPosWidth", self.LogPosWidth)
+        
+        self.ShowOnlyInParty = self.ini_handler.read_bool("QuestLog", "ShowOnlyInParty", self.ShowOnlyInParty)
+        self.ShowOnlyOnLeader = self.ini_handler.read_bool("QuestLog", "ShowOnlyOnLeader", self.ShowOnlyOnLeader)
+        self.ShowFollowerActiveQuestOnMinimap = self.ini_handler.read_bool("Overlays", "ShowFollowerActiveQuestOnMinimap", self.ShowFollowerActiveQuestOnMinimap)
+        self.ShowFollowerActiveQuestOnMissionMap = self.ini_handler.read_bool("Overlays", "ShowFollowerActiveQuestOnMissionMap", self.ShowFollowerActiveQuestOnMissionMap)
         
         hotkeykey = self.ini_handler.read_key("Hotkey", "HotKeyKey", "VK_L")
         modifiers = self.ini_handler.read_key("Hotkey", "Modifiers", "Ctrl")
