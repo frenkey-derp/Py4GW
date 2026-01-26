@@ -1760,7 +1760,7 @@ class ItemModifiersInformation:
         if is_weapon or (is_upgrade and not is_rune):            
             self.weapon_mods = WeaponModInfo.get_from_modifiers(modifier_values, item_type, model_id) or []
             self.max_weapon_mods = [mod for mod in self.weapon_mods if mod.IsMaxed]
-            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}) and (item_type == ItemType.Rune_Mod or settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False))]
+            self.weapon_mods_to_keep = [mod for mod in self.max_weapon_mods if (mod.Mod.mod_type is not ModType.Inherent or is_inscribable) and settings.profile and settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}) and (item_type == ItemType.Rune_Mod or settings.profile.weapon_mods.get(mod.WeaponMod.identifier, {}).get(item_type.name, False))]
                             
         
         self.mods = self.runes + self.weapon_mods
