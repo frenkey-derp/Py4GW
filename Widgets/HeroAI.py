@@ -209,6 +209,8 @@ def Follow(cached_data: CacheData):
         map_quads = []
         
 
+        
+
     if Player.GetAgentID() == GLOBAL_CACHE.Party.GetPartyLeaderID():
         cached_data.follow_throttle_timer.Reset()
         return False
