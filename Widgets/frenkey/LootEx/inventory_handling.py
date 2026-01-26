@@ -1,4 +1,6 @@
 from datetime import date, datetime, timedelta
+import re
+import re
 from typing import Any, Callable, Generator, override
 from Py4GWCoreLib.Builds.SF_Ass_vaettir import SF_Ass_vaettir
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
@@ -9,7 +11,7 @@ from Py4GWCoreLib.botting_src.subclases_src.MERCHANT_src import _MERCHANTS
 from Py4GWCoreLib.py4gwcorelib_src.MerchantHandler import MerchantHandler
 from Widgets.frenkey.Core.utility import string_similarity
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import XUNLAI_STORAGE, ActionState, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
+from Widgets.frenkey.LootEx.enum import ITEM_CONVERSIONS, XUNLAI_STORAGE, ActionState, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
 from Widgets.frenkey.LootEx import loot_handling, models, settings, utility, ui_manager_extensions, item_configuration, cache
 from Widgets.frenkey.LootEx.instance_manager import InstanceManager
@@ -1410,7 +1412,56 @@ class InventoryHandler:
             self.salvage_action = None
 
         return True                
+    
+    def ExchangeItems(self):
+        if not self.merchant_open:
+            return False
+    
+        from Widgets.frenkey.LootEx.settings import Settings
+        settings = Settings()
+        if not settings.profile:
+            return False
+                        
+        for (to_model_id, to_item_type), (from_model_id, from_item_type, rate, item_price) in ITEM_CONVERSIONS.items():
+            if not settings.profile.conversions.get(f"{from_model_id.name}>>{to_model_id.name}", False):  
+                continue
+            
+            from_item = next((
+                item for item in self.cached_inventory if item.model_id == from_model_id and item.quantity >= rate), None)
+            
+            
+            if from_item is None:
+                continue
+            
+            exchangeable_amount = from_item.quantity // rate
+            
+            if exchangeable_amount <= 0:
+                continue
         
+            to_item_data = self.data.Items.get_item(to_item_type, to_model_id)
+            exchanged = 0
+            
+            for _i in range(exchangeable_amount):                        
+                offered_items = Trading.Crafter.GetOfferedItems()
+                offered_item = next((
+                    item for item in offered_items if GLOBAL_CACHE.Item.GetModelID(item) == to_model_id), None)   
+                
+                if offered_item is None:
+                    continue
+                                    
+                gold_on_character = Inventory.GetGoldOnCharacter()
+                
+                if item_price > gold_on_character:
+                    continue
+                              
+                Merchant.Trading.Crafter.CraftItem(offered_item, item_price, [from_item.id], [rate])
+                exchanged += 1
+            
+            
+            ConsoleLog(
+                "LootEx", f"Exchanged {exchanged * rate}x '{from_item.data.name if from_item.data else from_item.name}' ({from_item.id}) for {exchanged}x '{to_item_data.name if to_item_data else to_model_id.name}' via crafter for {utility.Util.format_currency(item_price * exchanged)}.", Console.MessageType.Info)  
+        
+        pass
 
     def GetTraderType(self, item: cache.Cached_Item) -> MerchantType:
         if item.item_type == ItemType.Rune_Mod:
@@ -1975,6 +2026,8 @@ class InventoryHandler:
             if self.merchant_timer.IsExpired():
                 self.merchant_timer.Reset()
 
+                self.ExchangeItems()
+                
                 items_to_buy = self.GetMissingItems()
                 if items_to_buy:
                     if self.is_outpost and not self.GetItemsFromStorage(items_to_buy):

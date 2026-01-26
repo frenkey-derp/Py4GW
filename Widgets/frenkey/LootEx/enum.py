@@ -16,6 +16,10 @@ MAX_CHARACTER_GOLD = 100000
 MAX_VAULT_GOLD = 1000000
 
 INVALID_NAMES = ["", "Unknown", "No Item"]
+ITEM_CONVERSIONS : dict[tuple[ModelID, ItemType], tuple[ModelID, ItemType, int, int]] = {
+    (ModelID.Silver_Zaishen_Coin, ItemType.Materials_Zcoins): (ModelID.Copper_Zaishen_Coin, ItemType.Materials_Zcoins, 50, 10),
+    (ModelID.Gold_Zaishen_Coin, ItemType.Materials_Zcoins): (ModelID.Silver_Zaishen_Coin, ItemType.Materials_Zcoins, 10, 50),            
+}
 
 COMMON_MATERIALS: list[int] = [
     ModelID.Bone,

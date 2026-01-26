@@ -122,6 +122,11 @@ class Profile:
         self.rare_weapons : dict[str, bool] = {}
         from Widgets.frenkey.LootEx.data import Data
         self.rare_weapons = {name: True for (name, _) in Data().Rare_Weapon_ModelIds.keys()}
+        
+        self.conversions : dict[str, bool] = {
+            f"{ModelID.Copper_Zaishen_Coin.name}>>{ModelID.Silver_Zaishen_Coin}": True,
+            f"{ModelID.Silver_Zaishen_Coin.name}>>{ModelID.Gold_Zaishen_Coin.name}": True
+        }
 
     def setup_lookups(self):
         self.filters_by_item_type.clear()
@@ -213,7 +218,8 @@ class Profile:
             "blacklist": {
                 item_type.name: list(self.blacklist[item_type].keys())
                 for item_type in self.blacklist
-            }                
+            },
+            "conversions": self.conversions,  
         }
         
         file_path = os.path.join(
@@ -289,6 +295,7 @@ class Profile:
                     ItemType[item_type]: {int(model_id): True for model_id in model_ids}
                     for item_type, model_ids in profile_dict.get("blacklist", {}).items()
                 }                     
+                self.conversions = profile_dict.get("conversions", self.conversions)
                                 
             self.setup_lookups()
             

@@ -1,3 +1,4 @@
+import re
 import shutil
 from typing import Callable
 import webbrowser
@@ -13,7 +14,7 @@ from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, cache, ui_manager_extensions, inventory_handling, models, messaging
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, MaterialType, ModType, SalvageOption
+from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, ITEM_CONVERSIONS, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, MaterialType, ModType, SalvageOption
 from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
@@ -970,9 +971,17 @@ class UI:
 
                 if ImGui.begin_tab_bar("LootExTabBar"):
                     self.draw_general_settings()
-                    self.draw_by_item_type()
-                    self.draw_by_item_skin()
-                    self.draw_low_req()
+                    if ImGui.begin_tab_item("Rules"):
+                        if ImGui.begin_tab_bar("RulesTabBar"):
+                            self.draw_by_item_type()
+                            self.draw_by_item_skin()
+                            self.draw_low_req()
+                            ImGui.end_tab_bar()
+
+                        ImGui.end_tab_item()
+                    
+                    self.draw_item_conversions()
+                        
                     self.draw_weapon_mods()
                     self.draw_runes()
                     self.draw_rare_weapons()
@@ -5114,6 +5123,70 @@ class UI:
             ImGui.end_child()
             ImGui.end_tab_item()
 
+    def draw_item_conversions(self):
+        style = ImGui.get_style()
+        
+        if ImGui.begin_tab_item("Item Conversions"):
+            if self.settings.profile is not None:                               
+                ImGui.text("Select the item conversions you want to enable")
+                ImGui.separator()
+                line_height = PyImGui.get_text_line_height()
+                
+                for to_item, from_item in ITEM_CONVERSIONS.items():
+                    from_data = self.data.Items.get_item(from_item[1], from_item[0])
+                    to_data = self.data.Items.get_item(to_item[1], to_item[0])
+                    if from_data is None or to_data is None:    
+                        continue
+                    
+                    if ImGui.begin_child(f"ItemConversion{from_item[0]}{to_item[0]}", (0, 25), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        cursor_pos = PyImGui.get_cursor_pos()
+                        checked = ImGui.checkbox(f"##{from_item[2]}x {from_data.name} >> {to_data.name}", self.settings.profile.conversions.get(f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}", False))                
+                        item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
+                        PyImGui.set_cursor_pos(cursor_pos[0] + 30, cursor_pos[1] + (item_rect_size[1] - line_height) / 2)
+                        
+                        text = f"Exchange {from_item[2]}x <img path=\"{from_data.texture_file}\" w={line_height} h={line_height} uv=8,8,48,48,64,64/> {from_data.name} for {1}x <img path=\"{to_data.texture_file}\" w={line_height} h={line_height} uv=8,8,48,48,64,64/> {to_data.name}"
+                        RichTextRenderer.render(text, 1000)
+                        
+                        if checked != self.settings.profile.conversions.get(f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}", False):
+                            self.settings.profile.conversions[f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}"] = checked
+                            self.settings.profile.save()
+                            
+                    ImGui.end_child()
+                    
+                    if PyImGui.is_item_clicked(0):                        
+                        self.settings.profile.conversions[f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}"] = not self.settings.profile.conversions.get(f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}", False)
+                        self.settings.profile.save()
+                    
+                    ImGui.show_tooltip(f"Enable/Disable conversion from {from_data.name} to {to_data.name}")
+                    
+                    example_text = f"""
+                    Welcome to the <b>Py4GW Rich Text</b> system!<br>
+
+                    This line demonstrates <i>italic text</i>, <b>bold text</b>, and <c=255,0,0,255>RED</c>, <c=0,255,0,255>GREEN</c>, and <c=0,0,255,255>BLUE</c> colors using integer RGBA.<br>
+
+                    You can also use normalized floats:<br>
+                    <c=1.0,0.85,0.0,1.0>Gold</c>,<br>
+                    <c=0.6,0.6,0.6,1.0>Gray</c>,<br>
+                    <c=0.2,0.9,0.2,1.0>Soft Green</c>.<br><br>
+
+                    Styles can be nested:<br>
+                    <c=0.9,0.3,0.3,1.0>This is <b>bold red</b>,<br>
+                    <i>italic red</i>, and <b><i>bold italic red</i></b></c>.<br><br>
+
+                    Images can appear inline with text:<br>
+                    Deal bonus <img path="{from_data.texture_file}" w=14 h=14/> +15% while enchanted <img path="{to_data.texture_file}" w=14 h=14/>. Images wrap correctly at line edges and behave like text.<br><br>
+
+
+                    Manual line breaks are supported<br>
+                    like this, and paragraph breaks follow.
+
+
+                    """
+                    
+            
+            ImGui.end_tab_item()
+        pass
+
     #region DataCollection View
     def draw_collected_item(self, key: str, item: ScrapedItem, is_selected: bool = False):             
         if ImGui.begin_child(key, (0, 120), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
@@ -5681,3 +5754,176 @@ class UI:
         return v
 
     # endregion
+    
+    
+@dataclass
+class RichToken:
+    type: str
+    text: str = ""
+    color: Optional[tuple] = None
+    font: str = "Regular"
+    font_size : int = 14
+    texture_path: Optional[str] = None
+    size: Optional[Tuple[float, float]] = None
+    uv0: Optional[Tuple[float, float]] = None
+    uv1: Optional[Tuple[float, float]] = None
+    
+class RichTextTokenizer:
+    TAG_RE = re.compile(
+        r"(<img[^>]+/>|</?[a-z]+[^>]*>|\{sc\}|\{s\}|\n+|[^\s<\{]+|\s+)",
+        re.IGNORECASE
+    )
+
+    IMG_RE = re.compile(
+        r'path="([^"]+)"|w=(\d+)|h=(\d+)|uv=([\d,]+)',
+        re.IGNORECASE
+    )
+    
+    COLOR_RE = re.compile(
+    r'<c=([\d\.]+),([\d\.]+),([\d\.]+),([\d\.]+)>',
+    re.IGNORECASE
+    )
+
+    @staticmethod
+    def _parse_rgba(r, g, b, a):
+        values = [float(r), float(g), float(b), float(a)]
+        if any(v > 1.0 for v in values):
+            return tuple(v / 255.0 for v in values)
+        return tuple(values)
+    
+    @staticmethod
+    def tokenize(text: str) -> List[RichToken]:
+        tokens: List[RichToken] = []
+
+        for part in RichTextTokenizer.TAG_RE.findall(text):
+            low = part.lower()
+
+            if low.startswith("<c="):
+                m = RichTextTokenizer.COLOR_RE.match(part)
+                if m:
+                    rgba = RichTextTokenizer._parse_rgba(*m.groups())
+                    tokens.append(RichToken(
+                        type="color_push",
+                        color=rgba
+                    ))
+                continue
+            
+            # --- Color pop ---
+            if low == "</c>":
+                tokens.append(RichToken(type="color_pop"))
+                continue
+            
+            if low.startswith("<img"):
+                tex_id = None
+                w = h = 16
+                uv0 = (0.0, 0.0)
+                uv1 = (1.0, 1.0)
+
+                for m in RichTextTokenizer.IMG_RE.finditer(part):
+                    if m.group(1):
+                        tex_id = m.group(1)
+                    if m.group(2):
+                        w = int(m.group(2))
+                    if m.group(3):
+                        h = int(m.group(3))
+                    if m.group(4):
+                        uvsource = tuple(map(int, m.group(4).split(",")))                        
+                        if len(uvsource) == 6:
+                            uvs = (uvsource[0], uvsource[1], uvsource[2], uvsource[3], uvsource[4], uvsource[5])
+                            uv0, uv1 = Utils.PixelsToUV(*uvs)
+
+                tokens.append(RichToken(
+                    type="image",
+                    texture_path=tex_id,
+                    size=(w, h),
+                    uv0=uv0,
+                    uv1=uv1
+                ))
+                continue
+
+            if low == "<b>":
+                tokens.append(RichToken(type="font_push", font="Bold"))
+                continue
+            if low == "</b>":
+                tokens.append(RichToken(type="font_pop"))
+                continue
+
+            if low == "<i>":
+                tokens.append(RichToken(type="font_push", font="Italic"))
+                continue
+            if low == "</i>":
+                tokens.append(RichToken(type="font_pop"))
+                continue
+
+            if low in ("<br>", "<brx>"):
+                tokens.append(RichToken(type="newline"))
+                continue
+
+            if part.isspace():
+                tokens.append(RichToken(type="space", text=part))
+                continue
+
+            tokens.append(RichToken(type="text", text=part))
+
+        return tokens
+
+class RichTextRenderer:
+
+    @staticmethod
+    def render(text: str, max_width: float = 0):
+        tokens = RichTextTokenizer.tokenize(text)
+        max_width = max_width or PyImGui.get_content_region_avail()[0]
+
+        cursor_x_start = PyImGui.get_cursor_pos_x()
+        line_height = PyImGui.get_text_line_height()
+        x = cursor_x_start
+        y = PyImGui.get_cursor_pos_y()
+
+        for tok in tokens:
+            if tok.type == "newline":
+                x = cursor_x_start
+                y += line_height
+                PyImGui.set_cursor_pos(x, y)
+                continue
+
+            if tok.type == "font_push":
+                ImGui.push_font(tok.font, tok.font_size)
+                continue
+            if tok.type == "font_pop":
+                PyImGui.pop_font()
+                continue
+
+            if tok.type == "color_push":
+                PyImGui.push_style_color(PyImGui.ImGuiCol.Text, tok.color or (1, 1, 1, 1))
+                continue
+            if tok.type == "color_pop":
+                PyImGui.pop_style_color(1)
+                continue
+
+            if tok.type == "image":
+                if not tok or not tok.texture_path:
+                    continue
+                
+                w, h = tok.size or (16, 16)
+                if x + w > cursor_x_start + max_width:
+                    x = cursor_x_start
+                    y += line_height
+                    PyImGui.set_cursor_pos(x, y)
+
+                PyImGui.set_cursor_pos(x, y)
+                ImGui.image(tok.texture_path, (w, h), tok.uv0 or (0, 0), tok.uv1 or (1, 1))
+                x += w
+                continue
+
+            if tok.type in ("text", "space"):
+                size = PyImGui.calc_text_size(tok.text)
+                if x + size[0] > cursor_x_start + max_width:
+                    x = cursor_x_start
+                    y += line_height
+                    PyImGui.set_cursor_pos(x, y)
+                    
+                PyImGui.set_cursor_pos(x, y)
+                PyImGui.text_unformatted(tok.text)
+                x += size[0]
+
+        PyImGui.set_cursor_pos(cursor_x_start, y + line_height)
