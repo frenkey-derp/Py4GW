@@ -2,6 +2,7 @@
 import os
 from typing import Optional
 
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
 from Py4GWCoreLib.HotkeyManager import HotKey
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.py4gwcorelib_src.IniHandler import IniHandler
@@ -51,6 +52,7 @@ class Settings:
         self.Modifiers : ModifierKey = ModifierKey.Ctrl
         
         self.hotkey : Optional[HotKey] = None
+        self.show_quests_for_accounts : dict[str, bool] = {}
             
     def save_settings(self):
         self.save_requested = True
@@ -79,6 +81,9 @@ class Settings:
         
         self.ini_handler.write_key("Hotkey", "HotKeyKey", self.HotKeyKey.name.replace('VK_',''))
         self.ini_handler.write_key("Hotkey", "Modifiers", self.Modifiers.name)
+        
+        for account_email, enabled in self.show_quests_for_accounts.items():
+            self.ini_handler.write_key("OverlayAccounts", account_email, str(enabled))
         
     def load_settings(self):
         self.LogOpen = self.ini_handler.read_bool("Window", "LogOpen", self.LogOpen)
@@ -111,6 +116,11 @@ class Settings:
             ConsoleLog("Party Quest Log", f"Invalid Modifiers '{modifiers}' in settings. Using default 'Ctrl'.")
             self.Modifiers = ModifierKey.Ctrl
             
+        account_section = self.ini_handler.list_keys("OverlayAccounts")
+
+        if account_section:
+            for account_email, _ in account_section.items():
+                self.show_quests_for_accounts[account_email] = self.ini_handler.read_bool("OverlayAccounts", account_email, True)
         pass
 
     def set_questlog_hotkey_keys(self, key: Key, modifiers: ModifierKey):

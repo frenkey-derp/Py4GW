@@ -385,7 +385,7 @@ class UI():
         if not UI.Settings.ShowFollowerActiveQuestOnMinimap and not UI.Settings.ShowFollowerActiveQuestOnMissionMap:
             return
 
-        active_quests = [acc.PlayerData.QuestsData.ActiveQuest for acc in accounts.values() if acc.PlayerData.QuestsData.ActiveQuest.QuestID != 0]
+        active_quests = [acc.PlayerData.QuestsData.ActiveQuest for acc in accounts.values() if acc.PlayerData.QuestsData.ActiveQuest.QuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
         
         if not active_quests:
             return
@@ -411,13 +411,12 @@ class UI():
         compass_center = Map.MiniMap.GetMapScreenCenter() # (x, y)  
         rotation = UI.AnimationTimer.GetElapsedTime() * 0.0005  # radians per milli second
         
-        for active_quest in active_quests:  
+        for active_quest in active_quests:              
             marker_pos = UI.ConvertQuestMarkerCoordinates(active_quest.MarkerX, active_quest.MarkerY)       
             if marker_pos is None:
                 continue
             
-            if not mission_map_open or UI.Settings.ShowFollowerActiveQuestOnMissionMap:   
-                
+            if mission_map_open and UI.Settings.ShowFollowerActiveQuestOnMissionMap:  
                 mission_map_pos = Map.MissionMap.MapProjection.GameMapToScreen(marker_pos[0], marker_pos[1])       
                 
                 if not Utils.IsPointInRect(mission_map_pos[0], mission_map_pos[1], map_coords[0], map_coords[1], map_coords[2] - map_coords[0], map_coords[3] - map_coords[1]):
@@ -436,7 +435,7 @@ class UI():
                     overlay.DrawStarFilled(mission_map_pos[0], mission_map_pos[1], 10.0, 5.0, color_fill.to_color(), 8, rotation)
                     overlay.DrawStar(mission_map_pos[0], mission_map_pos[1], 10.0, 5.0, color_outline.to_color(), 8, 1, rotation)
                 
-            if not mini_map_open or UI.Settings.ShowFollowerActiveQuestOnMinimap:
+            if mini_map_open and UI.Settings.ShowFollowerActiveQuestOnMinimap:
                 mini_map_pos = Map.MiniMap.MapProjection.GamePosToScreen(marker_pos[0], marker_pos[1])  
                         
                 radius = ((mini_map_coords[2] - mini_map_coords[0]) * 0.81) / 2
@@ -481,7 +480,7 @@ class UI():
         
     
     @staticmethod
-    def draw_configure():
+    def draw_configure(accounts : dict[int, AccountData]):
         if not UI.ConfigWindow.open:
             return
         
@@ -489,40 +488,58 @@ class UI():
         
         if open:
             style = ImGui.get_style()
-            avail = PyImGui.get_content_region_avail()
-            _, height = avail[0], avail[1]
             
-            ImGui.text_aligned("Quest Log Hotkey", height=22, alignment=Alignment.MidLeft)
-            PyImGui.same_line(0, 5)
-            width_avail = PyImGui.get_content_region_avail()[0]
-            PyImGui.push_item_width(width_avail - 5)
-            key, modifiers = ImGui.keybinding("##HotkeyInfo", key=UI.Settings.HotKeyKey, modifiers=UI.Settings.Modifiers)
-            PyImGui.pop_item_width()
-            
-            if key != UI.Settings.HotKeyKey or modifiers != UI.Settings.Modifiers:
-                ConsoleLog("Party Quest Log", f"Setting new hotkey: {modifiers.name}+{key.name.replace('VK_','')}")
-                UI.Settings.set_questlog_hotkey_keys(key, modifiers)
-            
-            show_only_in_party = ImGui.checkbox("Show Quest Log only when in a Party", UI.Settings.ShowOnlyInParty)
-            if show_only_in_party != UI.Settings.ShowOnlyInParty:
-                UI.Settings.ShowOnlyInParty = show_only_in_party
-                UI.Settings.save_settings()
+            if ImGui.begin_tab_bar("PartyQuestLogConfigTabs"):
+                if ImGui.begin_tab_item("General Settings"):                        
+                    avail = PyImGui.get_content_region_avail()
+                    _, height = avail[0], avail[1]
+                    
+                    ImGui.text_aligned("Quest Log Hotkey", height=22, alignment=Alignment.MidLeft)
+                    PyImGui.same_line(0, 5)
+                    width_avail = PyImGui.get_content_region_avail()[0]
+                    PyImGui.push_item_width(width_avail - 5)
+                    key, modifiers = ImGui.keybinding("##HotkeyInfo", key=UI.Settings.HotKeyKey, modifiers=UI.Settings.Modifiers)
+                    PyImGui.pop_item_width()
+                    
+                    if key != UI.Settings.HotKeyKey or modifiers != UI.Settings.Modifiers:
+                        ConsoleLog("Party Quest Log", f"Setting new hotkey: {modifiers.name}+{key.name.replace('VK_','')}")
+                        UI.Settings.set_questlog_hotkey_keys(key, modifiers)
+                    
+                    show_only_in_party = ImGui.checkbox("Show Quest Log only when in a Party", UI.Settings.ShowOnlyInParty)
+                    if show_only_in_party != UI.Settings.ShowOnlyInParty:
+                        UI.Settings.ShowOnlyInParty = show_only_in_party
+                        UI.Settings.save_settings()
+                        
+                    show_only_on_leader = ImGui.checkbox("Show Quest Log only when Party Leader", UI.Settings.ShowOnlyOnLeader)
+                    if show_only_on_leader != UI.Settings.ShowOnlyOnLeader:
+                        UI.Settings.ShowOnlyOnLeader = show_only_on_leader
+                        UI.Settings.save_settings()
                 
-            show_only_on_leader = ImGui.checkbox("Show Quest Log only when Party Leader", UI.Settings.ShowOnlyOnLeader)
-            if show_only_on_leader != UI.Settings.ShowOnlyOnLeader:
-                UI.Settings.ShowOnlyOnLeader = show_only_on_leader
-                UI.Settings.save_settings()
-        
-            show_follower_on_minimap = ImGui.checkbox("Show Follower Active Quest on Minimap", UI.Settings.ShowFollowerActiveQuestOnMinimap)
-            if show_follower_on_minimap != UI.Settings.ShowFollowerActiveQuestOnMinimap:
-                UI.Settings.ShowFollowerActiveQuestOnMinimap = show_follower_on_minimap
-                UI.Settings.save_settings()
+                    show_follower_on_minimap = ImGui.checkbox("Show Follower Active Quest on Minimap", UI.Settings.ShowFollowerActiveQuestOnMinimap)
+                    if show_follower_on_minimap != UI.Settings.ShowFollowerActiveQuestOnMinimap:
+                        UI.Settings.ShowFollowerActiveQuestOnMinimap = show_follower_on_minimap
+                        UI.Settings.save_settings()
+                        
+                    show_follower_on_mission_map = ImGui.checkbox("Show Follower Active Quest on Mission Map", UI.Settings.ShowFollowerActiveQuestOnMissionMap)
+                    if show_follower_on_mission_map != UI.Settings.ShowFollowerActiveQuestOnMissionMap:
+                        UI.Settings.ShowFollowerActiveQuestOnMissionMap = show_follower_on_mission_map
+                        UI.Settings.save_settings()
+                    ImGui.end_tab_item()
                 
-            show_follower_on_mission_map = ImGui.checkbox("Show Follower Active Quest on Mission Map", UI.Settings.ShowFollowerActiveQuestOnMissionMap)
-            if show_follower_on_mission_map != UI.Settings.ShowFollowerActiveQuestOnMissionMap:
-                UI.Settings.ShowFollowerActiveQuestOnMissionMap = show_follower_on_mission_map
-                UI.Settings.save_settings()
-        
+                if ImGui.begin_tab_item("Accounts"):
+                    for acc in accounts.values():
+                        name = get_display_name(acc)
+                        enabled = UI.Settings.show_quests_for_accounts.get(acc.AccountEmail.lower(), True)
+                        
+                        changed = ImGui.checkbox(f"Show quests for {name}", enabled)
+                        if changed != enabled:
+                            UI.Settings.show_quests_for_accounts[acc.AccountEmail.lower()] = changed
+                            UI.Settings.save_settings()
+                    ImGui.end_tab_item()
+                    
+                ImGui.end_tab_bar()
+                
+                
         if UI.ConfigWindow.changed or not UI.ConfigWindow.open:
             WidgetHandler().set_widget_configuring("PartyQuestLog", UI.ConfigWindow.open)
         

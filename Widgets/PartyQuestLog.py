@@ -32,6 +32,7 @@ quest_cache = QuestCache()
 fetch_and_handle_quests = True
 previous_quest_log : list[int] = [quest.quest_id for quest in quest_cache.quest_data.quest_log.values()]
 
+accounts : dict[int, AccountData] = {}
 widget_handler = WidgetHandler()
 module_info = None
 
@@ -56,7 +57,7 @@ settings.hotkey = HOTKEY_MANAGER.register_hotkey(
 
 def configure():    
     UI.ConfigWindow.open = True
-    UI.draw_configure()
+    UI.draw_configure(accounts)
 
 def create_quest_node_generator(fresh_ids: list[int]):
     for qid in fresh_ids:            
@@ -68,13 +69,12 @@ def fetch_new_quests(fresh_ids: list[int]):
     GLOBAL_CACHE.Coroutines.append(create_quest_node_generator(fresh_ids))
 
 def main():
-    global quest_cache
+    global quest_cache, accounts
     
     if not Map.IsMapReady():
         return
         
     shmem_accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
-    accounts : dict[int, AccountData] = {}
     quest_log = Quest.GetQuestLog()
     acc_mail = Player.GetAccountEmail()
     new_quest_ids = [q.quest_id for q in quest_log]
@@ -91,7 +91,8 @@ def main():
         
         previous_quest_log.clear()
         previous_quest_log.extend(new_quest_ids)
-        
+    
+    accounts.clear()
     for acc in shmem_accounts:        
         if acc.AccountEmail != acc_mail and acc.IsSlotActive:
             if  SameMapOrPartyAsAccount(acc) and acc.PartyID == GLOBAL_CACHE.Party.GetPartyID():
