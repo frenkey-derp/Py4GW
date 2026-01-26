@@ -1,4 +1,5 @@
 import math
+import time
 import PyImGui
 import PyOverlay
 from HeroAI.ui import get_display_name
@@ -16,6 +17,7 @@ from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.GameData_enums import ProfessionShort
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
+from Py4GWCoreLib.py4gwcorelib_src.Timer import Timer
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
@@ -44,6 +46,7 @@ class UI():
     QuestLogWindow : WindowModule = WindowModule("PartyQuestLog", "Party Quest Log", window_size=(Settings.LogPosWidth, Settings.LogPosHeight), window_pos=(Settings.LogPosX, Settings.LogPosY), can_close=True)
     ConfigWindow : WindowModule = WindowModule("PartyQuestLog#Config", "Party Quest Log - Settings", window_size=(500, 300), can_close=True)
     ActiveQuest : QuestNode | None = None
+    AnimationTimer : Timer = Timer()
         
     @staticmethod
     def draw_log(quest_data : QuestData, accounts: dict[int, AccountData]):
@@ -390,7 +393,8 @@ class UI():
         overlay = Overlay()
         overlay.BeginDraw()
         
-        color = Color(152, 251, 152, 255)
+        color_fill = Color(42, 249, 65, 255)
+        color_outline = Color(30, 179, 47, 255)
      
         mission_map_open = Map.MissionMap.IsWindowOpen()
         mini_map_open = Map.MiniMap.IsWindowOpen()
@@ -399,9 +403,13 @@ class UI():
             overlay.EndDraw()
             return
         
+        if not UI.AnimationTimer.running:
+            UI.AnimationTimer.Start()
+        
         map_coords = Map.MissionMap.GetMissionMapContentsCoords() # (x1, y1, x2, y2)
         mini_map_coords = Map.MiniMap.GetWindowCoords() # (x1, y1, x2, y2)  
         compass_center = Map.MiniMap.GetMapScreenCenter() # (x, y)  
+        rotation = UI.AnimationTimer.GetElapsedTime() * 0.0005  # radians per milli second
         
         for active_quest in active_quests:  
             marker_pos = UI.ConvertQuestMarkerCoordinates(active_quest.MarkerX, active_quest.MarkerY)       
@@ -419,13 +427,14 @@ class UI():
                         target_x=mission_map_pos[0],
                         target_y=mission_map_pos[1],
                         rect=map_coords,
-                        color=color.to_color(),
+                        color=color_fill.to_color(),
                         size=14.0,
                         thickness=3.0,
                     )
                     pass
                 else:            
-                    overlay.DrawStarFilled(mission_map_pos[0], mission_map_pos[1], 10.0, 5.0, color.to_color(), 8)
+                    overlay.DrawStarFilled(mission_map_pos[0], mission_map_pos[1], 10.0, 5.0, color_fill.to_color(), 8, rotation)
+                    overlay.DrawStar(mission_map_pos[0], mission_map_pos[1], 10.0, 5.0, color_outline.to_color(), 8, 1, rotation)
                 
             if not mini_map_open or UI.Settings.ShowFollowerActiveQuestOnMinimap:
                 mini_map_pos = Map.MiniMap.MapProjection.GamePosToScreen(marker_pos[0], marker_pos[1])  
@@ -454,19 +463,19 @@ class UI():
                             tip_x, tip_y,
                             tip_x + math.cos(left) * size,
                             tip_y + math.sin(left) * size,
-                            color.to_color(), 3.0
+                            color_fill.to_color(), 3.0
                         )
 
                         overlay.DrawLine(
                             tip_x, tip_y,
                             tip_x + math.cos(right) * size,
                             tip_y + math.sin(right) * size,
-                            color.to_color(), 3.0
+                            color_fill.to_color(), 3.0
                         )
                     pass
                 else:    
-                    overlay.DrawStarFilled(mini_map_pos[0], mini_map_pos[1], 6.0, 3.0, color.to_color(), 8)
-                
+                    overlay.DrawStarFilled(mini_map_pos[0], mini_map_pos[1], 10.0, 5.0, color_fill.to_color(), 8, rotation)
+                    overlay.DrawStar(mini_map_pos[0], mini_map_pos[1], 10.0, 5.0, color_outline.to_color(), 8, 1, rotation)
             
         overlay.EndDraw()
         

@@ -142,7 +142,7 @@ class Overlay:
         center = PyOverlay.Point3D(x, y, z)
         self.overlay_instance.DrawCubeFilled(center, size, color)
 
-    def DrawStarFilled(self, center_x: float, center_y: float, outer_radius: float, inner_radius: float, color=0xFFFFFFFF, points: int = 5):
+    def DrawStarFilled(self, center_x: float, center_y: float, outer_radius: float, inner_radius: float, color=0xFFFFFFFF, points: int = 5, rotation: float = 0.0):
         if points < 2:
             return
 
@@ -153,7 +153,7 @@ class Overlay:
 
         vertices = []
         angle_step = math.pi / points
-        angle = -math.pi / 2
+        angle = -math.pi / 2 + rotation
 
         for i in range(points * 2):
             radius = outer_radius if i % 2 == 0 else inner_radius
@@ -167,7 +167,7 @@ class Overlay:
             p2 = vertices[(i + 1) % len(vertices)]
             self.overlay_instance.DrawTriangleFilled(center, p1, p2, color)
             
-    def DrawStar(self, center_x: float, center_y: float, outer_radius: float, inner_radius: float, color=0xFFFFFFFF, points: int = 5, thickness: float = 1.0):
+    def DrawStar(self, center_x: float, center_y: float, outer_radius: float, inner_radius: float, color=0xFFFFFFFF, points: int = 5, thickness: float = 1.0, rotation: float = 0.0):
         if points < 2:
             return
 
@@ -176,7 +176,7 @@ class Overlay:
 
         vertices = []
         angle_step = math.pi / points
-        angle = -math.pi / 2  # start at top
+        angle = -math.pi / 2 + rotation
 
         for i in range(points * 2):
             radius = outer_radius if i % 2 == 0 else inner_radius
