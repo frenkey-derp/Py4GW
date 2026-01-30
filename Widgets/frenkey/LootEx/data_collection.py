@@ -700,13 +700,13 @@ class DataCollector:
         merchant_open = ui_manager_extensions.UIManagerExtensions.IsMerchantWindowOpen()
         
         item_array : list[int] = GLOBAL_CACHE.ItemArray.GetItemArray(ALL_BAGS)
-        trader_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or []
-        trader2_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems2() or []
-        merchant_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or []
-        crafter_array : list[int] = ui_manager_extensions.UIManagerExtensions.IsCrafterOpen() and GLOBAL_CACHE.Trading.Crafter.GetOfferedItems() or []
-        collector_array : list[int] = ui_manager_extensions.UIManagerExtensions.IsCollectorOpen() and GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or []
+        # trader_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems() or []
+        # trader2_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Trader.GetOfferedItems2() or []
+        # merchant_array : list[int] = merchant_open and GLOBAL_CACHE.Trading.Merchant.GetOfferedItems() or []
+        # crafter_array : list[int] = ui_manager_extensions.UIManagerExtensions.IsCrafterOpen() and GLOBAL_CACHE.Trading.Crafter.GetOfferedItems() or []
+        # collector_array : list[int] = ui_manager_extensions.UIManagerExtensions.IsCollectorOpen() and GLOBAL_CACHE.Trading.Collector.GetOfferedItems() or []
         
-        all_arrays = item_array + trader_array  + trader2_array + merchant_array + crafter_array + collector_array
+        # all_arrays = item_array + trader_array  + trader2_array + merchant_array + crafter_array + collector_array
         
         # Placeholder for actual implementation
-        return all_arrays
+        return item_array
