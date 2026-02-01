@@ -549,7 +549,7 @@ def BuildCraftingQueueFromCrafter() -> list[CraftingAction]:
     # ------------------------------------------------------------
     queue: list[CraftingAction] = []
 
-    for recipe in data.Recipes:        
+    for recipe in data.Recipes + data.Conversions:        
         recipe.get_item_data()
         item = recipe.item
         if not item:
