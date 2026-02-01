@@ -79,6 +79,46 @@ def get_server_language() -> ServerLanguage:
     return language
 
 @dataclass
+class Ingredient:
+    model_id: int
+    amount: int
+    item_type: ItemType = ItemType.Unknown
+    rarity : Rarity = Rarity.White
+    
+    def __post_init__(self):
+        self.item : Optional[Item] = None
+
+    def get_item_data(self):
+        from Widgets.frenkey.LootEx.utility import Util
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()        
+        self.item = data.Items.get_item(self.item_type, self.model_id)
+        
+
+@dataclass
+class CraftingRecipe:
+    model_id: int
+    amount: int = 1
+    item_type: ItemType = ItemType.Unknown    
+    ingredients: list[Ingredient] = field(default_factory=list)
+    price: int = 0
+    skill_points: int = 0
+    profession: Profession = Profession._None
+    rarity : Rarity = Rarity.White
+    
+    def __post_init__(self):
+        self.item : Optional[Item] = None
+        
+    def get_item_data(self):
+        from Widgets.frenkey.LootEx.utility import Util
+        from Widgets.frenkey.LootEx.data import Data
+        data = Data()        
+        self.item = data.Items.get_item(self.item_type, self.model_id)     
+        
+        for ingredient in self.ingredients:
+            ingredient.get_item_data()   
+
+@dataclass
 class NickItemEntry:
     Week: date
     Item: str

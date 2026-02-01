@@ -14,6 +14,7 @@ from Widgets.frenkey.LootEx import utility
 from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.enum import MAX_CHARACTER_GOLD, MAX_VAULT_GOLD, ActionState, MerchantType
 
+DEBUG_TRADING = False
 class ActionType(Enum):
     Buy = 1
     Sell = 2
@@ -67,7 +68,8 @@ class TraderAction:
         self.action = action
         self.trader_type = trader_type
         self.price: int = -1
-        self.initial_quantity: int = item.quantity
+        self.initial_quantity: int = item.quantity if action == ActionType.Sell else Inventory.GetModelCount(item.model_id)
+        self.is_item_valid: bool = True
 
         # Determine target quantity
         if desired_quantity == -1:
@@ -93,9 +95,9 @@ class TraderAction:
         ConsoleLog(
             "LootEx",
             f"Starting TraderAction for {self.item.name} ({self.item.id}), "
-            f"mode={self.action.name}, desired={self.desired_quantity}, initial={self.item.quantity}",
+            f"mode={self.action.name}, desired={self.desired_quantity}, initial={self.initial_quantity}",
             Console.MessageType.Info,
-                    False
+                    DEBUG_TRADING
         )
 
         while not self._is_done():
@@ -103,13 +105,6 @@ class TraderAction:
             yield from self._wait_for_price()
             yield from self._execute_trade()
             yield from self._confirm_trade()
-
-        ConsoleLog(
-            "LootEx",
-            f"TraderAction for {self.item.name} COMPLETED. Final quantity: {self.item.quantity}",
-            Console.MessageType.Info,
-                    False
-        )
 
     # Condition to stop the trading action
     def _is_done(self) -> bool:
@@ -120,11 +115,11 @@ class TraderAction:
                 "LootEx",
                 f"Item {self.item.name} ({self.item.id}) is no longer valid. Ending TraderAction.",
                 Console.MessageType.Warning,
-                    False
+                    DEBUG_TRADING
             )
             return True
         
-        q = self.item.quantity
+        q = self.item.quantity if self.action == ActionType.Sell else Inventory.GetModelCount(self.item.model_id)
         
         current_gold = Inventory.GetGoldOnCharacter()
         vault_gold = Inventory.GetGoldInStorage()
@@ -144,6 +139,7 @@ class TraderAction:
                 f"Not enough gold to buy {self.item.name} ({self.item.id}). Current gold: {utility.Util.format_currency(current_gold)}, needed: {utility.Util.format_currency(self.price)}. Ending TraderAction.",
                 Console.MessageType.Warning
             )
+            
             return True
         
         if self.action == ActionType.Sell and current_gold + self.price > MAX_CHARACTER_GOLD:
@@ -185,14 +181,18 @@ class TraderAction:
     # Request a price quote from the merchant
     def _request_price(self) -> Generator:             
         self._update_item()
+        
         if not self.is_item_valid:
             ConsoleLog(
                 "LootEx",
                 f"Item {self.item.name} ({self.item.id}) is no longer valid. Cannot execute trade.",
                 Console.MessageType.Warning,
-                    False
+                    DEBUG_TRADING
             )
             return
+    
+        if self.action == ActionType.Sell and self.item.common_material and self.item.quantity < 10:
+            return 
         
         msg = "Requesting quote for buying" if self.action == ActionType.Buy else "Requesting quote for selling"
 
@@ -200,7 +200,7 @@ class TraderAction:
             "LootEx",
             f"{msg} {self.item.name} ({self.item.id})",
             Console.MessageType.Info,
-                    False
+                    DEBUG_TRADING
         )
 
         if self.action == ActionType.Buy:
@@ -223,6 +223,9 @@ class TraderAction:
                 )
                 return
             
+            if self.action == ActionType.Sell and self.item.common_material and self.item.quantity < 10:
+                return 
+            
             quoted_id = Trading.Trader.GetQuotedItemID()
             quoted_value = Trading.Trader.GetQuotedValue()
 
@@ -232,7 +235,7 @@ class TraderAction:
                     "LootEx",
                     f"Received quote {quoted_value} for {self.item.name}",
                     Console.MessageType.Info,
-                    False
+                    DEBUG_TRADING
                 )
                 return
 
@@ -241,7 +244,7 @@ class TraderAction:
                     "LootEx",
                     f"Quote timeout — requesting new quote for {self.item.name}",
                     Console.MessageType.Warning,
-                    False
+                    DEBUG_TRADING
                 )
                 if self.action == ActionType.Buy:
                     Trading.Trader.RequestQuote(self.item.id)
@@ -262,12 +265,15 @@ class TraderAction:
                 Console.MessageType.Warning
             )
             return
+    
+        if self.action == ActionType.Sell and self.item.common_material and self.item.quantity < 10:
+            return 
         
         ConsoleLog(
             "LootEx",
             f"Executing {self.action.name} for {self.item.name} at price {self.price}",
             Console.MessageType.Info,
-                    False
+                    DEBUG_TRADING
         )
 
         if self.action == ActionType.Buy:
@@ -290,27 +296,54 @@ class TraderAction:
         We watch the item's quantity and wait until it changes.
         Then the trade has completed.
         """
-        initial = self.item.quantity
-        start = datetime.now()
+        
+        if self.action == ActionType.Sell and self.item.common_material and self.item.quantity < 10:
+            return 
+        
+        if  self.action == ActionType.Sell:
+            start = datetime.now()
 
-        while True:            
-            self._update_item()
-            
-            if self.item.quantity != initial:
-                ConsoleLog(
-                    "LootEx",
-                    f"Trade confirmed: {self.item.name} quantity changed {initial} -> {self.item.quantity}",
-                    Console.MessageType.Info,
-                    False
-                )
-                return
+            while True:           
+                
+                self._update_item()
+                
+                if self.item.quantity != self.initial_quantity:
+                    ConsoleLog(
+                        "LootEx",
+                        f"Trade confirmed: {self.item.name} quantity changed {self.initial_quantity} -> {self.item.quantity}",
+                        Console.MessageType.Info,
+                        DEBUG_TRADING
+                    )
+                    return
 
-            if (datetime.now() - start).total_seconds() > 1.5:
-                ConsoleLog(
-                    "LootEx",
-                    f"Trade confirmation TIMEOUT for {self.item.name}",
-                    Console.MessageType.Warning
-                )
-                return
+                if (datetime.now() - start).total_seconds() > 1.5:
+                    ConsoleLog(
+                        "LootEx",
+                        f"Trade confirmation TIMEOUT for {self.item.name}",
+                        Console.MessageType.Warning,
+                        DEBUG_TRADING
+                    )
+                    return
 
-            yield
+                yield
+                
+        elif self.action == ActionType.Buy:
+            start = datetime.now()
+
+            while True:          
+                self._update_item()
+                
+                if Inventory.GetModelCount(self.item.model_id) != self.initial_quantity:
+                    self.initial_quantity = Inventory.GetModelCount(self.item.model_id)
+                    return
+
+                if (datetime.now() - start).total_seconds() > 1.5:
+                    ConsoleLog(
+                        "LootEx",
+                        f"Trade confirmation TIMEOUT for {self.item.name}",
+                        Console.MessageType.Warning,
+                        DEBUG_TRADING
+                    )
+                    return
+
+                yield

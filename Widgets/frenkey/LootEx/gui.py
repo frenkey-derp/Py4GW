@@ -5,20 +5,22 @@ import webbrowser
 from datetime import datetime
 
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
-from Py4GWCoreLib.ImGui_src.types import Alignment, TextDecorator
+from Py4GWCoreLib.ImGui_src.types import Alignment, ControlAppearance, TextDecorator
 from Py4GW_widget_manager import WidgetHandler
 from Widgets.frenkey.Core.iterable import chunked
 from Widgets.frenkey.Core.utility import ImGuiIniReader, string_similarity
 from Widgets.frenkey.Core.gui import GUI
 from Widgets.frenkey.Core import ex_style, texture_map
 from Widgets.frenkey.LootEx import skin_rule, loot_handling, settings, price_check, utility, cache, ui_manager_extensions, inventory_handling, models, messaging
+from Widgets.frenkey.LootEx.crafting import CraftingAction
 from Widgets.frenkey.LootEx.data import Data
 from Widgets.frenkey.LootEx.data_collection import DataCollector
-from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, ITEM_CONVERSIONS, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, MaterialType, ModType, SalvageOption
+from Widgets.frenkey.LootEx.enum import CHARACTER_INVENTORY, ITEM_CONVERSIONS, XUNLAI_STORAGE, ActionModsType, ItemAction, ItemCategory, ItemSubCategory, MaterialType, MerchantType, ModType, SalvageOption
 from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
 from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
+from Widgets.frenkey.LootEx.trading import ActionType, TraderAction
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
@@ -972,6 +974,9 @@ class UI:
                 if ImGui.begin_tab_bar("LootExTabBar"):
                     self.draw_general_settings()
                     if ImGui.begin_tab_item("Rules"):
+                        if self.first_draw:
+                            self.filter_rules()
+                            
                         if ImGui.begin_tab_bar("RulesTabBar"):
                             self.draw_by_item_type()
                             self.draw_by_item_skin()
@@ -981,6 +986,7 @@ class UI:
                         ImGui.end_tab_item()
                     
                     self.draw_item_conversions()
+                    self.draw_crafting()
                         
                     self.draw_weapon_mods()
                     self.draw_runes()
@@ -1259,7 +1265,7 @@ class UI:
                 style.ChildBg.push_color((255, 178, 102, 125))
                 colored_item += 1
 
-            style.Border.push_color(utility.Util.GetRarityColor(cached_item.rarity)["text"])
+            style.Border.push_color(utility.Util.GetRarityColorDict(cached_item.rarity)["text"])
             border_popped = False
             
             if ImGui.begin_child(str(i), (button_width, button_height), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):    
@@ -3045,10 +3051,7 @@ class UI:
                 PyImGui.close_current_popup()
                 self.mod_range_popup = False
     
-    def draw_by_item_skin(self):
-        if self.first_draw:
-            self.filter_rules()
-            
+    def draw_by_item_skin(self):            
         if ImGui.begin_tab_item("By Skin") and self.settings.profile:
                         # Get size of the tab
             tab_size = PyImGui.get_content_region_avail()
@@ -4464,7 +4467,7 @@ class UI:
                             mod.identifier, None) if self.settings.profile else None
 
                         if keep:
-                            color = utility.Util.GetRarityColor(Rarity.Gold)[
+                            color = utility.Util.GetRarityColorDict(Rarity.Gold)[
                                 "text"]
                             PyImGui.push_style_color(
                                 PyImGui.ImGuiCol.Text,
@@ -4495,8 +4498,8 @@ class UI:
 
                         # Mod name
                         PyImGui.table_next_column()
-                        color = utility.Util.GetRarityColor(Rarity.Green)[
-                            "text"] if not server_language in mod.names else utility.Util.GetRarityColor(Rarity.White)["text"]
+                        color = utility.Util.GetRarityColorDict(Rarity.Green)[
+                            "text"] if not server_language in mod.names else utility.Util.GetRarityColorDict(Rarity.White)["text"]
                         # PyImGui.push_style_color(
                         #     PyImGui.ImGuiCol.Text,
                         #     Utils.ColorToTuple(color),
@@ -4720,7 +4723,7 @@ class UI:
                                     False,
                                     PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
                                 )
-                                color = utility.Util.GetRarityColor(
+                                color = utility.Util.GetRarityColorDict(
                                     rune.rarity.value)
                                 style.Text.push_color(color["text"])
                                 style.FrameBg.push_color(color["content"])
@@ -5126,64 +5129,285 @@ class UI:
     def draw_item_conversions(self):
         style = ImGui.get_style()
         
-        if ImGui.begin_tab_item("Item Conversions"):
-            if self.settings.profile is not None:                               
-                ImGui.text("Select the item conversions you want to enable")
-                ImGui.separator()
-                line_height = PyImGui.get_text_line_height()
+        if ImGui.begin_tab_item("Auto Crafting"):
+            if ImGui.begin_child("Auto Crafting#1", (0, 105), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                auto_crafting_enabled = ImGui.checkbox("Enable Auto Crafting", self.settings.auto_crafting_enabled)
+                if auto_crafting_enabled != self.settings.auto_crafting_enabled:
+                    self.settings.auto_crafting_enabled = auto_crafting_enabled
+                    self.settings.save()
                 
-                for to_item, from_item in ITEM_CONVERSIONS.items():
-                    from_data = self.data.Items.get_item(from_item[1], from_item[0])
-                    to_data = self.data.Items.get_item(to_item[1], to_item[0])
-                    if from_data is None or to_data is None:    
-                        continue
+                auto_withdraw_materials = ImGui.checkbox("Auto Withdraw Materials", self.settings.auto_withdraw_materials)
+                if auto_withdraw_materials != self.settings.auto_withdraw_materials:
+                    self.settings.auto_withdraw_materials = auto_withdraw_materials
+                    self.settings.save()
+                                    
+                auto_even_consets = ImGui.checkbox("Auto Even Consets", self.settings.auto_even_consets)
+                if auto_even_consets != self.settings.auto_even_consets:
+                    self.settings.auto_even_consets = auto_even_consets
+                    self.settings.save()
                     
-                    if ImGui.begin_child(f"ItemConversion{from_item[0]}{to_item[0]}", (0, 25), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                        cursor_pos = PyImGui.get_cursor_pos()
-                        checked = ImGui.checkbox(f"##{from_item[2]}x {from_data.name} >> {to_data.name}", self.settings.profile.conversions.get(f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}", False))                
-                        item_rect_min, item_rect_max, item_rect_size = ImGui.get_item_rect()
-                        PyImGui.set_cursor_pos(cursor_pos[0] + 30, cursor_pos[1] + (item_rect_size[1] - line_height) / 2)
-                        
-                        text = f"Exchange {from_item[2]}x <img path=\"{from_data.texture_file}\" w={line_height} h={line_height} uv=8,8,48,48,64,64/> {from_data.name} for {1}x <img path=\"{to_data.texture_file}\" w={line_height} h={line_height} uv=8,8,48,48,64,64/> {to_data.name}"
-                        RichTextRenderer.render(text, 1000)
-                        
-                        if checked != self.settings.profile.conversions.get(f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}", False):
-                            self.settings.profile.conversions[f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}"] = checked
-                            self.settings.profile.save()
-                            
-                    ImGui.end_child()
-                    
-                    if PyImGui.is_item_clicked(0):                        
-                        self.settings.profile.conversions[f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}"] = not self.settings.profile.conversions.get(f"{ModelID(from_data.model_id).name}>>{ModelID(to_data.model_id).name}", False)
-                        self.settings.profile.save()
-                    
-                    ImGui.show_tooltip(f"Enable/Disable conversion from {from_data.name} to {to_data.name}")
-                    
-                    example_text = f"""
-                    Welcome to the <b>Py4GW Rich Text</b> system!<br>
-
-                    This line demonstrates <i>italic text</i>, <b>bold text</b>, and <c=255,0,0,255>RED</c>, <c=0,255,0,255>GREEN</c>, and <c=0,0,255,255>BLUE</c> colors using integer RGBA.<br>
-
-                    You can also use normalized floats:<br>
-                    <c=1.0,0.85,0.0,1.0>Gold</c>,<br>
-                    <c=0.6,0.6,0.6,1.0>Gray</c>,<br>
-                    <c=0.2,0.9,0.2,1.0>Soft Green</c>.<br><br>
-
-                    Styles can be nested:<br>
-                    <c=0.9,0.3,0.3,1.0>This is <b>bold red</b>,<br>
-                    <i>italic red</i>, and <b><i>bold italic red</i></b></c>.<br><br>
-
-                    Images can appear inline with text:<br>
-                    Deal bonus <img path="{from_data.texture_file}" w=14 h=14/> +15% while enchanted <img path="{to_data.texture_file}" w=14 h=14/>. Images wrap correctly at line edges and behave like text.<br><br>
-
-
-                    Manual line breaks are supported<br>
-                    like this, and paragraph breaks follow.
-
-
-                    """
-                    
+            ImGui.end_child()
             
+            gold_coin = data.Items.get_item(ItemType.Gold_Coin, ModelID.Gold_Coins)
+            gold_color = utility.Util.GetRarityColor(Rarity.Gold)
+            disabled_color = style.TextDisabled            
+            if gold_coin:            
+                if self.settings.profile is not None:                                               
+                    for recipe in data.Conversions + data.Recipes:
+                        item = data.Items.get_item(recipe.item_type, recipe.model_id)
+                        if item is None or not recipe.ingredients:
+                            continue
+                        
+                        enabled = self.settings.conversions.get(item.get_name(ServerLanguage.English), False)
+                            
+                        if self.draw_recipe_selectable(style, gold_coin, gold_color, disabled_color, recipe, item, enabled, expand=True):     
+                            self.settings.conversions[item.get_name(ServerLanguage.English)] = not self.settings.conversions.get(item.get_name(ServerLanguage.English), False)
+                            self.settings.save()
+                            
+                            inventory_handling.InventoryHandler().auto_crafting_queue.clear()
+            
+            ImGui.end_tab_item()
+        pass
+
+    def draw_recipe_selectable(self, style : Style.Style, gold_coin : models.Item, gold_color : Color, disabled_color : Color, recipe : models.CraftingRecipe, item : models.Item, enabled : bool, amount : int = 1, expand : bool = False) -> bool:
+        color = gold_color if enabled else disabled_color
+        style.TableBorderStrong.push_color((color.rgb_tuple[:3] + (255 if enabled else 150,)))
+        style.TableRowBg.push_color(color.rgb_tuple[:3] + (50 if enabled else 50,))        
+        style.CellPadding.push_style_var(0, 4)       
+        
+        if ImGui.begin_table(f"Recipe{item.model_id}{item.item_type}", 5 if expand else 2, flags=PyImGui.TableFlags.BordersOuterH | PyImGui.TableFlags.BordersOuterV| PyImGui.TableFlags.RowBg):                        
+            PyImGui.table_setup_column("ResultIcon", PyImGui.TableColumnFlags.WidthFixed, 32)
+            PyImGui.table_setup_column("ResultName", PyImGui.TableColumnFlags.WidthStretch, 0.4 if expand else 1)
+            PyImGui.table_setup_column("Ingredients", PyImGui.TableColumnFlags.WidthStretch, 0.6)
+            PyImGui.table_setup_column("Gold", PyImGui.TableColumnFlags.WidthFixed, 64)
+            PyImGui.table_setup_column("GoldTexture", PyImGui.TableColumnFlags.WidthFixed, 20)
+                        # PyImGui.table_headers_row()
+                        
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+            if item.texture_file:
+                ImGui.DrawTexture(item.texture_file, 32, 32)
+            else:
+                PyImGui.dummy(32, 32)
+                        
+                            
+            PyImGui.table_next_column()
+            ImGui.text_aligned(f"{(f"{recipe.amount * amount} " if recipe.amount != 1 or amount > 1 else '')}{utility.Util.reformat_string(item.name)}", height=32, alignment=Alignment.MidLeft, color=utility.Util.GetRarityColor(recipe.rarity).color_tuple if recipe.rarity is not Rarity.White else None, font_size=16)
+            
+            if expand:
+                PyImGui.table_next_column()                
+                self.draw_ingredients(f"{item.model_id}{item.item_type}", recipe.ingredients, amount)     
+                                                           
+                PyImGui.table_next_column()                
+                if recipe.price > 0:
+                    ImGui.text_aligned(utility.Util.format_currency_short(recipe.price * amount), alignment=Alignment.MidRight, height=32, font_size=12)
+                else:
+                    ImGui.text_aligned("-", alignment=Alignment.MidRight, height=32)
+                            
+                PyImGui.table_next_column()
+                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() + (32 - 20) / 2)
+
+                if gold_coin and gold_coin.texture_file:
+                    ImGui.DrawTexture(gold_coin.texture_file, 20, 20)
+                else:
+                    PyImGui.dummy(20, 20)
+                                                    
+                            
+            ImGui.end_table()
+                                            
+        style.TableRowBg.pop_color()                    
+        style.TableBorderStrong.pop_color()
+        style.CellPadding.pop_style_var()
+                    
+        return PyImGui.is_item_clicked(0)
+
+    def draw_ingredients(self, identifier : str, ingredients : list[models.Ingredient], amount : int = 1):
+        if not ingredients:
+            return
+        
+        style = ImGui.get_style()                
+        style.CellPadding.push_style_var(0, 4)
+        #Ingredients                        
+        if ImGui.begin_table(f"Ingredient{identifier}", 2, flags=PyImGui.TableFlags.NoFlag):
+            PyImGui.table_setup_column("IngredientIcon", PyImGui.TableColumnFlags.WidthFixed, 28)
+            PyImGui.table_setup_column("IngredientName", PyImGui.TableColumnFlags.WidthStretch, 0)
+            PyImGui.table_next_row()
+                        
+            for ingredient in ingredients:
+                ingredient_item = data.Items.get_item(ingredient.item_type, ingredient.model_id)
+                if ingredient_item is None:
+                    continue
+                                                            
+                PyImGui.table_next_column()
+                if ingredient_item.texture_file:
+                    ImGui.DrawTexture(ingredient_item.texture_file, 24, 24)
+                else:
+                    PyImGui.dummy(24, 24)
+                                
+                PyImGui.table_next_column()
+                ImGui.text_aligned(f"{(f"{ingredient.amount * amount} " if ingredient.amount != 1 else '')}{utility.Util.reformat_string(ingredient_item.name)}", color=utility.Util.GetRarityColor(ingredient.rarity).color_tuple if ingredient.rarity is not Rarity.White else None, alignment=Alignment.MidLeft, height=24)
+                        
+            ImGui.end_table()
+        style.CellPadding.pop_style_var()
+
+    def draw_crafting(self):
+        style = ImGui.get_style()
+        inventory_handler = inventory_handling.InventoryHandler()
+            
+        gold_coin = data.Items.get_item(ItemType.Gold_Coin, ModelID.Gold_Coins)
+        gold_color = utility.Util.GetRarityColor(Rarity.Gold)
+        disabled_color = style.TextDisabled     
+        
+        if not gold_coin:
+            return     
+        
+        if not self.settings.profile:
+            return
+          
+        if ImGui.begin_tab_item("Crafting"):
+            if ImGui.begin_table("Layout##Crafting", 2, PyImGui.TableFlags.NoSavedSettings):
+                PyImGui.table_setup_column("LeftColumn##Crafting", PyImGui.TableColumnFlags.WidthStretch, 0.25)
+                PyImGui.table_setup_column("RightColumn##Crafting", PyImGui.TableColumnFlags.WidthStretch, 0.75)
+                PyImGui.table_next_row()    
+                PyImGui.table_next_column()
+                
+                # Left Column
+                if ImGui.begin_child("Recipes", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                   for recipe in data.Recipes:
+                        item = data.Items.get_item(recipe.item_type, recipe.model_id) 
+                        if item is None:
+                            continue
+                        
+                        existing_action = next((action for action in inventory_handler.crafting_queue if action.recipe == recipe), None)
+                        _ = self.draw_recipe_selectable(style, gold_coin, gold_color, disabled_color, recipe, item, existing_action is not None, expand=False)
+                        if PyImGui.is_item_clicked(0) and PyImGui.is_mouse_double_clicked(0):          
+                            if existing_action:
+                                inventory_handler.crafting_queue.remove(existing_action)
+                            else:
+                                inventory_handler.crafting_queue.append(CraftingAction(recipe=recipe, max_amount=1))
+                            
+                ImGui.end_child()
+                
+                PyImGui.table_next_column()
+                
+                # Right Column                
+                if ImGui.begin_child("CraftingQueue", (0, 0), True, PyImGui.WindowFlags.NoFlag):
+                    ImGui.text("Crafting Queue")
+                    ImGui.separator()
+                    total_cost = sum(action.recipe.price * action.max_amount for action in inventory_handler.crafting_queue if action.recipe and action.recipe.price > 0)
+                    ingredients : dict[int, models.Ingredient] = {}
+                    for action in inventory_handler.crafting_queue:
+                        if action.recipe:
+                            for ingredient in action.recipe.ingredients:
+                                if ingredient.model_id in ingredients:
+                                    ingredients[ingredient.model_id].amount += ingredient.amount * action.max_amount
+                                else:
+                                    ingredients[ingredient.model_id] = models.Ingredient(
+                                        item_type=ingredient.item_type,
+                                        model_id=ingredient.model_id,
+                                        amount=ingredient.amount * action.max_amount,
+                                        rarity=ingredient.rarity
+                                    )
+                                    
+                    all_ingredients = list(ingredients.values())
+                    summary_height = max(140, (len(all_ingredients) + 1) * 34)
+                    table_height = max(100, PyImGui.get_content_region_avail()[1] - summary_height - 50)
+                                        
+                    if ImGui.begin_table("CraftingQueueTable", 2, PyImGui.TableFlags.NoSavedSettings | PyImGui.TableFlags.ScrollY, 0, table_height):
+                        PyImGui.table_setup_column("Recipe", PyImGui.TableColumnFlags.WidthStretch, 0.7)
+                        PyImGui.table_setup_column("Amount", PyImGui.TableColumnFlags.WidthFixed, 120)
+                        
+                        PyImGui.table_next_row()
+                        
+                        # Display crafting queue items
+                        for crafting_action in inventory_handler.crafting_queue:
+                            if crafting_action.recipe is None or crafting_action.recipe.item is None:
+                                ConsoleLog("LootEx", "Invalid crafting action in queue.", Console.MessageType.Warning)
+                                continue
+                            
+                            PyImGui.table_next_column()
+                            self.draw_recipe_selectable(style, gold_coin, gold_color, disabled_color, crafting_action.recipe, crafting_action.recipe.item, crafting_action._start_time is not None, crafting_action.max_amount, expand=True)
+                            PyImGui.table_next_column()
+                            
+                            PyImGui.push_item_width(120)
+                            crafting_action.max_amount = ImGui.input_int(f"##Amount{crafting_action.recipe.item.model_id}{crafting_action.recipe.item.item_type}", crafting_action.max_amount)
+                            PyImGui.pop_item_width()
+                            
+                            crafting_action.include_storage = self.settings.profile.include_storage_materials
+                            crafting_action.include_material_storage = self.settings.profile.include_storage_materials
+                            
+                        ImGui.end_table()
+                        
+                    ImGui.separator()
+                    
+                    if ImGui.begin_table("SummaryCraftingQueueTable", 2, PyImGui.TableFlags.NoSavedSettings, 0, summary_height):
+                        PyImGui.table_setup_column("CraftingCost", PyImGui.TableColumnFlags.WidthStretch, 0.7)
+                        PyImGui.table_setup_column("ActionsCraftingCost", PyImGui.TableColumnFlags.WidthFixed, 160)
+                        
+                        PyImGui.table_next_row()
+                        PyImGui.table_next_column()
+                        
+                        if ImGui.begin_child("CraftingCost", (0, 0), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            ImGui.DrawTexture(gold_coin.texture_file, 20, 20)
+                            PyImGui.same_line(0, 5)
+                            ImGui.text_aligned(f"{utility.Util.format_currency(total_cost)}", alignment=Alignment.MidLeft, height=24)                        
+                            self.draw_ingredients("summary", all_ingredients)
+                        
+                        ImGui.end_child()
+                        
+                        PyImGui.table_next_column()
+                        
+                        if ImGui.begin_child("ActionsCraftingCost", (0, 0), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.button("Buy Materials", 150, 30):
+                                for ingredient in all_ingredients:
+                                    if ingredient.item is None:
+                                        ingredient.get_item_data()
+                                    
+                                    if ingredient.item is None:
+                                        continue
+                                    
+                                    is_material = ingredient.item.item_type is ItemType.Materials_Zcoins          
+                                    trader_type = MerchantType.RareMaterialTrader if is_material else MerchantType.Merchant
+                                    
+                                    if (is_material and ingredient.model_id in data.Common_Materials):
+                                        trader_type = MerchantType.MaterialTrader
+                                        
+                                    offerd_items = Merchant.Trading.Trader.GetOfferedItems()
+                                    merchant_item = next((cache.Cached_Item(item_id) for item_id in offerd_items if cache.Cached_Item(item_id).model_id == ingredient.model_id), None)
+                                    if merchant_item is None:
+                                        ConsoleLog("LootEx", f"Material {ingredient.item.name} is not offered by the merchant.", Console.MessageType.Warning)
+                                        continue
+                                    
+                                    current_amount = Inventory.GetModelCountInMaterialStorage(ingredient.model_id) if self.settings.profile.include_storage_materials else 0
+                                    current_amount += Inventory.GetModelCountInStorage(ingredient.model_id) if self.settings.profile.include_storage_materials else 0
+                                    current_amount += Inventory.GetModelCount(ingredient.model_id)
+                                    
+                                    if current_amount >= ingredient.amount:
+                                        continue                                                                    
+                                        
+                                    inventory_handler.trading_queue.append(TraderAction(merchant_item, trader_type, ActionType.Buy, ingredient.amount - current_amount))
+                                        
+                            if ImGui.button("Clear Queue", 150, 30):
+                                inventory_handler.crafting_queue.clear()
+                                
+                            if ImGui.button("Start" if not inventory_handler.process_crafting else "Stop", 150, 30, appearance=ControlAppearance.Primary if not inventory_handler.process_crafting else ControlAppearance.Danger):
+                                inventory_handler.process_crafting = not inventory_handler.process_crafting
+                            
+                            grab_from_storage = ImGui.checkbox("Include Vault", self.settings.profile.include_storage_materials)
+                            if grab_from_storage != self.settings.profile.include_storage_materials:
+                                self.settings.profile.include_storage_materials = grab_from_storage
+                                self.settings.profile.save()
+                            
+                            ImGui.show_tooltip("Include materials from your vault when crafting.")
+                            
+                        ImGui.end_child()
+                        
+                        ImGui.end_table()
+                
+                ImGui.end_child()
+                
+                ImGui.end_table()
+                
             ImGui.end_tab_item()
         pass
 

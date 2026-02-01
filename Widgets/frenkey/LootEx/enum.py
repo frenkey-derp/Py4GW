@@ -14,6 +14,7 @@ ITEM_TEXTURE_FOLDER = os.path.join(Console.get_projects_path(), "Textures", "Ite
 
 MAX_CHARACTER_GOLD = 100000
 MAX_VAULT_GOLD = 1000000
+MAX_STACK_SIZE = 250
 
 INVALID_NAMES = ["", "Unknown", "No Item"]
 ITEM_CONVERSIONS : dict[tuple[ModelID, ItemType], tuple[ModelID, ItemType, int, int]] = {

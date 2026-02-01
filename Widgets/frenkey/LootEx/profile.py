@@ -123,10 +123,10 @@ class Profile:
         from Widgets.frenkey.LootEx.data import Data
         self.rare_weapons = {name: True for (name, _) in Data().Rare_Weapon_ModelIds.keys()}
         
-        self.conversions : dict[str, bool] = {
-            f"{ModelID.Copper_Zaishen_Coin.name}>>{ModelID.Silver_Zaishen_Coin}": True,
-            f"{ModelID.Silver_Zaishen_Coin.name}>>{ModelID.Gold_Zaishen_Coin.name}": True
-        }
+        self.even_consets : bool = False
+        self.include_storage_materials : bool = False
+        self.include_material_storage_materials : bool = False
+        self.recipes : dict[str, bool] = {}
 
     def setup_lookups(self):
         self.filters_by_item_type.clear()
@@ -219,7 +219,10 @@ class Profile:
                 item_type.name: list(self.blacklist[item_type].keys())
                 for item_type in self.blacklist
             },
-            "conversions": self.conversions,  
+            "recipes": self.recipes,  
+            "even_consets": self.even_consets,
+            "include_storage_materials": self.include_storage_materials,
+            "include_material_storage_materials": self.include_material_storage_materials,
         }
         
         file_path = os.path.join(
@@ -295,7 +298,10 @@ class Profile:
                     ItemType[item_type]: {int(model_id): True for model_id in model_ids}
                     for item_type, model_ids in profile_dict.get("blacklist", {}).items()
                 }                     
-                self.conversions = profile_dict.get("conversions", self.conversions)
+                self.recipes = profile_dict.get("recipes", self.recipes)
+                self.even_consets = profile_dict.get("even_consets", self.even_consets) 
+                self.include_storage_materials = profile_dict.get("include_storage_materials", self.include_storage_materials)
+                self.include_material_storage_materials = profile_dict.get("include_material_storage_materials", self.include_material_storage_materials)
                                 
             self.setup_lookups()
             

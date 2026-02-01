@@ -8,6 +8,7 @@ from Py4GW import Console
 import Py4GW
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
+from Py4GWCoreLib.enums_src.Item_enums import Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Widgets.frenkey.LootEx import models
 from Widgets.frenkey.LootEx.enum import INVALID_NAMES, ITEM_TEXTURE_FOLDER, ItemCategory, ModType, ModsModels
@@ -727,7 +728,78 @@ class Data():
                 ModelID.OminousAegisLeadership,
             ],
         }
-
+        
+        self.Recipes: list[models.CraftingRecipe] = [            
+            models.CraftingRecipe(
+                model_id=ModelID.Essence_Of_Celerity, 
+                item_type=ItemType.Usable, 
+                rarity=Rarity.Gold,
+                amount=1, 
+                price=250,
+                skill_points = 1,
+                ingredients=[
+                    models.Ingredient(model_id=ModelID.Feather, item_type=ItemType.Materials_Zcoins, amount=50),
+                    models.Ingredient(model_id=ModelID.Pile_Of_Glittering_Dust, item_type=ItemType.Materials_Zcoins, amount=50),
+                    ]),
+            
+            models.CraftingRecipe(
+                model_id=ModelID.Armor_Of_Salvation,
+                item_type=ItemType.Usable, 
+                rarity=Rarity.Gold,
+                amount=1, 
+                price=250,
+                skill_points = 1,                
+                ingredients=[
+                    models.Ingredient(model_id=ModelID.Iron_Ingot, item_type=ItemType.Materials_Zcoins, amount=50),
+                    models.Ingredient(model_id=ModelID.Bone, item_type=ItemType.Materials_Zcoins, amount=50),
+                    ]),
+            
+            models.CraftingRecipe(
+                model_id=ModelID.Grail_Of_Might, 
+                item_type=ItemType.Usable, 
+                rarity=Rarity.Gold,
+                amount=1, 
+                price=250,
+                skill_points = 1,  
+                ingredients=[
+                    models.Ingredient(model_id=ModelID.Pile_Of_Glittering_Dust, item_type=ItemType.Materials_Zcoins, amount=50),
+                    models.Ingredient(model_id=ModelID.Iron_Ingot, item_type=ItemType.Materials_Zcoins, amount=50),
+                ]),
+            
+            models.CraftingRecipe(
+                model_id=ModelID.Scroll_Of_Resurrection, 
+                item_type=ItemType.Usable, 
+                rarity=Rarity.Gold,
+                amount=1,
+                price=250,
+                skill_points = 1,
+                ingredients=[
+                    models.Ingredient(model_id=ModelID.Plant_Fiber, item_type=ItemType.Materials_Zcoins, amount=25),
+                    models.Ingredient(model_id=ModelID.Bone, item_type=ItemType.Materials_Zcoins, amount=25),
+                ]),
+        ]
+        self.Conversions : list[models.CraftingRecipe] = [
+            models.CraftingRecipe(
+                model_id=ModelID.Gold_Zaishen_Coin, 
+                item_type=ItemType.Materials_Zcoins, 
+                rarity=Rarity.Gold,
+                amount=1, 
+                price=50,
+                ingredients=[
+                    models.Ingredient(model_id=ModelID.Silver_Zaishen_Coin, item_type=ItemType.Materials_Zcoins, amount=10),
+                    ]),
+            
+            models.CraftingRecipe(
+                model_id=ModelID.Silver_Zaishen_Coin, 
+                item_type=ItemType.Materials_Zcoins, 
+                rarity=Rarity.Gold,
+                amount=1, 
+                price=10,
+                ingredients=[
+                    models.Ingredient(model_id=ModelID.Copper_Zaishen_Coin, item_type=ItemType.Materials_Zcoins, amount=50),
+                    ]),
+        ]
+        
     def get_mods_models(self, item_type: ItemType) -> models.ModsPair | None:
         try:
             return self.ModsByItemType[item_type]

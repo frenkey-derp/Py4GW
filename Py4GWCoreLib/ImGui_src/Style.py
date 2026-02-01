@@ -131,7 +131,11 @@ class Style:
         self.Tab = Style.StyleColor(self, 26, 38, 51, 255, PyImGui.ImGuiCol.Tab)
         self.TabHovered = Style.StyleColor(self, 51, 76, 102, 255, PyImGui.ImGuiCol.TabHovered)
         self.TabActive = Style.StyleColor(self, 102, 127, 153, 255, PyImGui.ImGuiCol.TabActive)
-
+        
+        #TODO: SET COLORS
+        self.TabUnfocused = Style.StyleColor(self, 26, 23, 30, 255, PyImGui.ImGuiCol.TabUnfocused)
+        self.TabUnfocusedActive = Style.StyleColor(self, 51, 59, 74, 255, PyImGui.ImGuiCol.TabUnfocusedActive)
+        
         self.PopupBg = Style.StyleColor(self, 2, 2, 2, 215, PyImGui.ImGuiCol.PopupBg)
         self.Border = Style.StyleColor(self, 204, 204, 212, 225, PyImGui.ImGuiCol.Border)
         self.BorderShadow = Style.StyleColor(self, 26, 26, 26, 128, PyImGui.ImGuiCol.BorderShadow)
@@ -158,6 +162,12 @@ class Style:
         self.Header = Style.StyleColor(self, 26, 38, 51, 255, PyImGui.ImGuiCol.Header)
         self.HeaderHovered = Style.StyleColor(self, 143, 143, 148, 255, PyImGui.ImGuiCol.HeaderHovered)
         self.HeaderActive = Style.StyleColor(self, 15, 13, 18, 255, PyImGui.ImGuiCol.HeaderActive)
+        
+        #TODO: SET COLORS
+        self.Separator = Style.StyleColor(self, 51, 51, 51, 128, PyImGui.ImGuiCol.Separator)
+        self.SeparatorHovered = Style.StyleColor(self, 102, 99, 96, 255, PyImGui.ImGuiCol.SeparatorHovered)
+        self.SeparatorActive = Style.StyleColor(self, 143, 143, 148, 255, PyImGui.ImGuiCol.SeparatorActive)
+        
         # self.Column = Style.StyleColor(self, 143, 143, 148, 255, PyImGui.ImGuiCol.Column)
         # self.ColumnHovered = Style.StyleColor(self, 61, 59, 74, 255, PyImGui.ImGuiCol.ColumnHovered)
         # self.ColumnActive = Style.StyleColor(self, 143, 143, 148, 255, PyImGui.ImGuiCol.ColumnActive)
@@ -174,7 +184,7 @@ class Style:
         self.PlotHistogram = Style.StyleColor(self, 102, 99, 96, 160, PyImGui.ImGuiCol.PlotHistogram)
         self.PlotHistogramHovered = Style.StyleColor(self, 64, 255, 0, 255, PyImGui.ImGuiCol.PlotHistogramHovered)
         # self.ModalWindowDarkening = Style.StyleColor(self, 255, 250, 242, 186, PyImGui.ImGuiCol.ModalWindowDarkening)
-
+        
         self.PrimaryButton = Style.StyleColor(self, 26, 38, 51, 255, PyImGui.ImGuiCol.Button, StyleColorType.Custom, "Primary Button")
         self.PrimaryButtonHovered = Style.StyleColor(self, 51, 76, 102, 255, PyImGui.ImGuiCol.ButtonHovered, StyleColorType.Custom, "Primary Button Hovered")
         self.PrimaryButtonActive = Style.StyleColor(self, 102, 127, 153, 255, PyImGui.ImGuiCol.ButtonActive, StyleColorType.Custom, "Primary Button Active")
@@ -203,6 +213,19 @@ class Style:
         self.ButtonTextureBackgroundHovered = Style.StyleColor(self, 61, 59, 74, 255, None, StyleColorType.Texture, "Button Background Hovered (Textured)")
         self.ButtonTextureBackgroundActive = Style.StyleColor(self, 143, 143, 148, 255, None, StyleColorType.Texture, "Button Background Active (Textured)")
         self.ButtonTextureBackgroundDisabled = Style.StyleColor(self, 143, 143, 148, 255, None, StyleColorType.Texture, "Button Background Disabled (Textured)")
+
+        #TODO: SET COLORS
+        self.TableHeaderBg = Style.StyleColor(self, 26, 38, 51, 255, PyImGui.ImGuiCol.TableHeaderBg)
+        self.TableBorderStrong = Style.StyleColor(self, 204, 204, 212, 225, PyImGui.ImGuiCol.TableBorderStrong)
+        self.TableBorderLight = Style.StyleColor(self, 204, 204, 212, 225, PyImGui.ImGuiCol.TableBorderLight)
+        self.TableRowBg = Style.StyleColor(self, 15, 13, 18, 255, PyImGui.ImGuiCol.TableRowBg)
+        self.TableRowBgAlt = Style.StyleColor(self, 26, 23, 30, 255, PyImGui.ImGuiCol.TableRowBgAlt)
+        
+        self.DragDropTarget = Style.StyleColor(self, 48, 48, 48, 255, PyImGui.ImGuiCol.DragDropTarget)
+        self.NavHighlight = Style.StyleColor(self, 102, 127, 153, 255, PyImGui.ImGuiCol.NavHighlight)
+        self.NavWindowingHighlight = Style.StyleColor(self, 102, 127, 153, 255, PyImGui.ImGuiCol.NavWindowingHighlight)
+        self.NavWindowingDimBg = Style.StyleColor(self, 102, 127, 153, 255, PyImGui.ImGuiCol.NavWindowingDimBg)
+        self.ModalWindowDimBg = Style.StyleColor(self, 102, 127, 153, 255, PyImGui.ImGuiCol.ModalWindowDimBg)
 
         attributes = {name: getattr(self, name) for name in dir(self)}
         self.Colors : dict[str, Style.StyleColor] = {name: attributes[name] for name in attributes if isinstance(attributes[name], Style.StyleColor) and attributes[name].color_type == StyleColorType.Default}

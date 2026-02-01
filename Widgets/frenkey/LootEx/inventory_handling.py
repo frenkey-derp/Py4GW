@@ -10,6 +10,7 @@ from Py4GWCoreLib.botting_src.helpers_src.decorators import yield_step
 from Py4GWCoreLib.botting_src.subclases_src.MERCHANT_src import _MERCHANTS
 from Py4GWCoreLib.py4gwcorelib_src.MerchantHandler import MerchantHandler
 from Widgets.frenkey.Core.utility import string_similarity
+from Widgets.frenkey.LootEx.crafting import BuildCraftingQueueFromCrafter, CraftingAction, CraftingCoroutine
 from Widgets.frenkey.LootEx.data_collection import DataCollector
 from Widgets.frenkey.LootEx.enum import ITEM_CONVERSIONS, XUNLAI_STORAGE, ActionState, MaterialType, MerchantType, ModType, SalvageKitOption, SalvageOption, ItemAction
 from Py4GWCoreLib import *
@@ -234,10 +235,10 @@ class LootEx_Merchant_Handler(MerchantHandler):
             model_id = ModelID.Superior_Identification_Kit.value
             item_type = ItemType.Kit
             item_id = next((
-                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                item for item in merchant_item_list if Item.GetModelID(item) == model_id and Item.GetItemType(item)[0] == item_type.value), None)
             
             if item_id is not None:
-                value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                value = Item.Properties.GetValue(item_id) * 2
                 if gold_on_character <= value:
                     ConsoleLog("LootEx_Merchant_Handler", "Cannot afford identification kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
                     return
@@ -249,9 +250,9 @@ class LootEx_Merchant_Handler(MerchantHandler):
                 # Fallback to normal identification kits if superior kits are not available
                 model_id = ModelID.Identification_Kit.value
                 item_id = next((
-                    item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                    item for item in merchant_item_list if Item.GetModelID(item) == model_id and Item.GetItemType(item)[0] == item_type.value), None)
                 if item_id is not None:
-                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    value = Item.Properties.GetValue(item_id) * 2
                     if gold_on_character <= value:
                         ConsoleLog("LootEx_Merchant_Handler", "Cannot afford identification kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
                         return
@@ -284,9 +285,9 @@ class LootEx_Merchant_Handler(MerchantHandler):
                 item_type = ItemType.Kit
 
                 item_id = next((
-                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                item for item in merchant_item_list if Item.GetModelID(item) == model_id and Item.GetItemType(item)[0] == item_type.value), None)
                 if item_id is not None:
-                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    value = Item.Properties.GetValue(item_id) * 2
                     if gold_on_character >= value:
                         can_afford = True
                         ConsoleLog("LootEx_Merchant_Handler", f"Restocking {salvage_kits[1]} Salvage Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
@@ -297,9 +298,9 @@ class LootEx_Merchant_Handler(MerchantHandler):
                 item_type = ItemType.Kit
 
                 item_id = next((
-                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                item for item in merchant_item_list if Item.GetModelID(item) == model_id and Item.GetItemType(item)[0] == item_type.value), None)
                 if item_id is not None:
-                    value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+                    value = Item.Properties.GetValue(item_id) * 2
                     if gold_on_character >= value:
                         can_afford = True
                         ConsoleLog("LootEx_Merchant_Handler", f"Restocking {expert_salvage_kits[1]} Expert Salvage Kits.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
@@ -388,11 +389,16 @@ class InventoryHandler:
 
         self.salvage_queue: dict[int, cache.Cached_Item] = {}
         
-        self.salvage_action : SalvageAction | None = None
+        self._active_salvage_action : SalvageAction | None = None
         self.salvaging_queue: dict[int, SalvageAction] = {}
         
-        self.trader_action : TraderAction | None = None
-        self.trading_queue: dict[int, TraderAction] = {}
+        self._active_trader_action : TraderAction | None = None
+        self.trading_queue: list[TraderAction] = []
+        
+        self._active_crafting: CraftingAction | None = None
+        self.auto_crafting_queue: list[CraftingAction] = []
+        self.crafting_queue: list[CraftingAction] = []
+        self.process_crafting = False
         
         self.salvaged = False
         self.salvage_windows_updated: bool = False
@@ -401,6 +407,9 @@ class InventoryHandler:
         self.is_confirm_materials_window_open: bool = False
         self.is_salvage_window_open: bool = False
         self.upgrade_open: bool | None = False
+        
+        self.custom_throttle : ThrottledTimer = ThrottledTimer(1000)
+        
     
     
     def soft_reset(self):
@@ -458,8 +467,8 @@ class InventoryHandler:
                 Bag.Storage_1, Bag(settings.max_xunlai_storage.value))
             
             self.item_storage = [
-                (item_id, ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]), GLOBAL_CACHE.Item.GetModelID(
-                    item_id), GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
+                (item_id, ItemType(Item.GetItemType(item_id)[0]), Item.GetModelID(
+                    item_id), Item.Properties.GetQuantity(item_id))
                 for item_id in storage
             ]
 
@@ -707,7 +716,7 @@ class InventoryHandler:
                     continue
 
                 if model_id == item.model_id:
-                    slot_quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(
+                    slot_quantity = Item.Properties.GetQuantity(
                         id)
 
                     if slot_quantity == 250:
@@ -786,7 +795,7 @@ class InventoryHandler:
             inventory_slot = next(
                 (index for index, item in enumerate(self.cached_inventory) if item.id == 0), None)
 
-            if GLOBAL_CACHE.Item.Customization.IsStackable(storage_item_id):
+            if Item.Customization.IsStackable(storage_item_id):
                 existing_slot = next(
                     (index for index, item in enumerate(self.cached_inventory) if item.item_type == item_type and item.quantity < 250), None)
 
@@ -842,12 +851,12 @@ class InventoryHandler:
                 self.item_id = item_id
                 self.bag = bag
                 self.slot = slot
-                self.model_id = GLOBAL_CACHE.Item.GetModelID(item_id)
-                self.item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[
+                self.model_id = Item.GetModelID(item_id)
+                self.item_type = ItemType(Item.GetItemType(item_id)[
                                           0]) if item_id else ItemType.Unknown
-                self.stackable = GLOBAL_CACHE.Item.Customization.IsStackable(
+                self.stackable = Item.Customization.IsStackable(
                     item_id)
-                self.quantity = GLOBAL_CACHE.Item.Properties.GetQuantity(
+                self.quantity = Item.Properties.GetQuantity(
                     item_id)
                 self.color = utility.Util.get_color(item_id)
 
@@ -858,7 +867,7 @@ class InventoryHandler:
             SlotInfo(item_id, bag, local_slot)
             for index, item_id in enumerate(item_array)
             for bag, local_slot in [self.GetBagFromSlot(index, bag_sizes)]
-            if item_id > 0 and GLOBAL_CACHE.Item.Customization.IsStackable(item_id) and (GLOBAL_CACHE.Item.Properties.GetQuantity(item_id) > 0 < 250)
+            if item_id > 0 and Item.Customization.IsStackable(item_id) and (Item.Properties.GetQuantity(item_id) > 0 < 250)
         ]
 
         condensed = False
@@ -942,11 +951,11 @@ class InventoryHandler:
             key=lambda item_id: (
                 item_id == 0,
                 item_typeOrder.index(
-                    GLOBAL_CACHE.Item.GetItemType(item_id)[0]),
-                GLOBAL_CACHE.Item.GetModelID(item_id),
-                -GLOBAL_CACHE.Item.Properties.GetQuantity(item_id),
-                -GLOBAL_CACHE.Item.Rarity.GetRarity(item_id)[0],
-                -GLOBAL_CACHE.Item.Properties.GetValue(item_id),
+                    Item.GetItemType(item_id)[0]),
+                Item.GetModelID(item_id),
+                -Item.Properties.GetQuantity(item_id),
+                -Item.Rarity.GetRarity(item_id)[0],
+                -Item.Properties.GetValue(item_id),
                 utility.Util.get_color(item_id),
                 item_id
             )
@@ -960,7 +969,7 @@ class InventoryHandler:
                 bag, slot = self.GetBagFromSlot(target_slot, bag_sizes)
 
                 Inventory.MoveItem(item_id, bag.value, slot,
-                                   GLOBAL_CACHE.Item.Properties.GetQuantity(item_id))
+                                   Item.Properties.GetQuantity(item_id))
 
         return False
 
@@ -1049,17 +1058,17 @@ class InventoryHandler:
 
         for model_id, (item_type, amount) in items_to_buy.items():
             item_id = next((
-                item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == model_id and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                item for item in merchant_item_list if Item.GetModelID(item) == model_id and Item.GetItemType(item)[0] == item_type.value), None)
 
             if item_id is None:
                 if model_id == ModelID.Superior_Identification_Kit:
                     item_id = next((
-                        item for item in merchant_item_list if GLOBAL_CACHE.Item.GetModelID(item) == ModelID.Identification_Kit and GLOBAL_CACHE.Item.GetItemType(item)[0] == item_type.value), None)
+                        item for item in merchant_item_list if Item.GetModelID(item) == ModelID.Identification_Kit and Item.GetItemType(item)[0] == item_type.value), None)
             
             if item_id is None:
                 continue
 
-            value = GLOBAL_CACHE.Item.Properties.GetValue(item_id) * 2
+            value = Item.Properties.GetValue(item_id) * 2
             amount = math.floor(min(amount, gold_on_character / value))
             if amount <= 0:
                 continue
@@ -1081,10 +1090,10 @@ class InventoryHandler:
                 break
 
     def UpdateMaterialCapacity(self):        
-        material_storage = GLOBAL_CACHE.ItemArray.GetItemArray(
+        material_storage = ItemArray.GetItemArray(
             [Bag.Material_Storage])
         
-        max_quantity = max([GLOBAL_CACHE.Item.Properties.GetQuantity(item_id) for item_id in material_storage])
+        max_quantity = max([Item.Properties.GetQuantity(item_id) for item_id in material_storage])
         
         ## calculate the estimated capacity based on the max quantity by rounding it up to the nearest 250 if it is not already a multiple of 250        
         estimated_capacity = (max_quantity // 250) * 250
@@ -1116,7 +1125,7 @@ class InventoryHandler:
 
         if material_item_id > 0 and material_amount == 0:
             material_storage[item.material.material_storage_slot] = (
-                material_item_id, GLOBAL_CACHE.Item.Properties.GetQuantity(material_item_id))
+                material_item_id, Item.Properties.GetQuantity(material_item_id))
             material_item_id, material_amount = material_storage[item.material.material_storage_slot]
 
         max_move_amount = self.material_capacity - material_amount
@@ -1169,7 +1178,7 @@ class InventoryHandler:
             item_ids = GLOBAL_CACHE.Trading.Merchant.GetOfferedItems()
                             
             if item_ids:                    
-                item_type = ItemType(GLOBAL_CACHE.Item.GetItemType(item_ids[0])[0])              
+                item_type = ItemType(Item.GetItemType(item_ids[0])[0])              
                 
                 if item_type == ItemType.Rune_Mod:
                     self.merchant_type = MerchantType.RuneTrader
@@ -1184,7 +1193,7 @@ class InventoryHandler:
                     return
                 
                 elif item_type == ItemType.Materials_Zcoins:
-                    model_id = GLOBAL_CACHE.Item.GetModelID(item_ids[0])
+                    model_id = Item.GetModelID(item_ids[0])
                     material = self.data.Materials.get(model_id, None)
                     
                     if material:
@@ -1359,8 +1368,11 @@ class InventoryHandler:
 
         return False
 
-    def ProcessTraderList(self):        
-        for item_id, action in list(self.trading_queue.items()):
+    def ProcessTraderList(self):  
+        if not self.trading_queue:
+            return False
+        
+        for action in self.trading_queue:
             if action.trader_type == self.merchant_type != MerchantType.None_:
                 # Start coroutine if not already started
                 if action.coroutine is None:
@@ -1369,10 +1381,52 @@ class InventoryHandler:
                 state = action.coroutine.step()
 
                 if state in (ActionState.Completed, ActionState.Timeout):
-                    del self.trading_queue[item_id]
+                    self.trading_queue.remove(action)
 
                 return True
 
+        return False
+    
+    def ProcessCraftingList(self):        
+        if not self.crafting_queue:
+            self.process_crafting = False
+            return
+                    
+        if not self.process_crafting:
+            return
+                    
+        for action in self.crafting_queue:  
+            if not action._is_available():
+                continue
+                      
+            if action.coroutine is None:
+                action.coroutine = action.run()
+                
+            state = action.coroutine.step()
+            if state in (ActionState.Completed, ActionState.Timeout):
+                self.crafting_queue.remove(action)
+                
+            return True
+    
+        return False
+    
+    def ProcessAutoCraftingList(self):        
+        if not self.auto_crafting_queue:
+            return
+                    
+        for action in self.auto_crafting_queue:  
+            if not action._is_available():
+                continue
+                      
+            if action.coroutine is None:
+                action.coroutine = action.run()
+                
+            state = action.coroutine.step()
+            if state in (ActionState.Completed, ActionState.Timeout):
+                self.auto_crafting_queue.remove(action)
+                
+            return True
+    
         return False
 
     def ProcessSalvageList(self):
@@ -1383,7 +1437,7 @@ class InventoryHandler:
             return False
         
         
-        if self.salvage_action is None:
+        if self._active_salvage_action is None:
             items_to_salvage = list(self.salvaging_queue.items())
             # Begin with lowest quantity to free up inventory space faster
             items_to_salvage.sort(key=lambda x: x[1].item.quantity)
@@ -1395,21 +1449,21 @@ class InventoryHandler:
                 if action.item.salvage_option in (SalvageOption.RareCraftingMaterials, SalvageOption.Prefix, SalvageOption.Suffix, SalvageOption.Inherent) and not self.expert_salvage_kits:
                     continue
                 
-                self.salvage_action = action
+                self._active_salvage_action = action
                 break
         
-        if self.salvage_action is None:
+        if self._active_salvage_action is None:
             return False
         
         # Start coroutine if not already started
-        if self.salvage_action.coroutine is None:
-            self.salvage_action.coroutine = self.salvage_action.run()
+        if self._active_salvage_action.coroutine is None:
+            self._active_salvage_action.coroutine = self._active_salvage_action.run()
 
-        state = self.salvage_action.coroutine.step()
+        state = self._active_salvage_action.coroutine.step()
 
         if state in (ActionState.Completed, ActionState.Timeout):
-            del self.salvaging_queue[self.salvage_action.item_id]
-            self.salvage_action = None
+            del self.salvaging_queue[self._active_salvage_action.item_id]
+            self._active_salvage_action = None
 
         return True                
     
@@ -1423,7 +1477,7 @@ class InventoryHandler:
             return False
                         
         for (to_model_id, to_item_type), (from_model_id, from_item_type, rate, item_price) in ITEM_CONVERSIONS.items():
-            if not settings.profile.conversions.get(f"{from_model_id.name}>>{to_model_id.name}", False):  
+            if not settings.conversions.get(f"{from_model_id.name}>>{to_model_id.name}", False):  
                 continue
             
             from_item = next((
@@ -1444,7 +1498,7 @@ class InventoryHandler:
             for _i in range(exchangeable_amount):                        
                 offered_items = Trading.Crafter.GetOfferedItems()
                 offered_item = next((
-                    item for item in offered_items if GLOBAL_CACHE.Item.GetModelID(item) == to_model_id), None)   
+                    item for item in offered_items if Item.GetModelID(item) == to_model_id), None)   
                 
                 if offered_item is None:
                     continue
@@ -1747,7 +1801,7 @@ class InventoryHandler:
                     result.inventory_materials.append(item)
                 
                     if item.action == ItemAction.NONE:                                
-                        item.action = ItemAction.Deposit_Material
+                        item.action = ItemAction.Hold
 
             if get_from_existing(existing_item):
                 continue
@@ -1933,6 +1987,8 @@ class InventoryHandler:
                         claimed = True
 
         return claimed
+
+
                     
     @property
     def IsActive(self) -> bool:
@@ -1959,7 +2015,7 @@ class InventoryHandler:
             increased = False
             
             for bag in XUNLAI_STORAGE:
-                items = GLOBAL_CACHE.ItemArray.GetItemArray([bag])
+                items = ItemArray.GetItemArray([bag])
                 if any(item_id != 0 for item_id in items):
                     max_xunlai_storage = Bag_enum(max(settings.max_xunlai_storage.value, bag.value))
                     increased = settings.max_xunlai_storage.value < max_xunlai_storage.value
@@ -1978,7 +2034,11 @@ class InventoryHandler:
         global_time = datetime.now()
 
         self.ProcessSalvageList()
-        self.ProcessTraderList()
+        
+        if Map.IsOutpost():
+            self.ProcessTraderList()
+            self.ProcessCraftingList()
+            self.ProcessAutoCraftingList()
 
         if self.inventory_timer.IsExpired():
             self.inventory_timer.Reset()
@@ -2020,13 +2080,16 @@ class InventoryHandler:
                         self.salvaging_queue[item.id] = SalvageAction(item)
                 
                 if item.action == ItemAction.Sell_To_Trader:
-                    if item.id not in self.trading_queue and (not item.material or item.model_id not in self.data.Common_Materials or item.quantity >= 10):
-                        self.trading_queue[item.id] = TraderAction(item, self.GetTraderType(item), ActionType.Sell) 
+                    existing_action = next((action for action in self.trading_queue if action.item.id == item.id), None)
+                    if existing_action is None and (not item.material or item.model_id not in self.data.Common_Materials or item.quantity >= 10):
+                        ConsoleLog(
+                            "LootEx", f"Queuing item: '{item.name}' ({item.id}) to sell to trader.", Console.MessageType.Info)
+                        self.trading_queue.append(TraderAction(item, self.GetTraderType(item), ActionType.Sell)) 
 
             if self.merchant_timer.IsExpired():
                 self.merchant_timer.Reset()
 
-                self.ExchangeItems()
+                self.auto_crafting_queue = BuildCraftingQueueFromCrafter() if not self.auto_crafting_queue and settings.auto_crafting_enabled else self.auto_crafting_queue
                 
                 items_to_buy = self.GetMissingItems()
                 if items_to_buy:

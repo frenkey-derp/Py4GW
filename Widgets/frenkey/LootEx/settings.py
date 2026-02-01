@@ -68,6 +68,11 @@ class Settings:
         
         self.changed = False
         self.development_mode: bool = os.path.exists("C:\\frenkey_development") 
+        self.conversions : dict[str, bool] = {}
+        
+        self.auto_crafting_enabled : bool = False
+        self.auto_withdraw_materials : bool = False
+        self.auto_even_consets : bool = False
         
     def set_language(self, lang = ServerLanguage.English):
         self.language = lang
@@ -135,6 +140,10 @@ class Settings:
             "collect_items": self.collect_items,
             "max_xunlai_storage": self.max_xunlai_storage.value,
             "last_xunlai_check": self.last_xunlai_check.isoformat(),
+            "conversions": self.conversions,
+            "auto_crafting_enabled": self.auto_crafting_enabled,
+            "auto_withdraw_materials": self.auto_withdraw_materials,
+            "auto_even_consets" : self.auto_even_consets,
         }
         # ConsoleLog(
         #     "LootEx", f"Saving settings to '{self.settings_file_path}'...", Console.MessageType.Debug)
@@ -193,6 +202,10 @@ class Settings:
                         last_xunlai_check_str)
 
                 self.collect_items = True # settings_dict.get("collect_items", False)
+                self.conversions = settings_dict.get("conversions", {})
+                self.auto_crafting_enabled = settings_dict.get("auto_crafting_enabled", False)
+                self.auto_withdraw_materials = settings_dict.get("auto_withdraw_materials", False)
+                self.auto_even_consets = settings_dict.get("auto_even_consets", False)
         
         except FileNotFoundError:
             ConsoleLog(

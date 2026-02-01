@@ -7,6 +7,7 @@ from urllib import parse
 import PyInventory
 from PyItem import DyeInfo
 
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Widgets.frenkey.LootEx import item_configuration, enum
 from Widgets.frenkey.LootEx import models
 from Widgets.frenkey.LootEx.enum import ItemAction, ItemCategory, ModifierIdentifier, ModifierValueArg
@@ -339,7 +340,7 @@ class Util:
         return ItemType.Unknown
 
     @staticmethod
-    def GetRarityColor(rarity):
+    def GetRarityColorDict(rarity):
         rarity_colors = {
             Rarity.White: {
                 "frame": (255, 255, 255, 125),
@@ -376,6 +377,21 @@ class Util:
                 "content": (255, 255, 255, 75),
                 "text": (255, 255, 255, 255),
             }
+
+    @staticmethod
+    def GetRarityColor(rarity) -> Color:
+        rarity_colors = {
+            Rarity.White: Color(255, 255, 255, 255),
+            Rarity.Blue: Color(153, 238, 255, 255),
+            Rarity.Green: Color(0, 255, 0, 255),
+            Rarity.Purple: Color(187, 136, 238, 255),
+            Rarity.Gold: Color(255, 204, 85, 255),
+        }
+
+        if (rarity in rarity_colors):
+            return rarity_colors[rarity]
+        else:
+            return ColorPalette.GetColor("white")
 
     @staticmethod
     def GetDyeColor(dye, alpha=255):
@@ -566,6 +582,19 @@ class Util:
             parts.append(f"{platinum} platinum")
         if gold > 0 or platinum == 0:
             parts.append(f"{gold} gold")
+
+        return " ".join(parts)
+    
+    @staticmethod
+    def format_currency_short(value: int) -> str:
+        platinum = value // 1000
+        gold = value % 1000
+
+        parts = []
+        if platinum > 0:
+            parts.append(f"{platinum} p")
+        if gold > 0 or platinum == 0:
+            parts.append(f"{gold} g")
 
         return " ".join(parts)
 
