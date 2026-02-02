@@ -518,6 +518,7 @@ def on_enable():
     global selected_theme
     selected_theme = StyleTheme[py4_gw_ini_handler.read_key(
         "settings", "style_theme", StyleTheme.ImGui.name)]
+    Py4GW.Console.Log(MODULE_NAME, f"Enabled Style Manager with theme: {selected_theme.name}", Py4GW.Console.MessageType.Info)
     set_theme(selected_theme)
         
 def DrawWindow():

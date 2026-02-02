@@ -22,7 +22,7 @@ from Py4GWCoreLib import get_texture_for_model
 from Py4GWCoreLib.enums import Bags
 from Py4GWCoreLib.enums import ModelID
 
-# region Frenkey Function
+# region frenkey Function
 
 try:
     # We will try to use LootEx to generate Known items
@@ -692,7 +692,7 @@ def _collect_bag_items(bag, bag_id, email, storage_name=None, char_name=None):
     global current_character_name
     global multi_store
 
-    """Shared coroutine to fetch all items from a bag with modifier and Frenkey DB name support."""
+    """Shared coroutine to fetch all items from a bag with modifier and frenkey DB name support."""
 
     def _strip_markup(text):
         if not text:

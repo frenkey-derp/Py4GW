@@ -46,10 +46,10 @@ class SharedCommandType(IntEnum):
     SetActiveQuest = 40
     AbandonQuest = 41
 
-    MultiBoxing = 990 # privately Handled Command, by Frenkey
+    MultiBoxing = 990 # privately Handled Command, by frenkey
     CustomBehaviors = 997 # privately Handled Command, used in CustomBehaviors widget
     UseSkillCombatPrep = 998 #handled in CombatPrep only by Mark
-    LootEx = 999 # privately Handled Command, by Frenkey
+    LootEx = 999 # privately Handled Command, by frenkey
 
     
 
