@@ -36,7 +36,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer, Timer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Py4GW_widget_manager import WidgetHandler
+from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 
 class CachedSkillInfo:
     def __init__(self, skill_id: int):
@@ -84,7 +84,7 @@ template_account: str = ""
 template_code = ""
 configure_consumables_window_open: bool = False
 
-widget_handler = WidgetHandler()
+widget_handler = get_widget_handler()
 module_info = None
 
 settings = Settings()
@@ -2854,6 +2854,7 @@ def draw_configure_window(module_name : str, configure_window : WindowModule):
     configure_window.end()  
     
     if not configure_window.open:
-        WidgetHandler().set_widget_configuring(module_name, False)
+        wh = get_widget_handler()
+        wh.set_widget_configuring(module_name, False)
           
     pass
