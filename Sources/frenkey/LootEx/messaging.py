@@ -7,9 +7,6 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Py4GWcorelib import ActionQueueNode, ConsoleLog
 from Py4GWCoreLib.enums import SharedCommandType
 
-from Sources.frenkey.LootEx.data import Data
-data = Data()
-
 action_node = ActionQueueNode(150)
 
 
@@ -55,6 +52,9 @@ def SendMergingMessage():
     MergeWhenCollectionPaused()
         
 def MergeWhenCollectionPaused():    
+    from Sources.frenkey.LootEx.data import Data
+    data = Data()
+    
     messages = GLOBAL_CACHE.ShMem.GetAllMessages()
     messages = [msg for msg in messages if msg[1].Command == SharedCommandType.LootEx]
     account_email = Player.GetAccountEmail()
@@ -243,6 +243,8 @@ def HandleReceivedMessages():
                             GLOBAL_CACHE.ShMem.MarkMessageAsRunning(Player.GetAccountEmail(), index)
                             
                             ConsoleLog("LootEx", "Reloading data...")
+                            from Sources.frenkey.LootEx.data import Data
+                            data = Data()
                             data.Reload()
                             GLOBAL_CACHE.ShMem.MarkMessageAsFinished(Player.GetAccountEmail(), index)
                             

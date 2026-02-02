@@ -2,9 +2,6 @@ from Sources.frenkey.LootEx import models, enum
 from Sources.frenkey.LootEx.enum import ItemAction
 from Py4GWCoreLib import *
 
-from Sources.frenkey.LootEx.data import Data
-data = Data()
-
 class RequirementInfo:
     def __init__(self, min_value: int, max_value: int, max_damage_only: bool = True):
         self.min: int = min_value
@@ -100,6 +97,9 @@ class SkinRule:
         return rule
 
     def get_items(self):
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+
         if not self.models:
             items = [
                 item for item in data.Items.All if item.inventory_icon == self.skin]
@@ -123,6 +123,9 @@ class SkinRule:
             del self.mods[mod.identifier]
 
     def matches(self, target_item) -> bool:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         from Sources.frenkey.LootEx import cache
         item : cache.Cached_Item = target_item
                 

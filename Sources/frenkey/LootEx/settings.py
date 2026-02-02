@@ -50,10 +50,11 @@ class Settings:
         self.window_visible: bool = False
         self.scraper_window_visible: bool = False
 
-        self.settings_file_path: str = ""
-        self.profiles_path: str = ""
+
+        self.settings_file_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", f"{Player.GetAccountEmail()}.json")
+        self.profiles_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "LootEx", "Profiles")
+        self.data_collection_path = os.path.join(Console.get_projects_path(), "Widgets", "Config", "DataCollection")         
         self.current_character: str = ""
-        self.data_collection_path: str = ""
         
         self.inventory_frame_exists: bool = False
         self.inventory_frame_coords: Optional[FrameCoords] = None

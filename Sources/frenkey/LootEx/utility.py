@@ -13,9 +13,6 @@ from Sources.frenkey.LootEx import models
 from Sources.frenkey.LootEx.enum import ItemAction, ItemCategory, ModifierIdentifier, ModifierValueArg
 from Sources.frenkey.LootEx.item_configuration import ItemConfiguration
 
-from Sources.frenkey.LootEx.data import Data
-data = Data()
-
 import importlib
 
 from Sources.frenkey.LootEx.models import ModifierInfo, Rune, WeaponMod
@@ -181,6 +178,9 @@ class Util:
 
     @staticmethod
     def GetAttributes(itemType: ItemType) -> list[Attribute]:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+
         if itemType in data.Item_Attributes:
             return data.Item_Attributes[itemType]
         else:
@@ -246,6 +246,9 @@ class Util:
 
     @staticmethod
     def GetMaxDamage(requirement: int, itemType: Optional[ItemType] = ItemType.Unknown) -> models.IntRange:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         requirement = 9 if requirement > 9 else requirement
         itemType = itemType if itemType != None else ItemType.Unknown
 
@@ -262,6 +265,9 @@ class Util:
 
     @staticmethod
     def GetDataItem(item_type: ItemType, model_id: int) -> Optional[models.Item]:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Get the data item based on item type and model ID.
 
@@ -418,6 +424,9 @@ class Util:
 
     @staticmethod
     def GetWeaponModName(mod_identifier: str, refresh: bool = False) -> str:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Get the name of the weapon mod based on its hex representation.
 
@@ -436,6 +445,9 @@ class Util:
 
     @staticmethod
     def IsMatchingItemType(item_type1: ItemType, item_type2: ItemType):
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Check if two item types are the same or if one is a subtype of the other.
 
@@ -450,6 +462,9 @@ class Util:
 
     @staticmethod
     def GetWeaponTypeFromAttribute(attribute: Attribute) -> ItemType:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Get the weapon type associated with a specific attribute.
 
@@ -538,6 +553,9 @@ class Util:
 
     @staticmethod
     def is_missing_item(item_id: int) -> bool:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         return data.Items.get_item_data(item_id) is None
 
     @staticmethod
@@ -655,6 +673,9 @@ class Util:
 
     @staticmethod
     def is_common_material(model_id: int) -> bool:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Check if the item with the given model ID is a common material.
 
@@ -753,6 +774,9 @@ class Util:
 
     @staticmethod
     def IsRareWeapon(model_id: int) -> bool:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Check if the item with the given model ID is a rare weapon.
 
@@ -789,6 +813,9 @@ class Util:
 
     @staticmethod
     def GetItemDataName(item_id: int) -> str:
+        from Sources.frenkey.LootEx.data import Data
+        data = Data()
+        
         """
         Get the name of the item based on its ID.
 

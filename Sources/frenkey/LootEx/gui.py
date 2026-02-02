@@ -24,13 +24,11 @@ from Sources.frenkey.LootEx.trading import ActionType, TraderAction, add_ingredi
 from Sources.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
-data = Data()
-
 class SelectableItem:
     """
     Represents an item that can be selected and hovered over in a GUI.
     Attributes:
-        item_info (data.Item): The information about the item.
+        item_info (self.data.Item): The information about the item.
         is_selected (bool): Indicates whether the item is currently selected. Defaults to False.
         is_hovered (bool): Indicates whether the item is currently being hovered over. Defaults to False.
     Methods:
@@ -236,13 +234,13 @@ class UI:
         self.action_infos : UI.ActionInfos = UI.ActionInfos({
             ItemAction.Loot: UI.ActionInfo("Loot (Pick Up)", "If the item is dropped, pick it up.", texture_map.CoreTextures.UI_Reward_Bag_Hovered.value),
             ItemAction.Collect_Data: UI.ActionInfo("Collect Data", "Collect data about the item.", os.path.join(self.icon_textures_path, "wiki_logo.png")),
-            ItemAction.Identify: UI.ActionInfo("Identify", "Use an Identification Kit to identify the item.", data.Items.get_texture_by_name("Identification Kit.png")),
+            ItemAction.Identify: UI.ActionInfo("Identify", "Use an Identification Kit to identify the item.", self.data.Items.get_texture_by_name("Identification Kit.png")),
             ItemAction.Hold: UI.ActionInfo("Hold", "Hold on to the item without stashing.", texture_map.CoreTextures.UI_Backpack.value),
             ItemAction.Stash: UI.ActionInfo("Stash", "Stash the item in your Xunlai Chest.", os.path.join(self.icon_textures_path, "xunlai_chest.png")),
-            ItemAction.Salvage_Mods: UI.ActionInfo("Salvage Mods", "Salvage the mods from the item.", data.Items[ItemType.Rune_Mod][17059].texture_file),
+            ItemAction.Salvage_Mods: UI.ActionInfo("Salvage Mods", "Salvage the mods from the item.", self.data.Items[ItemType.Rune_Mod][17059].texture_file),
             ItemAction.Salvage: UI.ActionInfo("Salvage for Common or Rare Materials", "Use a Salvage Kit to salvage the item.", os.path.join(self.icon_textures_path, "expert_or_common_salvage_kit.png")),
-            ItemAction.Salvage_Common_Materials: UI.ActionInfo("Salvage Common Materials", "Use a Salvage Kit to salvage common materials from the item.", data.Items.get_texture_by_name("Salvage Kit.png")),
-            ItemAction.Salvage_Rare_Materials: UI.ActionInfo("Salvage Rare Materials", "Use an Expert Salvage Kit to salvage rare materials from the item.", data.Items.get_texture_by_name("Expert Salvage Kit.png")),
+            ItemAction.Salvage_Common_Materials: UI.ActionInfo("Salvage Common Materials", "Use a Salvage Kit to salvage common materials from the item.", self.data.Items.get_texture_by_name("Salvage Kit.png")),
+            ItemAction.Salvage_Rare_Materials: UI.ActionInfo("Salvage Rare Materials", "Use an Expert Salvage Kit to salvage rare materials from the item.", self.data.Items.get_texture_by_name("Expert Salvage Kit.png")),
             ItemAction.Sell_To_Merchant: UI.ActionInfo("Sell to Merchant", "Sell the item to a merchant for gold.", texture_map.CoreTextures.UI_Gold.value),
             ItemAction.Sell_To_Trader: UI.ActionInfo("Sell to Trader (Runes, Scrolls, Dyes...)", "Sell the item to a trader for gold.", texture_map.CoreTextures.UI_Gold.value),
             ItemAction.Destroy: UI.ActionInfo("Destroy", "Destroy the item permanently.", texture_map.CoreTextures.UI_Destroy.value),
@@ -321,45 +319,45 @@ class UI:
         
         self.mod_textures : dict[ItemType, dict[ModType, str]] = {
             ItemType.Axe: {
-                ModType.Prefix: data.Items.get_texture_by_name("Axe Haft"),
-                ModType.Suffix: data.Items.get_texture_by_name("Axe Grip"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Axe Haft"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Axe Grip"),
             },
             ItemType.Bow: {
-                ModType.Prefix: data.Items.get_texture_by_name("Bow String"),
-                ModType.Suffix: data.Items.get_texture_by_name("Bow Grip"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Bow String"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Bow Grip"),
             },
             ItemType.Offhand: {
-                ModType.Suffix: data.Items.get_texture_by_name("Focus Core"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Focus Core"),
             },
             ItemType.Hammer: {
-                ModType.Prefix: data.Items.get_texture_by_name("Hammer Haft"),
-                ModType.Suffix: data.Items.get_texture_by_name("Hammer Grip"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Hammer Haft"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Hammer Grip"),
             },
             ItemType.Wand: {
-                ModType.Suffix: data.Items.get_texture_by_name("Wand Wrapping"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Wand Wrapping"),
             },
             ItemType.Shield: {
-                ModType.Suffix: data.Items.get_texture_by_name("Shield Handle"),                        
+                ModType.Suffix: self.data.Items.get_texture_by_name("Shield Handle"),                        
             },
             ItemType.Staff: {
-                ModType.Prefix: data.Items.get_texture_by_name("Staff Head"),
-                ModType.Suffix: data.Items.get_texture_by_name("Staff Wrapping"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Staff Head"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Staff Wrapping"),
             },
             ItemType.Sword: {
-                ModType.Prefix: data.Items.get_texture_by_name("Sword Hilt"),
-                ModType.Suffix: data.Items.get_texture_by_name("Sword Pommel"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Sword Hilt"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Sword Pommel"),
             },
             ItemType.Daggers: {
-                ModType.Prefix: data.Items.get_texture_by_name("Dagger Tang"),
-                ModType.Suffix: data.Items.get_texture_by_name("Dagger Handle"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Dagger Tang"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Dagger Handle"),
             },
             ItemType.Spear: {
-                ModType.Prefix: data.Items.get_texture_by_name("Spearhead"),
-                ModType.Suffix: data.Items.get_texture_by_name("Spear Grip"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Spearhead"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Spear Grip"),
             },
             ItemType.Scythe: {
-                ModType.Prefix: data.Items.get_texture_by_name("Scythe Snathe"),
-                ModType.Suffix: data.Items.get_texture_by_name("Scythe Grip"),
+                ModType.Prefix: self.data.Items.get_texture_by_name("Scythe Snathe"),
+                ModType.Suffix: self.data.Items.get_texture_by_name("Scythe Grip"),
             },                            
         }
         
@@ -379,41 +377,41 @@ class UI:
         ]
         
         self.item_type_textures: dict[ItemType, str] = {
-            ItemType.Salvage: data.Items.get_texture_by_name("Axe Fiend Armor"),
-            ItemType.Axe: data.Items.get_texture_by_name("Spiked Axe"),
-            ItemType.Bag: data.Items.get_texture_by_name("Bag"),
+            ItemType.Salvage: self.data.Items.get_texture_by_name("Axe Fiend Armor"),
+            ItemType.Axe: self.data.Items.get_texture_by_name("Spiked Axe"),
+            ItemType.Bag: self.data.Items.get_texture_by_name("Bag"),
             ItemType.Boots: os.path.join(self.icon_textures_path, "templar_armor_feet.png"),
-            ItemType.Bow: data.Items.get_texture_by_name("Ivory Bow"),
-            ItemType.Bundle: data.Items.get_texture_by_name("War Supplies"),
+            ItemType.Bow: self.data.Items.get_texture_by_name("Ivory Bow"),
+            ItemType.Bundle: self.data.Items.get_texture_by_name("War Supplies"),
             ItemType.Chestpiece: os.path.join(self.icon_textures_path, "templar_armor_chestpiece.png"),
-            ItemType.Rune_Mod: data.Items.get_texture_by_name("Rune (Superior)"),
-            ItemType.Usable: data.Items.get_texture_by_name("Birthday Cupcake"),
+            ItemType.Rune_Mod: self.data.Items.get_texture_by_name("Rune (Superior)"),
+            ItemType.Usable: self.data.Items.get_texture_by_name("Birthday Cupcake"),
             ItemType.Dye: os.path.join(self.textures_folder, "Dyes", "White.png"),
-            ItemType.Materials_Zcoins: data.Items.get_texture_by_name("Wood Plank"),
-            ItemType.Offhand: data.Items.get_texture_by_name("Channeling Focus"),
+            ItemType.Materials_Zcoins: self.data.Items.get_texture_by_name("Wood Plank"),
+            ItemType.Offhand: self.data.Items.get_texture_by_name("Channeling Focus"),
             ItemType.Gloves: os.path.join(self.icon_textures_path, "templar_armor_gloves.png"),
-            ItemType.Hammer: data.Items.get_texture_by_name("Foehammer"),
+            ItemType.Hammer: self.data.Items.get_texture_by_name("Foehammer"),
             ItemType.Headpiece: os.path.join(self.icon_textures_path, "templar_armor_helmet.png"),
-            ItemType.CC_Shards: data.Items.get_texture_by_name("Candy Cane Shard"),
-            ItemType.Key: data.Items.get_texture_by_name("Zaishen Key"),
+            ItemType.CC_Shards: self.data.Items.get_texture_by_name("Candy Cane Shard"),
+            ItemType.Key: self.data.Items.get_texture_by_name("Zaishen Key"),
             ItemType.Leggings: os.path.join(self.icon_textures_path, "templar_armor_leggins.png"),
             ItemType.Gold_Coin: texture_map.CoreTextures.UI_Gold.value,
-            ItemType.Quest_Item: data.Items.get_texture_by_name("Top Right Map Piece"),
-            ItemType.Wand: data.Items.get_texture_by_name("Shaunur's Scepter"),
-            ItemType.Shield: data.Items.get_texture_by_name("Round Shield"),
-            ItemType.Staff : data.Items.get_texture_by_name("Bone Staff"),
-            ItemType.Sword: data.Items.get_texture_by_name("Long Sword"),
-            ItemType.Kit: data.Items.get_texture_by_name("Superior Salvage Kit"),
-            ItemType.Trophy: data.Items.get_texture_by_name("Destroyer Core"),
-            ItemType.Scroll: data.Items.get_texture_by_name("Scroll of the Lightbringer"),
-            ItemType.Daggers: data.Items.get_texture_by_name("Kukris"),
-            ItemType.Present: data.Items.get_texture_by_name("Birthday Present"),
-            ItemType.Minipet: data.Items.get_texture_by_name("Miniature Mox"),
-            ItemType.Scythe: data.Items.get_texture_by_name("Suntouched Scythe")  ,
-            ItemType.Spear: data.Items.get_texture_by_name("Serrated Spear"),
-            ItemType.Storybook: data.Items.get_texture_by_name("Young Heroes of Tyria [Hard Mode]"),
-            ItemType.Costume: data.Items.get_texture_by_name("Shining Blade Uniform"),
-            ItemType.Costume_Headpiece: data.Items.get_texture_by_name("Divine Halo"),
+            ItemType.Quest_Item: self.data.Items.get_texture_by_name("Top Right Map Piece"),
+            ItemType.Wand: self.data.Items.get_texture_by_name("Shaunur's Scepter"),
+            ItemType.Shield: self.data.Items.get_texture_by_name("Round Shield"),
+            ItemType.Staff : self.data.Items.get_texture_by_name("Bone Staff"),
+            ItemType.Sword: self.data.Items.get_texture_by_name("Long Sword"),
+            ItemType.Kit: self.data.Items.get_texture_by_name("Superior Salvage Kit"),
+            ItemType.Trophy: self.data.Items.get_texture_by_name("Destroyer Core"),
+            ItemType.Scroll: self.data.Items.get_texture_by_name("Scroll of the Lightbringer"),
+            ItemType.Daggers: self.data.Items.get_texture_by_name("Kukris"),
+            ItemType.Present: self.data.Items.get_texture_by_name("Birthday Present"),
+            ItemType.Minipet: self.data.Items.get_texture_by_name("Miniature Mox"),
+            ItemType.Scythe: self.data.Items.get_texture_by_name("Suntouched Scythe")  ,
+            ItemType.Spear: self.data.Items.get_texture_by_name("Serrated Spear"),
+            ItemType.Storybook: self.data.Items.get_texture_by_name("Young Heroes of Tyria [Hard Mode]"),
+            ItemType.Costume: self.data.Items.get_texture_by_name("Shining Blade Uniform"),
+            ItemType.Costume_Headpiece: self.data.Items.get_texture_by_name("Divine Halo"),
             ItemType.Unknown: "",
         }
                     
@@ -434,24 +432,24 @@ class UI:
         }
         
         self.inscription_type_textures: dict[ItemType, str] = {
-            ItemType.Weapon: data.Items[ItemType.Rune_Mod][15542].texture_file,
-            ItemType.MartialWeapon: data.Items[ItemType.Rune_Mod][15540].texture_file,
-            ItemType.Offhand: data.Items[ItemType.Rune_Mod][19123].texture_file,
-            ItemType.OffhandOrShield: data.Items[ItemType.Rune_Mod][15541].texture_file,
-            ItemType.EquippableItem: data.Items[ItemType.Rune_Mod][17059].texture_file,
-            ItemType.SpellcastingWeapon: data.Items[ItemType.Rune_Mod][19122].texture_file,
+            ItemType.Weapon: self.data.Items[ItemType.Rune_Mod][15542].texture_file,
+            ItemType.MartialWeapon: self.data.Items[ItemType.Rune_Mod][15540].texture_file,
+            ItemType.Offhand: self.data.Items[ItemType.Rune_Mod][19123].texture_file,
+            ItemType.OffhandOrShield: self.data.Items[ItemType.Rune_Mod][15541].texture_file,
+            ItemType.EquippableItem: self.data.Items[ItemType.Rune_Mod][17059].texture_file,
+            ItemType.SpellcastingWeapon: self.data.Items[ItemType.Rune_Mod][19122].texture_file,
         }
                 
         self.merchant_item_textures: dict[str, str] = {
-            "Superior Identification Kit": data.Items.get_texture_by_name("Superior Identification Kit"),
-            "Salvage Kit": data.Items.get_texture_by_name("Salvage Kit"),
-            "Expert Salvage Kit": data.Items.get_texture_by_name("Expert Salvage Kit"),
-            "Lockpick": data.Items.get_texture_by_name("Lockpick"),
+            "Superior Identification Kit": self.data.Items.get_texture_by_name("Superior Identification Kit"),
+            "Salvage Kit": self.data.Items.get_texture_by_name("Salvage Kit"),
+            "Expert Salvage Kit": self.data.Items.get_texture_by_name("Expert Salvage Kit"),
+            "Lockpick": self.data.Items.get_texture_by_name("Lockpick"),
         }
         
         self.nick_textures: dict[str, str] = {
-            "Gift of the Traveler": data.Items.get_texture_by_name("Gift of the Traveler"),
-            "Red Iris Flower": data.Items.get_texture_by_name("Red Iris Flower"),
+            "Gift of the Traveler": self.data.Items.get_texture_by_name("Gift of the Traveler"),
+            "Red Iris Flower": self.data.Items.get_texture_by_name("Red Iris Flower"),
         }
             
         
@@ -478,7 +476,7 @@ class UI:
         self.bag_names = [key for key in self.bag_ranges.keys()]
         self.bag_index = 0
         
-        for mod in data.Weapon_Mods.values():
+        for mod in self.data.Weapon_Mods.values():
             if mod.mod_type == ModType.Prefix:
                 self.prefix_names.append(mod.name)
 
@@ -1524,17 +1522,17 @@ class UI:
                         PyImGui.table_next_column()
                         ImGui.text(f"Weapon Mods")
                         PyImGui.table_next_column()
-                        ImGui.text(f"{len(data.Weapon_Mods)}")
+                        ImGui.text(f"{len(self.data.Weapon_Mods)}")
 
                         PyImGui.table_next_column()
                         ImGui.text(f"Runes")
                         PyImGui.table_next_column()
-                        ImGui.text(f"{len(data.Runes)}")
+                        ImGui.text(f"{len(self.data.Runes)}")
 
                         PyImGui.table_next_column()
                         ImGui.text(f"Items")
                         PyImGui.table_next_column()
-                        ImGui.text(f"{len(data.Items.All)}")
+                        ImGui.text(f"{len(self.data.Items.All)}")
                         
                         PyImGui.table_next_column()
                         ImGui.separator()
@@ -1542,7 +1540,7 @@ class UI:
                         ImGui.separator()
                         
                         
-                        for item_type, items in data.Items.items():                            
+                        for item_type, items in self.data.Items.items():                            
                             item_count = len(items)
                             if item_count > 0:
                                 PyImGui.table_next_column()
@@ -1559,7 +1557,7 @@ class UI:
                     if ImGui.button("Merge Diffs into Data", 160, 30):
                         ConsoleLog(
                             "LootEx",
-                            "Merging diffs into data...",
+                            "Merging diffs into self.data...",
                             Console.MessageType.Info,
                         )
 
@@ -1571,7 +1569,7 @@ class UI:
                         items_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "Items")
                         item_model_files_folder = os.path.join(Py4GW.Console.get_projects_path(), "Textures", "ItemModelFiles")
                         
-                        for item in data.Items.All:
+                        for item in self.data.Items.All:
                             if item.inventory_icon and item.model_file_id:
                                 source_path = os.path.join(items_folder, f"{item.inventory_icon}")
                                 dest_path = os.path.join(item_model_files_folder, f"{item.model_file_id}.png")
@@ -1703,10 +1701,7 @@ class UI:
                 def assign_material_price(item_id, price):
                     if not self.settings.profile:
                         return
-                    
-                    from Sources.frenkey.LootEx.data import Data
-                    data = Data()
-                    
+                                        
                     item = cache.Cached_Item(item_id)
                     if not item.material:
                         return
@@ -1719,7 +1714,7 @@ class UI:
                     item.material.vendor_value = price
                     item.material.vendor_updated = datetime.now()
                     
-                    data.SaveMaterials()
+                    self.data.SaveMaterials()
                 
                 item_ids = Trading.Trader.GetOfferedItems()
                 price_check_mgr = price_check.PriceCheckManager()
@@ -1733,7 +1728,7 @@ class UI:
                 # PyImGui.table_headers_row()
                 
                 PyImGui.table_next_row()
-                for material in data.Materials.values():
+                for material in self.data.Materials.values():
                     PyImGui.table_next_column()
                     ImGui.image(material.texture_file, (24, 24))
                     PyImGui.table_next_column()
@@ -1750,7 +1745,7 @@ class UI:
                     if PyImGui.is_item_hovered():
                         ImGui.show_tooltip("Last Checked: " + utility.Util.format_custom_time_ago(datetime.now() - material.vendor_updated) if material.vendor_updated else "Never Updated")
 
-                # for material in data.Rare_Materials.values():
+                # for material in self.data.Rare_Materials.values():
                 #     PyImGui.table_next_row()
                 #     PyImGui.table_next_column()
                 #     ImGui.text(material.name)
@@ -1991,7 +1986,7 @@ class UI:
                         PyImGui.table_setup_column("Name")
                         PyImGui.table_setup_column("Weeks Until Next Nick", PyImGui.TableColumnFlags.WidthFixed, 85)   
                         
-                        for i, nick_item in enumerate(data.Nick_Cycle):
+                        for i, nick_item in enumerate(self.data.Nick_Cycle):
                              
                             if nick_item.weeks_until_next_nick is None:
                                 # ConsoleLog("LootEx", f"Nick item '{nick_item.name}' has no 'weeks_until_next_nick' value set! But next week is {nick_item.next_nick_week}", Console.MessageType.Warning)
@@ -2327,10 +2322,10 @@ class UI:
                             item_width = 36
                             columns = max(1, math.floor(width / item_width))
                             
-                            has_common_materials = len(data.Common_Materials) > 0 if filter.action in [ItemAction.Salvage, ItemAction.Salvage_Common_Materials] else False
-                            has_rare_materials = len(data.Rare_Materials) > 0 if filter.action in [ItemAction.Salvage, ItemAction.Salvage_Rare_Materials] else False
+                            has_common_materials = len(self.data.Common_Materials) > 0 if filter.action in [ItemAction.Salvage, ItemAction.Salvage_Common_Materials] else False
+                            has_rare_materials = len(self.data.Rare_Materials) > 0 if filter.action in [ItemAction.Salvage, ItemAction.Salvage_Rare_Materials] else False
                             
-                            rows = (math.ceil(len(data.Common_Materials) / columns) if has_common_materials else 0) + (math.ceil(len(data.Rare_Materials) / columns) if has_rare_materials else 0)
+                            rows = (math.ceil(len(self.data.Common_Materials) / columns) if has_common_materials else 0) + (math.ceil(len(self.data.Rare_Materials) / columns) if has_rare_materials else 0)
                                                             
                             self.action_heights[ItemAction.Salvage_Rare_Materials] = (rows * item_width) + 123 + 8
                             self.action_heights[ItemAction.Salvage_Common_Materials] = (rows * item_width) + 125 + 8
@@ -2342,13 +2337,13 @@ class UI:
                                 style.CellPadding.push_style_var(0, 2)
                                 ImGui.begin_table("salvage_materials_table", columns, PyImGui.TableFlags.ScrollY, 0, 0)                                
                                 if filter.action == ItemAction.Salvage or filter.action == ItemAction.Salvage_Common_Materials:
-                                    for material in data.Common_Materials.values():
+                                    for material in self.data.Common_Materials.values():
                                         PyImGui.table_next_column()
                                         changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
                                     
                                         if changed:
                                             if self.py_io.key_ctrl:
-                                                for mat in data.Common_Materials.values():
+                                                for mat in self.data.Common_Materials.values():
                                                     if not selected:
                                                         if mat.model_id in filter.materials:
                                                             del filter.materials[mat.model_id]
@@ -2374,13 +2369,13 @@ class UI:
                                         ImGui.separator()
                                     
                                 if filter.action == ItemAction.Salvage_Rare_Materials or filter.action == ItemAction.Salvage:    
-                                    for material in data.Rare_Materials.values():
+                                    for material in self.data.Rare_Materials.values():
                                         PyImGui.table_next_column()
                                         changed, selected = self.draw_material_selectable(material, filter.materials.get(material.model_id, False))
                                     
                                         if changed:
                                             if self.py_io.key_ctrl:
-                                                for mat in data.Rare_Materials.values():
+                                                for mat in self.data.Rare_Materials.values():
                                                     if not selected:
                                                         if mat.model_id in filter.materials:
                                                             del filter.materials[mat.model_id]
@@ -2846,7 +2841,7 @@ class UI:
             ]
             
             if ImGui.begin_child("skin_selection_list", (0, 0), True, PyImGui.WindowFlags.NoFlag):
-                sorted_skins = sorted(data.ItemsBySkins.items(), key=lambda x: x[0].lower())
+                sorted_skins = sorted(self.data.ItemsBySkins.items(), key=lambda x: x[0].lower())
                 
                 for skin, items in sorted_skins:
                     if skin in existing_skins_from_rules:
@@ -2863,7 +2858,7 @@ class UI:
                             if selected and skin != self.selected_rule.skin:
                                 if self.selected_rule:
                                     self.selected_rule.skin = skin                                   
-                                    self.selectable_items = data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
+                                    self.selectable_items = self.data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
                                     
                                     self.skin_search = ""            
                                     self.settings.profile.save()     
@@ -3100,7 +3095,7 @@ class UI:
                                 
                                 if is_selected:
                                     self.selected_rule = selectable_rule.object
-                                    self.selectable_items = data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
+                                    self.selectable_items = self.data.ItemsBySkins.get(self.selected_rule.skin, []) if self.selected_rule else []
                                     
                                     for sel_rule in self.selectable_rules:
                                         if sel_rule.object != self.selected_rule:
@@ -3407,7 +3402,7 @@ class UI:
                                         selectable_mods : list[models.WeaponMod] = []
                                         
                                         if ImGui.begin_child("selectable_mods", (0, 0), False, PyImGui.WindowFlags.NoFlag):
-                                            for mod in data.Weapon_Mods.values():
+                                            for mod in self.data.Weapon_Mods.values():
                                                 if mod.mod_type == ModType.Inherent:
                                                     for item in self.selectable_items:
                                                         if not mod.has_item_type(item.item_type):
@@ -3603,7 +3598,7 @@ class UI:
                         self.selected_rule_damage_range = damage_range
                         self.selected_damage_range = damage_range_info   
                         
-                        requirements = data.DamageRanges.get(item_type, None)
+                        requirements = self.data.DamageRanges.get(item_type, None)
                         self.selected_damage_range_min = requirements.get(0) if requirements else models.IntRange(0, 0)
             
             
@@ -3699,7 +3694,7 @@ class UI:
                     width_remaining = PyImGui.get_content_region_avail()[0] - 10
                     
                     if ImGui.begin_child("Low Req Req & Damage", (width_remaining / 2, 0), True, PyImGui.WindowFlags.NoFlag):
-                        requirements = data.DamageRanges.get(selected_item_type, None)
+                        requirements = self.data.DamageRanges.get(selected_item_type, None)
                         
                         if requirements:
                             for req, damage_range in requirements.items():
@@ -3768,7 +3763,7 @@ class UI:
                             selectable_mods : list[models.WeaponMod] = []
                             
                             if ImGui.begin_child("selectable_mods", (0, 0), False, PyImGui.WindowFlags.NoFlag):
-                                for mod in data.Weapon_Mods.values():
+                                for mod in self.data.Weapon_Mods.values():
                                     if mod.mod_type == ModType.Inherent:
                                         if not mod.has_item_type(selected_item_type):
                                             continue
@@ -4091,11 +4086,11 @@ class UI:
 
     def filter_items(self):       
         self.filtered_loot_items = [
-                        SelectableItem(item) for item in data.Items.All
+                        SelectableItem(item) for item in self.data.Items.All
                         if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
                     ]
         self.filtered_blacklist_items = [
-                        SelectableItem(item) for item in data.Items.All
+                        SelectableItem(item) for item in self.data.Items.All
                         if item and item.item_type != ItemType.Unknown and item.name and (item.name.lower().find(self.item_search.lower()) != -1 or str(item.model_id).find(self.item_search.lower()) != -1) and (self.selected_filter is None or self.selected_filter.match(item))
                     ]
 
@@ -4115,13 +4110,13 @@ class UI:
     def filter_weapon_mods(self):
         if self.mod_search == "":
             self.filtered_weapon_mods = [SelectableWrapper(
-                v) for k, v in data.Weapon_Mods.items() if v]
+                v) for k, v in self.data.Weapon_Mods.items() if v]
 
         else:
             self.filtered_weapon_mods = []
             lower_search = self.mod_search.lower()
             
-            for mod in data.Weapon_Mods.values():
+            for mod in self.data.Weapon_Mods.values():
                 if mod and ((mod.name and mod.name.lower().find(lower_search)) != -1 or mod.description.lower().find(lower_search) != -1 or mod.identifier.lower().find(lower_search) != -1):
                     self.filtered_weapon_mods.append(SelectableWrapper(mod))
 
@@ -4698,7 +4693,7 @@ class UI:
                 ImGui.separator()
 
                 if ImGui.begin_tab_bar("RunesTabBar"):
-                    for profession, runes in data.Runes_by_Profession.items():
+                    for profession, runes in self.data.Runes_by_Profession.items():
 
                         if not runes:
                             continue
@@ -4847,9 +4842,6 @@ class UI:
                             if not self.settings.profile:
                                 return
                             
-                            from Sources.frenkey.LootEx.data import Data
-                            data = Data()
-                            
                             item = cache.Cached_Item(item_id)
                             if not item.runes or len(item.runes) == 0:
                                 return
@@ -4857,7 +4849,7 @@ class UI:
                             if not item.runes[0].Rune:
                                 return
                             
-                            rune = data.Runes.get(item.runes[0].Rune.identifier)
+                            rune = self.data.Runes.get(item.runes[0].Rune.identifier)
                             if not rune:
                                 return
                             
@@ -4872,7 +4864,7 @@ class UI:
                                 self.settings.profile.set_rune(rune.identifier, True, self.mark_to_sell_runes)
                                 
                             self.settings.profile.save()
-                            data.SaveRunes()
+                            self.data.SaveRunes()
                         
                         
                         
@@ -5087,7 +5079,6 @@ class UI:
                 item.time_stamp = datetime.now()
 
     def draw_rare_weapons(self):
-        data = Data()
         style = ImGui.get_style()
         
         if ImGui.begin_tab_item("Rare Weapons") and self.settings.profile:
@@ -5096,9 +5087,9 @@ class UI:
             
             if ImGui.begin_child("Rare Weapons#1", (0, 0), True, PyImGui.WindowFlags.NoFlag):
                 style.WindowPadding.push_style_var(5, 5)
-                for (weapon_name, weapon_type), model_ids in data.Rare_Weapon_ModelIds.items():
+                for (weapon_name, weapon_type), model_ids in self.data.Rare_Weapon_ModelIds.items():
                     if ImGui.begin_child(f"RareWeaponSelectable{weapon_name}", (0, 34), True, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                        items = data.Items.get(weapon_type, {})
+                        items = self.data.Items.get(weapon_type, {})
                         
                         #get an item which has toe correct model id
                         weapon_info = next((item for item in items.values() if item.model_id in model_ids), None)                            
@@ -5148,13 +5139,13 @@ class UI:
                     
             ImGui.end_child()
             
-            gold_coin = data.Items.get_item(ItemType.Gold_Coin, ModelID.Gold_Coins)
+            gold_coin = self.data.Items.get_item(ItemType.Gold_Coin, ModelID.Gold_Coins)
             gold_color = utility.Util.GetRarityColor(Rarity.Gold)
             disabled_color = style.TextDisabled            
             if gold_coin:            
                 if self.settings.profile is not None:                                               
-                    for recipe in data.Conversions + data.Recipes:
-                        item = data.Items.get_item(recipe.item_type, recipe.model_id)
+                    for recipe in self.data.Conversions + self.data.Recipes:
+                        item = self.data.Items.get_item(recipe.item_type, recipe.model_id)
                         if item is None or not recipe.ingredients:
                             continue
                         
@@ -5234,7 +5225,7 @@ class UI:
             PyImGui.table_next_row()
                         
             for ingredient in ingredients:
-                ingredient_item = data.Items.get_item(ingredient.item_type, ingredient.model_id)
+                ingredient_item = self.data.Items.get_item(ingredient.item_type, ingredient.model_id)
                 if ingredient_item is None:
                     continue
                                                             
@@ -5254,7 +5245,7 @@ class UI:
         style = ImGui.get_style()
         inventory_handler = inventory_handling.InventoryHandler()
             
-        gold_coin = data.Items.get_item(ItemType.Gold_Coin, ModelID.Gold_Coins)
+        gold_coin = self.data.Items.get_item(ItemType.Gold_Coin, ModelID.Gold_Coins)
         gold_color = utility.Util.GetRarityColor(Rarity.Gold)
         disabled_color = style.TextDisabled     
         
@@ -5273,8 +5264,8 @@ class UI:
                 
                 # Left Column
                 if ImGui.begin_child("Recipes", (0, 0), True, PyImGui.WindowFlags.NoFlag):
-                   for recipe in data.Recipes:
-                        item = data.Items.get_item(recipe.item_type, recipe.model_id) 
+                   for recipe in self.data.Recipes:
+                        item = self.data.Items.get_item(recipe.item_type, recipe.model_id) 
                         if item is None:
                             continue
                         
