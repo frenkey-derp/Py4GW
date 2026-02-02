@@ -258,8 +258,10 @@ class WidgetHandler:
         self.widgets.clear()
         
         try:
+            Py4GW.Console.Log("WidgetManager", f"Discovering widgets in: {self.widgets_path}", Py4GW.Console.MessageType.Info)
             self._scan_widget_folders()
             self.discovered = True
+            Py4GW.Console.Log("WidgetManager", f"Discovery complete. {len(self.widgets)} widgets found.", Py4GW.Console.MessageType.Info)
         except Exception as e:
             self._log_error(f"Discovery failed: {e}")
             raise
@@ -273,7 +275,9 @@ class WidgetHandler:
             # Check if this specific folder is marked as a widget container
             if ".widget" in files:
                 for py_file in [f for f in files if f.endswith(".py")]:
+                    Py4GW.Console.Log("WidgetManager", f"Found widget script: {py_file}", Py4GW.Console.MessageType.Info)
                     self._load_widget_module(current_dir, py_file)
+                    Py4GW.Console.Log("WidgetManager", f"Loaded widget script: {py_file}", Py4GW.Console.MessageType.Info)
             
 
             
@@ -482,6 +486,8 @@ class WidgetHandler:
     def draw_ui(self, INI_KEY: str):
         if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", 40):
             Py4GW.Console.Log("Widget Manager", "Reloading Widgets...", Py4GW.Console.MessageType.Info)
+            
+            
             self.widget_initialized = False
             self.discovered = False
             self.discover()
