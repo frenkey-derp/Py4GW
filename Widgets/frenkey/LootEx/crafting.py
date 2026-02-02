@@ -11,7 +11,7 @@ from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Routines import Routines
-from Py4GWCoreLib.enums_src.Item_enums import Bags
+from Py4GWCoreLib.enums_src.Item_enums import Bags, ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
@@ -428,7 +428,8 @@ def plan_even_consets(
     }
 
     def can_craft_essence():
-        return feathers >= COST and dust >= COST
+        # return feathers >= COST and dust >= COST
+        return dust >= COST
 
     def can_craft_armor():
         return iron >= COST
@@ -480,6 +481,93 @@ def plan_even_consets(
 
     return plan
 
+def mat(model_id: int) -> int:
+    from Widgets.frenkey.LootEx.settings import Settings
+    
+    settings = Settings()
+    if not settings:
+        return 0
+
+    return (
+        Inventory.GetModelCount(model_id)
+        + Inventory.GetModelCountInStorage(model_id)
+        + Inventory.GetModelCountInMaterialStorage(model_id)
+        if settings.auto_withdraw_materials else
+        Inventory.GetModelCount(model_id)
+    )
+
+def get_missing_materials_to_evenout() -> list[Ingredient]:
+    """
+    Returns a dict of model_id -> missing amount to even out consets.
+    """
+    from Widgets.frenkey.LootEx.settings import Settings
+    from Widgets.frenkey.LootEx.data import Data
+
+    data = Data()
+    if not data or not data.Recipes:
+        return []
+
+    settings = Settings()
+    if not settings:
+        return []
+    
+    # ------------------------------------------------------------
+    # Current conset counts
+    # ------------------------------------------------------------
+    cur_essence = (
+        Inventory.GetModelCount(ModelID.Essence_Of_Celerity)
+        + Inventory.GetModelCountInStorage(ModelID.Essence_Of_Celerity)
+    )
+    cur_armor = (
+        Inventory.GetModelCount(ModelID.Armor_Of_Salvation)
+        + Inventory.GetModelCountInStorage(ModelID.Armor_Of_Salvation)
+    )
+    cur_grail = (
+        Inventory.GetModelCount(ModelID.Grail_Of_Might)
+        + Inventory.GetModelCountInStorage(ModelID.Grail_Of_Might)
+    )
+
+    # ------------------------------------------------------------
+    # Available materials
+    # ------------------------------------------------------------
+
+    iron = mat(ModelID.Iron_Ingot)
+    dust = mat(ModelID.Pile_Of_Glittering_Dust)
+    feathers = mat(ModelID.Feather)
+
+    # ------------------------------------------------------------
+    # Run the EVEN CONSET PLANNER
+    # ------------------------------------------------------------
+    conset_plan = plan_even_consets(
+        iron=iron,
+        dust=dust,
+        feathers=feathers,
+        cur_essence=cur_essence,
+        cur_armor=cur_armor,
+        cur_grail=cur_grail,
+    )
+
+    ingredients: dict[int, Ingredient] = {}
+    
+    for con, amount in conset_plan.items():
+        if amount > 0:
+            recipe = next((r for r in data.Recipes if r.item_type == ItemType.Usable and r.model_id == con), None)
+            if not recipe:
+                continue
+
+            for ingredient in recipe.ingredients:
+                if ingredient.model_id in ingredients:
+                    ingredients[ingredient.model_id].amount += ingredient.amount * amount
+                else:
+                    ingredients[ingredient.model_id] = Ingredient(
+                        item_type=ingredient.item_type,
+                        model_id=ingredient.model_id,
+                        amount=ingredient.amount * amount,
+                        rarity=ingredient.rarity
+                    )
+
+    return list(ingredients.values())
+    
 def BuildCraftingQueueFromCrafter() -> list[CraftingAction]:
     """
     Builds the crafting queue by inspecting the current crafter and
@@ -516,14 +604,6 @@ def BuildCraftingQueueFromCrafter() -> list[CraftingAction]:
     # ------------------------------------------------------------
     # Available materials
     # ------------------------------------------------------------
-    def mat(model_id: int) -> int:
-        return (
-            Inventory.GetModelCount(model_id)
-            + Inventory.GetModelCountInStorage(model_id)
-            + Inventory.GetModelCountInMaterialStorage(model_id)
-            if settings.auto_withdraw_materials else
-            Inventory.GetModelCount(model_id)
-        )
 
     iron = mat(ModelID.Iron_Ingot)
     dust = mat(ModelID.Pile_Of_Glittering_Dust)
@@ -549,6 +629,8 @@ def BuildCraftingQueueFromCrafter() -> list[CraftingAction]:
     # ------------------------------------------------------------
     queue: list[CraftingAction] = []
 
+    offered_items = Trading.Merchant.GetOfferedItems() + Trading.Crafter.GetOfferedItems() + Trading.Trader.GetOfferedItems()
+
     for recipe in data.Recipes + data.Conversions:        
         recipe.get_item_data()
         item = recipe.item
@@ -560,6 +642,12 @@ def BuildCraftingQueueFromCrafter() -> list[CraftingAction]:
         )
         
         if not enabled:
+            continue
+
+        if not any(
+            Item.GetModelID(i) == recipe.model_id
+            for i in offered_items
+        ):
             continue
 
         max_by_ingredients = float("inf")        

@@ -352,6 +352,7 @@ class InventoryHandler:
 
         self.inventory_changed: bool = False
         self.deposited = False
+        self.can_deposit = True
         
         self.capacity_checked = False
         self.material_capacity = 2500
@@ -409,8 +410,6 @@ class InventoryHandler:
         self.upgrade_open: bool | None = False
         
         self.custom_throttle : ThrottledTimer = ThrottledTimer(1000)
-        
-    
     
     def soft_reset(self):
         self.empty_slots: int = -1
@@ -689,6 +688,9 @@ class InventoryHandler:
         return True
     
     def DepositItem(self, item: cache.Cached_Item, respect_keep_amount : bool = True  ) -> bool:
+        if not self.can_deposit:
+            return False
+        
         stash, sorted_stash = self.GetItemStorage()
         
         if item.material:
@@ -1110,6 +1112,9 @@ class InventoryHandler:
             ConsoleLog("LootEx", f"Material storage capacity set to {self.material_capacity}", Console.MessageType.Info)
             
     def DepositMaterial(self, item: cache.Cached_Item) -> bool:
+        if not self.can_deposit:
+            return False
+        
         if not self.material_capacity:
             ConsoleLog(
                 "LootEx", "Material storage capacity is not set, cannot deposit materials.", Console.MessageType.Warning)
@@ -2036,9 +2041,15 @@ class InventoryHandler:
         self.ProcessSalvageList()
         
         if Map.IsOutpost():
-            self.ProcessTraderList()
-            self.ProcessCraftingList()
-            self.ProcessAutoCraftingList()
+            self.can_deposit = True
+            
+            stop_deposit = self.ProcessTraderList()
+            stop_deposit = self.ProcessCraftingList() or stop_deposit
+            stop_deposit = self.ProcessAutoCraftingList() or stop_deposit
+            
+            
+            if stop_deposit:
+                self.can_deposit = False
 
         if self.inventory_timer.IsExpired():
             self.inventory_timer.Reset()
@@ -2173,7 +2184,7 @@ class InventoryHandler:
                         self.inventory_changed = True
                 self.deposited = True
                 
-            if self.inventory_changed:
+            if self.inventory_changed and self.can_deposit:
                 if not self.CompactInventory():
                     self.inventory_changed = False
 

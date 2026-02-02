@@ -20,7 +20,7 @@ from Widgets.frenkey.LootEx.item_configuration import ConfigurationCondition
 from Widgets.frenkey.LootEx.filter import Filter
 from Widgets.frenkey.LootEx.profile import Profile
 from Widgets.frenkey.LootEx.texture_scraping_models import ScrapedItem
-from Widgets.frenkey.LootEx.trading import ActionType, TraderAction
+from Widgets.frenkey.LootEx.trading import ActionType, TraderAction, add_ingredients_to_buy
 from Widgets.frenkey.LootEx.ui_manager_extensions import UIManagerExtensions
 from Py4GWCoreLib import *
 
@@ -203,7 +203,7 @@ class UI:
         self.collection_module_window : ImGui.WindowModule = ImGui.WindowModule(
             "LootEx Data Collection",
             "LootEx Data Collection",
-            window_size=(1200, 700),
+            window_size=(800, 500),
             window_flags=PyImGui.WindowFlags.NoFlag,
             can_close=True,
             collapse=collapse
@@ -5359,39 +5359,19 @@ class UI:
                         
                         if ImGui.begin_child("ActionsCraftingCost", (0, 0), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                             if ImGui.button("Buy Materials", 150, 30):
-                                for ingredient in all_ingredients:
-                                    if ingredient.item is None:
-                                        ingredient.get_item_data()
-                                    
-                                    if ingredient.item is None:
-                                        continue
-                                    
-                                    is_material = ingredient.item.item_type is ItemType.Materials_Zcoins          
-                                    trader_type = MerchantType.RareMaterialTrader if is_material else MerchantType.Merchant
-                                    
-                                    if (is_material and ingredient.model_id in data.Common_Materials):
-                                        trader_type = MerchantType.MaterialTrader
-                                        
-                                    offerd_items = Merchant.Trading.Trader.GetOfferedItems()
-                                    merchant_item = next((cache.Cached_Item(item_id) for item_id in offerd_items if cache.Cached_Item(item_id).model_id == ingredient.model_id), None)
-                                    if merchant_item is None:
-                                        ConsoleLog("LootEx", f"Material {ingredient.item.name} is not offered by the merchant.", Console.MessageType.Warning)
-                                        continue
-                                    
-                                    current_amount = Inventory.GetModelCountInMaterialStorage(ingredient.model_id) if self.settings.profile.include_storage_materials else 0
-                                    current_amount += Inventory.GetModelCountInStorage(ingredient.model_id) if self.settings.profile.include_storage_materials else 0
-                                    current_amount += Inventory.GetModelCount(ingredient.model_id)
-                                    
-                                    if current_amount >= ingredient.amount:
-                                        continue                                                                    
-                                        
-                                    inventory_handler.trading_queue.append(TraderAction(merchant_item, trader_type, ActionType.Buy, ingredient.amount - current_amount))
+                                add_ingredients_to_buy(all_ingredients) 
                                         
                             if ImGui.button("Clear Queue", 150, 30):
                                 inventory_handler.crafting_queue.clear()
                                 
                             if ImGui.button("Start" if not inventory_handler.process_crafting else "Stop", 150, 30, appearance=ControlAppearance.Primary if not inventory_handler.process_crafting else ControlAppearance.Danger):
                                 inventory_handler.process_crafting = not inventory_handler.process_crafting
+                                
+                            if ImGui.button("Buy Conset Evenly", 150, 30):        
+                                from Widgets.frenkey.LootEx.crafting import get_missing_materials_to_evenout
+                                missing_materials = get_missing_materials_to_evenout()         
+                                add_ingredients_to_buy(missing_materials) 
+                                
                             
                             grab_from_storage = ImGui.checkbox("Include Vault", self.settings.profile.include_storage_materials)
                             if grab_from_storage != self.settings.profile.include_storage_materials:

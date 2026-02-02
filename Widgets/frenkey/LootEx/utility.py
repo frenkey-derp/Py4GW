@@ -594,7 +594,7 @@ class Util:
         if platinum > 0:
             parts.append(f"{platinum} p")
         if gold > 0 or platinum == 0:
-            parts.append(f"{gold} g")
+            parts.append(f"{gold} gold")
 
         return " ".join(parts)
 

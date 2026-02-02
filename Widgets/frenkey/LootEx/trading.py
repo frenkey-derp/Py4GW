@@ -6,13 +6,16 @@ from typing import Callable, Generator
 from Py4GW import Console
 from PyItem import PyItem
 
+from Py4GWCoreLib import Merchant
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Merchant import Trading
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Widgets.frenkey.LootEx import utility
 from Widgets.frenkey.LootEx.cache import Cached_Item
 from Widgets.frenkey.LootEx.enum import MAX_CHARACTER_GOLD, MAX_VAULT_GOLD, ActionState, MerchantType
+from Widgets.frenkey.LootEx.models import Ingredient
 
 DEBUG_TRADING = False
 class ActionType(Enum):
@@ -131,7 +134,7 @@ class TraderAction:
                     f"Withdrawing gold from vault to buy {self.item.name} ({self.item.id}). Current gold: {utility.Util.format_currency(current_gold)}, vault gold: {utility.Util.format_currency(vault_gold)}, needed: {utility.Util.format_currency(self.price)}.",
                     Console.MessageType.Info
                 )
-                Inventory.WithdrawGold(min((self.price * self.desired_quantity) - current_gold + 1000, vault_gold))
+                Inventory.WithdrawGold(min((self.price * self.desired_quantity) - current_gold + 1000, MAX_CHARACTER_GOLD - current_gold, vault_gold))
                 return False
             
             ConsoleLog(
@@ -347,3 +350,44 @@ class TraderAction:
                     return
 
                 yield
+
+def add_ingredients_to_buy(all_ingredients: list[Ingredient]) -> None:
+    from Widgets.frenkey.LootEx.inventory_handling import InventoryHandler
+    from Widgets.frenkey.LootEx.settings import Settings
+    from Widgets.frenkey.LootEx.data import Data
+    
+    data = Data()
+    settings = Settings()
+    inventory_handler = InventoryHandler()
+    
+    if not settings or not data or not settings.profile:
+        return
+        
+    for ingredient in all_ingredients:
+        if ingredient.item is None:
+            ingredient.get_item_data()
+        
+        if ingredient.item is None:
+            continue
+        
+        is_material = ingredient.item.item_type is ItemType.Materials_Zcoins          
+        trader_type = MerchantType.RareMaterialTrader if is_material else MerchantType.Merchant
+        
+        if (is_material and ingredient.model_id in data.Common_Materials):
+            trader_type = MerchantType.MaterialTrader
+            
+        offerd_items = Merchant.Trading.Trader.GetOfferedItems()
+        merchant_item = next((Cached_Item(item_id) for item_id in offerd_items if Cached_Item(item_id).model_id == ingredient.model_id), None)
+        if merchant_item is None:
+            ConsoleLog("LootEx", f"Material {ingredient.item.name} is not offered by the merchant.", Console.MessageType.Warning)
+            continue
+        
+        current_amount = Inventory.GetModelCountInMaterialStorage(ingredient.model_id) if settings.profile.include_storage_materials else 0
+        current_amount += Inventory.GetModelCountInStorage(ingredient.model_id) if settings.profile.include_storage_materials else 0
+        current_amount += Inventory.GetModelCount(ingredient.model_id)
+        
+        if current_amount >= ingredient.amount:
+            continue                                                                    
+            
+        ConsoleLog("LootEx", f"Adding to trading queue: Buy {ingredient.amount - current_amount}x {ingredient.item.name}. Currently have {current_amount}.", Console.MessageType.Info)
+        inventory_handler.trading_queue.append(TraderAction(merchant_item, trader_type, ActionType.Buy, ingredient.amount - current_amount))
