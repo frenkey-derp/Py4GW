@@ -23,7 +23,6 @@ from Sources.frenkey.PartyQuestLog.settings import Settings
 from Sources.frenkey.PartyQuestLog.quest import QuestCache
         
 settings = Settings()
-settings.load_settings()
 
 UI.QuestLogWindow.window_pos = (settings.LogPosX, settings.LogPosY)
 UI.QuestLogWindow.window_size = (settings.LogPosWidth, settings.LogPosHeight)
@@ -46,14 +45,22 @@ def open_quest_log_hotkey_callback():
         UI.QuestLogWindow.open = True
         settings.LogOpen = True
         settings.save_settings()
-            
-settings.hotkey = HOTKEY_MANAGER.register_hotkey(
+
+def on_enabled():
+    global settings
+    settings.load_settings()
+    
+    settings.hotkey = HOTKEY_MANAGER.register_hotkey(
     key=settings.HotKeyKey,
     identifier=f"{MODULE_NAME}_OpenQuestLog",
     name="Open Party Quest Log",
     callback=open_quest_log_hotkey_callback,
     modifiers=settings.Modifiers
 )
+    
+def on_disabled():
+    global settings
+    HOTKEY_MANAGER.unregister_hotkey(f"{MODULE_NAME}_OpenQuestLog")
 
 def configure():    
     UI.ConfigWindow.open = True
