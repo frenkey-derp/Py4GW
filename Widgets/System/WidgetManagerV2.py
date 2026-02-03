@@ -1,4 +1,4 @@
-MODULE_NAME = "WidgetManagerV2"
+MODULE_NAME = "Py4GW Browser"
 
 import os
 import traceback
@@ -7,46 +7,19 @@ import PyImGui
 from Py4GWCoreLib import ImGui, IniManager, Player
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
+from Py4GWCoreLib.ImGui_src.Style import Style
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
-from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
+from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import Widget, get_widget_handler
 
 
-class WidgetTreeNode:
-    def __init__(self):
-        # hierarchy
-        self.children: dict[str, WidgetTreeNode] = {}
-        self.widgets: list[str] = []
-
-        # ui state
-        self.window_hovered: bool = False
-        self.hovered: bool = False
-        self.active: bool = False
-        self.open: bool = False
-        self.pos = (0.0, 0.0)
-        
-        # optional extra state
-        self.last_hover_frame: int = 0
-        self.last_active_frame: int = 0
-
-    def get_child(self, name: str) -> "WidgetTreeNode":
-        if name not in self.children:
-            self.children[name] = WidgetTreeNode()
-        return self.children[name]
-    
-    def is_hovered(self):
-        return self.window_hovered or any(child.is_hovered() for child in self.children.values())
-    
-    def close(self):
-        self.open = False
-        for child in self.children.values():
-            child.close()
-    
+widget_filter = ""
 widget_manager = get_widget_handler()
-tree = WidgetTreeNode()
+filtered_widgets : list[Widget] = []
 
 INI_KEY = ""
-INI_PATH = "Widgets/WidgetManagerV2"
-INI_FILENAME = "WidgetManagerV2.ini"
+INI_PATH = f"Widgets/{MODULE_NAME}"
+INI_FILENAME = f"{MODULE_NAME}.ini"
 
 def on_enable():
     Py4GW.Console.Log(MODULE_NAME, f"{MODULE_NAME} loaded successfully.")
@@ -57,192 +30,232 @@ def on_disable():
 def configure():
     Py4GW.Console.Log(MODULE_NAME, f"{MODULE_NAME} configuration opened.")
 
-def draw_node(INI_KEY: str, parent_node: WidgetTreeNode, depth: int = 0):
-    desired_open_node: WidgetTreeNode | None = None
-
-    window_pos = PyImGui.get_window_pos()
-    window_size = PyImGui.get_window_size()
-
-    for key, node in parent_node.children.items():
-        node.pos = PyImGui.get_cursor_screen_pos()
-
-        PyImGui.selectable(
-            f"{key}##Selectable_{depth}_{key}",
-            node.open,
-            PyImGui.SelectableFlags.NoFlag,
-            (0, 0)
-        )
-
-        node.hovered = PyImGui.is_item_hovered()
-
-        if node.hovered:
-            desired_open_node = node
-
-    # fallback: keep previously open node if nothing hovered
-    if desired_open_node is None:
-        desired_open_node = next(
-            (n for n in parent_node.children.values() if n.open),
-            None
-        )
-
-    # enforce ONE open per depth
-    for node in parent_node.children.values():
-        node.open = (node is desired_open_node)
-
-    if desired_open_node is None:
-        return
-
-    node = desired_open_node
-
-    PyImGui.set_next_window_pos(
-        (window_pos[0] + window_size[0] - 2, node.pos[1] - 2),
-        PyImGui.ImGuiCond.Always
-    )
-
-    if PyImGui.begin(
-        f"##Popup_{depth}_{id(node)}",
-        False,
-        PyImGui.WindowFlags.AlwaysAutoResize
-        | PyImGui.WindowFlags.NoTitleBar
-        | PyImGui.WindowFlags.NoMove
-        | PyImGui.WindowFlags.NoSavedSettings
-    ):
-
-        # ---- recurse AFTER popup content ----
-        draw_node(INI_KEY, node, depth + 1)
-        
-        # ---- widgets table ----
-        if node.widgets:
-            table_id = f"WidgetsTable##tree_depth_{depth}"
-            PyImGui.set_next_item_width(-1)
-
-            flags = (
-                PyImGui.TableFlags.Borders
-                | PyImGui.TableFlags.SizingStretchProp
-                | PyImGui.TableFlags.NoSavedSettings
-            )
-
-            if ImGui.begin_table(table_id, 2, flags):
-                PyImGui.table_setup_column("Widget", PyImGui.TableColumnFlags.WidthStretch, 1.0)
-                PyImGui.table_setup_column("Cfg", PyImGui.TableColumnFlags.WidthFixed, 40.0)
-
-                for widget_id in node.widgets:
-                    widget = widget_manager.widgets.get(widget_id)
-                    if not widget:
-                        continue
-
-                    PyImGui.table_next_row()
-                    PyImGui.table_set_column_index(0)
-
-                    label = f"{widget.plain_name}##{widget_id}"
-                    v_enabled = widget_manager._widget_var(widget_id, "enabled")
-                    section_name = f"Widget:{widget_id}"
-
-                    val = bool(IniManager().get(INI_KEY, v_enabled, False, section=section_name))
-                    new_val = ImGui.checkbox(label, val)
-
-                    if new_val != val:
-                        widget.enable() if new_val else widget.disable()
-                        IniManager().set(INI_KEY, v_enabled, widget.enabled, section=section_name)
-                        IniManager().save_vars(INI_KEY)
-
-                    PyImGui.table_set_column_index(1)
-                    if widget.has_configure_property:
-                        ImGui.toggle_icon_button(
-                            IconsFontAwesome5.ICON_COG + f"##cfg_{widget_id}",
-                            widget.configuring
-                        )
-                    else:
-                        PyImGui.text_disabled(IconsFontAwesome5.ICON_COG)
-
-                ImGui.end_table()
-                if PyImGui.is_item_hovered():
-                    for node in node.children.values():
-                        node.open = False
-
-        node.window_hovered = PyImGui.is_window_hovered()
-
-    PyImGui.end()
-  
-def create_tree():
-    global tree, widget_manager
-    
-    for widget_id, widget in widget_manager.widgets.items():
-        folder = widget.widget_path  # "A/B/C" or ""
-        node = tree
-
-        if folder:
-            for part in folder.split("/"):
-                node = node.get_child(part)
-
-        node.widgets.append(widget_id)
+def _push_card_style(style : Style, enabled : bool):
+    CARD_BACKGROUND_COLOR = Color(200, 200, 200, 20)
+    CARD_ENABLED_BACKGROUND_COLOR = Color(90, 255, 90, 30)
+    style.ChildBg.push_color(CARD_ENABLED_BACKGROUND_COLOR.rgb_tuple if enabled else CARD_BACKGROUND_COLOR.rgb_tuple)
+    style.ChildBorderSize.push_style_var(2.0 if enabled else 1.0) 
+    style.ChildRounding.push_style_var(4.0)
+    style.Border.push_color(CARD_ENABLED_BACKGROUND_COLOR.opacify(0.6).rgb_tuple if enabled else CARD_BACKGROUND_COLOR.opacify(0.6).rgb_tuple)
     pass
 
+def _pop_card_style(style : Style):
+    style.ChildBg.pop_color()
+    style.ChildBorderSize.pop_style_var()
+    style.ChildRounding.pop_style_var()
+    style.Border.pop_color()
+    pass
+
+def _push_tag_style(style : Style, color : tuple):
+    style.FramePadding.push_style_var(4, 4)
+    style.Button.push_color(color)
+    style.ButtonHovered.push_color(color)
+    style.ButtonActive.push_color(color)
+    ImGui.push_font("Regular", 12)
+
+def _pop_tag_style(style : Style):
+    style.FramePadding.pop_style_var()
+    style.Button.pop_color()
+    style.ButtonHovered.pop_color()
+    style.ButtonActive.pop_color()
+    ImGui.pop_font()
+   
+
+def draw_widget_card(widget : Widget, CARD_WIDTH : float):
+    """
+    Draws a single widget card.
+    Must be called inside a grid / SameLine layout.
+    """
+    CARD_HEIGHT = 88
+    IMAGE_SIZE = 40
+    PADDING = 10
+    TAG_HEIGHT = 18
+    BUTTON_HEIGHT = 24
+    ROUNDING = 6.0
+    NAME_COLOR = Color(255, 255, 255, 255)
+    NAME_ENABLED_COLOR = Color(150, 255, 150, 255)
+    CATEGORY_COLOR = Color(150, 150, 150, 255)
+    SYSTEM_COLOR = Color(255, 0, 0, 255)
+    TAG_COLOR = Color(38, 51, 59, 255)
+
+    style = ImGui.get_style()
+    _push_card_style(style, widget.enabled)
+    
+    opened = PyImGui.begin_child(
+        f"##widget_card_{widget.folder_script_name}",
+        (CARD_WIDTH, CARD_HEIGHT),
+        border=True,
+        flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
+    )
+    
+    if opened and PyImGui.is_rect_visible(CARD_WIDTH, CARD_HEIGHT):
+        available_width = PyImGui.get_content_region_avail()[0]
+        
+        # --- Top Row: Icon + Title ---
+        PyImGui.begin_group()
+
+        # Icon
+        ImGui.image(widget.image, (IMAGE_SIZE, IMAGE_SIZE), border_color=CATEGORY_COLOR.rgb_tuple)
+
+        PyImGui.same_line(0, 5)
+
+        # Title + Category
+        PyImGui.begin_group()
+        ImGui.push_font("Regular", 15)
+        name = ImGui.trim_text_to_width(text=widget.name, max_width=CARD_WIDTH - IMAGE_SIZE - BUTTON_HEIGHT - PADDING * 4)
+        ImGui.text_colored(name, NAME_COLOR.color_tuple if not widget.enabled else NAME_ENABLED_COLOR.color_tuple, 15)
+        ImGui.pop_font()
+        
+        PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+        PyImGui.separator()
+
+        PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
+        ImGui.text_colored(f"{widget.category}", CATEGORY_COLOR.color_tuple if widget.category != "System" else SYSTEM_COLOR.color_tuple, 12)
+
+        PyImGui.end_group()
+                
+        if widget.has_configure_property:
+            PyImGui.set_cursor_pos(available_width - 8, 2)
+            ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, BUTTON_HEIGHT, BUTTON_HEIGHT)
+        PyImGui.end_group()
+
+        # --- Tags ---
+        _push_tag_style(style, TAG_COLOR.rgb_tuple)
+        PyImGui.begin_group()
+        for i, tag in enumerate(widget.tags):
+            if i > 0:
+                PyImGui.same_line(0, 2)
+
+            PyImGui.button(tag)
+        PyImGui.end_group()
+        _pop_tag_style(style)
+
+
+    PyImGui.end_child()
+    
+    if PyImGui.is_item_clicked(0):
+        widget.enable() if not widget.enabled else widget.disable()
+        
+    if PyImGui.is_item_hovered():
+        if widget.has_tooltip_property:
+            try:
+                if widget.tooltip:
+                    widget.tooltip()
+            except Exception as e:
+                Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+        else:
+            PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+
+    _pop_card_style(style)
+    
+def draw_compact_widget_card(widget : Widget, CARD_WIDTH : float):
+    """
+    Draws a single widget card.
+    Must be called inside a grid / SameLine layout.
+    """
+    CARD_HEIGHT = 30
+    IMAGE_SIZE = 40
+    PADDING = 10
+    TAG_HEIGHT = 18
+    BUTTON_HEIGHT = 24
+    ROUNDING = 6.0
+    NAME_COLOR = Color(255, 255, 255, 255)
+    NAME_ENABLED_COLOR = Color(150, 255, 150, 255)
+    CATEGORY_COLOR = Color(150, 150, 150, 255)
+    SYSTEM_COLOR = Color(255, 0, 0, 255)
+    TAG_COLOR = Color(38, 51, 59, 255)
+
+    style = ImGui.get_style()
+    _push_card_style(style, widget.enabled)
+    
+    opened = PyImGui.begin_child(
+        f"##widget_card_{widget.folder_script_name}",
+        (CARD_WIDTH, CARD_HEIGHT),
+        border=True,
+        flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
+    )
+    
+    if opened and PyImGui.is_rect_visible(CARD_WIDTH, CARD_HEIGHT):
+        available_width = PyImGui.get_content_region_avail()[0]
+
+        ImGui.push_font("Regular", 15)
+        name = ImGui.trim_text_to_width(text=widget.name, max_width=available_width - 20)
+        ImGui.text_colored(name, NAME_COLOR.color_tuple if not widget.enabled else NAME_ENABLED_COLOR.color_tuple, 15)
+        ImGui.pop_font()
+                        
+        if widget.has_configure_property:
+            PyImGui.set_cursor_pos(available_width - 10, 2)
+            ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, BUTTON_HEIGHT, BUTTON_HEIGHT)
+
+    PyImGui.end_child()
+    
+    if PyImGui.is_item_clicked(0):
+        widget.enable() if not widget.enabled else widget.disable()
+        
+    if PyImGui.is_item_hovered():
+        if widget.has_tooltip_property:
+            try:
+                if widget.tooltip:
+                    widget.tooltip()
+            except Exception as e:
+                Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+        else:
+            PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+
+    _pop_card_style(style)
+    
+def draw_widget(widget: Widget, card_width: float):
+    if ImGui.begin_child(f"widget_card_{widget.folder_script_name}", (card_width, 50), True):
+        ImGui.text(f"{widget.name or widget.plain_name} ")
+    
+    ImGui.end_child()
+    pass
+
+def filter_widgets(filter_text: str):
+    global filtered_widgets, widget_manager, tree
+    
+    filtered_widgets.clear()
+    if not filter_text:
+        return
+    
+    filtered_widgets = [w for w in widget_manager.widgets.values() if filter_text.lower() in w.plain_name.lower() or filter_text.lower() in w.folder.lower()]
+    
 def draw():    
+    global widget_filter
+    
     if not INI_KEY:
         return
             
     if INI_KEY:
-        if ImGui.Begin(ini_key=INI_KEY, name="Widget Manager V2", flags=PyImGui.WindowFlags.AlwaysAutoResize):
-            widgets = widget_manager.widgets
-                                
-            if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", 40):
-                Py4GW.Console.Log("Widget Manager", "Reloading Widgets...", Py4GW.Console.MessageType.Info)
+        PyImGui.set_next_window_size((500, 300), PyImGui.ImGuiCond.Once)
+        if ImGui.Begin(ini_key=INI_KEY, name=MODULE_NAME):            
+            PyImGui.push_item_width(-1)
+            changed, widget_filter = ImGui.search_field("##WidgetFilter", widget_filter)
+            PyImGui.pop_item_width()
+            if changed:
+                filter_widgets(widget_filter)
                 
-                widget_manager.widget_initialized = False
-                widget_manager.discovered = False
-                widget_manager.discover()
-                widget_manager.widget_initialized = True    
-                    
-            ImGui.show_tooltip("Reload all widgets")
-            PyImGui.same_line(0, 5)
-            
-            e_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=True, section="Configuration"))
-            new_enable_all = ImGui.toggle_icon_button(
-                (IconsFontAwesome5.ICON_TOGGLE_ON if e_all else IconsFontAwesome5.ICON_TOGGLE_OFF) + "##widget_disable",
-                e_all,
-                40
-            )
-
-            if new_enable_all != e_all:
-                IniManager().set(key= INI_KEY, var_name="enable_all", value=new_enable_all, section="Configuration")
-                IniManager().save_vars(INI_KEY)
-
-            widget_manager.enable_all = new_enable_all
-
-
-            ImGui.show_tooltip(f"{("Run" if not widget_manager.enable_all else "Pause")} all widgets")
-            
-            PyImGui.same_line(0, 5)
-            show_widget_ui = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_EYE if widget_manager.show_widget_ui else IconsFontAwesome5.ICON_EYE_SLASH) + "##Show Widget UIs", widget_manager.show_widget_ui, 40)
-            if show_widget_ui != widget_manager.show_widget_ui:
-                widget_manager.set_widget_ui_visibility(show_widget_ui)
-            ImGui.show_tooltip(f"{("Show" if not widget_manager.show_widget_ui else "Hide")} all widget UIs")
-            
-            PyImGui.same_line(0, 5)
-            pause_non_env = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_PAUSE if widget_manager.pause_optional_widgets else IconsFontAwesome5.ICON_PLAY) + "##Pause Non-Env Widgets", not widget_manager.pause_optional_widgets, 40)
-            if pause_non_env != (not widget_manager.pause_optional_widgets):
-                if not widget_manager.pause_optional_widgets:
-                    widget_manager.pause_widgets()
-                else:
-                    widget_manager.resume_widgets()
-                    
-                own_email = Player.GetAccountEmail()
-                for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
-                    if acc.AccountEmail == own_email:
-                        continue
-                    
-                    GLOBAL_CACHE.ShMem.SendMessage(own_email, acc.AccountEmail, SharedCommandType.PauseWidgets if widget_manager.pause_optional_widgets else SharedCommandType.ResumeWidgets)
-                
-            ImGui.show_tooltip(f"{("Pause" if not widget_manager.pause_optional_widgets else "Resume")} all optional widgets")
             ImGui.separator()
-            draw_node(INI_KEY, tree)
             
-            tree.window_hovered = PyImGui.is_window_hovered()
+            style = ImGui.get_style()
+            style.DisabledAlpha.push_style_var(0.4)      
             
-            if tree.is_hovered() == False :
-                for node in tree.children.values():                    
-                    node.close()
+            min_card_width = 250
+            available_width = PyImGui.get_content_region_avail()[0]
+            num_columns = max(1, int(available_width // min_card_width))
+            card_width = 0
+            PyImGui.columns(num_columns, "widget_cards", False)
+                 
+            for widget in (filtered_widgets if widget_filter else widget_manager.widgets.values()):
+                card_width = PyImGui.get_content_region_avail()[0]
+                draw_widget_card(widget, card_width)
+                PyImGui.next_column()
+            
+                
+            style.DisabledAlpha.pop_style_var()
+            PyImGui.end_columns()
                 
         ImGui.End(INI_KEY)
     
@@ -273,9 +286,6 @@ def main():
         widget_manager.enable_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=False, section="Configuration"))
         widget_manager._apply_ini_configuration()
         
-        create_tree()
-            
-    
     
 # These functions need to be available at module level
 __all__ = ['on_enable', 'on_disable', 'configure', 'draw', 'update', 'main']
