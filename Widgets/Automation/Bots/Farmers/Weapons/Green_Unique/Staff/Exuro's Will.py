@@ -4,6 +4,7 @@ import Py4GW
 from Py4GW_widget_manager import get_widget_handler
 from Py4GWCoreLib import Botting, ConsoleLog, Routines, Agent, Player
 
+MODULE_ICON = "Textures\\Items\\Exuro's Will.png"
 BOT_NAME = "Exuro Farm"
 bot = Botting(BOT_NAME)
 

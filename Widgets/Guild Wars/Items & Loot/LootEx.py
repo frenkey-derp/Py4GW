@@ -7,7 +7,7 @@ from ctypes import windll
 from Sources.frenkey.LootEx.enum import ITEM_TEXTURE_FOLDER
 from Sources.frenkey.SulfurousRunner import ui
 
-
+MODULE_ICON = "Sources\\frenkey\\Core\\textures\\ui_backpack.png"
 MODULE_NAME = "LootEx"
  # Copy keys so we can delete from sys.modules safely
 module_names = list(sys.modules.keys())

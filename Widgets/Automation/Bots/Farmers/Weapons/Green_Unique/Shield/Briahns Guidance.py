@@ -11,6 +11,7 @@ from Py4GWCoreLib import Routines
 from Py4GWCoreLib import Utils
 from Py4GWCoreLib import Map, Agent, Player
 
+MODULE_ICON = "Textures\\Items\\Briahn's Guidance.png"
 BOT_NAME = "Briahn's Shield Farm"
 TEXTURE = os.path.join(
     Py4GW.Console.get_projects_path(), "Bots", "marks_coding_corner", "textures", "briahns_guidance.png"

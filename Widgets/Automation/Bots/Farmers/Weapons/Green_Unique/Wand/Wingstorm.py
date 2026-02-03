@@ -1,6 +1,7 @@
 import os
 from Py4GWCoreLib import Botting
 
+MODULE_ICON = "Textures\\Items\\Wingstorm.png"
 # QUEST TO INCREASE SPAWNS
 BOT_NAME = "Wingstorm Farm"
 OUTPOST_TO_TRAVEL = 222  # The Eternal Grove

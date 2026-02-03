@@ -1,5 +1,6 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID, GLOBAL_CACHE, Routines, Agent, Player
 
+MODULE_ICON = "Textures\\Items\\Totem Axe.png"
 BOT_NAME = "Totem Axe Farm"
 MODEL_ID_TO_FARM = ModelID.Totem_Axe
 MAP_TO_TRAVEL = 139 #ventaris refuge
