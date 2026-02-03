@@ -794,17 +794,17 @@ class UI:
     
     def show_main_window(self, ensure_on_screen: bool = False):             
         widget_info = self.widget_handler.get_widget_info("LootEx")
-        if not widget_info:
+        if not widget_info or widget_info.configuring:
             return
         
-        widget_info.configuring = True
+        widget_info.enable_configuring()
         
     def hide_main_window(self):              
         widget_info = self.widget_handler.get_widget_info("LootEx")
-        if not widget_info:
+        if not widget_info or not widget_info.configuring:
             return
         
-        widget_info.configuring = False
+        widget_info.disable_configuring()
     
     def draw_disclaimer(self, active_inventory_widgets):
         if not self.InventoryBagsVisible():
@@ -1013,7 +1013,8 @@ class UI:
         
         if self.module_window.open != self.settings.window_visible:
             self.settings.window_visible = self.module_window.open
-            widget_info.configuring = self.module_window.open
+            if widget_info.configuring != self.module_window.open:
+                widget_info.set_configuring(self.module_window.open)
             self.settings.save()
     
     def InventoryBagsVisible(self) -> bool:
