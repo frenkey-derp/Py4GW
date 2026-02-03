@@ -88,7 +88,7 @@ class Widget:
             spec.loader.exec_module(module)
         except Exception as e:
             del sys.modules[unique_name]
-            self.__enabled = False
+            self.disable()
             Py4GW.Console.Log("WidgetManager", f"Failed to load widget module '{self.name}': {e}", Py4GW.Console.MessageType.Error)
             return False
         
@@ -143,13 +143,13 @@ class Widget:
         
     def enable(self):
         """Enable the widget"""
-        if self.__enabled and self.module is not None:
+        if self.enabled and self.module is not None:
             return  # Already enabled
         
         # enable widget only if module loads successfully
         self.__enabled = self.load_module()
         
-        if self.__enabled:
+        if self.enabled:
             try:
                 if self.on_enable:
                     self.on_enable()
@@ -335,7 +335,7 @@ class WidgetHandler:
         
         """Phase 0: Unload currently enabled widgets"""
         for widget in self.widgets.values():
-            if widget.__enabled:
+            if widget.enabled:
                 widget.disable()
                                 
         """Phase 1: Discover widgets without INI configuration"""
@@ -483,7 +483,7 @@ class WidgetHandler:
                             else:
                                 widget.disable()
                                 
-                            IniManager().set(key=INI_KEY, var_name=v_enabled, value=widget.__enabled, section=section_name)
+                            IniManager().set(key=INI_KEY, var_name=v_enabled, value=widget.enabled, section=section_name)
                             IniManager().save_vars(INI_KEY)
 
                         PyImGui.table_set_column_index(1)
@@ -599,7 +599,7 @@ class WidgetHandler:
         pause_optional = self.pause_optional_widgets
 
         for widget_name, widget_info in self.widgets.items():
-            if not widget_info.__enabled:
+            if not widget_info.enabled:
                 continue
  
             if pause_optional and widget_info.optional:
@@ -623,7 +623,7 @@ class WidgetHandler:
             style.Push()
 
         for widget_name, widget_info in self.widgets.items():
-            if not widget_info.__enabled:
+            if not widget_info.enabled:
                 continue
  
             if widget_info.minimal is not None:
@@ -658,7 +658,7 @@ class WidgetHandler:
             style.Push()
 
         for widget_name, widget_info in self.widgets.items():
-            if not widget_info.__enabled:
+            if not widget_info.enabled:
                 continue
  
             if widget_info.minimal is not None:
@@ -707,10 +707,10 @@ class WidgetHandler:
     
     def is_widget_enabled(self, name: str) -> bool:
         widget = self._get_widget_by_plain_name(name)
-        return bool(widget and widget.__enabled)
+        return bool(widget and widget.enabled)
 
     def list_enabled_widgets(self) -> list[str]:
-        return [name for name, info in self.widgets.items() if info.__enabled]
+        return [name for name, info in self.widgets.items() if info.enabled]
     
     def enable_widget(self, name: str):
         self._set_widget_state(self.MANAGER_INI_KEY,name, True)
