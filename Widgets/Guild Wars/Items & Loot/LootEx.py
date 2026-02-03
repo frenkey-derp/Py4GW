@@ -1,8 +1,10 @@
 from PyTrading import PyTrading
 from Py4GWCoreLib import *
+from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 from ctypes import windll
 
+from Sources.frenkey.LootEx.enum import ITEM_TEXTURE_FOLDER
 from Sources.frenkey.SulfurousRunner import ui
 
 
@@ -253,9 +255,61 @@ class LootEx:
 
 loot_ex : LootEx | None = None
 
+
+def tooltip():
+    PyImGui.begin_tooltip()
+
+    # Title
+    title_color = Color(255, 200, 100, 255)
+    ImGui.push_font("Regular", 20)
+    PyImGui.text_colored("LootEx", title_color.to_tuple_normalized())
+    ImGui.pop_font()
+    PyImGui.spacing()
+    PyImGui.separator()
+    #description
+    PyImGui.text("Allows adding a extensive amount of filter based configurations for 'all' items.\nFully automate your Inventory at blazing fast speeds.")
+
+    # Features
+    PyImGui.text_colored("Features:", title_color.to_tuple_normalized())
+    if PyImGui.begin_table("FeaturesTable", 2, PyImGui.TableFlags.SizingStretchProp):
+        PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 24)
+        PyImGui.table_setup_column("Feature", PyImGui.TableColumnFlags.WidthStretch)
+        
+        features = [
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Gold.png"), "Automatic Merchant handling for Buying and Selling"),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Salvage Kit.png"), "Automatic Salvaging"),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Armor of Salvation.png"), "Crafting Consets, assisted and automated"),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Inscription spellcasting weapons.png"), "Extraction of Runes and Weapon Mods"),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Gift of the Traveler.png"), "Collecting Nick Items"),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "White Dye.png"), "Configure to collect specific Dyes"),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Crystalline Sword.png"), "Rare Weapons, OS and Low Req Handling to ensure you never miss out on valuable items."),
+            (os.path.join(ITEM_TEXTURE_FOLDER, "Crate of Fireworks.png"), "Always confirm  amount dialog for stackable items on withdrawal/deposit/trade."),
+        ]
+        
+        for icon_path, feature_text in features:
+            PyImGui.table_next_row()
+            PyImGui.table_set_column_index(0)
+            ImGui.image(icon_path, (24, 24))
+            PyImGui.table_set_column_index(1)
+            ImGui.text_aligned(feature_text, alignment=Alignment.MidLeft, height=24)
+            
+        PyImGui.end_table()
+
+    PyImGui.spacing()
+    PyImGui.separator()
+    PyImGui.spacing()
+
+    # Credits
+    PyImGui.text_colored("Credits:", title_color.to_tuple_normalized())
+    PyImGui.bullet_text("Developed by frenkey")
+
+    PyImGui.end_tooltip()
+
+
 def on_enable():
     global loot_ex
-    loot_ex = LootEx()
+    if loot_ex is None:
+        loot_ex = LootEx()
 
 def configure():
     global loot_ex
