@@ -58,123 +58,112 @@ def configure():
     Py4GW.Console.Log(MODULE_NAME, f"{MODULE_NAME} configuration opened.")
 
 def draw_node(INI_KEY: str, parent_node: WidgetTreeNode, depth: int = 0):
-    style = ImGui.get_style()
-    desired_open_node : WidgetTreeNode | None = None
+    desired_open_node: WidgetTreeNode | None = None
 
     window_pos = PyImGui.get_window_pos()
     window_size = PyImGui.get_window_size()
-     
+
     for key, node in parent_node.children.items():
-        # Leaf: render widgets table
-        
-        was_open = node.open
-        
         node.pos = PyImGui.get_cursor_screen_pos()
-        if PyImGui.selectable(f"{key}##Selectable_{depth}_{key}", node.open, PyImGui.SelectableFlags.NoFlag, (0, 0)):
-            pass
-        
+
+        PyImGui.selectable(
+            f"{key}##Selectable_{depth}_{key}",
+            node.open,
+            PyImGui.SelectableFlags.NoFlag,
+            (0, 0)
+        )
+
         node.hovered = PyImGui.is_item_hovered()
-        
+
         if node.hovered:
             desired_open_node = node
-    
+
+    # fallback: keep previously open node if nothing hovered
     if desired_open_node is None:
-        desired_open_node = next((n for n in parent_node.children.values() if n.open), None)
-        
-            
-    # ---------- ENFORCE ONE OPEN PER DEPTH ----------
+        desired_open_node = next(
+            (n for n in parent_node.children.values() if n.open),
+            None
+        )
+
+    # enforce ONE open per depth
     for node in parent_node.children.values():
         node.open = (node is desired_open_node)
-        
+
     if desired_open_node is None:
         return
-    
+
     node = desired_open_node
-    if node.open:        
-        PyImGui.set_next_window_pos((window_pos[0] + window_size[0] - 2, node.pos[1] - 2), PyImGui.ImGuiCond.Always)
+
+    PyImGui.set_next_window_pos(
+        (window_pos[0] + window_size[0] - 2, node.pos[1] - 2),
+        PyImGui.ImGuiCond.Always
+    )
+
+    if PyImGui.begin(
+        f"##Popup_{depth}_{id(node)}",
+        False,
+        PyImGui.WindowFlags.AlwaysAutoResize
+        | PyImGui.WindowFlags.NoTitleBar
+        | PyImGui.WindowFlags.NoMove
+        | PyImGui.WindowFlags.NoSavedSettings
+    ):
+
+        # ---- recurse AFTER popup content ----
+        draw_node(INI_KEY, node, depth + 1)
         
-        open = PyImGui.begin(f"##Popup_{depth}_{node}", False, PyImGui.WindowFlags.AlwaysAutoResize | PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoSavedSettings)
-        if open:
-            if node.widgets:
-                table_id = f"WidgetsTable##tree_depth_{depth}"
-                PyImGui.set_next_item_width(-1)  # take full available width
+        # ---- widgets table ----
+        if node.widgets:
+            table_id = f"WidgetsTable##tree_depth_{depth}"
+            PyImGui.set_next_item_width(-1)
 
-                flags = (
-                    PyImGui.TableFlags.Borders |
-                    PyImGui.TableFlags.SizingStretchProp |
-                    PyImGui.TableFlags.NoSavedSettings
-                )
+            flags = (
+                PyImGui.TableFlags.Borders
+                | PyImGui.TableFlags.SizingStretchProp
+                | PyImGui.TableFlags.NoSavedSettings
+            )
 
-                if ImGui.begin_table(table_id, 2, flags):
-                    PyImGui.table_setup_column("Widget", PyImGui.TableColumnFlags.WidthStretch, 1.0)
-                    PyImGui.table_setup_column("Cfg", PyImGui.TableColumnFlags.WidthFixed, 40.0)
-                    #PyImGui.table_headers_row()
+            if ImGui.begin_table(table_id, 2, flags):
+                PyImGui.table_setup_column("Widget", PyImGui.TableColumnFlags.WidthStretch, 1.0)
+                PyImGui.table_setup_column("Cfg", PyImGui.TableColumnFlags.WidthFixed, 40.0)
 
-                    for widget_id in node.widgets:
-                        widget = widget_manager.widgets.get(widget_id)
-                        if not widget:
-                            continue
+                for widget_id in node.widgets:
+                    widget = widget_manager.widgets.get(widget_id)
+                    if not widget:
+                        continue
 
-                        PyImGui.table_next_row()
-                        PyImGui.table_set_column_index(0)
+                    PyImGui.table_next_row()
+                    PyImGui.table_set_column_index(0)
 
-                        display_name = widget.plain_name
+                    label = f"{widget.plain_name}##{widget_id}"
+                    v_enabled = widget_manager._widget_var(widget_id, "enabled")
+                    section_name = f"Widget:{widget_id}"
 
-                        label = f"{display_name}##{widget_id}"
-                        
-                        v_enabled = widget_manager._widget_var(widget_id, "enabled")
-                        # Define the section once to ensure consistency
-                        section_name = f"Widget:{widget_id}"
+                    val = bool(IniManager().get(INI_KEY, v_enabled, False, section=section_name))
+                    new_val = ImGui.checkbox(label, val)
 
-                        # FIXED: Added the section parameter to the get call
-                        val = bool(IniManager().get(INI_KEY, v_enabled, False, section=section_name))
-                        new_enabled = ImGui.checkbox(label, val)
-                        if PyImGui.is_item_hovered():
-                            if widget.has_tooltip_property:
-                                try:
-                                    if widget.tooltip:
-                                        widget.tooltip()
-                                except Exception as e:
-                                    Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget_id}: {str(e)}", Py4GW.Console.MessageType.Error)
-                                    Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-                            else:
-                                PyImGui.show_tooltip(f"Enable/Disable {display_name} widget")
+                    if new_val != val:
+                        widget.enable() if new_val else widget.disable()
+                        IniManager().set(INI_KEY, v_enabled, widget.enabled, section=section_name)
+                        IniManager().save_vars(INI_KEY)
 
-                        if new_enabled != val:
-                            # Using consistent section name
-                            if new_enabled:
-                                widget.enable()
-                            else:
-                                widget.disable()
-                                
-                            IniManager().set(key=INI_KEY, var_name=v_enabled, value=widget.enabled, section=section_name)
-                            IniManager().save_vars(INI_KEY)
+                    PyImGui.table_set_column_index(1)
+                    if widget.has_configure_property:
+                        ImGui.toggle_icon_button(
+                            IconsFontAwesome5.ICON_COG + f"##cfg_{widget_id}",
+                            widget.configuring
+                        )
+                    else:
+                        PyImGui.text_disabled(IconsFontAwesome5.ICON_COG)
 
-                        PyImGui.table_set_column_index(1)
-                        
-                        if widget.has_configure_property:
-                            configuring = ImGui.toggle_icon_button(
-                                IconsFontAwesome5.ICON_COG + f"##Configure{widget_id}",
-                                widget.configuring
-                            )
-                            if configuring != widget.configuring:
-                                widget.set_configuring(configuring)
-                                
-                            if PyImGui.is_item_hovered():
-                                PyImGui.show_tooltip("Configure Widget")
-                        else:
-                            PyImGui.table_set_column_index(1)
-                            PyImGui.text_disabled(IconsFontAwesome5.ICON_COG)
-                            if PyImGui.is_item_hovered():
-                                PyImGui.show_tooltip("No config available")
+                ImGui.end_table()
+                if PyImGui.is_item_hovered():
+                    for node in node.children.values():
+                        node.open = False
 
-                    ImGui.end_table()
-                    
-            draw_node(INI_KEY, node, depth + 1)
-        
         node.window_hovered = PyImGui.is_window_hovered()
-        PyImGui.end()
-                
+
+    PyImGui.end()
+  
 def create_tree():
     global tree, widget_manager
     
