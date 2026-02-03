@@ -240,7 +240,7 @@ def draw():
             
             tree.window_hovered = PyImGui.is_window_hovered()
             
-            if tree.is_hovered() == False and not PyImGui.is_any_item_hovered() and not PyImGui.is_any_item_active():
+            if tree.is_hovered() == False :
                 for node in tree.children.values():                    
                     node.close()
                 
