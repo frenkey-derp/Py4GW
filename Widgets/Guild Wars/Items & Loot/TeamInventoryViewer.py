@@ -28,8 +28,8 @@ try:
     # We will try to use LootEx to generate Known items
     # https://github.com/frenkey-derp/Py4GW/tree/apo_source/Widgets/frenkey
     # This will require you to download and add to your file `Core` and `LootEx`
-    from Widgets.Config.frenkey.LootEx.data import Data  # type: ignore
-    from Widgets.Config.frenkey.LootEx.utility import Util  # type: ignore
+    from Sources.frenkey.LootEx.data import Data  # type: ignore
+    from Sources.frenkey.LootEx.utility import Util  # type: ignore
 
     LOOTEX_AVAILABLE = True
 
