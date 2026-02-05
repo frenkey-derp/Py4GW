@@ -4,10 +4,10 @@ from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 from ctypes import windll
 
-from Sources.frenkey.LootEx.enum import ITEM_TEXTURE_FOLDER
-from Sources.frenkey.SulfurousRunner import ui
+from Sources.frenkeyLib.LootEx.enum import ITEM_TEXTURE_FOLDER
+from Sources.frenkeyLib.SulfurousRunner import ui
 
-MODULE_ICON = "Sources\\frenkey\\Core\\textures\\ui_backpack.png"
+MODULE_ICON = "Sources\\frenkeyLib\\Core\\textures\\ui_backpack.png"
 MODULE_NAME = "LootEx"
  # Copy keys so we can delete from sys.modules safely
 module_names = list(sys.modules.keys())
@@ -33,16 +33,16 @@ for name in module_names:
     except Exception as e:
         ConsoleLog(MODULE_NAME, f"Error unloading {name}: {e}", Console.MessageType.Error)
 
-from Sources.frenkey.LootEx.price_check import PriceCheckManager
-from Sources.frenkey.LootEx.data import Data
-from Sources.frenkey.LootEx.settings import Settings
-from Sources.frenkey.LootEx.loot_handling import LootHandler
-from Sources.frenkey.LootEx.inventory_handling import InventoryHandler
-from Sources.frenkey.LootEx.data_collection import DataCollector
-from Sources.frenkey.LootEx import messaging
-from Sources.frenkey.LootEx.cache import Cached_Item
-from Sources.frenkey.LootEx.utility import Util
-from Sources.frenkey.LootEx.gui import UI
+from Sources.frenkeyLib.LootEx.price_check import PriceCheckManager
+from Sources.frenkeyLib.LootEx.data import Data
+from Sources.frenkeyLib.LootEx.settings import Settings
+from Sources.frenkeyLib.LootEx.loot_handling import LootHandler
+from Sources.frenkeyLib.LootEx.inventory_handling import InventoryHandler
+from Sources.frenkeyLib.LootEx.data_collection import DataCollector
+from Sources.frenkeyLib.LootEx import messaging
+from Sources.frenkeyLib.LootEx.cache import Cached_Item
+from Sources.frenkeyLib.LootEx.utility import Util
+from Sources.frenkeyLib.LootEx.gui import UI
 
 VK_LBUTTON = 0x01  # Virtual-Key code for left mouse button
 

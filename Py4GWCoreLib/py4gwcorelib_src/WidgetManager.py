@@ -119,7 +119,7 @@ class Widget:
             self.on_disable = getattr(self.module, "on_disable", None) if callable(getattr(self.module, "on_disable", None)) else None
             self.optional = getattr(self.module, 'OPTIONAL', True) if hasattr(self.module, 'OPTIONAL') else True
             
-            self.name = getattr(self.module, 'MODULE_NAME', "") if hasattr(self.module, 'MODULE_NAME') else self.plain_name
+            self.name = getattr(self.module, 'MODULE_NAME', "") if hasattr(self.module, 'MODULE_NAME') else self.cleaned_name()
             self.category = getattr(self.module, 'MODULE_CATEGORY', "") if hasattr(self.module, 'MODULE_CATEGORY') else (self.widget_path.split('/')[0] if self.widget_path else "") #get first folder after Widgets 
             self.tags = getattr(self.module, 'MODULE_TAGS', []) if hasattr(self.module, 'MODULE_TAGS') else [folder for folder in self.widget_path.split('/') if folder and folder != self.category]
             self.image = getattr(self.module, 'MODULE_ICON', "") if hasattr(self.module, 'MODULE_ICON') else "Textures\\missing_texture.png"
@@ -168,7 +168,15 @@ class Widget:
             except Exception as e:
                 Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-                
+        
+    def cleaned_name(self):
+        """Cleanup the widget name for display"""
+        ## if name starts with [0-9]-, remove that part for module cleanup and replace all _ with " "
+        import re
+        cleaned_name = re.sub(r'^\d+-', '', self.plain_name)
+        cleaned_name = cleaned_name.replace("_", " ")
+        return cleaned_name.strip()
+                    
     def __post_init__(self):
         """Extract callbacks from module after initialization"""      
         

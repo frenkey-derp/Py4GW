@@ -88,7 +88,7 @@ def tooltip():
 def main():
     global widget_config
 
-    HOTKEY_MANAGER.update()
+    HOTKEY_MANAGER.update(True)
     GLOBAL_CACHE._update_cache()
     account_email = Player.GetAccountEmail()
     GLOBAL_CACHE.ShMem.SetPlayerData(account_email)

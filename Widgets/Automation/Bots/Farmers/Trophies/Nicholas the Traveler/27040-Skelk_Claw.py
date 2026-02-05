@@ -1,6 +1,7 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID
 import PyImGui
 
+MODULE_ICON = "Textures\\Items\\Skelk Claw.png"
 BOT_NAME = "Skelk Farmer"
 MODEL_ID_TO_FARM = ModelID.Skelk_Claw
 OUTPOST_TO_TRAVEL = 639 #Umbral grotto

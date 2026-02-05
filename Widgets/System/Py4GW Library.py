@@ -6,16 +6,18 @@ import Py4GW
 import PyImGui
 from Py4GWCoreLib import ImGui, IniManager, Player
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.Style import Style
+from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import Widget, get_widget_handler
 
 Utils.ClearSubModules(MODULE_NAME.replace(" ", ""))
-from Sources.frenkey.Py4GWLibrary.library import ModuleBrowser
-from Sources.frenkey.Py4GWLibrary.module_cards import draw_widget_card
+from Sources.frenkeyLib.Py4GWLibrary.library import ModuleBrowser
+from Sources.frenkeyLib.Py4GWLibrary.module_cards import draw_widget_card
 
 
 widget_filter = ""
@@ -26,6 +28,20 @@ INI_KEY = ""
 INI_PATH = f"Widgets/{MODULE_NAME}"
 INI_FILENAME = f"{MODULE_NAME}.ini"
 ModuleBrowserInstance : ModuleBrowser | None = None
+
+def focus_search():
+    global ModuleBrowserInstance
+    
+    if ModuleBrowserInstance:
+        ModuleBrowserInstance.set_search_focus()
+        
+HOTKEY_MANAGER.register_hotkey(
+    key=Key.F,
+    modifiers=ModifierKey.Ctrl,
+    callback=focus_search,
+    identifier=f"{MODULE_NAME}_focus_search",
+    name="Focus Search",
+)
 
 def on_enable():
     Py4GW.Console.Log(MODULE_NAME, f"{MODULE_NAME} loaded successfully.")

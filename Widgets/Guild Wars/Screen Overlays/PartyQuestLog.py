@@ -18,9 +18,9 @@ from Sources.ApoSource.account_data_src.quest_data_src import QuestNode
 
 MODULE_NAME = "PartyQuestLog"
 Utils.ClearSubModules(MODULE_NAME.replace(" ", ""), log=False)
-from Sources.frenkey.PartyQuestLog.ui import UI
-from Sources.frenkey.PartyQuestLog.settings import Settings
-from Sources.frenkey.PartyQuestLog.quest import QuestCache
+from Sources.frenkeyLib.PartyQuestLog.ui import UI
+from Sources.frenkeyLib.PartyQuestLog.settings import Settings
+from Sources.frenkeyLib.PartyQuestLog.quest import QuestCache
         
 settings = Settings()
 

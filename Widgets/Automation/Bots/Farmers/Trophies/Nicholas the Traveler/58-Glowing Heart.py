@@ -1,6 +1,7 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID
 import PyImGui
 
+MODULE_ICON = "Textures\\Items\\Glowing Heart.png"
 #QUEST TO INCREASE SPAWNS 
 BOT_NAME = "Glowing Heart Farm"
 MODEL_ID_TO_FARM = ModelID.Glowing_Heart

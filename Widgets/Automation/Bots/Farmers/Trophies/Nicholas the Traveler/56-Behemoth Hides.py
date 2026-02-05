@@ -1,6 +1,7 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID
 import PyImGui
 
+MODULE_ICON = "Textures\\Items\\Behemoth Hide.png"
 BOT_NAME = "Behemoth Hide Farm"
 MODEL_ID_TO_FARM = ModelID.Behemoth_Hide
 OUTPOST_TO_TRAVEL = 433 #Dzagonur Bastion

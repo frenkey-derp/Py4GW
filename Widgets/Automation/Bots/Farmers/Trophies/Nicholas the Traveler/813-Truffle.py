@@ -1,6 +1,7 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID
 import PyImGui
 
+MODULE_ICON = "Textures\\Items\\Truffle.png"
 #QUEST TO INCREASE SPAWNS 
 BOT_NAME = "Truffle Farmer"
 MODEL_ID_TO_FARM = ModelID.Truffle

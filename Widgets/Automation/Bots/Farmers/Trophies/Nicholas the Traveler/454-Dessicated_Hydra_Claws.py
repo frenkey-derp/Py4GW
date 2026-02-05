@@ -1,6 +1,7 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID
 import PyImGui
 
+MODULE_ICON = "Textures\\Items\\Dessicated Hydra Claw.png"
 BOT_NAME = "Dessicated Hydra Claws Farm"
 MODEL_ID_TO_FARM = ModelID.Dessicated_Hydra_Claw
 OUTPOST_TO_TRAVEL = 38 #Augury Rock

@@ -1,6 +1,7 @@
 from Py4GWCoreLib import Botting, get_texture_for_model, ModelID
 import PyImGui
 
+MODULE_ICON = "Textures\\Items\\Chunk of Drake Flesh.png"
 #QUEST TO INCREASE SPAWNS 
 BOT_NAME = "Chunk Of Drake Flesh Farmer"
 MODEL_ID_TO_FARM = ModelID.Chunk_Of_Drake_Flesh

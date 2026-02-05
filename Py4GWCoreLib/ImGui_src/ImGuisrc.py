@@ -278,7 +278,7 @@ class ImGui:
     def _is_textured_theme() -> bool: return ImGui.get_style().Theme in ImGui.Textured_Themes
     
     @staticmethod
-    def Begin(ini_key: str, name: str, p_open=None, flags=PyImGui.WindowFlags.NoFlag, ini_filename="imgui.ini") -> bool:
+    def Begin(ini_key: str, name: str, p_open=None, flags : int = PyImGui.WindowFlags.NoFlag, ini_filename="imgui.ini") -> bool:
         from Py4GWCoreLib.IniManager import IniManager
         IniManager().begin_window_config(ini_key)
 
@@ -292,7 +292,7 @@ class ImGui:
         return result
     
     @staticmethod
-    def begin (name: str, p_open: Optional[bool] = None, flags: PyImGui.WindowFlags = PyImGui.WindowFlags.NoFlag) -> bool:
+    def begin (name: str, p_open: Optional[bool] = None, flags: int = PyImGui.WindowFlags.NoFlag) -> bool:
         if not ImGui._is_textured_theme(): 
             return PyImGui.begin(name, p_open, flags)
         
@@ -311,7 +311,7 @@ class ImGui:
         return WindowModule._windows[name].begin(p_open, flags)
     
     @staticmethod
-    def begin_with_close(name: str, p_open: Optional[bool] = None, flags: PyImGui.WindowFlags = PyImGui.WindowFlags.NoFlag) -> tuple[bool, bool]:
+    def begin_with_close(name: str, p_open: Optional[bool] = None, flags: int = PyImGui.WindowFlags.NoFlag) -> tuple[bool, bool]:
         if not ImGui._is_textured_theme():
             return PyImGui.begin_with_close(name, p_open if p_open is not None else True, flags)
         
