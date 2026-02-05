@@ -221,7 +221,7 @@ class ModuleBrowser:
             spacing = 5
             width = win_size[0] - style.WindowPadding.value1 * 2
             button_width = self.get_button_width(width, 5, spacing)            
-            if ImGui.button(IconsFontAwesome5.ICON_SEARCH + "##FocusSearch", button_width):
+            if ImGui.icon_button(IconsFontAwesome5.ICON_SEARCH + "##FocusSearch", button_width):
                 self.set_layout_mode(LayoutMode.Compact)
             
             PyImGui.same_line(0, spacing)            
