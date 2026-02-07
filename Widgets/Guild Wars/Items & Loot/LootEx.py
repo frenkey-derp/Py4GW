@@ -1,6 +1,17 @@
+import os
+import PyImGui
 from PyTrading import PyTrading
-from Py4GWCoreLib import *
+from Py4GWCoreLib import (GLOBAL_CACHE, ImGui, Routines, ThrottledTimer, Utils)
+from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.ImGui_src.types import Alignment
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Party import Party
+from Py4GWCoreLib.Player import Player
+from Py4GWCoreLib.UIManager import UIManager
+from Py4GWCoreLib.enums_src.Py4GW_enums import Console
+from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog, Console
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 from ctypes import windll
 
@@ -9,29 +20,7 @@ from Sources.frenkeyLib.SulfurousRunner import ui
 
 MODULE_ICON = "Sources\\frenkeyLib\\Core\\textures\\ui_backpack.png"
 MODULE_NAME = "LootEx"
- # Copy keys so we can delete from sys.modules safely
-module_names = list(sys.modules.keys())
-
-for name in module_names:    
-    if MODULE_NAME not in name:
-        continue
-
-    module = sys.modules.get(name, None)
-    if module is None:
-        continue
-
-    # Check persistence flag (proper bugfix)
-    is_persistent = getattr(module, "PERSISTENT", False)
-
-    if is_persistent:
-        ConsoleLog(MODULE_NAME, f"Skipping reloading for persistent module: {name}", Console.MessageType.Info)
-        continue
-
-    try:
-        del sys.modules[name]
-        
-    except Exception as e:
-        ConsoleLog(MODULE_NAME, f"Error unloading {name}: {e}", Console.MessageType.Error)
+Utils.ClearSubModules(MODULE_NAME)
 
 from Sources.frenkeyLib.LootEx.price_check import PriceCheckManager
 from Sources.frenkeyLib.LootEx.data import Data
@@ -167,11 +156,13 @@ class LootEx:
             self.current_character_requested = False
             return
         
+        show_ui = not UIManager.IsWorldMapShowing() and not Map.IsMapLoading() and not Map.IsInCinematic() and not Map.Pregame.InCharacterSelectScreen()
+        if not show_ui:
+            return
         
         if messaging.HandleMessages():
             return
         
-        show_ui = not UIManager.IsWorldMapShowing() and not Map.IsMapLoading() and not Map.IsInCinematic() and not Map.Pregame.InCharacterSelectScreen()
         
         conflicting_widgets = ["InventoryPlus"]
         active_conflicting_inventory_widgets = [w for w in conflicting_widgets if self.widget_handler.is_widget_enabled(w)]
@@ -180,7 +171,7 @@ class LootEx:
             if show_ui:
                 self.ui.draw_disclaimer(active_conflicting_inventory_widgets)
             return
-        
+            
         if show_ui and self.data.is_loaded:      
             self.ui.draw_inventory_controls()        
             self.ui.draw_vault_controls()      
@@ -198,7 +189,8 @@ class LootEx:
             return
             
         if not self.current_character:
-            self.current_character = Party.party_instance().GetPlayerNameByLoginNumber(GLOBAL_CACHE.ShMem.GetLoginNumber())        
+            self.current_character = GLOBAL_CACHE.Party._party_instance.GetPlayerNameByLoginNumber(GLOBAL_CACHE.ShMem.GetLoginNumber()) if GLOBAL_CACHE.Party._party_instance and GLOBAL_CACHE.Party.IsPartyLoaded() and GLOBAL_CACHE.ShMem.GetLoginNumber() > 0 else ""  
+            # self.current_character = Player.GetName()
                 
         if self.current_character == "Timeout":
             ConsoleLog(MODULE_NAME, "Character name request timed out. Try again...", Console.MessageType.Error)

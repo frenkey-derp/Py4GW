@@ -38,7 +38,7 @@ class ModuleBrowser:
         self.tag : str = ""
         self.tags : list[str] = sorted(set(tag for widget in self.widgets for tag in widget.tags if widget.tags))
         
-        self.win_size = (800, 600)
+        self.win_size = (200, 45)
         self.ui_active = False
         self.focus_search = False
         self.popup_opened = False

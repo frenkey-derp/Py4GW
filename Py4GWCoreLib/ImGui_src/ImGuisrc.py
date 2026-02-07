@@ -278,7 +278,7 @@ class ImGui:
     def _is_textured_theme() -> bool: return ImGui.get_style().Theme in ImGui.Textured_Themes
     
     @staticmethod
-    def Begin(ini_key: str, name: str, p_open=None, flags=PyImGui.WindowFlags.NoFlag) -> bool:
+    def Begin(ini_key: str, name: str, p_open=None, flags:int=PyImGui.WindowFlags.NoFlag) -> bool:
         from Py4GWCoreLib.IniManager import IniManager
         IniManager().begin_window_config(ini_key)
 
