@@ -19,6 +19,7 @@ NAME_ENABLED_COLOR = Color(150, 255, 150, 255)
 CATEGORY_COLOR = Color(150, 150, 150, 255)
 SYSTEM_COLOR = Color(255, 0, 0, 255)
 TAG_COLOR = Color(38, 51, 59, 255)
+
 CARD_BACKGROUND_COLOR = Color(200, 200, 200, 20)
 CARD_ENABLED_BACKGROUND_COLOR = Color(90, 255, 90, 30)
 FAVORITES_COLOR = Color(255, 215, 0, 255)  # Gold color for favorites
@@ -99,7 +100,7 @@ def draw_widget_card(widget : Widget, CARD_WIDTH : float, is_favorite: bool = Fa
         PyImGui.end_group()
                 
         if widget.has_configure_property:
-            PyImGui.set_cursor_pos(available_width - 8, 2)
+            PyImGui.set_cursor_pos(available_width - 10, 2)
             ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, BUTTON_HEIGHT, BUTTON_HEIGHT)
         PyImGui.end_group()
 

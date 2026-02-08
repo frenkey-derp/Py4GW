@@ -16,4 +16,3 @@ class ViewMode(IntEnum):
     Favorites = 1
     Actives = 2
     Inactives = 3
-    
