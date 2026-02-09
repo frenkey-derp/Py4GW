@@ -1894,7 +1894,7 @@ class Py4GWSharedMemoryManager:
         if index != -1:
             return self.GetStruct().AccountData[index]
         else:
-            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error, log = log)
+            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error, log = False)
             return None
      
     def GetAccountDataFromPartyNumber(self, party_number: int, log : bool = False) -> AccountData | None:
@@ -1904,7 +1904,7 @@ class Py4GWSharedMemoryManager:
             if self._is_slot_active(i) and player.PartyPosition == party_number:
                 return player
         
-        ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error, log = log)
+        ConsoleLog(SMM_MODULE_NAME, f"Party number {party_number} not found.", Py4GW.Console.MessageType.Error, log = False)
         return None
     
     def HasEffect(self, account_email: str, effect_id: int) -> bool:
@@ -1936,7 +1936,7 @@ class Py4GWSharedMemoryManager:
         if index != -1:
             return self.GetStruct().HeroAIOptions[index]
         else:
-            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error)
+            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error, log = False)
             return None
         
     def GetGerHeroAIOptionsByPartyNumber(self, party_number: int) -> HeroAIOptionStruct | None:
@@ -1956,7 +1956,7 @@ class Py4GWSharedMemoryManager:
         if index != -1:
             self.GetStruct().HeroAIOptions[index] = options
         else:
-            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error)
+            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error, log = False)
     
     def SetHeroAIProperty(self, account_email: str, property_name: str, value):
         """Set a specific HeroAI property for the account with the given email."""
@@ -1979,7 +1979,7 @@ class Py4GWSharedMemoryManager:
             else:
                 ConsoleLog(SMM_MODULE_NAME, f"Property {property_name} does not exist in HeroAIOptions.", Py4GW.Console.MessageType.Error)
         else:
-            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error)
+            ConsoleLog(SMM_MODULE_NAME, f"Account {account_email} not found.", Py4GW.Console.MessageType.Error, log = False)
     
     def GetMapsFromPlayers(self):
         """Get a list of unique maps from all active players."""
