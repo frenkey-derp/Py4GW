@@ -4,6 +4,7 @@ import Py4GW
 
 MODULE_ICON = "Textures\\Items\\Crystalline Sword.png"
 BOT_NAME = "The Crystalline Farm"
+MODULE_ICON = "Textures\\Module_Icons\\Crystalline Sword.png"
 MODEL_ID_TO_FARM = ModelID.Feathered_Crest
 OUTPOST_TO_TRAVEL = 206  # Deldrimor war camp
 COORD_TO_EXIT_MAP = (-2854, -3613)  # Deldrimor war camp exit to Grenth Footprint

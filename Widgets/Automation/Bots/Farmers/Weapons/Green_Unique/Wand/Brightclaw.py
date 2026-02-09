@@ -7,6 +7,7 @@ from Py4GWCoreLib import Map
 
 MODULE_ICON = "Textures\\Items\\Brightclaw.png"
 BOT_NAME = "Brightclaw Farm 8man"
+MODULE_ICON = "Textures\\Module_Icons\\Brightclaw.png"
 
 # Optionnel : ajoute une texture custom si tu veux
 # TEXTURE = os.path.join(

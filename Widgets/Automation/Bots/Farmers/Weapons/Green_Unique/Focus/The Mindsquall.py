@@ -4,6 +4,7 @@ from Py4GWCoreLib import Botting
 # QUEST TO INCREASE SPAWNS 
 MODULE_ICON = "Textures\\Items\\The Mindsquall.png"
 BOT_NAME = "The Mindsquall Farm"
+MODULE_ICON = "Textures\\Module_Icons\\The Mindsquall.png"
 OUTPOST_TO_TRAVEL = 640  # Rata Sum
 COORD_TO_EXIT_MAP = (16429.57, 13491.29)  # Rata Sum exit to Magus Stones
 EXPLORABLE_TO_TRAVEL = 569  # Magus Stones

@@ -4,6 +4,7 @@ import PyImGui
 MODULE_ICON = "Textures\\Items\\Truffle.png"
 #QUEST TO INCREASE SPAWNS 
 BOT_NAME = "Truffle Farmer"
+MODULE_ICON = "Textures\\Module_Icons\\Truffle.png"
 MODEL_ID_TO_FARM = ModelID.Truffle
 OUTPOST_TO_TRAVEL = 130 #Vasburg Armory
 COORD_TO_EXIT_MAP = (24082, 7150)

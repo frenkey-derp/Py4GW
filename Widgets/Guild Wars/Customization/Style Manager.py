@@ -22,6 +22,7 @@ MODULE_ICON = "Textures\\Module_Icons\\StyleManager.png"
 MODULE_NAME = "Style Manager"
 OPTIONAL = False
 
+MODULE_ICON = "Textures\\Module_Icons\\StyleManagerIcon.png"
 class ThemeTexturesDev(Enum):
  pass
     

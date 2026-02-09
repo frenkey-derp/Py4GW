@@ -3,6 +3,7 @@ import PyImGui
 
 MODULE_ICON = "Textures\\Items\\Dessicated Hydra Claw.png"
 BOT_NAME = "Dessicated Hydra Claws Farm"
+MODULE_ICON = "Textures\\Module_Icons\\Dessicated Hydra Claw.png"
 MODEL_ID_TO_FARM = ModelID.Dessicated_Hydra_Claw
 OUTPOST_TO_TRAVEL = 38 #Augury Rock
 COORD_TO_EXIT_MAP = (-15169, 2357)
