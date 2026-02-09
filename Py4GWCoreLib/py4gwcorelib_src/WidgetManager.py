@@ -1187,7 +1187,10 @@ class Py4GWLibrary:
                     
             if widget.has_configure_property and self.show_configure_button:
                 PyImGui.set_cursor_pos(available_width - 10, 2)
-                ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
+                configuring = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
+                if configuring != widget.configuring:
+                    widget.set_configuring(configuring)
+                    
             PyImGui.end_group()
 
             if self.show_tags:
@@ -1262,7 +1265,9 @@ class Py4GWLibrary:
                             
             if widget.has_configure_property:
                 PyImGui.set_cursor_pos(available_width - 10, 2)
-                ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
+                configuring = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
+                if configuring != widget.configuring:
+                    widget.set_configuring(configuring)
 
         PyImGui.end_child()
         self._pop_card_style(style)
@@ -1318,7 +1323,7 @@ class Widget:
     ini_key: str = ""             # "" or valid key
     ini_path: str = ""            # "Widgets/folder"
     ini_filename: str = ""        # "script_name.ini"
-    
+        
     # Extracted callbacks (will be populated in __post_init__)
     main: Optional[Callable] = field(default=None, init=False)
     configure: Optional[Callable] = field(default=None, init=False)
@@ -1629,6 +1634,27 @@ class WidgetHandler:
         
     # --------------------------------------------
     # region discovery
+    def _coro_discover(self):
+        if self.discovered:
+            return
+        
+        """Phase 0: Unload currently enabled widgets"""
+        for widget in self.widgets.values():
+            if widget.enabled:
+                widget.disable()
+                yield
+                                
+        """Phase 1: Discover widgets without INI configuration"""
+        self.widgets.clear()
+        
+        try:
+            yield from self._coro_scan_widget_folders()
+            self.discovered = True
+        except Exception as e:
+            self._log_error(f"Discovery failed: {e}")
+            raise 
+        
+        
     def discover(self):
         if self.discovered:
             return
@@ -1647,6 +1673,21 @@ class WidgetHandler:
         except Exception as e:
             self._log_error(f"Discovery failed: {e}")
             raise
+    
+    def _coro_scan_widget_folders(self):
+        """Find .widget folders and load .py files throughout the entire tree"""
+        if not os.path.isdir(self.widgets_path):
+            raise FileNotFoundError(f"Widgets folder missing: {self.widgets_path}")
+        
+        for current_dir, dirs, files in os.walk(self.widgets_path):
+            # Check if this specific folder is marked as a widget container
+            if ".widget" in files:
+                for py_file in [f for f in files if f.endswith(".py")]:
+                    yield from self._coro_load_widget_module(current_dir, py_file)
+                    
+        yield
+                    
+    
     
     def _scan_widget_folders(self):
         """Find .widget folders and load .py files throughout the entire tree"""
@@ -1774,12 +1815,31 @@ class WidgetHandler:
         except Exception as e:
             self._log_error(f"Failed to discover {widget_id}: {e}")
                             
-    def _apply_ini_configuration(self):        
-        # Apply saved enabled states to runtime widgets
+                
+    def _apply_ini_configuration(self):
+        """Apply saved enabled states and enforce System widget activation"""
         for wid, w in self.widgets.items():
             vname = self._widget_var(wid, "enabled")
             section = f"Widget:{wid}"
+            
+            # 1. Read the current state from IniManager (which just loaded from disk)
             enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=section, var_name=vname, default=False))
+            
+            # 2. THE FORCE: Check if this is a System widget section
+            is_system = "Widget:System" in section
+            
+            if is_system:
+                # If it's system but the disk/ini said False, we override it right now
+                if not enabled:
+                    # Py4GW.Console.Log("WidgetManager", f"Forcing System Widget: {wid}", Py4GW.Console.MessageType.Info)
+                    enabled = True
+                    # Update IniManager memory so it stays synced
+                    IniManager().set(key=self.MANAGER_INI_KEY, section=section, var_name=vname, value=True)
+                    # Note: No need to save_vars here unless you want to fix the file immediately; 
+                    # the next global save will persist this.
+                    self._log_success(f"Enforcing System Widget Enabled: {wid}")
+            
+            # 3. Final Activation
             if enabled:
                 w.enable()
                 

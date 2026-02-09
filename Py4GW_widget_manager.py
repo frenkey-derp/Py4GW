@@ -72,39 +72,6 @@ def draw():
         
 widget_manager_initialized = False
 widget_manager_initializing = False
-init_coro = None
-
-def _coro_initialize_widget_manager():
-    global INI_KEY, widget_manager_initializing, widget_manager_initialized
-
-    widget_manager_initializing = True
-    print("Initializing Widget Manager...")
-    
-    if not INI_KEY:
-        if not os.path.exists(INI_PATH):
-            os.makedirs(INI_PATH, exist_ok=True)
-
-        INI_KEY = IniManager().ensure_global_key(
-            INI_PATH,
-            INI_FILENAME
-        )
-        yield 
-        if not INI_KEY: return
-        
-        widget_manager.MANAGER_INI_KEY = INI_KEY
-        
-        yield from widget_manager._coro_discover()
-        _add_config_vars()
-        IniManager().load_once(INI_KEY)
-
-        # FIX 1: Explicitly load the global manager state into the handler
-        widget_manager.enable_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=False, section="Configuration"))
-        widget_manager._apply_ini_configuration()
-        
-        widget_manager_initialized = True
-        widget_manager_initializing = False
-        print ("Widget Manager initialized.")
-    
 
 def main():
     global INI_KEY, init_coro, widget_manager_initialized, widget_manager_initializing, py4_gw_library
@@ -130,18 +97,7 @@ def main():
         widget_manager.enable_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=False, section="Configuration"))
         widget_manager._apply_ini_configuration()
             
-    """if not widget_manager_initialized:
 
-        if not init_coro:
-            init_coro = _coro_initialize_widget_manager()
-
-        try:
-            next(init_coro)        # advance ONE step
-        except StopIteration:
-            init_coro = None      # fully exhausted
-
-        return  """ 
-                
     if INI_KEY:
         use_library = bool(IniManager().get(key=INI_KEY, var_name="use_library", default=True, section="Configuration"))
         if use_library:
