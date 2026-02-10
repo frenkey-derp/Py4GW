@@ -1065,7 +1065,7 @@ class Py4GWLibrary:
         )
 
         PyImGui.set_next_window_size(
-            (500, 160),
+            (500, 175),
             PyImGui.ImGuiCond.Always,
         )
 
