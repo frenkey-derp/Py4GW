@@ -23,11 +23,17 @@ library : Py4GWLibrary | None = None
 def _add_config_vars():
     global INI_KEY
     IniManager().add_bool(key=INI_KEY, var_name="enable_all", section="Configuration", name="enable_all", default=False)
-    IniManager().add_str(key=INI_KEY, var_name="favorites", section="Favorites", name="favorites", default="")
+    IniManager().add_bool(key=INI_KEY, var_name="use_library", section="Configuration", name="use_library", default=True)
+    
+    IniManager().add_int(key=INI_KEY, var_name="max_suggestions", section="Configuration", name="max_suggestions", default=10)
+    IniManager().add_int(key=INI_KEY, var_name="single_button_size", section="Configuration", name="single_button_size", default=48)
     IniManager().add_str(key=INI_KEY, var_name="default_layout", section="Configuration", name="default_layout", default=LayoutMode.Minimalistic.name)  
     IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)  
     IniManager().add_str(key=INI_KEY, var_name="hotkey_modifiers", section="Configuration", name="hotkey_modifiers", default="NoneKey")
+    IniManager().add_bool(key=INI_KEY, var_name="single_filter", section="Configuration", name="single_filter", default=True)
                             
+    IniManager().add_str(key=INI_KEY, var_name="favorites", section="Favorites", name="favorites", default="")
+    
     IniManager().add_bool(key=INI_KEY, var_name="show_configure_button", section="Card Configuration", name="show_configure_button", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="show_images", section="Card Configuration", name="show_images", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="show_separator", section="Card Configuration", name="show_separator", default=True)
@@ -57,6 +63,7 @@ def _add_config_vars():
             default=False
         )
         
+        
 def on_enable():
     Py4GW.Console.Log(MODULE_NAME, f"{MODULE_NAME} loaded successfully.")
 
@@ -78,7 +85,6 @@ def draw():
         if library is None:
             library = Py4GWLibrary(INI_KEY, MODULE_NAME, widget_manager)
         
-        Py4GW.Console.Log(MODULE_NAME, f"Drawing {MODULE_NAME} UI", Py4GW.Console.MessageType.Debug)
         library.draw_window()
     
 def update():
@@ -88,8 +94,6 @@ def main():
     global INI_KEY
     
     if not INI_KEY:
-        Py4GW.Console.Log(MODULE_NAME, f"Initializing {MODULE_NAME}...", Py4GW.Console.MessageType.Info)
-        
         if not os.path.exists(INI_PATH):
             os.makedirs(INI_PATH, exist_ok=True)
 
@@ -99,7 +103,6 @@ def main():
         )
         
         if not INI_KEY:
-            Py4GW.Console.Log(MODULE_NAME, f"Failed to initialize {MODULE_NAME} INI configuration.", Py4GW.Console.MessageType.Error)
             return
         
         # widget_manager.MANAGER_INI_KEY = INI_KEY
@@ -109,10 +112,8 @@ def main():
         IniManager().load_once(INI_KEY)
 
         # FIX 1: Explicitly load the global manager state into the handler
-        widget_manager.enable_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=False, section="Configuration"))
-        widget_manager._apply_ini_configuration()
-    else:
-        Py4GW.Console.Log(MODULE_NAME, f"{MODULE_NAME} already initialized.", Py4GW.Console.MessageType.Warning)
+        # widget_manager.enable_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=False, section="Configuration"))
+        # widget_manager._apply_ini_configuration()
         
     
 # These functions need to be available at module level
