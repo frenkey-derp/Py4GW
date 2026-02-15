@@ -37,6 +37,7 @@ class DyeColor(IntEnum):
 
 
 # endregion
+
 # region Profession
 class Profession(IntEnum):
     _None = 0
@@ -274,7 +275,6 @@ class SkillType ( IntEnum):
     EchoRefrain = 28
     Disguise = 29
 
-
 #region Attribute
 class Attribute(IntEnum):
     FastCasting = 0
@@ -372,6 +372,19 @@ AttributeNames = {
     Attribute.Mysticism: "Mysticism",
     Attribute.None_: "None",
 }
+
+class ProfessionAttributes(Enum):
+    _None = [],
+    Warrior = [Attribute.Strength, Attribute.AxeMastery, Attribute.HammerMastery, Attribute.Swordsmanship, Attribute.Tactics],
+    Ranger = [Attribute.BeastMastery, Attribute.Expertise, Attribute.WildernessSurvival, Attribute.Marksmanship],
+    Monk = [Attribute.HealingPrayers, Attribute.SmitingPrayers, Attribute.ProtectionPrayers, Attribute.DivineFavor],
+    Necromancer = [Attribute.BloodMagic, Attribute.DeathMagic, Attribute.SoulReaping, Attribute.Curses],
+    Mesmer = [Attribute.FastCasting, Attribute.IllusionMagic, Attribute.DominationMagic, Attribute.InspirationMagic],
+    Elementalist = [Attribute.AirMagic, Attribute.EarthMagic, Attribute.FireMagic, Attribute.WaterMagic],
+    Assassin = [Attribute.DaggerMastery, Attribute.DeadlyArts, Attribute.ShadowArts, Attribute.CriticalStrikes],
+    Ritualist = [Attribute.Communing, Attribute.RestorationMagic, Attribute.ChannelingMagic, Attribute.SpawningPower],
+    Paragon = [Attribute.Command, Attribute.Motivation, Attribute.Leadership, Attribute.SpearMastery],
+    Dervish = [Attribute.ScytheMastery, Attribute.WindPrayers, Attribute.EarthPrayers, Attribute.Mysticism],
 
 #region Inscription
 class Inscription(IntEnum):
