@@ -1,8 +1,8 @@
 from enum import IntEnum
 from typing import Optional
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, ProfessionAttributes, Reduced_Ailment
-from Sources.ItemHandling.insignias import _INSIGNIA_REGISTRY, Insignia
-from Sources.ItemHandling.item_modifiers import ItemProperty
+from Sources.frenkeyLib.ItemHandling.insignias import _INSIGNIA_REGISTRY, Insignia
+from Sources.frenkeyLib.ItemHandling.item_modifiers import ItemProperty
 
 _PROPERTY_REGISTRY: dict[int, type[ItemProperty]] = {}
 def register_property(cls: type[ItemProperty]) -> type[ItemProperty]:

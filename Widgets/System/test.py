@@ -14,8 +14,8 @@ from Sources.frenkeyLib.LootEx.data import Data
 from Sources.frenkeyLib.LootEx.enum import ModType
 
 Utils.ClearSubModules("ItemHandling")
-from Sources.ItemHandling.item_modifier_parser import ItemModifierParser
-from Sources.ItemHandling.item_properties import _PROPERTY_REGISTRY, Damage
+from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
+from Sources.frenkeyLib.ItemHandling.item_properties import _PROPERTY_REGISTRY, Damage
 
 
 def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:

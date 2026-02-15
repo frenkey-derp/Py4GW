@@ -7,9 +7,9 @@ from typing import Optional
 
 import Py4GW
 from PyItem import ItemModifier
-from Sources.ItemHandling.insignias import Insignia
-from Sources.ItemHandling.item_modifiers import DecodedModifier, ItemProperty
-from Sources.ItemHandling.item_properties import _PROPERTY_REGISTRY
+from Sources.frenkeyLib.ItemHandling.insignias import Insignia
+from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier, ItemProperty
+from Sources.frenkeyLib.ItemHandling.item_properties import _PROPERTY_REGISTRY
 from typing import TypeVar, Type, Optional, List, Dict, Iterable
 
 T = TypeVar("T", bound=ItemProperty)
