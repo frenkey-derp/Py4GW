@@ -1,5 +1,6 @@
 
 from typing import Optional
+import re
 import Py4GW
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
@@ -10,25 +11,85 @@ from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Sources.frenkeyLib.ItemHandling.item_properties import AppliesToRuneProperty, BaneProperty, InscriptionProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
+from Sources.frenkeyLib.ItemHandling.types import ItemModifierParam
 from Sources.frenkeyLib.LootEx.data import Data
 from Sources.frenkeyLib.LootEx.enum import ModType
 
 Utils.ClearSubModules("ItemHandling")
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
-from Sources.frenkeyLib.ItemHandling.item_properties import _PROPERTY_REGISTRY, Damage
 
 
 def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     value = (runtime_identifier >> 4) & 0x3FF
     return value, hex(value)
 
+import inspect
+from dataclasses import dataclass
+
 
 def run_test():
-    # with file open to write values
-    Py4GW.Console.Log("Test", f"{get_true_identifier_with_hex(10312)}")   
+    def localized_dictionary_to_string(d: dict[ServerLanguage, str]) -> str:
+        return "{\n\t" + ",\n\t\t".join(f"ServerLanguage.{lang.name}: \"{text.replace('\"', '\\\"')}\"" for lang, text in d.items()) + "}"
+    with open("test_weapon_upgradesoutput.txt", "w", encoding="utf-8") as f:
+        data = Data()
+        data.Load()
+        
+        for key, mod in data.Weapon_Mods.items():
+            txt = f"""{key.replace(" ", "").replace('"', '').replace("'", "").replace("-", "").replace(".", "").replace(",", "")} = Upgrade(
+    names = {localized_dictionary_to_string(mod.names)},
+    descriptions = {localized_dictionary_to_string(mod.descriptions)},
+    upgrade_type = ItemUpgradeClassType.{mod.mod_type.name}
+)\n\n"""
+            
+            f.write(txt)
+
+
+UPGRADE_PATTERN = re.compile(
+    r'ItemUpgrade\s+(\w+)\s*=\s*new\(\s*([^,]+)\s*,\s*"((?:\\.|[^"\\])*)"\s*,\s*ItemUpgradeType\.([A-Za-z_]+)\s*\);'
+)
+
+
+def normalize_class_name(name: str) -> str:
+    name = name.replace(" ", "")
+    name = name.replace("'", "")
+    name = name.replace("-", "")
+    name = name.replace(".", "")
+    name = name.replace(",", "")
+    return name
+
+
+def write_upgrades():
+    source_path = "Sources\\frenkeyLib\\ItemHandling\\upgrades.txt"
+    target_path = "Sources\\frenkeyLib\\ItemHandling\\generated_upgrades.py"
+
+    with open(source_path, "r", encoding="utf-8") as fsource:
+        upgrade_lines = fsource.readlines()
+
+    with open(target_path, "w", encoding="utf-8") as f:
+
+        for line in upgrade_lines:
+            line = line.strip()
+
+            if not line or line.startswith("//"):
+                continue
+
+            match = UPGRADE_PATTERN.search(line)
+            if not match:
+                if len(line.strip()) > 0:
+                    Py4GW.Console.Log("ItemHandling", f"Warning: Line did not match upgrade pattern: {line}")
+                continue
+
+            variable_name, upgrade_id_raw, display_name, upgrade_type = match.groups()
+
+            class_name = normalize_class_name(variable_name)
+            text = f"""{class_name} = ItemUpgrade(upgrade_id = {upgrade_id_raw},  name = "{display_name}", upgrade_type = ItemUpgradeType.{upgrade_type})\n"""
+
+            f.write(text)
+
 
 def write_insignias():
-    with open("Sources\\ItemHandling\\generated_insignias.py", "w", encoding='utf-8') as f:
+    with open("Sources\\frenkeyLib\\ItemHandling\\generated_insignias.py", "w", encoding='utf-8') as f:
         Py4GW.Console.Log("ItemHandling", "Generating insignia classes from runes.json data...")
         
         data = Data()
@@ -95,7 +156,15 @@ def main():
         
         if parser:
             for prop in parser.get_properties():
-                ImGui.text(prop.describe())
+                if parser:
+
+                    # if any(base.__name__ in {"PrefixProperty", "SuffixProperty", "BaneProperty",
+                    #                         "UpgradeRuneProperty", "InscriptionProperty",
+                    #                         "AppliesToRuneProperty"} for base in prop.__class__.__mro__):
+                    #     continue
+
+                    ImGui.text(prop.describe())
+                
         
     ImGui.end()
     pass

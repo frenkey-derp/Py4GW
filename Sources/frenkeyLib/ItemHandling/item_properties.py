@@ -1,1017 +1,677 @@
+from dataclasses import dataclass
 from enum import IntEnum
-from typing import Optional
+from typing import Callable, Optional
+from unittest import case
+
+from PyItem import ItemModifier
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, ProfessionAttributes, Reduced_Ailment
 from Sources.frenkeyLib.ItemHandling.insignias import _INSIGNIA_REGISTRY, Insignia
-from Sources.frenkeyLib.ItemHandling.item_modifiers import ItemProperty
+from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier, ItemProperty
+from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeType, ModifierIdentifier
+from Sources.frenkeyLib.ItemHandling.upgrades import ITEM_UPGRADES, ItemUpgradeClass, ItemUpgrade
 
-_PROPERTY_REGISTRY: dict[int, type[ItemProperty]] = {}
-def register_property(cls: type[ItemProperty]) -> type[ItemProperty]:
-    _PROPERTY_REGISTRY[cls.identifier] = cls
-    return cls
-
-
-class ItemBaneSpecies(IntEnum):
-    Undead = 0
-    Charr = 1
-    Trolls = 2
-    Plants = 3
-    Skeletons = 4
-    Giants = 5
-    Dwarves = 6
-    Tengus = 7
-    Demons = 8
-    Dragons = 9
-    Ogres = 10
-    Unknown = -1
-
-class BaneSpecies(ItemProperty):
-    identifier = 0x008
-
-    @property
-    def species(self) -> ItemBaneSpecies:
-        return ItemBaneSpecies(self.modifier.arg1)
-
-    def describe(self) -> str:
-        match self.species:
-            case ItemBaneSpecies.Charr:
-                return "of Charrslaying"
-            case ItemBaneSpecies.Demons:
-                return "of Demonslaying"
-            case ItemBaneSpecies.Dragons:
-                return "of Dragonslaying"
-            case ItemBaneSpecies.Dwarves:
-                return "of Dwarfslaying"
-            case ItemBaneSpecies.Giants:
-                return "of Giantslaying"
-            case ItemBaneSpecies.Ogres:
-                return "of Ogreslaying"
-            case ItemBaneSpecies.Plants:
-                return "of Pruning"
-            case ItemBaneSpecies.Tengus:
-                return "of Tenguslaying"
-            case ItemBaneSpecies.Trolls:                
-                return "of Trollslaying"
-            case ItemBaneSpecies.Undead:
-                return "of Deathbane"            
-            case ItemBaneSpecies.Skeletons:
-                return "of Skeletonslaying"
-            case _:
-                return f"of Slaying of Unknown Species (ID {self.modifier.arg1})"
-register_property(BaneSpecies)
-
-class Damage(ItemProperty):
-    identifier = 0x27A
-
-    @property
-    def min_damage(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def max_damage(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"{self.min_damage}-{self.max_damage} Damage"
-register_property(Damage)
-
-class Damage2(ItemProperty):
-    identifier = 0x248
-
-    @property
-    def min_damage(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def max_damage(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"{self.min_damage}-{self.max_damage} Damage"
-register_property(Damage2)
-
-class AttributeRequirement(ItemProperty):
-    identifier = 0x279
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
-
-    @property
-    def required(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"(Requires {self.required} {AttributeNames.get(self.attribute)})"
-register_property(AttributeRequirement)
-
-class Armor1(ItemProperty):
-    identifier = 0x27B
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class Armor(ItemProperty):
+    armor: int
 
     def describe(self) -> str:
         return f"Armor: {self.armor}"
-register_property(Armor1)
 
-class Armor2(ItemProperty):
-    identifier = 0x23C
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class ArmorEnergyRegen(ItemProperty):
+    energy_regen: int
 
     def describe(self) -> str:
-        return f"Armor: {self.armor}"
-register_property(Armor2)
+        return f"Energy recovery +{self.energy_regen}"
 
-class Energy(ItemProperty):
-    identifier = 0x27C
+@dataclass
+class ArmorMinusAttacking(ItemProperty):
+    armor: int
+    
+    def describe(self) -> str:
+        return f"-{self.armor} Armor (while attacking)"
 
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class ArmorPenetration(ItemProperty):
+    armor_pen: int
+    chance: int
 
     def describe(self) -> str:
-        return f"Energy +{self.energy}"
-register_property(Energy)
+        return f"Armor penetration +{self.armor_pen}% (Chance: {self.chance}%)"
 
-class Energy2(ItemProperty):
-    identifier = 0x22C
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class ArmorPlus(ItemProperty):
+    armor: int
 
     def describe(self) -> str:
-        return f"Energy +{self.energy}"
-register_property(Energy2)
+        return f"+{self.armor} Armor"
 
-class OfTheProfession(ItemProperty):
-    identifier = 0x28A
-
-    @property
-    def attibute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
-
-    @property
-    def attribute_level(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def profession_id(self) -> Profession:
-        attribute = self.attibute
-
-        # find attribute in ProfessionAttributes
-        for prof, attr in ProfessionAttributes.__dict__.items():
-            if isinstance(attr, list) and attribute in attr:
-                return Profession[prof]
-
-        return Profession._None
+@dataclass
+class ArmorPlusAttacking(ItemProperty):
+    armor: int
 
     def describe(self) -> str:
-        return f"{AttributeNames.get(self.attibute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)"
-register_property(OfTheProfession)
+        return f"+{self.armor} Armor (while Attacking)"
 
-class DamageTypeProperty(ItemProperty):
-    identifier = 0x24B
-
-    @property
-    def damage_type(self) -> DamageType:
-        return DamageType(self.modifier.arg1)
+@dataclass
+class ArmorPlusCasting(ItemProperty):
+    armor: int
 
     def describe(self) -> str:
-        return f"{self.damage_type.name} Dmg"
-register_property(DamageTypeProperty)
+        return f"+{self.armor} Armor (while Casting)"
 
-class IncreasedSaleValue(ItemProperty):
-    identifier = 0x25F
-
-    def describe(self) -> str:
-        return f"Improved sale value"
-register_property(IncreasedSaleValue)
-
-class HighlySalvageable(ItemProperty):
-    identifier = 0x260
+@dataclass
+class ArmorPlusEnchanted(ItemProperty):
+    armor: int
 
     def describe(self) -> str:
-        return f"Highly salvageable"
-register_property(HighlySalvageable)
+        return f"+{self.armor} Armor (while Enchanted)"
 
+@dataclass
+class ArmorPlusHexed(ItemProperty):
+    armor: int
+
+    def describe(self) -> str:
+        return f"+{self.armor} Armor (while Hexed)"
+
+@dataclass
+class ArmorPlusHexed2(ItemProperty):
+    armor: int
+
+    def describe(self) -> str:
+        return f"+{self.armor} Armor (while Hexed)"
+
+@dataclass
+class ArmorPlusVsDamage(ItemProperty):
+    armor: int
+    damage_type: DamageType
+
+    def describe(self) -> str:
+        return f"+{self.armor} Armor (vs. {self.damage_type.name} Dmg)"
+
+@dataclass
+class ArmorPlusVsElemental(ItemProperty):
+    armor: int
+
+    def describe(self) -> str:
+        return f"+{self.armor} Armor (vs. Elemental Dmg)"
+
+@dataclass
+class ArmorPlusVsPhysical(ItemProperty):
+    armor: int
+
+    def describe(self) -> str:
+        return f"+{self.armor} Armor (vs. Physical Dmg)"
+
+@dataclass
+class ArmorPlusVsSpecies(ItemProperty):
+    armor: int
+    species: ItemBaneSpecies
+
+    def describe(self) -> str:
+        species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"ID {self.modifier.arg1}"
+        return f"+{self.armor} Armor (vs. {species})"
+
+@dataclass
+class ArmorPlusWhileDown(ItemProperty):
+    armor: int
+    health_threshold: int
+
+    def describe(self) -> str:
+        return f"+{self.armor} Armor (while Health is below {self.health_threshold}%)"
+
+@dataclass
+class AttributePlusOne(ItemProperty):
+    attribute: Attribute
+    chance: int
+
+    def describe(self) -> str:
+        return f"{AttributeNames.get(self.attribute)} +1 ({self.chance}% chance while using skills)"
+
+@dataclass
+class AttributePlusOneItem(ItemProperty):
+    chance: int
+
+    def describe(self) -> str:
+        return f"Item's attribute +1 (Chance: {self.chance}%)"
+
+@dataclass
 class DamageCustomized(ItemProperty):
-    identifier = 0x249
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg1 - 100
+    damage_increase: int
 
     def describe(self) -> str:
         increase = self.damage_increase
         return f"Damage +{increase}%"
-register_property(DamageCustomized)
 
-class DamagePlusPercent(ItemProperty):
-    identifier = 0x223
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        increase = self.damage_increase
-        return f"Damage +{increase}%"
-register_property(DamagePlusPercent)
-
-class DamagePlusVsHexed(ItemProperty):
-    identifier = 0x225
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        increase = self.damage_increase
-        return f"Damage +{increase}% (vs. Hexed Foes)"
-register_property(DamagePlusVsHexed)
-
+@dataclass
 class DamagePlusEnchanted(ItemProperty):
-    identifier = 0x226
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
+    damage_increase: int
 
     def describe(self) -> str:
         increase = self.damage_increase
         return f"Damage +{increase}% (while Enchanted)"
-register_property(DamagePlusEnchanted)
 
-class DamagePlusWhileUp(ItemProperty):
-    identifier = 0x227
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def health_threshold(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        increase = self.damage_increase
-        threshold = self.health_threshold
-
-        return f"Damage +{increase}% (while Health is above +{threshold}%)"
-register_property(DamagePlusWhileUp)
-
-class DamagePlusWhileDown(ItemProperty):
-    identifier = 0x228
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def health_threshold(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        increase = self.damage_increase
-        threshold = self.health_threshold
-
-        return f"Damage +{increase}% (while Health is below {threshold}%)"
-register_property(DamagePlusWhileDown)
-
+@dataclass
 class DamagePlusHexed(ItemProperty):
-    identifier = 0x229
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
+    damage_increase: int
 
     def describe(self) -> str:
         increase = self.damage_increase
         return f"Damage +{increase}% (while Hexed)"
-register_property(DamagePlusHexed)
 
+@dataclass
+class DamagePlusPercent(ItemProperty):
+    damage_increase: int
+
+    def describe(self) -> str:
+        increase = self.damage_increase
+        return f"Damage +{increase}%"
+
+@dataclass
 class DamagePlusStance(ItemProperty):
-    identifier = 0x22A
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg2
+    damage_increase: int
 
     def describe(self) -> str:
         increase = self.damage_increase
         return f"Damage +{increase}% (while in a Stance)"
-register_property(DamagePlusStance)
 
+@dataclass
+class DamagePlusVsHexed(ItemProperty):
+    damage_increase: int
+
+    def describe(self) -> str:
+        increase = self.damage_increase
+        return f"Damage +{increase}% (vs. Hexed Foes)"
+
+@dataclass
 class DamagePlusVsSpecies(ItemProperty):
-    identifier = 0x224
-
-    @property
-    def damage_increase(self) -> int:
-        return self.modifier.arg1
-
-    @property
-    def species(self) -> ItemBaneSpecies:
-        return ItemBaneSpecies(self.modifier.arg2)
+    damage_increase: int
+    species: ItemBaneSpecies
 
     def describe(self) -> str:
         increase = self.damage_increase
         species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"ID {self.modifier.arg1}"
         return f"Damage +{increase}% (vs. {species.lower()})"
-register_property(DamagePlusVsSpecies)
 
-class HalvesCastingTimeGeneral(ItemProperty):
-    identifier = 0x220
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class DamagePlusWhileDown(ItemProperty):
+    damage_increase: int
+    health_threshold: int
 
     def describe(self) -> str:
-        return f"Halves casting time of spells (Chance: +{self.chance}%)"
-register_property(HalvesCastingTimeGeneral)
+        increase = self.damage_increase
+        threshold = self.health_threshold
+        
+        return f"Damage +{increase}% (while Health is below {threshold}%)"
 
-class HalvesCastingTimeAttribute(ItemProperty):
-    identifier = 0x221
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg2)
+@dataclass
+class DamagePlusWhileUp(ItemProperty):
+    damage_increase: int
+    health_threshold: int
 
     def describe(self) -> str:
-        return f"Halves casting time of {AttributeNames.get(self.attribute)} spells (Chance: {self.chance}%)"
-register_property(HalvesCastingTimeAttribute)
+        increase = self.damage_increase
+        threshold = self.health_threshold
+        
+        return f"Damage +{increase}% (while Health is above +{threshold}%)"
 
-class HalvesCastingTimeItemAttribute(ItemProperty):
-    identifier = 0x280
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"Halves casting time on spells of item's attribute (Chance: {self.chance}%)"
-register_property(HalvesCastingTimeItemAttribute)
-
-class HalvesSkillRechargeGeneral(ItemProperty):
-    identifier = 0x23A
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class DamageTypeProperty(ItemProperty):
+    damage_type: DamageType
 
     def describe(self) -> str:
-        return f"Halves skill recharge of spells (Chance: +{self.chance}%)"
-register_property(HalvesSkillRechargeGeneral)
+        return f"{self.damage_type.name} Dmg"
 
-class HalvesSkillRechargeAttribute(ItemProperty):
-    identifier = 0x239
-    
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg2)
+@dataclass
+class Energy(ItemProperty):
+    energy: int
 
     def describe(self) -> str:
-        return f"Halves skill recharge of {AttributeNames.get(self.attribute)} spells (Chance: {self.chance}%)"
-register_property(HalvesSkillRechargeAttribute)
+        return f"Energy +{self.energy}"
 
-class HalvesSkillRechargeItemAttribute(ItemProperty):
-    identifier = 0x282
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class Energy2(ItemProperty):
+    energy: int
 
     def describe(self) -> str:
-        return f"Halves skill recharge on spells of item's attribute (Chance: {self.chance}%)"
-register_property(HalvesSkillRechargeItemAttribute)
+        return f"Energy +{self.energy}"
 
-class EnergyPlus(ItemProperty):
-    identifier = 0x22D
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.energy} Energy"
-register_property(EnergyPlus)
-
-class EnergyPlusEnchanted(ItemProperty):
-    identifier = 0x22F
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.energy} Energy (while Enchanted)"
-register_property(EnergyPlusEnchanted)
-
-class EnergyPlusHexed(ItemProperty):
-    identifier = 0x232
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.energy} Energy (while Hexed)"
-register_property(EnergyPlusHexed)
-
-class EnergyPlusWhileAbove(ItemProperty):
-    identifier = 0x231
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def health_threshold(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.energy} Energy (while Health is above {self.health_threshold}%)"
-register_property(EnergyPlusWhileAbove)
-
-class EnergyPlusWhileBelow(ItemProperty):
-    identifier = 0x231
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def health_threshold(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.energy} Energy (while Health is below {self.health_threshold}%)"
-register_property(EnergyPlusWhileBelow)
-
-class EnergyMinus(ItemProperty):
-    identifier = 0x20B
-
-    @property
-    def energy(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"-{self.energy} Energy"
-register_property(EnergyMinus)
-
+@dataclass
 class EnergyDegen(ItemProperty):
-    identifier = 0x20C
-
-    @property
-    def energy_regen(self) -> int:
-        return self.modifier.arg2
+    energy_regen: int
 
     def describe(self) -> str:
         return f"Energy regeneration -{self.energy_regen}"
-register_property(EnergyDegen)
 
-# class EnergyRegen(ItemProperty):
-#     identifier = 0x262
-
-#     @property
-#     def energy_regen(self) -> int:
-#         return self.modifier.arg2
-
-#     def describe(self) -> str:
-#         return f"Energy regeneration +{self.energy_regen}"
-# register_property(EnergyRegen)
-
+@dataclass
 class EnergyGainOnHit(ItemProperty):
-    identifier = 0x251
-
-    @property
-    def energy_gain(self) -> int:
-        return self.modifier.arg2
+    energy_gain: int
 
     def describe(self) -> str:
         return f"Energy gain on hit: {self.energy_gain}"
-register_property(EnergyGainOnHit)
 
-class ArmorPlus(ItemProperty):
-    identifier = 0x210
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class EnergyMinus(ItemProperty):
+    energy: int
 
     def describe(self) -> str:
-        return f"+{self.armor} Armor"
-register_property(ArmorPlus)
+        return f"-{self.energy} Energy"
 
-class ArmorPlusVsDamage(ItemProperty):
-    identifier = 0x211
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def damage_type(self) -> DamageType:
-        return DamageType(self.modifier.arg1)
+@dataclass
+class EnergyPlus(ItemProperty):
+    energy: int
 
     def describe(self) -> str:
-        return f"+{self.armor} Armor (vs. {self.damage_type.name} Dmg)"
-register_property(ArmorPlusVsDamage)
+        return f"+{self.energy} Energy"
 
-class ArmorPlusVsPhysical(ItemProperty):
-    identifier = 0x215
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class EnergyPlusEnchanted(ItemProperty):
+    energy: int
 
     def describe(self) -> str:
-        return f"+{self.armor} Armor (vs. Physical Dmg)"
-register_property(ArmorPlusVsPhysical)
+        return f"+{self.energy} Energy (while Enchanted)"
 
-class ArmorPlusVsPhysical2(ItemProperty):
-    identifier = 0x216
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class EnergyPlusHexed(ItemProperty):
+    energy: int
 
     def describe(self) -> str:
-        return f"+{self.armor} Armor (vs. Physical Dmg)"
-register_property(ArmorPlusVsPhysical2)
+        return f"+{self.energy} Energy (while Hexed)"
 
-class ArmorPlusVsElemental(ItemProperty):
-    identifier = 0x212
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class EnergyPlusWhileBelow(ItemProperty):
+    energy: int
+    health_threshold: int
 
     def describe(self) -> str:
-        return f"+{self.armor} Armor (vs. Elemental Dmg)"
-register_property(ArmorPlusVsElemental)
+        return f"+{self.energy} Energy (while Health is below {self.health_threshold}%)"
 
-class ArmorPlusVsSpecies(ItemProperty):
-    identifier = 0x214
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def species(self) -> ItemBaneSpecies:
-        return ItemBaneSpecies(self.modifier.arg1)
-
-    def describe(self) -> str:
-        species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"ID {self.modifier.arg1}"
-        return f"+{self.armor} Armor (vs. {species})"
-register_property(ArmorPlusVsSpecies)
-
-class ArmorPlusAttacking(ItemProperty):
-    identifier = 0x217
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.armor} Armor (while Attacking)"
-register_property(ArmorPlusAttacking)
-
-class ArmorPlusCasting(ItemProperty):
-    identifier = 0x218
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.armor} Armor (while Casting)"
-register_property(ArmorPlusCasting)
-
-class ArmorPlusEnchanted(ItemProperty):
-    identifier = 0x219
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.armor} Armor (while Enchanted)"
-register_property(ArmorPlusEnchanted)
-
-class ArmorPlusHexed2(ItemProperty):
-    identifier = 0x21A
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.armor} Armor (while Hexed)"
-register_property(ArmorPlusHexed2)
-
-class ArmorPlusHexed(ItemProperty):
-    identifier = 0x21C
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.armor} Armor (while Hexed)"
-register_property(ArmorPlusHexed)
-
-class ArmorPlusWhileDown(ItemProperty):
-    identifier = 0x21B
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def health_threshold(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.armor} Armor (while Health is below {self.health_threshold}%)"
-register_property(ArmorPlusWhileDown)
-
-class ArmorMinusAttacking(ItemProperty):
-    identifier = 0x201
-
-    @property
-    def armor(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"-{self.armor} Armor (while attacking)"
-register_property(ArmorMinusAttacking)
-
-class ArmorPenetration(ItemProperty):
-    identifier = 0x23F
-
-    @property
-    def armor_pen(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"Armor penetration +{self.armor_pen}% (Chance: {self.chance}%)"
-register_property(ArmorPenetration)
-
-class HealthPlus(ItemProperty):
-    identifier = 0x289
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"+{self.health} Health"
-register_property(HealthPlus)
-
-class HealthPlus2(ItemProperty):
-    identifier = 0x234
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.health} Health"
-register_property(HealthPlus2)
-
-class HealthPlusWhileDown(ItemProperty):
-    identifier = 0x230
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg2
-
-    @property
-    def health_threshold(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.health} Health (while Health is below {self.health_threshold}%)"
-register_property(HealthPlusWhileDown)
-
-class HealthPlusHexed(ItemProperty):
-    identifier = 0x237
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.health} Health (while Hexed)"
-register_property(HealthPlusHexed)
-
-class HealthPlusStance(ItemProperty):
-    identifier = 0x238
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.health} Health (while in a Stance)"
-register_property(HealthPlusStance)
-
-class HealthPlusEnchanted(ItemProperty):
-    identifier = 0x236
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"+{self.health} Health (while Enchanted)"
-register_property(HealthPlusEnchanted)
-
-class HealthMinus(ItemProperty):
-    identifier = 0x20D
-
-    @property
-    def health(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"-{self.health} Health"
-register_property(HealthMinus)
-
-class HealthDegen(ItemProperty):
-    identifier = 0x20E
-
-    @property
-    def health_regen(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"Health regeneration -{self.health_regen}"
-register_property(HealthDegen)
-
-class HealthStealOnHit(ItemProperty):
-    identifier = 0x252
-
-    @property
-    def health_steal(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"Life Draining: {self.health_steal}"
-register_property(HealthStealOnHit)
-
-class ReceiveLessDamage(ItemProperty):
-    identifier = 0x207
-
-    @property
-    def damage_reduction(self) -> int:
-        return self.modifier.arg2
-    
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg1
-
-    def describe(self) -> str:
-        return f"Received damage -{self.damage_reduction} (Chance: {self.chance}%)"
-register_property(ReceiveLessDamage)
-
-class ReceiveLessPhysDamageEnchanted(ItemProperty):
-    identifier = 0x208
-
-    @property
-    def damage_reduction(self) -> int:
-        return self.modifier.arg2
-    
-    def describe(self) -> str:
-        return f"Received physical damage -{self.damage_reduction} (while Enchanted)"
-register_property(ReceiveLessPhysDamageEnchanted)
-
-class ReceiveLessPhysDamageHexed(ItemProperty):
-    identifier = 0x209
-
-    @property
-    def damage_reduction(self) -> int:
-        return self.modifier.arg2
-    
-    def describe(self) -> str:
-        return f"Received physical damage -{self.damage_reduction} (while Hexed)"
-register_property(ReceiveLessPhysDamageHexed)
-
-class ReceiveLessPhysDamageStance(ItemProperty):
-    identifier = 0x20A
-
-    @property
-    def damage_reduction(self) -> int:
-        return self.modifier.arg2
-    
-    def describe(self) -> str:
-        return f"Received physical damage -{self.damage_reduction} (while in a Stance)"
-register_property(ReceiveLessPhysDamageStance)
-
-class AttributePlusOne(ItemProperty):
-    identifier = 0x241
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
-    
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"{AttributeNames.get(self.attribute)} +1 ({self.chance}% chance while using skills)"
-register_property(AttributePlusOne)
-
-class AttributePlusOneItem(ItemProperty):
-    identifier = 0x283
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
-    
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"Item's attribute +1 (Chance: {self.chance}%)"
-register_property(AttributePlusOneItem)
-
-class ReduceConditionDuration(ItemProperty):
-    identifier = 0x285
-
-    @property
-    def condition(self) -> Reduced_Ailment:
-        return Reduced_Ailment(self.modifier.arg1)
-
-    def describe(self) -> str:
-        return f"Reduces {self.condition.name} duration on you by 20% (Stacking)"
-register_property(ReduceConditionDuration)
-
-class ReduceConditionTupleDuration(ItemProperty):
-    identifier = 0x277
-
-    @property
-    def condition_1(self) -> Reduced_Ailment:
-        return Reduced_Ailment(self.modifier.arg1)
-
-    @property
-    def condition_2(self) -> Reduced_Ailment:
-        return Reduced_Ailment(self.modifier.arg2)
-
-    def describe(self) -> str:
-        return f"Reduces {self.condition_1.name.replace('_', ' ')} duration on you by 20% (Non-stacking)\nReduces {self.condition_2.name.replace('_', ' ')} duration on you by 20% (Non-stacking)"
-register_property(ReduceConditionTupleDuration)
-
-class IncreaseEnchantmentDuration(ItemProperty):
-    identifier = 0x22B
-
-    @property
-    def enchantment_duration(self) -> int:
-        return self.modifier.arg2
-
-    def describe(self) -> str:
-        return f"Enchantments last {self.enchantment_duration}% longer"
-register_property(IncreaseEnchantmentDuration)
-
-class IncreaseConditionDuration(ItemProperty):
-    identifier = 0x246
-
-    @property
-    def condition(self) -> Ailment:
-        return Ailment(self.modifier.arg2)
-
-    def describe(self) -> str:
-        return f"Lengthens {self.condition.name.replace('_', ' ')} duration on foes by 33%"
-register_property(IncreaseConditionDuration)
-
+@dataclass
 class Furious(ItemProperty):
-    identifier = 0x23B
-
-    @property
-    def chance(self) -> int:
-        return self.modifier.arg2
+    chance: int
 
     def describe(self) -> str:
         return f"Double Adrenaline on hit (Chance: +{self.chance}%)"
-register_property(Furious)
 
+@dataclass
+class HalvesCastingTimeAttribute(ItemProperty):
+    chance: int
+    attribute: Attribute
+
+    def describe(self) -> str:
+        return f"Halves casting time of {AttributeNames.get(self.attribute)} spells (Chance: {self.chance}%)"
+
+@dataclass
+class HalvesCastingTimeGeneral(ItemProperty):
+    chance: int
+
+    def describe(self) -> str:
+        return f"Halves casting time of spells (Chance: +{self.chance}%)"
+
+@dataclass
+class HalvesCastingTimeItemAttribute(ItemProperty):
+    chance: int
+
+    def describe(self) -> str:
+        return f"Halves casting time on spells of item's attribute (Chance: {self.chance}%)"
+
+@dataclass
+class HalvesSkillRechargeAttribute(ItemProperty):
+    chance: int
+    attribute: Attribute
+
+    def describe(self) -> str:
+        return f"Halves skill recharge of {AttributeNames.get(self.attribute)} spells (Chance: {self.chance}%)"
+
+@dataclass
+class HalvesSkillRechargeGeneral(ItemProperty):
+    chance: int
+
+    def describe(self) -> str:
+        return f"Halves skill recharge of spells (Chance: +{self.chance}%)"
+
+@dataclass
+class HalvesSkillRechargeItemAttribute(ItemProperty):
+    chance: int
+
+    def describe(self) -> str:
+        return f"Halves skill recharge on spells of item's attribute (Chance: {self.chance}%)"
+
+@dataclass
+class HeadpieceAttribute(ItemProperty):
+    attribute: Attribute
+    attribute_level: int
+
+    def describe(self) -> str:
+        return f"{AttributeNames.get(self.attribute)} +{self.attribute_level}"
+
+@dataclass
+class HeadpieceGenericAttribute(ItemProperty):
+    def describe(self) -> str:
+        return f"Item's attribute +1"
+
+@dataclass
+class HealthDegen(ItemProperty):
+    health_regen: int
+
+    def describe(self) -> str:
+        return f"Health regeneration -{self.health_regen}"
+
+@dataclass
+class HealthMinus(ItemProperty):
+    health: int
+
+    def describe(self) -> str:
+        return f"-{self.health} Health"
+
+@dataclass
+class HealthPlus(ItemProperty):
+    health: int
+
+    def describe(self) -> str:
+        return f"+{self.health} Health"
+
+@dataclass
+class HealthPlusEnchanted(ItemProperty):
+    health: int
+
+    def describe(self) -> str:
+        return f"+{self.health} Health (while Enchanted)"
+
+@dataclass
+class HealthPlusHexed(ItemProperty):
+    health: int
+
+    def describe(self) -> str:
+        return f"+{self.health} Health (while Hexed)"
+
+@dataclass
+class HealthPlusStance(ItemProperty):
+    health: int
+
+    def describe(self) -> str:
+        return f"+{self.health} Health (while in a Stance)"
+
+@dataclass
+class HealthPlusWhileDown(ItemProperty):
+    health: int
+    health_threshold: int
+
+    def describe(self) -> str:
+        return f"+{self.health} Health (while Health is below {self.health_threshold}%)"
+
+@dataclass
+class HealthStealOnHit(ItemProperty):
+    health_steal: int
+
+    def describe(self) -> str:
+        return f"Life Draining: {self.health_steal}"
+
+@dataclass
+class HighlySalvageable(ItemProperty):
+    def describe(self) -> str:
+        return f"Highly salvageable"
+
+@dataclass
+class IncreaseConditionDuration(ItemProperty):
+    condition: Ailment
+
+    def describe(self) -> str:
+        return f"Lengthens {self.condition.name.replace('_', ' ')} duration on foes by 33%"
+
+@dataclass
+class IncreaseEnchantmentDuration(ItemProperty):
+    enchantment_duration: int
+
+    def describe(self) -> str:
+        return f"Enchantments last {self.enchantment_duration}% longer"
+
+@dataclass
+class IncreasedSaleValue(ItemProperty):
+    def describe(self) -> str:
+        return f"Improved sale value"
+
+@dataclass
+class Infused(ItemProperty):
+    def describe(self) -> str:
+        return f"Infused"
+
+@dataclass
+class OfTheProfession(ItemProperty):
+    attribute: Attribute
+    attribute_level: int
+    profession: Profession
+
+    def describe(self) -> str:
+        return f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)"
+
+@dataclass
+class PrefixProperty(ItemProperty):
+    upgrade_id: int
+    upgrade: ItemUpgradeClass
+
+    def describe(self) -> str:
+        return f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}"
+
+@dataclass
+class ReceiveLessDamage(ItemProperty):
+    damage_reduction: int
+    chance: int
+
+    def describe(self) -> str:
+        return f"Received damage -{self.damage_reduction} (Chance: {self.chance}%)"
+
+@dataclass
+class ReceiveLessPhysDamageEnchanted(ItemProperty):
+    damage_reduction: int
+
+    def describe(self) -> str:
+        return f"Received physical damage -{self.damage_reduction} (while Enchanted)"
+
+@dataclass
+class ReceiveLessPhysDamageHexed(ItemProperty):
+    damage_reduction: int
+
+    def describe(self) -> str:
+        return f"Received physical damage -{self.damage_reduction} (while Hexed)"
+
+@dataclass
+class ReceiveLessPhysDamageStance(ItemProperty):
+    damage_reduction: int
+
+    def describe(self) -> str:
+        return f"Received physical damage -{self.damage_reduction} (while in a Stance)"
+
+@dataclass
+class ReduceConditionDuration(ItemProperty):
+    condition: Reduced_Ailment
+
+    def describe(self) -> str:
+        return f"Reduces {self.condition.name} duration on you by 20% (Stacking)"
+
+@dataclass
+class ReduceConditionTupleDuration(ItemProperty):
+    condition_1: Reduced_Ailment
+    condition_2: Reduced_Ailment
+
+    def describe(self) -> str:
+        return f"Reduces {self.condition_1.name.replace('_', ' ')} duration on you by 20% (Non-stacking)\nReduces {self.condition_2.name.replace('_', ' ')} duration on you by 20% (Non-stacking)"
+
+@dataclass
 class ReducesDiseaseDuration(ItemProperty):
-    identifier = 0x247
-
     def describe(self) -> str:
         return f"Reduces disease duration on you by 20%"
-register_property(ReducesDiseaseDuration)
 
-class RuneAttribute(ItemProperty):
-    identifier = 0x21E
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
-    
-    @property
-    def attribute_level(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class SuffixProperty(ItemProperty):
+    upgrade_id: int
+    upgrade: ItemUpgradeClass
 
     def describe(self) -> str:
-        return f"{AttributeNames.get(self.attribute)} +{self.attribute_level}"
-register_property(RuneAttribute)
+        return f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}"
 
-class HeadpieceAttribute(ItemProperty):
-    identifier = 0x21F
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
-    
-    @property
-    def attribute_level(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class AttributeRequirement(ItemProperty):
+    attribute: Attribute
+    attribute_level: int
 
     def describe(self) -> str:
-        return f"{AttributeNames.get(self.attribute)} +{self.attribute_level}"
-register_property(HeadpieceAttribute)
+        return f"(Requires {self.attribute_level} {AttributeNames.get(self.attribute)})"
 
-# class ArmorVsElemental(ItemProperty):
-#     identifier = 0x20F
+@dataclass
+class BaneProperty(ItemProperty):
+    species: ItemBaneSpecies
+    
+    def describe(self) -> str:
+        species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"ID {self.modifier.arg1}"
+        return f"Bane: {species}"
+    
+@dataclass
+class DamageProperty(ItemProperty):
+    min_damage: int
+    max_damage: int
+    
+    def describe(self) -> str:
+        return f"{self.min_damage}-{self.max_damage} Damage"
 
-#     @property
-#     def armor(self) -> int:
-#         return self.modifier.arg1
+@dataclass
+class UnknownUpgradeProperty(ItemProperty):
+    upgrade_id: int
+    
+    def describe(self) -> str:
+        return f"Unknown Upgrade (ID {self.upgrade_id})"
 
-#     def describe(self) -> str:
-#         return f"+{self.armor} Armor (vs. elemental dmg)XX"
-# register_property(ArmorVsElemental)
-
-class ArmorEnergyRegen(ItemProperty):
-    identifier = 0x22e
-
-    @property
-    def energy_regen(self) -> int:
-        return self.modifier.arg1
+@dataclass
+class InscriptionProperty(ItemProperty):
+    upgrade_id: int
+    upgrade: ItemUpgradeClass
 
     def describe(self) -> str:
-        return f"Energy recovery +{self.energy_regen}"
-register_property(ArmorEnergyRegen)
-
-class HeadpieceGenericAttribute(ItemProperty):
-    # identifier = 0x262
-    identifier = 0x284
-
-    @property
-    def attribute(self) -> Attribute:
-        return Attribute(self.modifier.arg1)
+        return f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}"
     
-    @property
-    def attribute_level(self) -> int:
-        return self.modifier.arg2
+@dataclass
+class UpgradeRuneProperty(ItemProperty):
+    upgrade_id: int
+    upgrade: ItemUpgradeClass
 
     def describe(self) -> str:
-        return f"Item's attribute +{self.attribute_level}"
-register_property(HeadpieceGenericAttribute)
-
-class InsigniaProperty(ItemProperty):
-    identifier = 0x240
+        return f"RUNE: {self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}"
     
-    @property
-    def insignia(self) -> Optional[Insignia]:
-        property_cls = _INSIGNIA_REGISTRY.get(self.modifier.arg)
-        if property_cls:
-            prop = property_cls(self.modifier)
-            if isinstance(prop, Insignia):
-                return prop
+@dataclass
+class AppliesToRuneProperty(ItemProperty):
+    upgrade_id: int
+    upgrade: ItemUpgradeClass
+
+    def describe(self) -> str:
+        return f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}"
+
+@dataclass
+class TooltipProperty(ItemProperty):
+    pass
+
+def get_profession_from_attribute(attribute: Attribute) -> Optional[Profession]:
+    for prof, attr in ProfessionAttributes.__dict__.items():
+        if isinstance(attr, list) and attribute in attr:
+            return Profession[prof]
+    return None
+
+def get_upgrade_property(modifier: DecodedModifier) -> ItemProperty:
+    upgrade = next((u for u in ITEM_UPGRADES if u.upgrade_id == modifier.upgrade_id), None)
+    upgrade_type = upgrade.upgrade_type if upgrade else None
+    
+    if upgrade:
+        match upgrade_type:
+            case ItemUpgradeType.Prefix:
+                return PrefixProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
             
-        return None
+            case ItemUpgradeType.Suffix:
+                return SuffixProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
+            
+            case ItemUpgradeType.Inscription:
+                return InscriptionProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
+            
+            case ItemUpgradeType.UpgradeRune:
+                return UpgradeRuneProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
+            
+            case ItemUpgradeType.AppliesToRune:
+                return AppliesToRuneProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
+    
+    return UnknownUpgradeProperty(modifier=modifier, upgrade_id=modifier.upgrade_id)
         
-    def describe(self) -> str:
-        insignia = self.insignia
-        if insignia:
-            return f"{insignia.describe()}"
-        else:
-            return f"Unknown Insignia (ID {self.modifier.arg})"
-    
-    def is_valid(self) -> bool:
-        return self.insignia is not None
-    
-register_property(InsigniaProperty)
+_PROPERTY_FACTORY: dict[ModifierIdentifier, Callable[[DecodedModifier], ItemProperty]] = {
+    ModifierIdentifier.Armor1: lambda m: Armor(modifier=m, armor=m.arg1),
+    ModifierIdentifier.Armor2: lambda m: Armor(modifier=m, armor=m.arg1),
+    ModifierIdentifier.ArmorEnergyRegen: lambda m: ArmorEnergyRegen(modifier=m, energy_regen=m.arg1),
+    ModifierIdentifier.ArmorMinusAttacking: lambda m: ArmorMinusAttacking(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPenetration: lambda m: ArmorPenetration(modifier=m, armor_pen=m.arg2, chance=m.arg1),
+    ModifierIdentifier.ArmorPlus: lambda m: ArmorPlus(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusAttacking: lambda m: ArmorPlusAttacking(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusCasting: lambda m: ArmorPlusCasting(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusEnchanted: lambda m: ArmorPlusEnchanted(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusHexed: lambda m: ArmorPlusHexed(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusHexed2: lambda m: ArmorPlusHexed2(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusVsDamage: lambda m: ArmorPlusVsDamage(modifier=m, armor=m.arg2, damage_type=DamageType(m.arg1)),
+    ModifierIdentifier.ArmorPlusVsElemental: lambda m: ArmorPlusVsElemental(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusVsPhysical: lambda m: ArmorPlusVsPhysical(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusVsPhysical2: lambda m: ArmorPlusVsPhysical(modifier=m, armor=m.arg2),
+    ModifierIdentifier.ArmorPlusVsSpecies: lambda m: ArmorPlusVsSpecies(modifier=m, armor=m.arg2, species=ItemBaneSpecies(m.arg1)),
+    ModifierIdentifier.ArmorPlusWhileDown: lambda m: ArmorPlusWhileDown(modifier=m, armor=m.arg2, health_threshold=m.arg1),
+    ModifierIdentifier.AttributePlusOne: lambda m: AttributePlusOne(modifier=m, attribute=Attribute(m.arg1), chance=m.arg2),
+    ModifierIdentifier.AttributePlusOneItem: lambda m: AttributePlusOneItem(modifier=m, chance=m.arg2),
+    ModifierIdentifier.AttributeRequirement: lambda m: AttributeRequirement(modifier=m, attribute=Attribute(m.arg1), attribute_level=m.arg2),
+    ModifierIdentifier.BaneSpecies: lambda m: BaneProperty(modifier=m, species=ItemBaneSpecies(m.arg1)),
+    ModifierIdentifier.Damage: lambda m: DamageProperty(modifier=m, min_damage=m.arg2, max_damage=m.arg1),
+    ModifierIdentifier.Damage2: lambda m: DamageProperty(modifier=m, min_damage=m.arg2, max_damage=m.arg1),
+    ModifierIdentifier.DamageCustomized: lambda m: DamageCustomized(modifier=m, damage_increase=m.arg1 - 100),
+    ModifierIdentifier.DamagePlusEnchanted: lambda m: DamagePlusEnchanted(modifier=m, damage_increase=m.arg2),
+    ModifierIdentifier.DamagePlusHexed: lambda m: DamagePlusHexed(modifier=m, damage_increase=m.arg2),
+    ModifierIdentifier.DamagePlusPercent: lambda m: DamagePlusPercent(modifier=m, damage_increase=m.arg2),
+    ModifierIdentifier.DamagePlusStance: lambda m: DamagePlusStance(modifier=m, damage_increase=m.arg2),
+    ModifierIdentifier.DamagePlusVsHexed: lambda m: DamagePlusVsHexed(modifier=m, damage_increase=m.arg2),
+    ModifierIdentifier.DamagePlusVsSpecies: lambda m: DamagePlusVsSpecies(modifier=m, damage_increase=m.arg1, species=ItemBaneSpecies(m.arg2)),
+    ModifierIdentifier.DamagePlusWhileDown: lambda m: DamagePlusWhileDown(modifier=m, damage_increase=m.arg2, health_threshold=m.arg1),
+    ModifierIdentifier.DamagePlusWhileUp: lambda m: DamagePlusWhileUp(modifier=m, damage_increase=m.arg2, health_threshold=m.arg1),
+    ModifierIdentifier.DamageTypeProperty: lambda m: DamageTypeProperty(modifier=m, damage_type=DamageType(m.arg1)),
+    ModifierIdentifier.Energy: lambda m: Energy(modifier=m, energy=m.arg1),
+    ModifierIdentifier.Energy2: lambda m: Energy(modifier=m, energy=m.arg1),
+    ModifierIdentifier.EnergyDegen: lambda m: EnergyDegen(modifier=m, energy_regen=m.arg2),
+    ModifierIdentifier.EnergyGainOnHit: lambda m: EnergyGainOnHit(modifier=m, energy_gain=m.arg2),
+    ModifierIdentifier.EnergyMinus: lambda m: EnergyMinus(modifier=m, energy=m.arg2),
+    ModifierIdentifier.EnergyPlus : lambda m: EnergyPlus(modifier=m, energy=m.arg2),
+    ModifierIdentifier.EnergyPlusEnchanted: lambda m: EnergyPlusEnchanted(modifier=m, energy=m.arg2),
+    ModifierIdentifier.EnergyPlusHexed: lambda m: EnergyPlusHexed(modifier=m, energy=m.arg2),
+    ModifierIdentifier.EnergyPlusWhileBelow: lambda m: EnergyPlusWhileBelow(modifier=m, energy=m.arg2, health_threshold=m.arg1),
+    ModifierIdentifier.Furious: lambda m: Furious(modifier=m, chance=m.arg2),
+    ModifierIdentifier.HalvesCastingTimeAttribute: lambda m: HalvesCastingTimeAttribute(modifier=m, chance=m.arg1, attribute=Attribute(m.arg2)),
+    ModifierIdentifier.HalvesCastingTimeGeneral: lambda m: HalvesCastingTimeGeneral(modifier=m, chance=m.arg1),
+    ModifierIdentifier.HalvesCastingTimeItemAttribute: lambda m: HalvesCastingTimeItemAttribute(modifier=m, chance=m.arg1),
+    ModifierIdentifier.HalvesSkillRechargeAttribute: lambda m: HalvesSkillRechargeAttribute(modifier=m, chance=m.arg1, attribute=Attribute(m.arg2)),
+    ModifierIdentifier.HalvesSkillRechargeGeneral: lambda m: HalvesSkillRechargeGeneral(modifier=m, chance=m.arg1),
+    ModifierIdentifier.HalvesSkillRechargeItemAttribute: lambda m: HalvesSkillRechargeItemAttribute(modifier=m, chance=m.arg1),
+    ModifierIdentifier.HeadpieceAttribute: lambda m: HeadpieceAttribute(modifier=m, attribute=Attribute(m.arg2), attribute_level=m.arg1),
+    ModifierIdentifier.HeadpieceGenericAttribute: lambda m: HeadpieceGenericAttribute(modifier=m),
+    ModifierIdentifier.HealthDegen: lambda m: HealthDegen(modifier=m, health_regen=m.arg2),
+    ModifierIdentifier.HealthMinus: lambda m: HealthMinus(modifier=m, health=m.arg2),
+    ModifierIdentifier.HealthPlus: lambda m: HealthPlus(modifier=m, health=m.arg2),
+    ModifierIdentifier.HealthPlus2 : lambda m: HealthPlus(modifier=m, health=m.arg1),
+    ModifierIdentifier.HealthPlusEnchanted: lambda m: HealthPlusEnchanted(modifier=m, health=m.arg1),
+    ModifierIdentifier.HealthPlusHexed: lambda m: HealthPlusHexed(modifier=m, health=m.arg1),
+    ModifierIdentifier.HealthPlusStance: lambda m: HealthPlusStance(modifier=m, health=m.arg1),
+    ModifierIdentifier.HealthPlusWhileDown: lambda m: HealthPlusWhileDown(modifier=m, health=m.arg2, health_threshold=m.arg1),
+    ModifierIdentifier.HealthStealOnHit: lambda m: HealthStealOnHit(modifier=m, health_steal=m.arg1),
+    ModifierIdentifier.HighlySalvageable: lambda m: HighlySalvageable(modifier=m),
+    ModifierIdentifier.IncreaseConditionDuration: lambda m: IncreaseConditionDuration(modifier=m, condition=Ailment(m.arg2)),
+    ModifierIdentifier.IncreaseEnchantmentDuration: lambda m: IncreaseEnchantmentDuration(modifier=m, enchantment_duration=m.arg2),
+    ModifierIdentifier.IncreasedSaleValue: lambda m: IncreasedSaleValue(modifier=m),
+    ModifierIdentifier.Infused: lambda m: Infused(modifier=m),
+    ModifierIdentifier.OfTheProfession: lambda m: OfTheProfession(modifier=m, attribute=Attribute(m.arg1), attribute_level=m.arg2, profession=get_profession_from_attribute(Attribute(m.arg1)) or Profession._None),
+    ModifierIdentifier.ReceiveLessPhysDamageEnchanted: lambda m: ReceiveLessPhysDamageEnchanted(modifier=m, damage_reduction=m.arg2),
+    ModifierIdentifier.ReceiveLessPhysDamageHexed: lambda m: ReceiveLessPhysDamageHexed(modifier=m, damage_reduction=m.arg2),
+    ModifierIdentifier.ReceiveLessPhysDamageStance: lambda m: ReceiveLessPhysDamageStance(modifier=m, damage_reduction=m.arg2),
+    ModifierIdentifier.ReduceConditionDuration: lambda m: ReduceConditionDuration(modifier=m, condition=Reduced_Ailment(m.arg1)),
+    ModifierIdentifier.ReduceConditionTupleDuration: lambda m: ReduceConditionTupleDuration(modifier=m, condition_1=Reduced_Ailment(m.arg2), condition_2=Reduced_Ailment(m.arg1)),
+    ModifierIdentifier.ReducesDiseaseDuration: lambda m: ReducesDiseaseDuration(modifier=m),
+    ModifierIdentifier.ReceiveLessDamage: lambda m: ReceiveLessDamage(modifier=m, damage_reduction=m.arg2, chance=m.arg1),
+    ModifierIdentifier.Upgrade1: lambda m: get_upgrade_property(m),
+    ModifierIdentifier.Upgrade2: lambda m: get_upgrade_property(m),
+}
