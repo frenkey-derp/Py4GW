@@ -2542,3 +2542,20 @@ class Upgrades(Enum):
         upgrade_type = ItemUpgradeClassType.Suffix
     )
 
+    OfSlaying = Upgrade(
+        names = {
+        ServerLanguage.German: "d. Tötung",
+            ServerLanguage.English: "of Slaying",
+            ServerLanguage.Korean: "(상대 무기)",
+            ServerLanguage.French: "(anti-)",
+            ServerLanguage.Italian: "del martello da Uccisione",
+            ServerLanguage.Spanish: "(matador)",
+            ServerLanguage.TraditionalChinese: "殺戮",
+            ServerLanguage.Japanese: "(スレイング)",
+            ServerLanguage.Polish: "(Zabijania)",
+            ServerLanguage.Russian: "of Slaying",
+            ServerLanguage.BorkBorkBork: "ooff Slaeyeeng"},
+        descriptions = {
+        ServerLanguage.English: "Damage +{arg1[41544]}% (vs. {arg1[32896]})"},
+        upgrade_type = ItemUpgradeClassType.Suffix
+    )
