@@ -25,13 +25,7 @@ def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     return value, hex(value)
 
 def run_test():
-    data = Data()
-    inscriptions = [mod for mod in data.Weapon_Mods.values() if mod.mod_type == ModType.Inherent and mod.upgrade_exists]
-    # sort inscriptions by their amount of target_types (ascending), and then by the first target type (e.g. Axe, Dagger, etc.)
-    inscriptions.sort(key=lambda mod: (len(mod.target_types), mod.target_types[0].value if mod.target_types else ""))
-    
-    for insc in inscriptions:
-        print(f"{insc.name} | Target Types: {[t.name for t in insc.target_types]}")
+    Py4GW.Console.Log("ItemHandling", f"{get_true_identifier_with_hex(8680)}")
 
 UPGRADE_PATTERN = re.compile(
     r'ItemUpgrade\s+(\w+)\s*=\s*new\(\s*([^,]+)\s*,\s*"((?:\\.|[^"\\])*)"\s*,\s*ItemUpgradeType\.([A-Za-z_]+)\s*\);'
