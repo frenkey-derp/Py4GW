@@ -5,7 +5,7 @@ import Py4GW
 
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, ProfessionAttributes, Reduced_Ailment
-from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier
@@ -1768,8 +1768,19 @@ class SeizeTheDay(Upgrade):
 
 #region Armor Upgrades
 
-class AttributeRune(Upgrade):
+class Insignia(Upgrade):
+    mod_type = ItemUpgradeType.Prefix
+    inventory_icon : str
+    rarity : Rarity = Rarity.Blue
+    profession : Profession = Profession._None
+
+class Rune(Upgrade):
     mod_type = ItemUpgradeType.Suffix
+    inventory_icon : str
+    rarity : Rarity = Rarity.Blue
+    profession : Profession = Profession._None
+    
+class AttributeRune(Rune):
     attribute : Attribute
     attribute_level : int
 
@@ -1802,7 +1813,7 @@ class AttributeRune(Upgrade):
 
     
 #region No Profession
-class SurvivorInsignia(Upgrade):
+class SurvivorInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Survivor,
@@ -1814,7 +1825,7 @@ class SurvivorInsignia(Upgrade):
     
     property_identifiers = []
     
-class RadiantInsignia(Upgrade):
+class RadiantInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Radiant,
@@ -1826,7 +1837,7 @@ class RadiantInsignia(Upgrade):
     
     property_identifiers = []
     
-class StalwartInsignia(Upgrade):
+class StalwartInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Stalwart,
@@ -1838,7 +1849,7 @@ class StalwartInsignia(Upgrade):
     
     property_identifiers = []
 
-class BrawlersInsignia(Upgrade):
+class BrawlersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Brawlers,
@@ -1850,7 +1861,7 @@ class BrawlersInsignia(Upgrade):
     
     property_identifiers = []
     
-class BlessedInsignia(Upgrade):
+class BlessedInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Blessed,
@@ -1862,7 +1873,7 @@ class BlessedInsignia(Upgrade):
     
     property_identifiers = []
     
-class HeraldsInsignia(Upgrade):
+class HeraldsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Heralds,
@@ -1874,7 +1885,7 @@ class HeraldsInsignia(Upgrade):
     
     property_identifiers = []
     
-class SentrysInsignia(Upgrade):
+class SentrysInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Sentrys,
@@ -1886,7 +1897,7 @@ class SentrysInsignia(Upgrade):
     
     property_identifiers = []
     
-class RuneOfMinorVigor(Upgrade):
+class RuneOfMinorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorVigor,
@@ -1898,7 +1909,7 @@ class RuneOfMinorVigor(Upgrade):
     
     property_identifiers = []
     
-class RuneOfMinorVigor2(Upgrade):
+class RuneOfMinorVigor2(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorVigor2,
@@ -1910,7 +1921,7 @@ class RuneOfMinorVigor2(Upgrade):
     
     property_identifiers = []
 
-class RuneOfVitae(Upgrade):
+class RuneOfVitae(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfVitae,
@@ -1922,7 +1933,7 @@ class RuneOfVitae(Upgrade):
     
     property_identifiers = []
 
-class RuneOfAttunement(Upgrade):
+class RuneOfAttunement(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfAttunement,
@@ -1934,7 +1945,7 @@ class RuneOfAttunement(Upgrade):
     
     property_identifiers = []
 
-class RuneOfMajorVigor(Upgrade):
+class RuneOfMajorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorVigor,
@@ -1946,7 +1957,7 @@ class RuneOfMajorVigor(Upgrade):
     
     property_identifiers = []
 
-class RuneOfRecovery(Upgrade):
+class RuneOfRecovery(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfRecovery,
@@ -1960,7 +1971,7 @@ class RuneOfRecovery(Upgrade):
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
 
-class RuneOfRestoration(Upgrade):
+class RuneOfRestoration(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfRestoration,
@@ -1974,7 +1985,7 @@ class RuneOfRestoration(Upgrade):
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
 
-class RuneOfClarity(Upgrade):
+class RuneOfClarity(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfClarity,
@@ -1988,7 +1999,7 @@ class RuneOfClarity(Upgrade):
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
     
-class RuneOfPurity(Upgrade):
+class RuneOfPurity(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfPurity,
@@ -2002,7 +2013,7 @@ class RuneOfPurity(Upgrade):
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
 
-class RuneOfSuperiorVigor(Upgrade):
+class RuneOfSuperiorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorVigor,
@@ -2016,7 +2027,7 @@ class RuneOfSuperiorVigor(Upgrade):
 #endregion No Profession
 
 #region Warrior
-class KnightsInsignia(Upgrade):
+class KnightsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Knights,
@@ -2028,7 +2039,7 @@ class KnightsInsignia(Upgrade):
     
     property_identifiers = []
     
-class LieutenantsInsignia(Upgrade):
+class LieutenantsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Lieutenants,
@@ -2040,7 +2051,7 @@ class LieutenantsInsignia(Upgrade):
     
     property_identifiers = []
     
-class StonefistInsignia(Upgrade):
+class StonefistInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Stonefist,
@@ -2052,7 +2063,7 @@ class StonefistInsignia(Upgrade):
     
     property_identifiers = []
     
-class DreadnoughtInsignia(Upgrade):
+class DreadnoughtInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Dreadnought,
@@ -2064,7 +2075,7 @@ class DreadnoughtInsignia(Upgrade):
     
     property_identifiers = []
     
-class SentinelsInsignia(Upgrade):
+class SentinelsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Sentinels,
@@ -2076,7 +2087,7 @@ class SentinelsInsignia(Upgrade):
     
     property_identifiers = []
     
-class RuneOfMinorAbsorption(Upgrade):
+class RuneOfMinorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorAbsorption,
@@ -2148,7 +2159,7 @@ class RuneOfMinorSwordsmanship(AttributeRune):
     
     property_identifiers = []
     
-class RuneOfMajorAbsorption(Upgrade):
+class RuneOfMajorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorAbsorption,
@@ -2230,7 +2241,7 @@ class RuneOfMajorSwordsmanship(AttributeRune):
         ModifierIdentifier.HealthMinus
     ]
     
-class RuneOfSuperiorAbsorption(Upgrade):
+class RuneOfSuperiorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
     id = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorAbsorption,
@@ -2386,7 +2397,7 @@ class AppliesToSuperiorRuneWarrior(Upgrade):
 #endregion Warrior
 
 #region Ranger
-class FrostboundInsignia(Upgrade):
+class FrostboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Frostbound,
@@ -2398,7 +2409,7 @@ class FrostboundInsignia(Upgrade):
     
     property_identifiers = []
     
-class PyreboundInsignia(Upgrade):
+class PyreboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Pyrebound,
@@ -2410,7 +2421,7 @@ class PyreboundInsignia(Upgrade):
     
     property_identifiers = []
     
-class StormboundInsignia(Upgrade):
+class StormboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Stormbound,
@@ -2422,7 +2433,7 @@ class StormboundInsignia(Upgrade):
     
     property_identifiers = []
     
-class ScoutsInsignia(Upgrade):
+class ScoutsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Scouts,
@@ -2434,7 +2445,7 @@ class ScoutsInsignia(Upgrade):
     
     property_identifiers = []
     
-class EarthboundInsignia(Upgrade):
+class EarthboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Earthbound,
@@ -2446,7 +2457,7 @@ class EarthboundInsignia(Upgrade):
     
     property_identifiers = []
     
-class BeastmastersInsignia(Upgrade):
+class BeastmastersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Beastmasters,
@@ -2692,7 +2703,7 @@ class AppliesToSuperiorRuneRanger(Upgrade):
 #endregion Ranger
 
 #region Monk
-class WanderersInsignia(Upgrade):
+class WanderersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Wanderers,
@@ -2704,7 +2715,7 @@ class WanderersInsignia(Upgrade):
     
     property_identifiers = []
     
-class DisciplesInsignia(Upgrade):
+class DisciplesInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Disciples,
@@ -2716,7 +2727,7 @@ class DisciplesInsignia(Upgrade):
     
     property_identifiers = []
     
-class AnchoritesInsignia(Upgrade):
+class AnchoritesInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Anchorites,
@@ -2962,7 +2973,7 @@ class AppliesToSuperiorRuneMonk(Upgrade):
 #endregion Monk
 
 #region Necromancer
-class BloodstainedInsignia(Upgrade):
+class BloodstainedInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Bloodstained,
@@ -2974,7 +2985,7 @@ class BloodstainedInsignia(Upgrade):
     
     property_identifiers = []
     
-class TormentorsInsignia(Upgrade):
+class TormentorsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Tormentors,
@@ -2986,7 +2997,7 @@ class TormentorsInsignia(Upgrade):
     
     property_identifiers = []
     
-class BonelaceInsignia(Upgrade):
+class BonelaceInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Bonelace,
@@ -2998,7 +3009,7 @@ class BonelaceInsignia(Upgrade):
     
     property_identifiers = []
     
-class MinionMastersInsignia(Upgrade):
+class MinionMastersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.MinionMasters,
@@ -3010,7 +3021,7 @@ class MinionMastersInsignia(Upgrade):
     
     property_identifiers = []
     
-class BlightersInsignia(Upgrade):
+class BlightersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Blighters,
@@ -3022,7 +3033,7 @@ class BlightersInsignia(Upgrade):
     
     property_identifiers = []
     
-class UndertakersInsignia(Upgrade):
+class UndertakersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Undertakers,
@@ -3268,7 +3279,7 @@ class AppliesToSuperiorRuneNecromancer(Upgrade):
 #endregion Necromancer
 
 #region Mesmer
-class VirtuososInsignia(Upgrade):    
+class VirtuososInsignia(Insignia):    
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Virtuosos,
@@ -3280,7 +3291,7 @@ class VirtuososInsignia(Upgrade):
     
     property_identifiers = []
     
-class ArtificersInsignia(Upgrade):
+class ArtificersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Artificers,
@@ -3292,7 +3303,7 @@ class ArtificersInsignia(Upgrade):
     
     property_identifiers = []
     
-class ProdigysInsignia(Upgrade):
+class ProdigysInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Prodigys,
@@ -3538,7 +3549,7 @@ class AppliesToSuperiorRuneMesmer(Upgrade):
 #endregion Mesmer
 
 #region Elementalist
-class HydromancerInsignia(Upgrade):
+class HydromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Hydromancer,
@@ -3550,7 +3561,7 @@ class HydromancerInsignia(Upgrade):
     
     property_identifiers = []
     
-class GeomancerInsignia(Upgrade):
+class GeomancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Geomancer,
@@ -3562,7 +3573,7 @@ class GeomancerInsignia(Upgrade):
     
     property_identifiers = []
     
-class PyromancerInsignia(Upgrade):
+class PyromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Pyromancer,
@@ -3574,7 +3585,7 @@ class PyromancerInsignia(Upgrade):
     
     property_identifiers = []   
     
-class AeromancerInsignia(Upgrade):
+class AeromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Aeromancer,
@@ -3586,7 +3597,7 @@ class AeromancerInsignia(Upgrade):
     
     property_identifiers = []
     
-class PrismaticInsignia(Upgrade):
+class PrismaticInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Prismatic,
@@ -3872,7 +3883,7 @@ class AppliesToSuperiorRuneElementalist(Upgrade):
 #endregion Elementalist
 
 #region Assassin
-class VanguardsInsignia(Upgrade):
+class VanguardsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Vanguards,
@@ -3884,7 +3895,7 @@ class VanguardsInsignia(Upgrade):
     
     property_identifiers = []
     
-class InfiltratorsInsignia(Upgrade):
+class InfiltratorsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Infiltrators,
@@ -3896,7 +3907,7 @@ class InfiltratorsInsignia(Upgrade):
     
     property_identifiers = []
     
-class SaboteursInsignia(Upgrade):
+class SaboteursInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Saboteurs,
@@ -3908,7 +3919,7 @@ class SaboteursInsignia(Upgrade):
     
     property_identifiers = []
     
-class NightstalkersInsignia(Upgrade):
+class NightstalkersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Nightstalkers,
@@ -4152,7 +4163,7 @@ class AppliesToSuperiorRuneAssassin(Upgrade):
 #endregion Assassin
 
 #region Ritualist
-class ShamansInsignia(Upgrade):
+class ShamansInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Shamans,
@@ -4164,7 +4175,7 @@ class ShamansInsignia(Upgrade):
     
     property_identifiers = []
     
-class GhostForgeInsignia(Upgrade):
+class GhostForgeInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.GhostForge,
@@ -4176,7 +4187,7 @@ class GhostForgeInsignia(Upgrade):
     
     property_identifiers = []
     
-class MysticsInsignia(Upgrade):
+class MysticsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Mystics,
@@ -4422,7 +4433,7 @@ class AppliesToSuperiorRuneRitualist(Upgrade):
 #endregion Ritualist
 
 #region Dervish
-class WindwalkerInsignia(Upgrade):
+class WindwalkerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Windwalker,
@@ -4434,7 +4445,7 @@ class WindwalkerInsignia(Upgrade):
     
     property_identifiers = []
     
-class ForsakenInsignia(Upgrade):
+class ForsakenInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Forsaken,
@@ -4680,7 +4691,7 @@ class AppliesToSuperiorRuneDervish(Upgrade):
 #endregion Dervish
 
 #region Paragon
-class CenturionsInsignia(Upgrade):
+class CenturionsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = {
         ItemType.Headpiece: ItemUpgradeId.Centurions,
