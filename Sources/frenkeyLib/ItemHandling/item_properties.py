@@ -4964,6 +4964,11 @@ _UPGRADES: list[type[Upgrade]] = [
     AdeptStaffUpgrade,
     OfMemoryUpgrade,
     OfQuickeningUpgrade,
+    OfAptitudeUpgrade,
+    OfDevotionUpgrade,
+    OfValorUpgrade,
+    OfEnduranceUpgrade,
+    OfSwiftnessUpgrade,
     
     BeJustAndFearNot,
     DownButNotOut,
