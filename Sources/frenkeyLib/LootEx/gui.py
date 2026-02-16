@@ -727,8 +727,14 @@ class UI:
             ItemFilter("Trophies", lambda item: item.category == ItemCategory.Trophy),
             ItemFilter("Reward Trophies", lambda item: item.category == ItemCategory.RewardTrophy),
             ItemFilter("Quest Items", lambda item: item.category == ItemCategory.QuestItem), 
-            ItemFilter("Miniatures", lambda item: item.item_type == ItemType.Minipet),   
+            ItemFilter("Miniatures", lambda item: item.item_type == ItemType.Minipet),
+            ItemFilter("Bags", lambda item: item.item_type == ItemType.Bag),
         ]
+        for item_type in sorted_item_types:            
+            #if not any filter name matches the item type name, add a filter for it
+            if not any(filter.name == utility.Util.reformat_string(item_type.name) for filter in self.filters):
+                self.filters.append(ItemFilter(utility.Util.reformat_string(item_type.name), lambda item, it=item_type: item.item_type == it))
+            
         self.selected_skin_filter: Optional[ItemFilter] = None
         self.skin_search = ""
         self.skin_select_popup = False

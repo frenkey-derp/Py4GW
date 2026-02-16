@@ -28,7 +28,7 @@ class ModifierIdentifier(IntEnum):
     ArmorPlusCasting = 0x218
     ArmorPlusEnchanted = 0x219
     ArmorPlusHexed = 0x21c
-    ArmorPlusHexed2 = 0x21a
+    ArmorPlusAbove = 0x21a
     ArmorPlusVsDamage = 0x211
     ArmorPlusVsElemental = 0x212
     ArmorPlusVsPhysical = 0x215
@@ -71,12 +71,12 @@ class ModifierIdentifier(IntEnum):
     HeadpieceGenericAttribute = 0x284
     HealthDegen = 0x20e
     HealthMinus = 0x20d
-    HealthPlus = 0x289
-    HealthPlus2 = 0x234
+    HealthPlus = 0x234
+    HealthPlus2 = 0x289
     HealthPlusEnchanted = 0x236
     HealthPlusHexed = 0x237
     HealthPlusStance = 0x238
-    HealthPlusWhileDown = 0x230
+    EnergyPlusWhileDown = 0x230
     HealthStealOnHit = 0x252
     HighlySalvageable = 0x260
     IncreaseConditionDuration = 0x246

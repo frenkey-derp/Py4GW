@@ -2,19 +2,17 @@
 from typing import Optional
 import re
 import Py4GW
+import PyImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.Inventory import Inventory
-from Py4GWCoreLib.Item import Item
-from Py4GWCoreLib.enums_src.GameData_enums import DamageType
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Sources.frenkeyLib.ItemHandling.item_modifiers import ItemProperty
-from Sources.frenkeyLib.ItemHandling.item_properties import AppliesToRuneProperty, AttributeRequirement, BaneProperty, DamageCustomized, DamageProperty, DamageTypeProperty, InscriptionProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
-from Sources.frenkeyLib.ItemHandling.types import ItemModifierParam
+from Sources.frenkeyLib.ItemHandling.item_properties import DamageProperty
+from Sources.frenkeyLib.ItemHandling.item_types.base_item import Axe, Bag, Salvage, Item, Scythe
 from Sources.frenkeyLib.LootEx.data import Data
 from Sources.frenkeyLib.LootEx.enum import ModType
 
@@ -26,26 +24,14 @@ def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     value = (runtime_identifier >> 4) & 0x3FF
     return value, hex(value)
 
-import inspect
-from dataclasses import dataclass
-
-
 def run_test():
-    def localized_dictionary_to_string(d: dict[ServerLanguage, str]) -> str:
-        return "{\n\t" + ",\n\t\t".join(f"ServerLanguage.{lang.name}: \"{text.replace('\"', '\\\"')}\"" for lang, text in d.items()) + "}"
-    with open("test_weapon_upgradesoutput.txt", "w", encoding="utf-8") as f:
-        data = Data()
-        data.Load()
-        
-        for key, mod in data.Weapon_Mods.items():
-            txt = f"""{key.replace(" ", "").replace('"', '').replace("'", "").replace("-", "").replace(".", "").replace(",", "")} = Upgrade(
-    names = {localized_dictionary_to_string(mod.names)},
-    descriptions = {localized_dictionary_to_string(mod.descriptions)},
-    upgrade_type = ItemUpgradeClassType.{mod.mod_type.name}
-)\n\n"""
-            
-            f.write(txt)
-
+    data = Data()
+    inscriptions = [mod for mod in data.Weapon_Mods.values() if mod.mod_type == ModType.Inherent and mod.upgrade_exists]
+    # sort inscriptions by their amount of target_types (ascending), and then by the first target type (e.g. Axe, Dagger, etc.)
+    inscriptions.sort(key=lambda mod: (len(mod.target_types), mod.target_types[0].value if mod.target_types else ""))
+    
+    for insc in inscriptions:
+        print(f"{insc.name} | Target Types: {[t.name for t in insc.target_types]}")
 
 UPGRADE_PATTERN = re.compile(
     r'ItemUpgrade\s+(\w+)\s*=\s*new\(\s*([^,]+)\s*,\s*"((?:\\.|[^"\\])*)"\s*,\s*ItemUpgradeType\.([A-Za-z_]+)\s*\);'
@@ -142,33 +128,10 @@ HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=r
 
 hovered_item_id = Inventory.GetHoveredItemID()
 parser : Optional[ItemModifierParser] = None
-
-def sort_for_item_display(props: list[ItemProperty]) -> list[ItemProperty]:
-
-    GROUP_ORDER = {
-        DamageTypeProperty: 1,
-        DamageProperty: 2,
-        AttributeRequirement: 3,
-        PrefixProperty: 4,
-        SuffixProperty: 4,
-        UpgradeRuneProperty: 4,
-        InscriptionProperty: 5,
-        DamageCustomized: 6,
-    }
-
-    def get_group(prop: ItemProperty) -> int:
-        for cls, order in GROUP_ORDER.items():
-            if isinstance(prop, cls):
-                return order
-        return 5
-
-    def get_identifier(prop: ItemProperty) -> int:
-        return getattr(prop.__class__, "identifier", 999999)
-
-    return sorted(props, key=lambda p: (get_group(p), get_identifier(p)))
+item : Optional[Item] = None
 
 def main():
-    global hovered_item_id, parser
+    global hovered_item_id, parser, item
     
     open = ImGui.begin("Item Modifier Parser Test")
     if open:
@@ -179,11 +142,30 @@ def main():
         if hovered_item_id != item_id and item_id != 0:
             hovered_item_id = item_id
             parser = ItemModifierParser(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(hovered_item_id))
-        
+            item  = Item.from_item_id(hovered_item_id)
+            
         if parser:
-            for prop in sort_for_item_display(parser.get_properties()):
-                if parser:
-                    ImGui.text(prop.describe())
+            if ImGui.begin_table("properties", 2, PyImGui.TableFlags.Borders):
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                for prop in parser.get_properties():
+                    if parser:
+                        ImGui.text(f"{type(prop).__name__}")
+                        PyImGui.table_next_column()
+                        ImGui.text(f"{prop.describe()}")
+                        PyImGui.table_next_column()
+                ImGui.end_table()
+        
+        ImGui.separator()
+        # if item:
+        #     ImGui.text(f"Item: {item.name} | Type: {item.item_type.name}")
+        
+        #     ImGui.text(item.damage.describe() if hasattr(item, 'damage') and item.damage else "No damage")
+        #     ImGui.text(item.damage_type.describe() if hasattr(item, 'damage_type') and item.damage_type else "No damage type")
+        #     ImGui.text(item.prefix.describe() if hasattr(item, 'prefix') and item.prefix else "No prefix properties")
+        #     ImGui.text(item.inherent.describe() if hasattr(item, 'inherent') and item.inherent else "No inherent properties")
+        #     ImGui.text(item.suffix.describe() if hasattr(item, 'suffix') and item.suffix else "No suffix properties")
                 
         
     ImGui.end()

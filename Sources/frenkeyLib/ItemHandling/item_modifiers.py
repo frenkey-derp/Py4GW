@@ -1,12 +1,11 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from enum import IntEnum
-from typing import Iterable, List, Optional, Dict, Type
+from typing import Optional
 
-import Py4GW
 from PyItem import ItemModifier
 
 from Sources.frenkeyLib.ItemHandling.types import ItemModifierParam, ModifierIdentifier
+from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgradeId
 
 @dataclass(frozen=True)
 class DecodedModifier:
@@ -17,7 +16,7 @@ class DecodedModifier:
     arg2: int
     arg: int
     raw_bits: int
-    upgrade_id: int
+    upgrade_id: ItemUpgradeId
     flags: int
     
     @staticmethod
@@ -56,7 +55,7 @@ class DecodedModifier:
 
         identifier = ModifierIdentifier(stripped_identifier)
         param_value = ItemModifierParam((runtime_identifier  >> 16) & 0xF)
-        upgrade_id = raw & 0xFFFF
+        upgrade_id = ItemUpgradeId(raw & 0xFFFF) if (raw & 0xFFFF) in ItemUpgradeId._value2member_map_ else ItemUpgradeId.Unknown
         flags = (raw >> 30) & 0x3
 
         arg1 = modifier.GetArg1()
@@ -73,13 +72,3 @@ class DecodedModifier:
             upgrade_id=upgrade_id,
             flags=flags,
         )
-
-@dataclass
-class ItemProperty:
-    modifier: DecodedModifier
-
-    def describe(self) -> str:
-        return f"ItemProperty | Modifier {self.modifier.identifier}"
-    
-    def is_valid(self) -> bool:
-        return True

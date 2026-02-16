@@ -3,7 +3,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
-from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier, ItemProperty
+from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.item_properties import AppliesToRuneProperty, PrefixProperty, UpgradeRuneProperty
 from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgrade, ItemUpgradeClassType
 
