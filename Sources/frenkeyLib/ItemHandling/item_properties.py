@@ -5,7 +5,6 @@ from unittest import case
 
 from PyItem import ItemModifier
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, ProfessionAttributes, Reduced_Ailment
-from Sources.frenkeyLib.ItemHandling.insignias import _INSIGNIA_REGISTRY, Insignia
 from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier, ItemProperty
 from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeType, ModifierIdentifier
 from Sources.frenkeyLib.ItemHandling.upgrades import ITEM_UPGRADES, ItemUpgradeClass, ItemUpgrade

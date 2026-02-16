@@ -131,7 +131,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Aepteetoode-a nut Aetteetoode-a\""},
         descriptions = {
         ServerLanguage.English: "Halves casting time on spells of item's attribute (Chance: {arg1[10248]}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     BeJustAndFearNot = Upgrade(
@@ -139,7 +139,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "\"Be Just and Fear Not\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (while Hexed)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     BrawnOverBrains = Upgrade(
@@ -157,7 +157,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Braevn oofer Braeeens\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2[8760]}%\nEnergy -{arg2[8376]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     CastOutTheUnclean = Upgrade(
@@ -175,7 +175,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Caest Oooot zee Uncleun\""},
         descriptions = {
         ServerLanguage.English: "Reduces Disease duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DanceWithDeath = Upgrade(
@@ -193,7 +193,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Dunce-a veet Deaet\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2}% (while in a Stance)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DontFearTheReaper = Upgrade(
@@ -211,7 +211,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Dun't Feaer zee Reaeper\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2}% (while Hexed)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DontThinkTwice = Upgrade(
@@ -229,7 +229,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Dun't Theenk Tveece-a\""},
         descriptions = {
         ServerLanguage.English: "Halves casting time of spells (Chance: +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DontCallItAComback = Upgrade(
@@ -247,7 +247,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Dun't caell it a cumebaeck!\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2} (while Health is below +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DownButNotOut = Upgrade(
@@ -255,7 +255,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "\"Down But Not Out\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (while Health is below +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     FaithIsMyShield = Upgrade(
@@ -273,7 +273,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Faeeet is My Sheeeld\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (while Enchanted)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     FearCutsDeeper = Upgrade(
@@ -291,7 +291,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Feaer Coots Deeper\""},
         descriptions = {
         ServerLanguage.English: "Reduces Bleeding duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ForgetMeNot = Upgrade(
@@ -309,7 +309,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Furget Me-a Nut\""},
         descriptions = {
         ServerLanguage.English: "Halves skill recharge of item's attribute spells (Chance: {arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     GuidedByFate = Upgrade(
@@ -327,7 +327,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Gooeeded by Faete-a\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2}% (while Enchanted)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     HailToTheKing = Upgrade(
@@ -345,7 +345,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Haeeel tu zee Keeng\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (while Health is above +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     HaleAndHearty = Upgrade(
@@ -363,7 +363,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Haele-a und Heaerty\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2} (while health is above +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     HaveFaith = Upgrade(
@@ -381,7 +381,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Haefe-a Faeeet\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2} (while Enchanted)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ICanSeeClearlyNow = Upgrade(
@@ -399,7 +399,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"I Cun See-a Cleaerly Noo\""},
         descriptions = {
         ServerLanguage.English: "Reduces Blind duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     IAmSorrow = Upgrade(
@@ -417,7 +417,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"I aem Surroo.\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2} (while hexed)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     IHaveThePower = Upgrade(
@@ -435,7 +435,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"I haefe-a zee pooer!\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     IgnoranceIsBliss = Upgrade(
@@ -453,7 +453,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Ignurunce-a is Bleess\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2[8456]}\nEnergy -{arg2[8376]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     KnowingIsHalfTheBattle = Upgrade(
@@ -461,7 +461,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "\"Knowing is Half the Battle\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (while casting)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     LeafOnTheWind = Upgrade(
@@ -479,7 +479,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Leaeff oon zee Veend\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Cold damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     LetTheMemoryLiveAgain = Upgrade(
@@ -497,7 +497,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Let zee Memury Leefe-a Aegaeeen\""},
         descriptions = {
         ServerLanguage.English: "Halves skill recharge of spells (Chance: {arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     LifeIsPain = Upgrade(
@@ -505,7 +505,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "\"Life is Pain\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2[8456]}\nHealth -{arg2[8408]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     LikeARollingStone = Upgrade(
@@ -523,7 +523,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Leeke-a a Rulleeng Stune-a\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Earth damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     LiveForToday = Upgrade(
@@ -541,7 +541,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Leefe-a fur Tudaey\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2[8920]}\nEnergy regeneration -{arg2[8392]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     LuckOfTheDraw = Upgrade(
@@ -559,7 +559,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Loock ooff zee Draev\""},
         descriptions = {
         ServerLanguage.English: "Received physical damage -{arg2} (Chance: {arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ManForAllSeasons = Upgrade(
@@ -567,7 +567,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "\"Man for All Seasons\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Elemental damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     MasterOfMyDomain = Upgrade(
@@ -585,7 +585,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Maester ooff My Dumaeeen\""},
         descriptions = {
         ServerLanguage.English: "Item's attribute +1 (Chance: {arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     MeasureForMeasure = Upgrade(
@@ -603,7 +603,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Meaesoore-a fur Meaesoore-a\""},
         descriptions = {
         ServerLanguage.English: "Highly salvageable"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     MightMakesRight = Upgrade(
@@ -611,7 +611,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "\"Might Makes Right\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (while attacking)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     NotTheFace = Upgrade(
@@ -629,7 +629,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Nut zee faece-a!\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Blunt damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     NothingToFear = Upgrade(
@@ -647,7 +647,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Nutheeng tu Feaer\""},
         descriptions = {
         ServerLanguage.English: "Received physical damage -{arg2} (while Hexed)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     OnlyTheStrongSurvive = Upgrade(
@@ -665,7 +665,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Oonly zee Strung Soorfeefe-a\""},
         descriptions = {
         ServerLanguage.English: "Reduces Weakness duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     PureOfHeart = Upgrade(
@@ -683,7 +683,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Poore-a ooff Heaert\""},
         descriptions = {
         ServerLanguage.English: "Reduces Poison duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     RidersOnTheStorm = Upgrade(
@@ -701,7 +701,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Reeders oon zee Sturm\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Lightning damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     RunForYourLife = Upgrade(
@@ -719,7 +719,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Roon Fur Yuoor Leeffe-a!\""},
         descriptions = {
         ServerLanguage.English: "Received physical damage -{arg2} (while in a Stance)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SeizeTheDay = Upgrade(
@@ -737,7 +737,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Leefe-a fur Tudaey\""},
         descriptions = {
         ServerLanguage.English: "Energy +{arg2[8920]}\nEnergy regeneration -{arg2[8392]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SerenityNow = Upgrade(
@@ -755,7 +755,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Sereneety Noo\""},
         descriptions = {
         ServerLanguage.English: "Halves skill recharge of spells (Chance: {arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ShelteredByFaith = Upgrade(
@@ -773,7 +773,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Sheltered by Faeeet\""},
         descriptions = {
         ServerLanguage.English: "Received physical damage -{arg2} (while Enchanted)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ShowMeTheMoney = Upgrade(
@@ -791,7 +791,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Shoo me-a zee muney!\""},
         descriptions = {
         ServerLanguage.English: "Improved sale value"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SleepNowInTheFire = Upgrade(
@@ -809,7 +809,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Sleep Noo in zee Fure-a\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Fire damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SoundnessOfMind = Upgrade(
@@ -827,7 +827,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Suoondness ooff Meend\""},
         descriptions = {
         ServerLanguage.English: "Reduces Dazed duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     StrengthAndHonor = Upgrade(
@@ -845,7 +845,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Strengt und Hunur\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2}% (while Health is above +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     StrengthOfBody = Upgrade(
@@ -863,7 +863,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Strengt ooff Budy\""},
         descriptions = {
         ServerLanguage.English: "Reduces Deep Wound duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SurvivalOfTheFittest = Upgrade(
@@ -881,7 +881,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Soorfeefael ooff zee Feettest\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Physical damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SwiftAsTheWind = Upgrade(
@@ -899,7 +899,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Sveefft aes zee Veend\""},
         descriptions = {
         ServerLanguage.English: "Reduces Crippled duration on you by 20%"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     TheRiddleOfSteel = Upgrade(
@@ -917,7 +917,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Zee Reeddle-a ooff Steel\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Slashing damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ThroughThickAndThin = Upgrade(
@@ -935,7 +935,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Thruoogh Theeck und Theen\""},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} (vs. Piercing damage)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ToThePain = Upgrade(
@@ -953,7 +953,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Tu zee Paeeen!\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2[8760]}%\nArmor -{arg2[8216]} (while attacking)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     TooMuchInformation = Upgrade(
@@ -971,7 +971,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Tuu Mooch Inffurmaeshun\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2}% (vs. Hexed Foes)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     VengeanceIsMine = Upgrade(
@@ -989,7 +989,7 @@ class Upgrades(Enum):
             ServerLanguage.BorkBorkBork: "\"Fengeunce-a is Meene-a\""},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2}% (while Health is below +{arg1}%)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     AirMagic = Upgrade(
@@ -997,7 +997,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Air Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     BloodMagic = Upgrade(
@@ -1005,7 +1005,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Blood Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ChannelingMagic = Upgrade(
@@ -1013,7 +1013,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Channeling Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     Communing = Upgrade(
@@ -1021,7 +1021,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Communing +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     Curses = Upgrade(
@@ -1029,7 +1029,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Curses +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DeathMagic = Upgrade(
@@ -1037,7 +1037,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Death Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DivineFavor = Upgrade(
@@ -1045,7 +1045,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Divine Favor +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     DominationMagic = Upgrade(
@@ -1053,7 +1053,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Domination Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     EarthMagic = Upgrade(
@@ -1061,7 +1061,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Earth Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     FireMagic = Upgrade(
@@ -1069,7 +1069,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Fire Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     HealingPrayers = Upgrade(
@@ -1077,7 +1077,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Healing Prayers +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     IllusionMagic = Upgrade(
@@ -1085,7 +1085,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Illusion Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     InspirationMagic = Upgrade(
@@ -1093,7 +1093,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Inspiration Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ProtectionPrayers = Upgrade(
@@ -1101,7 +1101,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Protection Prayers +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ReducesDiseaseOS = Upgrade(
@@ -1109,7 +1109,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Reduces Disease duration on you by 20%"},
         descriptions = {
         ServerLanguage.English: "Reduces Disease duration on you by 20%\n[Old School] Shield, Staff or Offhand"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     RestorationMagic = Upgrade(
@@ -1117,7 +1117,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Restoration Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SmitingPrayers = Upgrade(
@@ -1125,7 +1125,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Smiting Prayers +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SoulReaping = Upgrade(
@@ -1133,7 +1133,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Soul Reaping +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     SpawningPower = Upgrade(
@@ -1141,7 +1141,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Spawning Power +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     VampiricStrength = Upgrade(
@@ -1149,7 +1149,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Vampiric Strength"},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2[8760]}%\nHealth regeneration -{arg2[8424]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     WaterMagic = Upgrade(
@@ -1157,7 +1157,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Water Magic +1"},
         descriptions = {
         ServerLanguage.English: "{arg1} +1 ({arg2}% chance while using skills)"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ZealousStrength = Upgrade(
@@ -1165,7 +1165,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "Zealous Strength"},
         descriptions = {
         ServerLanguage.English: "Damage +{arg2[8760]}%\nEnergy regeneration -{arg2[8392]}"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsBluntdamage = Upgrade(
@@ -1173,7 +1173,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Blunt damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Blunt damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsCharr = Upgrade(
@@ -1181,7 +1181,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Charr"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Charr"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsCold = Upgrade(
@@ -1189,7 +1189,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Cold damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Cold damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsDemons = Upgrade(
@@ -1197,7 +1197,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Demons"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Demons"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsDragons = Upgrade(
@@ -1205,7 +1205,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Dragons"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Dragons"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsDwarves = Upgrade(
@@ -1213,7 +1213,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Dwarves"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Dwarves"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsEarth = Upgrade(
@@ -1221,7 +1221,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Earth damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Earth damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsFire = Upgrade(
@@ -1229,7 +1229,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Fire damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Fire damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsGiants = Upgrade(
@@ -1237,7 +1237,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Giants"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Giants"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsLightning = Upgrade(
@@ -1245,7 +1245,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Lightning damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Lightning damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsOgres = Upgrade(
@@ -1253,7 +1253,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Ogres"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Ogres"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsPiercing = Upgrade(
@@ -1261,7 +1261,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Piercing damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Piercing damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsPlants = Upgrade(
@@ -1269,7 +1269,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Plants"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Plants"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsSkeletons = Upgrade(
@@ -1277,7 +1277,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Skeletons"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Skeletons"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsSlashing = Upgrade(
@@ -1285,7 +1285,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Slashing damage"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Slashing damage"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsTengu = Upgrade(
@@ -1293,7 +1293,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Tengu"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Tengu"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsTrolls = Upgrade(
@@ -1301,7 +1301,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Trolls"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Trolls"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     ArmorVsUndead = Upgrade(
@@ -1309,7 +1309,7 @@ class Upgrades(Enum):
         ServerLanguage.English: "vs. Undead"},
         descriptions = {
         ServerLanguage.English: "Armor +{arg2} vs. Undead"},
-        upgrade_type = ItemUpgradeClassType.Inscription
+        upgrade_type = ItemUpgradeClassType.Inherent
     )
 
     Adept = Upgrade(

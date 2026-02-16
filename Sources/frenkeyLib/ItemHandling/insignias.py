@@ -3,11 +3,15 @@ from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
-from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier
+from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier, ItemProperty
+from Sources.frenkeyLib.ItemHandling.item_properties import AppliesToRuneProperty, PrefixProperty, UpgradeRuneProperty
+from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgrade, ItemUpgradeClassType
 
+def register_insignia(insignia_class):
+    pass
 
 class Insignia:
-    identifier: int
+    upgrade : ItemUpgrade
     model_id : int
     model_file_id: int
     inventory_icon : str
@@ -19,7 +23,7 @@ class Insignia:
         self.modifier = modifier        
 
     def describe(self) -> str:
-        return f"Modifier {self.identifier}"
+        return f"Modifier {self.upgrade.name}"
     
     @property
     def name(self) -> str:
@@ -27,16 +31,8 @@ class Insignia:
         server_language = ServerLanguage(preference)
         return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__))
         
-_INSIGNIA_REGISTRY: dict[int, type[Insignia]] = {}
-def register_insignia(cls: type[Insignia]) -> type[Insignia]:
-    if cls.identifier in _INSIGNIA_REGISTRY:
-        raise ValueError(f"Insignia with identifier {cls.identifier} is already registered as {_INSIGNIA_REGISTRY[cls.identifier].__name__}")
-    
-    _INSIGNIA_REGISTRY[cls.identifier] = cls
-    return cls
-
 class BlessedInsignia(Insignia):
-    identifier = 489
+    upgrade : ItemUpgrade = ItemUpgrade.Blessed
     model_id = 19135
     model_file_id = 265850
     inventory_icon = "Blessed Insignia.png"
@@ -55,10 +51,22 @@ class BlessedInsignia(Insignia):
         ServerLanguage.Russian: "Blessed Insignia",
         ServerLanguage.BorkBorkBork: "Blessed Inseegneea"
     }
-    def describe(self) -> str:
-        return f"Armor +10 (while affected by an Enchantment Spell)"
-register_insignia(BlessedInsignia)
-
+    descriptions = {
+        ServerLanguage.English: "Armor +10 (while affected by an Enchantment Spell)",
+    }
+    
+    @property
+    def description(self) -> str:
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        return self.descriptions.get(server_language, self.descriptions.get(ServerLanguage.English, ""))
+    
+    @property
+    def name(self) -> str:
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__))
+    
 class BrawlersInsignia(Insignia):
     identifier = 488
     model_id = 19134

@@ -7,11 +7,13 @@ from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Item
+from Py4GWCoreLib.enums_src.GameData_enums import DamageType
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Sources.frenkeyLib.ItemHandling.item_properties import AppliesToRuneProperty, BaneProperty, InscriptionProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
+from Sources.frenkeyLib.ItemHandling.item_modifiers import ItemProperty
+from Sources.frenkeyLib.ItemHandling.item_properties import AppliesToRuneProperty, AttributeRequirement, BaneProperty, DamageCustomized, DamageProperty, DamageTypeProperty, InscriptionProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
 from Sources.frenkeyLib.ItemHandling.types import ItemModifierParam
 from Sources.frenkeyLib.LootEx.data import Data
 from Sources.frenkeyLib.LootEx.enum import ModType
@@ -141,6 +143,30 @@ HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=r
 hovered_item_id = Inventory.GetHoveredItemID()
 parser : Optional[ItemModifierParser] = None
 
+def sort_for_item_display(props: list[ItemProperty]) -> list[ItemProperty]:
+
+    GROUP_ORDER = {
+        DamageTypeProperty: 1,
+        DamageProperty: 2,
+        AttributeRequirement: 3,
+        PrefixProperty: 4,
+        SuffixProperty: 4,
+        UpgradeRuneProperty: 4,
+        InscriptionProperty: 5,
+        DamageCustomized: 6,
+    }
+
+    def get_group(prop: ItemProperty) -> int:
+        for cls, order in GROUP_ORDER.items():
+            if isinstance(prop, cls):
+                return order
+        return 5
+
+    def get_identifier(prop: ItemProperty) -> int:
+        return getattr(prop.__class__, "identifier", 999999)
+
+    return sorted(props, key=lambda p: (get_group(p), get_identifier(p)))
+
 def main():
     global hovered_item_id, parser
     
@@ -155,14 +181,8 @@ def main():
             parser = ItemModifierParser(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(hovered_item_id))
         
         if parser:
-            for prop in parser.get_properties():
+            for prop in sort_for_item_display(parser.get_properties()):
                 if parser:
-
-                    # if any(base.__name__ in {"PrefixProperty", "SuffixProperty", "BaneProperty",
-                    #                         "UpgradeRuneProperty", "InscriptionProperty",
-                    #                         "AppliesToRuneProperty"} for base in prop.__class__.__mro__):
-                    #     continue
-
                     ImGui.text(prop.describe())
                 
         
