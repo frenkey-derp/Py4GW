@@ -10,7 +10,6 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
 from Sources.frenkeyLib.ItemHandling.item_properties import ArmorProperty, AttributeRequirement, DamageCustomized, DamageProperty, DamageTypeProperty, EnergyProperty, InscriptionProperty, ItemProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
-from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgrade, ItemUpgradeClass
 
 class Item:
     item_id : int
