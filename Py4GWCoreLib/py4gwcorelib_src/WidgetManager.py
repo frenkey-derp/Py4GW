@@ -40,6 +40,8 @@ class LayoutMode(IntEnum):
     Minimalistic = 2
     SingleButton = 3
     
+    LastView = 100
+    
 class SortMode(IntEnum):
     ByName = 0
     ByCategory = 1
@@ -99,7 +101,7 @@ class Py4GWLibrary:
         self.widget_filter = ""
         
         self.view_mode = ViewMode.All
-        self.layout_mode = LayoutMode.Minimalistic
+        self.layout_mode = LayoutMode.Library
         self.sort_mode = SortMode.ByName
         
         self.filtered_widgets : list[Widget] = []
@@ -125,7 +127,7 @@ class Py4GWLibrary:
         self.context_menu_widget = None
         self.context_menu_id = ""
         
-        self.default_layout = LayoutMode.Minimalistic
+        self.startup_layout = LayoutMode.LastView
         self.show_configure_button = True
         self.show_images = True
         self.show_separator = True
@@ -166,8 +168,10 @@ class Py4GWLibrary:
             self.single_button_size = IniManager().read_int(key=self.ini_key, section="Configuration", name="single_button_size", default=48)
             
             self.single_filter = IniManager().read_bool(key=self.ini_key, section="Configuration", name="single_filter", default=True)
-            self.default_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="default_layout", default=LayoutMode.Compact.name)]
-            self.set_layout_mode(self.default_layout)
+            self.startup_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)]
+            
+            layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="layout", default=LayoutMode.Library.name)] if self.startup_layout is LayoutMode.LastView else self.startup_layout
+            self.set_layout_mode(layout)
             
             self.show_configure_button = IniManager().read_bool(key=self.ini_key, section="Card Configuration", name="show_configure_button", default=True)
             self.show_images = IniManager().read_bool(key=self.ini_key, section="Card Configuration", name="show_images", default=True)
@@ -258,6 +262,7 @@ class Py4GWLibrary:
                 self.win_size = (self.single_button_size, self.single_button_size)
                 
         self.layout_mode = mode
+        IniManager().set(key=self.ini_key, section="Configuration", var_name="layout", value=mode.name)
         self.filter_widgets(self.widget_filter)
         pass
 
@@ -521,7 +526,7 @@ class Py4GWLibrary:
                 self.widget_filter = ""
                 self.filtered_widgets.clear()
                 
-                if self.default_layout is LayoutMode.Minimalistic:
+                if self.startup_layout is LayoutMode.Minimalistic:
                     self.set_layout_mode(LayoutMode.Minimalistic)
                 
                             
@@ -751,28 +756,35 @@ class Py4GWLibrary:
                 
                 if ImGui.begin_menu("Preferences"):
                     if ImGui.begin_menu("Layout"):                        
-                        if ImGui.begin_menu("Default Mode"):
-                            layout_mode = ImGui.radio_button("Library View", self.default_layout, LayoutMode.Library)
-                            if self.default_layout != layout_mode:
-                                self.default_layout = LayoutMode.Library
-                                self.set_layout_mode(self.default_layout)
-                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
+                        if ImGui.begin_menu("Startup View Mode"):
+                            layout_mode = ImGui.radio_button("Last View", self.startup_layout, LayoutMode.LastView)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.LastView                                
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
+                                IniManager().save_vars(self.ini_key)                                
+                            ImGui.show_tooltip("Open the widget browser in the same view mode as when it was last closed.")
+                                                        
+                            layout_mode = ImGui.radio_button("Library View", self.startup_layout, LayoutMode.Library)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.Library
+                                self.set_layout_mode(self.startup_layout)
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in library view by default,\nshowing all details and options for each widget.")
                                 
-                            layout_mode = ImGui.radio_button("Compact View", self.default_layout, LayoutMode.Compact)
-                            if self.default_layout != layout_mode:
-                                self.default_layout = LayoutMode.Compact
-                                self.set_layout_mode(self.default_layout)
-                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
+                            layout_mode = ImGui.radio_button("Compact View", self.startup_layout, LayoutMode.Compact)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.Compact
+                                self.set_layout_mode(self.startup_layout)
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in compact view by default,\nshowing a simplified card for each widget.")
                                 
-                            layout_mode = ImGui.radio_button("Minimalistic View", self.default_layout, LayoutMode.Minimalistic)
-                            if self.default_layout != layout_mode:
-                                self.default_layout = LayoutMode.Minimalistic
-                                self.set_layout_mode(self.default_layout)
-                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
+                            layout_mode = ImGui.radio_button("Minimalistic View", self.startup_layout, LayoutMode.Minimalistic)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.Minimalistic
+                                self.set_layout_mode(self.startup_layout)
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in minimalistic view by default,\nshowing only a search icon which switches to compact view when clicked.\nIf the widget filter is cleared while in compact view, it will switch back to minimalistic view.")
                             
@@ -921,7 +933,7 @@ class Py4GWLibrary:
                             IniManager().set(self.ini_key, var_name="hotkey_modifiers", section="Configuration", value=self.focus_keybind.modifiers.name)
                             IniManager().save_vars(self.ini_key)
                         
-                        ImGui.show_tooltip("Set the hotkey used to focus the search field in the widget browser.\nPressing this hotkey will move the keyboard focus to the search field, allowing you to start typing immediately to filter widgets.")
+                        ImGui.show_tooltip("Set the hotkey used to focus the search field in the widget browser.\nPressing this hotkey will move the keyboard focus to the search field, allowing you to start typing immediately to filter widgets.\nWorks only ingame due to limitations with our Hotkey system.")
                         
                         PyImGui.same_line(0, 0)
                         ImGui.dummy(200, 0)

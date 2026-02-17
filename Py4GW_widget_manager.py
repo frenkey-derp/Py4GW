@@ -27,7 +27,8 @@ def _add_config_vars():
     
     IniManager().add_int(key=INI_KEY, var_name="max_suggestions", section="Configuration", name="max_suggestions", default=10)
     IniManager().add_int(key=INI_KEY, var_name="single_button_size", section="Configuration", name="single_button_size", default=48)
-    IniManager().add_str(key=INI_KEY, var_name="default_layout", section="Configuration", name="default_layout", default=LayoutMode.Minimalistic.name)  
+    IniManager().add_str(key=INI_KEY, var_name="startup_layout", section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)  
+    IniManager().add_str(key=INI_KEY, var_name="layout", section="Configuration", name="layout", default=LayoutMode.Library.name)  
     IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)  
     IniManager().add_str(key=INI_KEY, var_name="hotkey_modifiers", section="Configuration", name="hotkey_modifiers", default="NoneKey")
     IniManager().add_bool(key=INI_KEY, var_name="single_filter", section="Configuration", name="single_filter", default=True)
