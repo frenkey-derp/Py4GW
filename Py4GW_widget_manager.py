@@ -1,20 +1,35 @@
-from typing import Optional
+import Py4GW
 import PyImGui
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.ImGui import ImGui
-from Py4GWCoreLib.enums_src.IO_enums import Key
-
-from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import LayoutMode, Py4GWLibrary, WidgetHandler, get_widget_handler
+from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler, WidgetHandler, Widget
 import os
 
-MODULE_NAME = "Widget Manager"
-          
+module_name = "Widget Manager"
+      
+#region UI
+def draw_window():
+    global INI_KEY
+    if ImGui.Begin(INI_KEY,MODULE_NAME, flags=PyImGui.WindowFlags.AlwaysAutoResize):
+        
+        val = bool(IniManager().get(key= INI_KEY, var_name="enable_all", default=False, section="Configuration"))
+        new_val = PyImGui.checkbox("Enable All Widgets", val)
+        if new_val != val:
+            IniManager().set(key=INI_KEY, var_name="enable_all", value=new_val, section="Configuration")
+            IniManager().save_vars(INI_KEY)
+
+    ImGui.End(INI_KEY)
+
+def configure():
+    pass
+    
 #region Main
 # ------------------------------------------------------------
 # Config
 # ------------------------------------------------------------
-widget_manager : WidgetHandler = get_widget_handler()
-py4_gw_library : Optional[Py4GWLibrary] = None 
+widget_manager = get_widget_handler()
+
+MODULE_NAME = "Widget Template"
 
 INI_KEY = ""
 INI_PATH = "Widgets/WidgetManager"
@@ -76,7 +91,7 @@ widget_manager_initialized = False
 widget_manager_initializing = False
 
 def main():
-    global INI_KEY, init_coro, widget_manager_initialized, widget_manager_initializing, py4_gw_library
+    global INI_KEY, init_coro, widget_manager_initialized, widget_manager_initializing
 
     if not INI_KEY:
         if not os.path.exists(INI_PATH):
@@ -101,16 +116,9 @@ def main():
             
 
     if INI_KEY:
-        use_library = bool(IniManager().get(key=INI_KEY, var_name="use_library", default=True, section="Configuration"))
-        if use_library:
-            if py4_gw_library is None:
-                py4_gw_library = Py4GWLibrary(INI_KEY, MODULE_NAME, widget_manager)
-        
-            py4_gw_library.draw_window()
-        else:
-            if ImGui.Begin(ini_key=INI_KEY, name="Widget Manager", flags=PyImGui.WindowFlags.AlwaysAutoResize):
-                widget_manager.draw_ui(INI_KEY)
-            ImGui.End(INI_KEY)
+        if ImGui.Begin(ini_key=INI_KEY, name="Widget Manager", flags=PyImGui.WindowFlags.AlwaysAutoResize):
+            widget_manager.draw_ui(INI_KEY)
+        ImGui.End(INI_KEY)
     
     if widget_manager.enable_all:
         widget_manager.execute_enabled_widgets_main()

@@ -3,15 +3,9 @@ from types import ModuleType
 import traceback
 import Py4GW
 import PyImGui
-from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER, HotKey
-from Py4GWCoreLib.ImGui_src.Style import Style
-from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER, HotKey
-from Py4GWCoreLib.ImGui_src.Style import Style
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.ImGui import ImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
-from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
@@ -39,8 +33,6 @@ class LayoutMode(IntEnum):
     Compact = 1
     Minimalistic = 2
     SingleButton = 3
-    
-    LastView = 100
     
 class SortMode(IntEnum):
     ByName = 0
@@ -101,7 +93,7 @@ class Py4GWLibrary:
         self.widget_filter = ""
         
         self.view_mode = ViewMode.All
-        self.layout_mode = LayoutMode.Library
+        self.layout_mode = LayoutMode.Minimalistic
         self.sort_mode = SortMode.ByName
         
         self.filtered_widgets : list[Widget] = []
@@ -127,7 +119,7 @@ class Py4GWLibrary:
         self.context_menu_widget = None
         self.context_menu_id = ""
         
-        self.startup_layout = LayoutMode.LastView
+        self.default_layout = LayoutMode.Minimalistic
         self.show_configure_button = True
         self.show_images = True
         self.show_separator = True
@@ -168,10 +160,8 @@ class Py4GWLibrary:
             self.single_button_size = IniManager().read_int(key=self.ini_key, section="Configuration", name="single_button_size", default=48)
             
             self.single_filter = IniManager().read_bool(key=self.ini_key, section="Configuration", name="single_filter", default=True)
-            self.startup_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)]
-            
-            layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="layout", default=LayoutMode.Library.name)] if self.startup_layout is LayoutMode.LastView else self.startup_layout
-            self.set_layout_mode(layout)
+            self.default_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="default_layout", default=LayoutMode.Compact.name)]
+            self.set_layout_mode(self.default_layout)
             
             self.show_configure_button = IniManager().read_bool(key=self.ini_key, section="Card Configuration", name="show_configure_button", default=True)
             self.show_images = IniManager().read_bool(key=self.ini_key, section="Card Configuration", name="show_images", default=True)
@@ -262,7 +252,6 @@ class Py4GWLibrary:
                 self.win_size = (self.single_button_size, self.single_button_size)
                 
         self.layout_mode = mode
-        IniManager().set(key=self.ini_key, section="Configuration", var_name="layout", value=mode.name)
         self.filter_widgets(self.widget_filter)
         pass
 
@@ -526,7 +515,7 @@ class Py4GWLibrary:
                 self.widget_filter = ""
                 self.filtered_widgets.clear()
                 
-                if self.startup_layout is LayoutMode.Minimalistic:
+                if self.default_layout is LayoutMode.Minimalistic:
                     self.set_layout_mode(LayoutMode.Minimalistic)
                 
                             
@@ -756,35 +745,28 @@ class Py4GWLibrary:
                 
                 if ImGui.begin_menu("Preferences"):
                     if ImGui.begin_menu("Layout"):                        
-                        if ImGui.begin_menu("Startup View Mode"):
-                            layout_mode = ImGui.radio_button("Last View", self.startup_layout, LayoutMode.LastView)
-                            if self.startup_layout != layout_mode:
-                                self.startup_layout = LayoutMode.LastView                                
-                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
-                                IniManager().save_vars(self.ini_key)                                
-                            ImGui.show_tooltip("Open the widget browser in the same view mode as when it was last closed.")
-                                                        
-                            layout_mode = ImGui.radio_button("Library View", self.startup_layout, LayoutMode.Library)
-                            if self.startup_layout != layout_mode:
-                                self.startup_layout = LayoutMode.Library
-                                self.set_layout_mode(self.startup_layout)
-                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
+                        if ImGui.begin_menu("Default Mode"):
+                            layout_mode = ImGui.radio_button("Library View", self.default_layout, LayoutMode.Library)
+                            if self.default_layout != layout_mode:
+                                self.default_layout = LayoutMode.Library
+                                self.set_layout_mode(self.default_layout)
+                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in library view by default,\nshowing all details and options for each widget.")
                                 
-                            layout_mode = ImGui.radio_button("Compact View", self.startup_layout, LayoutMode.Compact)
-                            if self.startup_layout != layout_mode:
-                                self.startup_layout = LayoutMode.Compact
-                                self.set_layout_mode(self.startup_layout)
-                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
+                            layout_mode = ImGui.radio_button("Compact View", self.default_layout, LayoutMode.Compact)
+                            if self.default_layout != layout_mode:
+                                self.default_layout = LayoutMode.Compact
+                                self.set_layout_mode(self.default_layout)
+                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in compact view by default,\nshowing a simplified card for each widget.")
                                 
-                            layout_mode = ImGui.radio_button("Minimalistic View", self.startup_layout, LayoutMode.Minimalistic)
-                            if self.startup_layout != layout_mode:
-                                self.startup_layout = LayoutMode.Minimalistic
-                                self.set_layout_mode(self.startup_layout)
-                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
+                            layout_mode = ImGui.radio_button("Minimalistic View", self.default_layout, LayoutMode.Minimalistic)
+                            if self.default_layout != layout_mode:
+                                self.default_layout = LayoutMode.Minimalistic
+                                self.set_layout_mode(self.default_layout)
+                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in minimalistic view by default,\nshowing only a search icon which switches to compact view when clicked.\nIf the widget filter is cleared while in compact view, it will switch back to minimalistic view.")
                             
@@ -933,7 +915,7 @@ class Py4GWLibrary:
                             IniManager().set(self.ini_key, var_name="hotkey_modifiers", section="Configuration", value=self.focus_keybind.modifiers.name)
                             IniManager().save_vars(self.ini_key)
                         
-                        ImGui.show_tooltip("Set the hotkey used to focus the search field in the widget browser.\nPressing this hotkey will move the keyboard focus to the search field, allowing you to start typing immediately to filter widgets.\nWorks only ingame due to limitations with our Hotkey system.")
+                        ImGui.show_tooltip("Set the hotkey used to focus the search field in the widget browser.\nPressing this hotkey will move the keyboard focus to the search field, allowing you to start typing immediately to filter widgets.")
                         
                         PyImGui.same_line(0, 0)
                         ImGui.dummy(200, 0)
@@ -1399,7 +1381,7 @@ class Widget:
     Widget data class with callback extraction in __post_init__
     """
     # Core identity (passed to __init__)
-    folder_script_name: str       # "folder/script_name"
+    name: str                     # "folder/script_name"
     plain_name: str = ""          # script without extension
     widget_path: str = ""         # folder relative path (no script)
     script_path: str = ""         # script full path
@@ -1431,12 +1413,6 @@ class Widget:
     __enabled: bool = field(default=False, init=False,)
     __configuring: bool = field(default=False, init=False)
     
-    # Optional properties to be displayed in widget manager ui
-    name : str = field(default="", init=False, repr=False)
-    image : str = field(default="", init=False, repr=False)
-    tags : list[str] = field(default_factory=list, init=False)
-    category : str = field(default="", init=False)    
-        
     @property
     def enabled(self) -> bool:
         """Check if the widget is enabled"""
@@ -1456,7 +1432,7 @@ class Widget:
             Py4GW.Console.Log("WidgetManager", f"Widget script not found: {self.script_path}", Py4GW.Console.MessageType.Error)
             return False
         
-        unique_name = f"py4gw_widget_{self.folder_script_name.replace('/', '_').replace('.', '_')}"
+        unique_name = f"py4gw_widget_{self.name.replace('/', '_').replace('.', '_')}"
         
         spec = importlib.util.spec_from_file_location(unique_name, self.script_path)
         if spec is None or spec.loader is None:
@@ -1470,7 +1446,7 @@ class Widget:
         except Exception as e:
             del sys.modules[unique_name]
             self.disable()
-            Py4GW.Console.Log("WidgetManager", f"Failed to load widget module '{self.folder_script_name}': {e}", Py4GW.Console.MessageType.Error)
+            Py4GW.Console.Log("WidgetManager", f"Failed to load widget module '{self.name}': {e}", Py4GW.Console.MessageType.Error)
             return False
         
         self.module = module
@@ -1493,11 +1469,6 @@ class Widget:
             self.on_enable = getattr(self.module, "on_enable", None) if callable(getattr(self.module, "on_enable", None)) else None
             self.on_disable = getattr(self.module, "on_disable", None) if callable(getattr(self.module, "on_disable", None)) else None
             self.optional = getattr(self.module, 'OPTIONAL', True) if hasattr(self.module, 'OPTIONAL') else True
-            
-            self.name = getattr(self.module, 'MODULE_NAME', "") if hasattr(self.module, 'MODULE_NAME') else self.cleaned_name()
-            self.category = getattr(self.module, 'MODULE_CATEGORY', "") if hasattr(self.module, 'MODULE_CATEGORY') else (self.widget_path.split('/')[0] if self.widget_path else "") #get first folder after Widgets 
-            self.tags = getattr(self.module, 'MODULE_TAGS', []) if hasattr(self.module, 'MODULE_TAGS') else [folder for folder in self.widget_path.split('/') if folder]
-            self.image = getattr(self.module, 'MODULE_ICON', "") if hasattr(self.module, 'MODULE_ICON') else "Textures\\missing_texture.png"
             
         return True
     
@@ -1522,8 +1493,7 @@ class Widget:
                         self.on_disable()
                     
                 except Exception as e:
-                    Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                    Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                    Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
                 
             self.__enabled = False
@@ -1542,18 +1512,9 @@ class Widget:
                     self.on_enable()
                 
             except Exception as e:
-                Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-        
-    def cleaned_name(self):
-        """Cleanup the widget name for display"""
-        ## if name starts with [0-9]-, remove that part for module cleanup and replace all _ with " "
-        import re
-        cleaned_name = re.sub(r'^\d+-', '', self.plain_name)
-        cleaned_name = cleaned_name.replace("_", " ")
-        return cleaned_name.strip()
-                    
+                
     def __post_init__(self):
         """Extract callbacks from module after initialization"""      
         
@@ -1581,16 +1542,16 @@ class Widget:
     @property
     def folder(self) -> str:
         """Extract folder path from name"""
-        if '/' in self.folder_script_name:
-            return self.folder_script_name.rsplit('/', 1)[0]
+        if '/' in self.name:
+            return self.name.rsplit('/', 1)[0]
         return ""
     
     @property  
     def script_name(self) -> str:
         """Extract script name from name"""
-        if '/' in self.folder_script_name:
-            return self.folder_script_name.rsplit('/', 1)[1]
-        return self.folder_script_name
+        if '/' in self.name:
+            return self.name.rsplit('/', 1)[1]
+        return self.name
     
     @property
     def can_save(self) -> bool:
@@ -1711,8 +1672,7 @@ class WidgetHandler:
         else:
             widget.disable()
         
-        widget_id = widget.folder_script_name  # full id: "folder/file.py"
-        widget_id = widget.folder_script_name  # full id: "folder/file.py"
+        widget_id = widget.name  # full id: "folder/file.py"
         v_enabled = self._widget_var(widget_id, "enabled")  # "folder/file.py__enabled"
 
         cv = self._get_config_var(widget_id, v_enabled)
@@ -1811,7 +1771,7 @@ class WidgetHandler:
         try:
             # 1. Create Widget with EMPTY INI data
             widget = Widget(
-                folder_script_name=widget_id,
+                name=widget_id,
                 plain_name=plain,
                 widget_path=widget_path,
                 script_path=script_path,
@@ -1870,7 +1830,7 @@ class WidgetHandler:
         try:
             # 1. Create Widget with EMPTY INI data
             widget = Widget(
-                folder_script_name=widget_id,
+                name=widget_id,
                 plain_name=plain,
                 widget_path=widget_path,
                 script_path=script_path,
@@ -1894,8 +1854,7 @@ class WidgetHandler:
                 var_name=f"{widget_id}__optional"
             ))                    
 
-            cv = self._get_config_var(widget.folder_script_name, self._widget_var(widget.folder_script_name, "enabled"))
-            cv = self._get_config_var(widget.folder_script_name, self._widget_var(widget.folder_script_name, "enabled"))
+            cv = self._get_config_var(widget.name, self._widget_var(widget.name, "enabled"))
             
             enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=cv.section, var_name=cv.var_name, default=False)) if cv else False
             if enabled:
@@ -2038,7 +1997,10 @@ class WidgetHandler:
                     ImGui.tree_pop()
             
     def draw_ui(self, INI_KEY: str):
-        if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", 40):           
+        if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", 40):
+            Py4GW.Console.Log("Widget Manager", "Reloading Widgets...", Py4GW.Console.MessageType.Info)
+            
+            
             self.widget_initialized = False
             self.discovered = False
             self.discover()
