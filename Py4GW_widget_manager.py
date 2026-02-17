@@ -29,9 +29,11 @@ def _add_config_vars():
     IniManager().add_int(key=INI_KEY, var_name="single_button_size", section="Configuration", name="single_button_size", default=48)
     IniManager().add_str(key=INI_KEY, var_name="startup_layout", section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)  
     IniManager().add_str(key=INI_KEY, var_name="layout", section="Configuration", name="layout", default=LayoutMode.Library.name)  
-    IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)  
+    IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)
     IniManager().add_str(key=INI_KEY, var_name="hotkey_modifiers", section="Configuration", name="hotkey_modifiers", default="NoneKey")
     IniManager().add_bool(key=INI_KEY, var_name="single_filter", section="Configuration", name="single_filter", default=True)
+    IniManager().add_float(key=INI_KEY, var_name="library_width", section="Configuration", name="library_width", default=900)
+    IniManager().add_float(key=INI_KEY, var_name="library_height", section="Configuration", name="library_height", default=600)
                             
     IniManager().add_str(key=INI_KEY, var_name="favorites", section="Favorites", name="favorites", default="")
     
@@ -41,6 +43,7 @@ def _add_config_vars():
     IniManager().add_bool(key=INI_KEY, var_name="show_category", section="Card Configuration", name="show_category", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="show_tags", section="Card Configuration", name="show_tags", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="fixed_card_width", section="Card Configuration", name="fixed_card_width", default=False)
+    
     IniManager().add_float(key=INI_KEY, var_name="card_width", section="Card Configuration", name="card_width", default=300)
     
     IniManager().add_str(key=INI_KEY, var_name="card_color", section="Card Configuration", name="card_color", default="200, 200, 200, 20")

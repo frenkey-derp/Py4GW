@@ -170,6 +170,10 @@ class Py4GWLibrary:
             self.single_filter = IniManager().read_bool(key=self.ini_key, section="Configuration", name="single_filter", default=True)
             self.startup_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)]
             
+            x = IniManager().read_float(key=self.ini_key, section="Configuration", name="library_width", default=900)
+            y = IniManager().read_float(key=self.ini_key, section="Configuration", name="library_height", default=600)
+            self.previous_size = (x, y)
+            
             layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="layout", default=LayoutMode.Library.name)] if self.startup_layout is LayoutMode.LastView else self.startup_layout
             self.set_layout_mode(layout)
             
@@ -256,9 +260,6 @@ class Py4GWLibrary:
             case LayoutMode.Minimalistic:
                 self.win_size = (200, 45)
             case LayoutMode.SingleButton:
-                if self.layout_mode is LayoutMode.Library:
-                    self.previous_size = self.win_size
-                    
                 self.win_size = (self.single_button_size, self.single_button_size)
                 
         self.layout_mode = mode
@@ -710,6 +711,14 @@ class Py4GWLibrary:
             win_size = PyImGui.get_window_size()
             win_pos = PyImGui.get_window_pos()
             self.win_size = (win_size[0], win_size[1])
+    
+            if self.previous_size != self.win_size and self.layout_mode is LayoutMode.Library:
+                self.previous_size = self.win_size
+                Py4GW.Console.Log("Widget Browser", f"Window resized to: {self.win_size}", Py4GW.Console.MessageType.Info)
+                IniManager().set(key=self.ini_key, section="Configuration", var_name="library_width", value=self.win_size[0])
+                IniManager().set(key=self.ini_key, section="Configuration", var_name="library_height", value=self.win_size[1])
+                IniManager().save_vars(self.ini_key)
+                
             ImGui.set_window_within_displayport(*self.win_size, PyImGui.ImGuiCond.Once)            
             style = ImGui.get_style()
             
@@ -1069,7 +1078,7 @@ class Py4GWLibrary:
                     
                 ImGui.end_child()
                 ImGui.end_table()
-        
+
         if PyImGui.is_window_collapsed():
             self.set_layout_mode(LayoutMode.SingleButton)   
         
