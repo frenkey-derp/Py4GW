@@ -25,7 +25,7 @@ def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     return value, hex(value)
 
 def run_test():
-    Py4GW.Console.Log("ItemHandling", f"{get_true_identifier_with_hex(8680)}")
+    print("ItemHandling", f"{get_true_identifier_with_hex(9656)}")
 
 UPGRADE_PATTERN = re.compile(
     r'ItemUpgrade\s+(\w+)\s*=\s*new\(\s*([^,]+)\s*,\s*"((?:\\.|[^"\\])*)"\s*,\s*ItemUpgradeType\.([A-Za-z_]+)\s*\);'
@@ -145,7 +145,7 @@ def main():
                 
                 for prop in parser.get_properties():
                     if parser:
-                        ImGui.text(f"{type(prop).__name__}")
+                        ImGui.text(f"{type(prop).__name__} ({prop.modifier.raw_identifier})")
                         PyImGui.table_next_column()
                         ImGui.text(f"{prop.describe()}")
                         PyImGui.table_next_column()

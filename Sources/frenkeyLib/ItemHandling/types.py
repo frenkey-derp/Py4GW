@@ -84,7 +84,6 @@ class ModifierIdentifier(IntEnum):
     IncreasedSaleValue = 0x25f
     Infused = 0x262
     OfTheProfession = 0x28a
-    Upgrade1 = 0x21e
     ReceiveLessDamage = 0x207
     ReceiveLessPhysDamageEnchanted = 0x208
     ReceiveLessPhysDamageHexed = 0x209
@@ -92,8 +91,10 @@ class ModifierIdentifier(IntEnum):
     ReduceConditionDuration = 0x285
     ReduceConditionTupleDuration = 0x277
     ReducesDiseaseDuration = 0x247
-    Upgrade2 = 0x240
+    TargetItemType = 0x25b
     TooltipDescription = 0x253
+    AttributeRune = 0x21e
+    Insignia_RuneOfAbsorption = 0x240
 
 class ItemModifierParam(IntEnum):
     LabelInName = 0x0

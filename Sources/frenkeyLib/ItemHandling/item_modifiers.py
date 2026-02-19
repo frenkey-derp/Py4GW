@@ -10,6 +10,7 @@ from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgradeId
 @dataclass(frozen=True)
 class DecodedModifier:
     modifier: ItemModifier
+    raw_identifier: int
     identifier: ModifierIdentifier
     param: ItemModifierParam
     arg1: int
@@ -47,7 +48,7 @@ class DecodedModifier:
 
         runtime_identifier = modifier.GetIdentifier()
         stripped_identifier = (runtime_identifier >> 4) & 0x3FF
-        
+        raw_identifier = runtime_identifier
         if stripped_identifier not in ModifierIdentifier._value2member_map_:
             return None
         
@@ -63,6 +64,7 @@ class DecodedModifier:
 
         return cls(
             modifier=modifier,
+            raw_identifier=raw_identifier,
             identifier=identifier,
             param=param_value,
             arg1=arg1,

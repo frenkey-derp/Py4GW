@@ -581,6 +581,13 @@ class AppliesToRuneProperty(ItemProperty):
 class TooltipProperty(ItemProperty):
     pass
 
+@dataclass
+class TargetItemTypeProperty(ItemProperty):
+    item_type : ItemType
+    
+    def describe(self) -> str:
+        return f"{self.item_type.name}"
+    
 def get_profession_from_attribute(attribute: Attribute) -> Optional[Profession]:
     for prof, attr in ProfessionAttributes.__dict__.items():
         if isinstance(attr, list) and attribute in attr:
@@ -591,7 +598,6 @@ def get_upgrade_property(modifier: DecodedModifier, modifiers: list[DecodedModif
     upgrade, upgrade_type = get_upgrade(modifier, modifiers)
     
     if upgrade:
-        Py4GW.Console.Log("ItemHandling", f"Upgrade {upgrade.name} identified as type {upgrade_type.name}")
         match upgrade_type:
             case ItemUpgradeType.Prefix:
                 return PrefixProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
@@ -683,8 +689,101 @@ class WeaponUpgrade(Upgrade):
 
     
 #region Prefixes
+WEAPON_PREFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
+    ItemType.Axe: {
+        ServerLanguage.English: "{prefix} Axe Haft",
+    },
+    ItemType.Bow: {
+        ServerLanguage.German: "{prefix} Bogensehne",
+        ServerLanguage.English: "{prefix} Bow String",
+        ServerLanguage.Korean: "{prefix} 활시위",
+        ServerLanguage.French: "Corde {prefix}",
+        ServerLanguage.Italian: "Corda d'arco {prefix}",
+        ServerLanguage.Spanish: "Cuerda de arco {prefix}",
+        ServerLanguage.TraditionalChinese: "{prefix} 弓弦",
+        ServerLanguage.Japanese: "{prefix} ボウの弦",
+        ServerLanguage.Polish: "Cięciwa {prefix}",
+        ServerLanguage.Russian: "{prefix} Bow String",
+        ServerLanguage.BorkBorkBork: "{prefix} Boostreeng"
+    },
+    ItemType.Daggers: {
+        ServerLanguage.German: "{prefix} Dolchangel",
+        ServerLanguage.English: "{prefix} Dagger Tang",
+        ServerLanguage.Korean: "{prefix} 단검자루",
+        ServerLanguage.French: "Soie de dague {prefix}",
+        ServerLanguage.Italian: "Codolo per Pugnale {prefix}",
+        ServerLanguage.Spanish: "Afilador de dagas {prefix}",
+        ServerLanguage.TraditionalChinese: "{prefix} 匕首刃",
+        ServerLanguage.Japanese: "{prefix} ダガーのグリップ",
+        ServerLanguage.Polish: "Uchwyt Sztyletu {prefix}",
+        ServerLanguage.Russian: "{prefix} Dagger Tang",
+        ServerLanguage.BorkBorkBork: "{prefix} Daegger Tung"
+    },
+    # ItemType.Offhand does not have a prefix mod, so no name format is needed
+    ItemType.Hammer: {
+        ServerLanguage.German: "{0} Hammerstiel",
+        ServerLanguage.English: "{0} Hammer Haft",
+        ServerLanguage.Russian: "{0} Hammer Haft"
+    },
+    ItemType.Scythe: {
+        ServerLanguage.English: "{0} Scythe Snathe",
+    },
+    # ItemType.Shield does not have a prefix mod, so no name format is needed
+    ItemType.Spear: {
+        ServerLanguage.German: "{0} Speerspitze",
+        ServerLanguage.English: "{0} Spearhead",
+        ServerLanguage.Korean: "{0} 흡혈의 창촉",
+        ServerLanguage.French: "Tête de javelot {0}",
+        ServerLanguage.Italian: "Punta per Lancia {0}",
+        ServerLanguage.Spanish: "Punta de lanza {0}",
+        ServerLanguage.TraditionalChinese: "{0} 矛頭",
+        ServerLanguage.Japanese: "{0} スピアヘッド",
+        ServerLanguage.Polish: "Grot Włóczni {0}",
+        ServerLanguage.Russian: "{0} Spearhead",
+        ServerLanguage.BorkBorkBork: "{0} Speaerheaed"
+    },
+    ItemType.Staff: {
+        ServerLanguage.German: "{0} Stabkopf",
+        ServerLanguage.English: "{0} Staff Head",
+        ServerLanguage.Korean: "{0} 스태프머리",
+        ServerLanguage.French: "Pommeau de bâton {0}",
+        ServerLanguage.Italian: "Testa del bastone {0}",
+        ServerLanguage.Spanish: "Puño de báculo {0}",
+        ServerLanguage.TraditionalChinese: "{0} 法杖頭",
+        ServerLanguage.Japanese: "{0} スタッフの頭部",
+        ServerLanguage.Polish: "Głowica Kostura {0}",
+        ServerLanguage.Russian: "{0} Staff Head",
+        ServerLanguage.BorkBorkBork: "{0} Staeffff Heaed"
+    },
+    ItemType.Sword: {
+        ServerLanguage.German: "{0} Schwertheft",
+        ServerLanguage.English: "{0} Sword Hilt",
+        ServerLanguage.Korean: "{0} 칼자루",
+        ServerLanguage.French: "Poignée d'épée {0}",
+        ServerLanguage.Italian: "Elsa della spada {0}",
+        ServerLanguage.Spanish: "Empuñadura de espada {0}",
+        ServerLanguage.TraditionalChinese: "{0} 劍柄",
+        ServerLanguage.Japanese: "{0} ソードの柄",
+        ServerLanguage.Polish: "Rękojeść Miecza {0}",
+        ServerLanguage.Russian: "{0} Sword Hilt",
+        ServerLanguage.BorkBorkBork: "{0} Svurd Heelt"
+    }, 
+    # ItemType.Wand does not have a prefix mod, so no name format is needed    
+}
+
 class WeaponPrefix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Prefix
+
+    @classmethod
+    def get_weapon_upgrade_name(cls, item_type: ItemType, server_language: ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> Optional[str]:
+        if item_type in WEAPON_PREFIX_ITEM_NAME_FORMAT:
+            item_type_name_formats = WEAPON_PREFIX_ITEM_NAME_FORMAT.get(item_type, {})
+            item_type_name_format = item_type_name_formats.get(server_language, item_type_name_formats.get(ServerLanguage.English, "{prefix} " + item_type.name + " Upgrade"))
+            name = cls.localized_name_format.get(server_language, cls.localized_name_format.get(ServerLanguage.English, cls.__class__.__name__))
+            return item_type_name_format.format(prefix=name)
+        
+        return None
+
     
 class IcyUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
@@ -932,8 +1031,164 @@ class HaleUpgrade(WeaponPrefix):
 #endregion Prefixes
 
 #region Suffixes
+WEAPON_SUFFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
+    ItemType.Axe: {
+        ServerLanguage.German: "Axtgriff {suffix}",
+        ServerLanguage.English: "Axe Grip {suffix}",
+        ServerLanguage.Korean: "도끼손잡이 {suffix}",
+        ServerLanguage.French: "Poignée de hache {suffix}",
+        ServerLanguage.Italian: "Impugnatura dell'ascia {suffix}",
+        ServerLanguage.Spanish: "Empuñadura de hacha {suffix}",
+        ServerLanguage.TraditionalChinese: "{suffix} 斧把手",
+        ServerLanguage.Japanese: "アックスのグリップ {suffix}",
+        ServerLanguage.Polish: "Stylisko Topora {suffix}",
+        ServerLanguage.Russian: "Axe Grip {suffix}",
+        ServerLanguage.BorkBorkBork: "Aexe-a Greep {suffix}",
+    },
+    ItemType.Bow: {
+        ServerLanguage.German: "Bogengriff {suffix}",
+        ServerLanguage.English: "Bow Grip {suffix}",
+        ServerLanguage.Korean: "활손잡이 {suffix}",
+        ServerLanguage.French: "Poignée d'arc {suffix}",
+        ServerLanguage.Italian: "Impugnatura dell'arco {suffix}",
+        ServerLanguage.Spanish: "Empuñadura de arco {suffix}",
+        ServerLanguage.TraditionalChinese: "{suffix} 弓柄",
+        ServerLanguage.Japanese: "ボウのグリップ {suffix}",
+        ServerLanguage.Polish: "Łęczysko {suffix}",
+        ServerLanguage.Russian: "Bow Grip {suffix}",
+        ServerLanguage.BorkBorkBork: "Boo Greep {suffix}"
+    },
+    ItemType.Daggers: {
+        ServerLanguage.German: "Dolchgriff {0}",
+        ServerLanguage.English: "Dagger Handle {0}",
+        ServerLanguage.Korean: "단검손자루 {0}",
+        ServerLanguage.French: "Poignée de dague {0}",
+        ServerLanguage.Italian: "Impugnatura per Pugnale {0}",
+        ServerLanguage.Spanish: "Empuñadura para daga {0}",
+        ServerLanguage.TraditionalChinese: "{0} 匕首握柄",
+        ServerLanguage.Japanese: "ダガーの柄 {0}",
+        ServerLanguage.Polish: "Rękojeść Sztyletu {0}",
+        ServerLanguage.Russian: "Dagger Handle {0}",
+        ServerLanguage.BorkBorkBork: "Daegger Hundle-a {0}"
+    },
+    ItemType.Offhand: {
+        ServerLanguage.German: "Fokus-Kern {0}",
+        ServerLanguage.English: "Focus Core {0}",
+        ServerLanguage.Korean: "포커스장식 {0}",
+        ServerLanguage.French: "Noyau de focus {0}",
+        ServerLanguage.Italian: "Nucleo del Focus {0}",
+        ServerLanguage.Spanish: "Mango de foco {0}",
+        ServerLanguage.TraditionalChinese: "{0} 聚能器核心",
+        ServerLanguage.Japanese: "フォーカスのグリップ {0}",
+        ServerLanguage.Polish: "Rdzeń Fokusu {0}",
+        ServerLanguage.Russian: "Focus Core {0}",
+        ServerLanguage.BorkBorkBork: "Fucoos Cure-a {0}"
+    },
+    ItemType.Hammer: {
+        ServerLanguage.German: "Hammergriff {0}",
+        ServerLanguage.English: "Hammer Grip {0}",
+        ServerLanguage.Korean: "해머손잡이{0}",
+        ServerLanguage.French: "Poignée de marteau {0}",
+        ServerLanguage.Italian: "Impugnatura del martello {0}",
+        ServerLanguage.Spanish: "Empuñadura de martillo {0}",
+        ServerLanguage.TraditionalChinese: "{0} 鎚把手",
+        ServerLanguage.Japanese: "ハンマーのグリップ {0}",
+        ServerLanguage.Polish: "Uchwyt Młota {0}",
+        ServerLanguage.Russian: "Hammer Grip {0}",
+        ServerLanguage.BorkBorkBork: "Haemmer Greep {0}"
+    },
+    ItemType.Scythe: {
+        ServerLanguage.German: "Sensengriff {0}",
+        ServerLanguage.English: "Scythe Grip {0}",
+        ServerLanguage.Korean: "사이드손잡이 {0}",
+        ServerLanguage.French: "Poignée de faux {0}",
+        ServerLanguage.Italian: "Impugnatura {0}",
+        ServerLanguage.Spanish: "Empuñadura de guadaña {0}",
+        ServerLanguage.TraditionalChinese: "{0} 鐮刀把",
+        ServerLanguage.Japanese: "サイズのグリップ {0}",
+        ServerLanguage.Polish: "Drzewce Kosy {0}",
+        ServerLanguage.Russian: "Scythe Grip {0}",
+        ServerLanguage.BorkBorkBork: "Scyzee Greep {0}"
+    },
+    ItemType.Shield: {
+        ServerLanguage.German: "Schildgriff {0}",
+        ServerLanguage.English: "Shield Handle {0}",
+        ServerLanguage.Korean: "방패손잡이 {0}",
+        ServerLanguage.French: "Poignée de bouclier {0}",
+        ServerLanguage.Italian: "Impugnatura dello Scudo {0}",
+        ServerLanguage.Spanish: "Mango de escudo {0}",
+        ServerLanguage.TraditionalChinese: "{0} 盾握柄",
+        ServerLanguage.Japanese: "シールドの柄 {0}",
+        ServerLanguage.Polish: "Uchwyt Tarczy {0}",
+        ServerLanguage.Russian: "Shield Handle {0}",
+        ServerLanguage.BorkBorkBork: "Sheeeld Hundle-a {0}"
+    },
+    ItemType.Spear: {
+        ServerLanguage.German: "Speergriff {0}",
+        ServerLanguage.English: "Spear Grip {0}",
+        ServerLanguage.Korean: "창손잡이(네크로맨서) {0}",
+        ServerLanguage.French: "Poignée de javelot {0}",
+        ServerLanguage.Italian: "Impugnatura della Lancia {0}",
+        ServerLanguage.Spanish: "Empuñadura de lanza {0}",
+        ServerLanguage.TraditionalChinese: "the Necromancer 矛柄 {0}",
+        ServerLanguage.Japanese: "スピアのグリップ (ネクロマンサー) {0}",
+        ServerLanguage.Polish: "Drzewce Włóczni {0}",
+        ServerLanguage.Russian: "Spear Grip of некромант {0}",
+        ServerLanguage.BorkBorkBork: "Speaer Greep {0}"
+    },
+    ItemType.Staff: {
+        ServerLanguage.German: "Stabhülle {0}",
+        ServerLanguage.English: "Staff Wrapping {0}",
+        ServerLanguage.Korean: "스태프손잡이{0}",
+        ServerLanguage.French: "Gaine de bâton {0}",
+        ServerLanguage.Italian: "Fascia del bastone {0}",
+        ServerLanguage.Spanish: "Envoltura de báculo {0}",
+        ServerLanguage.TraditionalChinese: "{0} 法杖把手",
+        ServerLanguage.Japanese: "スタッフの柄 {0}",
+        ServerLanguage.Polish: "Okład Kostura {0}",
+        ServerLanguage.Russian: "Staff Wrapping {0}",
+        ServerLanguage.BorkBorkBork: "Staeffff Vraeppeeng {0}"
+    },
+    ItemType.Sword: {
+        ServerLanguage.German: "Schwertknauf {0}",
+        ServerLanguage.English: "Sword Pommel {0}",
+        ServerLanguage.Korean: "칼머리 {0}",
+        ServerLanguage.French: "Pommeau d'épée {0}",
+        ServerLanguage.Italian: "Pomolo della spada {0}",
+        ServerLanguage.Spanish: "Pomo de espada {0}",
+        ServerLanguage.TraditionalChinese: "{0} 劍柄首",
+        ServerLanguage.Japanese: "ソードの柄頭 {0}",
+        ServerLanguage.Polish: "Głowica Miecza {0}",
+        ServerLanguage.Russian: "Sword Pommel {0}",
+        ServerLanguage.BorkBorkBork: "Svurd Pummel {0}"
+    }, 
+    ItemType.Wand: {
+        ServerLanguage.German: "Zauberstab-Hülle {0}",
+        ServerLanguage.English: "Wand Wrapping {0}",
+        ServerLanguage.Korean: "지팡이자루 {0}",
+        ServerLanguage.French: "Gaine de baguette {0}",
+        ServerLanguage.Italian: "Fascia della Bacchetta {0}",
+        ServerLanguage.Spanish: "Envoltura de varita {0}",
+        ServerLanguage.TraditionalChinese: "{0} 魔杖把手",
+        ServerLanguage.Japanese: "ワンドの布 {0}",
+        ServerLanguage.Polish: "Okład Różdżki {0}",
+        ServerLanguage.Russian: "Wand Wrapping {0}",
+        ServerLanguage.BorkBorkBork: "Vund Vraeppeeng {0}"
+    },
+}
+
 class WeaponSuffix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Suffix
+    
+    @classmethod
+    def get_weapon_upgrade_name(cls, item_type: ItemType, server_language: ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> Optional[str]:
+        if item_type in WEAPON_PREFIX_ITEM_NAME_FORMAT:
+            item_type_name_formats = WEAPON_PREFIX_ITEM_NAME_FORMAT.get(item_type, {})
+            item_type_name_format = item_type_name_formats.get(server_language, item_type_name_formats.get(ServerLanguage.English, item_type.name + " Upgrade of {prefix}"))
+            name = cls.localized_name_format.get(server_language, cls.localized_name_format.get(ServerLanguage.English, cls.__class__.__name__))
+            return item_type_name_format.format(prefix=name)
+        
+        return None
     
 class OfDefenseUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
@@ -1245,6 +1500,22 @@ class OfQuickeningUpgrade(WeaponSuffix):
 class Inscription(Upgrade):
     inventory_icon : str
     id : ItemUpgradeId
+    localized_names : dict[ServerLanguage, str] = {}
+    target_item_type : ItemType
+    
+    INSCRIPTION_LOCALIZATION = {
+            ServerLanguage.English: "Inscription: {name}",
+            ServerLanguage.German: "Inschrift: {name}",
+            ServerLanguage.French: "Inscription : {name}",
+            ServerLanguage.Spanish: "Inscripción: {name}",
+            ServerLanguage.Italian: "Iscrizione: {name}",
+            ServerLanguage.TraditionalChinese: "鑄印：{name}",
+            ServerLanguage.Korean: "마력석: {name}",
+            ServerLanguage.Japanese: "刻印：{name}",
+            ServerLanguage.Polish: "Inskrypcja: {name}",
+            ServerLanguage.Russian: "Надпись: {name}",
+            ServerLanguage.BorkBorkBork: "Inscreepshun: {name}"
+        }
     
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
@@ -1252,26 +1523,14 @@ class Inscription(Upgrade):
     
     @property
     def name(self) -> str:
-        patterns = {
-            ServerLanguage.English: r"Inscription: ",
-            ServerLanguage.German: r"Inschrift: ",
-            ServerLanguage.French: r"Inscription : ",
-            ServerLanguage.Spanish: r"Inscripción: ",
-            ServerLanguage.Italian: r"Iscrizione: ",
-            ServerLanguage.TraditionalChinese: r"鑄印：",
-            ServerLanguage.Korean: r"마력석:",
-            ServerLanguage.Japanese: r"刻印：",
-            ServerLanguage.Polish: r"Inskrypcja: ",
-            ServerLanguage.Russian: r"Надпись: ",
-            ServerLanguage.BorkBorkBork: r"Inscreepshun: "
-        }
-        
-        return ""
-    
+        language = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))
+        inscription_format = self.INSCRIPTION_LOCALIZATION.get(language, self.INSCRIPTION_LOCALIZATION[ServerLanguage.English])
+        return inscription_format.format(name=self.localized_names.get(language, self.localized_names.get(ServerLanguage.English, "")))
 
 #region Offhand
 class BeJustAndFearNot(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.BeJustAndFearNot    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusHexed,
@@ -1279,6 +1538,7 @@ class BeJustAndFearNot(Inscription):
 
 class DownButNotOut(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.DownButNotOut    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusWhileDown
@@ -1286,6 +1546,7 @@ class DownButNotOut(Inscription):
 
 class FaithIsMyShield(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.FaithIsMyShield    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusEnchanted,
@@ -1293,6 +1554,7 @@ class FaithIsMyShield(Inscription):
 
 class ForgetMeNot(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.ForgetMeNot    
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
@@ -1300,6 +1562,7 @@ class ForgetMeNot(Inscription):
 
 class HailToTheKing(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.HailToTheKing    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAbove,
@@ -1307,6 +1570,7 @@ class HailToTheKing(Inscription):
 
 class IgnoranceIsBliss(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.IgnoranceIsBliss    
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
@@ -1315,6 +1579,7 @@ class IgnoranceIsBliss(Inscription):
 
 class KnowingIsHalfTheBattle(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.KnowingIsHalfTheBattle
     property_identifiers = [
         ModifierIdentifier.ArmorPlusCasting,
@@ -1322,6 +1587,7 @@ class KnowingIsHalfTheBattle(Inscription):
 
 class LifeIsPain(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.LifeIsPain    
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
@@ -1330,6 +1596,7 @@ class LifeIsPain(Inscription):
 
 class LiveForToday(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.LiveForToday    
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
@@ -1338,6 +1605,7 @@ class LiveForToday(Inscription):
 
 class ManForAllSeasons(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.ManForAllSeasons    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
@@ -1345,6 +1613,7 @@ class ManForAllSeasons(Inscription):
 
 class MightMakesRight(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.MightMakesRight    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAttacking,
@@ -1352,6 +1621,7 @@ class MightMakesRight(Inscription):
 
 class SerenityNow(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.SerenityNow        
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
@@ -1359,6 +1629,7 @@ class SerenityNow(Inscription):
 
 class SurvivalOfTheFittest(Inscription):
     mod_type = ItemUpgradeType.Inscription
+    target_item_type = ItemType.Offhand
     id = ItemUpgradeId.SurvivalOfTheFittest    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
@@ -1369,10 +1640,8 @@ class SurvivalOfTheFittest(Inscription):
 
 class BrawnOverBrains(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.BrawnOverBrains,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.BrawnOverBrains
     property_identifiers = [
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.EnergyMinus,
@@ -1380,60 +1649,48 @@ class BrawnOverBrains(Inscription):
 
 class DanceWithDeath(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.DanceWithDeath,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.DanceWithDeath
     property_identifiers = [
         ModifierIdentifier.DamagePlusStance,
     ]
 
 class DontFearTheReaper(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.DontFearTheReaper,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.DontFearTheReaper
     property_identifiers = [
         ModifierIdentifier.DamagePlusHexed,
     ]
 
 class DontThinkTwice(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.DontThinkTwice,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.DontThinkTwice
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
 
 class GuidedByFate(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.GuidedByFate,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.GuidedByFate
     property_identifiers = [
         ModifierIdentifier.DamagePlusEnchanted,
     ]
 
 class StrengthAndHonor(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.StrengthAndHonor,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.StrengthAndHonor
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileUp,
     ]
 
 class ToThePain(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.ToThePain,
-    }
-    
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.ToThePain
     property_identifiers = [
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.ArmorMinusAttacking
@@ -1441,9 +1698,8 @@ class ToThePain(Inscription):
 
 class TooMuchInformation(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.TooMuchInformation,
-    }
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.TooMuchInformation
     
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsHexed,
@@ -1451,9 +1707,8 @@ class TooMuchInformation(Inscription):
 
 class VengeanceIsMine(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.Weapon: ItemUpgradeId.VengeanceIsMine,
-    }
+    target_item_type = ItemType.Weapon
+    id = ItemUpgradeId.VengeanceIsMine
     
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileDown,
@@ -1464,20 +1719,18 @@ class VengeanceIsMine(Inscription):
 #region MartialWeapon
 class IHaveThePower(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.MartialWeapon: ItemUpgradeId.IHaveThePower,
-    }
-    
+    target_item_type = ItemType.MartialWeapon
+    id = ItemUpgradeId.IHaveThePower
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
 
 class LetTheMemoryLiveAgain(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.MartialWeapon: ItemUpgradeId.LetTheMemoryLiveAgain,
-    }
+    target_item_type = ItemType.MartialWeapon
+    id = ItemUpgradeId.LetTheMemoryLiveAgain
     
+    id = ItemUpgradeId.LetTheMemoryLiveAgain
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
@@ -1487,201 +1740,160 @@ class LetTheMemoryLiveAgain(Inscription):
 #region OffhandOrShield
 class CastOutTheUnclean(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.CastOutTheUnclean,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.CastOutTheUnclean    
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
 class FearCutsDeeper(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.FearCutsDeeper,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.FearCutsDeeper    
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
-
 class ICanSeeClearlyNow(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.ICanSeeClearlyNow,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.ICanSeeClearlyNow
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,   
     ]
 
 class LeafOnTheWind(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.LeafOnTheWind,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.LeafOnTheWind    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
 
 class LikeARollingStone(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.LikeARollingStone,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.LikeARollingStone    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
 
 class LuckOfTheDraw(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.LuckOfTheDraw,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.LuckOfTheDraw
     property_identifiers = [
         ModifierIdentifier.ReceiveLessDamage,
     ]
 
 class MasterOfMyDomain(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.MasterOfMyDomain,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.MasterOfMyDomain    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
 
 class NotTheFace(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.NotTheFace,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.NotTheFace    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage
     ]
 
 class NothingToFear(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.NothingToFear,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.NothingToFear
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageHexed,
     ]
 
 class OnlyTheStrongSurvive(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.OnlyTheStrongSurvive,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.OnlyTheStrongSurvive    
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
 class PureOfHeart(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.PureOfHeart,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.PureOfHeart
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
 class RidersOnTheStorm(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.RidersOnTheStorm,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.RidersOnTheStorm
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
 
 class RunForYourLife(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.RunForYourLife,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.RunForYourLife
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageStance,
     ]
 
 class ShelteredByFaith(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.ShelteredByFaith,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.ShelteredByFaith    
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageEnchanted,
     ]
 
 class SleepNowInTheFire(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.SleepNowInTheFire,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.SleepNowInTheFire        
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
 
 class SoundnessOfMind(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.SoundnessOfMind,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.SoundnessOfMind
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
 class StrengthOfBody(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.StrengthOfBody,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.StrengthOfBody
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
 class SwiftAsTheWind(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.SwiftAsTheWind,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.SwiftAsTheWind
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
 
 class TheRiddleOfSteel(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.TheRiddleOfSteel,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.TheRiddleOfSteel    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
 
 class ThroughThickAndThin(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.OffhandOrShield: ItemUpgradeId.ThroughThickAndThin,
-    }
-    
+    target_item_type = ItemType.OffhandOrShield
+    id = ItemUpgradeId.ThroughThickAndThin
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -1690,20 +1902,16 @@ class ThroughThickAndThin(Inscription):
 #region EquippableItem
 class MeasureForMeasure(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.EquippableItem: ItemUpgradeId.MeasureForMeasure,
-    }
-    
+    target_item_type = ItemType.EquippableItem
+    id = ItemUpgradeId.MeasureForMeasure
     property_identifiers = [
         ModifierIdentifier.HighlySalvageable,
     ]
     
 class ShowMeTheMoney(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.EquippableItem: ItemUpgradeId.ShowMeTheMoney,
-    }
-    
+    target_item_type = ItemType.EquippableItem
+    id = ItemUpgradeId.ShowMeTheMoney
     property_identifiers = [
         ModifierIdentifier.IncreasedSaleValue,
     ]    
@@ -1712,60 +1920,48 @@ class ShowMeTheMoney(Inscription):
 #region SpellcastingWeapon
 class AptitudeNotAttitude(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.SpellcastingWeapon: ItemUpgradeId.AptitudeNotAttitude,
-    }
-    
+    target_item_type = ItemType.SpellcastingWeapon
+    id = ItemUpgradeId.AptitudeNotAttitude
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
 
 class DontCallItAComeback(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.SpellcastingWeapon: ItemUpgradeId.DontCallItAComeback,
-    }
-    
+    target_item_type = ItemType.SpellcastingWeapon
+    id = ItemUpgradeId.DontCallItAComeback    
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileBelow,
     ]
 
 class HaleAndHearty(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.SpellcastingWeapon: ItemUpgradeId.HaleAndHearty,
-    }
-    
+    target_item_type = ItemType.SpellcastingWeapon
+    id = ItemUpgradeId.HaleAndHearty
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileDown,
     ]
 
 class HaveFaith(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.SpellcastingWeapon: ItemUpgradeId.HaveFaith,
-    }
-    
+    target_item_type = ItemType.SpellcastingWeapon
+    id = ItemUpgradeId.HaveFaith
     property_identifiers = [
         ModifierIdentifier.EnergyPlusEnchanted,
     ]
 
 class IAmSorrow(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.SpellcastingWeapon: ItemUpgradeId.IAmSorrow,
-    }
-    
+    target_item_type = ItemType.SpellcastingWeapon
+    id = ItemUpgradeId.IAmSorrow        
     property_identifiers = [
         ModifierIdentifier.EnergyPlusHexed,
     ]
 
 class SeizeTheDay(Inscription):
     mod_type = ItemUpgradeType.Inscription
-    item_type_id_map = {
-        ItemType.SpellcastingWeapon: ItemUpgradeId.SeizeTheDay,
-    }
-    
+    target_item_type = ItemType.SpellcastingWeapon
+    id = ItemUpgradeId.SeizeTheDay    
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
@@ -1817,7 +2013,6 @@ class Insignia(Upgrade):
     def add_to_item_name(cls, item_name: str, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
         format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
         return format_str.format(name=cls.get_name(language), item_name=item_name)
-        
 
 class Rune(Upgrade):
     id : ItemUpgradeId
@@ -5463,7 +5658,8 @@ _PROPERTY_FACTORY: dict[ModifierIdentifier, Callable[[DecodedModifier, list[Deco
     ModifierIdentifier.ReduceConditionTupleDuration: lambda m, _: ReduceConditionTupleDuration(modifier=m, condition_1=Reduced_Ailment(m.arg2), condition_2=Reduced_Ailment(m.arg1)),
     ModifierIdentifier.ReducesDiseaseDuration: lambda m, _: ReducesDiseaseDuration(modifier=m),
     ModifierIdentifier.ReceiveLessDamage: lambda m, _: ReceiveLessDamage(modifier=m, damage_reduction=m.arg2, chance=m.arg1),
-    ModifierIdentifier.Upgrade1: lambda m, mods: get_upgrade_property(m, mods),
-    ModifierIdentifier.Upgrade2: lambda m, mods: get_upgrade_property(m, mods),
+    ModifierIdentifier.TargetItemType: lambda m, _: TargetItemTypeProperty(modifier=m, item_type=ItemType(m.arg1)),
+    ModifierIdentifier.AttributeRune: lambda m, mods: get_upgrade_property(m, mods),
+    ModifierIdentifier.Insignia_RuneOfAbsorption: lambda m, mods: get_upgrade_property(m, mods),
 }
 
