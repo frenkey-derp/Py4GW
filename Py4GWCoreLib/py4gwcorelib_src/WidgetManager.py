@@ -1556,7 +1556,6 @@ class Widget:
                     
                 except Exception as e:
                     Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                    Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
                 
             self.__enabled = False
@@ -1575,7 +1574,6 @@ class Widget:
                     self.on_enable()
                 
             except Exception as e:
-                Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
         
@@ -1744,7 +1742,6 @@ class WidgetHandler:
         else:
             widget.disable()
         
-        widget_id = widget.folder_script_name  # full id: "folder/file.py"
         widget_id = widget.folder_script_name  # full id: "folder/file.py"
         v_enabled = self._widget_var(widget_id, "enabled")  # "folder/file.py__enabled"
 
@@ -1927,7 +1924,6 @@ class WidgetHandler:
                 var_name=f"{widget_id}__optional"
             ))                    
 
-            cv = self._get_config_var(widget.folder_script_name, self._widget_var(widget.folder_script_name, "enabled"))
             cv = self._get_config_var(widget.folder_script_name, self._widget_var(widget.folder_script_name, "enabled"))
             
             enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=cv.section, var_name=cv.var_name, default=False)) if cv else False
