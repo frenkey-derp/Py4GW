@@ -4,10 +4,15 @@ from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.ImGui import ImGui
 from Py4GWCoreLib.enums_src.IO_enums import Key
 
-from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import LayoutMode, Py4GWLibrary, WidgetHandler, get_widget_handler
+from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import WidgetHandler, get_widget_handler
 import os
 
-MODULE_NAME = "Widget Manager"
+
+MODULE_NAME = "Py4GW Library"
+
+Utils.ClearSubModules(MODULE_NAME.replace(" ", ""))
+from Sources.frenkeyLib.Py4GWLibrary.library import LayoutMode, Py4GWLibrary
           
 #region Main
 # ------------------------------------------------------------
@@ -17,8 +22,8 @@ widget_manager : WidgetHandler = get_widget_handler()
 py4_gw_library : Optional[Py4GWLibrary] = None 
 
 INI_KEY = ""
-INI_PATH = "Widgets/WidgetManager"
-INI_FILENAME = "WidgetManager.ini"
+INI_PATH = "Widgets/Py4GW Library"
+INI_FILENAME = "Py4GW Library.ini"
 
 def _add_config_vars():
     global INI_KEY
@@ -32,7 +37,7 @@ def _add_config_vars():
     IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)
     IniManager().add_str(key=INI_KEY, var_name="hotkey_modifiers", section="Configuration", name="hotkey_modifiers", default="NoneKey")
     IniManager().add_bool(key=INI_KEY, var_name="single_filter", section="Configuration", name="single_filter", default=True)
-    IniManager().add_bool(key=INI_KEY, var_name="jump_to_minimalistic", section="Configuration", name="jump_to_minimalistic", default=False)
+    IniManager().add_bool(key=INI_KEY, var_name="jump_to_minimalistic", section="Configuration", name="jump_to_minimalistic", default=True)
     IniManager().add_float(key=INI_KEY, var_name="library_width", section="Configuration", name="library_width", default=900)
     IniManager().add_float(key=INI_KEY, var_name="library_height", section="Configuration", name="library_height", default=600)
                             
@@ -69,18 +74,13 @@ def _add_config_vars():
         )
         
 def update():
-    if widget_manager.enable_all:
-        widget_manager.execute_enabled_widgets_update()
-    
+    pass
+
 def draw():
-    if widget_manager.enable_all:
-        widget_manager.execute_enabled_widgets_draw()     
-        
-widget_manager_initialized = False
-widget_manager_initializing = False
+    pass
 
 def main():
-    global INI_KEY, init_coro, widget_manager_initialized, widget_manager_initializing, py4_gw_library
+    global INI_KEY, py4_gw_library
 
     if not INI_KEY:
         if not os.path.exists(INI_PATH):
@@ -93,16 +93,9 @@ def main():
         
         if not INI_KEY: return
         
-        widget_manager.MANAGER_INI_KEY = INI_KEY
-        
-        widget_manager.discover()
         _add_config_vars()
         IniManager().load_once(INI_KEY)
 
-        # FIX 1: Explicitly load the global manager state into the handler
-        widget_manager.enable_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=False, section="Configuration"))
-        widget_manager._apply_ini_configuration()
-            
 
     if INI_KEY:
         use_library = bool(IniManager().get(key=INI_KEY, var_name="use_library", default=True, section="Configuration"))
@@ -112,14 +105,10 @@ def main():
         
             py4_gw_library.draw_window()
         else:
-            if ImGui.Begin(ini_key=INI_KEY, name="Widget Manager", flags=PyImGui.WindowFlags.AlwaysAutoResize):
+            if ImGui.Begin(ini_key=INI_KEY, name=MODULE_NAME, flags=PyImGui.WindowFlags.AlwaysAutoResize):
                 widget_manager.draw_ui(INI_KEY)
             ImGui.End(INI_KEY)
     
-    if widget_manager.enable_all:
-        widget_manager.execute_enabled_widgets_main()
-        widget_manager.execute_configuring_widgets()
-
 
 if __name__ == "__main__":
     main()
