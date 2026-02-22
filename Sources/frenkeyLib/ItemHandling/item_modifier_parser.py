@@ -35,7 +35,7 @@ class ItemModifierParser:
                     
                 if prop and isinstance(prop, ItemProperty) and type(prop) is not ItemProperty:
                     #only add if no property of that type already exists, since some modifiers have multiple entries with the same identifier but different args (e.g. one for the name and one for the description)
-                    if not any(isinstance(p, type(prop)) for p in self.properties):
+                    if not any(isinstance(p, type(prop)) and p.modifier.arg == prop.modifier.arg for p in self.properties):
                         self.properties.append(prop)
                         
     def get_properties(self) -> list[ItemProperty]:

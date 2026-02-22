@@ -1,0 +1,42 @@
+
+    RANK_LOCALIZATION = {
+        Rarity.Blue: {
+            ServerLanguage.English: "Minor",
+            ServerLanguage.Spanish: "de grado menor",
+            ServerLanguage.Italian: "di grado minore",
+            ServerLanguage.German: "d. kleineren",
+            ServerLanguage.Korean: "하급",
+            ServerLanguage.French: "bonus mineur",
+            ServerLanguage.TraditionalChinese: "初級",
+            ServerLanguage.Japanese: "マイナー",
+            ServerLanguage.Polish: "niższego poziomu",
+            ServerLanguage.Russian: "Minor",
+            ServerLanguage.BorkBorkBork: "Meenur"
+        },
+        Rarity.Purple: {
+            ServerLanguage.English: "Major",
+            ServerLanguage.Spanish: "de grado mayor",
+            ServerLanguage.Italian: "di grado maggiore",
+            ServerLanguage.German: "d. hohen",
+            ServerLanguage.Korean: "상급",
+            ServerLanguage.French: "bonus majeur",
+            ServerLanguage.TraditionalChinese: "中級",
+            ServerLanguage.Japanese: "メジャー",
+            ServerLanguage.Polish: "wyższego poziomu",
+            ServerLanguage.Russian: "Major",
+            ServerLanguage.BorkBorkBork: "Maejur"
+            },
+        Rarity.Gold: {
+            ServerLanguage.English: "Superior",
+            ServerLanguage.Spanish: "de grado excepcional",
+            ServerLanguage.Italian: "di grado supremo",
+            ServerLanguage.German: "d. überlegenen",
+            ServerLanguage.Korean: "고급",
+            ServerLanguage.French: "bonus supérieur",
+            ServerLanguage.TraditionalChinese: "高級",
+            ServerLanguage.Japanese: "スーペリア",
+            ServerLanguage.Polish: "najwyższego poziomu",
+            ServerLanguage.Russian: "Superior",
+            ServerLanguage.BorkBorkBork: "Soopereeur"
+        }
+    }
