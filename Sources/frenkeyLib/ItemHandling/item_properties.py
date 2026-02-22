@@ -12,6 +12,98 @@ from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeType, ModifierIdentifier
 from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgradeId
 
+class LocalizedString:    
+    def __init__(self, localization: Optional[dict[ServerLanguage, str]] = None):
+        self._localization = localization or {}
+    
+    @property
+    def default(self) -> str:
+        return self.get()
+    
+    @property
+    def english(self) -> str:
+        return self.get(ServerLanguage.English)
+    
+    @property
+    def korean(self) -> str:
+        return self.get(ServerLanguage.Korean)
+    
+    @property
+    def french(self) -> str:
+        return self.get(ServerLanguage.French)
+    
+    @property
+    def german(self) -> str:
+        return self.get(ServerLanguage.German)
+    
+    @property
+    def italian(self) -> str:
+        return self.get(ServerLanguage.Italian)
+    
+    @property
+    def spanish(self) -> str:
+        return self.get(ServerLanguage.Spanish)
+    
+    @property
+    def chinese(self) -> str:
+        return self.get(ServerLanguage.TraditionalChinese)
+    
+    @property
+    def japanese(self) -> str:
+        return self.get(ServerLanguage.Japanese)
+    
+    @property
+    def polish(self) -> str:
+        return self.get(ServerLanguage.Polish)
+    
+    @property
+    def russian(self) -> str:
+        return self.get(ServerLanguage.Russian)
+    
+    @property
+    def bork(self) -> str:
+        return self.get(ServerLanguage.BorkBorkBork)
+        
+    def get(self, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
+        return self._localization.get(language, self._localization.get(ServerLanguage.English, ""))
+    
+    def __str__(self) -> str:
+        return self.get()
+
+    def __repr__(self) -> str:
+        return repr(self.get())
+
+    def __format__(self, format_spec: str) -> str:
+        return format(self.get(), format_spec)
+
+    def __len__(self) -> int:
+        return len(self.get())
+
+    def __add__(self, other):
+        return self.get() + str(other)
+
+    def __radd__(self, other):
+        return str(other) + self.get()
+
+    def __eq__(self, other):
+        return self.get() == str(other)
+
+    def __contains__(self, item):
+        return item in self.get()
+
+    # ---------------------------------------------------------
+    # Forward ALL other string methods automatically
+    # ---------------------------------------------------------
+
+    def __getattr__(self, item):
+        return getattr(self.get(), item)
+    
+LOCALIZED_PROFESSION_NAMES : dict = {
+}
+
+LOCALIZED_ATTRIBUTE_NAMES : dict = {
+}
+
 #region Item Properties
 @dataclass
 class ItemProperty:
@@ -1376,7 +1468,7 @@ WEAPON_SUFFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
         ServerLanguage.French: "Poignée de javelot {0}",
         ServerLanguage.Italian: "Impugnatura della Lancia {0}",
         ServerLanguage.Spanish: "Empuñadura de lanza {0}",
-        ServerLanguage.TraditionalChinese: "the Necromancer 矛柄 {0}",
+        ServerLanguage.TraditionalChinese: "the 矛柄 {0}",
         ServerLanguage.Japanese: "スピアのグリップ (ネクロマンサー) {0}",
         ServerLanguage.Polish: "Drzewce Włóczni {0}",
         ServerLanguage.Russian: "Spear Grip of некромант {0}",
@@ -3093,7 +3185,7 @@ class Insignia(Upgrade):
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
-    localized_name_format : dict[ServerLanguage, str] = {}
+    names : dict[ServerLanguage, str] = {}
 
     INSIGNIA_LOCALIZATION = {
         ServerLanguage.English: "Insignia",
@@ -3119,12 +3211,12 @@ class Insignia(Upgrade):
 
     @classmethod
     def get_name(cls, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
-        format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
+        format_str = cls.names.get(language, "[ABC] {item_name}")
         return format_str.format(item_name=Insignia.INSIGNIA_LOCALIZATION.get(language, "Insignia"))
 
     @classmethod
     def add_to_item_name(cls, item_name: str, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
-        format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
+        format_str = cls.names.get(language, "[ABC] {item_name}")
         return format_str.format(name=cls.get_name(language), item_name=item_name)
 
 class Rune(Upgrade):
@@ -3134,49 +3226,7 @@ class Rune(Upgrade):
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
-    localized_name_format : dict[ServerLanguage, str] = {}
-
-    RANK_LOCALIZATION = {
-        Rarity.Blue: {
-            ServerLanguage.English: "Minor",
-            ServerLanguage.Spanish: "de grado menor",
-            ServerLanguage.Italian: "di grado minore",
-            ServerLanguage.German: "d. kleineren",
-            ServerLanguage.Korean: "하급",
-            ServerLanguage.French: "bonus mineur",
-            ServerLanguage.TraditionalChinese: "初級",
-            ServerLanguage.Japanese: "マイナー",
-            ServerLanguage.Polish: "niższego poziomu",
-            ServerLanguage.Russian: "Minor",
-            ServerLanguage.BorkBorkBork: "Meenur"
-        },
-        Rarity.Purple: {
-            ServerLanguage.English: "Major",
-            ServerLanguage.Spanish: "de grado mayor",
-            ServerLanguage.Italian: "di grado maggiore",
-            ServerLanguage.German: "d. hohen",
-            ServerLanguage.Korean: "상급",
-            ServerLanguage.French: "bonus majeur",
-            ServerLanguage.TraditionalChinese: "中級",
-            ServerLanguage.Japanese: "メジャー",
-            ServerLanguage.Polish: "wyższego poziomu",
-            ServerLanguage.Russian: "Major",
-            ServerLanguage.BorkBorkBork: "Maejur"
-            },
-        Rarity.Gold: {
-            ServerLanguage.English: "Superior",
-            ServerLanguage.Spanish: "de grado excepcional",
-            ServerLanguage.Italian: "di grado supremo",
-            ServerLanguage.German: "d. überlegenen",
-            ServerLanguage.Korean: "고급",
-            ServerLanguage.French: "bonus supérieur",
-            ServerLanguage.TraditionalChinese: "高級",
-            ServerLanguage.Japanese: "スーペリア",
-            ServerLanguage.Polish: "najwyższego poziomu",
-            ServerLanguage.Russian: "Superior",
-            ServerLanguage.BorkBorkBork: "Soopereeur"
-        }
-    }
+    names : dict[ServerLanguage, str] = {}
 
     RUNE_LOCALIZATION = {
         ServerLanguage.English: "Rune",
@@ -3191,6 +3241,16 @@ class Rune(Upgrade):
         ServerLanguage.Russian: "Rune",
         ServerLanguage.BorkBorkBork: "Roone-a"
     }
+    
+    @classmethod
+    def get_rune_name(cls, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
+        if cls.profession is not Profession._None:
+            profession_str = LOCALIZED_PROFESSION_NAMES.get(cls.profession, {}).get(language)
+            rune_str = cls.RUNE_LOCALIZATION.get(language, "Rune")
+            return f"{profession_str} {rune_str}".strip()
+        else:                
+            rune_str = cls.RUNE_LOCALIZATION.get(language, "Rune")
+            return f"{rune_str}".strip()
 
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
@@ -3202,12 +3262,12 @@ class Rune(Upgrade):
 
     @classmethod
     def get_name(cls, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
-        format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
+        format_str = cls.names.get(language, "[ABC] {item_name}")
         return format_str.format(item_name=Insignia.INSIGNIA_LOCALIZATION.get(language, "Insignia"))
 
     @classmethod
     def add_to_item_name(cls, item_name: str, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
-        format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
+        format_str = cls.names.get(language, "[ABC] {item_name}")
         return format_str.format(name=cls.get_name(language), item_name=item_name)
 
 class AttributeRune(Rune):
@@ -3246,17 +3306,17 @@ class SurvivorInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Survivor Insignia",
-        ServerLanguage.Korean: "생존자의 휘장",
-        ServerLanguage.French: "Insigne du survivant",
-        ServerLanguage.German: "Überlebende Befähigung",
-        ServerLanguage.Italian: "Insegne del Superstite",
-        ServerLanguage.Spanish: "Insignia de superviviente",
-        ServerLanguage.TraditionalChinese: "生存 徽記",
-        ServerLanguage.Japanese: "サバイバー 記章",
-        ServerLanguage.Polish: "Symbol Przetrwania",
-        ServerLanguage.Russian: "Survivor Insignia",
-        ServerLanguage.BorkBorkBork: "Soorfeefur Inseegneea",
+        ServerLanguage.English: "Survivor {item_name}",
+        ServerLanguage.Korean: "생존자의 {item_name}",
+        ServerLanguage.French: "{item_name} du survivant",
+        ServerLanguage.German: "Überlebende {item_name}",
+        ServerLanguage.Italian: "{item_name} del Superstite",
+        ServerLanguage.Spanish: "{item_name} de superviviente",
+        ServerLanguage.TraditionalChinese: "生存 {item_name}",
+        ServerLanguage.Japanese: "サバイバー {item_name}",
+        ServerLanguage.Polish: "{item_name} Przetrwania",
+        ServerLanguage.Russian: "Survivor {item_name}",
+        ServerLanguage.BorkBorkBork: "Soorfeefur {item_name}",
     }
 
 class RadiantInsignia(Insignia):
@@ -3264,17 +3324,17 @@ class RadiantInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Radiant Insignia",
-        ServerLanguage.Korean: "눈부신 휘장",
-        ServerLanguage.French: "Insigne du rayonnement",
-        ServerLanguage.German: "Radianten- Befähigung",
-        ServerLanguage.Italian: "Insegne Radianti",
-        ServerLanguage.Spanish: "Insignia radiante",
-        ServerLanguage.TraditionalChinese: "閃耀 徽記",
-        ServerLanguage.Japanese: "ラディアント 記章",
-        ServerLanguage.Polish: "Symbol Promieni",
-        ServerLanguage.Russian: "Radiant Insignia",
-        ServerLanguage.BorkBorkBork: "Raedeeunt Inseegneea",
+        ServerLanguage.English: "Radiant {item_name}",
+        ServerLanguage.Korean: "눈부신 {item_name}",
+        ServerLanguage.French: "{item_name} du rayonnement",
+        ServerLanguage.German: "Radianten- {item_name}",
+        ServerLanguage.Italian: "{item_name} Radianti",
+        ServerLanguage.Spanish: "{item_name} radiante",
+        ServerLanguage.TraditionalChinese: "閃耀 {item_name}",
+        ServerLanguage.Japanese: "ラディアント {item_name}",
+        ServerLanguage.Polish: "{item_name} Promieni",
+        ServerLanguage.Russian: "Radiant {item_name}",
+        ServerLanguage.BorkBorkBork: "Raedeeunt {item_name}",
     }
 
 class StalwartInsignia(Insignia):
@@ -3286,17 +3346,17 @@ class StalwartInsignia(Insignia):
     ]
 
     names = {
-        ServerLanguage.English: "Stalwart Insignia",
-        ServerLanguage.Korean: "튼튼한 휘장",
-        ServerLanguage.French: "Insigne robuste",
-        ServerLanguage.German: "Entschlossenheits- Befähigung",
-        ServerLanguage.Italian: "Insegne della Robustezza",
-        ServerLanguage.Spanish: "Insignia firme",
-        ServerLanguage.TraditionalChinese: "健壯 徽記",
-        ServerLanguage.Japanese: "スタルウォート 記章",
-        ServerLanguage.Polish: "Symbol Stanowczości",
-        ServerLanguage.Russian: "Stalwart Insignia",
-        ServerLanguage.BorkBorkBork: "Staelvaert Inseegneea",
+        ServerLanguage.English: "Stalwart {item_name}",
+        ServerLanguage.Korean: "튼튼한 {item_name}",
+        ServerLanguage.French: "{item_name} robuste",
+        ServerLanguage.German: "Entschlossenheits- {item_name}",
+        ServerLanguage.Italian: "{item_name} della Robustezza",
+        ServerLanguage.Spanish: "{item_name} firme",
+        ServerLanguage.TraditionalChinese: "健壯 {item_name}",
+        ServerLanguage.Japanese: "スタルウォート {item_name}",
+        ServerLanguage.Polish: "{item_name} Stanowczości",
+        ServerLanguage.Russian: "Stalwart {item_name}",
+        ServerLanguage.BorkBorkBork: "Staelvaert {item_name}",
     }
 
 class BrawlersInsignia(Insignia):
@@ -3304,17 +3364,17 @@ class BrawlersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Brawler's Insignia",
-        ServerLanguage.Korean: "싸움꾼의 휘장",
-        ServerLanguage.French: "Insigne de l'agitateur",
-        ServerLanguage.German: "Raufbold- Befähigung",
-        ServerLanguage.Italian: "Insegne da Lottatore",
-        ServerLanguage.Spanish: "Insignia del pendenciero",
-        ServerLanguage.TraditionalChinese: "鬥士 徽記",
-        ServerLanguage.Japanese: "ブラウラー 記章",
-        ServerLanguage.Polish: "Symbol Zapaśnika",
-        ServerLanguage.Russian: "Brawler's Insignia",
-        ServerLanguage.BorkBorkBork: "Braevler's Inseegneea",
+        ServerLanguage.English: "Brawler's {item_name}",
+        ServerLanguage.Korean: "싸움꾼의 {item_name}",
+        ServerLanguage.French: "{item_name} de l'agitateur",
+        ServerLanguage.German: "Raufbold- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Lottatore",
+        ServerLanguage.Spanish: "{item_name} del pendenciero",
+        ServerLanguage.TraditionalChinese: "鬥士 {item_name}",
+        ServerLanguage.Japanese: "ブラウラー {item_name}",
+        ServerLanguage.Polish: "{item_name} Zapaśnika",
+        ServerLanguage.Russian: "Brawler's {item_name}",
+        ServerLanguage.BorkBorkBork: "Braevler's {item_name}",
     }
 
 class BlessedInsignia(Insignia):
@@ -3322,17 +3382,17 @@ class BlessedInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Blessed Insignia",
-        ServerLanguage.Korean: "축복의 휘장",
-        ServerLanguage.French: "Insigne de la bénédiction",
-        ServerLanguage.German: "Segens Befähigung",
-        ServerLanguage.Italian: "Insegne della Benedizione",
-        ServerLanguage.Spanish: "Insignia con bendición",
-        ServerLanguage.TraditionalChinese: "祝福 徽記",
-        ServerLanguage.Japanese: "ブレス 記章",
-        ServerLanguage.Polish: "Symbol Błogosławieństwa",
-        ServerLanguage.Russian: "Blessed Insignia",
-        ServerLanguage.BorkBorkBork: "Blessed Inseegneea",
+        ServerLanguage.English: "Blessed {item_name}",
+        ServerLanguage.Korean: "축복의 {item_name}",
+        ServerLanguage.French: "{item_name} de la bénédiction",
+        ServerLanguage.German: "Segens {item_name}",
+        ServerLanguage.Italian: "{item_name} della Benedizione",
+        ServerLanguage.Spanish: "{item_name} con bendición",
+        ServerLanguage.TraditionalChinese: "祝福 {item_name}",
+        ServerLanguage.Japanese: "ブレス {item_name}",
+        ServerLanguage.Polish: "{item_name} Błogosławieństwa",
+        ServerLanguage.Russian: "Blessed {item_name}",
+        ServerLanguage.BorkBorkBork: "Blessed {item_name}",
     }
 
 class HeraldsInsignia(Insignia):
@@ -3340,17 +3400,17 @@ class HeraldsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Herald's Insignia",
-        ServerLanguage.Korean: "전령의 휘장",
-        ServerLanguage.French: "Insigne de héraut",
-        ServerLanguage.German: "Herold- Befähigung",
-        ServerLanguage.Italian: "Insegne da Araldo",
-        ServerLanguage.Spanish: "Insignia de heraldo",
-        ServerLanguage.TraditionalChinese: "先驅 徽記",
-        ServerLanguage.Japanese: "ヘラルド 記章",
-        ServerLanguage.Polish: "Symbol Herolda",
-        ServerLanguage.Russian: "Herald's Insignia",
-        ServerLanguage.BorkBorkBork: "Heraeld's Inseegneea",
+        ServerLanguage.English: "Herald's {item_name}",
+        ServerLanguage.Korean: "전령의 {item_name}",
+        ServerLanguage.French: "{item_name} de héraut",
+        ServerLanguage.German: "Herold- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Araldo",
+        ServerLanguage.Spanish: "{item_name} de heraldo",
+        ServerLanguage.TraditionalChinese: "先驅 {item_name}",
+        ServerLanguage.Japanese: "ヘラルド {item_name}",
+        ServerLanguage.Polish: "{item_name} Herolda",
+        ServerLanguage.Russian: "Herald's {item_name}",
+        ServerLanguage.BorkBorkBork: "Heraeld's {item_name}",
     }
 
 class SentrysInsignia(Insignia):
@@ -3358,17 +3418,17 @@ class SentrysInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Sentry's Insignia",
-        ServerLanguage.Korean: "보초병의 휘장",
-        ServerLanguage.French: "Insigne de factionnaire",
-        ServerLanguage.German: "Wachposten- Befähigung",
-        ServerLanguage.Italian: "Insegne da Sentinella",
-        ServerLanguage.Spanish: "Insignia de centinela",
-        ServerLanguage.TraditionalChinese: "哨兵 徽記",
-        ServerLanguage.Japanese: "セントリー 記章",
-        ServerLanguage.Polish: "Symbol Wartownika",
-        ServerLanguage.Russian: "Sentry's Insignia",
-        ServerLanguage.BorkBorkBork: "Sentry's Inseegneea",
+        ServerLanguage.English: "Sentry's {item_name}",
+        ServerLanguage.Korean: "보초병의 {item_name}",
+        ServerLanguage.French: "{item_name} de factionnaire",
+        ServerLanguage.German: "Wachposten- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Sentinella",
+        ServerLanguage.Spanish: "{item_name} de centinela",
+        ServerLanguage.TraditionalChinese: "哨兵 {item_name}",
+        ServerLanguage.Japanese: "セントリー {item_name}",
+        ServerLanguage.Polish: "{item_name} Wartownika",
+        ServerLanguage.Russian: "Sentry's {item_name}",
+        ServerLanguage.BorkBorkBork: "Sentry's {item_name}",
     }
 
 class RuneOfMinorVigor(Rune):
@@ -3377,17 +3437,17 @@ class RuneOfMinorVigor(Rune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Rune of Minor Vigor",
-        ServerLanguage.Korean: "룬(하급 활력)",
-        ServerLanguage.French: "Rune (Vigueur : bonus mineur)",
-        ServerLanguage.German: "Rune d. kleineren Lebenskraft",
-        ServerLanguage.Italian: "Runa Vigore di grado minore",
-        ServerLanguage.Spanish: "Runa (vigor de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 活力 符文",
-        ServerLanguage.Japanese: "ルーン (マイナー ビガー)",
-        ServerLanguage.Polish: "Runa (Wigoru niższego poziomu)",
-        ServerLanguage.Russian: "Rune of Minor Vigor",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Meenur Feegur",
+        ServerLanguage.English: "{item_name} of Minor Vigor",
+        ServerLanguage.Korean: "{item_name}(하급 활력)",
+        ServerLanguage.French: "{item_name} (Vigueur : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Lebenskraft",
+        ServerLanguage.Italian: "{item_name} Vigore di grado minore",
+        ServerLanguage.Spanish: "{item_name} (vigor de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 活力 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ビガー)",
+        ServerLanguage.Polish: "{item_name} (Wigoru niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Vigor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Feegur",
     }
 
 class RuneOfMinorVigor2(Rune):
@@ -3396,17 +3456,17 @@ class RuneOfMinorVigor2(Rune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Rune of Minor Vigor",
-        ServerLanguage.Korean: "룬(하급 활력)",
-        ServerLanguage.French: "Rune (Vigueur : bonus mineur)",
-        ServerLanguage.German: "Rune d. kleineren Lebenskraft",
-        ServerLanguage.Italian: "Runa Vigore di grado minore",
-        ServerLanguage.Spanish: "Runa (vigor de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 活力 符文",
-        ServerLanguage.Japanese: "ルーン (マイナー ビガー)",
-        ServerLanguage.Polish: "Runa (Wigoru niższego poziomu)",
-        ServerLanguage.Russian: "Rune of Minor Vigor",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Meenur Feegur",
+        ServerLanguage.English: "{item_name} of Minor Vigor",
+        ServerLanguage.Korean: "{item_name}(하급 활력)",
+        ServerLanguage.French: "{item_name} (Vigueur : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Lebenskraft",
+        ServerLanguage.Italian: "{item_name} Vigore di grado minore",
+        ServerLanguage.Spanish: "{item_name} (vigor de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 活力 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ビガー)",
+        ServerLanguage.Polish: "{item_name} (Wigoru niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Vigor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Feegur",
     }
 
 class RuneOfVitae(Rune):
@@ -3415,17 +3475,17 @@ class RuneOfVitae(Rune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Rune of Vitae",
-        ServerLanguage.Korean: "룬(이력)",
-        ServerLanguage.French: "Rune (de la vie)",
-        ServerLanguage.German: "Rune d. Lebenskraft",
-        ServerLanguage.Italian: "Runa della Vita",
-        ServerLanguage.Spanish: "Runa (de vida)",
-        ServerLanguage.TraditionalChinese: "生命 符文",
-        ServerLanguage.Japanese: "ルーン (ヴィータ)",
-        ServerLanguage.Polish: "Runa (Życia)",
-        ServerLanguage.Russian: "Rune of Vitae",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Feetaee-a",
+        ServerLanguage.English: "{item_name} of Vitae",
+        ServerLanguage.Korean: "{item_name}(이력)",
+        ServerLanguage.French: "{item_name} (de la vie)",
+        ServerLanguage.German: "{item_name} d. Lebenskraft",
+        ServerLanguage.Italian: "{item_name} della Vita",
+        ServerLanguage.Spanish: "{item_name} (de vida)",
+        ServerLanguage.TraditionalChinese: "生命 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (ヴィータ)",
+        ServerLanguage.Polish: "{item_name} (Życia)",
+        ServerLanguage.Russian: "{item_name} of Vitae",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Feetaee-a",
     }
 
 class RuneOfAttunement(Rune):
@@ -3434,17 +3494,17 @@ class RuneOfAttunement(Rune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Rune of Attunement",
-        ServerLanguage.Korean: "룬(조율)",
-        ServerLanguage.French: "Rune (d'affinité)",
-        ServerLanguage.German: "Rune d. Einstimmung",
-        ServerLanguage.Italian: "Runa dell'Armonia",
-        ServerLanguage.Spanish: "Runa (de sintonía)",
-        ServerLanguage.TraditionalChinese: "調和 符文",
-        ServerLanguage.Japanese: "ルーン (アチューン)",
-        ServerLanguage.Polish: "Runa (Dostrojenia)",
-        ServerLanguage.Russian: "Rune of Attunement",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Aettoonement",
+        ServerLanguage.English: "{item_name} of Attunement",
+        ServerLanguage.Korean: "{item_name}(조율)",
+        ServerLanguage.French: "{item_name} (d'affinité)",
+        ServerLanguage.German: "{item_name} d. Einstimmung",
+        ServerLanguage.Italian: "{item_name} dell'Armonia",
+        ServerLanguage.Spanish: "{item_name} (de sintonía)",
+        ServerLanguage.TraditionalChinese: "調和 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (アチューン)",
+        ServerLanguage.Polish: "{item_name} (Dostrojenia)",
+        ServerLanguage.Russian: "{item_name} of Attunement",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Aettoonement",
     }
 
 class RuneOfMajorVigor(Rune):
@@ -3453,17 +3513,17 @@ class RuneOfMajorVigor(Rune):
     rarity = Rarity.Purple
 
     names = {
-        ServerLanguage.English: "Rune of Major Vigor",
-        ServerLanguage.Korean: "룬(상급 활력)",
-        ServerLanguage.French: "Rune (Vigueur : bonus majeur)",
-        ServerLanguage.German: "Rune d. hohen Lebenskraft",
-        ServerLanguage.Italian: "Runa Vigore di grado maggiore",
-        ServerLanguage.Spanish: "Runa (vigor de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 活力 符文",
-        ServerLanguage.Japanese: "ルーン (メジャー ビガー)",
-        ServerLanguage.Polish: "Runa (Wigoru wyższego poziomu)",
-        ServerLanguage.Russian: "Rune of Major Vigor",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Maejur Feegur",
+        ServerLanguage.English: "{item_name} of Major Vigor",
+        ServerLanguage.Korean: "{item_name}(상급 활력)",
+        ServerLanguage.French: "{item_name} (Vigueur : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Lebenskraft",
+        ServerLanguage.Italian: "{item_name} Vigore di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (vigor de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 活力 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ビガー)",
+        ServerLanguage.Polish: "{item_name} (Wigoru wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Vigor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Feegur",
     }
 
 class RuneOfRecovery(Rune):
@@ -3476,17 +3536,17 @@ class RuneOfRecovery(Rune):
     ]
 
     names = {
-        ServerLanguage.English: "Rune of Recovery",
-        ServerLanguage.Korean: "룬(회복)",
-        ServerLanguage.French: "Rune (de récupération)",
-        ServerLanguage.German: "Rune d. Gesundung",
-        ServerLanguage.Italian: "Runa della Ripresa",
-        ServerLanguage.Spanish: "Runa (de mejoría)",
-        ServerLanguage.TraditionalChinese: "恢復 符文",
-        ServerLanguage.Japanese: "ルーン (リカバリー)",
-        ServerLanguage.Polish: "Runa (Uzdrowienia)",
-        ServerLanguage.Russian: "Rune of Recovery",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Recufery",
+        ServerLanguage.English: "{item_name} of Recovery",
+        ServerLanguage.Korean: "{item_name}(회복)",
+        ServerLanguage.French: "{item_name} (de récupération)",
+        ServerLanguage.German: "{item_name} d. Gesundung",
+        ServerLanguage.Italian: "{item_name} della Ripresa",
+        ServerLanguage.Spanish: "{item_name} (de mejoría)",
+        ServerLanguage.TraditionalChinese: "恢復 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (リカバリー)",
+        ServerLanguage.Polish: "{item_name} (Uzdrowienia)",
+        ServerLanguage.Russian: "{item_name} of Recovery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Recufery",
     }
 
 class RuneOfRestoration(Rune):
@@ -3499,17 +3559,17 @@ class RuneOfRestoration(Rune):
     ]
 
     names = {
-        ServerLanguage.English: "Rune of Restoration",
-        ServerLanguage.Korean: "룬(복구)",
-        ServerLanguage.French: "Rune (de rétablissement)",
-        ServerLanguage.German: "Rune d. Wiederherstellung",
-        ServerLanguage.Italian: "Runa del Ripristino",
-        ServerLanguage.Spanish: "Runa (de restauración)",
-        ServerLanguage.TraditionalChinese: "復原 符文",
-        ServerLanguage.Japanese: "ルーン (レストレーション)",
-        ServerLanguage.Polish: "Runa (Renowacji)",
-        ServerLanguage.Russian: "Rune of Restoration",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Resturaeshun",
+        ServerLanguage.English: "{item_name} of Restoration",
+        ServerLanguage.Korean: "{item_name}(복구)",
+        ServerLanguage.French: "{item_name} (de rétablissement)",
+        ServerLanguage.German: "{item_name} d. Wiederherstellung",
+        ServerLanguage.Italian: "{item_name} del Ripristino",
+        ServerLanguage.Spanish: "{item_name} (de restauración)",
+        ServerLanguage.TraditionalChinese: "復原 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (レストレーション)",
+        ServerLanguage.Polish: "{item_name} (Renowacji)",
+        ServerLanguage.Russian: "{item_name} of Restoration",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Resturaeshun",
     }
 
 class RuneOfClarity(Rune):
@@ -3522,17 +3582,17 @@ class RuneOfClarity(Rune):
     ]
 
     names = {
-        ServerLanguage.English: "Rune of Clarity",
-        ServerLanguage.Korean: "룬(명석)",
-        ServerLanguage.French: "Rune (de la clarté)",
-        ServerLanguage.German: "Rune d. Klarheit",
-        ServerLanguage.Italian: "Runa della Trasparenza",
-        ServerLanguage.Spanish: "Runa (de claridad)",
-        ServerLanguage.TraditionalChinese: "澄澈 符文",
-        ServerLanguage.Japanese: "ルーン (クラリティ)",
-        ServerLanguage.Polish: "Runa (Jasności)",
-        ServerLanguage.Russian: "Rune of Clarity",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Claereety",
+        ServerLanguage.English: "{item_name} of Clarity",
+        ServerLanguage.Korean: "{item_name}(명석)",
+        ServerLanguage.French: "{item_name} (de la clarté)",
+        ServerLanguage.German: "{item_name} d. Klarheit",
+        ServerLanguage.Italian: "{item_name} della Trasparenza",
+        ServerLanguage.Spanish: "{item_name} (de claridad)",
+        ServerLanguage.TraditionalChinese: "澄澈 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (クラリティ)",
+        ServerLanguage.Polish: "{item_name} (Jasności)",
+        ServerLanguage.Russian: "{item_name} of Clarity",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Claereety",
     }
 
 class RuneOfPurity(Rune):
@@ -3545,17 +3605,17 @@ class RuneOfPurity(Rune):
     ]
 
     names = {
-        ServerLanguage.English: "Rune of Purity",
-        ServerLanguage.Korean: "룬(순수)",
-        ServerLanguage.French: "Rune (de la pureté)",
-        ServerLanguage.German: "Rune d. Reinheit",
-        ServerLanguage.Italian: "Runa della Purezza",
-        ServerLanguage.Spanish: "Runa (de pureza)",
-        ServerLanguage.TraditionalChinese: "潔淨 符文",
-        ServerLanguage.Japanese: "ルーン (ピュリティ)",
-        ServerLanguage.Polish: "Runa (Czystości)",
-        ServerLanguage.Russian: "Rune of Purity",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Pooreety",
+        ServerLanguage.English: "{item_name} of Purity",
+        ServerLanguage.Korean: "{item_name}(순수)",
+        ServerLanguage.French: "{item_name} (de la pureté)",
+        ServerLanguage.German: "{item_name} d. Reinheit",
+        ServerLanguage.Italian: "{item_name} della Purezza",
+        ServerLanguage.Spanish: "{item_name} (de pureza)",
+        ServerLanguage.TraditionalChinese: "潔淨 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (ピュリティ)",
+        ServerLanguage.Polish: "{item_name} (Czystości)",
+        ServerLanguage.Russian: "{item_name} of Purity",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Pooreety",
     }
 
 class RuneOfSuperiorVigor(Rune):
@@ -3564,17 +3624,17 @@ class RuneOfSuperiorVigor(Rune):
     rarity = Rarity.Gold
 
     names = {
-        ServerLanguage.English: "Rune of Superior Vigor",
-        ServerLanguage.Korean: "룬(고급 활력)",
-        ServerLanguage.French: "Rune (Vigueur : bonus supérieur)",
-        ServerLanguage.German: "Rune d. überlegenen Lebenskraft",
-        ServerLanguage.Italian: "Runa Vigore di grado supremo",
-        ServerLanguage.Spanish: "Runa (vigor de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 活力 符文",
-        ServerLanguage.Japanese: "ルーン (スーペリア ビガー)",
-        ServerLanguage.Polish: "Runa (Wigoru najwyższego poziomu)",
-        ServerLanguage.Russian: "Rune of Superior Vigor",
-        ServerLanguage.BorkBorkBork: "Roone-a ooff Soopereeur Feegur",
+        ServerLanguage.English: "{item_name} of Superior Vigor",
+        ServerLanguage.Korean: "{item_name}(고급 활력)",
+        ServerLanguage.French: "{item_name} (Vigueur : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Lebenskraft",
+        ServerLanguage.Italian: "{item_name} Vigore di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (vigor de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 活力 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ビガー)",
+        ServerLanguage.Polish: "{item_name} (Wigoru najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Vigor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Feegur",
     }
 
 #endregion No Profession
@@ -3586,17 +3646,17 @@ class KnightsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Knight's Insignia [Warrior]",
-        ServerLanguage.Korean: "기사의 휘장 [워리어]",
-        ServerLanguage.French: "Insigne [Guerrier] de chevalier",
-        ServerLanguage.German: "Ritter- [Krieger]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Guerriero] da Cavaliere",
-        ServerLanguage.Spanish: "Insignia [Guerrero] de caballero",
-        ServerLanguage.TraditionalChinese: "騎士 徽記 [戰士]",
-        ServerLanguage.Japanese: "ナイト 記章 [ウォーリア]",
-        ServerLanguage.Polish: "[Wojownik] Symbol Rycerza",
-        ServerLanguage.Russian: "Knight's Insignia [Warrior]",
-        ServerLanguage.BorkBorkBork: "Kneeght's Inseegneea [Vaerreeur]",
+        ServerLanguage.English: "Knight's {item_name}",
+        ServerLanguage.Korean: "기사의 {item_name}",
+        ServerLanguage.French: "{item_name} de chevalier",
+        ServerLanguage.German: "Ritter- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Cavaliere",
+        ServerLanguage.Spanish: "{item_name} de caballero",
+        ServerLanguage.TraditionalChinese: "騎士 {item_name}",
+        ServerLanguage.Japanese: "ナイト {item_name}",
+        ServerLanguage.Polish: "{item_name} Rycerza",
+        ServerLanguage.Russian: "Knight's {item_name}",
+        ServerLanguage.BorkBorkBork: "Kneeght's {item_name}",
     }
 
 class LieutenantsInsignia(Insignia):
@@ -3604,17 +3664,17 @@ class LieutenantsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Lieutenant's Insignia [Warrior]",
-        ServerLanguage.Korean: "부관의 휘장 [워리어]",
-        ServerLanguage.French: "Insigne [Guerrier] du Lieutenant",
-        ServerLanguage.German: "Leutnant- [Krieger]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Guerriero] da Luogotenente",
-        ServerLanguage.Spanish: "Insignia [Guerrero] de teniente",
-        ServerLanguage.TraditionalChinese: "副官 徽記 [戰士]",
-        ServerLanguage.Japanese: "ルテナント 記章 [ウォーリア]",
-        ServerLanguage.Polish: "[Wojownik] Symbol Porucznika",
-        ServerLanguage.Russian: "Lieutenant's Insignia [Warrior]",
-        ServerLanguage.BorkBorkBork: "Leeeootenunt's Inseegneea [Vaerreeur]",
+        ServerLanguage.English: "Lieutenant's {item_name}",
+        ServerLanguage.Korean: "부관의 {item_name}",
+        ServerLanguage.French: "{item_name} du Lieutenant",
+        ServerLanguage.German: "Leutnant- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Luogotenente",
+        ServerLanguage.Spanish: "{item_name} de teniente",
+        ServerLanguage.TraditionalChinese: "副官 {item_name}",
+        ServerLanguage.Japanese: "ルテナント {item_name}",
+        ServerLanguage.Polish: "{item_name} Porucznika",
+        ServerLanguage.Russian: "Lieutenant's {item_name}",
+        ServerLanguage.BorkBorkBork: "Leeeootenunt's {item_name}",
     }
 
 class StonefistInsignia(Insignia):
@@ -3622,17 +3682,17 @@ class StonefistInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Stonefist Insignia [Warrior]",
-        ServerLanguage.Korean: "돌주먹의 휘장 [워리어]",
-        ServerLanguage.French: "Insigne [Guerrier] Poing-de-fer",
-        ServerLanguage.German: "Steinfaust- [Krieger]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Guerriero] di Pietra",
-        ServerLanguage.Spanish: "Insignia [Guerrero] de piedra",
-        ServerLanguage.TraditionalChinese: "石拳 徽記 [戰士]",
-        ServerLanguage.Japanese: "ストーンフィスト 記章 [ウォーリア]",
-        ServerLanguage.Polish: "[Wojownik] Symbol Kamiennej Pięści",
-        ServerLanguage.Russian: "Stonefist Insignia [Warrior]",
-        ServerLanguage.BorkBorkBork: "Stuneffeest Inseegneea [Vaerreeur]",
+        ServerLanguage.English: "Stonefist {item_name}",
+        ServerLanguage.Korean: "돌주먹의 {item_name}",
+        ServerLanguage.French: "{item_name} Poing-de-fer",
+        ServerLanguage.German: "Steinfaust- {item_name}",
+        ServerLanguage.Italian: "{item_name} di Pietra",
+        ServerLanguage.Spanish: "{item_name} de piedra",
+        ServerLanguage.TraditionalChinese: "石拳 {item_name}",
+        ServerLanguage.Japanese: "ストーンフィスト {item_name}",
+        ServerLanguage.Polish: "{item_name} Kamiennej Pięści",
+        ServerLanguage.Russian: "Stonefist {item_name}",
+        ServerLanguage.BorkBorkBork: "Stuneffeest {item_name}",
     }
 
 class DreadnoughtInsignia(Insignia):
@@ -3640,17 +3700,17 @@ class DreadnoughtInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Dreadnought Insignia [Warrior]",
-        ServerLanguage.Korean: "용자의 휘장 [워리어]",
-        ServerLanguage.French: "Insigne [Guerrier] de Dreadnaught",
-        ServerLanguage.German: "Panzerschiff- [Krieger]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Guerriero] da Dreadnought",
-        ServerLanguage.Spanish: "Insignia [Guerrero] de Dreadnought",
-        ServerLanguage.TraditionalChinese: "無懼 徽記 [戰士]",
-        ServerLanguage.Japanese: "ドレッドノート 記章 [ウォーリア]",
-        ServerLanguage.Polish: "[Wojownik] Symbol Pancernika",
-        ServerLanguage.Russian: "Dreadnought Insignia [Warrior]",
-        ServerLanguage.BorkBorkBork: "Dreaednuooght Inseegneea [Vaerreeur]",
+        ServerLanguage.English: "Dreadnought {item_name}",
+        ServerLanguage.Korean: "용자의 {item_name}",
+        ServerLanguage.French: "{item_name} de Dreadnaught",
+        ServerLanguage.German: "Panzerschiff- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Dreadnought",
+        ServerLanguage.Spanish: "{item_name} de Dreadnought",
+        ServerLanguage.TraditionalChinese: "無懼 {item_name}",
+        ServerLanguage.Japanese: "ドレッドノート {item_name}",
+        ServerLanguage.Polish: "{item_name} Pancernika",
+        ServerLanguage.Russian: "Dreadnought {item_name}",
+        ServerLanguage.BorkBorkBork: "Dreaednuooght {item_name}",
     }
 
 class SentinelsInsignia(Insignia):
@@ -3658,17 +3718,17 @@ class SentinelsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Sentinel's Insignia [Warrior]",
-        ServerLanguage.Korean: "감시병의 휘장 [워리어]",
-        ServerLanguage.French: "Insigne [Guerrier] de sentinelle",
-        ServerLanguage.German: "Wächter- [Krieger]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Guerriero] da Sentinella",
-        ServerLanguage.Spanish: "Insignia [Guerrero] de centinela",
-        ServerLanguage.TraditionalChinese: "警戒 徽記 [戰士]",
-        ServerLanguage.Japanese: "センチネル 記章 [ウォーリア]",
-        ServerLanguage.Polish: "[Wojownik] Symbol Strażnika",
-        ServerLanguage.Russian: "Sentinel's Insignia [Warrior]",
-        ServerLanguage.BorkBorkBork: "Senteenel's Inseegneea [Vaerreeur]",
+        ServerLanguage.English: "Sentinel's {item_name}",
+        ServerLanguage.Korean: "감시병의 {item_name}",
+        ServerLanguage.French: "{item_name} de sentinelle",
+        ServerLanguage.German: "Wächter- {item_name}",
+        ServerLanguage.Italian: "{item_name} da Sentinella",
+        ServerLanguage.Spanish: "{item_name} de centinela",
+        ServerLanguage.TraditionalChinese: "警戒 {item_name}",
+        ServerLanguage.Japanese: "センチネル {item_name}",
+        ServerLanguage.Polish: "{item_name} Strażnika",
+        ServerLanguage.Russian: "Sentinel's {item_name}",
+        ServerLanguage.BorkBorkBork: "Senteenel's {item_name}",
     }
 
 class WarriorRuneOfMinorAbsorption(Rune):
@@ -3677,17 +3737,17 @@ class WarriorRuneOfMinorAbsorption(Rune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Minor Absorption",
-        ServerLanguage.Korean: "워리어 룬(하급 흡수)",
-        ServerLanguage.French: "Rune de Guerrier (Absorption : bonus mineur)",
-        ServerLanguage.German: "Krieger-Rune d. kleineren Absorption",
-        ServerLanguage.Italian: "Runa del Guerriero Assorbimento di grado minore",
-        ServerLanguage.Spanish: "Runa de Guerrero (absorción de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 吸收 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (マイナー アブソープション)",
-        ServerLanguage.Polish: "Runa Wojownika (Pochłaniania niższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Minor Absorption",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Meenur Aebsurpshun",
+        ServerLanguage.English: "{item_name} of Minor Absorption",
+        ServerLanguage.Korean: "{item_name}(하급 흡수)",
+        ServerLanguage.French: "{item_name} (Absorption : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Absorption",
+        ServerLanguage.Italian: "{item_name} Assorbimento di grado minore",
+        ServerLanguage.Spanish: "{item_name} (absorción de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 吸收 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー アブソープション)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Pochłaniania niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Absorption",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Aebsurpshun",
     }
 
 class WarriorRuneOfMinorTactics(AttributeRune):
@@ -3696,17 +3756,17 @@ class WarriorRuneOfMinorTactics(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Minor Tactics",
-        ServerLanguage.Korean: "워리어 룬(하급 전술)",
-        ServerLanguage.French: "Rune de Guerrier (Tactique : bonus mineur)",
-        ServerLanguage.German: "Krieger-Rune d. kleineren Taktik",
-        ServerLanguage.Italian: "Runa del Guerriero Tattica di grado minore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Táctica de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 戰術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (マイナー タクティクス)",
-        ServerLanguage.Polish: "Runa Wojownika (Taktyka niższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Minor Tactics",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Meenur Taecteecs",
+        ServerLanguage.English: "{item_name} of Minor Tactics",
+        ServerLanguage.Korean: "{item_name}(하급 전술)",
+        ServerLanguage.French: "{item_name} (Tactique : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Taktik",
+        ServerLanguage.Italian: "{item_name} Tattica di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Táctica de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 戰術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー タクティクス)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Taktyka niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Tactics",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Taecteecs",
     }
 
 class WarriorRuneOfMinorStrength(AttributeRune):
@@ -3715,17 +3775,17 @@ class WarriorRuneOfMinorStrength(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Minor Strength",
-        ServerLanguage.Korean: "워리어 룬(하급 강인함)",
-        ServerLanguage.French: "Rune de Guerrier (Force : bonus mineur)",
-        ServerLanguage.German: "Krieger-Rune d. kleineren Stärke",
-        ServerLanguage.Italian: "Runa del Guerriero Forza di grado minore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Fuerza de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 力量 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (マイナー ストレングス)",
-        ServerLanguage.Polish: "Runa Wojownika (Siła niższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Minor Strength",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Meenur Strengt",
+        ServerLanguage.English: "{item_name} of Minor Strength",
+        ServerLanguage.Korean: "{item_name}(하급 강인함)",
+        ServerLanguage.French: "{item_name} (Force : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Stärke",
+        ServerLanguage.Italian: "{item_name} Forza di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Fuerza de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 力量 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ストレングス)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Siła niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Strength",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Strengt",
     }
 
 class WarriorRuneOfMinorAxeMastery(AttributeRune):
@@ -3734,17 +3794,17 @@ class WarriorRuneOfMinorAxeMastery(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Minor Axe Mastery",
-        ServerLanguage.Korean: "워리어 룬(하급 도끼술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise de la hache : bonus mineur)",
-        ServerLanguage.German: "Krieger-Rune d. kleineren Axtbeherrschung",
-        ServerLanguage.Italian: "Runa del Guerriero Abilità con l'Ascia di grado minore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Dominio del hacha de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 精通斧術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (マイナー アックス マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Toporach niższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Minor Axe Mastery",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Meenur Aexe-a Maestery",
+        ServerLanguage.English: "{item_name} of Minor Axe Mastery",
+        ServerLanguage.Korean: "{item_name}(하급 도끼술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de la hache : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Axtbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con l'Ascia di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Dominio del hacha de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 精通斧術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー アックス マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Toporach niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Axe Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Aexe-a Maestery",
     }
 
 class WarriorRuneOfMinorHammerMastery(AttributeRune):
@@ -3753,17 +3813,17 @@ class WarriorRuneOfMinorHammerMastery(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Minor Hammer Mastery",
-        ServerLanguage.Korean: "워리어 룬(하급 해머술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise du marteau : bonus mineur)",
-        ServerLanguage.German: "Krieger-Rune d. kleineren Hammerbeherrschung",
-        ServerLanguage.Italian: "Runa del Guerriero Abilità col Martello di grado minore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Dominio del martillo de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 精通鎚術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (マイナー ハンマー マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Młotach niższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Minor Hammer Mastery",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Meenur Haemmer Maestery",
+        ServerLanguage.English: "{item_name} of Minor Hammer Mastery",
+        ServerLanguage.Korean: "{item_name}(하급 해머술)",
+        ServerLanguage.French: "{item_name} (Maîtrise du marteau : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Hammerbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità col Martello di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Dominio del martillo de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 精通鎚術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ハンマー マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Młotach niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Hammer Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Haemmer Maestery",
     }
 
 class WarriorRuneOfMinorSwordsmanship(AttributeRune):
@@ -3772,17 +3832,17 @@ class WarriorRuneOfMinorSwordsmanship(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Minor Swordsmanship",
-        ServerLanguage.Korean: "워리어 룬(하급 검술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise de l'épée : bonus mineur)",
-        ServerLanguage.German: "Krieger-Rune d. kleineren Schwertkunst",
-        ServerLanguage.Italian: "Runa del Guerriero Scherma di grado minore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Esgrima de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 精通劍術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (マイナー ソード マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Mieczach niższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Minor Swordsmanship",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Meenur Svurdsmunsheep",
+        ServerLanguage.English: "{item_name} of Minor Swordsmanship",
+        ServerLanguage.Korean: "{item_name}(하급 검술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de l'épée : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Schwertkunst",
+        ServerLanguage.Italian: "{item_name} Scherma di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Esgrima de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 精通劍術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ソード マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Mieczach niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Swordsmanship",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Svurdsmunsheep",
     }
 
 class WarriorRuneOfMajorAbsorption(Rune):
@@ -3791,17 +3851,17 @@ class WarriorRuneOfMajorAbsorption(Rune):
     rarity = Rarity.Purple
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Major Absorption",
-        ServerLanguage.Korean: "워리어 룬(상급 흡수)",
-        ServerLanguage.French: "Rune de Guerrier (Absorption : bonus majeur)",
-        ServerLanguage.German: "Krieger-Rune d. hohen Absorption",
-        ServerLanguage.Italian: "Runa del Guerriero Assorbimento di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guerrero (absorción de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 吸收 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (メジャー アブソープション)",
-        ServerLanguage.Polish: "Runa Wojownika (Pochłaniania wyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Major Absorption",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Maejur Aebsurpshun",
+        ServerLanguage.English: "{item_name} of Major Absorption",
+        ServerLanguage.Korean: "{item_name}(상급 흡수)",
+        ServerLanguage.French: "{item_name} (Absorption : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Absorption",
+        ServerLanguage.Italian: "{item_name} Assorbimento di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (absorción de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 吸收 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー アブソープション)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Pochłaniania wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Absorption",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Aebsurpshun",
     }
 
 class WarriorRuneOfMajorTactics(AttributeRune):
@@ -3814,17 +3874,17 @@ class WarriorRuneOfMajorTactics(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Major Tactics",
-        ServerLanguage.Korean: "워리어 룬(상급 전술)",
-        ServerLanguage.French: "Rune de Guerrier (Tactique : bonus majeur)",
-        ServerLanguage.German: "Krieger-Rune d. hohen Taktik",
-        ServerLanguage.Italian: "Runa del Guerriero Tattica di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Táctica de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 戰術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (メジャー タクティクス)",
-        ServerLanguage.Polish: "Runa Wojownika (Taktyka wyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Major Tactics",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Maejur Taecteecs",
+        ServerLanguage.English: "{item_name} of Major Tactics",
+        ServerLanguage.Korean: "{item_name}(상급 전술)",
+        ServerLanguage.French: "{item_name} (Tactique : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Taktik",
+        ServerLanguage.Italian: "{item_name} Tattica di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Táctica de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 戰術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー タクティクス)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Taktyka wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Tactics",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Taecteecs",
     }
 
 class WarriorRuneOfMajorStrength(AttributeRune):
@@ -3837,17 +3897,17 @@ class WarriorRuneOfMajorStrength(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Major Strength",
-        ServerLanguage.Korean: "워리어 룬(상급 강인함)",
-        ServerLanguage.French: "Rune de Guerrier (Force : bonus majeur)",
-        ServerLanguage.German: "Krieger-Rune d. hohen Stärke",
-        ServerLanguage.Italian: "Runa del Guerriero Forza di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Fuerza de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 力量 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (メジャー ストレングス)",
-        ServerLanguage.Polish: "Runa Wojownika (Siła wyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Major Strength",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Maejur Strengt",
+        ServerLanguage.English: "{item_name} of Major Strength",
+        ServerLanguage.Korean: "{item_name}(상급 강인함)",
+        ServerLanguage.French: "{item_name} (Force : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Stärke",
+        ServerLanguage.Italian: "{item_name} Forza di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Fuerza de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 力量 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ストレングス)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Siła wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Strength",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Strengt",
     }
 
 class WarriorRuneOfMajorAxeMastery(AttributeRune):
@@ -3860,17 +3920,17 @@ class WarriorRuneOfMajorAxeMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Major Axe Mastery",
-        ServerLanguage.Korean: "워리어 룬(상급 도끼술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise de la hache : bonus majeur)",
-        ServerLanguage.German: "Krieger-Rune d. hohen Axtbeherrschung",
-        ServerLanguage.Italian: "Runa del Guerriero Abilità con l'Ascia di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Dominio del hacha de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 精通斧術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (メジャー アックス マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Toporach wyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Major Axe Mastery",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Maejur Aexe-a Maestery",
+        ServerLanguage.English: "{item_name} of Major Axe Mastery",
+        ServerLanguage.Korean: "{item_name}(상급 도끼술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de la hache : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Axtbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con l'Ascia di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Dominio del hacha de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 精通斧術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー アックス マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Toporach wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Axe Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Aexe-a Maestery",
     }
 
 class WarriorRuneOfMajorHammerMastery(AttributeRune):
@@ -3883,17 +3943,17 @@ class WarriorRuneOfMajorHammerMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Major Hammer Mastery",
-        ServerLanguage.Korean: "워리어 룬(상급 해머술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise du marteau : bonus majeur)",
-        ServerLanguage.German: "Krieger-Rune d. hohen Hammerbeherrschung",
-        ServerLanguage.Italian: "Runa del Guerriero Abilità col Martello di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Dominio del martillo de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 精通鎚術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (メジャー ハンマー マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Młotach wyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Major Hammer Mastery",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Maejur Haemmer Maestery",
+        ServerLanguage.English: "{item_name} of Major Hammer Mastery",
+        ServerLanguage.Korean: "{item_name}(상급 해머술)",
+        ServerLanguage.French: "{item_name} (Maîtrise du marteau : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Hammerbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità col Martello di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Dominio del martillo de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 精通鎚術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ハンマー マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Młotach wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Hammer Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Haemmer Maestery",
     }
 
 class WarriorRuneOfMajorSwordsmanship(AttributeRune):
@@ -3906,17 +3966,17 @@ class WarriorRuneOfMajorSwordsmanship(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Major Swordsmanship",
-        ServerLanguage.Korean: "워리어 룬(상급 검술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise de l'épée : bonus majeur)",
-        ServerLanguage.German: "Krieger-Rune d. hohen Schwertkunst",
-        ServerLanguage.Italian: "Runa del Guerriero Scherma di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guerrero (Esgrima de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 精通劍術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (メジャー ソード マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Mieczach wyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Major Swordsmanship",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Maejur Svurdsmunsheep",
+        ServerLanguage.English: "{item_name} of Major Swordsmanship",
+        ServerLanguage.Korean: "{item_name}(상급 검술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de l'épée : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Schwertkunst",
+        ServerLanguage.Italian: "{item_name} Scherma di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Esgrima de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 精通劍術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ソード マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Mieczach wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Swordsmanship",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Svurdsmunsheep",
     }
 
 class WarriorRuneOfSuperiorAbsorption(Rune):
@@ -3925,17 +3985,17 @@ class WarriorRuneOfSuperiorAbsorption(Rune):
     rarity = Rarity.Gold
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Superior Absorption",
-        ServerLanguage.Korean: "워리어 룬(고급 흡수)",
-        ServerLanguage.French: "Rune de Guerrier (Absorption : bonus supérieur)",
-        ServerLanguage.German: "Krieger-Rune d. überlegenen Absorption",
-        ServerLanguage.Italian: "Runa del Guerriero Assorbimento di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guerrero (absorción de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 吸收 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (スーペリア アブソープション)",
-        ServerLanguage.Polish: "Runa Wojownika (Pochłaniania najwyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Superior Absorption",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Soopereeur Aebsurpshun",
+        ServerLanguage.English: "{item_name} of Superior Absorption",
+        ServerLanguage.Korean: "{item_name}(고급 흡수)",
+        ServerLanguage.French: "{item_name} (Absorption : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Absorption",
+        ServerLanguage.Italian: "{item_name} Assorbimento di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (absorción de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 吸收 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア アブソープション)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Pochłaniania najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Absorption",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Aebsurpshun",
     }
 
 class WarriorRuneOfSuperiorTactics(AttributeRune):
@@ -3948,17 +4008,17 @@ class WarriorRuneOfSuperiorTactics(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Superior Tactics",
-        ServerLanguage.Korean: "워리어 룬(고급 전술)",
-        ServerLanguage.French: "Rune de Guerrier (Tactique : bonus supérieur)",
-        ServerLanguage.German: "Krieger-Rune d. überlegenen Taktik",
-        ServerLanguage.Italian: "Runa del Guerriero Tattica di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guerrero (Táctica de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 戰術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (スーペリア タクティクス)",
-        ServerLanguage.Polish: "Runa Wojownika (Taktyka najwyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Superior Tactics",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Soopereeur Taecteecs",
+        ServerLanguage.English: "{item_name} of Superior Tactics",
+        ServerLanguage.Korean: "{item_name}(고급 전술)",
+        ServerLanguage.French: "{item_name} (Tactique : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Taktik",
+        ServerLanguage.Italian: "{item_name} Tattica di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Táctica de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 戰術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア タクティクス)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Taktyka najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Tactics",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Taecteecs",
     }
 
 class WarriorRuneOfSuperiorStrength(AttributeRune):
@@ -3971,17 +4031,17 @@ class WarriorRuneOfSuperiorStrength(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Superior Strength",
-        ServerLanguage.Korean: "워리어 룬(고급 강인함)",
-        ServerLanguage.French: "Rune de Guerrier (Force : bonus supérieur)",
-        ServerLanguage.German: "Krieger-Rune d. überlegenen Stärke",
-        ServerLanguage.Italian: "Runa del Guerriero Forza di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guerrero (Fuerza de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 力量 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (スーペリア ストレングス)",
-        ServerLanguage.Polish: "Runa Wojownika (Siła najwyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Superior Strength",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Soopereeur Strengt",
+        ServerLanguage.English: "{item_name} of Superior Strength",
+        ServerLanguage.Korean: "{item_name}(고급 강인함)",
+        ServerLanguage.French: "{item_name} (Force : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Stärke",
+        ServerLanguage.Italian: "{item_name} Forza di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Fuerza de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 力量 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ストレングス)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Siła najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Strength",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Strengt",
     }
 
 class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
@@ -3994,17 +4054,17 @@ class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Superior Axe Mastery",
-        ServerLanguage.Korean: "워리어 룬(고급 도끼술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise de la hache : bonus supérieur)",
-        ServerLanguage.German: "Krieger-Rune d. überlegenen Axtbeherrschung",
-        ServerLanguage.Italian: "Runa del Guerriero Abilità con l'Ascia di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guerrero (Dominio del hacha de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 精通斧術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (スーペリア アックス マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Toporach najwyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Superior Axe Mastery",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Soopereeur Aexe-a Maestery",
+        ServerLanguage.English: "{item_name} of Superior Axe Mastery",
+        ServerLanguage.Korean: "{item_name}(고급 도끼술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de la hache : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Axtbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con l'Ascia di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Dominio del hacha de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 精通斧術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア アックス マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Toporach najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Axe Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Aexe-a Maestery",
     }
 
 class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
@@ -4017,17 +4077,17 @@ class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Superior Hammer Mastery",
-        ServerLanguage.Korean: "워리어 룬(고급 해머술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise du marteau : bonus supérieur)",
-        ServerLanguage.German: "Krieger-Rune d. überlegenen Hammerbeherrschung",
-        ServerLanguage.Italian: "Runa del Guerriero Abilità col Martello di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guerrero (Dominio del martillo de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 精通鎚術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (スーペリア ハンマー マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Młotach najwyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Superior Hammer Mastery",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Soopereeur Haemmer Maestery",
+        ServerLanguage.English: "{item_name} of Superior Hammer Mastery",
+        ServerLanguage.Korean: "{item_name}(고급 해머술)",
+        ServerLanguage.French: "{item_name} (Maîtrise du marteau : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Hammerbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità col Martello di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Dominio del martillo de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 精通鎚術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ハンマー マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Młotach najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Hammer Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Haemmer Maestery",
     }
 
 class WarriorRuneOfSuperiorSwordsmanship(AttributeRune):
@@ -4040,17 +4100,17 @@ class WarriorRuneOfSuperiorSwordsmanship(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Warrior Rune of Superior Swordsmanship",
-        ServerLanguage.Korean: "워리어 룬(고급 검술)",
-        ServerLanguage.French: "Rune de Guerrier (Maîtrise de l'épée : bonus supérieur)",
-        ServerLanguage.German: "Krieger-Rune d. überlegenen Schwertkunst",
-        ServerLanguage.Italian: "Runa del Guerriero Scherma di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guerrero (Esgrima de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 精通劍術 戰士符文",
-        ServerLanguage.Japanese: "ウォーリア ルーン (スーペリア ソード マスタリー)",
-        ServerLanguage.Polish: "Runa Wojownika (Biegłość w Mieczach najwyższego poziomu)",
-        ServerLanguage.Russian: "Warrior Rune of Superior Swordsmanship",
-        ServerLanguage.BorkBorkBork: "Vaerreeur Roone-a ooff Soopereeur Svurdsmunsheep",
+        ServerLanguage.English: "{item_name} of Superior Swordsmanship",
+        ServerLanguage.Korean: "{item_name}(고급 검술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de l'épée : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Schwertkunst",
+        ServerLanguage.Italian: "{item_name} Scherma di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Esgrima de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 精通劍術 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ソード マスタリー)",
+        ServerLanguage.Polish: "{item_name} Wojownika (Biegłość w Mieczach najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Swordsmanship",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Svurdsmunsheep",
     }
 
 class UpgradeMinorRuneWarrior(Upgrade):
@@ -4086,17 +4146,17 @@ class FrostboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Frostbound Insignia [Ranger]",
-        ServerLanguage.Korean: "얼음결계의 휘장 [레인저]",
-        ServerLanguage.French: "Insigne [Rôdeur] de givre",
-        ServerLanguage.German: "Permafrost- [Waldläufer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Esploratore] da Ghiaccio",
-        ServerLanguage.Spanish: "Insignia [Guardabosques] de montaña",
-        ServerLanguage.TraditionalChinese: "霜縛 徽記 [遊俠]",
-        ServerLanguage.Japanese: "フロストバウンド 記章 [レンジャー]",
-        ServerLanguage.Polish: "[Łowca] Symbol Spętanego przez Lód",
-        ServerLanguage.Russian: "Frostbound Insignia [Ranger]",
-        ServerLanguage.BorkBorkBork: "Frustbuoond Inseegneea [Runger]",
+        ServerLanguage.English: "Frostbound {item_name}",
+        ServerLanguage.Korean: "얼음결계의 {item_name}",
+        ServerLanguage.French: "{item_name} de givre",
+        ServerLanguage.German: "Permafrost--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Ghiaccio",
+        ServerLanguage.Spanish: "{item_name} de montaña",
+        ServerLanguage.TraditionalChinese: "霜縛 {item_name}",
+        ServerLanguage.Japanese: "フロストバウンド {item_name}",
+        ServerLanguage.Polish: "{item_name} Spętanego przez Lód",
+        ServerLanguage.Russian: "Frostbound {item_name}",
+        ServerLanguage.BorkBorkBork: "Frustbuoond {item_name}",
     }
 
 class PyreboundInsignia(Insignia):
@@ -4104,17 +4164,17 @@ class PyreboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Pyrebound Insignia [Ranger]",
-        ServerLanguage.Korean: "화염결계의 휘장 [레인저]",
-        ServerLanguage.French: "Insigne [Rôdeur] du bûcher",
-        ServerLanguage.German: "Scheiterhaufen- [Waldläufer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Esploratore] da Rogo",
-        ServerLanguage.Spanish: "Insignia [Guardabosques] de leñero",
-        ServerLanguage.TraditionalChinese: "火縛 徽記 [遊俠]",
-        ServerLanguage.Japanese: "パイアーバウンド 記章 [レンジャー]",
-        ServerLanguage.Polish: "[Łowca] Symbol Spętanego przez Ogień",
-        ServerLanguage.Russian: "Pyrebound Insignia [Ranger]",
-        ServerLanguage.BorkBorkBork: "Pyrebuoond Inseegneea [Runger]",
+        ServerLanguage.English: "Pyrebound {item_name}",
+        ServerLanguage.Korean: "화염결계의 {item_name}",
+        ServerLanguage.French: "{item_name} du bûcher",
+        ServerLanguage.German: "Scheiterhaufen--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Rogo",
+        ServerLanguage.Spanish: "{item_name} de leñero",
+        ServerLanguage.TraditionalChinese: "火縛 {item_name}",
+        ServerLanguage.Japanese: "パイアーバウンド {item_name}",
+        ServerLanguage.Polish: "{item_name} Spętanego przez Ogień",
+        ServerLanguage.Russian: "Pyrebound {item_name}",
+        ServerLanguage.BorkBorkBork: "Pyrebuoond {item_name}",
     }
 
 class StormboundInsignia(Insignia):
@@ -4122,17 +4182,17 @@ class StormboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Stormbound Insignia [Ranger]",
-        ServerLanguage.Korean: "폭풍결계의 휘장 [레인저]",
-        ServerLanguage.French: "Insigne [Rôdeur] de tonnerre",
-        ServerLanguage.German: "Unwetter- [Waldläufer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Esploratore] da Bufera",
-        ServerLanguage.Spanish: "Insignia [Guardabosques] de hidromántico",
-        ServerLanguage.TraditionalChinese: "風縛 徽記 [遊俠]",
-        ServerLanguage.Japanese: "ストームバウンド 記章 [レンジャー]",
-        ServerLanguage.Polish: "[Łowca] Symbol Spętanego przez Sztorm",
-        ServerLanguage.Russian: "Stormbound Insignia [Ranger]",
-        ServerLanguage.BorkBorkBork: "Sturmbuoond Inseegneea [Runger]",
+        ServerLanguage.English: "Stormbound {item_name}",
+        ServerLanguage.Korean: "폭풍결계의 {item_name}",
+        ServerLanguage.French: "{item_name} de tonnerre",
+        ServerLanguage.German: "Unwetter--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Bufera",
+        ServerLanguage.Spanish: "{item_name} de hidromántico",
+        ServerLanguage.TraditionalChinese: "風縛 {item_name}",
+        ServerLanguage.Japanese: "ストームバウンド {item_name}",
+        ServerLanguage.Polish: "{item_name} Spętanego przez Sztorm",
+        ServerLanguage.Russian: "Stormbound {item_name}",
+        ServerLanguage.BorkBorkBork: "Sturmbuoond {item_name}",
     }
 
 class ScoutsInsignia(Insignia):
@@ -4140,17 +4200,17 @@ class ScoutsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Scout's Insignia [Ranger]",
-        ServerLanguage.Korean: "정찰병의 휘장 [레인저]",
-        ServerLanguage.French: "Insigne [Rôdeur] d'éclaireur",
-        ServerLanguage.German: "Späher- [Waldläufer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Esploratore] da Perlustratore",
-        ServerLanguage.Spanish: "Insignia [Guardabosques] de explorador",
-        ServerLanguage.TraditionalChinese: "偵查者 徽記 [遊俠]",
-        ServerLanguage.Japanese: "スカウト 記章 [レンジャー]",
-        ServerLanguage.Polish: "[Łowca] Symbol Zwiadowcy",
-        ServerLanguage.Russian: "Scout's Insignia [Ranger]",
-        ServerLanguage.BorkBorkBork: "Scuoot's Inseegneea [Runger]",
+        ServerLanguage.English: "Scout's {item_name}",
+        ServerLanguage.Korean: "정찰병의 {item_name}",
+        ServerLanguage.French: "{item_name} d'éclaireur",
+        ServerLanguage.German: "Späher--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Perlustratore",
+        ServerLanguage.Spanish: "{item_name} de explorador",
+        ServerLanguage.TraditionalChinese: "偵查者 {item_name}",
+        ServerLanguage.Japanese: "スカウト {item_name}",
+        ServerLanguage.Polish: "{item_name} Zwiadowcy",
+        ServerLanguage.Russian: "Scout's {item_name}",
+        ServerLanguage.BorkBorkBork: "Scuoot's {item_name}",
     }
 
 class EarthboundInsignia(Insignia):
@@ -4158,17 +4218,17 @@ class EarthboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Earthbound Insignia [Ranger]",
-        ServerLanguage.Korean: "대지결계의 휘장 [레인저]",
-        ServerLanguage.French: "Insigne [Rôdeur] terrestre",
-        ServerLanguage.German: "Erdbindungs- [Waldläufer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Esploratore] da Terra",
-        ServerLanguage.Spanish: "Insignia [Guardabosques] de tierra",
-        ServerLanguage.TraditionalChinese: "地縛 徽記 [遊俠]",
-        ServerLanguage.Japanese: "アースバウンド 記章 [レンジャー]",
-        ServerLanguage.Polish: "[Łowca] Symbol Spętanego przez Ziemię",
-        ServerLanguage.Russian: "Earthbound Insignia [Ranger]",
-        ServerLanguage.BorkBorkBork: "Iaerthbuoond Inseegneea [Runger]",
+        ServerLanguage.English: "Earthbound {item_name}",
+        ServerLanguage.Korean: "대지결계의 {item_name}",
+        ServerLanguage.French: "{item_name} terrestre",
+        ServerLanguage.German: "Erdbindungs--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Terra",
+        ServerLanguage.Spanish: "{item_name} de tierra",
+        ServerLanguage.TraditionalChinese: "地縛 {item_name}",
+        ServerLanguage.Japanese: "アースバウンド {item_name}",
+        ServerLanguage.Polish: "{item_name} Spętanego przez Ziemię",
+        ServerLanguage.Russian: "Earthbound {item_name}",
+        ServerLanguage.BorkBorkBork: "Iaerthbuoond {item_name}",
     }
 
 class BeastmastersInsignia(Insignia):
@@ -4176,17 +4236,17 @@ class BeastmastersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Beastmaster's Insignia [Ranger]",
-        ServerLanguage.Korean: "조련사의 휘장 [레인저]",
-        ServerLanguage.French: "Insigne [Rôdeur] de belluaire",
-        ServerLanguage.German: "Tierbändiger- [Waldläufer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Esploratore] da Domatore",
-        ServerLanguage.Spanish: "Insignia [Guardabosques] de domador",
-        ServerLanguage.TraditionalChinese: "野獸大師 徽記 [遊俠]",
-        ServerLanguage.Japanese: "ビーストマスター 記章 [レンジャー]",
-        ServerLanguage.Polish: "[Łowca] Symbol Władcy Zwierząt",
-        ServerLanguage.Russian: "Beastmaster's Insignia [Ranger]",
-        ServerLanguage.BorkBorkBork: "Beaestmaester's Inseegneea [Runger]",
+        ServerLanguage.English: "Beastmaster's {item_name}",
+        ServerLanguage.Korean: "조련사의 {item_name}",
+        ServerLanguage.French: "{item_name} de belluaire",
+        ServerLanguage.German: "Tierbändiger--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Domatore",
+        ServerLanguage.Spanish: "{item_name} de domador",
+        ServerLanguage.TraditionalChinese: "野獸大師 {item_name}",
+        ServerLanguage.Japanese: "ビーストマスター {item_name}",
+        ServerLanguage.Polish: "{item_name} Władcy Zwierząt",
+        ServerLanguage.Russian: "Beastmaster's {item_name}",
+        ServerLanguage.BorkBorkBork: "Beaestmaester's {item_name}",
     }
 
 class RangerRuneOfMinorWildernessSurvival(AttributeRune):
@@ -4195,17 +4255,17 @@ class RangerRuneOfMinorWildernessSurvival(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Minor Wilderness Survival",
-        ServerLanguage.Korean: "레인저 룬(하급 생존술)",
-        ServerLanguage.French: "Rune de Rôdeur (Survie : bonus mineur)",
-        ServerLanguage.German: "Waldläufer-Rune d. kleineren Überleben in der Wildnis",
-        ServerLanguage.Italian: "Runa dell'Esploratore Sopravvivenza nella Natura di grado minore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Supervivencia naturaleza de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 求生 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (マイナー サバイバル)",
-        ServerLanguage.Polish: "Runa Łowcy (Przetrwanie w Dziczy niższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Minor Wilderness Survival",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Meenur Veelderness Soorfeefael",
+        ServerLanguage.English: "{item_name} of Minor Wilderness Survival",
+        ServerLanguage.Korean: "{item_name}(하급 생존술)",
+        ServerLanguage.French: "{item_name} (Survie : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Überleben in der Wildnis",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Sopravvivenza nella Natura di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Supervivencia naturaleza de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 求生 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー サバイバル)",
+        ServerLanguage.Polish: "{item_name} (Przetrwanie w Dziczy niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Wilderness Survival",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Meenur Veelderness Soorfeefael",
     }
 
 class RangerRuneOfMinorExpertise(AttributeRune):
@@ -4214,17 +4274,17 @@ class RangerRuneOfMinorExpertise(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Minor Expertise",
-        ServerLanguage.Korean: "레인저 룬(하급 전문성)",
-        ServerLanguage.French: "Rune de Rôdeur (Expertise : bonus mineur)",
-        ServerLanguage.German: "Waldläufer-Rune d. kleineren Fachkenntnis",
-        ServerLanguage.Italian: "Runa dell'Esploratore Esperienza di grado minore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Pericia de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 專精 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (マイナー エキスパーティーズ)",
-        ServerLanguage.Polish: "Runa Łowcy (Specjalizacja niższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Minor Expertise",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Meenur Ixperteese-a",
+        ServerLanguage.English: "{item_name} of Minor Expertise",
+        ServerLanguage.Korean: "{item_name}(하급 전문성)",
+        ServerLanguage.French: "{item_name} (Expertise : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Fachkenntnis",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Esperienza di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Pericia de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 專精 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー エキスパーティーズ)",
+        ServerLanguage.Polish: "{item_name} (Specjalizacja niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Expertise",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Meenur Ixperteese-a",
     }
 
 class RangerRuneOfMinorBeastMastery(AttributeRune):
@@ -4233,17 +4293,17 @@ class RangerRuneOfMinorBeastMastery(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Minor Beast Mastery",
-        ServerLanguage.Korean: "레인저 룬(하급 동물 친화)",
-        ServerLanguage.French: "Rune de Rôdeur (Domptage : bonus mineur)",
-        ServerLanguage.German: "Waldläufer-Rune d. kleineren Tierbeherrschung",
-        ServerLanguage.Italian: "Runa dell'Esploratore Potere sulle Belve di grado minore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Dominio de bestias de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 野獸支配 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (マイナー ビースト マスタリー)",
-        ServerLanguage.Polish: "Runa Łowcy (Panowanie nad Zwierzętami niższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Minor Beast Mastery",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Meenur Beaest Maestery",
+        ServerLanguage.English: "{item_name} of Minor Beast Mastery",
+        ServerLanguage.Korean: "{item_name}(하급 동물 친화)",
+        ServerLanguage.French: "{item_name} (Domptage : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Tierbeherrschung",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Potere sulle Belve di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de bestias de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 野獸支配 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ビースト マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Panowanie nad Zwierzętami niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Beast Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Meenur Beaest Maestery",
     }
 
 class RangerRuneOfMinorMarksmanship(AttributeRune):
@@ -4252,17 +4312,17 @@ class RangerRuneOfMinorMarksmanship(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Minor Marksmanship",
-        ServerLanguage.Korean: "레인저 룬(하급 궁술)",
-        ServerLanguage.French: "Rune de Rôdeur (Adresse au tir : bonus mineur)",
-        ServerLanguage.German: "Waldläufer-Rune d. kleineren Treffsicherheit",
-        ServerLanguage.Italian: "Runa dell'Esploratore Precisione di grado minore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Puntería de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 弓術精通 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (マイナー ボウ マスタリー)",
-        ServerLanguage.Polish: "Runa Łowcy (Umiejętności Strzeleckie niższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Minor Marksmanship",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Meenur Maerksmunsheep",
+        ServerLanguage.English: "{item_name} of Minor Marksmanship",
+        ServerLanguage.Korean: "{item_name}(하급 궁술)",
+        ServerLanguage.French: "{item_name} (Adresse au tir : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Treffsicherheit",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Precisione di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Puntería de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 弓術精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ボウ マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Umiejętności Strzeleckie niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Marksmanship",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Meenur Maerksmunsheep",
     }
 
 class RangerRuneOfMajorWildernessSurvival(AttributeRune):
@@ -4275,17 +4335,17 @@ class RangerRuneOfMajorWildernessSurvival(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Major Wilderness Survival",
-        ServerLanguage.Korean: "레인저 룬(상급 생존술)",
-        ServerLanguage.French: "Rune de Rôdeur (Survie : bonus majeur)",
-        ServerLanguage.German: "Waldläufer-Rune d. hohen Überleben in der Wildnis",
-        ServerLanguage.Italian: "Runa dell'Esploratore Sopravvivenza nella Natura di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Supervivencia naturaleza de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 求生 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (メジャー サバイバル)",
-        ServerLanguage.Polish: "Runa Łowcy (Przetrwanie w Dziczy wyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Major Wilderness Survival",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Maejur Veelderness Soorfeefael",
+        ServerLanguage.English: "{item_name} of Major Wilderness Survival",
+        ServerLanguage.Korean: "{item_name}(상급 생존술)",
+        ServerLanguage.French: "{item_name} (Survie : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Überleben in der Wildnis",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Sopravvivenza nella Natura di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Supervivencia naturaleza de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 求生 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー サバイバル)",
+        ServerLanguage.Polish: "{item_name} (Przetrwanie w Dziczy wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Wilderness Survival",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Maejur Veelderness Soorfeefael",
     }
 
 class RangerRuneOfMajorExpertise(AttributeRune):
@@ -4298,17 +4358,17 @@ class RangerRuneOfMajorExpertise(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Major Expertise",
-        ServerLanguage.Korean: "레인저 룬(상급 전문성)",
-        ServerLanguage.French: "Rune de Rôdeur (Expertise : bonus majeur)",
-        ServerLanguage.German: "Waldläufer-Rune d. hohen Fachkenntnis",
-        ServerLanguage.Italian: "Runa dell'Esploratore Esperienza di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Pericia de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 專精 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (メジャー エキスパーティーズ)",
-        ServerLanguage.Polish: "Runa Łowcy (Specjalizacja wyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Major Expertise",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Maejur Ixperteese-a",
+        ServerLanguage.English: "{item_name} of Major Expertise",
+        ServerLanguage.Korean: "{item_name}(상급 전문성)",
+        ServerLanguage.French: "{item_name} (Expertise : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Fachkenntnis",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Esperienza di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Pericia de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 專精 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー エキスパーティーズ)",
+        ServerLanguage.Polish: "{item_name} (Specjalizacja wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Expertise",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Maejur Ixperteese-a",
     }
 
 class RangerRuneOfMajorBeastMastery(AttributeRune):
@@ -4321,17 +4381,17 @@ class RangerRuneOfMajorBeastMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Major Beast Mastery",
-        ServerLanguage.Korean: "레인저 룬(상급 동물 친화)",
-        ServerLanguage.French: "Rune de Rôdeur (Domptage : bonus majeur)",
-        ServerLanguage.German: "Waldläufer-Rune d. hohen Tierbeherrschung",
-        ServerLanguage.Italian: "Runa dell'Esploratore Potere sulle Belve di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Dominio de bestias de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 野獸支配 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (メジャー ビースト マスタリー)",
-        ServerLanguage.Polish: "Runa Łowcy (Panowanie nad Zwierzętami wyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Major Beast Mastery",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Maejur Beaest Maestery",
+        ServerLanguage.English: "{item_name} of Major Beast Mastery",
+        ServerLanguage.Korean: "{item_name}(상급 동물 친화)",
+        ServerLanguage.French: "{item_name} (Domptage : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Tierbeherrschung",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Potere sulle Belve di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de bestias de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 野獸支配 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ビースト マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Panowanie nad Zwierzętami wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Beast Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Maejur Beaest Maestery",
     }
 
 class RangerRuneOfMajorMarksmanship(AttributeRune):
@@ -4344,17 +4404,17 @@ class RangerRuneOfMajorMarksmanship(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Major Marksmanship",
-        ServerLanguage.Korean: "레인저 룬(상급 궁술)",
-        ServerLanguage.French: "Rune de Rôdeur (Adresse au tir : bonus majeur)",
-        ServerLanguage.German: "Waldläufer-Rune d. hohen Treffsicherheit",
-        ServerLanguage.Italian: "Runa dell'Esploratore Precisione di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Puntería de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 弓術精通 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (メジャー ボウ マスタリー)",
-        ServerLanguage.Polish: "Runa Łowcy (Umiejętności Strzeleckie wyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Major Marksmanship",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Maejur Maerksmunsheep",
+        ServerLanguage.English: "{item_name} of Major Marksmanship",
+        ServerLanguage.Korean: "{item_name}(상급 궁술)",
+        ServerLanguage.French: "{item_name} (Adresse au tir : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Treffsicherheit",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Precisione di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Puntería de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 弓術精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ボウ マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Umiejętności Strzeleckie wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Marksmanship",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Maejur Maerksmunsheep",
     }
 
 class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
@@ -4367,17 +4427,17 @@ class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Superior Wilderness Survival",
-        ServerLanguage.Korean: "레인저 룬(고급 생존술)",
-        ServerLanguage.French: "Rune de Rôdeur (Survie : bonus supérieur)",
-        ServerLanguage.German: "Waldläufer-Rune d. überlegenen Überleben in der Wildnis",
-        ServerLanguage.Italian: "Runa dell'Esploratore Sopravvivenza nella Natura di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Supervivencia naturaleza de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 求生 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (スーペリア サバイバル)",
-        ServerLanguage.Polish: "Runa Łowcy (Przetrwanie w Dziczy najwyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Superior Wilderness Survival",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Soopereeur Veelderness Soorfeefael",
+        ServerLanguage.English: "{item_name} of Superior Wilderness Survival",
+        ServerLanguage.Korean: "{item_name}(고급 생존술)",
+        ServerLanguage.French: "{item_name} (Survie : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Überleben in der Wildnis",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Sopravvivenza nella Natura di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Supervivencia naturaleza de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 求生 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア サバイバル)",
+        ServerLanguage.Polish: "{item_name} (Przetrwanie w Dziczy najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Wilderness Survival",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Soopereeur Veelderness Soorfeefael",
     }
 
 class RangerRuneOfSuperiorExpertise(AttributeRune):
@@ -4390,17 +4450,17 @@ class RangerRuneOfSuperiorExpertise(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Superior Expertise",
-        ServerLanguage.Korean: "레인저 룬(고급 전문성)",
-        ServerLanguage.French: "Rune de Rôdeur (Expertise : bonus supérieur)",
-        ServerLanguage.German: "Waldläufer-Rune d. überlegenen Fachkenntnis",
-        ServerLanguage.Italian: "Runa dell'Esploratore Esperienza di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Pericia de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 專精 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (スーペリア エキスパーティーズ)",
-        ServerLanguage.Polish: "Runa Łowcy (Specjalizacja najwyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Superior Expertise",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Soopereeur Ixperteese-a",
+        ServerLanguage.English: "{item_name} of Superior Expertise",
+        ServerLanguage.Korean: "{item_name}(고급 전문성)",
+        ServerLanguage.French: "{item_name} (Expertise : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Fachkenntnis",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Esperienza di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Pericia de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 專精 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア エキスパーティーズ)",
+        ServerLanguage.Polish: "{item_name} (Specjalizacja najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Expertise",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Soopereeur Ixperteese-a",
     }
 
 class RangerRuneOfSuperiorBeastMastery(AttributeRune):
@@ -4413,17 +4473,17 @@ class RangerRuneOfSuperiorBeastMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Superior Beast Mastery",
-        ServerLanguage.Korean: "레인저 룬(고급 동물 친화)",
-        ServerLanguage.French: "Rune de Rôdeur (Domptage : bonus supérieur)",
-        ServerLanguage.German: "Waldläufer-Rune d. überlegenen Tierbeherrschung",
-        ServerLanguage.Italian: "Runa dell'Esploratore Potere sulle Belve di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Dominio de bestias de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 野獸支配 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (スーペリア ビースト マスタリー)",
-        ServerLanguage.Polish: "Runa Łowcy (Panowanie nad Zwierzętami najwyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Superior Beast Mastery",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Soopereeur Beaest Maestery",
+        ServerLanguage.English: "{item_name} of Superior Beast Mastery",
+        ServerLanguage.Korean: "{item_name}(고급 동물 친화)",
+        ServerLanguage.French: "{item_name} (Domptage : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Tierbeherrschung",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Potere sulle Belve di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Dominio de bestias de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 野獸支配 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ビースト マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Panowanie nad Zwierzętami najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Beast Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Soopereeur Beaest Maestery",
     }
 
 class RangerRuneOfSuperiorMarksmanship(AttributeRune):
@@ -4436,17 +4496,17 @@ class RangerRuneOfSuperiorMarksmanship(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ranger Rune of Superior Marksmanship",
-        ServerLanguage.Korean: "레인저 룬(고급 궁술)",
-        ServerLanguage.French: "Rune de Rôdeur (Adresse au tir : bonus supérieur)",
-        ServerLanguage.German: "Waldläufer-Rune d. überlegenen Treffsicherheit",
-        ServerLanguage.Italian: "Runa dell'Esploratore Precisione di grado supremo",
-        ServerLanguage.Spanish: "Runa de Guardabosques (Puntería de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 弓術精通 遊俠符文",
-        ServerLanguage.Japanese: "レンジャー ルーン (スーペリア ボウ マスタリー)",
-        ServerLanguage.Polish: "Runa Łowcy (Umiejętności Strzeleckie najwyższego poziomu)",
-        ServerLanguage.Russian: "Ranger Rune of Superior Marksmanship",
-        ServerLanguage.BorkBorkBork: "Runger Roone-a ooff Soopereeur Maerksmunsheep",
+        ServerLanguage.English: "{item_name} of Superior Marksmanship",
+        ServerLanguage.Korean: "{item_name}(고급 궁술)",
+        ServerLanguage.French: "{item_name} (Adresse au tir : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Treffsicherheit",
+        ServerLanguage.Italian: "{item_name} dell'Esploratore Precisione di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Puntería de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 弓術精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ボウ マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Umiejętności Strzeleckie najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Marksmanship",
+        ServerLanguage.BorkBorkBork: "{item_name} {item_name} ooff Soopereeur Maerksmunsheep",
     }
 
 class UpgradeMinorRuneRanger(Upgrade):
@@ -4482,17 +4542,17 @@ class WanderersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Wanderer's Insignia [Monk]",
-        ServerLanguage.Korean: "방랑자의 휘장 [몽크]",
-        ServerLanguage.French: "Insigne [Moine] de vagabond",
-        ServerLanguage.German: "Wanderer- [Mönchs]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Mistico] da Vagabondo",
-        ServerLanguage.Spanish: "Insignia [Monje] de trotamundos",
-        ServerLanguage.TraditionalChinese: "流浪者 徽記 [僧侶]",
-        ServerLanguage.Japanese: "ワンダラー 記章 [モンク]",
-        ServerLanguage.Polish: "[Mnich] Symbol Wędrowca",
-        ServerLanguage.Russian: "Wanderer's Insignia [Monk]",
-        ServerLanguage.BorkBorkBork: "Vunderer's Inseegneea [Munk]",
+        ServerLanguage.English: "Wanderer's {item_name}",
+        ServerLanguage.Korean: "방랑자의 {item_name}",
+        ServerLanguage.French: "{item_name} de vagabond",
+        ServerLanguage.German: "Wanderer--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Vagabondo",
+        ServerLanguage.Spanish: "{item_name} de trotamundos",
+        ServerLanguage.TraditionalChinese: "流浪者 {item_name}",
+        ServerLanguage.Japanese: "ワンダラー {item_name}",
+        ServerLanguage.Polish: "{item_name} Wędrowca",
+        ServerLanguage.Russian: "Wanderer's {item_name}",
+        ServerLanguage.BorkBorkBork: "Vunderer's {item_name}",
     }
 
 class DisciplesInsignia(Insignia):
@@ -4500,17 +4560,17 @@ class DisciplesInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Disciple's Insignia [Monk]",
-        ServerLanguage.Korean: "사도의 휘장 [몽크]",
-        ServerLanguage.French: "Insigne [Moine] de disciple",
-        ServerLanguage.German: "Jünger- [Mönchs]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Mistico] da Discepolo",
-        ServerLanguage.Spanish: "Insignia [Monje] de discípulo",
-        ServerLanguage.TraditionalChinese: "門徒 徽記 [僧侶]",
-        ServerLanguage.Japanese: "ディサイプル 記章 [モンク]",
-        ServerLanguage.Polish: "[Mnich] Symbol Ucznia",
-        ServerLanguage.Russian: "Disciple's Insignia [Monk]",
-        ServerLanguage.BorkBorkBork: "Deesceeple-a's Inseegneea [Munk]",
+        ServerLanguage.English: "Disciple's {item_name}",
+        ServerLanguage.Korean: "사도의 {item_name}",
+        ServerLanguage.French: "{item_name} de disciple",
+        ServerLanguage.German: "Jünger--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Discepolo",
+        ServerLanguage.Spanish: "{item_name} de discípulo",
+        ServerLanguage.TraditionalChinese: "門徒 {item_name}",
+        ServerLanguage.Japanese: "ディサイプル {item_name}",
+        ServerLanguage.Polish: "{item_name} Ucznia",
+        ServerLanguage.Russian: "Disciple's {item_name}",
+        ServerLanguage.BorkBorkBork: "Deesceeple-a's {item_name}",
     }
 
 class AnchoritesInsignia(Insignia):
@@ -4518,17 +4578,17 @@ class AnchoritesInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Anchorite's Insignia [Monk]",
-        ServerLanguage.Korean: "은둔자의 휘장 [몽크]",
-        ServerLanguage.French: "Insigne [Moine] d'anachorète",
-        ServerLanguage.German: "Einsiedler- [Mönchs]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Mistico] da Anacoreta",
-        ServerLanguage.Spanish: "Insignia [Monje] de anacoreta",
-        ServerLanguage.TraditionalChinese: "隱士 徽記 [僧侶]",
-        ServerLanguage.Japanese: "アンコライト 記章 [モンク]",
-        ServerLanguage.Polish: "[Mnich] Symbol Pustelnika",
-        ServerLanguage.Russian: "Anchorite's Insignia [Monk]",
-        ServerLanguage.BorkBorkBork: "Unchureete-a's Inseegneea [Munk]",
+        ServerLanguage.English: "Anchorite's {item_name}",
+        ServerLanguage.Korean: "은둔자의 {item_name}",
+        ServerLanguage.French: "{item_name} d'anachorète",
+        ServerLanguage.German: "Einsiedler--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Anacoreta",
+        ServerLanguage.Spanish: "{item_name} de anacoreta",
+        ServerLanguage.TraditionalChinese: "隱士 {item_name}",
+        ServerLanguage.Japanese: "アンコライト {item_name}",
+        ServerLanguage.Polish: "{item_name} Pustelnika",
+        ServerLanguage.Russian: "Anchorite's {item_name}",
+        ServerLanguage.BorkBorkBork: "Unchureete-a's {item_name}",
     }
 
 class MonkRuneOfMinorHealingPrayers(AttributeRune):
@@ -4537,17 +4597,17 @@ class MonkRuneOfMinorHealingPrayers(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Monk Rune of Minor Healing Prayers",
-        ServerLanguage.Korean: "몽크 룬(하급 치유)",
-        ServerLanguage.French: "Rune de Moine (Prières de guérison : bonus mineur)",
-        ServerLanguage.German: "Mönch-Rune d. kleineren Heilgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Curative di grado minore",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias curativas de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 治療祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (マイナー ヒーリング)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Uzdrawiające niższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Minor Healing Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Meenur Heaeleeng Praeyers",
+        ServerLanguage.English: "{item_name} of Minor Healing Prayers",
+        ServerLanguage.Korean: "{item_name}(하급 치유)",
+        ServerLanguage.French: "{item_name} (Prières de guérison : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Heilgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Curative di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias curativas de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 治療祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ヒーリング)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Uzdrawiające niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Healing Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Heaeleeng Praeyers",
     }
 
 class MonkRuneOfMinorSmitingPrayers(AttributeRune):
@@ -4556,17 +4616,17 @@ class MonkRuneOfMinorSmitingPrayers(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Monk Rune of Minor Smiting Prayers",
-        ServerLanguage.Korean: "몽크 룬(하급 천벌)",
-        ServerLanguage.French: "Rune de Moine (Prières de châtiment : bonus mineur)",
-        ServerLanguage.German: "Mönch-Rune d. kleineren Peinigungsgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Punitive di grado minore",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias de ataque de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 懲戒祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (マイナー ホーリー)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Ofensywne niższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Minor Smiting Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Meenur Smeeteeng Praeyers",
+        ServerLanguage.English: "{item_name} of Minor Smiting Prayers",
+        ServerLanguage.Korean: "{item_name}(하급 천벌)",
+        ServerLanguage.French: "{item_name} (Prières de châtiment : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Peinigungsgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Punitive di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de ataque de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 懲戒祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ホーリー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ofensywne niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Smiting Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Smeeteeng Praeyers",
     }
 
 class MonkRuneOfMinorProtectionPrayers(AttributeRune):
@@ -4575,17 +4635,17 @@ class MonkRuneOfMinorProtectionPrayers(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Monk Rune of Minor Protection Prayers",
-        ServerLanguage.Korean: "몽크 룬(하급 보호)",
-        ServerLanguage.French: "Rune de Moine (Prières de protection : bonus mineur)",
-        ServerLanguage.German: "Mönch-Rune d. kleineren Schutzgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Protettive di grado minore",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias de protección de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 防護祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (マイナー プロテクション)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Ochronne niższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Minor Protection Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Meenur Prutecshun Praeyers",
+        ServerLanguage.English: "{item_name} of Minor Protection Prayers",
+        ServerLanguage.Korean: "{item_name}(하급 보호)",
+        ServerLanguage.French: "{item_name} (Prières de protection : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Schutzgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Protettive di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de protección de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 防護祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー プロテクション)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ochronne niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Protection Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Prutecshun Praeyers",
     }
 
 class MonkRuneOfMinorDivineFavor(AttributeRune):
@@ -4594,17 +4654,17 @@ class MonkRuneOfMinorDivineFavor(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Monk Rune of Minor Divine Favor",
-        ServerLanguage.Korean: "몽크 룬(하급 신의 은총)",
-        ServerLanguage.French: "Rune de Moine (Faveur divine : bonus mineur)",
-        ServerLanguage.German: "Mönch-Rune d. kleineren Gunst der Götter",
-        ServerLanguage.Italian: "Runa del Mistico Favore Divino di grado minore",
-        ServerLanguage.Spanish: "Runa de Monje (Favor divino de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 神恩 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (マイナー ディヴァイン)",
-        ServerLanguage.Polish: "Runa Mnicha (Łaska Bogów niższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Minor Divine Favor",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Meenur Deefeene-a Faefur",
+        ServerLanguage.English: "{item_name} of Minor Divine Favor",
+        ServerLanguage.Korean: "{item_name}(하급 신의 은총)",
+        ServerLanguage.French: "{item_name} (Faveur divine : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Gunst der Götter",
+        ServerLanguage.Italian: "{item_name} Favore Divino di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Favor divino de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 神恩 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ディヴァイン)",
+        ServerLanguage.Polish: "{item_name} (Łaska Bogów niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Divine Favor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Deefeene-a Faefur",
     }
 
 class MonkRuneOfMajorHealingPrayers(AttributeRune):
@@ -4617,17 +4677,17 @@ class MonkRuneOfMajorHealingPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Major Healing Prayers",
-        ServerLanguage.Korean: "몽크 룬(상급 치유)",
-        ServerLanguage.French: "Rune de Moine (Prières de guérison : bonus majeur)",
-        ServerLanguage.German: "Mönch-Rune d. hohen Heilgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Curative di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias curativas de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 治療祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (メジャー ヒーリング)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Uzdrawiające wyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Major Healing Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Maejur Heaeleeng Praeyers",
+        ServerLanguage.English: "{item_name} of Major Healing Prayers",
+        ServerLanguage.Korean: "{item_name}(상급 치유)",
+        ServerLanguage.French: "{item_name} (Prières de guérison : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Heilgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Curative di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias curativas de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 治療祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ヒーリング)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Uzdrawiające wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Healing Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Heaeleeng Praeyers",
     }
 
 class MonkRuneOfMajorSmitingPrayers(AttributeRune):
@@ -4640,17 +4700,17 @@ class MonkRuneOfMajorSmitingPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Major Smiting Prayers",
-        ServerLanguage.Korean: "몽크 룬(상급 천벌)",
-        ServerLanguage.French: "Rune de Moine (Prières de châtiment : bonus majeur)",
-        ServerLanguage.German: "Mönch-Rune d. hohen Peinigungsgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Punitive di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias de ataque de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 懲戒祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (メジャー ホーリー)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Ofensywne wyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Major Smiting Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Maejur Smeeteeng Praeyers",
+        ServerLanguage.English: "{item_name} of Major Smiting Prayers",
+        ServerLanguage.Korean: "{item_name}(상급 천벌)",
+        ServerLanguage.French: "{item_name} (Prières de châtiment : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Peinigungsgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Punitive di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de ataque de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 懲戒祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ホーリー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ofensywne wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Smiting Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Smeeteeng Praeyers",
     }
 
 class MonkRuneOfMajorProtectionPrayers(AttributeRune):
@@ -4663,17 +4723,17 @@ class MonkRuneOfMajorProtectionPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Major Protection Prayers",
-        ServerLanguage.Korean: "몽크 룬(상급 보호)",
-        ServerLanguage.French: "Rune de Moine (Prières de protection : bonus majeur)",
-        ServerLanguage.German: "Mönch-Rune d. hohen Schutzgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Protettive di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias de protección de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 防護祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (メジャー プロテクション)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Ochronne wyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Major Protection Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Maejur Prutecshun Praeyers",
+        ServerLanguage.English: "{item_name} of Major Protection Prayers",
+        ServerLanguage.Korean: "{item_name}(상급 보호)",
+        ServerLanguage.French: "{item_name} (Prières de protection : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Schutzgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Protettive di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de protección de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 防護祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー プロテクション)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ochronne wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Protection Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Prutecshun Praeyers",
     }
 
 class MonkRuneOfMajorDivineFavor(AttributeRune):
@@ -4686,17 +4746,17 @@ class MonkRuneOfMajorDivineFavor(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Major Divine Favor",
-        ServerLanguage.Korean: "몽크 룬(상급 신의 은총)",
-        ServerLanguage.French: "Rune de Moine (Faveur divine : bonus majeur)",
-        ServerLanguage.German: "Mönch-Rune d. hohen Gunst der Götter",
-        ServerLanguage.Italian: "Runa del Mistico Favore Divino di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Monje (Favor divino de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 神恩 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (メジャー ディヴァイン)",
-        ServerLanguage.Polish: "Runa Mnicha (Łaska Bogów wyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Major Divine Favor",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Maejur Deefeene-a Faefur",
+        ServerLanguage.English: "{item_name} of Major Divine Favor",
+        ServerLanguage.Korean: "{item_name}(상급 신의 은총)",
+        ServerLanguage.French: "{item_name} (Faveur divine : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Gunst der Götter",
+        ServerLanguage.Italian: "{item_name} Favore Divino di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Favor divino de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 神恩 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ディヴァイン)",
+        ServerLanguage.Polish: "{item_name} (Łaska Bogów wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Divine Favor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Deefeene-a Faefur",
     }
 
 class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
@@ -4709,17 +4769,17 @@ class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Superior Healing Prayers",
-        ServerLanguage.Korean: "몽크 룬(고급 치유)",
-        ServerLanguage.French: "Rune de Moine (Prières de guérison : bonus supérieur)",
-        ServerLanguage.German: "Mönch-Rune d. überlegenen Heilgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Curative di grado supremo",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias curativas de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 治療祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (スーペリア ヒーリング)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Uzdrawiające najwyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Superior Healing Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Soopereeur Heaeleeng Praeyers",
+        ServerLanguage.English: "{item_name} of Superior Healing Prayers",
+        ServerLanguage.Korean: "{item_name}(고급 치유)",
+        ServerLanguage.French: "{item_name} (Prières de guérison : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Heilgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Curative di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Plegarias curativas de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 治療祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ヒーリング)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Uzdrawiające najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Healing Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Heaeleeng Praeyers",
     }
 
 class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
@@ -4732,17 +4792,17 @@ class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Superior Smiting Prayers",
-        ServerLanguage.Korean: "몽크 룬(고급 천벌)",
-        ServerLanguage.French: "Rune de Moine (Prières de châtiment : bonus supérieur)",
-        ServerLanguage.German: "Mönch-Rune d. überlegenen Peinigungsgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Punitive di grado supremo",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias de ataque de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 懲戒祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (スーペリア ホーリー)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Ofensywne najwyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Superior Smiting Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Soopereeur Smeeteeng Praeyers",
+        ServerLanguage.English: "{item_name} of Superior Smiting Prayers",
+        ServerLanguage.Korean: "{item_name}(고급 천벌)",
+        ServerLanguage.French: "{item_name} (Prières de châtiment : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Peinigungsgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Punitive di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de ataque de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 懲戒祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ホーリー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ofensywne najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Smiting Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Smeeteeng Praeyers",
     }
 
 class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
@@ -4755,17 +4815,17 @@ class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Superior Protection Prayers",
-        ServerLanguage.Korean: "몽크 룬(고급 보호)",
-        ServerLanguage.French: "Rune de Moine (Prières de protection : bonus supérieur)",
-        ServerLanguage.German: "Mönch-Rune d. überlegenen Schutzgebete",
-        ServerLanguage.Italian: "Runa del Mistico Preghiere Protettive di grado supremo",
-        ServerLanguage.Spanish: "Runa de Monje (Plegarias de protección de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 防護祈禱 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (スーペリア プロテクション)",
-        ServerLanguage.Polish: "Runa Mnicha (Modlitwy Ochronne najwyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Superior Protection Prayers",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Soopereeur Prutecshun Praeyers",
+        ServerLanguage.English: "{item_name} of Superior Protection Prayers",
+        ServerLanguage.Korean: "{item_name}(고급 보호)",
+        ServerLanguage.French: "{item_name} (Prières de protection : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Schutzgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere Protettive di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de protección de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 防護祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア プロテクション)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ochronne najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Protection Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Prutecshun Praeyers",
     }
 
 class MonkRuneOfSuperiorDivineFavor(AttributeRune):
@@ -4778,17 +4838,17 @@ class MonkRuneOfSuperiorDivineFavor(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Monk Rune of Superior Divine Favor",
-        ServerLanguage.Korean: "몽크 룬(고급 신의 은총)",
-        ServerLanguage.French: "Rune de Moine (Faveur divine : bonus supérieur)",
-        ServerLanguage.German: "Mönch-Rune d. überlegenen Gunst der Götter",
-        ServerLanguage.Italian: "Runa del Mistico Favore Divino di grado supremo",
-        ServerLanguage.Spanish: "Runa de Monje (Favor divino de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 神恩 僧侶符文",
-        ServerLanguage.Japanese: "モンク ルーン (スーペリア ディヴァイン)",
-        ServerLanguage.Polish: "Runa Mnicha (Łaska Bogów najwyższego poziomu)",
-        ServerLanguage.Russian: "Monk Rune of Superior Divine Favor",
-        ServerLanguage.BorkBorkBork: "Munk Roone-a ooff Soopereeur Deefeene-a Faefur",
+        ServerLanguage.English: "{item_name} of Superior Divine Favor",
+        ServerLanguage.Korean: "{item_name}(고급 신의 은총)",
+        ServerLanguage.French: "{item_name} (Faveur divine : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Gunst der Götter",
+        ServerLanguage.Italian: "{item_name} Favore Divino di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Favor divino de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 神恩 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ディヴァイン)",
+        ServerLanguage.Polish: "{item_name} (Łaska Bogów najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Divine Favor",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Deefeene-a Faefur",
     }
 
 class UpgradeMinorRuneMonk(Upgrade):
@@ -4824,17 +4884,17 @@ class BloodstainedInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Bloodstained Insignia [Necromancer]",
-        ServerLanguage.Korean: "혈흔의 휘장 [네크로맨서]",
-        ServerLanguage.French: "Insigne [Nécromant] de Sang",
-        ServerLanguage.German: "Blutfleck- [Nekromanten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Negromante] di Sangue",
-        ServerLanguage.Spanish: "Insignia [Nigromante] con sangre",
-        ServerLanguage.TraditionalChinese: "血腥 徽記 [死靈法師]",
-        ServerLanguage.Japanese: "ブラッドステイン 記章 [ネクロマンサー]",
-        ServerLanguage.Polish: "[Nekromanta] Symbol Okrwawienia",
-        ServerLanguage.Russian: "Bloodstained Insignia [Necromancer]",
-        ServerLanguage.BorkBorkBork: "Bluudstaeeened Inseegneea [Necrumuncer]",
+        ServerLanguage.English: "Bloodstained {item_name}",
+        ServerLanguage.Korean: "혈흔의 {item_name}",
+        ServerLanguage.French: "{item_name} de Sang",
+        ServerLanguage.German: "Blutfleck--{item_name}",
+        ServerLanguage.Italian: "{item_name} di Sangue",
+        ServerLanguage.Spanish: "{item_name} con sangre",
+        ServerLanguage.TraditionalChinese: "血腥 {item_name}",
+        ServerLanguage.Japanese: "ブラッドステイン {item_name}",
+        ServerLanguage.Polish: "{item_name} Okrwawienia",
+        ServerLanguage.Russian: "Bloodstained {item_name}",
+        ServerLanguage.BorkBorkBork: "Bluudstaeeened {item_name}",
     }
 
 class TormentorsInsignia(Insignia):
@@ -4842,17 +4902,17 @@ class TormentorsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Tormentor's Insignia [Necromancer]",
-        ServerLanguage.Korean: "고문가의 휘장 [네크로맨서]",
-        ServerLanguage.French: "Insigne [Nécromant] de persécuteur",
-        ServerLanguage.German: "Folterer- [Nekromanten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Negromante] da Tormentatore",
-        ServerLanguage.Spanish: "Insignia [Nigromante] de torturador",
-        ServerLanguage.TraditionalChinese: "苦痛者 徽記 [死靈法師]",
-        ServerLanguage.Japanese: "トルメンター 記章 [ネクロマンサー]",
-        ServerLanguage.Polish: "[Nekromanta] Symbol Oprawcy",
-        ServerLanguage.Russian: "Tormentor's Insignia [Necromancer]",
-        ServerLanguage.BorkBorkBork: "Turmentur's Inseegneea [Necrumuncer]",
+        ServerLanguage.English: "Tormentor's {item_name}",
+        ServerLanguage.Korean: "고문가의 {item_name}",
+        ServerLanguage.French: "{item_name} de persécuteur",
+        ServerLanguage.German: "Folterer--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Tormentatore",
+        ServerLanguage.Spanish: "{item_name} de torturador",
+        ServerLanguage.TraditionalChinese: "苦痛者 {item_name}",
+        ServerLanguage.Japanese: "トルメンター {item_name}",
+        ServerLanguage.Polish: "{item_name} Oprawcy",
+        ServerLanguage.Russian: "Tormentor's {item_name}",
+        ServerLanguage.BorkBorkBork: "Turmentur's {item_name}",
     }
 
 class BonelaceInsignia(Insignia):
@@ -4860,17 +4920,17 @@ class BonelaceInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Bonelace Insignia [Necromancer]",
-        ServerLanguage.Korean: "해골장식 휘장 [네크로맨서]",
-        ServerLanguage.French: "Insigne [Nécromant] de dentelle",
-        ServerLanguage.German: "Klöppelspitzen- [Nekromanten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Negromante] di Maglia d'Ossa",
-        ServerLanguage.Spanish: "Insignia [Nigromante] de cordones de hueso",
-        ServerLanguage.TraditionalChinese: "骨飾 徽記 [死靈法師]",
-        ServerLanguage.Japanese: "ボーンレース 記章 [ネクロマンサー]",
-        ServerLanguage.Polish: "[Nekromanta] Symbol Kościanej Lancy",
-        ServerLanguage.Russian: "Bonelace Insignia [Necromancer]",
-        ServerLanguage.BorkBorkBork: "Bunelaece-a Inseegneea [Necrumuncer]",
+        ServerLanguage.English: "Bonelace {item_name}",
+        ServerLanguage.Korean: "해골장식 {item_name}",
+        ServerLanguage.French: "{item_name} de dentelle",
+        ServerLanguage.German: "Klöppelspitzen--{item_name}",
+        ServerLanguage.Italian: "{item_name} di Maglia d'Ossa",
+        ServerLanguage.Spanish: "{item_name} de cordones de hueso",
+        ServerLanguage.TraditionalChinese: "骨飾 {item_name}",
+        ServerLanguage.Japanese: "ボーンレース {item_name}",
+        ServerLanguage.Polish: "{item_name} Kościanej Lancy",
+        ServerLanguage.Russian: "Bonelace {item_name}",
+        ServerLanguage.BorkBorkBork: "Bunelaece-a {item_name}",
     }
 
 class MinionMastersInsignia(Insignia):
@@ -4878,17 +4938,17 @@ class MinionMastersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Minion Master's Insignia [Necromancer]",
-        ServerLanguage.Korean: "언데드마스터의 휘장 [네크로맨서]",
-        ServerLanguage.French: "Insigne [Nécromant] du Maître des serviteurs",
-        ServerLanguage.German: "Dienermeister- [Nekromanten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Negromante] da Domasgherri",
-        ServerLanguage.Spanish: "Insignia [Nigromante] de maestro de siervos",
-        ServerLanguage.TraditionalChinese: "爪牙大師 徽記 [死靈法師]",
-        ServerLanguage.Japanese: "ミニオン マスター 記章 [ネクロマンサー]",
-        ServerLanguage.Polish: "[Nekromanta] Symbol Władcy Sług",
-        ServerLanguage.Russian: "Minion Master's Insignia [Necromancer]",
-        ServerLanguage.BorkBorkBork: "Meeneeun Maester's Inseegneea [Necrumuncer]",
+        ServerLanguage.English: "Minion Master's {item_name}",
+        ServerLanguage.Korean: "언데드마스터의 {item_name}",
+        ServerLanguage.French: "{item_name} du Maître des serviteurs",
+        ServerLanguage.German: "Dienermeister--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Domasgherri",
+        ServerLanguage.Spanish: "{item_name} de maestro de siervos",
+        ServerLanguage.TraditionalChinese: "爪牙大師 {item_name}",
+        ServerLanguage.Japanese: "ミニオン マスター {item_name}",
+        ServerLanguage.Polish: "{item_name} Władcy Sług",
+        ServerLanguage.Russian: "Minion Master's {item_name}",
+        ServerLanguage.BorkBorkBork: "Meeneeun Maester's {item_name}",
     }
 
 class BlightersInsignia(Insignia):
@@ -4896,17 +4956,17 @@ class BlightersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Blighter's Insignia [Necromancer]",
-        ServerLanguage.Korean: "오염자의 휘장 [네크로맨서]",
-        ServerLanguage.French: "Insigne [Nécromant] de destructeur",
-        ServerLanguage.German: "Verderber- [Nekromanten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Negromante] da Malfattore",
-        ServerLanguage.Spanish: "Insignia [Nigromante] de malhechor",
-        ServerLanguage.TraditionalChinese: "破壞者 徽記 [死靈法師]",
-        ServerLanguage.Japanese: "ブライター 記章 [ネクロマンサー]",
-        ServerLanguage.Polish: "[Nekromanta] Symbol Złoczyńcy",
-        ServerLanguage.Russian: "Blighter's Insignia [Necromancer]",
-        ServerLanguage.BorkBorkBork: "Bleeghter's Inseegneea [Necrumuncer]",
+        ServerLanguage.English: "Blighter's {item_name}",
+        ServerLanguage.Korean: "오염자의 {item_name}",
+        ServerLanguage.French: "{item_name} de destructeur",
+        ServerLanguage.German: "Verderber--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Malfattore",
+        ServerLanguage.Spanish: "{item_name} de malhechor",
+        ServerLanguage.TraditionalChinese: "破壞者 {item_name}",
+        ServerLanguage.Japanese: "ブライター {item_name}",
+        ServerLanguage.Polish: "{item_name} Złoczyńcy",
+        ServerLanguage.Russian: "Blighter's {item_name}",
+        ServerLanguage.BorkBorkBork: "Bleeghter's {item_name}",
     }
 
 class UndertakersInsignia(Insignia):
@@ -4914,17 +4974,17 @@ class UndertakersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Undertaker's Insignia [Necromancer]",
-        ServerLanguage.Korean: "장의사의 휘장 [네크로맨서]",
-        ServerLanguage.French: "Insigne [Nécromant] du fossoyeur",
-        ServerLanguage.German: "Leichenbestatter- [Nekromanten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Negromante] da Becchino",
-        ServerLanguage.Spanish: "Insignia [Nigromante] de enterrador",
-        ServerLanguage.TraditionalChinese: "承受者 徽記 [死靈法師]",
-        ServerLanguage.Japanese: "アンダーテイカー 記章 [ネクロマンサー]",
-        ServerLanguage.Polish: "[Nekromanta] Symbol Grabarza",
-        ServerLanguage.Russian: "Undertaker's Insignia [Necromancer]",
-        ServerLanguage.BorkBorkBork: "Undertaeker's Inseegneea [Necrumuncer]",
+        ServerLanguage.English: "Undertaker's {item_name}",
+        ServerLanguage.Korean: "장의사의 {item_name}",
+        ServerLanguage.French: "{item_name} du fossoyeur",
+        ServerLanguage.German: "Leichenbestatter--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Becchino",
+        ServerLanguage.Spanish: "{item_name} de enterrador",
+        ServerLanguage.TraditionalChinese: "承受者 {item_name}",
+        ServerLanguage.Japanese: "アンダーテイカー {item_name}",
+        ServerLanguage.Polish: "{item_name} Grabarza",
+        ServerLanguage.Russian: "Undertaker's {item_name}",
+        ServerLanguage.BorkBorkBork: "Undertaeker's {item_name}",
     }
 
 class NecromancerRuneOfMinorBloodMagic(AttributeRune):
@@ -4933,17 +4993,17 @@ class NecromancerRuneOfMinorBloodMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Minor Blood Magic",
-        ServerLanguage.Korean: "네크로맨서 룬(하급 피)",
-        ServerLanguage.French: "Rune de Nécromant (Magie du sang : bonus mineur)",
-        ServerLanguage.German: "Nekromanten-Rune d. kleineren Blutmagie",
-        ServerLanguage.Italian: "Runa del Negromante Magia del Sangue di grado minore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Magia de sangre de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 血魔法 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (マイナー ブラッド)",
-        ServerLanguage.Polish: "Runa Nekromanty (Magia Krwi niższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Minor Blood Magic",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Meenur Bluud Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Blood Magic",
+        ServerLanguage.Korean: "{item_name}(하급 피)",
+        ServerLanguage.French: "{item_name} (Magie du sang : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Blutmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Sangue di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de sangre de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 血魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ブラッド)",
+        ServerLanguage.Polish: "{item_name} (Magia Krwi niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Blood Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Bluud Maegeec",
     }
 
 class NecromancerRuneOfMinorDeathMagic(AttributeRune):
@@ -4952,17 +5012,17 @@ class NecromancerRuneOfMinorDeathMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Minor Death Magic",
-        ServerLanguage.Korean: "네크로맨서 룬(하급 죽음)",
-        ServerLanguage.French: "Rune de Nécromant (Magie de la mort : bonus mineur)",
-        ServerLanguage.German: "Nekromanten-Rune d. kleineren Todesmagie",
-        ServerLanguage.Italian: "Runa del Negromante Magia della Morte di grado minore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Magia de muerte de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 死亡魔法 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (マイナー デス)",
-        ServerLanguage.Polish: "Runa Nekromanty (Magia Śmierci niższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Minor Death Magic",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Meenur Deaet Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Death Magic",
+        ServerLanguage.Korean: "{item_name}(하급 죽음)",
+        ServerLanguage.French: "{item_name} (Magie de la mort : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Todesmagie",
+        ServerLanguage.Italian: "{item_name} Magia della Morte di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de muerte de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 死亡魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー デス)",
+        ServerLanguage.Polish: "{item_name} (Magia Śmierci niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Death Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Deaet Maegeec",
     }
 
 class NecromancerRuneOfMinorCurses(AttributeRune):
@@ -4971,17 +5031,17 @@ class NecromancerRuneOfMinorCurses(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Minor Curses",
-        ServerLanguage.Korean: "네크로맨서 룬(하급 저주)",
-        ServerLanguage.French: "Rune de Nécromant (Malédictions : bonus mineur)",
-        ServerLanguage.German: "Nekromanten-Rune d. kleineren Flüche",
-        ServerLanguage.Italian: "Runa del Negromante Maledizioni di grado minore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Maldiciones de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 詛咒 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (マイナー カース)",
-        ServerLanguage.Polish: "Runa Nekromanty (Klątwy niższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Minor Curses",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Meenur Coorses",
+        ServerLanguage.English: "{item_name} of Minor Curses",
+        ServerLanguage.Korean: "{item_name}(하급 저주)",
+        ServerLanguage.French: "{item_name} (Malédictions : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Flüche",
+        ServerLanguage.Italian: "{item_name} Maledizioni di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Maldiciones de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 詛咒 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー カース)",
+        ServerLanguage.Polish: "{item_name} (Klątwy niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Curses",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Coorses",
     }
 
 class NecromancerRuneOfMinorSoulReaping(AttributeRune):
@@ -4990,17 +5050,17 @@ class NecromancerRuneOfMinorSoulReaping(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Minor Soul Reaping",
-        ServerLanguage.Korean: "네크로맨서 룬(하급 영혼)",
-        ServerLanguage.French: "Rune de Nécromant (Moisson des âmes : bonus mineur)",
-        ServerLanguage.German: "Nekromanten-Rune d. kleineren Seelensammlung",
-        ServerLanguage.Italian: "Runa del Negromante Sottrazione dell'Anima di grado minore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Cosecha de almas de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 靈魂吸取 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (マイナー ソウル リーピング)",
-        ServerLanguage.Polish: "Runa Nekromanty (Wydzieranie Duszy niższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Minor Soul Reaping",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Meenur Suool Reaepeeng",
+        ServerLanguage.English: "{item_name} of Minor Soul Reaping",
+        ServerLanguage.Korean: "{item_name}(하급 영혼)",
+        ServerLanguage.French: "{item_name} (Moisson des âmes : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Seelensammlung",
+        ServerLanguage.Italian: "{item_name} Sottrazione dell'Anima di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Cosecha de almas de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 靈魂吸取 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ソウル リーピング)",
+        ServerLanguage.Polish: "{item_name} (Wydzieranie Duszy niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Soul Reaping",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Suool Reaepeeng",
     }
 
 class NecromancerRuneOfMajorBloodMagic(AttributeRune):
@@ -5013,17 +5073,17 @@ class NecromancerRuneOfMajorBloodMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Major Blood Magic",
-        ServerLanguage.Korean: "네크로맨서 룬(상급 피)",
-        ServerLanguage.French: "Rune de Nécromant (Magie du sang : bonus majeur)",
-        ServerLanguage.German: "Nekromanten-Rune d. hohen Blutmagie",
-        ServerLanguage.Italian: "Runa del Negromante Magia del Sangue di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Magia de sangre de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 血魔法 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (メジャー ブラッド)",
-        ServerLanguage.Polish: "Runa Nekromanty (Magia Krwi wyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Major Blood Magic",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Maejur Bluud Maegeec",
+        ServerLanguage.English: "{item_name} of Major Blood Magic",
+        ServerLanguage.Korean: "{item_name}(상급 피)",
+        ServerLanguage.French: "{item_name} (Magie du sang : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Blutmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Sangue di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de sangre de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 血魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ブラッド)",
+        ServerLanguage.Polish: "{item_name} (Magia Krwi wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Blood Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Bluud Maegeec",
     }
 
 class NecromancerRuneOfMajorDeathMagic(AttributeRune):
@@ -5036,17 +5096,17 @@ class NecromancerRuneOfMajorDeathMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Major Death Magic",
-        ServerLanguage.Korean: "네크로맨서 룬(상급 죽음)",
-        ServerLanguage.French: "Rune de Nécromant (Magie de la mort : bonus majeur)",
-        ServerLanguage.German: "Nekromanten-Rune d. hohen Todesmagie",
-        ServerLanguage.Italian: "Runa del Negromante Magia della Morte di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Magia de muerte de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 死亡魔法 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (メジャー デス)",
-        ServerLanguage.Polish: "Runa Nekromanty (Magia Śmierci wyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Major Death Magic",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Maejur Deaet Maegeec",
+        ServerLanguage.English: "{item_name} of Major Death Magic",
+        ServerLanguage.Korean: "{item_name}(상급 죽음)",
+        ServerLanguage.French: "{item_name} (Magie de la mort : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Todesmagie",
+        ServerLanguage.Italian: "{item_name} Magia della Morte di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de muerte de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 死亡魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー デス)",
+        ServerLanguage.Polish: "{item_name} (Magia Śmierci wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Death Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Deaet Maegeec",
     }
 
 class NecromancerRuneOfMajorCurses(AttributeRune):
@@ -5059,17 +5119,17 @@ class NecromancerRuneOfMajorCurses(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Major Curses",
-        ServerLanguage.Korean: "네크로맨서 룬(상급 저주)",
-        ServerLanguage.French: "Rune de Nécromant (Malédictions : bonus majeur)",
-        ServerLanguage.German: "Nekromanten-Rune d. hohen Flüche",
-        ServerLanguage.Italian: "Runa del Negromante Maledizioni di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Maldiciones de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 詛咒 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (メジャー カース)",
-        ServerLanguage.Polish: "Runa Nekromanty (Klątwy wyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Major Curses",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Maejur Coorses",
+        ServerLanguage.English: "{item_name} of Major Curses",
+        ServerLanguage.Korean: "{item_name}(상급 저주)",
+        ServerLanguage.French: "{item_name} (Malédictions : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Flüche",
+        ServerLanguage.Italian: "{item_name} Maledizioni di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Maldiciones de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 詛咒 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー カース)",
+        ServerLanguage.Polish: "{item_name} (Klątwy wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Curses",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Coorses",
     }
 
 class NecromancerRuneOfMajorSoulReaping(AttributeRune):
@@ -5082,17 +5142,17 @@ class NecromancerRuneOfMajorSoulReaping(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Major Soul Reaping",
-        ServerLanguage.Korean: "네크로맨서 룬(상급 영혼)",
-        ServerLanguage.French: "Rune de Nécromant (Moisson des âmes : bonus majeur)",
-        ServerLanguage.German: "Nekromanten-Rune d. hohen Seelensammlung",
-        ServerLanguage.Italian: "Runa del Negromante Sottrazione dell'Anima di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Nigromante (Cosecha de almas de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 靈魂吸取 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (メジャー ソウル リーピング)",
-        ServerLanguage.Polish: "Runa Nekromanty (Wydzieranie Duszy wyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Major Soul Reaping",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Maejur Suool Reaepeeng",
+        ServerLanguage.English: "{item_name} of Major Soul Reaping",
+        ServerLanguage.Korean: "{item_name}(상급 영혼)",
+        ServerLanguage.French: "{item_name} (Moisson des âmes : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Seelensammlung",
+        ServerLanguage.Italian: "{item_name} Sottrazione dell'Anima di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Cosecha de almas de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 靈魂吸取 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ソウル リーピング)",
+        ServerLanguage.Polish: "{item_name} (Wydzieranie Duszy wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Soul Reaping",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Suool Reaepeeng",
     }
 
 class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
@@ -5105,17 +5165,17 @@ class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Superior Blood Magic",
-        ServerLanguage.Korean: "네크로맨서 룬(고급 피)",
-        ServerLanguage.French: "Rune de Nécromant (Magie du sang : bonus supérieur)",
-        ServerLanguage.German: "Nekromanten-Rune d. überlegenen Blutmagie",
-        ServerLanguage.Italian: "Runa del Negromante Magia del Sangue di grado supremo",
-        ServerLanguage.Spanish: "Runa de Nigromante (Magia de sangre de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 血魔法 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (スーペリア ブラッド)",
-        ServerLanguage.Polish: "Runa Nekromanty (Magia Krwi najwyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Superior Blood Magic",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Soopereeur Bluud Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Blood Magic",
+        ServerLanguage.Korean: "{item_name}(고급 피)",
+        ServerLanguage.French: "{item_name} (Magie du sang : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Blutmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Sangue di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de sangre de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 血魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ブラッド)",
+        ServerLanguage.Polish: "{item_name} (Magia Krwi najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Blood Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Bluud Maegeec",
     }
 
 class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
@@ -5128,17 +5188,17 @@ class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Superior Death Magic",
-        ServerLanguage.Korean: "네크로맨서 룬(고급 죽음)",
-        ServerLanguage.French: "Rune de Nécromant (Magie de la mort : bonus supérieur)",
-        ServerLanguage.German: "Nekromanten-Rune d. überlegenen Todesmagie",
-        ServerLanguage.Italian: "Runa del Negromante Magia della Morte di grado supremo",
-        ServerLanguage.Spanish: "Runa de Nigromante (Magia de muerte de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 死亡魔法 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (スーペリア デス)",
-        ServerLanguage.Polish: "Runa Nekromanty (Magia Śmierci najwyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Superior Death Magic",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Soopereeur Deaet Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Death Magic",
+        ServerLanguage.Korean: "{item_name}(고급 죽음)",
+        ServerLanguage.French: "{item_name} (Magie de la mort : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Todesmagie",
+        ServerLanguage.Italian: "{item_name} Magia della Morte di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de muerte de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 死亡魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア デス)",
+        ServerLanguage.Polish: "{item_name} (Magia Śmierci najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Death Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Deaet Maegeec",
     }
 
 class NecromancerRuneOfSuperiorCurses(AttributeRune):
@@ -5151,17 +5211,17 @@ class NecromancerRuneOfSuperiorCurses(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Superior Curses",
-        ServerLanguage.Korean: "네크로맨서 룬(고급 저주)",
-        ServerLanguage.French: "Rune de Nécromant (Malédictions : bonus supérieur)",
-        ServerLanguage.German: "Nekromanten-Rune d. überlegenen Flüche",
-        ServerLanguage.Italian: "Runa del Negromante Maledizioni di grado supremo",
-        ServerLanguage.Spanish: "Runa de Nigromante (Maldiciones de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 詛咒 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (スーペリア カース)",
-        ServerLanguage.Polish: "Runa Nekromanty (Klątwy najwyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Superior Curses",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Soopereeur Coorses",
+        ServerLanguage.English: "{item_name} of Superior Curses",
+        ServerLanguage.Korean: "{item_name}(고급 저주)",
+        ServerLanguage.French: "{item_name} (Malédictions : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Flüche",
+        ServerLanguage.Italian: "{item_name} Maledizioni di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Maldiciones de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 詛咒 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア カース)",
+        ServerLanguage.Polish: "{item_name} (Klątwy najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Curses",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Coorses",
     }
 
 class NecromancerRuneOfSuperiorSoulReaping(AttributeRune):
@@ -5174,17 +5234,17 @@ class NecromancerRuneOfSuperiorSoulReaping(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Necromancer Rune of Superior Soul Reaping",
-        ServerLanguage.Korean: "네크로맨서 룬(고급 영혼)",
-        ServerLanguage.French: "Rune de Nécromant (Moisson des âmes : bonus supérieur)",
-        ServerLanguage.German: "Nekromanten-Rune d. überlegenen Seelensammlung",
-        ServerLanguage.Italian: "Runa del Negromante Sottrazione dell'Anima di grado supremo",
-        ServerLanguage.Spanish: "Runa de Nigromante (Cosecha de almas de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 靈魂吸取 死靈法師符文",
-        ServerLanguage.Japanese: "ネクロマンサー ルーン (スーペリア ソウル リーピング)",
-        ServerLanguage.Polish: "Runa Nekromanty (Wydzieranie Duszy najwyższego poziomu)",
-        ServerLanguage.Russian: "Necromancer Rune of Superior Soul Reaping",
-        ServerLanguage.BorkBorkBork: "Necrumuncer Roone-a ooff Soopereeur Suool Reaepeeng",
+        ServerLanguage.English: "{item_name} of Superior Soul Reaping",
+        ServerLanguage.Korean: "{item_name}(고급 영혼)",
+        ServerLanguage.French: "{item_name} (Moisson des âmes : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Seelensammlung",
+        ServerLanguage.Italian: "{item_name} Sottrazione dell'Anima di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Cosecha de almas de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 靈魂吸取 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ソウル リーピング)",
+        ServerLanguage.Polish: "{item_name} (Wydzieranie Duszy najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Soul Reaping",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Suool Reaepeeng",
     }
 
 class UpgradeMinorRuneNecromancer(Upgrade):
@@ -5220,17 +5280,17 @@ class VirtuososInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Virtuoso's Insignia [Mesmer]",
-        ServerLanguage.Korean: "거장의 휘장 [메스머]",
-        ServerLanguage.French: "Insigne [Envoûteur] de virtuose",
-        ServerLanguage.German: "Virtuosen- [Mesmer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Ipnotizzatore] da Intenditore",
-        ServerLanguage.Spanish: "Insignia [Hipnotizador] de virtuoso",
-        ServerLanguage.TraditionalChinese: "鑑賞家 徽記 [幻術師]",
-        ServerLanguage.Japanese: "ヴァーチュオーソ 記章 [メスマー]",
-        ServerLanguage.Polish: "[Mesmer] Symbol Wirtuoza",
-        ServerLanguage.Russian: "Virtuoso's Insignia [Mesmer]",
-        ServerLanguage.BorkBorkBork: "Furtoousu's Inseegneea [Mesmer]",
+        ServerLanguage.English: "Virtuoso's {item_name}",
+        ServerLanguage.Korean: "거장의 {item_name}",
+        ServerLanguage.French: "{item_name} de virtuose",
+        ServerLanguage.German: "Virtuosen--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Intenditore",
+        ServerLanguage.Spanish: "{item_name} de virtuoso",
+        ServerLanguage.TraditionalChinese: "鑑賞家 {item_name}",
+        ServerLanguage.Japanese: "ヴァーチュオーソ {item_name}",
+        ServerLanguage.Polish: "{item_name} Wirtuoza",
+        ServerLanguage.Russian: "Virtuoso's {item_name}",
+        ServerLanguage.BorkBorkBork: "Furtoousu's {item_name}",
     }
 
 class ArtificersInsignia(Insignia):
@@ -5238,17 +5298,17 @@ class ArtificersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Artificer's Insignia [Mesmer]",
-        ServerLanguage.Korean: "장인의 휘장 [메스머]",
-        ServerLanguage.French: "Insigne [Envoûteur] de l'artisan",
-        ServerLanguage.German: "Feuerwerker- [Mesmer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Ipnotizzatore] da Artefice",
-        ServerLanguage.Spanish: "Insignia [Hipnotizador] de artífice",
-        ServerLanguage.TraditionalChinese: "巧匠 徽記 [幻術師]",
-        ServerLanguage.Japanese: "アーティファサー 記章 [メスマー]",
-        ServerLanguage.Polish: "[Mesmer] Symbol Rzemieślnika",
-        ServerLanguage.Russian: "Artificer's Insignia [Mesmer]",
-        ServerLanguage.BorkBorkBork: "Aerteeffeecer's Inseegneea [Mesmer]",
+        ServerLanguage.English: "Artificer's {item_name}",
+        ServerLanguage.Korean: "장인의 {item_name}",
+        ServerLanguage.French: "{item_name} de l'artisan",
+        ServerLanguage.German: "Feuerwerker--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Artefice",
+        ServerLanguage.Spanish: "{item_name} de artífice",
+        ServerLanguage.TraditionalChinese: "巧匠 {item_name}",
+        ServerLanguage.Japanese: "アーティファサー {item_name}",
+        ServerLanguage.Polish: "{item_name} Rzemieślnika",
+        ServerLanguage.Russian: "Artificer's {item_name}",
+        ServerLanguage.BorkBorkBork: "Aerteeffeecer's {item_name}",
     }
 
 class ProdigysInsignia(Insignia):
@@ -5256,17 +5316,17 @@ class ProdigysInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Prodigy's Insignia [Mesmer]",
-        ServerLanguage.Korean: "천재의 휘장 [메스머]",
-        ServerLanguage.French: "Insigne [Envoûteur] prodige",
-        ServerLanguage.German: "Wunder- [Mesmer]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Ipnotizzatore] da Prodigio",
-        ServerLanguage.Spanish: "Insignia [Hipnotizador] de prodigio",
-        ServerLanguage.TraditionalChinese: "奇蹟 徽記 [幻術師]",
-        ServerLanguage.Japanese: "プロディジー 記章 [メスマー]",
-        ServerLanguage.Polish: "[Mesmer] Symbol Geniusza",
-        ServerLanguage.Russian: "Prodigy's Insignia [Mesmer]",
-        ServerLanguage.BorkBorkBork: "Prudeegy's Inseegneea [Mesmer]",
+        ServerLanguage.English: "Prodigy's {item_name}",
+        ServerLanguage.Korean: "천재의 {item_name}",
+        ServerLanguage.French: "{item_name} prodige",
+        ServerLanguage.German: "Wunder--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Prodigio",
+        ServerLanguage.Spanish: "{item_name} de prodigio",
+        ServerLanguage.TraditionalChinese: "奇蹟 {item_name}",
+        ServerLanguage.Japanese: "プロディジー {item_name}",
+        ServerLanguage.Polish: "{item_name} Geniusza",
+        ServerLanguage.Russian: "Prodigy's {item_name}",
+        ServerLanguage.BorkBorkBork: "Prudeegy's {item_name}",
     }
 
 class MesmerRuneOfMinorFastCasting(AttributeRune):
@@ -5275,17 +5335,17 @@ class MesmerRuneOfMinorFastCasting(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Minor Fast Casting",
-        ServerLanguage.Korean: "메스머 룬(하급 빠른 시전)",
-        ServerLanguage.French: "Rune d'Envoûteur (Incantation rapide : bonus mineur)",
-        ServerLanguage.German: "Mesmer-Rune d. kleineren Schnellwirkung",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Lancio Rapido di grado minore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Lanzar conjuros rápido de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 快速施法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (マイナー ファスト キャスト)",
-        ServerLanguage.Polish: "Runa Mesmera (Szybkie Rzucanie Czarów niższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Minor Fast Casting",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Meenur Faest Caesteeng",
+        ServerLanguage.English: "{item_name} of Minor Fast Casting",
+        ServerLanguage.Korean: "{item_name}(하급 빠른 시전)",
+        ServerLanguage.French: "{item_name} (Incantation rapide : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Schnellwirkung",
+        ServerLanguage.Italian: "{item_name} Lancio Rapido di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Lanzar conjuros rápido de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 快速施法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ファスト キャスト)",
+        ServerLanguage.Polish: "{item_name} (Szybkie Rzucanie Czarów niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Fast Casting",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Faest Caesteeng",
     }
 
 class MesmerRuneOfMinorDominationMagic(AttributeRune):
@@ -5294,17 +5354,17 @@ class MesmerRuneOfMinorDominationMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Minor Domination Magic",
-        ServerLanguage.Korean: "메스머 룬(하급 지배)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de domination : bonus mineur)",
-        ServerLanguage.German: "Mesmer-Rune d. kleineren Beherrschungsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia del Dominio di grado minore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de dominación de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 支配魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (マイナー ドミネーション)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Dominacji niższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Minor Domination Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Meenur Dumeenaeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Domination Magic",
+        ServerLanguage.Korean: "{item_name}(하급 지배)",
+        ServerLanguage.French: "{item_name} (Magie de domination : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Beherrschungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Dominio di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de dominación de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 支配魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ドミネーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Dominacji niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Domination Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Dumeenaeshun Maegeec",
     }
 
 class MesmerRuneOfMinorIllusionMagic(AttributeRune):
@@ -5313,17 +5373,17 @@ class MesmerRuneOfMinorIllusionMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Minor Illusion Magic",
-        ServerLanguage.Korean: "메스머 룬(하급 환상)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de l'illusion : bonus mineur)",
-        ServerLanguage.German: "Mesmer-Rune d. kleineren Illusionsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia Illusoria di grado minore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de ilusión de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 幻術魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (マイナー イリュージョン)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Iluzji niższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Minor Illusion Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Meenur Illooseeun Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Illusion Magic",
+        ServerLanguage.Korean: "{item_name}(하급 환상)",
+        ServerLanguage.French: "{item_name} (Magie de l'illusion : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Illusionsmagie",
+        ServerLanguage.Italian: "{item_name} Magia Illusoria di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de ilusión de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 幻術魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー イリュージョン)",
+        ServerLanguage.Polish: "{item_name} (Magia Iluzji niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Illusion Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Illooseeun Maegeec",
     }
 
 class MesmerRuneOfMinorInspirationMagic(AttributeRune):
@@ -5332,17 +5392,17 @@ class MesmerRuneOfMinorInspirationMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Minor Inspiration Magic",
-        ServerLanguage.Korean: "메스머 룬(하급 영감)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de l'inspiration : bonus mineur)",
-        ServerLanguage.German: "Mesmer-Rune d. kleineren Inspirationsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia di Ispirazione di grado minore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de inspiración de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 靈感魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (マイナー インスピレーション)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Inspiracji niższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Minor Inspiration Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Meenur Inspuraeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Inspiration Magic",
+        ServerLanguage.Korean: "{item_name}(하급 영감)",
+        ServerLanguage.French: "{item_name} (Magie de l'inspiration : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Inspirationsmagie",
+        ServerLanguage.Italian: "{item_name} Magia di Ispirazione di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de inspiración de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 靈感魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー インスピレーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Inspiracji niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Inspiration Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Inspuraeshun Maegeec",
     }
 
 class MesmerRuneOfMajorFastCasting(AttributeRune):
@@ -5355,17 +5415,17 @@ class MesmerRuneOfMajorFastCasting(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Major Fast Casting",
-        ServerLanguage.Korean: "메스머 룬(상급 빠른 시전)",
-        ServerLanguage.French: "Rune d'Envoûteur (Incantation rapide : bonus majeur)",
-        ServerLanguage.German: "Mesmer-Rune d. hohen Schnellwirkung",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Lancio Rapido di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Lanzar conjuros rápido de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 快速施法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (メジャー ファスト キャスト)",
-        ServerLanguage.Polish: "Runa Mesmera (Szybkie Rzucanie Czarów wyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Major Fast Casting",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Maejur Faest Caesteeng",
+        ServerLanguage.English: "{item_name} of Major Fast Casting",
+        ServerLanguage.Korean: "{item_name}(상급 빠른 시전)",
+        ServerLanguage.French: "{item_name} (Incantation rapide : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Schnellwirkung",
+        ServerLanguage.Italian: "{item_name} Lancio Rapido di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Lanzar conjuros rápido de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 快速施法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ファスト キャスト)",
+        ServerLanguage.Polish: "{item_name} (Szybkie Rzucanie Czarów wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Fast Casting",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Faest Caesteeng",
     }
 
 class MesmerRuneOfMajorDominationMagic(AttributeRune):
@@ -5378,17 +5438,17 @@ class MesmerRuneOfMajorDominationMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Major Domination Magic",
-        ServerLanguage.Korean: "메스머 룬(상급 지배)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de domination : bonus majeur)",
-        ServerLanguage.German: "Mesmer-Rune d. hohen Beherrschungsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia del Dominio di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de dominación de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 支配魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (メジャー ドミネーション)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Dominacji wyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Major Domination Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Maejur Dumeenaeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Major Domination Magic",
+        ServerLanguage.Korean: "{item_name}(상급 지배)",
+        ServerLanguage.French: "{item_name} (Magie de domination : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Beherrschungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Dominio di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de dominación de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 支配魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ドミネーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Dominacji wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Domination Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Dumeenaeshun Maegeec",
     }
 
 class MesmerRuneOfMajorIllusionMagic(AttributeRune):
@@ -5401,17 +5461,17 @@ class MesmerRuneOfMajorIllusionMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Major Illusion Magic",
-        ServerLanguage.Korean: "메스머 룬(상급 환상)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de l'illusion : bonus majeur)",
-        ServerLanguage.German: "Mesmer-Rune d. hohen Illusionsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia Illusoria di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de ilusión de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 幻術魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (メジャー イリュージョン)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Iluzji wyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Major Illusion Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Maejur Illooseeun Maegeec",
+        ServerLanguage.English: "{item_name} of Major Illusion Magic",
+        ServerLanguage.Korean: "{item_name}(상급 환상)",
+        ServerLanguage.French: "{item_name} (Magie de l'illusion : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Illusionsmagie",
+        ServerLanguage.Italian: "{item_name} Magia Illusoria di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de ilusión de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 幻術魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー イリュージョン)",
+        ServerLanguage.Polish: "{item_name} (Magia Iluzji wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Illusion Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Illooseeun Maegeec",
     }
 
 class MesmerRuneOfMajorInspirationMagic(AttributeRune):
@@ -5424,17 +5484,17 @@ class MesmerRuneOfMajorInspirationMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Major Inspiration Magic",
-        ServerLanguage.Korean: "메스머 룬(상급 영감)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de l'inspiration : bonus majeur)",
-        ServerLanguage.German: "Mesmer-Rune d. hohen Inspirationsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia di Ispirazione di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de inspiración de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 靈感魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (メジャー インスピレーション)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Inspiracji wyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Major Inspiration Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Maejur Inspuraeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Major Inspiration Magic",
+        ServerLanguage.Korean: "{item_name}(상급 영감)",
+        ServerLanguage.French: "{item_name} (Magie de l'inspiration : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Inspirationsmagie",
+        ServerLanguage.Italian: "{item_name} Magia di Ispirazione di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de inspiración de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 靈感魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー インスピレーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Inspiracji wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Inspiration Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Inspuraeshun Maegeec",
     }
 
 class MesmerRuneOfSuperiorFastCasting(AttributeRune):
@@ -5447,17 +5507,17 @@ class MesmerRuneOfSuperiorFastCasting(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Superior Fast Casting",
-        ServerLanguage.Korean: "메스머 룬(고급 빠른 시전)",
-        ServerLanguage.French: "Rune d'Envoûteur (Incantation rapide : bonus supérieur)",
-        ServerLanguage.German: "Mesmer-Rune d. überlegenen Schnellwirkung",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Lancio Rapido di grado supremo",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Lanzar conjuros rápido de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 快速施法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (スーペリア ファスト キャスト)",
-        ServerLanguage.Polish: "Runa Mesmera (Szybkie Rzucanie Czarów najwyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Superior Fast Casting",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Soopereeur Faest Caesteeng",
+        ServerLanguage.English: "{item_name} of Superior Fast Casting",
+        ServerLanguage.Korean: "{item_name}(고급 빠른 시전)",
+        ServerLanguage.French: "{item_name} (Incantation rapide : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Schnellwirkung",
+        ServerLanguage.Italian: "{item_name} Lancio Rapido di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Lanzar conjuros rápido de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 快速施法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ファスト キャスト)",
+        ServerLanguage.Polish: "{item_name} (Szybkie Rzucanie Czarów najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Fast Casting",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Faest Caesteeng",
     }
 
 class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
@@ -5470,17 +5530,17 @@ class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Superior Domination Magic",
-        ServerLanguage.Korean: "메스머 룬(고급 지배)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de domination : bonus supérieur)",
-        ServerLanguage.German: "Mesmer-Rune d. überlegenen Beherrschungsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia del Dominio di grado supremo",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de dominación de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 支配魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (スーペリア ドミネーション)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Dominacji najwyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Superior Domination Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Soopereeur Dumeenaeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Domination Magic",
+        ServerLanguage.Korean: "{item_name}(고급 지배)",
+        ServerLanguage.French: "{item_name} (Magie de domination : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Beherrschungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Dominio di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de dominación de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 支配魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ドミネーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Dominacji najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Domination Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Dumeenaeshun Maegeec",
     }
 
 class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
@@ -5493,17 +5553,17 @@ class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Superior Illusion Magic",
-        ServerLanguage.Korean: "메스머 룬(고급 환상)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de l'illusion : bonus supérieur)",
-        ServerLanguage.German: "Mesmer-Rune d. überlegenen Illusionsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia Illusoria di grado supremo",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de ilusión de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 幻術魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (スーペリア イリュージョン)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Iluzji najwyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Superior Illusion Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Soopereeur Illooseeun Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Illusion Magic",
+        ServerLanguage.Korean: "{item_name}(고급 환상)",
+        ServerLanguage.French: "{item_name} (Magie de l'illusion : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Illusionsmagie",
+        ServerLanguage.Italian: "{item_name} Magia Illusoria di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de ilusión de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 幻術魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア イリュージョン)",
+        ServerLanguage.Polish: "{item_name} (Magia Iluzji najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Illusion Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Illooseeun Maegeec",
     }
 
 class MesmerRuneOfSuperiorInspirationMagic(AttributeRune):
@@ -5516,17 +5576,17 @@ class MesmerRuneOfSuperiorInspirationMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Mesmer Rune of Superior Inspiration Magic",
-        ServerLanguage.Korean: "메스머 룬(고급 영감)",
-        ServerLanguage.French: "Rune d'Envoûteur (Magie de l'inspiration : bonus supérieur)",
-        ServerLanguage.German: "Mesmer-Rune d. überlegenen Inspirationsmagie",
-        ServerLanguage.Italian: "Runa dell'Ipnotizzatore Magia di Ispirazione di grado supremo",
-        ServerLanguage.Spanish: "Runa de Hipnotizador (Magia de inspiración de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 靈感魔法 幻術師符文",
-        ServerLanguage.Japanese: "メスマー ルーン (スーペリア インスピレーション)",
-        ServerLanguage.Polish: "Runa Mesmera (Magia Inspiracji najwyższego poziomu)",
-        ServerLanguage.Russian: "Mesmer Rune of Superior Inspiration Magic",
-        ServerLanguage.BorkBorkBork: "Mesmer Roone-a ooff Soopereeur Inspuraeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Inspiration Magic",
+        ServerLanguage.Korean: "{item_name}(고급 영감)",
+        ServerLanguage.French: "{item_name} (Magie de l'inspiration : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Inspirationsmagie",
+        ServerLanguage.Italian: "{item_name} Magia di Ispirazione di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de inspiración de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 靈感魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア インスピレーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Inspiracji najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Inspiration Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Inspuraeshun Maegeec",
     }
 
 class UpgradeMinorRuneMesmer(Upgrade):
@@ -5562,17 +5622,17 @@ class HydromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Hydromancer Insignia [Elementalist]",
-        ServerLanguage.Korean: "물의술사의 휘장 [엘리멘탈리스트]",
-        ServerLanguage.French: "Insigne [Elémentaliste] d'hydromancie",
-        ServerLanguage.German: "Hydromanten- [Elementarmagier]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Elementalista] da Idromante",
-        ServerLanguage.Spanish: "Insignia [Elementalista] de hidromante",
-        ServerLanguage.TraditionalChinese: "水法師 徽記 [元素使]",
-        ServerLanguage.Japanese: "ハイドロマンサー 記章 [エレメンタリスト]",
-        ServerLanguage.Polish: "[Elementalista] Symbol Hydromanty",
-        ServerLanguage.Russian: "Hydromancer Insignia [Elementalist]",
-        ServerLanguage.BorkBorkBork: "Hydrumuncer Inseegneea [Ilementaeleest]",
+        ServerLanguage.English: "Hydromancer {item_name}",
+        ServerLanguage.Korean: "물의술사의 {item_name}",
+        ServerLanguage.French: "{item_name} d'hydromancie",
+        ServerLanguage.German: "Hydromanten--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Idromante",
+        ServerLanguage.Spanish: "{item_name} de hidromante",
+        ServerLanguage.TraditionalChinese: "水法師 {item_name}",
+        ServerLanguage.Japanese: "ハイドロマンサー {item_name}",
+        ServerLanguage.Polish: "{item_name} Hydromanty",
+        ServerLanguage.Russian: "Hydromancer {item_name}",
+        ServerLanguage.BorkBorkBork: "Hydrumuncer {item_name}",
     }
 
 class GeomancerInsignia(Insignia):
@@ -5580,17 +5640,17 @@ class GeomancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Geomancer Insignia [Elementalist]",
-        ServerLanguage.Korean: "대지술사의 휘장 [엘리멘탈리스트]",
-        ServerLanguage.French: "Insigne [Elémentaliste] de géomancie",
-        ServerLanguage.German: "Geomanten- [Elementarmagier]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Elementalista] da Geomante",
-        ServerLanguage.Spanish: "Insignia [Elementalista] de geomante",
-        ServerLanguage.TraditionalChinese: "地法師 徽記 [元素使]",
-        ServerLanguage.Japanese: "ジオマンサー 記章 [エレメンタリスト]",
-        ServerLanguage.Polish: "[Elementalista] Symbol Geomanty",
-        ServerLanguage.Russian: "Geomancer Insignia [Elementalist]",
-        ServerLanguage.BorkBorkBork: "Geumuncer Inseegneea [Ilementaeleest]",
+        ServerLanguage.English: "Geomancer {item_name}",
+        ServerLanguage.Korean: "대지술사의 {item_name}",
+        ServerLanguage.French: "{item_name} de géomancie",
+        ServerLanguage.German: "Geomanten--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Geomante",
+        ServerLanguage.Spanish: "{item_name} de geomante",
+        ServerLanguage.TraditionalChinese: "地法師 {item_name}",
+        ServerLanguage.Japanese: "ジオマンサー {item_name}",
+        ServerLanguage.Polish: "{item_name} Geomanty",
+        ServerLanguage.Russian: "Geomancer {item_name}",
+        ServerLanguage.BorkBorkBork: "Geumuncer {item_name}",
     }
 
 class PyromancerInsignia(Insignia):
@@ -5598,17 +5658,17 @@ class PyromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Pyromancer Insignia [Elementalist]",
-        ServerLanguage.Korean: "화염술사의 휘장 [엘리멘탈리스트]",
-        ServerLanguage.French: "Insigne [Elémentaliste] de pyromancie",
-        ServerLanguage.German: "Pyromanten- [Elementarmagier]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Elementalista] da Piromante",
-        ServerLanguage.Spanish: "Insignia [Elementalista] de piromante",
-        ServerLanguage.TraditionalChinese: "火法師 徽記 [元素使]",
-        ServerLanguage.Japanese: "パイロマンサー 記章 [エレメンタリスト]",
-        ServerLanguage.Polish: "[Elementalista] Symbol Piromanty",
-        ServerLanguage.Russian: "Pyromancer Insignia [Elementalist]",
-        ServerLanguage.BorkBorkBork: "Pyrumuncer Inseegneea [Ilementaeleest]",
+        ServerLanguage.English: "Pyromancer {item_name}",
+        ServerLanguage.Korean: "화염술사의 {item_name}",
+        ServerLanguage.French: "{item_name} de pyromancie",
+        ServerLanguage.German: "Pyromanten--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Piromante",
+        ServerLanguage.Spanish: "{item_name} de piromante",
+        ServerLanguage.TraditionalChinese: "火法師 {item_name}",
+        ServerLanguage.Japanese: "パイロマンサー {item_name}",
+        ServerLanguage.Polish: "{item_name} Piromanty",
+        ServerLanguage.Russian: "Pyromancer {item_name}",
+        ServerLanguage.BorkBorkBork: "Pyrumuncer {item_name}",
     }
 
 class AeromancerInsignia(Insignia):
@@ -5616,17 +5676,17 @@ class AeromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Aeromancer Insignia [Elementalist]",
-        ServerLanguage.Korean: "바람술사의 휘장 [엘리멘탈리스트]",
-        ServerLanguage.French: "Insigne [Elémentaliste] d'aéromancie",
-        ServerLanguage.German: "Aeromanten- [Elementarmagier]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Elementalista] da Aeromante",
-        ServerLanguage.Spanish: "Insignia [Elementalista] de aeromante",
-        ServerLanguage.TraditionalChinese: "風法師 徽記 [元素使]",
-        ServerLanguage.Japanese: "エアロマンサー 記章 [エレメンタリスト]",
-        ServerLanguage.Polish: "[Elementalista] Symbol Aeromanty",
-        ServerLanguage.Russian: "Aeromancer Insignia [Elementalist]",
-        ServerLanguage.BorkBorkBork: "Aeerumuncer Inseegneea [Ilementaeleest]",
+        ServerLanguage.English: "Aeromancer {item_name}",
+        ServerLanguage.Korean: "바람술사의 {item_name}",
+        ServerLanguage.French: "{item_name} d'aéromancie",
+        ServerLanguage.German: "Aeromanten--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Aeromante",
+        ServerLanguage.Spanish: "{item_name} de aeromante",
+        ServerLanguage.TraditionalChinese: "風法師 {item_name}",
+        ServerLanguage.Japanese: "エアロマンサー {item_name}",
+        ServerLanguage.Polish: "{item_name} Aeromanty",
+        ServerLanguage.Russian: "Aeromancer {item_name}",
+        ServerLanguage.BorkBorkBork: "Aeerumuncer {item_name}",
     }
 
 class PrismaticInsignia(Insignia):
@@ -5634,17 +5694,17 @@ class PrismaticInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Prismatic Insignia [Elementalist]",
-        ServerLanguage.Korean: "무지갯빛 휘장 [엘리멘탈리스트]",
-        ServerLanguage.French: "Insigne [Elémentaliste] prismatique",
-        ServerLanguage.German: "Spektral- [Elementarmagier]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Elementalista] a Prisma",
-        ServerLanguage.Spanish: "Insignia [Elementalista] de prismático",
-        ServerLanguage.TraditionalChinese: "稜鏡 徽記 [元素使]",
-        ServerLanguage.Japanese: "プリズマティック 記章 [エレメンタリスト]",
-        ServerLanguage.Polish: "[Elementalista] Symbol Pryzmatu",
-        ServerLanguage.Russian: "Prismatic Insignia [Elementalist]",
-        ServerLanguage.BorkBorkBork: "Preesmaeteec Inseegneea [Ilementaeleest]",
+        ServerLanguage.English: "Prismatic {item_name}",
+        ServerLanguage.Korean: "무지갯빛 {item_name}",
+        ServerLanguage.French: "{item_name} prismatique",
+        ServerLanguage.German: "Spektral--{item_name}",
+        ServerLanguage.Italian: "{item_name} a Prisma",
+        ServerLanguage.Spanish: "{item_name} de prismático",
+        ServerLanguage.TraditionalChinese: "稜鏡 {item_name}",
+        ServerLanguage.Japanese: "プリズマティック {item_name}",
+        ServerLanguage.Polish: "{item_name} Pryzmatu",
+        ServerLanguage.Russian: "Prismatic {item_name}",
+        ServerLanguage.BorkBorkBork: "Preesmaeteec {item_name}",
     }
 
 class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
@@ -5653,17 +5713,17 @@ class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Minor Energy Storage",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(하급 에너지 축적)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Conservation d'énergie : bonus mineur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. kleineren Energiespeicherung",
-        ServerLanguage.Italian: "Runa dell'Elementalista Riserva di Energia di grado minore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Almacenamiento energía de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 能量儲存 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (マイナー ストレージ)",
-        ServerLanguage.Polish: "Runa Elementalisty (Zapas Energii niższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Minor Energy Storage",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Meenur Inergy Sturaege-a",
+        ServerLanguage.English: "{item_name} of Minor Energy Storage",
+        ServerLanguage.Korean: "{item_name}(하급 에너지 축적)",
+        ServerLanguage.French: "{item_name} (Conservation d'énergie : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Energiespeicherung",
+        ServerLanguage.Italian: "{item_name} Riserva di Energia di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Almacenamiento energía de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 能量儲存 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ストレージ)",
+        ServerLanguage.Polish: "{item_name} (Zapas Energii niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Energy Storage",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Inergy Sturaege-a",
     }
 
 class ElementalistRuneOfMinorFireMagic(AttributeRune):
@@ -5672,17 +5732,17 @@ class ElementalistRuneOfMinorFireMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Minor Fire Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(하급 불)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie du feu : bonus mineur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. kleineren Feuermagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia del Fuoco di grado minore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de fuego de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 火系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (マイナー ファイア)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Ognia niższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Minor Fire Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Meenur Fure-a Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Fire Magic",
+        ServerLanguage.Korean: "{item_name}(하급 불)",
+        ServerLanguage.French: "{item_name} (Magie du feu : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Feuermagie",
+        ServerLanguage.Italian: "{item_name} Magia del Fuoco di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de fuego de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 火系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ファイア)",
+        ServerLanguage.Polish: "{item_name} (Magia Ognia niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Fire Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Fure-a Maegeec",
     }
 
 class ElementalistRuneOfMinorAirMagic(AttributeRune):
@@ -5691,17 +5751,17 @@ class ElementalistRuneOfMinorAirMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Minor Air Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(하급 바람)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de l'air : bonus mineur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. kleineren Luftmagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia dell'Aria di grado minore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de aire de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 風系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (マイナー エアー)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Powietrza niższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Minor Air Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Meenur Aeur Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Air Magic",
+        ServerLanguage.Korean: "{item_name}(하급 바람)",
+        ServerLanguage.French: "{item_name} (Magie de l'air : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Luftmagie",
+        ServerLanguage.Italian: "{item_name} Magia dell'Aria di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de aire de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 風系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー エアー)",
+        ServerLanguage.Polish: "{item_name} (Magia Powietrza niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Air Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Aeur Maegeec",
     }
 
 class ElementalistRuneOfMinorEarthMagic(AttributeRune):
@@ -5710,17 +5770,17 @@ class ElementalistRuneOfMinorEarthMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Minor Earth Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(하급 대지)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de la terre : bonus mineur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. kleineren Erdmagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia della Terra di grado minore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de tierra de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 土系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (マイナー アース)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Ziemi niższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Minor Earth Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Meenur Iaert Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Earth Magic",
+        ServerLanguage.Korean: "{item_name}(하급 대지)",
+        ServerLanguage.French: "{item_name} (Magie de la terre : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Erdmagie",
+        ServerLanguage.Italian: "{item_name} Magia della Terra di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de tierra de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 土系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー アース)",
+        ServerLanguage.Polish: "{item_name} (Magia Ziemi niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Earth Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Iaert Maegeec",
     }
 
 class ElementalistRuneOfMinorWaterMagic(AttributeRune):
@@ -5729,17 +5789,17 @@ class ElementalistRuneOfMinorWaterMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Minor Water Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(하급 물)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de l'eau : bonus mineur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. kleineren Wassermagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia dell'Acqua di grado minore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de agua de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 水系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (マイナー ウォーター)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Wody niższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Minor Water Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Meenur Vaeter Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Water Magic",
+        ServerLanguage.Korean: "{item_name}(하급 물)",
+        ServerLanguage.French: "{item_name} (Magie de l'eau : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Wassermagie",
+        ServerLanguage.Italian: "{item_name} Magia dell'Acqua di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de agua de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 水系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ウォーター)",
+        ServerLanguage.Polish: "{item_name} (Magia Wody niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Water Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Vaeter Maegeec",
     }
 
 class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
@@ -5752,17 +5812,17 @@ class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Major Energy Storage",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(상급 에너지 축적)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Conservation d'énergie : bonus majeur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. hohen Energiespeicherung",
-        ServerLanguage.Italian: "Runa dell'Elementalista Riserva di Energia di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Almacenamiento energía de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 能量儲存 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (メジャー ストレージ)",
-        ServerLanguage.Polish: "Runa Elementalisty (Zapas Energii wyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Major Energy Storage",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Maejur Inergy Sturaege-a",
+        ServerLanguage.English: "{item_name} of Major Energy Storage",
+        ServerLanguage.Korean: "{item_name}(상급 에너지 축적)",
+        ServerLanguage.French: "{item_name} (Conservation d'énergie : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Energiespeicherung",
+        ServerLanguage.Italian: "{item_name} Riserva di Energia di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Almacenamiento energía de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 能量儲存 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ストレージ)",
+        ServerLanguage.Polish: "{item_name} (Zapas Energii wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Energy Storage",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Inergy Sturaege-a",
     }
 
 class ElementalistRuneOfMajorFireMagic(AttributeRune):
@@ -5775,17 +5835,17 @@ class ElementalistRuneOfMajorFireMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Major Fire Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(상급 불)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie du feu : bonus majeur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. hohen Feuermagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia del Fuoco di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de fuego de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 火系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (メジャー ファイア)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Ognia wyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Major Fire Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Maejur Fure-a Maegeec",
+        ServerLanguage.English: "{item_name} of Major Fire Magic",
+        ServerLanguage.Korean: "{item_name}(상급 불)",
+        ServerLanguage.French: "{item_name} (Magie du feu : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Feuermagie",
+        ServerLanguage.Italian: "{item_name} Magia del Fuoco di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de fuego de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 火系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ファイア)",
+        ServerLanguage.Polish: "{item_name} (Magia Ognia wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Fire Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Fure-a Maegeec",
     }
 
 class ElementalistRuneOfMajorAirMagic(AttributeRune):
@@ -5798,17 +5858,17 @@ class ElementalistRuneOfMajorAirMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Major Air Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(상급 바람)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de l'air : bonus majeur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. hohen Luftmagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia dell'Aria di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de aire de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 風系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (メジャー エアー)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Powietrza wyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Major Air Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Maejur Aeur Maegeec",
+        ServerLanguage.English: "{item_name} of Major Air Magic",
+        ServerLanguage.Korean: "{item_name}(상급 바람)",
+        ServerLanguage.French: "{item_name} (Magie de l'air : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Luftmagie",
+        ServerLanguage.Italian: "{item_name} Magia dell'Aria di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de aire de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 風系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー エアー)",
+        ServerLanguage.Polish: "{item_name} (Magia Powietrza wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Air Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Aeur Maegeec",
     }
 
 class ElementalistRuneOfMajorEarthMagic(AttributeRune):
@@ -5821,17 +5881,17 @@ class ElementalistRuneOfMajorEarthMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Major Earth Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(상급 대지)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de la terre : bonus majeur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. hohen Erdmagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia della Terra di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de tierra de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 土系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (メジャー アース)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Ziemi wyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Major Earth Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Maejur Iaert Maegeec",
+        ServerLanguage.English: "{item_name} of Major Earth Magic",
+        ServerLanguage.Korean: "{item_name}(상급 대지)",
+        ServerLanguage.French: "{item_name} (Magie de la terre : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Erdmagie",
+        ServerLanguage.Italian: "{item_name} Magia della Terra di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de tierra de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 土系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー アース)",
+        ServerLanguage.Polish: "{item_name} (Magia Ziemi wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Earth Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Iaert Maegeec",
     }
 
 class ElementalistRuneOfMajorWaterMagic(AttributeRune):
@@ -5844,17 +5904,17 @@ class ElementalistRuneOfMajorWaterMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Major Water Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(상급 물)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de l'eau : bonus majeur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. hohen Wassermagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia dell'Acqua di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de agua de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 水系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (メジャー ウォーター)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Wody wyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Major Water Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Maejur Vaeter Maegeec",
+        ServerLanguage.English: "{item_name} of Major Water Magic",
+        ServerLanguage.Korean: "{item_name}(상급 물)",
+        ServerLanguage.French: "{item_name} (Magie de l'eau : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Wassermagie",
+        ServerLanguage.Italian: "{item_name} Magia dell'Acqua di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de agua de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 水系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ウォーター)",
+        ServerLanguage.Polish: "{item_name} (Magia Wody wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Water Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Vaeter Maegeec",
     }
 
 class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
@@ -5867,17 +5927,17 @@ class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Superior Energy Storage",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(고급 에너지 축적)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Conservation d'énergie : bonus supérieur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. überlegenen Energiespeicherung",
-        ServerLanguage.Italian: "Runa dell'Elementalista Riserva di Energia di grado supremo",
-        ServerLanguage.Spanish: "Runa de Elementalista (Almacenamiento energía de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 能量儲存 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (スーペリア ストレージ)",
-        ServerLanguage.Polish: "Runa Elementalisty (Zapas Energii najwyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Superior Energy Storage",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Soopereeur Inergy Sturaege-a",
+        ServerLanguage.English: "{item_name} of Superior Energy Storage",
+        ServerLanguage.Korean: "{item_name}(고급 에너지 축적)",
+        ServerLanguage.French: "{item_name} (Conservation d'énergie : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Energiespeicherung",
+        ServerLanguage.Italian: "{item_name} Riserva di Energia di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Almacenamiento energía de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 能量儲存 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ストレージ)",
+        ServerLanguage.Polish: "{item_name} (Zapas Energii najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Energy Storage",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Inergy Sturaege-a",
     }
 
 class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
@@ -5890,17 +5950,17 @@ class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Superior Fire Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(고급 불)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie du feu : bonus supérieur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. überlegenen Feuermagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia del Fuoco di grado supremo",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de fuego de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 火系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (スーペリア ファイア)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Ognia najwyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Superior Fire Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Soopereeur Fure-a Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Fire Magic",
+        ServerLanguage.Korean: "{item_name}(고급 불)",
+        ServerLanguage.French: "{item_name} (Magie du feu : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Feuermagie",
+        ServerLanguage.Italian: "{item_name} Magia del Fuoco di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de fuego de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 火系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ファイア)",
+        ServerLanguage.Polish: "{item_name} (Magia Ognia najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Fire Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Fure-a Maegeec",
     }
 
 class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
@@ -5913,17 +5973,17 @@ class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Superior Air Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(고급 바람)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de l'air : bonus supérieur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. überlegenen Luftmagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia dell'Aria di grado supremo",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de aire de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 風系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (スーペリア エアー)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Powietrza najwyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Superior Air Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Soopereeur Aeur Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Air Magic",
+        ServerLanguage.Korean: "{item_name}(고급 바람)",
+        ServerLanguage.French: "{item_name} (Magie de l'air : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Luftmagie",
+        ServerLanguage.Italian: "{item_name} Magia dell'Aria di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de aire de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 風系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア エアー)",
+        ServerLanguage.Polish: "{item_name} (Magia Powietrza najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Air Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Aeur Maegeec",
     }
 
 class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
@@ -5936,17 +5996,17 @@ class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Superior Earth Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(고급 대지)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de la terre : bonus supérieur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. überlegenen Erdmagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia della Terra di grado supremo",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de tierra de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 土系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (スーペリア アース)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Ziemi najwyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Superior Earth Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Soopereeur Iaert Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Earth Magic",
+        ServerLanguage.Korean: "{item_name}(고급 대지)",
+        ServerLanguage.French: "{item_name} (Magie de la terre : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Erdmagie",
+        ServerLanguage.Italian: "{item_name} Magia della Terra di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de tierra de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 土系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア アース)",
+        ServerLanguage.Polish: "{item_name} (Magia Ziemi najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Earth Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Iaert Maegeec",
     }
 
 class ElementalistRuneOfSuperiorWaterMagic(AttributeRune):
@@ -5959,17 +6019,17 @@ class ElementalistRuneOfSuperiorWaterMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Elementalist Rune of Superior Water Magic",
-        ServerLanguage.Korean: "엘리멘탈리스트 룬(고급 물)",
-        ServerLanguage.French: "Rune d'Elémentaliste (Magie de l'eau : bonus supérieur)",
-        ServerLanguage.German: "Elementarmagier-Rune d. überlegenen Wassermagie",
-        ServerLanguage.Italian: "Runa dell'Elementalista Magia dell'Acqua di grado supremo",
-        ServerLanguage.Spanish: "Runa de Elementalista (Magia de agua de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 水系魔法 元素使符文",
-        ServerLanguage.Japanese: "エレメンタリスト ルーン (スーペリア ウォーター)",
-        ServerLanguage.Polish: "Runa Elementalisty (Magia Wody najwyższego poziomu)",
-        ServerLanguage.Russian: "Elementalist Rune of Superior Water Magic",
-        ServerLanguage.BorkBorkBork: "Ilementaeleest Roone-a ooff Soopereeur Vaeter Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Water Magic",
+        ServerLanguage.Korean: "{item_name}(고급 물)",
+        ServerLanguage.French: "{item_name} (Magie de l'eau : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Wassermagie",
+        ServerLanguage.Italian: "{item_name} Magia dell'Acqua di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de agua de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 水系魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ウォーター)",
+        ServerLanguage.Polish: "{item_name} (Magia Wody najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Water Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Vaeter Maegeec",
     }
 
 class UpgradeMinorRuneElementalist(Upgrade):
@@ -6005,17 +6065,17 @@ class VanguardsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Vanguard's Insignia [Assassin]",
-        ServerLanguage.Korean: "선봉대의 휘장 [어새신]",
-        ServerLanguage.French: "Insigne [Assassin] de l'avant-garde",
-        ServerLanguage.German: "Hauptmann- [Assassinen]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Assassino] da Avanguardia",
-        ServerLanguage.Spanish: "Insignia [Asesino] de avanzado",
-        ServerLanguage.TraditionalChinese: "前鋒 徽記 [暗殺者]",
-        ServerLanguage.Japanese: "ヴァンガード 記章 [アサシン]",
-        ServerLanguage.Polish: "[Zabójca] Symbol Awangardy",
-        ServerLanguage.Russian: "Vanguard's Insignia [Assassin]",
-        ServerLanguage.BorkBorkBork: "Fungooaerd's Inseegneea [Aessaesseen]",
+        ServerLanguage.English: "Vanguard's {item_name}",
+        ServerLanguage.Korean: "선봉대의 {item_name}",
+        ServerLanguage.French: "{item_name} de l'avant-garde",
+        ServerLanguage.German: "Hauptmann--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Avanguardia",
+        ServerLanguage.Spanish: "{item_name} de avanzado",
+        ServerLanguage.TraditionalChinese: "前鋒 {item_name}",
+        ServerLanguage.Japanese: "ヴァンガード {item_name}",
+        ServerLanguage.Polish: "{item_name} Awangardy",
+        ServerLanguage.Russian: "Vanguard's {item_name}",
+        ServerLanguage.BorkBorkBork: "Fungooaerd's {item_name}",
     }
 
 class InfiltratorsInsignia(Insignia):
@@ -6023,17 +6083,17 @@ class InfiltratorsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Infiltrator's Insignia [Assassin]",
-        ServerLanguage.Korean: "침입자의 휘장 [어새신]",
-        ServerLanguage.French: "Insigne [Assassin] de l'infiltré",
-        ServerLanguage.German: "Eindringlings- [Assassinen]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Assassino] da Spia",
-        ServerLanguage.Spanish: "Insignia [Asesino] de infiltrado",
-        ServerLanguage.TraditionalChinese: "滲透者 徽記 [暗殺者]",
-        ServerLanguage.Japanese: "インフィルトレイター 記章 [アサシン]",
-        ServerLanguage.Polish: "[Zabójca] Symbol Infiltratora",
-        ServerLanguage.Russian: "Infiltrator's Insignia [Assassin]",
-        ServerLanguage.BorkBorkBork: "Inffeeltraetur's Inseegneea [Aessaesseen]",
+        ServerLanguage.English: "Infiltrator's {item_name}",
+        ServerLanguage.Korean: "침입자의 {item_name}",
+        ServerLanguage.French: "{item_name} de l'infiltré",
+        ServerLanguage.German: "Eindringlings--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Spia",
+        ServerLanguage.Spanish: "{item_name} de infiltrado",
+        ServerLanguage.TraditionalChinese: "滲透者 {item_name}",
+        ServerLanguage.Japanese: "インフィルトレイター {item_name}",
+        ServerLanguage.Polish: "{item_name} Infiltratora",
+        ServerLanguage.Russian: "Infiltrator's {item_name}",
+        ServerLanguage.BorkBorkBork: "Inffeeltraetur's {item_name}",
     }
 
 class SaboteursInsignia(Insignia):
@@ -6041,17 +6101,17 @@ class SaboteursInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Saboteur's Insignia [Assassin]",
-        ServerLanguage.Korean: "파괴자의 휘장 [어새신]",
-        ServerLanguage.French: "Insigne [Assassin] de saboteur",
-        ServerLanguage.German: "Saboteur- [Assassinen]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Assassino] da Sabotatore",
-        ServerLanguage.Spanish: "Insignia [Asesino] de saboteador",
-        ServerLanguage.TraditionalChinese: "破壞者 徽記 [暗殺者]",
-        ServerLanguage.Japanese: "サボター 記章 [アサシン]",
-        ServerLanguage.Polish: "[Zabójca] Symbol Sabotażysty",
-        ServerLanguage.Russian: "Saboteur's Insignia [Assassin]",
-        ServerLanguage.BorkBorkBork: "Saebuteoor's Inseegneea [Aessaesseen]",
+        ServerLanguage.English: "Saboteur's {item_name}",
+        ServerLanguage.Korean: "파괴자의 {item_name}",
+        ServerLanguage.French: "{item_name} de saboteur",
+        ServerLanguage.German: "Saboteur--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Sabotatore",
+        ServerLanguage.Spanish: "{item_name} de saboteador",
+        ServerLanguage.TraditionalChinese: "破壞者 {item_name}",
+        ServerLanguage.Japanese: "サボター {item_name}",
+        ServerLanguage.Polish: "{item_name} Sabotażysty",
+        ServerLanguage.Russian: "Saboteur's {item_name}",
+        ServerLanguage.BorkBorkBork: "Saebuteoor's {item_name}",
     }
 
 class NightstalkersInsignia(Insignia):
@@ -6059,17 +6119,17 @@ class NightstalkersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Nightstalker's Insignia [Assassin]",
-        ServerLanguage.Korean: "밤추종자의 휘장 [어새신]",
-        ServerLanguage.French: "Insigne [Assassin] de traqueur nocturne",
-        ServerLanguage.German: "Nachtpirscher- [Assassinen]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Assassino] da Inseguitore Notturno",
-        ServerLanguage.Spanish: "Insignia [Asesino] de acechador nocturno",
-        ServerLanguage.TraditionalChinese: "夜行者 徽記 [暗殺者]",
-        ServerLanguage.Japanese: "ナイトストーカー 記章 [アサシン]",
-        ServerLanguage.Polish: "[Zabójca] Symbol Nocnego Tropiciela",
-        ServerLanguage.Russian: "Nightstalker's Insignia [Assassin]",
-        ServerLanguage.BorkBorkBork: "Neeghtstaelker's Inseegneea [Aessaesseen]",
+        ServerLanguage.English: "Nightstalker's {item_name}",
+        ServerLanguage.Korean: "밤추종자의 {item_name}",
+        ServerLanguage.French: "{item_name} de traqueur nocturne",
+        ServerLanguage.German: "Nachtpirscher--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Inseguitore Notturno",
+        ServerLanguage.Spanish: "{item_name} de acechador nocturno",
+        ServerLanguage.TraditionalChinese: "夜行者 {item_name}",
+        ServerLanguage.Japanese: "ナイトストーカー {item_name}",
+        ServerLanguage.Polish: "{item_name} Nocnego Tropiciela",
+        ServerLanguage.Russian: "Nightstalker's {item_name}",
+        ServerLanguage.BorkBorkBork: "Neeghtstaelker's {item_name}",
     }
 
 class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
@@ -6078,17 +6138,17 @@ class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Minor Critical Strikes",
-        ServerLanguage.Korean: "어새신 룬(하급 치명타)",
-        ServerLanguage.French: "Rune d'Assassin (Attaques critiques : bonus mineur)",
-        ServerLanguage.German: "Assassinen-Rune d. kleineren Kritische Stöße",
-        ServerLanguage.Italian: "Runa dell'Assassino Colpi Critici di grado minore",
-        ServerLanguage.Spanish: "Runa de Asesino (Impactos críticos de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 致命攻擊 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (マイナー クリティカル ストライク)",
-        ServerLanguage.Polish: "Runa Zabójcy (Trafienia Krytyczne niższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Minor Critical Strikes",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Meenur Creeteecael Streekes",
+        ServerLanguage.English: "{item_name} of Minor Critical Strikes",
+        ServerLanguage.Korean: "{item_name}(하급 치명타)",
+        ServerLanguage.French: "{item_name} d'(Attaques critiques : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Kritische Stöße",
+        ServerLanguage.Italian: "{item_name} Colpi Critici di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Impactos críticos de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 致命攻擊 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー クリティカル ストライク)",
+        ServerLanguage.Polish: "{item_name} (Trafienia Krytyczne niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Critical Strikes",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Creeteecael Streekes",
     }
 
 class AssassinRuneOfMinorDaggerMastery(AttributeRune):
@@ -6097,17 +6157,17 @@ class AssassinRuneOfMinorDaggerMastery(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Minor Dagger Mastery",
-        ServerLanguage.Korean: "어새신 룬(하급 단검술)",
-        ServerLanguage.French: "Rune d'Assassin (Maîtrise de la dague : bonus mineur)",
-        ServerLanguage.German: "Assassinen-Rune d. kleineren Dolchbeherrschung",
-        ServerLanguage.Italian: "Runa dell'Assassino Abilità con il Pugnale di grado minore",
-        ServerLanguage.Spanish: "Runa de Asesino (Dominio de la daga de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 匕首精通 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (マイナー ダガー マスタリー)",
-        ServerLanguage.Polish: "Runa Zabójcy (Biegłość w Sztyletach niższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Minor Dagger Mastery",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Meenur Daegger Maestery",
+        ServerLanguage.English: "{item_name} of Minor Dagger Mastery",
+        ServerLanguage.Korean: "{item_name}(하급 단검술)",
+        ServerLanguage.French: "{item_name} d'(Maîtrise de la dague : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Dolchbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con il Pugnale di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la daga de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 匕首精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ダガー マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość w Sztyletach niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Dagger Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Daegger Maestery",
     }
 
 class AssassinRuneOfMinorDeadlyArts(AttributeRune):
@@ -6116,17 +6176,17 @@ class AssassinRuneOfMinorDeadlyArts(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Minor Deadly Arts",
-        ServerLanguage.Korean: "어새신 룬(하급 죽음의 기예)",
-        ServerLanguage.French: "Rune d'Assassin (Arts létaux : bonus mineur)",
-        ServerLanguage.German: "Assassinen-Rune d. kleineren Tödliche Künste",
-        ServerLanguage.Italian: "Runa dell'Assassino Arti Letali di grado minore",
-        ServerLanguage.Spanish: "Runa de Asesino (Artes mortales de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 暗殺技巧 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (マイナー デッドリー アーツ)",
-        ServerLanguage.Polish: "Runa Zabójcy (Sztuka Śmierci niższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Minor Deadly Arts",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Meenur Deaedly Aerts",
+        ServerLanguage.English: "{item_name} of Minor Deadly Arts",
+        ServerLanguage.Korean: "{item_name}(하급 죽음의 기예)",
+        ServerLanguage.French: "{item_name} d'(Arts létaux : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Tödliche Künste",
+        ServerLanguage.Italian: "{item_name} Arti Letali di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Artes mortales de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 暗殺技巧 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー デッドリー アーツ)",
+        ServerLanguage.Polish: "{item_name} (Sztuka Śmierci niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Deadly Arts",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Deaedly Aerts",
     }
 
 class AssassinRuneOfMinorShadowArts(AttributeRune):
@@ -6135,17 +6195,17 @@ class AssassinRuneOfMinorShadowArts(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Minor Shadow Arts",
-        ServerLanguage.Korean: "어새신 룬(하급 그림자 기예)",
-        ServerLanguage.French: "Rune d'Assassin (Arts des ombres : bonus mineur)",
-        ServerLanguage.German: "Assassinen-Rune d. kleineren Schattenkünste",
-        ServerLanguage.Italian: "Runa dell'Assassino Arti dell'Ombra di grado minore",
-        ServerLanguage.Spanish: "Runa de Asesino (Artes sombrías de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 暗影技巧 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (マイナー シャドウ アーツ)",
-        ServerLanguage.Polish: "Runa Zabójcy (Sztuka Cienia niższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Minor Shadow Arts",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Meenur Shaedoo Aerts",
+        ServerLanguage.English: "{item_name} of Minor Shadow Arts",
+        ServerLanguage.Korean: "{item_name}(하급 그림자 기예)",
+        ServerLanguage.French: "{item_name} d'(Arts des ombres : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Schattenkünste",
+        ServerLanguage.Italian: "{item_name} Arti dell'Ombra di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Artes sombrías de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 暗影技巧 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー シャドウ アーツ)",
+        ServerLanguage.Polish: "{item_name} (Sztuka Cienia niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Shadow Arts",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Shaedoo Aerts",
     }
 
 class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
@@ -6158,17 +6218,17 @@ class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Major Critical Strikes",
-        ServerLanguage.Korean: "어새신 룬(상급 치명타)",
-        ServerLanguage.French: "Rune d'Assassin (Attaques critiques : bonus majeur)",
-        ServerLanguage.German: "Assassinen-Rune d. hohen Kritische Stöße",
-        ServerLanguage.Italian: "Runa dell'Assassino Colpi Critici di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Asesino (Impactos críticos de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 致命攻擊 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (メジャー クリティカル ストライク)",
-        ServerLanguage.Polish: "Runa Zabójcy (Trafienia Krytyczne wyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Major Critical Strikes",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Maejur Creeteecael Streekes",
+        ServerLanguage.English: "{item_name} of Major Critical Strikes",
+        ServerLanguage.Korean: "{item_name}(상급 치명타)",
+        ServerLanguage.French: "{item_name} d'(Attaques critiques : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Kritische Stöße",
+        ServerLanguage.Italian: "{item_name} Colpi Critici di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Impactos críticos de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 致命攻擊 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー クリティカル ストライク)",
+        ServerLanguage.Polish: "{item_name} (Trafienia Krytyczne wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Critical Strikes",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Creeteecael Streekes",
     }
 
 class AssassinRuneOfMajorDaggerMastery(AttributeRune):
@@ -6181,17 +6241,17 @@ class AssassinRuneOfMajorDaggerMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Major Dagger Mastery",
-        ServerLanguage.Korean: "어새신 룬(상급 단검술)",
-        ServerLanguage.French: "Rune d'Assassin (Maîtrise de la dague : bonus majeur)",
-        ServerLanguage.German: "Assassinen-Rune d. hohen Dolchbeherrschung",
-        ServerLanguage.Italian: "Runa dell'Assassino Abilità con il Pugnale di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Asesino (Dominio de la daga de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 匕首精通 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (メジャー ダガー マスタリー)",
-        ServerLanguage.Polish: "Runa Zabójcy (Biegłość w Sztyletach wyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Major Dagger Mastery",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Maejur Daegger Maestery",
+        ServerLanguage.English: "{item_name} of Major Dagger Mastery",
+        ServerLanguage.Korean: "{item_name}(상급 단검술)",
+        ServerLanguage.French: "{item_name} d'(Maîtrise de la dague : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Dolchbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con il Pugnale di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la daga de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 匕首精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ダガー マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość w Sztyletach wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Dagger Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Daegger Maestery",
     }
 
 class AssassinRuneOfMajorDeadlyArts(AttributeRune):
@@ -6204,17 +6264,17 @@ class AssassinRuneOfMajorDeadlyArts(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Major Deadly Arts",
-        ServerLanguage.Korean: "어새신 룬(상급 죽음의 기예)",
-        ServerLanguage.French: "Rune d'Assassin (Arts létaux : bonus majeur)",
-        ServerLanguage.German: "Assassinen-Rune d. hohen Tödliche Künste",
-        ServerLanguage.Italian: "Runa dell'Assassino Arti Letali di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Asesino (Artes mortales de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 暗殺技巧 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (メジャー デッドリー アーツ)",
-        ServerLanguage.Polish: "Runa Zabójcy (Sztuka Śmierci wyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Major Deadly Arts",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Maejur Deaedly Aerts",
+        ServerLanguage.English: "{item_name} of Major Deadly Arts",
+        ServerLanguage.Korean: "{item_name}(상급 죽음의 기예)",
+        ServerLanguage.French: "{item_name} d'(Arts létaux : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Tödliche Künste",
+        ServerLanguage.Italian: "{item_name} Arti Letali di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Artes mortales de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 暗殺技巧 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー デッドリー アーツ)",
+        ServerLanguage.Polish: "{item_name} (Sztuka Śmierci wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Deadly Arts",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Deaedly Aerts",
     }
 
 class AssassinRuneOfMajorShadowArts(AttributeRune):
@@ -6227,17 +6287,17 @@ class AssassinRuneOfMajorShadowArts(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Major Shadow Arts",
-        ServerLanguage.Korean: "어새신 룬(상급 그림자 기예)",
-        ServerLanguage.French: "Rune d'Assassin (Arts des ombres : bonus majeur)",
-        ServerLanguage.German: "Assassinen-Rune d. hohen Schattenkünste",
-        ServerLanguage.Italian: "Runa dell'Assassino Arti dell'Ombra di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Asesino (Artes sombrías de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 暗影技巧 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (メジャー シャドウ アーツ)",
-        ServerLanguage.Polish: "Runa Zabójcy (Sztuka Cienia wyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Major Shadow Arts",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Maejur Shaedoo Aerts",
+        ServerLanguage.English: "{item_name} of Major Shadow Arts",
+        ServerLanguage.Korean: "{item_name}(상급 그림자 기예)",
+        ServerLanguage.French: "{item_name} d'(Arts des ombres : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Schattenkünste",
+        ServerLanguage.Italian: "{item_name} Arti dell'Ombra di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Artes sombrías de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 暗影技巧 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー シャドウ アーツ)",
+        ServerLanguage.Polish: "{item_name} (Sztuka Cienia wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Shadow Arts",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Shaedoo Aerts",
     }
 
 class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
@@ -6250,17 +6310,17 @@ class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Superior Critical Strikes",
-        ServerLanguage.Korean: "어새신 룬(고급 치명타)",
-        ServerLanguage.French: "Rune d'Assassin (Attaques critiques : bonus supérieur)",
-        ServerLanguage.German: "Assassinen-Rune d. überlegenen Kritische Stöße",
-        ServerLanguage.Italian: "Runa dell'Assassino Colpi Critici di grado supremo",
-        ServerLanguage.Spanish: "Runa de Asesino (Impactos críticos de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 致命攻擊 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (スーペリア クリティカル ストライク)",
-        ServerLanguage.Polish: "Runa Zabójcy (Trafienia Krytyczne najwyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Superior Critical Strikes",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Soopereeur Creeteecael Streekes",
+        ServerLanguage.English: "{item_name} of Superior Critical Strikes",
+        ServerLanguage.Korean: "{item_name}(고급 치명타)",
+        ServerLanguage.French: "{item_name} d'(Attaques critiques : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Kritische Stöße",
+        ServerLanguage.Italian: "{item_name} Colpi Critici di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Impactos críticos de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 致命攻擊 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア クリティカル ストライク)",
+        ServerLanguage.Polish: "{item_name} (Trafienia Krytyczne najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Critical Strikes",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Creeteecael Streekes",
     }
 
 class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
@@ -6273,17 +6333,17 @@ class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Superior Dagger Mastery",
-        ServerLanguage.Korean: "어새신 룬(고급 단검술)",
-        ServerLanguage.French: "Rune d'Assassin (Maîtrise de la dague : bonus supérieur)",
-        ServerLanguage.German: "Assassinen-Rune d. überlegenen Dolchbeherrschung",
-        ServerLanguage.Italian: "Runa dell'Assassino Abilità con il Pugnale di grado supremo",
-        ServerLanguage.Spanish: "Runa de Asesino (Dominio de la daga de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 匕首精通 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (スーペリア ダガー マスタリー)",
-        ServerLanguage.Polish: "Runa Zabójcy (Biegłość w Sztyletach najwyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Superior Dagger Mastery",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Soopereeur Daegger Maestery",
+        ServerLanguage.English: "{item_name} of Superior Dagger Mastery",
+        ServerLanguage.Korean: "{item_name}(고급 단검술)",
+        ServerLanguage.French: "{item_name} d'(Maîtrise de la dague : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Dolchbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con il Pugnale di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la daga de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 匕首精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ダガー マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość w Sztyletach najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Dagger Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Daegger Maestery",
     }
 
 class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
@@ -6296,17 +6356,17 @@ class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Superior Deadly Arts",
-        ServerLanguage.Korean: "어새신 룬(고급 죽음의 기예)",
-        ServerLanguage.French: "Rune d'Assassin (Arts létaux : bonus supérieur)",
-        ServerLanguage.German: "Assassinen-Rune d. überlegenen Tödliche Künste",
-        ServerLanguage.Italian: "Runa dell'Assassino Arti Letali di grado supremo",
-        ServerLanguage.Spanish: "Runa de Asesino (Artes mortales de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 暗殺技巧 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (スーペリア デッドリー アーツ)",
-        ServerLanguage.Polish: "Runa Zabójcy (Sztuka Śmierci najwyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Superior Deadly Arts",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Soopereeur Deaedly Aerts",
+        ServerLanguage.English: "{item_name} of Superior Deadly Arts",
+        ServerLanguage.Korean: "{item_name}(고급 죽음의 기예)",
+        ServerLanguage.French: "{item_name} d'(Arts létaux : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Tödliche Künste",
+        ServerLanguage.Italian: "{item_name} Arti Letali di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Artes mortales de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 暗殺技巧 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア デッドリー アーツ)",
+        ServerLanguage.Polish: "{item_name} (Sztuka Śmierci najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Deadly Arts",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Deaedly Aerts",
     }
 
 class AssassinRuneOfSuperiorShadowArts(AttributeRune):
@@ -6319,17 +6379,17 @@ class AssassinRuneOfSuperiorShadowArts(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Assassin Rune of Superior Shadow Arts",
-        ServerLanguage.Korean: "어새신 룬(고급 그림자 기예)",
-        ServerLanguage.French: "Rune d'Assassin (Arts des ombres : bonus supérieur)",
-        ServerLanguage.German: "Assassinen-Rune d. überlegenen Schattenkünste",
-        ServerLanguage.Italian: "Runa dell'Assassino Arti dell'Ombra di grado supremo",
-        ServerLanguage.Spanish: "Runa de Asesino (Artes sombrías de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 暗影技巧 暗殺者符文",
-        ServerLanguage.Japanese: "アサシン ルーン (スーペリア シャドウ アーツ)",
-        ServerLanguage.Polish: "Runa Zabójcy (Sztuka Cienia najwyższego poziomu)",
-        ServerLanguage.Russian: "Assassin Rune of Superior Shadow Arts",
-        ServerLanguage.BorkBorkBork: "Aessaesseen Roone-a ooff Soopereeur Shaedoo Aerts",
+        ServerLanguage.English: "{item_name} of Superior Shadow Arts",
+        ServerLanguage.Korean: "{item_name}(고급 그림자 기예)",
+        ServerLanguage.French: "{item_name} d'(Arts des ombres : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Schattenkünste",
+        ServerLanguage.Italian: "{item_name} Arti dell'Ombra di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Artes sombrías de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 暗影技巧 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア シャドウ アーツ)",
+        ServerLanguage.Polish: "{item_name} (Sztuka Cienia najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Shadow Arts",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Shaedoo Aerts",
     }
 
 class UpgradeMinorRuneAssassin(Upgrade):
@@ -6365,17 +6425,17 @@ class ShamansInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Shaman's Insignia [Ritualist]",
-        ServerLanguage.Korean: "주술사의 휘장 [리추얼리스트]",
-        ServerLanguage.French: "Insigne [Ritualiste] de chaman",
-        ServerLanguage.German: "Schamanen- [Ritualisten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Ritualista] da Sciamano",
-        ServerLanguage.Spanish: "Insignia [Ritualista] de chamán",
-        ServerLanguage.TraditionalChinese: "巫醫 徽記 [祭祀者]",
-        ServerLanguage.Japanese: "シャーマン 記章 [リチュアリスト]",
-        ServerLanguage.Polish: "[Rytualista] Symbol Szamana",
-        ServerLanguage.Russian: "Shaman's Insignia [Ritualist]",
-        ServerLanguage.BorkBorkBork: "Shaemun's Inseegneea [Reetooaeleest]",
+        ServerLanguage.English: "Shaman's {item_name}",
+        ServerLanguage.Korean: "주술사의 {item_name}",
+        ServerLanguage.French: "{item_name} de chaman",
+        ServerLanguage.German: "Schamanen--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Sciamano",
+        ServerLanguage.Spanish: "{item_name} de chamán",
+        ServerLanguage.TraditionalChinese: "巫醫 {item_name}",
+        ServerLanguage.Japanese: "シャーマン {item_name}",
+        ServerLanguage.Polish: "{item_name} Szamana",
+        ServerLanguage.Russian: "Shaman's {item_name}",
+        ServerLanguage.BorkBorkBork: "Shaemun's {item_name}",
     }
 
 class GhostForgeInsignia(Insignia):
@@ -6383,17 +6443,17 @@ class GhostForgeInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Ghost Forge Insignia [Ritualist]",
-        ServerLanguage.Korean: "유령화로의 휘장 [리추얼리스트]",
-        ServerLanguage.French: "Insigne [Ritualiste] de la forge du fantôme",
-        ServerLanguage.German: "Geisterschmiede- [Ritualisten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Ritualista] della Fucina Spettrale",
-        ServerLanguage.Spanish: "Insignia [Ritualista] de fragua fantasma",
-        ServerLanguage.TraditionalChinese: "魂鎔 徽記 [祭祀者]",
-        ServerLanguage.Japanese: "ゴースト フォージ 記章 [リチュアリスト]",
-        ServerLanguage.Polish: "[Rytualista] Symbol Kuźni Duchów",
-        ServerLanguage.Russian: "Ghost Forge Insignia [Ritualist]",
-        ServerLanguage.BorkBorkBork: "Ghust Furge-a Inseegneea [Reetooaeleest]",
+        ServerLanguage.English: "Ghost Forge {item_name}",
+        ServerLanguage.Korean: "유령화로의 {item_name}",
+        ServerLanguage.French: "{item_name} de la forge du fantôme",
+        ServerLanguage.German: "Geisterschmiede--{item_name}",
+        ServerLanguage.Italian: "{item_name} della Fucina Spettrale",
+        ServerLanguage.Spanish: "{item_name} de fragua fantasma",
+        ServerLanguage.TraditionalChinese: "魂鎔 {item_name}",
+        ServerLanguage.Japanese: "ゴースト フォージ {item_name}",
+        ServerLanguage.Polish: "{item_name} Kuźni Duchów",
+        ServerLanguage.Russian: "Ghost Forge {item_name}",
+        ServerLanguage.BorkBorkBork: "Ghust Furge-a {item_name}",
     }
 
 class MysticsInsignia(Insignia):
@@ -6401,17 +6461,17 @@ class MysticsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Mystic's Insignia [Ritualist]",
-        ServerLanguage.Korean: "신비술사의 휘장 [리추얼리스트]",
-        ServerLanguage.French: "Insigne [Ritualiste] mystique",
-        ServerLanguage.German: "Mystiker- [Ritualisten]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Ritualista] del Misticismo",
-        ServerLanguage.Spanish: "Insignia [Ritualista] de místico",
-        ServerLanguage.TraditionalChinese: "祕法 徽記 [祭祀者]",
-        ServerLanguage.Japanese: "ミスティック 記章 [リチュアリスト]",
-        ServerLanguage.Polish: "[Rytualista] Symbol Mistyka",
-        ServerLanguage.Russian: "Mystic's Insignia [Ritualist]",
-        ServerLanguage.BorkBorkBork: "Mysteec's Inseegneea [Reetooaeleest]",
+        ServerLanguage.English: "Mystic's {item_name}",
+        ServerLanguage.Korean: "신비술사의 {item_name}",
+        ServerLanguage.French: "{item_name} mystique",
+        ServerLanguage.German: "Mystiker--{item_name}",
+        ServerLanguage.Italian: "{item_name} del Misticismo",
+        ServerLanguage.Spanish: "{item_name} de místico",
+        ServerLanguage.TraditionalChinese: "祕法 {item_name}",
+        ServerLanguage.Japanese: "ミスティック {item_name}",
+        ServerLanguage.Polish: "{item_name} Mistyka",
+        ServerLanguage.Russian: "Mystic's {item_name}",
+        ServerLanguage.BorkBorkBork: "Mysteec's {item_name}",
     }
 
 class RitualistRuneOfMinorChannelingMagic(AttributeRune):
@@ -6420,17 +6480,17 @@ class RitualistRuneOfMinorChannelingMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Minor Channeling Magic",
-        ServerLanguage.Korean: "리추얼리스트 룬(하급 마력 증폭)",
-        ServerLanguage.French: "Rune du Ritualiste (Magie de la canalisation : bonus mineur)",
-        ServerLanguage.German: "Ritualisten-Rune d. kleineren Kanalisierungsmagie",
-        ServerLanguage.Italian: "Runa del Ritualista Magia di Incanalamento di grado minore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Magia de canalización de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 導引魔法 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (マイナー チャネリング)",
-        ServerLanguage.Polish: "Runa Rytualisty (Magia Połączeń niższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Minor Channeling Magic",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Meenur Chunneleeng Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Channeling Magic",
+        ServerLanguage.Korean: "{item_name}(하급 마력 증폭)",
+        ServerLanguage.French: "{item_name} (Magie de la canalisation : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Kanalisierungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia di Incanalamento di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de canalización de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 導引魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー チャネリング)",
+        ServerLanguage.Polish: "{item_name} (Magia Połączeń niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Channeling Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Chunneleeng Maegeec",
     }
 
 class RitualistRuneOfMinorRestorationMagic(AttributeRune):
@@ -6439,17 +6499,17 @@ class RitualistRuneOfMinorRestorationMagic(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Minor Restoration Magic",
-        ServerLanguage.Korean: "리추얼리스트 룬(하급 마력 회복)",
-        ServerLanguage.French: "Rune du Ritualiste (Magie de restauration : bonus mineur)",
-        ServerLanguage.German: "Ritualisten-Rune d. kleineren Wiederherstellungsmagie",
-        ServerLanguage.Italian: "Runa del Ritualista Magia del Ripristino di grado minore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Magia de restauración de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 復原魔法 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (マイナー レストレーション)",
-        ServerLanguage.Polish: "Runa Rytualisty (Magia Odnowy niższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Minor Restoration Magic",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Meenur Resturaeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Minor Restoration Magic",
+        ServerLanguage.Korean: "{item_name}(하급 마력 회복)",
+        ServerLanguage.French: "{item_name} (Magie de restauration : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Wiederherstellungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Ripristino di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Magia de restauración de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 復原魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー レストレーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Odnowy niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Restoration Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Resturaeshun Maegeec",
     }
 
 class RitualistRuneOfMinorCommuning(AttributeRune):
@@ -6458,17 +6518,17 @@ class RitualistRuneOfMinorCommuning(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Minor Communing",
-        ServerLanguage.Korean: "리추얼리스트 룬(하급 교감)",
-        ServerLanguage.French: "Rune du Ritualiste (Communion : bonus mineur)",
-        ServerLanguage.German: "Ritualisten-Rune d. kleineren Zwiesprache",
-        ServerLanguage.Italian: "Runa del Ritualista Raccoglimento di grado minore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Comunión de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 神諭 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (マイナー コミューン)",
-        ServerLanguage.Polish: "Runa Rytualisty (Zjednoczenie niższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Minor Communing",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Meenur Cummooneeng",
+        ServerLanguage.English: "{item_name} of Minor Communing",
+        ServerLanguage.Korean: "{item_name}(하급 교감)",
+        ServerLanguage.French: "{item_name} (Communion : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Zwiesprache",
+        ServerLanguage.Italian: "{item_name} Raccoglimento di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Comunión de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 神諭 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー コミューン)",
+        ServerLanguage.Polish: "{item_name} (Zjednoczenie niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Communing",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Cummooneeng",
     }
 
 class RitualistRuneOfMinorSpawningPower(AttributeRune):
@@ -6477,17 +6537,17 @@ class RitualistRuneOfMinorSpawningPower(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Minor Spawning Power",
-        ServerLanguage.Korean: "리추얼리스트 룬(하급 생성)",
-        ServerLanguage.French: "Rune du Ritualiste (Puissance de l'Invocation : bonus mineur)",
-        ServerLanguage.German: "Ritualisten-Rune d. kleineren Macht des Herbeirufens",
-        ServerLanguage.Italian: "Runa del Ritualista Riti Sacrificali di grado minore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Engendramiento de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 召喚 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (マイナー スポーン パワー)",
-        ServerLanguage.Polish: "Runa Rytualisty (Moc Przywoływania niższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Minor Spawning Power",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Meenur Spaevneeng Pooer",
+        ServerLanguage.English: "{item_name} of Minor Spawning Power",
+        ServerLanguage.Korean: "{item_name}(하급 생성)",
+        ServerLanguage.French: "{item_name} (Puissance de l'Invocation : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Macht des Herbeirufens",
+        ServerLanguage.Italian: "{item_name} Riti Sacrificali di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Engendramiento de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 召喚 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー スポーン パワー)",
+        ServerLanguage.Polish: "{item_name} (Moc Przywoływania niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Spawning Power",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Spaevneeng Pooer",
     }
 
 class RitualistRuneOfMajorChannelingMagic(AttributeRune):
@@ -6500,17 +6560,17 @@ class RitualistRuneOfMajorChannelingMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Major Channeling Magic",
-        ServerLanguage.Korean: "리추얼리스트 룬(상급 마력 증폭)",
-        ServerLanguage.French: "Rune du Ritualiste (Magie de la canalisation : bonus majeur)",
-        ServerLanguage.German: "Ritualisten-Rune d. hohen Kanalisierungsmagie",
-        ServerLanguage.Italian: "Runa del Ritualista Magia di Incanalamento di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Magia de canalización de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 導引魔法 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (メジャー チャネリング)",
-        ServerLanguage.Polish: "Runa Rytualisty (Magia Połączeń wyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Major Channeling Magic",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Maejur Chunneleeng Maegeec",
+        ServerLanguage.English: "{item_name} of Major Channeling Magic",
+        ServerLanguage.Korean: "{item_name}(상급 마력 증폭)",
+        ServerLanguage.French: "{item_name} (Magie de la canalisation : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Kanalisierungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia di Incanalamento di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de canalización de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 導引魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー チャネリング)",
+        ServerLanguage.Polish: "{item_name} (Magia Połączeń wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Channeling Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Chunneleeng Maegeec",
     }
 
 class RitualistRuneOfMajorRestorationMagic(AttributeRune):
@@ -6523,17 +6583,17 @@ class RitualistRuneOfMajorRestorationMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Major Restoration Magic",
-        ServerLanguage.Korean: "리추얼리스트 룬(상급 마력 회복)",
-        ServerLanguage.French: "Rune du Ritualiste (Magie de restauration : bonus majeur)",
-        ServerLanguage.German: "Ritualisten-Rune d. hohen Wiederherstellungsmagie",
-        ServerLanguage.Italian: "Runa del Ritualista Magia del Ripristino di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Magia de restauración de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 復原魔法 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (メジャー レストレーション)",
-        ServerLanguage.Polish: "Runa Rytualisty (Magia Odnowy wyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Major Restoration Magic",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Maejur Resturaeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Major Restoration Magic",
+        ServerLanguage.Korean: "{item_name}(상급 마력 회복)",
+        ServerLanguage.French: "{item_name} (Magie de restauration : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Wiederherstellungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Ripristino di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Magia de restauración de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 復原魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー レストレーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Odnowy wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Restoration Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Resturaeshun Maegeec",
     }
 
 class RitualistRuneOfMajorCommuning(AttributeRune):
@@ -6546,17 +6606,17 @@ class RitualistRuneOfMajorCommuning(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Major Communing",
-        ServerLanguage.Korean: "리추얼리스트 룬(상급 교감)",
-        ServerLanguage.French: "Rune du Ritualiste (Communion : bonus majeur)",
-        ServerLanguage.German: "Ritualisten-Rune d. hohen Zwiesprache",
-        ServerLanguage.Italian: "Runa del Ritualista Raccoglimento di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Comunión de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 神諭 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (メジャー コミューン)",
-        ServerLanguage.Polish: "Runa Rytualisty (Zjednoczenie wyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Major Communing",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Maejur Cummooneeng",
+        ServerLanguage.English: "{item_name} of Major Communing",
+        ServerLanguage.Korean: "{item_name}(상급 교감)",
+        ServerLanguage.French: "{item_name} (Communion : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Zwiesprache",
+        ServerLanguage.Italian: "{item_name} Raccoglimento di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Comunión de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 神諭 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー コミューン)",
+        ServerLanguage.Polish: "{item_name} (Zjednoczenie wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Communing",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Cummooneeng",
     }
 
 class RitualistRuneOfMajorSpawningPower(AttributeRune):
@@ -6569,17 +6629,17 @@ class RitualistRuneOfMajorSpawningPower(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Major Spawning Power",
-        ServerLanguage.Korean: "리추얼리스트 룬(상급 생성)",
-        ServerLanguage.French: "Rune du Ritualiste (Puissance de l'Invocation : bonus majeur)",
-        ServerLanguage.German: "Ritualisten-Rune d. hohen Macht des Herbeirufens",
-        ServerLanguage.Italian: "Runa del Ritualista Riti Sacrificali di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Ritualista (Engendramiento de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 召喚 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (メジャー スポーン パワー)",
-        ServerLanguage.Polish: "Runa Rytualisty (Moc Przywoływania wyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Major Spawning Power",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Maejur Spaevneeng Pooer",
+        ServerLanguage.English: "{item_name} of Major Spawning Power",
+        ServerLanguage.Korean: "{item_name}(상급 생성)",
+        ServerLanguage.French: "{item_name} (Puissance de l'Invocation : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Macht des Herbeirufens",
+        ServerLanguage.Italian: "{item_name} Riti Sacrificali di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Engendramiento de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 召喚 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー スポーン パワー)",
+        ServerLanguage.Polish: "{item_name} (Moc Przywoływania wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Spawning Power",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Spaevneeng Pooer",
     }
 
 class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
@@ -6592,17 +6652,17 @@ class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Superior Channeling Magic",
-        ServerLanguage.Korean: "리추얼리스트 룬(고급 마력 증폭)",
-        ServerLanguage.French: "Rune du Ritualiste (Magie de la canalisation : bonus supérieur)",
-        ServerLanguage.German: "Ritualisten-Rune d. überlegenen Kanalisierungsmagie",
-        ServerLanguage.Italian: "Runa del Ritualista Magia di Incanalamento di grado supremo",
-        ServerLanguage.Spanish: "Runa de Ritualista (Magia de canalización de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 導引魔法 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (スーペリア チャネリング)",
-        ServerLanguage.Polish: "Runa Rytualisty (Magia Połączeń najwyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Superior Channeling Magic",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Soopereeur Chunneleeng Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Channeling Magic",
+        ServerLanguage.Korean: "{item_name}(고급 마력 증폭)",
+        ServerLanguage.French: "{item_name} (Magie de la canalisation : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Kanalisierungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia di Incanalamento di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de canalización de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 導引魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア チャネリング)",
+        ServerLanguage.Polish: "{item_name} (Magia Połączeń najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Channeling Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Chunneleeng Maegeec",
     }
 
 class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
@@ -6615,17 +6675,17 @@ class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Superior Restoration Magic",
-        ServerLanguage.Korean: "리추얼리스트 룬(고급 마력 회복)",
-        ServerLanguage.French: "Rune du Ritualiste (Magie de restauration : bonus supérieur)",
-        ServerLanguage.German: "Ritualisten-Rune d. überlegenen Wiederherstellungsmagie",
-        ServerLanguage.Italian: "Runa del Ritualista Magia del Ripristino di grado supremo",
-        ServerLanguage.Spanish: "Runa de Ritualista (Magia de restauración de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 復原魔法 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (スーペリア レストレーション)",
-        ServerLanguage.Polish: "Runa Rytualisty (Magia Odnowy najwyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Superior Restoration Magic",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Soopereeur Resturaeshun Maegeec",
+        ServerLanguage.English: "{item_name} of Superior Restoration Magic",
+        ServerLanguage.Korean: "{item_name}(고급 마력 회복)",
+        ServerLanguage.French: "{item_name} (Magie de restauration : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Wiederherstellungsmagie",
+        ServerLanguage.Italian: "{item_name} Magia del Ripristino di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Magia de restauración de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 復原魔法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア レストレーション)",
+        ServerLanguage.Polish: "{item_name} (Magia Odnowy najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Restoration Magic",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Resturaeshun Maegeec",
     }
 
 class RitualistRuneOfSuperiorCommuning(AttributeRune):
@@ -6638,17 +6698,17 @@ class RitualistRuneOfSuperiorCommuning(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Superior Communing",
-        ServerLanguage.Korean: "리추얼리스트 룬(고급 교감)",
-        ServerLanguage.French: "Rune du Ritualiste (Communion : bonus supérieur)",
-        ServerLanguage.German: "Ritualisten-Rune d. überlegenen Zwiesprache",
-        ServerLanguage.Italian: "Runa del Ritualista Raccoglimento di grado supremo",
-        ServerLanguage.Spanish: "Runa de Ritualista (Comunión de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 神諭 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (スーペリア コミューン)",
-        ServerLanguage.Polish: "Runa Rytualisty (Zjednoczenie najwyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Superior Communing",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Soopereeur Cummooneeng",
+        ServerLanguage.English: "{item_name} of Superior Communing",
+        ServerLanguage.Korean: "{item_name}(고급 교감)",
+        ServerLanguage.French: "{item_name} (Communion : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Zwiesprache",
+        ServerLanguage.Italian: "{item_name} Raccoglimento di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Comunión de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 神諭 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア コミューン)",
+        ServerLanguage.Polish: "{item_name} (Zjednoczenie najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Communing",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Cummooneeng",
     }
 
 class RitualistRuneOfSuperiorSpawningPower(AttributeRune):
@@ -6661,17 +6721,17 @@ class RitualistRuneOfSuperiorSpawningPower(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Ritualist Rune of Superior Spawning Power",
-        ServerLanguage.Korean: "리추얼리스트 룬(고급 생성)",
-        ServerLanguage.French: "Rune du Ritualiste (Puissance de l'Invocation : bonus supérieur)",
-        ServerLanguage.German: "Ritualisten-Rune d. überlegenen Macht des Herbeirufens",
-        ServerLanguage.Italian: "Runa del Ritualista Riti Sacrificali di grado supremo",
-        ServerLanguage.Spanish: "Runa de Ritualista (Engendramiento de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 召喚 祭祀者符文",
-        ServerLanguage.Japanese: "リチュアリスト ルーン (スーペリア スポーン パワー)",
-        ServerLanguage.Polish: "Runa Rytualisty (Moc Przywoływania najwyższego poziomu)",
-        ServerLanguage.Russian: "Ritualist Rune of Superior Spawning Power",
-        ServerLanguage.BorkBorkBork: "Reetooaeleest Roone-a ooff Soopereeur Spaevneeng Pooer",
+        ServerLanguage.English: "{item_name} of Superior Spawning Power",
+        ServerLanguage.Korean: "{item_name}(고급 생성)",
+        ServerLanguage.French: "{item_name} (Puissance de l'Invocation : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Macht des Herbeirufens",
+        ServerLanguage.Italian: "{item_name} Riti Sacrificali di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Engendramiento de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 召喚 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア スポーン パワー)",
+        ServerLanguage.Polish: "{item_name} (Moc Przywoływania najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Spawning Power",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Spaevneeng Pooer",
     }
 
 class UpgradeMinorRuneRitualist(Upgrade):
@@ -6707,17 +6767,17 @@ class WindwalkerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Windwalker Insignia [Dervish]",
-        ServerLanguage.Korean: "여행가의 휘장 [더비시]",
-        ServerLanguage.French: "Insigne [Derviche] du Marche-vent",
-        ServerLanguage.German: "Windläufer- [Derwisch]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Derviscio] da Camminatore nel Vento",
-        ServerLanguage.Spanish: "Insignia [Derviche] de caminante del viento",
-        ServerLanguage.TraditionalChinese: "風行者 徽記 [神喚使]",
-        ServerLanguage.Japanese: "ウインドウォーカー 記章 [ダルウィーシュ]",
-        ServerLanguage.Polish: "[Derwisz] Symbol Włóczywiatru",
-        ServerLanguage.Russian: "Windwalker Insignia [Dervish]",
-        ServerLanguage.BorkBorkBork: "Veendvaelker Inseegneea [Derfeesh]",
+        ServerLanguage.English: "Windwalker {item_name}",
+        ServerLanguage.Korean: "여행가의 {item_name}",
+        ServerLanguage.French: "{item_name} du Marche-vent",
+        ServerLanguage.German: "Windläufer--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Camminatore nel Vento",
+        ServerLanguage.Spanish: "{item_name} de caminante del viento",
+        ServerLanguage.TraditionalChinese: "風行者 {item_name}",
+        ServerLanguage.Japanese: "ウインドウォーカー {item_name}",
+        ServerLanguage.Polish: "{item_name} Włóczywiatru",
+        ServerLanguage.Russian: "Windwalker {item_name}",
+        ServerLanguage.BorkBorkBork: "Veendvaelker {item_name}",
     }
 
 class ForsakenInsignia(Insignia):
@@ -6725,17 +6785,17 @@ class ForsakenInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Forsaken Insignia [Dervish]",
-        ServerLanguage.Korean: "고독한 휘장 [더비시]",
-        ServerLanguage.French: "Insigne [Derviche] de l'oubli",
-        ServerLanguage.German: "Verlassenen- [Derwisch]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Derviscio] da Abbandonato",
-        ServerLanguage.Spanish: "Insignia [Derviche] de abandonado",
-        ServerLanguage.TraditionalChinese: "背離 徽記 [神喚使]",
-        ServerLanguage.Japanese: "フォーセイク 記章 [ダルウィーシュ]",
-        ServerLanguage.Polish: "[Derwisz] Symbol Zapomnienia",
-        ServerLanguage.Russian: "Forsaken Insignia [Dervish]",
-        ServerLanguage.BorkBorkBork: "Fursaekee Inseegneea [Derfeesh]",
+        ServerLanguage.English: "Forsaken {item_name}",
+        ServerLanguage.Korean: "고독한 {item_name}",
+        ServerLanguage.French: "{item_name} de l'oubli",
+        ServerLanguage.German: "Verlassenen--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Abbandonato",
+        ServerLanguage.Spanish: "{item_name} de abandonado",
+        ServerLanguage.TraditionalChinese: "背離 {item_name}",
+        ServerLanguage.Japanese: "フォーセイク {item_name}",
+        ServerLanguage.Polish: "{item_name} Zapomnienia",
+        ServerLanguage.Russian: "Forsaken {item_name}",
+        ServerLanguage.BorkBorkBork: "Fursaekee {item_name}",
     }
 
 class DervishRuneOfMinorMysticism(AttributeRune):
@@ -6744,17 +6804,17 @@ class DervishRuneOfMinorMysticism(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Minor Mysticism",
-        ServerLanguage.Korean: "더비시 룬(하급 신비주의)",
-        ServerLanguage.French: "Rune de Derviche (Mysticisme : bonus mineur)",
-        ServerLanguage.German: "Derwisch-Rune d. kleineren Mystik",
-        ServerLanguage.Italian: "Runa del Derviscio Misticismo di grado minore",
-        ServerLanguage.Spanish: "Runa para Derviche (Misticismo de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 祕法 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (マイナー ミスティシズム)",
-        ServerLanguage.Polish: "Runa Derwisza (Mistycyzm niższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Minor Mysticism",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Meenur Mysteeceesm",
+        ServerLanguage.English: "{item_name} of Minor Mysticism",
+        ServerLanguage.Korean: "{item_name}(하급 신비주의)",
+        ServerLanguage.French: "{item_name} (Mysticisme : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Mystik",
+        ServerLanguage.Italian: "{item_name} Misticismo di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Misticismo de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 祕法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ミスティシズム)",
+        ServerLanguage.Polish: "{item_name} (Mistycyzm niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Mysticism",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Mysteeceesm",
     }
 
 class DervishRuneOfMinorEarthPrayers(AttributeRune):
@@ -6763,17 +6823,17 @@ class DervishRuneOfMinorEarthPrayers(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Minor Earth Prayers",
-        ServerLanguage.Korean: "더비시 룬(하급 대지의 기도)",
-        ServerLanguage.French: "Rune de Derviche (Prières de la Terre : bonus mineur)",
-        ServerLanguage.German: "Derwisch-Rune d. kleineren Erdgebete",
-        ServerLanguage.Italian: "Runa del Derviscio Preghiere della Terra di grado minore",
-        ServerLanguage.Spanish: "Runa para Derviche (Plegarias de tierra de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 地之祈禱 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (マイナー アース プレイヤー)",
-        ServerLanguage.Polish: "Runa Derwisza (Modlitwy Ziemi niższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Minor Earth Prayers",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Meenur Iaert Praeyers",
+        ServerLanguage.English: "{item_name} of Minor Earth Prayers",
+        ServerLanguage.Korean: "{item_name}(하급 대지의 기도)",
+        ServerLanguage.French: "{item_name} (Prières de la Terre : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Erdgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere della Terra di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de tierra de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 地之祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー アース プレイヤー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ziemi niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Earth Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Iaert Praeyers",
     }
 
 class DervishRuneOfMinorScytheMastery(AttributeRune):
@@ -6782,17 +6842,17 @@ class DervishRuneOfMinorScytheMastery(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Minor Scythe Mastery",
-        ServerLanguage.Korean: "더비시 룬(하급 사이드술)",
-        ServerLanguage.French: "Rune de Derviche (Maîtrise de la faux : bonus mineur)",
-        ServerLanguage.German: "Derwisch-Rune d. kleineren Sensenbeherrschung",
-        ServerLanguage.Italian: "Runa del Derviscio Abilità con la Falce di grado minore",
-        ServerLanguage.Spanish: "Runa para Derviche (Dominio de la guadaña de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 鐮刀精通 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (マイナー サイズ マスタリー)",
-        ServerLanguage.Polish: "Runa Derwisza (Biegłość w Kosach niższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Minor Scythe Mastery",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Meenur Scyzee Maestery",
+        ServerLanguage.English: "{item_name} of Minor Scythe Mastery",
+        ServerLanguage.Korean: "{item_name}(하급 사이드술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de la faux : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Sensenbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con la Falce di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la guadaña de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 鐮刀精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー サイズ マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość w Kosach niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Scythe Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Scyzee Maestery",
     }
 
 class DervishRuneOfMinorWindPrayers(AttributeRune):
@@ -6801,17 +6861,17 @@ class DervishRuneOfMinorWindPrayers(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Minor Wind Prayers",
-        ServerLanguage.Korean: "더비시 룬(하급 바람의 기도)",
-        ServerLanguage.French: "Rune de Derviche (Prières du Vent : bonus mineur)",
-        ServerLanguage.German: "Derwisch-Rune d. kleineren Windgebete",
-        ServerLanguage.Italian: "Runa del Derviscio Preghiere del Vento di grado minore",
-        ServerLanguage.Spanish: "Runa para Derviche (Plegarias de viento de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 風之祈禱 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (マイナー ウインド プレイヤー)",
-        ServerLanguage.Polish: "Runa Derwisza (Modlitwy Wiatru niższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Minor Wind Prayers",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Meenur Veend Praeyers",
+        ServerLanguage.English: "{item_name} of Minor Wind Prayers",
+        ServerLanguage.Korean: "{item_name}(하급 바람의 기도)",
+        ServerLanguage.French: "{item_name} (Prières du Vent : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Windgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere del Vento di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de viento de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 風之祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー ウインド プレイヤー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Wiatru niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Wind Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Veend Praeyers",
     }
 
 class DervishRuneOfMajorMysticism(AttributeRune):
@@ -6824,17 +6884,17 @@ class DervishRuneOfMajorMysticism(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Major Mysticism",
-        ServerLanguage.Korean: "더비시 룬(상급 신비주의)",
-        ServerLanguage.French: "Rune de Derviche (Mysticisme : bonus majeur)",
-        ServerLanguage.German: "Derwisch-Rune d. hohen Mystik",
-        ServerLanguage.Italian: "Runa del Derviscio Misticismo di grado maggiore",
-        ServerLanguage.Spanish: "Runa para Derviche (Misticismo de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 祕法 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (メジャー ミスティシズム)",
-        ServerLanguage.Polish: "Runa Derwisza (Mistycyzm wyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Major Mysticism",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Maejur Mysteeceesm",
+        ServerLanguage.English: "{item_name} of Major Mysticism",
+        ServerLanguage.Korean: "{item_name}(상급 신비주의)",
+        ServerLanguage.French: "{item_name} (Mysticisme : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Mystik",
+        ServerLanguage.Italian: "{item_name} Misticismo di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Misticismo de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 祕法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ミスティシズム)",
+        ServerLanguage.Polish: "{item_name} (Mistycyzm wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Mysticism",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Mysteeceesm",
     }
 
 class DervishRuneOfMajorEarthPrayers(AttributeRune):
@@ -6847,17 +6907,17 @@ class DervishRuneOfMajorEarthPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Major Earth Prayers",
-        ServerLanguage.Korean: "더비시 룬(상급 대지의 기도)",
-        ServerLanguage.French: "Rune de Derviche (Prières de la Terre : bonus majeur)",
-        ServerLanguage.German: "Derwisch-Rune d. hohen Erdgebete",
-        ServerLanguage.Italian: "Runa del Derviscio Preghiere della Terra di grado maggiore",
-        ServerLanguage.Spanish: "Runa para Derviche (Plegarias de tierra de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 地之祈禱 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (メジャー アース プレイヤー)",
-        ServerLanguage.Polish: "Runa Derwisza (Modlitwy Ziemi wyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Major Earth Prayers",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Maejur Iaert Praeyers",
+        ServerLanguage.English: "{item_name} of Major Earth Prayers",
+        ServerLanguage.Korean: "{item_name}(상급 대지의 기도)",
+        ServerLanguage.French: "{item_name} (Prières de la Terre : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Erdgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere della Terra di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de tierra de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 地之祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー アース プレイヤー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ziemi wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Earth Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Iaert Praeyers",
     }
 
 class DervishRuneOfMajorScytheMastery(AttributeRune):
@@ -6870,17 +6930,17 @@ class DervishRuneOfMajorScytheMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Major Scythe Mastery",
-        ServerLanguage.Korean: "더비시 룬(상급 사이드술)",
-        ServerLanguage.French: "Rune de Derviche (Maîtrise de la faux : bonus majeur)",
-        ServerLanguage.German: "Derwisch-Rune d. hohen Sensenbeherrschung",
-        ServerLanguage.Italian: "Runa del Derviscio Abilità con la Falce di grado maggiore",
-        ServerLanguage.Spanish: "Runa para Derviche (Dominio de la guadaña de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 鐮刀精通 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (メジャー サイズ マスタリー)",
-        ServerLanguage.Polish: "Runa Derwisza (Biegłość w Kosach wyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Major Scythe Mastery",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Maejur Scyzee Maestery",
+        ServerLanguage.English: "{item_name} of Major Scythe Mastery",
+        ServerLanguage.Korean: "{item_name}(상급 사이드술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de la faux : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Sensenbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con la Falce di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la guadaña de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 鐮刀精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー サイズ マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość w Kosach wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Scythe Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Scyzee Maestery",
     }
 
 class DervishRuneOfMajorWindPrayers(AttributeRune):
@@ -6893,17 +6953,17 @@ class DervishRuneOfMajorWindPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Major Wind Prayers",
-        ServerLanguage.Korean: "더비시 룬(상급 바람의 기도)",
-        ServerLanguage.French: "Rune de Derviche (Prières du Vent : bonus majeur)",
-        ServerLanguage.German: "Derwisch-Rune d. hohen Windgebete",
-        ServerLanguage.Italian: "Runa del Derviscio Preghiere del Vento di grado maggiore",
-        ServerLanguage.Spanish: "Runa para Derviche (Plegarias de viento de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 風之祈禱 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (メジャー ウインド プレイヤー)",
-        ServerLanguage.Polish: "Runa Derwisza (Modlitwy Wiatru wyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Major Wind Prayers",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Maejur Veend Praeyers",
+        ServerLanguage.English: "{item_name} of Major Wind Prayers",
+        ServerLanguage.Korean: "{item_name}(상급 바람의 기도)",
+        ServerLanguage.French: "{item_name} (Prières du Vent : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Windgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere del Vento di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de viento de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 風之祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー ウインド プレイヤー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Wiatru wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Wind Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Veend Praeyers",
     }
 
 class DervishRuneOfSuperiorMysticism(AttributeRune):
@@ -6916,17 +6976,17 @@ class DervishRuneOfSuperiorMysticism(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Superior Mysticism",
-        ServerLanguage.Korean: "더비시 룬(고급 신비주의)",
-        ServerLanguage.French: "Rune de Derviche (Mysticisme : bonus supérieur)",
-        ServerLanguage.German: "Derwisch-Rune d. überlegenen Mystik",
-        ServerLanguage.Italian: "Runa del Derviscio Misticismo di grado supremo",
-        ServerLanguage.Spanish: "Runa para Derviche (Misticismo de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 祕法 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (スーペリア ミスティシズム)",
-        ServerLanguage.Polish: "Runa Derwisza (Mistycyzm najwyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Superior Mysticism",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Soopereeur Mysteeceesm",
+        ServerLanguage.English: "{item_name} of Superior Mysticism",
+        ServerLanguage.Korean: "{item_name}(고급 신비주의)",
+        ServerLanguage.French: "{item_name} (Mysticisme : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Mystik",
+        ServerLanguage.Italian: "{item_name} Misticismo di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Misticismo de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 祕法 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ミスティシズム)",
+        ServerLanguage.Polish: "{item_name} (Mistycyzm najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Mysticism",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Mysteeceesm",
     }
 
 class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
@@ -6939,17 +6999,17 @@ class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Superior Earth Prayers",
-        ServerLanguage.Korean: "더비시 룬(고급 대지의 기도)",
-        ServerLanguage.French: "Rune de Derviche (Prières de la Terre : bonus supérieur)",
-        ServerLanguage.German: "Derwisch-Rune d. überlegenen Erdgebete",
-        ServerLanguage.Italian: "Runa del Derviscio Preghiere della Terra di grado supremo",
-        ServerLanguage.Spanish: "Runa para Derviche (Plegarias de tierra de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 地之祈禱 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (スーペリア アース プレイヤー)",
-        ServerLanguage.Polish: "Runa Derwisza (Modlitwy Ziemi najwyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Superior Earth Prayers",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Soopereeur Iaert Praeyers",
+        ServerLanguage.English: "{item_name} of Superior Earth Prayers",
+        ServerLanguage.Korean: "{item_name}(고급 대지의 기도)",
+        ServerLanguage.French: "{item_name} (Prières de la Terre : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Erdgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere della Terra di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de tierra de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 地之祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア アース プレイヤー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Ziemi najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Earth Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Iaert Praeyers",
     }
 
 class DervishRuneOfSuperiorScytheMastery(AttributeRune):
@@ -6962,17 +7022,17 @@ class DervishRuneOfSuperiorScytheMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Superior Scythe Mastery",
-        ServerLanguage.Korean: "더비시 룬(고급 사이드술)",
-        ServerLanguage.French: "Rune de Derviche (Maîtrise de la faux : bonus supérieur)",
-        ServerLanguage.German: "Derwisch-Rune d. überlegenen Sensenbeherrschung",
-        ServerLanguage.Italian: "Runa del Derviscio Abilità con la Falce di grado supremo",
-        ServerLanguage.Spanish: "Runa para Derviche (Dominio de la guadaña de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 鐮刀精通 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (スーペリア サイズ マスタリー)",
-        ServerLanguage.Polish: "Runa Derwisza (Biegłość w Kosach najwyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Superior Scythe Mastery",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Soopereeur Scyzee Maestery",
+        ServerLanguage.English: "{item_name} of Superior Scythe Mastery",
+        ServerLanguage.Korean: "{item_name}(고급 사이드술)",
+        ServerLanguage.French: "{item_name} (Maîtrise de la faux : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Sensenbeherrschung",
+        ServerLanguage.Italian: "{item_name} Abilità con la Falce di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la guadaña de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 鐮刀精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア サイズ マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość w Kosach najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Scythe Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Scyzee Maestery",
     }
 
 class DervishRuneOfSuperiorWindPrayers(AttributeRune):
@@ -6985,17 +7045,17 @@ class DervishRuneOfSuperiorWindPrayers(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Dervish Rune of Superior Wind Prayers",
-        ServerLanguage.Korean: "더비시 룬(고급 바람의 기도)",
-        ServerLanguage.French: "Rune de Derviche (Prières du Vent : bonus supérieur)",
-        ServerLanguage.German: "Derwisch-Rune d. überlegenen Windgebete",
-        ServerLanguage.Italian: "Runa del Derviscio Preghiere del Vento di grado supremo",
-        ServerLanguage.Spanish: "Runa para Derviche (Plegarias de viento de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 風之祈禱 神喚使符文",
-        ServerLanguage.Japanese: "ダルウィーシュ ルーン (スーペリア ウインド プレイヤー)",
-        ServerLanguage.Polish: "Runa Derwisza (Modlitwy Wiatru najwyższego poziomu)",
-        ServerLanguage.Russian: "Dervish Rune of Superior Wind Prayers",
-        ServerLanguage.BorkBorkBork: "Derfeesh Roone-a ooff Soopereeur Veend Praeyers",
+        ServerLanguage.English: "{item_name} of Superior Wind Prayers",
+        ServerLanguage.Korean: "{item_name}(고급 바람의 기도)",
+        ServerLanguage.French: "{item_name} (Prières du Vent : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Windgebete",
+        ServerLanguage.Italian: "{item_name} Preghiere del Vento di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Plegarias de viento de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 風之祈禱 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア ウインド プレイヤー)",
+        ServerLanguage.Polish: "{item_name} (Modlitwy Wiatru najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Wind Prayers",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Veend Praeyers",
     }
 
 class UpgradeMinorRuneDervish(Upgrade):
@@ -7031,17 +7091,17 @@ class CenturionsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
 
     names = {
-        ServerLanguage.English: "Centurion's Insignia [Paragon]",
-        ServerLanguage.Korean: "백부장의 휘장 [파라곤]",
-        ServerLanguage.French: "Insigne [Parangon] du centurion",
-        ServerLanguage.German: "Zenturio- [Paragon]-Befähigung",
-        ServerLanguage.Italian: "Insegne [Paragon] da Centurione",
-        ServerLanguage.Spanish: "Insignia [Paragón] de centurión",
-        ServerLanguage.TraditionalChinese: "百夫長 徽記 [聖言者]",
-        ServerLanguage.Japanese: "センチュリオン 記章 [パラゴン]",
-        ServerLanguage.Polish: "[Patron] Symbol Centuriona",
-        ServerLanguage.Russian: "Centurion's Insignia [Paragon]",
-        ServerLanguage.BorkBorkBork: "Centooreeun's Inseegneea [Paeraegun]",
+        ServerLanguage.English: "Centurion's {item_name}",
+        ServerLanguage.Korean: "백부장의 {item_name}",
+        ServerLanguage.French: "{item_name} du centurion",
+        ServerLanguage.German: "Zenturio--{item_name}",
+        ServerLanguage.Italian: "{item_name} da Centurione",
+        ServerLanguage.Spanish: "{item_name} de centurión",
+        ServerLanguage.TraditionalChinese: "百夫長 {item_name}",
+        ServerLanguage.Japanese: "センチュリオン {item_name}",
+        ServerLanguage.Polish: "{item_name} Centuriona",
+        ServerLanguage.Russian: "Centurion's {item_name}",
+        ServerLanguage.BorkBorkBork: "Centooreeun's {item_name}",
     }
 
 class ParagonRuneOfMinorLeadership(AttributeRune):
@@ -7050,17 +7110,17 @@ class ParagonRuneOfMinorLeadership(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Minor Leadership",
-        ServerLanguage.Korean: "파라곤 룬(하급 리더십)",
-        ServerLanguage.French: "Rune de Parangon (Charisme : bonus mineur)",
-        ServerLanguage.German: "Paragon-Rune d. kleineren Führung",
-        ServerLanguage.Italian: "Runa del Paragon Leadership di grado minore",
-        ServerLanguage.Spanish: "Runa de Paragón (Liderazgo de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 領導 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (マイナー リーダーシップ)",
-        ServerLanguage.Polish: "Runa Patrona (Przywództwo niższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Minor Leadership",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Meenur Leaedersheep",
+        ServerLanguage.English: "{item_name} of Minor Leadership",
+        ServerLanguage.Korean: "{item_name}(하급 리더십)",
+        ServerLanguage.French: "{item_name} (Charisme : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Führung",
+        ServerLanguage.Italian: "{item_name} del Leadership di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Liderazgo de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 領導 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー リーダーシップ)",
+        ServerLanguage.Polish: "{item_name} (Przywództwo niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Leadership",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Leaedersheep",
     }
 
 class ParagonRuneOfMinorMotivation(AttributeRune):
@@ -7069,17 +7129,17 @@ class ParagonRuneOfMinorMotivation(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Minor Motivation",
-        ServerLanguage.Korean: "파라곤 룬(하급 격려)",
-        ServerLanguage.French: "Rune de Parangon (Motivation : bonus mineur)",
-        ServerLanguage.German: "Paragon-Rune d. kleineren Motivation",
-        ServerLanguage.Italian: "Runa del Paragon Motivazione di grado minore",
-        ServerLanguage.Spanish: "Runa de Paragón (Motivación de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 激勵 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (マイナー モチベーション)",
-        ServerLanguage.Polish: "Runa Patrona (Motywacja niższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Minor Motivation",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Meenur Muteefaeshun",
+        ServerLanguage.English: "{item_name} of Minor Motivation",
+        ServerLanguage.Korean: "{item_name}(하급 격려)",
+        ServerLanguage.French: "{item_name} (Motivation : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Motivation",
+        ServerLanguage.Italian: "{item_name} del Motivazione di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Motivación de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 激勵 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー モチベーション)",
+        ServerLanguage.Polish: "{item_name} (Motywacja niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Motivation",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Muteefaeshun",
     }
 
 class ParagonRuneOfMinorCommand(AttributeRune):
@@ -7088,17 +7148,17 @@ class ParagonRuneOfMinorCommand(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Minor Command",
-        ServerLanguage.Korean: "파라곤 룬(하급 통솔)",
-        ServerLanguage.French: "Rune de Parangon (Commandement : bonus mineur)",
-        ServerLanguage.German: "Paragon-Rune d. kleineren Befehlsgewalt",
-        ServerLanguage.Italian: "Runa del Paragon Comando di grado minore",
-        ServerLanguage.Spanish: "Runa de Paragón (Mando de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 命令 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (マイナー コマンド)",
-        ServerLanguage.Polish: "Runa Patrona (Rozkazy niższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Minor Command",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Meenur Cummund",
+        ServerLanguage.English: "{item_name} of Minor Command",
+        ServerLanguage.Korean: "{item_name}(하급 통솔)",
+        ServerLanguage.French: "{item_name} (Commandement : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Befehlsgewalt",
+        ServerLanguage.Italian: "{item_name} del Comando di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Mando de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 命令 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー コマンド)",
+        ServerLanguage.Polish: "{item_name} (Rozkazy niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Command",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Cummund",
     }
 
 class ParagonRuneOfMinorSpearMastery(AttributeRune):
@@ -7107,17 +7167,17 @@ class ParagonRuneOfMinorSpearMastery(AttributeRune):
     rarity = Rarity.Blue
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Minor Spear Mastery",
-        ServerLanguage.Korean: "파라곤 룬(하급 창술)",
-        ServerLanguage.French: "Rune de Parangon (Maîtrise du javelot : bonus mineur)",
-        ServerLanguage.German: "Paragon-Rune d. kleineren Speerbeherrschung",
-        ServerLanguage.Italian: "Runa del Paragon Abilità con la Lancia di grado minore",
-        ServerLanguage.Spanish: "Runa de Paragón (Dominio de la lanza de grado menor)",
-        ServerLanguage.TraditionalChinese: "初級 矛術精通 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (マイナー スピア マスタリー)",
-        ServerLanguage.Polish: "Runa Patrona (Biegłość we Włóczniach niższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Minor Spear Mastery",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Meenur Speaer Maestery",
+        ServerLanguage.English: "{item_name} of Minor Spear Mastery",
+        ServerLanguage.Korean: "{item_name}(하급 창술)",
+        ServerLanguage.French: "{item_name} (Maîtrise du javelot : bonus mineur)",
+        ServerLanguage.German: "{item_name} d. kleineren Speerbeherrschung",
+        ServerLanguage.Italian: "{item_name} del Abilità con la Lancia di grado minore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la lanza de grado menor)",
+        ServerLanguage.TraditionalChinese: "初級 矛術精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (マイナー スピア マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość we Włóczniach niższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Minor Spear Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Meenur Speaer Maestery",
     }
 
 class ParagonRuneOfMajorLeadership(AttributeRune):
@@ -7130,17 +7190,17 @@ class ParagonRuneOfMajorLeadership(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Major Leadership",
-        ServerLanguage.Korean: "파라곤 룬(상급 리더십)",
-        ServerLanguage.French: "Rune de Parangon (Charisme : bonus majeur)",
-        ServerLanguage.German: "Paragon-Rune d. hohen Führung",
-        ServerLanguage.Italian: "Runa del Paragon Leadership di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Paragón (Liderazgo de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 領導 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (メジャー リーダーシップ)",
-        ServerLanguage.Polish: "Runa Patrona (Przywództwo wyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Major Leadership",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Maejur Leaedersheep",
+        ServerLanguage.English: "{item_name} of Major Leadership",
+        ServerLanguage.Korean: "{item_name}(상급 리더십)",
+        ServerLanguage.French: "{item_name} (Charisme : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Führung",
+        ServerLanguage.Italian: "{item_name} del Leadership di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Liderazgo de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 領導 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー リーダーシップ)",
+        ServerLanguage.Polish: "{item_name} (Przywództwo wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Leadership",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Leaedersheep",
     }
 
 class ParagonRuneOfMajorMotivation(AttributeRune):
@@ -7153,17 +7213,17 @@ class ParagonRuneOfMajorMotivation(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Major Motivation",
-        ServerLanguage.Korean: "파라곤 룬(상급 격려)",
-        ServerLanguage.French: "Rune de Parangon (Motivation : bonus majeur)",
-        ServerLanguage.German: "Paragon-Rune d. hohen Motivation",
-        ServerLanguage.Italian: "Runa del Paragon Motivazione di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Paragón (Motivación de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 激勵 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (メジャー モチベーション)",
-        ServerLanguage.Polish: "Runa Patrona (Motywacja wyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Major Motivation",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Maejur Muteefaeshun",
+        ServerLanguage.English: "{item_name} of Major Motivation",
+        ServerLanguage.Korean: "{item_name}(상급 격려)",
+        ServerLanguage.French: "{item_name} (Motivation : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Motivation",
+        ServerLanguage.Italian: "{item_name} del Motivazione di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Motivación de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 激勵 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー モチベーション)",
+        ServerLanguage.Polish: "{item_name} (Motywacja wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Motivation",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Muteefaeshun",
     }
 
 class ParagonRuneOfMajorCommand(AttributeRune):
@@ -7176,17 +7236,17 @@ class ParagonRuneOfMajorCommand(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Major Command",
-        ServerLanguage.Korean: "파라곤 룬(상급 통솔)",
-        ServerLanguage.French: "Rune de Parangon (Commandement : bonus majeur)",
-        ServerLanguage.German: "Paragon-Rune d. hohen Befehlsgewalt",
-        ServerLanguage.Italian: "Runa del Paragon Comando di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Paragón (Mando de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 命令 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (メジャー コマンド)",
-        ServerLanguage.Polish: "Runa Patrona (Rozkazy wyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Major Command",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Maejur Cummund",
+        ServerLanguage.English: "{item_name} of Major Command",
+        ServerLanguage.Korean: "{item_name}(상급 통솔)",
+        ServerLanguage.French: "{item_name} (Commandement : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Befehlsgewalt",
+        ServerLanguage.Italian: "{item_name} del Comando di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Mando de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 命令 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー コマンド)",
+        ServerLanguage.Polish: "{item_name} (Rozkazy wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Command",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Cummund",
     }
 
 class ParagonRuneOfMajorSpearMastery(AttributeRune):
@@ -7199,17 +7259,17 @@ class ParagonRuneOfMajorSpearMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Major Spear Mastery",
-        ServerLanguage.Korean: "파라곤 룬(상급 창술)",
-        ServerLanguage.French: "Rune de Parangon (Maîtrise du javelot : bonus majeur)",
-        ServerLanguage.German: "Paragon-Rune d. hohen Speerbeherrschung",
-        ServerLanguage.Italian: "Runa del Paragon Abilità con la Lancia di grado maggiore",
-        ServerLanguage.Spanish: "Runa de Paragón (Dominio de la lanza de grado mayor)",
-        ServerLanguage.TraditionalChinese: "中級 矛術精通 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (メジャー スピア マスタリー)",
-        ServerLanguage.Polish: "Runa Patrona (Biegłość we Włóczniach wyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Major Spear Mastery",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Maejur Speaer Maestery",
+        ServerLanguage.English: "{item_name} of Major Spear Mastery",
+        ServerLanguage.Korean: "{item_name}(상급 창술)",
+        ServerLanguage.French: "{item_name} (Maîtrise du javelot : bonus majeur)",
+        ServerLanguage.German: "{item_name} d. hohen Speerbeherrschung",
+        ServerLanguage.Italian: "{item_name} del Abilità con la Lancia di grado maggiore",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la lanza de grado mayor)",
+        ServerLanguage.TraditionalChinese: "中級 矛術精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (メジャー スピア マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość we Włóczniach wyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Major Spear Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Maejur Speaer Maestery",
     }
 
 class ParagonRuneOfSuperiorLeadership(AttributeRune):
@@ -7222,17 +7282,17 @@ class ParagonRuneOfSuperiorLeadership(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Superior Leadership",
-        ServerLanguage.Korean: "파라곤 룬(고급 리더십)",
-        ServerLanguage.French: "Rune de Parangon (Charisme : bonus supérieur)",
-        ServerLanguage.German: "Paragon-Rune d. überlegenen Führung",
-        ServerLanguage.Italian: "Runa del Paragon Leadership di grado supremo",
-        ServerLanguage.Spanish: "Runa de Paragón (Liderazgo de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 領導 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (スーペリア リーダーシップ)",
-        ServerLanguage.Polish: "Runa Patrona (Przywództwo najwyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Superior Leadership",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Soopereeur Leaedersheep",
+        ServerLanguage.English: "{item_name} of Superior Leadership",
+        ServerLanguage.Korean: "{item_name}(고급 리더십)",
+        ServerLanguage.French: "{item_name} (Charisme : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Führung",
+        ServerLanguage.Italian: "{item_name} del Leadership di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Liderazgo de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 領導 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア リーダーシップ)",
+        ServerLanguage.Polish: "{item_name} (Przywództwo najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Leadership",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Leaedersheep",
     }
 
 class ParagonRuneOfSuperiorMotivation(AttributeRune):
@@ -7245,17 +7305,17 @@ class ParagonRuneOfSuperiorMotivation(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Superior Motivation",
-        ServerLanguage.Korean: "파라곤 룬(고급 격려)",
-        ServerLanguage.French: "Rune de Parangon (Motivation : bonus supérieur)",
-        ServerLanguage.German: "Paragon-Rune d. überlegenen Motivation",
-        ServerLanguage.Italian: "Runa del Paragon Motivazione di grado supremo",
-        ServerLanguage.Spanish: "Runa de Paragón (Motivación de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 激勵 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (スーペリア モチベーション)",
-        ServerLanguage.Polish: "Runa Patrona (Motywacja najwyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Superior Motivation",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Soopereeur Muteefaeshun",
+        ServerLanguage.English: "{item_name} of Superior Motivation",
+        ServerLanguage.Korean: "{item_name}(고급 격려)",
+        ServerLanguage.French: "{item_name} (Motivation : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Motivation",
+        ServerLanguage.Italian: "{item_name} del Motivazione di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Motivación de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 激勵 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア モチベーション)",
+        ServerLanguage.Polish: "{item_name} (Motywacja najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Motivation",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Muteefaeshun",
     }
 
 class ParagonRuneOfSuperiorCommand(AttributeRune):
@@ -7268,17 +7328,17 @@ class ParagonRuneOfSuperiorCommand(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Superior Command",
-        ServerLanguage.Korean: "파라곤 룬(고급 통솔)",
-        ServerLanguage.French: "Rune de Parangon (Commandement : bonus supérieur)",
-        ServerLanguage.German: "Paragon-Rune d. überlegenen Befehlsgewalt",
-        ServerLanguage.Italian: "Runa del Paragon Comando di grado supremo",
-        ServerLanguage.Spanish: "Runa de Paragón (Mando de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 命令 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (スーペリア コマンド)",
-        ServerLanguage.Polish: "Runa Patrona (Rozkazy najwyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Superior Command",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Soopereeur Cummund",
+        ServerLanguage.English: "{item_name} of Superior Command",
+        ServerLanguage.Korean: "{item_name}(고급 통솔)",
+        ServerLanguage.French: "{item_name} (Commandement : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Befehlsgewalt",
+        ServerLanguage.Italian: "{item_name} del Comando di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Mando de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 命令 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア コマンド)",
+        ServerLanguage.Polish: "{item_name} (Rozkazy najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Command",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Cummund",
     }
 
 class ParagonRuneOfSuperiorSpearMastery(AttributeRune):
@@ -7291,17 +7351,17 @@ class ParagonRuneOfSuperiorSpearMastery(AttributeRune):
     ]
 
     names = {
-        ServerLanguage.English: "Paragon Rune of Superior Spear Mastery",
-        ServerLanguage.Korean: "파라곤 룬(고급 창술)",
-        ServerLanguage.French: "Rune de Parangon (Maîtrise du javelot : bonus supérieur)",
-        ServerLanguage.German: "Paragon-Rune d. überlegenen Speerbeherrschung",
-        ServerLanguage.Italian: "Runa del Paragon Abilità con la Lancia di grado supremo",
-        ServerLanguage.Spanish: "Runa de Paragón (Dominio de la lanza de grado excepcional)",
-        ServerLanguage.TraditionalChinese: "高級 矛術精通 聖言者符文",
-        ServerLanguage.Japanese: "パラゴン ルーン (スーペリア スピア マスタリー)",
-        ServerLanguage.Polish: "Runa Patrona (Biegłość we Włóczniach najwyższego poziomu)",
-        ServerLanguage.Russian: "Paragon Rune of Superior Spear Mastery",
-        ServerLanguage.BorkBorkBork: "Paeraegun Roone-a ooff Soopereeur Speaer Maestery",
+        ServerLanguage.English: "{item_name} of Superior Spear Mastery",
+        ServerLanguage.Korean: "{item_name}(고급 창술)",
+        ServerLanguage.French: "{item_name} (Maîtrise du javelot : bonus supérieur)",
+        ServerLanguage.German: "{item_name} d. überlegenen Speerbeherrschung",
+        ServerLanguage.Italian: "{item_name} del Abilità con la Lancia di grado supremo",
+        ServerLanguage.Spanish: "{item_name} (Dominio de la lanza de grado excepcional)",
+        ServerLanguage.TraditionalChinese: "高級 矛術精通 {item_name}",
+        ServerLanguage.Japanese: "{item_name} (スーペリア スピア マスタリー)",
+        ServerLanguage.Polish: "{item_name} (Biegłość we Włóczniach najwyższego poziomu)",
+        ServerLanguage.Russian: "{item_name} of Superior Spear Mastery",
+        ServerLanguage.BorkBorkBork: "{item_name} ooff Soopereeur Speaer Maestery",
     }
 
 class UpgradeMinorRuneParagon(Upgrade):
