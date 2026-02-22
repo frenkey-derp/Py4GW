@@ -1,4 +1,5 @@
 
+from pathlib import Path
 from typing import Optional
 import re
 import Py4GW
@@ -15,6 +16,7 @@ from Sources.frenkeyLib.ItemHandling.item_properties import DamageProperty
 from Sources.frenkeyLib.ItemHandling.item_types.base_item import Axe, Bag, Salvage, Item, Scythe
 from Sources.frenkeyLib.LootEx.data import Data
 from Sources.frenkeyLib.LootEx.enum import ModType
+from Sources.frenkeyLib.LootEx.models import Rune, WeaponMod
 
 Utils.ClearSubModules("ItemHandling")
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
@@ -25,8 +27,283 @@ def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     return value, hex(value)
 
 def run_test():
-    print("ItemHandling", f"{get_true_identifier_with_hex(9656)}")
+    data = Data()
+    
+    def compose_names_dict(mod: Rune) -> str:
+        names_dict = {
+            ServerLanguage.English: mod.names.get(ServerLanguage.English, None),
+            ServerLanguage.Spanish: mod.names.get(ServerLanguage.Spanish, None),
+            ServerLanguage.Italian: mod.names.get(ServerLanguage.Italian, None),
+            ServerLanguage.German: mod.names.get(ServerLanguage.German, None),
+            ServerLanguage.Korean: mod.names.get(ServerLanguage.Korean, None),
+            ServerLanguage.French: mod.names.get(ServerLanguage.French, None),
+            ServerLanguage.TraditionalChinese: mod.names.get(ServerLanguage.TraditionalChinese, None),
+            ServerLanguage.Japanese: mod.names.get(ServerLanguage.Japanese, None),
+            ServerLanguage.Polish: mod.names.get(ServerLanguage.Polish, None),
+            ServerLanguage.Russian: mod.names.get(ServerLanguage.Russian, None),
+            ServerLanguage.BorkBorkBork: mod.names.get(ServerLanguage.BorkBorkBork, None)
+        }
+        # keep only entries with a name
+        names_dict = {k: v for k, v in names_dict.items() if v is not None}
+        
+        #format it nicely as python code        
+        formatted = "\tnames = {\n"
+        for lang, name in names_dict.items():
+            
+            #names can contain double quotes, escape them
+            name = name.replace('"', '\\"')
+            formatted += f"\t\tServerLanguage.{lang.name}: \"{name}\",\n"
+        formatted += "\t}"
+        
+        return formatted
+    
+    runes : dict[str, Rune] = {r.identifier.lower(): r for r in data.Runes.values()}
+    def get_rune_name(class_name : str) -> str:
+        if runes.get(class_name.lower()):
+            return runes[class_name.lower()].name
+        
+        Py4GW.Console.Log("ItemHandling", f"Warning: No rune found for class name {class_name}, using class name as fallback")
+        return class_name
 
+    # iterate over Sources\\frenkeyLib\\ItemHandling\\edit_input.py.py lines and add the names dict to each rune
+    normalize_class_property_order("Sources\\frenkeyLib\\ItemHandling\\edit_input.py", "Sources\\frenkeyLib\\ItemHandling\\edit_output.py")
+    import re
+from pathlib import Path
+
+
+def normalize_class_property_order(source_path: str, target_path: str) -> None:
+    content = Path(source_path).read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    new_lines = []
+    i = 0
+
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+
+        class_match = re.match(r"class\s+(\w+)\(", stripped)
+
+        if not class_match:
+            new_lines.append(line)
+            i += 1
+            continue
+
+        # ----------------------------------------------------------
+        # Found class
+        # ----------------------------------------------------------
+        class_indent = re.match(r"(\s*)", line).group(1)
+        body_indent = class_indent + "    "
+
+        new_lines.append(line)
+        i += 1
+
+        # Collect class body
+        body = []
+        while i < len(lines):
+            if re.match(rf"^{class_indent}class\s+", lines[i]):
+                break
+            body.append(lines[i])
+            i += 1
+
+        # ----------------------------------------------------------
+        # Extract relevant sections
+        # ----------------------------------------------------------
+        id_line = None
+        mod_type_line = None
+        rarity_line = None
+        property_block = []
+        names_block = []
+        others = []
+
+        j = 0
+        while j < len(body):
+            current = body[j]
+            stripped_current = current.strip()
+
+            # id
+            if stripped_current.startswith("id ="):
+                id_line = current
+                j += 1
+                continue
+
+            # mod_type
+            if stripped_current.startswith("mod_type ="):
+                mod_type_line = current
+                j += 1
+                continue
+
+            # rarity
+            if stripped_current.startswith("rarity ="):
+                rarity_line = current
+                j += 1
+                continue
+
+            # property_identifiers block
+            if stripped_current.startswith("property_identifiers"):
+                property_block.append(current)
+                j += 1
+                while j < len(body) and not body[j].strip().endswith("]"):
+                    property_block.append(body[j])
+                    j += 1
+                if j < len(body):
+                    property_block.append(body[j])
+                    j += 1
+                continue
+
+            # names block
+            if stripped_current.startswith("names ="):
+                names_block.append(current)
+                j += 1
+                while j < len(body) and not body[j].strip().endswith("}"):
+                    names_block.append(body[j])
+                    j += 1
+                if j < len(body):
+                    names_block.append(body[j])
+                    j += 1
+                continue
+
+            others.append(current)
+            j += 1
+
+        # ----------------------------------------------------------
+        # Reassemble in required order
+        # ----------------------------------------------------------
+        ordered = []
+
+        if id_line:
+            ordered.append(id_line)
+        if mod_type_line:
+            ordered.append(mod_type_line)
+        if rarity_line:
+            ordered.append(rarity_line)
+
+        if ordered:
+            ordered.append("")  # blank line
+
+        if property_block:
+            ordered.extend(property_block)
+            ordered.append("")
+
+        if names_block:
+            ordered.extend(names_block)
+            ordered.append("")
+
+        # Preserve other attributes at bottom
+        if others:
+            ordered.extend(others)
+
+        # Clean trailing blank lines inside class
+        while ordered and ordered[-1].strip() == "":
+            ordered.pop()
+
+        new_lines.extend(ordered)
+        new_lines.append("")  # blank line after class
+
+    # ----------------------------------------------------------
+    # Final cleanup
+    # ----------------------------------------------------------
+    final = "\n".join(new_lines)
+    final = re.sub(r"\n{3,}", "\n\n", final)
+    final = final.strip() + "\n"
+
+    Path(target_path).write_text(final, encoding="utf-8")
+    
+def inject_rune_names():
+    data = Data()
+
+    source_path = Path("Sources\\frenkeyLib\\ItemHandling\\edit_input.py")
+    target_path = Path("Sources\\frenkeyLib\\ItemHandling\\edit_output.py")
+
+    content = source_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+
+    def normalize_class_name(name: str) -> str:
+        name = name.replace(" ", "")
+        name = name.replace("'", "")
+        name = name.replace("-", "")
+        name = name.replace(".", "")
+        name = name.replace(",", "")
+        
+        #remove everyting in []
+        name = re.sub(r"\[.*?\]", "", name)
+        
+        return name
+
+    runes: dict[str, Rune] = {
+        normalize_class_name(r.identifier.lower()): r for r in data.Runes.values()
+    }
+
+    def compose_names_dict(mod: Rune, indent: str) -> list[str]:
+        names_dict = {
+            lang: mod.names.get(lang, None)
+            for lang in ServerLanguage
+        }
+
+        names_dict = {k: v for k, v in names_dict.items() if v}
+
+        output = [f"{indent}names = {{"]
+
+        for lang, name in names_dict.items():
+            name = name.replace('"', '\\"')
+            output.append(
+                f"{indent}    ServerLanguage.{lang.name}: \"{name}\","
+            )
+
+        output.append(f"{indent}}}")
+        return output
+
+    new_lines = []
+    i = 0
+
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip().lower()
+
+        class_match = re.match(r"class\s+(\w+)\(", stripped)
+
+        if class_match:
+            class_name = class_match.group(1)
+            new_lines.append(line)
+
+            # Determine indentation level
+            indent = re.match(r"(\s*)", line).group(1) + "    "
+
+            # Check if this class already has names
+            j = i + 1
+            has_names = False
+            while j < len(lines) and not lines[j].strip().startswith("class "):
+                if "names =" in lines[j]:
+                    has_names = True
+                    break
+                j += 1
+
+            if not has_names:
+                rune = runes.get(class_name.lower())
+
+                if rune:
+                    name_block = compose_names_dict(rune, indent)
+
+                    new_lines.append("")
+                    new_lines.extend(name_block)
+                else:
+                    Py4GW.Console.Log("ItemHandling", f"Warning: No rune found for class {class_name}, skipping injection")
+
+            i += 1
+            continue
+
+        new_lines.append(line)
+        i += 1
+
+    # Normalize blank lines between classes
+    final_content = "\n".join(new_lines)
+    final_content = re.sub(r"\n{3,}", "\n\n", final_content)
+    final_content = final_content.strip() + "\n"
+
+    target_path.write_text(final_content, encoding="utf-8")
+
+    Py4GW.Console.Log("ItemHandling", "Rune names injection complete.")
+    
 UPGRADE_PATTERN = re.compile(
     r'ItemUpgrade\s+(\w+)\s*=\s*new\(\s*([^,]+)\s*,\s*"((?:\\.|[^"\\])*)"\s*,\s*ItemUpgradeType\.([A-Za-z_]+)\s*\);'
 )
@@ -116,7 +393,70 @@ def check_item(item_id):
     parser = ItemModifierParser(runtime_modifiers)        
     for prop in parser.get_properties():
         print(prop.describe())
-        
+   
+
+
+def refactor_upgrade_file(source_path: str, target_path: str) -> None:
+    with open(source_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # ----------------------------------------------------------
+    # 1️⃣ Replace item_type_id_map blocks with id = ItemUpgradeId.X
+    # ----------------------------------------------------------
+
+    map_pattern = re.compile(
+        r"item_type_id_map\s*=\s*\{\s*.*?ItemUpgradeId\.([A-Za-z0-9_]+).*?\}",
+        re.DOTALL
+    )
+
+    def replace_map(match: re.Match) -> str:
+        upgrade_name = match.group(1)
+        return f"id = ItemUpgradeId.{upgrade_name}"
+
+    content = map_pattern.sub(replace_map, content)
+
+    # ----------------------------------------------------------
+    # 2️⃣ Remove empty property_identifiers
+    # ----------------------------------------------------------
+
+    content = re.sub(
+        r"\n\s*property_identifiers\s*=\s*\[\s*\]\s*",
+        "\n",
+        content
+    )
+
+    # ----------------------------------------------------------
+    # 3️⃣ Ensure exactly ONE blank line between classes
+    # ----------------------------------------------------------
+
+    lines = content.splitlines()
+    new_lines = []
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+
+        # If this line starts a class and previous line isn't blank,
+        # insert a blank line before it (except at file start)
+        if stripped.startswith("class ") and new_lines:
+            if new_lines[-1].strip() != "":
+                new_lines.append("")
+
+        new_lines.append(line.rstrip())
+
+    content = "\n".join(new_lines)
+
+    # Remove multiple blank lines
+    content = re.sub(r"\n{3,}", "\n\n", content)
+
+    content = content.strip() + "\n"
+
+    # ----------------------------------------------------------
+    # 4️⃣ Write result
+    # ----------------------------------------------------------
+
+    with open(target_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
 
 HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=run_test, identifier="test_item_modifier_parser", name="Test Item Modifier Parser")
 
