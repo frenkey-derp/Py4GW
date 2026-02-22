@@ -392,12 +392,13 @@ class Py4GWLibrary:
             if self.layout_mode != LayoutMode.SingleButton:
                 self.set_layout_mode(LayoutMode.SingleButton)
         
-        item_min, item_max, item_size = ImGui.get_item_rect()
-        pos_x = item_min[0] + ((item_size[0] - item_size[1]) / 2)
-        ImGui.DrawTextureInDrawList((pos_x, item_min[1]), (item_size[1], item_size[1]), "python_icon_round_20px.png")
+        item_min, _, item_size = ImGui.get_item_rect()
+        image_size = item_size[1] - 4
+        pos_x = item_min[0] + ((item_size[0] - image_size) / 2)
+        pos_y = item_min[1] + ((item_size[1] - image_size) / 2)
+        ImGui.DrawTextureInDrawList((pos_x, pos_y), (image_size, image_size), "python_icon_round_20px.png")
         ImGui.show_tooltip("Switch to Single Button View")
-        
-        
+                
         PyImGui.same_line(0, spacing)
         
         if search:
