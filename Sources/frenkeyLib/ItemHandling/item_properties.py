@@ -12,6 +12,7 @@ from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeType, ModifierIdentifier
 from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgradeId
 
+#region Item Properties
 @dataclass
 class ItemProperty:
     modifier: DecodedModifier
@@ -587,7 +588,8 @@ class TargetItemTypeProperty(ItemProperty):
     
     def describe(self) -> str:
         return f"{self.item_type.name}"
-    
+#endregion Item Properties
+
 def get_profession_from_attribute(attribute: Attribute) -> Optional[Profession]:
     for prof, attr in ProfessionAttributes.__dict__.items():
         if isinstance(attr, list) and attribute in attr:
@@ -783,70 +785,15 @@ class WeaponPrefix(WeaponUpgrade):
             return item_type_name_format.format(prefix=name)
         
         return None
-
     
-class IcyUpgrade(WeaponPrefix):
+class AdeptStaffUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Icy_Axe,
-        ItemType.Bow: ItemUpgradeId.Icy_Bow,
-        ItemType.Daggers: ItemUpgradeId.Icy_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Icy_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Icy_Scythe,
-        ItemType.Spear: ItemUpgradeId.Icy_Spear,
-        ItemType.Sword: ItemUpgradeId.Icy_Sword,
+        ItemType.Staff: ItemUpgradeId.Adept_Staff,
     }
     
     property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
-
-class EbonUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Ebon_Axe,
-        ItemType.Bow: ItemUpgradeId.Ebon_Bow,
-        ItemType.Daggers: ItemUpgradeId.Ebon_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Ebon_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Ebon_Scythe,
-        ItemType.Spear: ItemUpgradeId.Ebon_Spear,
-        ItemType.Sword: ItemUpgradeId.Ebon_Sword,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
-    
-class ShockingUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Shocking_Axe,
-        ItemType.Bow: ItemUpgradeId.Shocking_Bow,
-        ItemType.Daggers: ItemUpgradeId.Shocking_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Shocking_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Shocking_Scythe,
-        ItemType.Spear: ItemUpgradeId.Shocking_Spear,
-        ItemType.Sword: ItemUpgradeId.Shocking_Sword,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
-    
-class FieryUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Fiery_Axe,
-        ItemType.Bow: ItemUpgradeId.Fiery_Bow,
-        ItemType.Daggers: ItemUpgradeId.Fiery_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Fiery_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Fiery_Scythe,
-        ItemType.Spear: ItemUpgradeId.Fiery_Spear,
-        ItemType.Sword: ItemUpgradeId.Fiery_Sword,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
+        ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
 
 class BarbedUpgrade(WeaponPrefix):
@@ -894,31 +841,46 @@ class CruelUpgrade(WeaponPrefix):
         ModifierIdentifier.IncreaseConditionDuration,
     ]
 
-class PoisonousUpgrade(WeaponPrefix):
+class DefensiveUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Poisonous_Axe,
-        ItemType.Bow: ItemUpgradeId.Poisonous_Bow,
-        ItemType.Daggers: ItemUpgradeId.Poisonous_Daggers,
-        ItemType.Scythe: ItemUpgradeId.Poisonous_Scythe,
-        ItemType.Spear: ItemUpgradeId.Poisonous_Spear,
-        ItemType.Sword: ItemUpgradeId.Poisonous_Sword,
+        ItemType.Staff: ItemUpgradeId.Defensive_Staff,
     }
     
     property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
+        ModifierIdentifier.ArmorPlus,
     ]
 
-class SilencingUpgrade(WeaponPrefix):
+class EbonUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
-        ItemType.Bow: ItemUpgradeId.Silencing_Bow,
-        ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
-        ItemType.Spear: ItemUpgradeId.Silencing_Spear,
+        ItemType.Axe: ItemUpgradeId.Ebon_Axe,
+        ItemType.Bow: ItemUpgradeId.Ebon_Bow,
+        ItemType.Daggers: ItemUpgradeId.Ebon_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Ebon_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Ebon_Scythe,
+        ItemType.Spear: ItemUpgradeId.Ebon_Spear,
+        ItemType.Sword: ItemUpgradeId.Ebon_Sword,
     }
     
     property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
+        ModifierIdentifier.DamageTypeProperty,
+    ]
+    
+class FieryUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.Fiery_Axe,
+        ItemType.Bow: ItemUpgradeId.Fiery_Bow,
+        ItemType.Daggers: ItemUpgradeId.Fiery_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Fiery_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Fiery_Scythe,
+        ItemType.Spear: ItemUpgradeId.Fiery_Spear,
+        ItemType.Sword: ItemUpgradeId.Fiery_Sword,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.DamageTypeProperty,
     ]
     
 class FuriousUpgrade(WeaponPrefix):
@@ -935,6 +897,16 @@ class FuriousUpgrade(WeaponPrefix):
     property_identifiers = [
         ModifierIdentifier.Furious,
     ]
+    
+class HaleUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Staff: ItemUpgradeId.Hale_Staff,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HealthPlus,
+    ]
 
 class HeavyUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
@@ -949,21 +921,99 @@ class HeavyUpgrade(WeaponPrefix):
         ModifierIdentifier.IncreaseConditionDuration,
     ]
 
-class ZealousUpgrade(WeaponPrefix):
+class IcyUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Zealous_Axe,
-        ItemType.Bow: ItemUpgradeId.Zealous_Bow,
-        ItemType.Daggers: ItemUpgradeId.Zealous_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Zealous_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Zealous_Scythe,
-        ItemType.Spear: ItemUpgradeId.Zealous_Spear,
-        ItemType.Sword: ItemUpgradeId.Zealous_Sword,
+        ItemType.Axe: ItemUpgradeId.Icy_Axe,
+        ItemType.Bow: ItemUpgradeId.Icy_Bow,
+        ItemType.Daggers: ItemUpgradeId.Icy_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Icy_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Icy_Scythe,
+        ItemType.Spear: ItemUpgradeId.Icy_Spear,
+        ItemType.Sword: ItemUpgradeId.Icy_Sword,
     }
     
     property_identifiers = [
-        ModifierIdentifier.EnergyDegen,
-        ModifierIdentifier.EnergyGainOnHit,
+        ModifierIdentifier.DamageTypeProperty,
+    ]
+
+class InsightfulUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Staff: ItemUpgradeId.Insightful_Staff,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.EnergyPlus,
+    ]
+
+class PoisonousUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.Poisonous_Axe,
+        ItemType.Bow: ItemUpgradeId.Poisonous_Bow,
+        ItemType.Daggers: ItemUpgradeId.Poisonous_Daggers,
+        ItemType.Scythe: ItemUpgradeId.Poisonous_Scythe,
+        ItemType.Spear: ItemUpgradeId.Poisonous_Spear,
+        ItemType.Sword: ItemUpgradeId.Poisonous_Sword,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.IncreaseConditionDuration,
+    ]
+
+class ShockingUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.Shocking_Axe,
+        ItemType.Bow: ItemUpgradeId.Shocking_Bow,
+        ItemType.Daggers: ItemUpgradeId.Shocking_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Shocking_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Shocking_Scythe,
+        ItemType.Spear: ItemUpgradeId.Shocking_Spear,
+        ItemType.Sword: ItemUpgradeId.Shocking_Sword,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.DamageTypeProperty,
+    ]
+    
+class SilencingUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Bow: ItemUpgradeId.Silencing_Bow,
+        ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
+        ItemType.Spear: ItemUpgradeId.Silencing_Spear,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.IncreaseConditionDuration,
+    ]
+    
+class SunderingUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.Sundering_Axe,
+        ItemType.Bow: ItemUpgradeId.Sundering_Bow,
+        ItemType.Daggers: ItemUpgradeId.Sundering_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Sundering_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Sundering_Scythe,
+        ItemType.Spear: ItemUpgradeId.Sundering_Spear,
+        ItemType.Sword: ItemUpgradeId.Sundering_Sword,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.ArmorPenetration,
+    ]
+    
+class SwiftStaffUpgrade(WeaponPrefix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Staff: ItemUpgradeId.Swift_Staff,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
 
 class VampiricUpgrade(WeaponPrefix):
@@ -983,50 +1033,21 @@ class VampiricUpgrade(WeaponPrefix):
         ModifierIdentifier.HealthStealOnHit,
     ]
 
-class SunderingUpgrade(WeaponPrefix):
+class ZealousUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Sundering_Axe,
-        ItemType.Bow: ItemUpgradeId.Sundering_Bow,
-        ItemType.Daggers: ItemUpgradeId.Sundering_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Sundering_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Sundering_Scythe,
-        ItemType.Spear: ItemUpgradeId.Sundering_Spear,
-        ItemType.Sword: ItemUpgradeId.Sundering_Sword,
+        ItemType.Axe: ItemUpgradeId.Zealous_Axe,
+        ItemType.Bow: ItemUpgradeId.Zealous_Bow,
+        ItemType.Daggers: ItemUpgradeId.Zealous_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Zealous_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Zealous_Scythe,
+        ItemType.Spear: ItemUpgradeId.Zealous_Spear,
+        ItemType.Sword: ItemUpgradeId.Zealous_Sword,
     }
     
     property_identifiers = [
-        ModifierIdentifier.ArmorPenetration,
-    ]
-
-class DefensiveUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Defensive_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlus,
-    ]
-
-class InsightfulUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Insightful_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlus,
-    ]
-    
-class HaleUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Hale_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HealthPlus,
+        ModifierIdentifier.EnergyDegen,
+        ModifierIdentifier.EnergyGainOnHit,
     ]
 #endregion Prefixes
 
@@ -1190,6 +1211,46 @@ class WeaponSuffix(WeaponUpgrade):
         
         return None
     
+class OfAttributeUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
+    ]
+    
+class OfAptitudeUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HalvesCastingTimeItemAttribute,
+    ]
+
+class OfAxeMasteryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.OfAxeMastery,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
+    ]
+
+class OfDaggerMasteryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
+    ]   
+    
 class OfDefenseUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1207,23 +1268,126 @@ class OfDefenseUpgrade(WeaponSuffix):
         ModifierIdentifier.ArmorPlus,
     ]
 
-class OfWardingUpgrade(WeaponSuffix):
+class OfDevotionUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfWarding_Axe,
-        ItemType.Bow: ItemUpgradeId.OfWarding_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfWarding_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfWarding_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfWarding_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfWarding_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfWarding_Spear,
-        ItemType.Sword: ItemUpgradeId.OfWarding_Sword,
+        ItemType.Shield: ItemUpgradeId.OfDevotion_Shield,
+        ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
+        ItemType.Staff: ItemUpgradeId.OfDevotion_Staff,
     }
     
     property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsElemental,
+        ModifierIdentifier.HealthPlusEnchanted,
     ]
 
+class OfEnchantingUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Suffix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.OfEnchanting_Axe,
+        ItemType.Bow: ItemUpgradeId.OfEnchanting_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfEnchanting_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfEnchanting_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfEnchanting_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfEnchanting_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfEnchanting_Spear,
+        ItemType.Sword: ItemUpgradeId.OfEnchanting_Sword,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.IncreaseEnchantmentDuration,
+    ]
+
+class OfEnduranceUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Suffix
+    item_type_id_map = {
+        ItemType.Offhand: ItemUpgradeId.OfEndurance_Focus,
+        ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
+        ItemType.Staff: ItemUpgradeId.OfEndurance_Staff,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HealthPlusStance,
+    ]
+
+class OfFortitudeUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Suffix
+    item_type_id_map = {
+        ItemType.Axe: ItemUpgradeId.OfFortitude_Axe,
+        ItemType.Bow: ItemUpgradeId.OfFortitude_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfFortitude_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfFortitude_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfFortitude_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfFortitude_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfFortitude_Spear,
+        ItemType.Sword: ItemUpgradeId.OfFortitude_Sword,
+        ItemType.Offhand: ItemUpgradeId.OfFortitude_Focus,
+        ItemType.Shield: ItemUpgradeId.OfFortitude_Shield,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HealthPlus,
+    ]
+
+class OfHammerMasteryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
+    ]
+
+class OfMarksmanshipUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Bow: ItemUpgradeId.OfMarksmanship,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
+    ]
+
+class OfMasteryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOneItem,
+    ]
+
+class OfMemoryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HalvesSkillRechargeItemAttribute,
+    ]
+
+class OfQuickeningUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.HalvesSkillRechargeGeneral,
+    ]
+
+class OfScytheMasteryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
+    ]
+    
 class OfShelterUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1255,40 +1419,34 @@ class OfSlayingUpgrade(WeaponSuffix):
         ModifierIdentifier.ArmorPlusVsSpecies,
     ]
 
-class OfFortitudeUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
+class OfSpearMasteryUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfFortitude_Axe,
-        ItemType.Bow: ItemUpgradeId.OfFortitude_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfFortitude_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfFortitude_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfFortitude_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfFortitude_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfFortitude_Spear,
-        ItemType.Sword: ItemUpgradeId.OfFortitude_Sword,
-        ItemType.Offhand: ItemUpgradeId.OfFortitude_Focus,
-        ItemType.Shield: ItemUpgradeId.OfFortitude_Shield,
+        ItemType.Spear: ItemUpgradeId.OfSpearMastery,
     }
     
     property_identifiers = [
-        ModifierIdentifier.HealthPlus,
+        ModifierIdentifier.AttributePlusOne,
     ]
 
-class OfEnchantingUpgrade(WeaponSuffix):
+class OfSwiftnessUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfEnchanting_Axe,
-        ItemType.Bow: ItemUpgradeId.OfEnchanting_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfEnchanting_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfEnchanting_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfEnchanting_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfEnchanting_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfEnchanting_Spear,
-        ItemType.Sword: ItemUpgradeId.OfEnchanting_Sword,
+        ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
     }
     
     property_identifiers = [
-        ModifierIdentifier.IncreaseEnchantmentDuration,
+        ModifierIdentifier.HalvesCastingTimeGeneral,
+    ]
+
+class OfSwordsmanshipUpgrade(WeaponSuffix):
+    mod_type = ItemUpgradeType.Prefix
+    item_type_id_map = {
+        ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
+    }
+    
+    property_identifiers = [
+        ModifierIdentifier.AttributePlusOne,
     ]
 
 class OfTheProfessionUpgrade(WeaponSuffix):
@@ -1309,58 +1467,6 @@ class OfTheProfessionUpgrade(WeaponSuffix):
         ModifierIdentifier.OfTheProfession,
     ]
 
-class OfAxeMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfAxeMastery,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-
-class OfMarksmanshipUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Bow: ItemUpgradeId.OfMarksmanship,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-
-class OfDaggerMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-
-class OfAptitudeUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeItemAttribute,
-    ]
-
-class OfDevotionUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
-    item_type_id_map = {
-        ItemType.Shield: ItemUpgradeId.OfDevotion_Shield,
-        ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
-        ItemType.Staff: ItemUpgradeId.OfDevotion_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HealthPlusEnchanted,
-    ]
-
 class OfValorUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1373,126 +1479,21 @@ class OfValorUpgrade(WeaponSuffix):
         ModifierIdentifier.HealthPlusHexed,
     ]
 
-class OfEnduranceUpgrade(WeaponSuffix):
+class OfWardingUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfEndurance_Focus,
-        ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
-        ItemType.Staff: ItemUpgradeId.OfEndurance_Staff,
+        ItemType.Axe: ItemUpgradeId.OfWarding_Axe,
+        ItemType.Bow: ItemUpgradeId.OfWarding_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfWarding_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfWarding_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfWarding_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfWarding_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfWarding_Spear,
+        ItemType.Sword: ItemUpgradeId.OfWarding_Sword,
     }
     
     property_identifiers = [
-        ModifierIdentifier.HealthPlusStance,
-    ]
-
-class OfSwiftnessUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
-    item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeGeneral,
-    ]
-
-class OfHammerMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-
-class OfScytheMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    
-class OfSpearMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Spear: ItemUpgradeId.OfSpearMastery,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-
-class OfSwordsmanshipUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-
-class OfAttributeUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    
-class OfMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOneItem,
-    ]
-
-class SwiftStaffUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Swift_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeGeneral,
-    ]
-
-class AdeptStaffUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Adept_Staff,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeItemAttribute,
-    ]
-
-class OfMemoryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeItemAttribute,
-    ]
-
-class OfQuickeningUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
-    }
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeGeneral,
+        ModifierIdentifier.ArmorPlusVsElemental,
     ]
 #endregion Suffixes
 
@@ -1970,7 +1971,6 @@ class SeizeTheDay(Inscription):
 #endregion Weapon Upgrades
 
 #region Armor Upgrades
-
 class Insignia(Upgrade):
     id : ItemUpgradeId
     mod_type = ItemUpgradeType.Prefix
@@ -1978,7 +1978,7 @@ class Insignia(Upgrade):
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
     localized_name_format : dict[ServerLanguage, str] = {}
-    
+
     INSIGNIA_LOCALIZATION = {
         ServerLanguage.English: "Insignia",
         ServerLanguage.Spanish: "Insignia",
@@ -1992,21 +1992,20 @@ class Insignia(Upgrade):
         ServerLanguage.Russian: "Insignia",
         ServerLanguage.BorkBorkBork: "Inseegneea"
     }
-    
-    
+
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return cls.id is not None and upgrade_id == cls.id
-    
+
     @property
     def name(self) -> str:
         return self.get_name()
-    
+
     @classmethod
     def get_name(cls, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
         format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
         return format_str.format(item_name=Insignia.INSIGNIA_LOCALIZATION.get(language, "Insignia"))
-    
+
     @classmethod
     def add_to_item_name(cls, item_name: str, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
         format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
@@ -2019,7 +2018,7 @@ class Rune(Upgrade):
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
     localized_name_format : dict[ServerLanguage, str] = {}
-    
+
     RANK_LOCALIZATION = {
         Rarity.Blue: {
             ServerLanguage.English: "Minor",
@@ -2061,7 +2060,7 @@ class Rune(Upgrade):
             ServerLanguage.BorkBorkBork: "Soopereeur"
         }
     }
-            
+
     RUNE_LOCALIZATION = {
         ServerLanguage.English: "Rune",
         ServerLanguage.Spanish: "Runa",
@@ -2075,66 +2074,66 @@ class Rune(Upgrade):
         ServerLanguage.Russian: "Rune",
         ServerLanguage.BorkBorkBork: "Roone-a"
     }
-    
+
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return cls.id is not None and upgrade_id == cls.id
-    
+
     @property
     def name(self) -> str:
         return self.get_name()
-    
+
     @classmethod
     def get_name(cls, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
         format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
         return format_str.format(item_name=Insignia.INSIGNIA_LOCALIZATION.get(language, "Insignia"))
-    
+
     @classmethod
     def add_to_item_name(cls, item_name: str, language : ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> str:
         format_str = cls.localized_name_format.get(language, "[ABC] {item_name}")
         return format_str.format(name=cls.get_name(language), item_name=item_name)
-    
+
 class AttributeRune(Rune):
     attribute : Attribute
     attribute_level : int
 
     @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["AttributeRune"]:        
+    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["AttributeRune"]:
         upgrade = cls()
         upgrade.properties = []
-        
+
         cls.attribute = Attribute(mod.arg1)
         cls.attribute_level = mod.arg2
-        
+
         Py4GW.Console.Log("ItemHandling", f"Composing upgrade {upgrade.__class__.__name__} from modifiers...")
-        
+
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
-            
+
             if prop_mod:
                 prop = _PROPERTY_FACTORY.get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
                 upgrade.properties.append(prop)
             else:
                 Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
                 return None
-        
+
         return upgrade
-    
+
     @property
     def description(self) -> str:
         parts = [prop.describe() for prop in self.properties if prop.is_valid()]
         return f"+ {self.attribute_level} {AttributeNames.get(self.attribute)}\n" + "\n".join(parts)
 
-    
 #region No Profession
+
 class SurvivorInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Survivor
-        
+
 class RadiantInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Radiant
-    
+
 class StalwartInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Stalwart
@@ -2145,95 +2144,48 @@ class StalwartInsignia(Insignia):
 class BrawlersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Brawlers
-    
+
 class BlessedInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Blessed
-    
+
 class HeraldsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Heralds
-    
+
 class SentrysInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
     id = ItemUpgradeId.Sentrys
-    
+
 class RuneOfMinorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorVigor,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorVigor,
-        ItemType.Gloves: ItemUpgradeId.OfMinorVigor,
-        ItemType.Leggings: ItemUpgradeId.OfMinorVigor,
-        ItemType.Boots: ItemUpgradeId.OfMinorVigor,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorVigor
+
 class RuneOfMinorVigor2(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorVigor2,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorVigor2,
-        ItemType.Gloves: ItemUpgradeId.OfMinorVigor2,
-        ItemType.Leggings: ItemUpgradeId.OfMinorVigor2,
-        ItemType.Boots: ItemUpgradeId.OfMinorVigor2,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorVigor2
 
 class RuneOfVitae(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfVitae,
-        ItemType.Chestpiece: ItemUpgradeId.OfVitae,
-        ItemType.Gloves: ItemUpgradeId.OfVitae,
-        ItemType.Leggings: ItemUpgradeId.OfVitae,
-        ItemType.Boots: ItemUpgradeId.OfVitae,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfVitae
 
 class RuneOfAttunement(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfAttunement,
-        ItemType.Chestpiece: ItemUpgradeId.OfAttunement,
-        ItemType.Gloves: ItemUpgradeId.OfAttunement,
-        ItemType.Leggings: ItemUpgradeId.OfAttunement,
-        ItemType.Boots: ItemUpgradeId.OfAttunement,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfAttunement
 
 class RuneOfMajorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorVigor,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorVigor,
-        ItemType.Gloves: ItemUpgradeId.OfMajorVigor,
-        ItemType.Leggings: ItemUpgradeId.OfMajorVigor,
-        ItemType.Boots: ItemUpgradeId.OfMajorVigor,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMajorVigor
 
 class RuneOfRecovery(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfRecovery,
-        ItemType.Chestpiece: ItemUpgradeId.OfRecovery,
-        ItemType.Gloves: ItemUpgradeId.OfRecovery,
-        ItemType.Leggings: ItemUpgradeId.OfRecovery,
-        ItemType.Boots: ItemUpgradeId.OfRecovery,
-    }
-    
+    id = ItemUpgradeId.OfRecovery
     property_identifiers = [
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
@@ -2241,14 +2193,7 @@ class RuneOfRecovery(Rune):
 class RuneOfRestoration(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfRestoration,
-        ItemType.Chestpiece: ItemUpgradeId.OfRestoration,
-        ItemType.Gloves: ItemUpgradeId.OfRestoration,
-        ItemType.Leggings: ItemUpgradeId.OfRestoration,
-        ItemType.Boots: ItemUpgradeId.OfRestoration,
-    }
-    
+    id = ItemUpgradeId.OfRestoration
     property_identifiers = [
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
@@ -2256,29 +2201,15 @@ class RuneOfRestoration(Rune):
 class RuneOfClarity(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfClarity,
-        ItemType.Chestpiece: ItemUpgradeId.OfClarity,
-        ItemType.Gloves: ItemUpgradeId.OfClarity,
-        ItemType.Leggings: ItemUpgradeId.OfClarity,
-        ItemType.Boots: ItemUpgradeId.OfClarity,
-    }
-    
+    id = ItemUpgradeId.OfClarity
     property_identifiers = [
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
-    
+
 class RuneOfPurity(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfPurity,
-        ItemType.Chestpiece: ItemUpgradeId.OfPurity,
-        ItemType.Gloves: ItemUpgradeId.OfPurity,
-        ItemType.Leggings: ItemUpgradeId.OfPurity,
-        ItemType.Boots: ItemUpgradeId.OfPurity,
-    }
-    
+    id = ItemUpgradeId.OfPurity
     property_identifiers = [
         ModifierIdentifier.ReduceConditionTupleDuration,
     ]
@@ -2286,195 +2217,80 @@ class RuneOfPurity(Rune):
 class RuneOfSuperiorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorVigor,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorVigor,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorVigor,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorVigor,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorVigor,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfSuperiorVigor
 #endregion No Profession
 
 #region Warrior
+
 class KnightsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Knights,
-        ItemType.Chestpiece: ItemUpgradeId.Knights,
-        ItemType.Gloves: ItemUpgradeId.Knights,
-        ItemType.Leggings: ItemUpgradeId.Knights,
-        ItemType.Boots: ItemUpgradeId.Knights,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Knights
+
 class LieutenantsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Lieutenants,
-        ItemType.Chestpiece: ItemUpgradeId.Lieutenants,
-        ItemType.Gloves: ItemUpgradeId.Lieutenants,
-        ItemType.Leggings: ItemUpgradeId.Lieutenants,
-        ItemType.Boots: ItemUpgradeId.Lieutenants,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Lieutenants
+
 class StonefistInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Stonefist,
-        ItemType.Chestpiece: ItemUpgradeId.Stonefist,
-        ItemType.Gloves: ItemUpgradeId.Stonefist,
-        ItemType.Leggings: ItemUpgradeId.Stonefist,
-        ItemType.Boots: ItemUpgradeId.Stonefist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Stonefist
+
 class DreadnoughtInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Dreadnought,
-        ItemType.Chestpiece: ItemUpgradeId.Dreadnought,
-        ItemType.Gloves: ItemUpgradeId.Dreadnought,
-        ItemType.Leggings: ItemUpgradeId.Dreadnought,
-        ItemType.Boots: ItemUpgradeId.Dreadnought,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Dreadnought
+
 class SentinelsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Sentinels,
-        ItemType.Chestpiece: ItemUpgradeId.Sentinels,
-        ItemType.Gloves: ItemUpgradeId.Sentinels,
-        ItemType.Leggings: ItemUpgradeId.Sentinels,
-        ItemType.Boots: ItemUpgradeId.Sentinels,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Sentinels
+
 class RuneOfMinorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorAbsorption,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorAbsorption,
-        ItemType.Gloves: ItemUpgradeId.OfMinorAbsorption,
-        ItemType.Leggings: ItemUpgradeId.OfMinorAbsorption,
-        ItemType.Boots: ItemUpgradeId.OfMinorAbsorption,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorAbsorption
 
 class RuneOfMinorTactics(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorTactics,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorTactics,
-        ItemType.Gloves: ItemUpgradeId.OfMinorTactics,
-        ItemType.Leggings: ItemUpgradeId.OfMinorTactics,
-        ItemType.Boots: ItemUpgradeId.OfMinorTactics,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorTactics
 
 class RuneOfMinorStrength(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorStrength,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorStrength,
-        ItemType.Gloves: ItemUpgradeId.OfMinorStrength,
-        ItemType.Leggings: ItemUpgradeId.OfMinorStrength,
-        ItemType.Boots: ItemUpgradeId.OfMinorStrength,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorStrength
 
 class RuneOfMinorAxeMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorAxeMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorAxeMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMinorAxeMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMinorAxeMastery,
-        ItemType.Boots: ItemUpgradeId.OfMinorAxeMastery,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorAxeMastery
+
 class RuneOfMinorHammerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorHammerMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorHammerMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMinorHammerMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMinorHammerMastery,
-        ItemType.Boots: ItemUpgradeId.OfMinorHammerMastery,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorHammerMastery
+
 class RuneOfMinorSwordsmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorSwordsmanship,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorSwordsmanship,
-        ItemType.Gloves: ItemUpgradeId.OfMinorSwordsmanship,
-        ItemType.Leggings: ItemUpgradeId.OfMinorSwordsmanship,
-        ItemType.Boots: ItemUpgradeId.OfMinorSwordsmanship,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorSwordsmanship
+
 class RuneOfMajorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorAbsorption,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorAbsorption,
-        ItemType.Gloves: ItemUpgradeId.OfMajorAbsorption,
-        ItemType.Leggings: ItemUpgradeId.OfMajorAbsorption,
-        ItemType.Boots: ItemUpgradeId.OfMajorAbsorption,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMajorAbsorption
+
 class RuneOfMajorTactics(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorTactics,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorTactics,
-        ItemType.Gloves: ItemUpgradeId.OfMajorTactics,
-        ItemType.Leggings: ItemUpgradeId.OfMajorTactics,
-        ItemType.Boots: ItemUpgradeId.OfMajorTactics,
-    }
-    
+    id = ItemUpgradeId.OfMajorTactics
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorStrength(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorStrength,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorStrength,
-        ItemType.Gloves: ItemUpgradeId.OfMajorStrength,
-        ItemType.Leggings: ItemUpgradeId.OfMajorStrength,
-        ItemType.Boots: ItemUpgradeId.OfMajorStrength,
-    }
-    
+    id = ItemUpgradeId.OfMajorStrength
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
@@ -2482,72 +2298,40 @@ class RuneOfMajorStrength(AttributeRune):
 class RuneOfMajorAxeMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorAxeMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorAxeMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMajorAxeMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMajorAxeMastery,
-        ItemType.Boots: ItemUpgradeId.OfMajorAxeMastery,
-    }
-    
+    id = ItemUpgradeId.OfMajorAxeMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorHammerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorHammerMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorHammerMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMajorHammerMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMajorHammerMastery,
-        ItemType.Boots: ItemUpgradeId.OfMajorHammerMastery,
-    }
-    
+    id = ItemUpgradeId.OfMajorHammerMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorSwordsmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorSwordsmanship,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorSwordsmanship,
-        ItemType.Gloves: ItemUpgradeId.OfMajorSwordsmanship,
-        ItemType.Leggings: ItemUpgradeId.OfMajorSwordsmanship,
-        ItemType.Boots: ItemUpgradeId.OfMajorSwordsmanship,
-    }
-    
+    id = ItemUpgradeId.OfMajorSwordsmanship
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorAbsorption,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorAbsorption,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorAbsorption,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorAbsorption,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorAbsorption,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfSuperiorAbsorption
 
 class RuneOfSuperiorTactics(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorTactics,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorTactics,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorTactics,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorTactics,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorTactics,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorTactics
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
@@ -2555,14 +2339,8 @@ class RuneOfSuperiorTactics(AttributeRune):
 class RuneOfSuperiorStrength(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorStrength,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorStrength,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorStrength,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorStrength,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorStrength,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorStrength
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
@@ -2570,539 +2348,237 @@ class RuneOfSuperiorStrength(AttributeRune):
 class RuneOfSuperiorAxeMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorAxeMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorAxeMastery,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorAxeMastery,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorAxeMastery,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorAxeMastery,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorAxeMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorHammerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorHammerMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorHammerMastery,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorHammerMastery,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorHammerMastery,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorHammerMastery,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorHammerMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorSwordsmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorSwordsmanship,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSwordsmanship,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorSwordsmanship,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorSwordsmanship,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorSwordsmanship,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorSwordsmanship
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
-    ]    
+    ]
 
 class UpgradeMinorRuneWarrior(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Warrior,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Warrior,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Warrior,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Warrior,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Warrior,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Warrior
 
 class UpgradeMajorRuneWarrior(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Warrior,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Warrior,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Warrior,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Warrior,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Warrior,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Warrior
+
 class UpgradeSuperiorRuneWarrior(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Warrior,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Warrior,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Warrior,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Warrior,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Warrior,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Warrior
+
 class AppliesToMinorRuneWarrior(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Warrior,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Warrior,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Warrior,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Warrior,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Warrior,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Warrior
+
 class AppliesToMajorRuneWarrior(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Warrior,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Warrior,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Warrior,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Warrior,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Warrior,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Warrior
 
 class AppliesToSuperiorRuneWarrior(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Warrior,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Warrior,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Warrior,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Warrior,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Warrior,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Warrior
 #endregion Warrior
 
 #region Ranger
+
 class FrostboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Frostbound,
-        ItemType.Chestpiece: ItemUpgradeId.Frostbound,
-        ItemType.Gloves: ItemUpgradeId.Frostbound,
-        ItemType.Leggings: ItemUpgradeId.Frostbound,
-        ItemType.Boots: ItemUpgradeId.Frostbound,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Frostbound
+
 class PyreboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Pyrebound,
-        ItemType.Chestpiece: ItemUpgradeId.Pyrebound,
-        ItemType.Gloves: ItemUpgradeId.Pyrebound,
-        ItemType.Leggings: ItemUpgradeId.Pyrebound,
-        ItemType.Boots: ItemUpgradeId.Pyrebound,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Pyrebound
+
 class StormboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Stormbound,
-        ItemType.Chestpiece: ItemUpgradeId.Stormbound,
-        ItemType.Gloves: ItemUpgradeId.Stormbound,
-        ItemType.Leggings: ItemUpgradeId.Stormbound,
-        ItemType.Boots: ItemUpgradeId.Stormbound,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Stormbound
+
 class ScoutsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Scouts,
-        ItemType.Chestpiece: ItemUpgradeId.Scouts,
-        ItemType.Gloves: ItemUpgradeId.Scouts,
-        ItemType.Leggings: ItemUpgradeId.Scouts,
-        ItemType.Boots: ItemUpgradeId.Scouts,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Scouts
+
 class EarthboundInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Earthbound,
-        ItemType.Chestpiece: ItemUpgradeId.Earthbound,
-        ItemType.Gloves: ItemUpgradeId.Earthbound,
-        ItemType.Leggings: ItemUpgradeId.Earthbound,
-        ItemType.Boots: ItemUpgradeId.Earthbound,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Earthbound
+
 class BeastmastersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Beastmasters,
-        ItemType.Chestpiece: ItemUpgradeId.Beastmasters,
-        ItemType.Gloves: ItemUpgradeId.Beastmasters,
-        ItemType.Leggings: ItemUpgradeId.Beastmasters,
-        ItemType.Boots: ItemUpgradeId.Beastmasters,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Beastmasters
 
 class RuneOfMinorWildernessSurvival(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorWildernessSurvival,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorWildernessSurvival,
-        ItemType.Gloves: ItemUpgradeId.OfMinorWildernessSurvival,
-        ItemType.Leggings: ItemUpgradeId.OfMinorWildernessSurvival,
-        ItemType.Boots: ItemUpgradeId.OfMinorWildernessSurvival,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorWildernessSurvival
 
 class RuneOfMinorExpertise(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorExpertise,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorExpertise,
-        ItemType.Gloves: ItemUpgradeId.OfMinorExpertise,
-        ItemType.Leggings: ItemUpgradeId.OfMinorExpertise,
-        ItemType.Boots: ItemUpgradeId.OfMinorExpertise,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorExpertise
 
 class RuneOfMinorBeastMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorBeastMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorBeastMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMinorBeastMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMinorBeastMastery,
-        ItemType.Boots: ItemUpgradeId.OfMinorBeastMastery,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorBeastMastery
+
 class RuneOfMinorMarksmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorMarksmanship,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorMarksmanship,
-        ItemType.Gloves: ItemUpgradeId.OfMinorMarksmanship,
-        ItemType.Leggings: ItemUpgradeId.OfMinorMarksmanship,
-        ItemType.Boots: ItemUpgradeId.OfMinorMarksmanship,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorMarksmanship
+
 class RuneOfMajorWildernessSurvival(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorWildernessSurvival,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorWildernessSurvival,
-        ItemType.Gloves: ItemUpgradeId.OfMajorWildernessSurvival,
-        ItemType.Leggings: ItemUpgradeId.OfMajorWildernessSurvival,
-        ItemType.Boots: ItemUpgradeId.OfMajorWildernessSurvival,
-    }
-    
+    id = ItemUpgradeId.OfMajorWildernessSurvival
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorExpertise(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorExpertise,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorExpertise,
-        ItemType.Gloves: ItemUpgradeId.OfMajorExpertise,
-        ItemType.Leggings: ItemUpgradeId.OfMajorExpertise,
-        ItemType.Boots: ItemUpgradeId.OfMajorExpertise,
-    }
-    
+    id = ItemUpgradeId.OfMajorExpertise
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorBeastMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorBeastMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorBeastMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMajorBeastMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMajorBeastMastery,
-        ItemType.Boots: ItemUpgradeId.OfMajorBeastMastery,
-    }
-    
+    id = ItemUpgradeId.OfMajorBeastMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorMarksmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorMarksmanship,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorMarksmanship,
-        ItemType.Gloves: ItemUpgradeId.OfMajorMarksmanship,
-        ItemType.Leggings: ItemUpgradeId.OfMajorMarksmanship,
-        ItemType.Boots: ItemUpgradeId.OfMajorMarksmanship,
-    }
-    
+    id = ItemUpgradeId.OfMajorMarksmanship
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorWildernessSurvival(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorWildernessSurvival,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorWildernessSurvival,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorWildernessSurvival,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorWildernessSurvival,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorWildernessSurvival,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorWildernessSurvival
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorExpertise(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorExpertise,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorExpertise,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorExpertise,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorExpertise,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorExpertise,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorExpertise
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorBeastMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorBeastMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorBeastMastery,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorBeastMastery,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorBeastMastery,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorBeastMastery,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorBeastMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorMarksmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorMarksmanship,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorMarksmanship,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorMarksmanship,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorMarksmanship,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorMarksmanship,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorMarksmanship
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
 
 class UpgradeMinorRuneRanger(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Ranger,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Ranger,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Ranger,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Ranger,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Ranger,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Ranger
 
 class UpgradeMajorRuneRanger(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Ranger,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Ranger,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Ranger,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Ranger,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Ranger,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMajorRune_Ranger
 
 class UpgradeSuperiorRuneRanger(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Ranger,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Ranger,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Ranger,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Ranger,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Ranger,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeSuperiorRune_Ranger
 
 class AppliesToMinorRuneRanger(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Ranger,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Ranger,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Ranger,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Ranger,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Ranger,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Ranger
+
 class AppliesToMajorRuneRanger(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Ranger,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Ranger,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Ranger,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Ranger,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Ranger,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMajorRune_Ranger
+
 class AppliesToSuperiorRuneRanger(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Ranger,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Ranger,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Ranger,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Ranger,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Ranger,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Ranger
 #endregion Ranger
 
 #region Monk
+
 class WanderersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Wanderers,
-        ItemType.Chestpiece: ItemUpgradeId.Wanderers,
-        ItemType.Gloves: ItemUpgradeId.Wanderers,
-        ItemType.Leggings: ItemUpgradeId.Wanderers,
-        ItemType.Boots: ItemUpgradeId.Wanderers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Wanderers
+
 class DisciplesInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Disciples,
-        ItemType.Chestpiece: ItemUpgradeId.Disciples,
-        ItemType.Gloves: ItemUpgradeId.Disciples,
-        ItemType.Leggings: ItemUpgradeId.Disciples,
-        ItemType.Boots: ItemUpgradeId.Disciples,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Disciples
+
 class AnchoritesInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Anchorites,
-        ItemType.Chestpiece: ItemUpgradeId.Anchorites,
-        ItemType.Gloves: ItemUpgradeId.Anchorites,
-        ItemType.Leggings: ItemUpgradeId.Anchorites,
-        ItemType.Boots: ItemUpgradeId.Anchorites,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Anchorites
 
 class RuneOfMinorHealingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorHealingPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorHealingPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMinorHealingPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMinorHealingPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMinorHealingPrayers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorHealingPrayers
+
 class RuneOfMinorSmitingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorSmitingPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorSmitingPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMinorSmitingPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMinorSmitingPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMinorSmitingPrayers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorSmitingPrayers
+
 class RuneOfMinorProtectionPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorProtectionPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorProtectionPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMinorProtectionPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMinorProtectionPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMinorProtectionPrayers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorProtectionPrayers
+
 class RuneOfMinorDivineFavor(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorDivineFavor,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorDivineFavor,
-        ItemType.Gloves: ItemUpgradeId.OfMinorDivineFavor,
-        ItemType.Leggings: ItemUpgradeId.OfMinorDivineFavor,
-        ItemType.Boots: ItemUpgradeId.OfMinorDivineFavor,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorDivineFavor
+
 class RuneOfMajorHealingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorHealingPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorHealingPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMajorHealingPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMajorHealingPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMajorHealingPrayers,
-    }
-    
+    id = ItemUpgradeId.OfMajorHealingPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
@@ -3110,44 +2586,26 @@ class RuneOfMajorHealingPrayers(AttributeRune):
 class RuneOfMajorSmitingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorSmitingPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorSmitingPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMajorSmitingPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMajorSmitingPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMajorSmitingPrayers,
-    }
-    
+    id = ItemUpgradeId.OfMajorSmitingPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorProtectionPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorProtectionPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorProtectionPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMajorProtectionPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMajorProtectionPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMajorProtectionPrayers,
-    }
-    
+    id = ItemUpgradeId.OfMajorProtectionPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorDivineFavor(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorDivineFavor,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorDivineFavor,
-        ItemType.Gloves: ItemUpgradeId.OfMajorDivineFavor,
-        ItemType.Leggings: ItemUpgradeId.OfMajorDivineFavor,
-        ItemType.Boots: ItemUpgradeId.OfMajorDivineFavor,
-    }
-    
+    id = ItemUpgradeId.OfMajorDivineFavor
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
@@ -3155,14 +2613,8 @@ class RuneOfMajorDivineFavor(AttributeRune):
 class RuneOfSuperiorHealingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorHealingPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorHealingPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorHealingPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorHealingPrayers,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorHealingPrayers,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorHealingPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
@@ -3170,2170 +2622,1005 @@ class RuneOfSuperiorHealingPrayers(AttributeRune):
 class RuneOfSuperiorSmitingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorSmitingPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSmitingPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorSmitingPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorSmitingPrayers,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorSmitingPrayers,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorSmitingPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
-class RuneOfSuperiorProtectionPrayers(AttributeRune): 
+
+class RuneOfSuperiorProtectionPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorProtectionPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorProtectionPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorProtectionPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorProtectionPrayers,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorProtectionPrayers,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorProtectionPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
-    ]   
+    ]
 
 class RuneOfSuperiorDivineFavor(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorDivineFavor,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDivineFavor,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorDivineFavor,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorDivineFavor,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorDivineFavor,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorDivineFavor
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
 
 class UpgradeMinorRuneMonk(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Monk,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Monk,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Monk,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Monk,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Monk,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Monk
 
 class UpgradeMajorRuneMonk(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Monk,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Monk,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Monk,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Monk,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Monk,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMajorRune_Monk
 
 class UpgradeSuperiorRuneMonk(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Monk,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Monk,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Monk,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Monk,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Monk,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Monk
+
 class AppliesToMinorRuneMonk(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Monk,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Monk,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Monk,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Monk,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Monk,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Monk
+
 class AppliesToMajorRuneMonk(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Monk,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Monk,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Monk,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Monk,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Monk,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Monk
 
 class AppliesToSuperiorRuneMonk(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Monk,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Monk,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Monk,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Monk,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Monk,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Monk
 #endregion Monk
 
 #region Necromancer
+
 class BloodstainedInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Bloodstained,
-        ItemType.Chestpiece: ItemUpgradeId.Bloodstained,
-        ItemType.Gloves: ItemUpgradeId.Bloodstained,
-        ItemType.Leggings: ItemUpgradeId.Bloodstained,
-        ItemType.Boots: ItemUpgradeId.Bloodstained,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Bloodstained
+
 class TormentorsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Tormentors,
-        ItemType.Chestpiece: ItemUpgradeId.Tormentors,
-        ItemType.Gloves: ItemUpgradeId.Tormentors,
-        ItemType.Leggings: ItemUpgradeId.Tormentors,
-        ItemType.Boots: ItemUpgradeId.Tormentors,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Tormentors
+
 class BonelaceInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Bonelace,
-        ItemType.Chestpiece: ItemUpgradeId.Bonelace,
-        ItemType.Gloves: ItemUpgradeId.Bonelace,
-        ItemType.Leggings: ItemUpgradeId.Bonelace,
-        ItemType.Boots: ItemUpgradeId.Bonelace,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Bonelace
+
 class MinionMastersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.MinionMasters,
-        ItemType.Chestpiece: ItemUpgradeId.MinionMasters,
-        ItemType.Gloves: ItemUpgradeId.MinionMasters,
-        ItemType.Leggings: ItemUpgradeId.MinionMasters,
-        ItemType.Boots: ItemUpgradeId.MinionMasters,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.MinionMasters
+
 class BlightersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Blighters,
-        ItemType.Chestpiece: ItemUpgradeId.Blighters,
-        ItemType.Gloves: ItemUpgradeId.Blighters,
-        ItemType.Leggings: ItemUpgradeId.Blighters,
-        ItemType.Boots: ItemUpgradeId.Blighters,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Blighters
+
 class UndertakersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Undertakers,
-        ItemType.Chestpiece: ItemUpgradeId.Undertakers,
-        ItemType.Gloves: ItemUpgradeId.Undertakers,
-        ItemType.Leggings: ItemUpgradeId.Undertakers,
-        ItemType.Boots: ItemUpgradeId.Undertakers,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Undertakers
 
 class RuneOfMinorBloodMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorBloodMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorBloodMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorBloodMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorBloodMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorBloodMagic,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorBloodMagic
 
 class RuneOfMinorDeathMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorDeathMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorDeathMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorDeathMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorDeathMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorDeathMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorDeathMagic
+
 class RuneOfMinorCurses(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorCurses,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorCurses,
-        ItemType.Gloves: ItemUpgradeId.OfMinorCurses,
-        ItemType.Leggings: ItemUpgradeId.OfMinorCurses,
-        ItemType.Boots: ItemUpgradeId.OfMinorCurses,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorCurses
+
 class RuneOfMinorSoulReaping(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorSoulReaping,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorSoulReaping,
-        ItemType.Gloves: ItemUpgradeId.OfMinorSoulReaping,
-        ItemType.Leggings: ItemUpgradeId.OfMinorSoulReaping,
-        ItemType.Boots: ItemUpgradeId.OfMinorSoulReaping,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorSoulReaping
 
 class RuneOfMajorBloodMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorBloodMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorBloodMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorBloodMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorBloodMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorBloodMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorBloodMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorDeathMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorDeathMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorDeathMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorDeathMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorDeathMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorDeathMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorDeathMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorCurses(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorCurses,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorCurses,
-        ItemType.Gloves: ItemUpgradeId.OfMajorCurses,
-        ItemType.Leggings: ItemUpgradeId.OfMajorCurses,
-        ItemType.Boots: ItemUpgradeId.OfMajorCurses,
-    }
-    
+    id = ItemUpgradeId.OfMajorCurses
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorSoulReaping(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorSoulReaping,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorSoulReaping,
-        ItemType.Gloves: ItemUpgradeId.OfMajorSoulReaping,
-        ItemType.Leggings: ItemUpgradeId.OfMajorSoulReaping,
-        ItemType.Boots: ItemUpgradeId.OfMajorSoulReaping,
-    }
-    
+    id = ItemUpgradeId.OfMajorSoulReaping
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorBloodMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorBloodMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorBloodMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorBloodMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorBloodMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorBloodMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorBloodMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorDeathMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorDeathMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDeathMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorDeathMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorDeathMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorDeathMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorDeathMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorCurses(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorCurses,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCurses,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorCurses,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorCurses,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorCurses,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorCurses
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
-class RuneOfSuperiorSoulReaping(AttributeRune):    
+
+class RuneOfSuperiorSoulReaping(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorSoulReaping,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSoulReaping,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorSoulReaping,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorSoulReaping,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorSoulReaping,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorSoulReaping
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
 
 class UpgradeMinorRuneNecromancer(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Necromancer,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Necromancer,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Necromancer,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Necromancer,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Necromancer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMinorRune_Necromancer
+
 class UpgradeMajorRuneNecromancer(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Necromancer,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Necromancer,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Necromancer,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Necromancer,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Necromancer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMajorRune_Necromancer
 
 class UpgradeSuperiorRuneNecromancer(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Necromancer,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Necromancer,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Necromancer,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Necromancer,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Necromancer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeSuperiorRune_Necromancer
 
 class AppliesToMinorRuneNecromancer(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Necromancer,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Necromancer,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Necromancer,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Necromancer,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Necromancer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMinorRune_Necromancer
 
 class AppliesToMajorRuneNecromancer(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Necromancer,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Necromancer,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Necromancer,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Necromancer,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Necromancer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Necromancer
 
 class AppliesToSuperiorRuneNecromancer(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Necromancer,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Necromancer,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Necromancer,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Necromancer,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Necromancer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Necromancer
 #endregion Necromancer
 
 #region Mesmer
-class VirtuososInsignia(Insignia):    
+
+class VirtuososInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Virtuosos,
-        ItemType.Chestpiece: ItemUpgradeId.Virtuosos,
-        ItemType.Gloves: ItemUpgradeId.Virtuosos,
-        ItemType.Leggings: ItemUpgradeId.Virtuosos,
-        ItemType.Boots: ItemUpgradeId.Virtuosos,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Virtuosos
+
 class ArtificersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Artificers,
-        ItemType.Chestpiece: ItemUpgradeId.Artificers,
-        ItemType.Gloves: ItemUpgradeId.Artificers,
-        ItemType.Leggings: ItemUpgradeId.Artificers,
-        ItemType.Boots: ItemUpgradeId.Artificers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Artificers
+
 class ProdigysInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Prodigys,
-        ItemType.Chestpiece: ItemUpgradeId.Prodigys,
-        ItemType.Gloves: ItemUpgradeId.Prodigys,
-        ItemType.Leggings: ItemUpgradeId.Prodigys,
-        ItemType.Boots: ItemUpgradeId.Prodigys,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Prodigys
 
 class RuneOfMinorFastCasting(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorFastCasting,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorFastCasting,
-        ItemType.Gloves: ItemUpgradeId.OfMinorFastCasting,
-        ItemType.Leggings: ItemUpgradeId.OfMinorFastCasting,
-        ItemType.Boots: ItemUpgradeId.OfMinorFastCasting,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorFastCasting
+
 class RuneOfMinorDominationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorDominationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorDominationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorDominationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorDominationMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorDominationMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorDominationMagic
+
 class RuneOfMinorIllusionMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorIllusionMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorIllusionMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorIllusionMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorIllusionMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorIllusionMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorIllusionMagic
+
 class RuneOfMinorInspirationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorInspirationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorInspirationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorInspirationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorInspirationMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorInspirationMagic,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorInspirationMagic
 
 class RuneOfMajorFastCasting(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorFastCasting,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorFastCasting,
-        ItemType.Gloves: ItemUpgradeId.OfMajorFastCasting,
-        ItemType.Leggings: ItemUpgradeId.OfMajorFastCasting,
-        ItemType.Boots: ItemUpgradeId.OfMajorFastCasting,
-    }
-    
+    id = ItemUpgradeId.OfMajorFastCasting
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorDominationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorDominationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorDominationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorDominationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorDominationMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorDominationMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorDominationMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorIllusionMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorIllusionMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorIllusionMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorIllusionMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorIllusionMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorIllusionMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorIllusionMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorInspirationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorInspirationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorInspirationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorInspirationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorInspirationMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorInspirationMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorInspirationMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
-    ]   
-    
+    ]
+
 class RuneOfSuperiorFastCasting(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorFastCasting,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorFastCasting,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorFastCasting,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorFastCasting,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorFastCasting,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorFastCasting
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorDominationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorDominationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDominationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorDominationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorDominationMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorDominationMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorDominationMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorIllusionMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorIllusionMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorIllusionMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorIllusionMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorIllusionMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorIllusionMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorIllusionMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorInspirationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorInspirationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorInspirationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorInspirationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorInspirationMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorInspirationMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorInspirationMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class UpgradeMinorRuneMesmer(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Mesmer,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Mesmer,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Mesmer,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Mesmer,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Mesmer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Mesmer
 
 class UpgradeMajorRuneMesmer(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Mesmer,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Mesmer,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Mesmer,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Mesmer,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Mesmer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Mesmer
+
 class UpgradeSuperiorRuneMesmer(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Mesmer,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Mesmer,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Mesmer,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Mesmer,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Mesmer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Mesmer
+
 class AppliesToMinorRuneMesmer(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Mesmer,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Mesmer,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Mesmer,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Mesmer,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Mesmer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Mesmer
+
 class AppliesToMajorRuneMesmer(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Mesmer,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Mesmer,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Mesmer,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Mesmer,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Mesmer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Mesmer
 
 class AppliesToSuperiorRuneMesmer(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Mesmer,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Mesmer,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Mesmer,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Mesmer,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Mesmer,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Mesmer
 #endregion Mesmer
 
 #region Elementalist
+
 class HydromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Hydromancer,
-        ItemType.Chestpiece: ItemUpgradeId.Hydromancer,
-        ItemType.Gloves: ItemUpgradeId.Hydromancer,
-        ItemType.Leggings: ItemUpgradeId.Hydromancer,
-        ItemType.Boots: ItemUpgradeId.Hydromancer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Hydromancer
+
 class GeomancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Geomancer,
-        ItemType.Chestpiece: ItemUpgradeId.Geomancer,
-        ItemType.Gloves: ItemUpgradeId.Geomancer,
-        ItemType.Leggings: ItemUpgradeId.Geomancer,
-        ItemType.Boots: ItemUpgradeId.Geomancer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Geomancer
+
 class PyromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Pyromancer,
-        ItemType.Chestpiece: ItemUpgradeId.Pyromancer,
-        ItemType.Gloves: ItemUpgradeId.Pyromancer,
-        ItemType.Leggings: ItemUpgradeId.Pyromancer,
-        ItemType.Boots: ItemUpgradeId.Pyromancer,
-    }
-    
-    property_identifiers = []   
-    
+    id = ItemUpgradeId.Pyromancer
+
 class AeromancerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Aeromancer,
-        ItemType.Chestpiece: ItemUpgradeId.Aeromancer,
-        ItemType.Gloves: ItemUpgradeId.Aeromancer,
-        ItemType.Leggings: ItemUpgradeId.Aeromancer,
-        ItemType.Boots: ItemUpgradeId.Aeromancer,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Aeromancer
+
 class PrismaticInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Prismatic,
-        ItemType.Chestpiece: ItemUpgradeId.Prismatic,
-        ItemType.Gloves: ItemUpgradeId.Prismatic,
-        ItemType.Leggings: ItemUpgradeId.Prismatic,
-        ItemType.Boots: ItemUpgradeId.Prismatic,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Prismatic
 
 class RuneOfMinorEnergyStorage(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorEnergyStorage,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorEnergyStorage,
-        ItemType.Gloves: ItemUpgradeId.OfMinorEnergyStorage,
-        ItemType.Leggings: ItemUpgradeId.OfMinorEnergyStorage,
-        ItemType.Boots: ItemUpgradeId.OfMinorEnergyStorage,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorEnergyStorage
+
 class RuneOfMinorFireMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorFireMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorFireMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorFireMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorFireMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorFireMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorFireMagic
+
 class RuneOfMinorAirMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorAirMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorAirMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorAirMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorAirMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorAirMagic,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorAirMagic
 
 class RuneOfMinorEarthMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorEarthMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorEarthMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorEarthMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorEarthMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorEarthMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorEarthMagic
+
 class RuneOfMinorWaterMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorWaterMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorWaterMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorWaterMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorWaterMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorWaterMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorWaterMagic
+
 class RuneOfMajorEnergyStorage(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorEnergyStorage,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorEnergyStorage,
-        ItemType.Gloves: ItemUpgradeId.OfMajorEnergyStorage,
-        ItemType.Leggings: ItemUpgradeId.OfMajorEnergyStorage,
-        ItemType.Boots: ItemUpgradeId.OfMajorEnergyStorage,
-    }
-    
+    id = ItemUpgradeId.OfMajorEnergyStorage
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorFireMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorFireMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorFireMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorFireMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorFireMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorFireMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorFireMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorAirMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorAirMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorAirMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorAirMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorAirMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorAirMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorAirMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorEarthMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorEarthMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorEarthMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorEarthMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorEarthMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorEarthMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorEarthMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorWaterMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorWaterMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorWaterMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorWaterMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorWaterMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorWaterMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorWaterMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
-class RuneOfSuperiorEnergyStorage(AttributeRune): 
+
+class RuneOfSuperiorEnergyStorage(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorEnergyStorage,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorEnergyStorage,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorEnergyStorage,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorEnergyStorage,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorEnergyStorage,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorEnergyStorage
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
-class RuneOfSuperiorFireMagic(AttributeRune): 
+
+class RuneOfSuperiorFireMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorFireMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorFireMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorFireMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorFireMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorFireMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorFireMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorAirMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorAirMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorAirMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorAirMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorAirMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorAirMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorAirMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorEarthMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorEarthMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorEarthMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorEarthMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorEarthMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorEarthMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorEarthMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorWaterMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorWaterMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorWaterMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorWaterMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorWaterMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorWaterMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorWaterMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
 
 class UpgradeMinorRuneElementalist(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Elementalist,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Elementalist,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Elementalist,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Elementalist,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Elementalist,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Elementalist
 
 class UpgradeMajorRuneElementalist(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Elementalist,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Elementalist,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Elementalist,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Elementalist,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Elementalist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Elementalist
+
 class UpgradeSuperiorRuneElementalist(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Elementalist,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Elementalist,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Elementalist,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Elementalist,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Elementalist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Elementalist
+
 class AppliesToMinorRuneElementalist(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Elementalist,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Elementalist,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Elementalist,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Elementalist,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Elementalist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Elementalist
+
 class AppliesToMajorRuneElementalist(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Elementalist,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Elementalist,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Elementalist,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Elementalist,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Elementalist,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Elementalist
 
 class AppliesToSuperiorRuneElementalist(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Elementalist,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Elementalist,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Elementalist,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Elementalist,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Elementalist,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Elementalist
 #endregion Elementalist
 
 #region Assassin
+
 class VanguardsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Vanguards,
-        ItemType.Chestpiece: ItemUpgradeId.Vanguards,
-        ItemType.Gloves: ItemUpgradeId.Vanguards,
-        ItemType.Leggings: ItemUpgradeId.Vanguards,
-        ItemType.Boots: ItemUpgradeId.Vanguards,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Vanguards
+
 class InfiltratorsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Infiltrators,
-        ItemType.Chestpiece: ItemUpgradeId.Infiltrators,
-        ItemType.Gloves: ItemUpgradeId.Infiltrators,
-        ItemType.Leggings: ItemUpgradeId.Infiltrators,
-        ItemType.Boots: ItemUpgradeId.Infiltrators,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Infiltrators
+
 class SaboteursInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Saboteurs,
-        ItemType.Chestpiece: ItemUpgradeId.Saboteurs,
-        ItemType.Gloves: ItemUpgradeId.Saboteurs,
-        ItemType.Leggings: ItemUpgradeId.Saboteurs,
-        ItemType.Boots: ItemUpgradeId.Saboteurs,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Saboteurs
+
 class NightstalkersInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Nightstalkers,
-        ItemType.Chestpiece: ItemUpgradeId.Nightstalkers,
-        ItemType.Gloves: ItemUpgradeId.Nightstalkers,
-        ItemType.Leggings: ItemUpgradeId.Nightstalkers,
-        ItemType.Boots: ItemUpgradeId.Nightstalkers,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Nightstalkers
 
 class RuneOfMinorCriticalStrikes(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorCriticalStrikes,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorCriticalStrikes,
-        ItemType.Gloves: ItemUpgradeId.OfMinorCriticalStrikes,
-        ItemType.Leggings: ItemUpgradeId.OfMinorCriticalStrikes,
-        ItemType.Boots: ItemUpgradeId.OfMinorCriticalStrikes,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorCriticalStrikes
+
 class RuneOfMinorDaggerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorDaggerMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorDaggerMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMinorDaggerMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMinorDaggerMastery,
-        ItemType.Boots: ItemUpgradeId.OfMinorDaggerMastery,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorDaggerMastery
+
 class RuneOfMinorDeadlyArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorDeadlyArts,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorDeadlyArts,
-        ItemType.Gloves: ItemUpgradeId.OfMinorDeadlyArts,
-        ItemType.Leggings: ItemUpgradeId.OfMinorDeadlyArts,
-        ItemType.Boots: ItemUpgradeId.OfMinorDeadlyArts,
-    }
+    id = ItemUpgradeId.OfMinorDeadlyArts
 
 class RuneOfMinorShadowArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorShadowArts,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorShadowArts,
-        ItemType.Gloves: ItemUpgradeId.OfMinorShadowArts,
-        ItemType.Leggings: ItemUpgradeId.OfMinorShadowArts,
-        ItemType.Boots: ItemUpgradeId.OfMinorShadowArts,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorShadowArts
 
 class RuneOfMajorCriticalStrikes(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorCriticalStrikes,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorCriticalStrikes,
-        ItemType.Gloves: ItemUpgradeId.OfMajorCriticalStrikes,
-        ItemType.Leggings: ItemUpgradeId.OfMajorCriticalStrikes,
-        ItemType.Boots: ItemUpgradeId.OfMajorCriticalStrikes,
-    }
-    
+    id = ItemUpgradeId.OfMajorCriticalStrikes
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorDaggerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorDaggerMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorDaggerMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMajorDaggerMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMajorDaggerMastery,
-        ItemType.Boots: ItemUpgradeId.OfMajorDaggerMastery,
-    }
-    
+    id = ItemUpgradeId.OfMajorDaggerMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorDeadlyArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorDeadlyArts,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorDeadlyArts,
-        ItemType.Gloves: ItemUpgradeId.OfMajorDeadlyArts,
-        ItemType.Leggings: ItemUpgradeId.OfMajorDeadlyArts,
-        ItemType.Boots: ItemUpgradeId.OfMajorDeadlyArts,
-    }
-    
+    id = ItemUpgradeId.OfMajorDeadlyArts
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorShadowArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorShadowArts,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorShadowArts,
-        ItemType.Gloves: ItemUpgradeId.OfMajorShadowArts,
-        ItemType.Leggings: ItemUpgradeId.OfMajorShadowArts,
-        ItemType.Boots: ItemUpgradeId.OfMajorShadowArts,
-    }
-    
+    id = ItemUpgradeId.OfMajorShadowArts
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorCriticalStrikes(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorCriticalStrikes,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCriticalStrikes,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorCriticalStrikes,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorCriticalStrikes,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorCriticalStrikes,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorCriticalStrikes
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorDaggerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorDaggerMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDaggerMastery,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorDaggerMastery,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorDaggerMastery,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorDaggerMastery,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorDaggerMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorDeadlyArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorDeadlyArts,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDeadlyArts,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorDeadlyArts,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorDeadlyArts,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorDeadlyArts,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorDeadlyArts
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorShadowArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorShadowArts,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorShadowArts,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorShadowArts,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorShadowArts,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorShadowArts,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorShadowArts
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class UpgradeMinorRuneAssassin(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Assassin,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Assassin,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Assassin,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Assassin,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Assassin,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Assassin
 
 class UpgradeMajorRuneAssassin(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Assassin,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Assassin,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Assassin,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Assassin,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Assassin,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Assassin
+
 class UpgradeSuperiorRuneAssassin(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Assassin,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Assassin,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Assassin,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Assassin,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Assassin,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Assassin
+
 class AppliesToMinorRuneAssassin(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Assassin,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Assassin,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Assassin,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Assassin,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Assassin,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Assassin
+
 class AppliesToMajorRuneAssassin(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Assassin,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Assassin,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Assassin,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Assassin,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Assassin,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Assassin
 
 class AppliesToSuperiorRuneAssassin(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Assassin,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Assassin,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Assassin,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Assassin,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Assassin,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Assassin
 #endregion Assassin
 
 #region Ritualist
+
 class ShamansInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Shamans,
-        ItemType.Chestpiece: ItemUpgradeId.Shamans,
-        ItemType.Gloves: ItemUpgradeId.Shamans,
-        ItemType.Leggings: ItemUpgradeId.Shamans,
-        ItemType.Boots: ItemUpgradeId.Shamans,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Shamans
+
 class GhostForgeInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.GhostForge,
-        ItemType.Chestpiece: ItemUpgradeId.GhostForge,
-        ItemType.Gloves: ItemUpgradeId.GhostForge,
-        ItemType.Leggings: ItemUpgradeId.GhostForge,
-        ItemType.Boots: ItemUpgradeId.GhostForge,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.GhostForge
+
 class MysticsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Mystics,
-        ItemType.Chestpiece: ItemUpgradeId.Mystics,
-        ItemType.Gloves: ItemUpgradeId.Mystics,
-        ItemType.Leggings: ItemUpgradeId.Mystics,
-        ItemType.Boots: ItemUpgradeId.Mystics,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Mystics
 
 class RuneOfMinorChannelingMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorChannelingMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorChannelingMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorChannelingMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorChannelingMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorChannelingMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorChannelingMagic
+
 class RuneOfMinorRestorationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorRestorationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorRestorationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMinorRestorationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMinorRestorationMagic,
-        ItemType.Boots: ItemUpgradeId.OfMinorRestorationMagic,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorRestorationMagic
+
 class RuneOfMinorCommuning(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorCommuning,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorCommuning,
-        ItemType.Gloves: ItemUpgradeId.OfMinorCommuning,
-        ItemType.Leggings: ItemUpgradeId.OfMinorCommuning,
-        ItemType.Boots: ItemUpgradeId.OfMinorCommuning,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorCommuning
+
 class RuneOfMinorSpawningPower(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorSpawningPower,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorSpawningPower,
-        ItemType.Gloves: ItemUpgradeId.OfMinorSpawningPower,
-        ItemType.Leggings: ItemUpgradeId.OfMinorSpawningPower,
-        ItemType.Boots: ItemUpgradeId.OfMinorSpawningPower,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorSpawningPower
 
 class RuneOfMajorChannelingMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorChannelingMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorChannelingMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorChannelingMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorChannelingMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorChannelingMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorChannelingMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorRestorationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorRestorationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorRestorationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfMajorRestorationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfMajorRestorationMagic,
-        ItemType.Boots: ItemUpgradeId.OfMajorRestorationMagic,
-    }
-    
+    id = ItemUpgradeId.OfMajorRestorationMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorCommuning(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorCommuning,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorCommuning,
-        ItemType.Gloves: ItemUpgradeId.OfMajorCommuning,
-        ItemType.Leggings: ItemUpgradeId.OfMajorCommuning,
-        ItemType.Boots: ItemUpgradeId.OfMajorCommuning,
-    }
-    
+    id = ItemUpgradeId.OfMajorCommuning
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorSpawningPower(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorSpawningPower,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorSpawningPower,
-        ItemType.Gloves: ItemUpgradeId.OfMajorSpawningPower,
-        ItemType.Leggings: ItemUpgradeId.OfMajorSpawningPower,
-        ItemType.Boots: ItemUpgradeId.OfMajorSpawningPower,
-    }
-    
+    id = ItemUpgradeId.OfMajorSpawningPower
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorChannelingMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorChannelingMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorChannelingMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorChannelingMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorChannelingMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorChannelingMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorChannelingMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorRestorationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorRestorationMagic,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorRestorationMagic,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorRestorationMagic,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorRestorationMagic,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorRestorationMagic,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorRestorationMagic
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorCommuning(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorCommuning,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCommuning,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorCommuning,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorCommuning,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorCommuning,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorCommuning
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorSpawningPower(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorSpawningPower,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSpawningPower,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorSpawningPower,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorSpawningPower,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorSpawningPower,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorSpawningPower
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
 
 class UpgradeMinorRuneRitualist(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Ritualist,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Ritualist,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Ritualist,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Ritualist,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Ritualist,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Ritualist
 
 class UpgradeMajorRuneRitualist(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Ritualist,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Ritualist,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Ritualist,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Ritualist,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Ritualist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Ritualist
+
 class UpgradeSuperiorRuneRitualist(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Ritualist,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Ritualist,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Ritualist,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Ritualist,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Ritualist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Ritualist
+
 class AppliesToMinorRuneRitualist(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Ritualist,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Ritualist,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Ritualist,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Ritualist,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Ritualist,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Ritualist
+
 class AppliesToMajorRuneRitualist(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Ritualist,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Ritualist,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Ritualist,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Ritualist,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Ritualist,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Ritualist
 
 class AppliesToSuperiorRuneRitualist(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Ritualist,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Ritualist,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Ritualist,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Ritualist,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Ritualist,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Ritualist
 #endregion Ritualist
 
 #region Dervish
+
 class WindwalkerInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Windwalker,
-        ItemType.Chestpiece: ItemUpgradeId.Windwalker,
-        ItemType.Gloves: ItemUpgradeId.Windwalker,
-        ItemType.Leggings: ItemUpgradeId.Windwalker,
-        ItemType.Boots: ItemUpgradeId.Windwalker,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.Windwalker
+
 class ForsakenInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Forsaken,
-        ItemType.Chestpiece: ItemUpgradeId.Forsaken,
-        ItemType.Gloves: ItemUpgradeId.Forsaken,
-        ItemType.Leggings: ItemUpgradeId.Forsaken,
-        ItemType.Boots: ItemUpgradeId.Forsaken,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.Forsaken
 
 class RuneOfMinorMysticsm(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorMysticism,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorMysticism,
-        ItemType.Gloves: ItemUpgradeId.OfMinorMysticism,
-        ItemType.Leggings: ItemUpgradeId.OfMinorMysticism,
-        ItemType.Boots: ItemUpgradeId.OfMinorMysticism,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorMysticism
 
 class RuneOfMinorEarthPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorEarthPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorEarthPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMinorEarthPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMinorEarthPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMinorEarthPrayers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorEarthPrayers
+
 class RuneOfMinorScytheMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorScytheMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorScytheMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMinorScytheMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMinorScytheMastery,
-        ItemType.Boots: ItemUpgradeId.OfMinorScytheMastery,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorScytheMastery
+
 class RuneOfMinorWindPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorWindPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorWindPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMinorWindPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMinorWindPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMinorWindPrayers,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorWindPrayers
+
 class RuneOfMajorMysticsm(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorMysticism,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorMysticism,
-        ItemType.Gloves: ItemUpgradeId.OfMajorMysticism,
-        ItemType.Leggings: ItemUpgradeId.OfMajorMysticism,
-        ItemType.Boots: ItemUpgradeId.OfMajorMysticism,
-    }
-    
+    id = ItemUpgradeId.OfMajorMysticism
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorEarthPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorEarthPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorEarthPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMajorEarthPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMajorEarthPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMajorEarthPrayers,
-    }
-    
+    id = ItemUpgradeId.OfMajorEarthPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorScytheMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorScytheMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorScytheMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMajorScytheMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMajorScytheMastery,
-        ItemType.Boots: ItemUpgradeId.OfMajorScytheMastery,
-    }
-    
+    id = ItemUpgradeId.OfMajorScytheMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorWindPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorWindPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorWindPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfMajorWindPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfMajorWindPrayers,
-        ItemType.Boots: ItemUpgradeId.OfMajorWindPrayers,
-    }
-    
+    id = ItemUpgradeId.OfMajorWindPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorMysticsm(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorMysticism,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorMysticism,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorMysticism,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorMysticism,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorMysticism,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorMysticism
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorEarthPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorEarthPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorEarthPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorEarthPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorEarthPrayers,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorEarthPrayers,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorEarthPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorScytheMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorScytheMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorScytheMastery,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorScytheMastery,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorScytheMastery,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorScytheMastery,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorScytheMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorWindPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorWindPrayers,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorWindPrayers,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorWindPrayers,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorWindPrayers,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorWindPrayers,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorWindPrayers
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class UpgradeMinorRuneDervish(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Dervish,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Dervish,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Dervish,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Dervish,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Dervish,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Dervish
 
 class UpgradeMajorRuneDervish(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Dervish,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Dervish,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Dervish,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Dervish,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Dervish,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Dervish
+
 class UpgradeSuperiorRuneDervish(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Dervish,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Dervish,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Dervish,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Dervish,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Dervish,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Dervish
+
 class AppliesToMinorRuneDervish(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Dervish,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Dervish,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Dervish,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Dervish,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Dervish,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Dervish
+
 class AppliesToMajorRuneDervish(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Dervish,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Dervish,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Dervish,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Dervish,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Dervish,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Dervish
 
 class AppliesToSuperiorRuneDervish(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Dervish,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Dervish,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Dervish,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Dervish,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Dervish,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Dervish
 #endregion Dervish
 
 #region Paragon
+
 class CenturionsInsignia(Insignia):
     mod_type = ItemUpgradeType.Prefix
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.Centurions,
-        ItemType.Chestpiece: ItemUpgradeId.Centurions,
-        ItemType.Gloves: ItemUpgradeId.Centurions,
-        ItemType.Leggings: ItemUpgradeId.Centurions,
-        ItemType.Boots: ItemUpgradeId.Centurions,
-    }
-    
-    property_identifiers = []   
+    id = ItemUpgradeId.Centurions
 
 class RuneOfMinorLeadership(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorLeadership,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorLeadership,
-        ItemType.Gloves: ItemUpgradeId.OfMinorLeadership,
-        ItemType.Leggings: ItemUpgradeId.OfMinorLeadership,
-        ItemType.Boots: ItemUpgradeId.OfMinorLeadership,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorLeadership
+
 class RuneOfMinorMotivation(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorMotivation,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorMotivation,
-        ItemType.Gloves: ItemUpgradeId.OfMinorMotivation,
-        ItemType.Leggings: ItemUpgradeId.OfMinorMotivation,
-        ItemType.Boots: ItemUpgradeId.OfMinorMotivation,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.OfMinorMotivation
 
 class RuneOfMinorCommand(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorCommand,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorCommand,
-        ItemType.Gloves: ItemUpgradeId.OfMinorCommand,
-        ItemType.Leggings: ItemUpgradeId.OfMinorCommand,
-        ItemType.Boots: ItemUpgradeId.OfMinorCommand,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorCommand
+
 class RuneOfMinorSpearMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMinorSpearMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMinorSpearMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMinorSpearMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMinorSpearMastery,
-        ItemType.Boots: ItemUpgradeId.OfMinorSpearMastery,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.OfMinorSpearMastery
+
 class RuneOfMajorLeadership(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorLeadership,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorLeadership,
-        ItemType.Gloves: ItemUpgradeId.OfMajorLeadership,
-        ItemType.Leggings: ItemUpgradeId.OfMajorLeadership,
-        ItemType.Boots: ItemUpgradeId.OfMajorLeadership,
-    }
-    
+    id = ItemUpgradeId.OfMajorLeadership
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorMotivation(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorMotivation,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorMotivation,
-        ItemType.Gloves: ItemUpgradeId.OfMajorMotivation,
-        ItemType.Leggings: ItemUpgradeId.OfMajorMotivation,
-        ItemType.Boots: ItemUpgradeId.OfMajorMotivation,
-    }
-    
+    id = ItemUpgradeId.OfMajorMotivation
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorCommand(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorCommand,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorCommand,
-        ItemType.Gloves: ItemUpgradeId.OfMajorCommand,
-        ItemType.Leggings: ItemUpgradeId.OfMajorCommand,
-        ItemType.Boots: ItemUpgradeId.OfMajorCommand,
-    }
-    
+    id = ItemUpgradeId.OfMajorCommand
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfMajorSpearMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfMajorSpearMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfMajorSpearMastery,
-        ItemType.Gloves: ItemUpgradeId.OfMajorSpearMastery,
-        ItemType.Leggings: ItemUpgradeId.OfMajorSpearMastery,
-        ItemType.Boots: ItemUpgradeId.OfMajorSpearMastery,
-    }
-    
+    id = ItemUpgradeId.OfMajorSpearMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorLeadership(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorLeadership,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorLeadership,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorLeadership,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorLeadership,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorLeadership,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorLeadership
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorMotivation(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorMotivation,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorMotivation,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorMotivation,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorMotivation,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorMotivation,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorMotivation
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorCommand(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorCommand,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCommand,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorCommand,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorCommand,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorCommand,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorCommand
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class RuneOfSuperiorSpearMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.OfSuperiorSpearMastery,
-        ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSpearMastery,
-        ItemType.Gloves: ItemUpgradeId.OfSuperiorSpearMastery,
-        ItemType.Leggings: ItemUpgradeId.OfSuperiorSpearMastery,
-        ItemType.Boots: ItemUpgradeId.OfSuperiorSpearMastery,
-    }
-    
+    id = ItemUpgradeId.OfSuperiorSpearMastery
+
     property_identifiers = [
         ModifierIdentifier.HealthMinus
     ]
-    
+
 class UpgradeMinorRuneParagon(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMinorRune_Paragon,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMinorRune_Paragon,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMinorRune_Paragon,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMinorRune_Paragon,
-        ItemType.Boots: ItemUpgradeId.UpgradeMinorRune_Paragon,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.UpgradeMinorRune_Paragon
 
 class UpgradeMajorRuneParagon(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeMajorRune_Paragon,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeMajorRune_Paragon,
-        ItemType.Gloves: ItemUpgradeId.UpgradeMajorRune_Paragon,
-        ItemType.Leggings: ItemUpgradeId.UpgradeMajorRune_Paragon,
-        ItemType.Boots: ItemUpgradeId.UpgradeMajorRune_Paragon,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeMajorRune_Paragon
+
 class UpgradeSuperiorRuneParagon(Upgrade):
     mod_type = ItemUpgradeType.UpgradeRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.UpgradeSuperiorRune_Paragon,
-        ItemType.Chestpiece: ItemUpgradeId.UpgradeSuperiorRune_Paragon,
-        ItemType.Gloves: ItemUpgradeId.UpgradeSuperiorRune_Paragon,
-        ItemType.Leggings: ItemUpgradeId.UpgradeSuperiorRune_Paragon,
-        ItemType.Boots: ItemUpgradeId.UpgradeSuperiorRune_Paragon,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.UpgradeSuperiorRune_Paragon
+
 class AppliesToMinorRuneParagon(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMinorRune_Paragon,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMinorRune_Paragon,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMinorRune_Paragon,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMinorRune_Paragon,
-        ItemType.Boots: ItemUpgradeId.AppliesToMinorRune_Paragon,
-    }
-    
-    property_identifiers = []
-    
+    id = ItemUpgradeId.AppliesToMinorRune_Paragon
+
 class AppliesToMajorRuneParagon(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToMajorRune_Paragon,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToMajorRune_Paragon,
-        ItemType.Gloves: ItemUpgradeId.AppliesToMajorRune_Paragon,
-        ItemType.Leggings: ItemUpgradeId.AppliesToMajorRune_Paragon,
-        ItemType.Boots: ItemUpgradeId.AppliesToMajorRune_Paragon,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToMajorRune_Paragon
 
 class AppliesToSuperiorRuneParagon(Upgrade):
     mod_type = ItemUpgradeType.AppliesToRune
-    item_type_id_map = {
-        ItemType.Headpiece: ItemUpgradeId.AppliesToSuperiorRune_Paragon,
-        ItemType.Chestpiece: ItemUpgradeId.AppliesToSuperiorRune_Paragon,
-        ItemType.Gloves: ItemUpgradeId.AppliesToSuperiorRune_Paragon,
-        ItemType.Leggings: ItemUpgradeId.AppliesToSuperiorRune_Paragon,
-        ItemType.Boots: ItemUpgradeId.AppliesToSuperiorRune_Paragon,
-    }
-    
-    property_identifiers = []
+    id = ItemUpgradeId.AppliesToSuperiorRune_Paragon
 #endregion Paragon
 
 #endregion Armor Upgrades
