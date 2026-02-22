@@ -687,7 +687,6 @@ class WeaponUpgrade(Upgrade):
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return upgrade_id in cls.item_type_id_map.values()
 
-    
 #region Prefixes
 WEAPON_PREFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
     ItemType.Axe: {
@@ -789,11 +788,23 @@ class AdeptStaffUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Adept_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
-
+    names = {
+		ServerLanguage.English: "Adept",
+		ServerLanguage.Spanish: "de adepto",
+		ServerLanguage.Italian: "da Adepto",
+		ServerLanguage.German: "Experten-",
+		ServerLanguage.Korean: "숙련된",
+		ServerLanguage.French: "d'adepte",
+		ServerLanguage.TraditionalChinese: "行家",
+		ServerLanguage.Japanese: "アデプト",
+		ServerLanguage.Polish: "Adepta",
+		ServerLanguage.Russian: "Adept",
+		ServerLanguage.BorkBorkBork: "Aedept",
+	}
+    
 class BarbedUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -804,11 +815,23 @@ class BarbedUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Barbed_Spear,
         ItemType.Sword: ItemUpgradeId.Barbed_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "Barbed",
+		ServerLanguage.Spanish: "con espinas",
+		ServerLanguage.Italian: "a Punta",
+		ServerLanguage.German: "Stachel-",
+		ServerLanguage.Korean: "가시 박힌",
+		ServerLanguage.French: "à pointes",
+		ServerLanguage.TraditionalChinese: "荊棘",
+		ServerLanguage.Japanese: "バーブ",
+		ServerLanguage.Polish: "Kolców",
+		ServerLanguage.Russian: "Barbed",
+		ServerLanguage.BorkBorkBork: "Baerbed",
+	}
+    
 class CripplingUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -819,11 +842,23 @@ class CripplingUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Crippling_Spear,
         ItemType.Sword: ItemUpgradeId.Crippling_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    
+    names = {
+		ServerLanguage.English: "Crippling",
+		ServerLanguage.Spanish: "letal",
+		ServerLanguage.Italian: "Azzoppante",
+		ServerLanguage.German: "Verkrüppelungs-",
+		ServerLanguage.Korean: "치명적인",
+		ServerLanguage.French: "d'infirmité",
+		ServerLanguage.TraditionalChinese: "致殘",
+		ServerLanguage.Japanese: "クリップル",
+		ServerLanguage.Polish: "Kaleczenia",
+		ServerLanguage.Russian: "Crippling",
+		ServerLanguage.BorkBorkBork: "Creeppleeng",
+	}
+        
 class CruelUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -834,21 +869,45 @@ class CruelUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Cruel_Spear,
         ItemType.Sword: ItemUpgradeId.Cruel_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
+    names = {
+		ServerLanguage.English: "Cruel",
+		ServerLanguage.Spanish: "cruel",
+		ServerLanguage.Italian: "Crudele",
+		ServerLanguage.German: "Grausamkeits-",
+		ServerLanguage.Korean: "잔인한",
+		ServerLanguage.French: "atroce",
+		ServerLanguage.TraditionalChinese: "殘酷",
+		ServerLanguage.Japanese: "クルーエル",
+		ServerLanguage.Polish: "Okrucieństwa",
+		ServerLanguage.Russian: "Cruel",
+		ServerLanguage.BorkBorkBork: "Crooel",
+	}
 
 class DefensiveUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Defensive_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
-
+    names = {
+		ServerLanguage.English: "Defensive",
+		ServerLanguage.Spanish: "de defensa",
+		ServerLanguage.Italian: "da Difesa",
+		ServerLanguage.German: "Verteidigungs-",
+		ServerLanguage.Korean: "방어적인",
+		ServerLanguage.French: "défensif",
+		ServerLanguage.TraditionalChinese: "防衛",
+		ServerLanguage.Japanese: "ディフェンス",
+		ServerLanguage.Polish: "Obrony",
+		ServerLanguage.Russian: "Defensive",
+		ServerLanguage.BorkBorkBork: "Deffenseefe-a",
+	}
+    
 class EbonUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -860,10 +919,22 @@ class EbonUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Ebon_Spear,
         ItemType.Sword: ItemUpgradeId.Ebon_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
+    names = {
+		ServerLanguage.English: "Ebon",
+		ServerLanguage.Spanish: "con daño de granito",
+		ServerLanguage.Italian: "per danno d'ebano",
+		ServerLanguage.German: "Ebon-",
+		ServerLanguage.Korean: "흑단",
+		ServerLanguage.French: "terrestre",
+		ServerLanguage.TraditionalChinese: "黑檀",
+		ServerLanguage.Japanese: "エボン",
+		ServerLanguage.Polish: "z Hebanu",
+		ServerLanguage.Russian: "Ebon",
+		ServerLanguage.BorkBorkBork: "Ibun",
+	}
     
 class FieryUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
@@ -876,10 +947,22 @@ class FieryUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Fiery_Spear,
         ItemType.Sword: ItemUpgradeId.Fiery_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
+    names = {
+		ServerLanguage.English: "Fiery",
+		ServerLanguage.Spanish: "con daño ardiente",
+		ServerLanguage.Italian: "per danno da fuoco",
+		ServerLanguage.German: "Hitze-",
+		ServerLanguage.Korean: "화염의",
+		ServerLanguage.French: "incendiaire",
+		ServerLanguage.TraditionalChinese: "火焰",
+		ServerLanguage.Japanese: "ファイア",
+		ServerLanguage.Polish: "Ognia",
+		ServerLanguage.Russian: "Fiery",
+		ServerLanguage.BorkBorkBork: "Feeery",
+	}
     
 class FuriousUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
@@ -891,21 +974,45 @@ class FuriousUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Furious_Spear,
         ItemType.Sword: ItemUpgradeId.Furious_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.Furious,
     ]
+    names = {
+		ServerLanguage.English: "Furious",
+		ServerLanguage.Spanish: "de furor",
+		ServerLanguage.Italian: "della Furia",
+		ServerLanguage.German: "Zorn-",
+		ServerLanguage.Korean: "격노한",
+		ServerLanguage.French: "de fureur",
+		ServerLanguage.TraditionalChinese: "狂怒",
+		ServerLanguage.Japanese: "フューリアス",
+		ServerLanguage.Polish: "Wściekłości",
+		ServerLanguage.Russian: "Furious",
+		ServerLanguage.BorkBorkBork: "Fooreeuoos",
+	}
     
 class HaleUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Hale_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
-
+    names = {
+		ServerLanguage.English: "Hale",
+		ServerLanguage.Spanish: "de robustez",
+		ServerLanguage.Italian: "del Vigore",
+		ServerLanguage.German: "Rüstigkeits-",
+		ServerLanguage.Korean: "단단한",
+		ServerLanguage.French: "de vigueur",
+		ServerLanguage.TraditionalChinese: "健壯",
+		ServerLanguage.Japanese: "ヘイル",
+		ServerLanguage.Polish: "Wigoru",
+		ServerLanguage.Russian: "Hale",
+		ServerLanguage.BorkBorkBork: "Haele-a",
+	}
+    
 class HeavyUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -914,11 +1021,23 @@ class HeavyUpgrade(WeaponPrefix):
         ItemType.Scythe: ItemUpgradeId.Heavy_Scythe,
         ItemType.Spear: ItemUpgradeId.Heavy_Spear,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "Heavy",
+		ServerLanguage.Spanish: "fuerte",
+		ServerLanguage.Italian: "Pesante",
+		ServerLanguage.German: "Schwergewichts-",
+		ServerLanguage.Korean: "무거운",
+		ServerLanguage.French: "de poids",
+		ServerLanguage.TraditionalChinese: "沉重",
+		ServerLanguage.Japanese: "ヘヴィー",
+		ServerLanguage.Polish: "Ciężaru",
+		ServerLanguage.Russian: "Heavy",
+		ServerLanguage.BorkBorkBork: "Heaefy",
+	}
+    
 class IcyUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -930,21 +1049,45 @@ class IcyUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Icy_Spear,
         ItemType.Sword: ItemUpgradeId.Icy_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
-
+    names = {
+		ServerLanguage.English: "Icy",
+		ServerLanguage.Spanish: "con daño frío",
+		ServerLanguage.Italian: "per danno da ghiaccio",
+		ServerLanguage.German: "Eis-",
+		ServerLanguage.Korean: "냉기",
+		ServerLanguage.French: "polaire",
+		ServerLanguage.TraditionalChinese: "冰凍",
+		ServerLanguage.Japanese: "アイス",
+		ServerLanguage.Polish: "Lodu",
+		ServerLanguage.Russian: "Icy",
+		ServerLanguage.BorkBorkBork: "Icy",
+	}
+    
 class InsightfulUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Insightful_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
-
+    names = {
+		ServerLanguage.English: "Insightful",
+		ServerLanguage.Spanish: "de visión",
+		ServerLanguage.Italian: "dell'Astuzia",
+		ServerLanguage.German: "Einblick-",
+		ServerLanguage.Korean: "통찰력의",
+		ServerLanguage.French: "de vision",
+		ServerLanguage.TraditionalChinese: "洞察",
+		ServerLanguage.Japanese: "インサイト",
+		ServerLanguage.Polish: "Przenikliwości",
+		ServerLanguage.Russian: "Insightful",
+		ServerLanguage.BorkBorkBork: "Inseeghtffool",
+	}
+    
 class PoisonousUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -955,11 +1098,23 @@ class PoisonousUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Poisonous_Spear,
         ItemType.Sword: ItemUpgradeId.Poisonous_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "Poisonous",
+		ServerLanguage.Spanish: "con veneno",
+		ServerLanguage.Italian: "del Veleno",
+		ServerLanguage.German: "Gift-",
+		ServerLanguage.Korean: "맹독의",
+		ServerLanguage.French: "de poison",
+		ServerLanguage.TraditionalChinese: "淬毒",
+		ServerLanguage.Japanese: "ポイズン",
+		ServerLanguage.Polish: "Zatrucia",
+		ServerLanguage.Russian: "Poisonous",
+		ServerLanguage.BorkBorkBork: "Pueesunuoos",
+	}
+    
 class ShockingUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -971,10 +1126,22 @@ class ShockingUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Shocking_Spear,
         ItemType.Sword: ItemUpgradeId.Shocking_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
+    names = {
+		ServerLanguage.English: "Shocking",
+		ServerLanguage.Spanish: "con daño de descarga",
+		ServerLanguage.Italian: "per danno da shock",
+		ServerLanguage.German: "Schock-",
+		ServerLanguage.Korean: "충격의",
+		ServerLanguage.French: "de foudre",
+		ServerLanguage.TraditionalChinese: "電擊",
+		ServerLanguage.Japanese: "ショック",
+		ServerLanguage.Polish: "Porażenia",
+		ServerLanguage.Russian: "Shocking",
+		ServerLanguage.BorkBorkBork: "Shuckeeng",
+	}
     
 class SilencingUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
@@ -983,10 +1150,22 @@ class SilencingUpgrade(WeaponPrefix):
         ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
         ItemType.Spear: ItemUpgradeId.Silencing_Spear,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
+    names = {
+		ServerLanguage.English: "Silencing",
+		ServerLanguage.Spanish: "de silencio",
+		ServerLanguage.Italian: "del Silenzio",
+		ServerLanguage.German: "Dämpfungs-",
+		ServerLanguage.Korean: "침묵의",
+		ServerLanguage.French: "de silence",
+		ServerLanguage.TraditionalChinese: "沈默",
+		ServerLanguage.Japanese: "サイレンス",
+		ServerLanguage.Polish: "Uciszenia",
+		ServerLanguage.Russian: "Silencing",
+		ServerLanguage.BorkBorkBork: "Seelenceeng",
+	}
     
 class SunderingUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
@@ -999,21 +1178,45 @@ class SunderingUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Sundering_Spear,
         ItemType.Sword: ItemUpgradeId.Sundering_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.ArmorPenetration,
     ]
+    names = {
+		ServerLanguage.English: "Sundering",
+		ServerLanguage.Spanish: "de penetración",
+		ServerLanguage.Italian: "della Separazione",
+		ServerLanguage.German: "Trenn-",
+		ServerLanguage.Korean: "날카로운",
+		ServerLanguage.French: "de fractionnement",
+		ServerLanguage.TraditionalChinese: "分離",
+		ServerLanguage.Japanese: "サンダリング",
+		ServerLanguage.Polish: "Rozdzierania",
+		ServerLanguage.Russian: "Sundering",
+		ServerLanguage.BorkBorkBork: "Soondereeng",
+	}
     
 class SwiftStaffUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Swift_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
-
+    names = {
+		ServerLanguage.English: "Swift",
+		ServerLanguage.Spanish: "veloz",
+		ServerLanguage.Italian: "della Rapidità",
+		ServerLanguage.German: "Schnelligkeits-",
+		ServerLanguage.Korean: "재빠른",
+		ServerLanguage.French: "rapide",
+		ServerLanguage.TraditionalChinese: "迅速",
+		ServerLanguage.Japanese: "スウィフト",
+		ServerLanguage.Polish: "Szybkości",
+		ServerLanguage.Russian: "Swift",
+		ServerLanguage.BorkBorkBork: "Sveefft",
+	}
+    
 class VampiricUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -1025,12 +1228,24 @@ class VampiricUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Vampiric_Spear,
         ItemType.Sword: ItemUpgradeId.Vampiric_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HealthDegen,
         ModifierIdentifier.HealthStealOnHit,
     ]
-
+    names = {
+		ServerLanguage.English: "Vampiric",
+		ServerLanguage.Spanish: "de vampiro",
+		ServerLanguage.Italian: "del Vampiro",
+		ServerLanguage.German: "Vampir-",
+		ServerLanguage.Korean: "흡혈의 단검자루",
+		ServerLanguage.French: "vampirique",
+		ServerLanguage.TraditionalChinese: "吸血鬼 匕首刃",
+		ServerLanguage.Japanese: "ヴァンピリック ダガーのグリップ",
+		ServerLanguage.Polish: "Wampiryzmu",
+		ServerLanguage.Russian: "Vampiric",
+		ServerLanguage.BorkBorkBork: "Faempureec",
+	}
+    
 class ZealousUpgrade(WeaponPrefix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
@@ -1042,11 +1257,23 @@ class ZealousUpgrade(WeaponPrefix):
         ItemType.Spear: ItemUpgradeId.Zealous_Spear,
         ItemType.Sword: ItemUpgradeId.Zealous_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.EnergyDegen,
         ModifierIdentifier.EnergyGainOnHit,
     ]
+    names = {
+		ServerLanguage.English: "Zealous",
+		ServerLanguage.Spanish: "de afán",
+		ServerLanguage.Italian: "Zelante",
+		ServerLanguage.German: "Eifer-",
+		ServerLanguage.Korean: "광신도의",
+		ServerLanguage.French: "de zèle",
+		ServerLanguage.TraditionalChinese: "熱望",
+		ServerLanguage.Japanese: "ゼラス",
+		ServerLanguage.Polish: "Fanatyzmu",
+		ServerLanguage.Russian: "Zealous",
+		ServerLanguage.BorkBorkBork: "Zeaeluoos",
+	}
 #endregion Prefixes
 
 #region Suffixes
@@ -1214,40 +1441,90 @@ class OfAttributeUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
+    
+    #TODO: This is a temporary solution to the fact that the name of this upgrade is not localized in the game files. Once it is, this can be removed and the name can be pulled from the game files like all other upgrades.
+    names = {
+		ServerLanguage.English: "of {attribute}",
+		ServerLanguage.Spanish: "({attribute})",
+		ServerLanguage.Italian: "dell'{attribute}",
+		ServerLanguage.German: "d. {attribute}",
+		ServerLanguage.Korean: "({attribute})",
+		ServerLanguage.French: "({attribute})",
+		ServerLanguage.TraditionalChinese: "{attribute}",
+		ServerLanguage.Japanese: "({attribute})",
+		ServerLanguage.Polish: "({attribute})",
+		ServerLanguage.Russian: "of {attribute}",
+		ServerLanguage.BorkBorkBork: "ooff {attribute}",
+	}
     
 class OfAptitudeUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
-
+    names = {
+		ServerLanguage.English: "of Aptitude",
+		ServerLanguage.Spanish: "(de aptitud)",
+		ServerLanguage.Italian: "della Perspicacia",
+		ServerLanguage.German: "d. Begabung",
+		ServerLanguage.Korean: "(총명)",
+		ServerLanguage.French: "(d'aptitude)",
+		ServerLanguage.TraditionalChinese: "天賦",
+		ServerLanguage.Japanese: "(アプティテュード)",
+		ServerLanguage.Polish: "(Uzdolnienia)",
+		ServerLanguage.Russian: "of Aptitude",
+		ServerLanguage.BorkBorkBork: "ooff Aepteetoode-a",
+	}
+    
 class OfAxeMasteryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfAxeMastery,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-
+    names = {
+		ServerLanguage.English: "of Axe Mastery",
+		ServerLanguage.Spanish: "(Dominio del hacha)",
+		ServerLanguage.Italian: "Abilità con l'Ascia",
+		ServerLanguage.German: "d. Axtbeherrschung",
+		ServerLanguage.Korean: "(도끼술)",
+		ServerLanguage.French: "(Maîtrise de la hache)",
+		ServerLanguage.TraditionalChinese: "精通斧術",
+		ServerLanguage.Japanese: "(アックス マスタリー)",
+		ServerLanguage.Polish: "(Biegłość w Toporach)",
+		ServerLanguage.Russian: "of Axe Mastery",
+		ServerLanguage.BorkBorkBork: "ooff Aexe-a Maestery",
+	}
+    
 class OfDaggerMasteryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]   
+    names = {
+		ServerLanguage.English: "of Dagger Mastery",
+		ServerLanguage.Spanish: "(Dominio de la daga)",
+		ServerLanguage.Italian: "Abilità con il Pugnale",
+		ServerLanguage.German: "d. Dolchbeherrschung",
+		ServerLanguage.Korean: "(단검술)",
+		ServerLanguage.French: "(Maîtrise de la dague)",
+		ServerLanguage.TraditionalChinese: "匕首精通",
+		ServerLanguage.Japanese: "(ダガー マスタリー)",
+		ServerLanguage.Polish: "(Biegłość w Sztyletach)",
+		ServerLanguage.Russian: "of Dagger Mastery",
+		ServerLanguage.BorkBorkBork: "ooff Daegger Maestery",
+	}
     
 class OfDefenseUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
@@ -1261,11 +1538,23 @@ class OfDefenseUpgrade(WeaponSuffix):
         ItemType.Spear: ItemUpgradeId.OfDefense_Spear,
         ItemType.Sword: ItemUpgradeId.OfDefense_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
-
+    names = {
+		ServerLanguage.English: "of Defense",
+		ServerLanguage.Spanish: "(de protección)",
+		ServerLanguage.Italian: "di Difesa",
+		ServerLanguage.German: "d. Verteidigung",
+		ServerLanguage.Korean: "(방어)",
+		ServerLanguage.French: "(de Défense)",
+		ServerLanguage.TraditionalChinese: "防衛",
+		ServerLanguage.Japanese: "(ディフェンス)",
+		ServerLanguage.Polish: "(Obrony)",
+		ServerLanguage.Russian: "of Defense",
+		ServerLanguage.BorkBorkBork: "ooff Deffense-a",
+	}
+    
 class OfDevotionUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1273,11 +1562,23 @@ class OfDevotionUpgrade(WeaponSuffix):
         ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
         ItemType.Staff: ItemUpgradeId.OfDevotion_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HealthPlusEnchanted,
     ]
-
+    names = {
+		ServerLanguage.English: "of Devotion",
+		ServerLanguage.Spanish: "(de devoción)",
+		ServerLanguage.Italian: "della Devozione",
+		ServerLanguage.German: "d. Hingabe",
+		ServerLanguage.Korean: "(헌신)",
+		ServerLanguage.French: "(de dévotion)",
+		ServerLanguage.TraditionalChinese: "奉獻",
+		ServerLanguage.Japanese: "(ディボーション)",
+		ServerLanguage.Polish: "(Oddania)",
+		ServerLanguage.Russian: "of Devotion",
+		ServerLanguage.BorkBorkBork: "ooff Defushun",
+	}
+    
 class OfEnchantingUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1290,11 +1591,23 @@ class OfEnchantingUpgrade(WeaponSuffix):
         ItemType.Spear: ItemUpgradeId.OfEnchanting_Spear,
         ItemType.Sword: ItemUpgradeId.OfEnchanting_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.IncreaseEnchantmentDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "of Enchanting",
+		ServerLanguage.Spanish: "(de encantamientos)",
+		ServerLanguage.Italian: "dell'Incantesimo",
+		ServerLanguage.German: "d. Verzauberung",
+		ServerLanguage.Korean: "(강화)",
+		ServerLanguage.French: "(d'Enchantement)",
+		ServerLanguage.TraditionalChinese: "附魔",
+		ServerLanguage.Japanese: "(エンチャント)",
+		ServerLanguage.Polish: "(Zaklinania)",
+		ServerLanguage.Russian: "of Enchanting",
+		ServerLanguage.BorkBorkBork: "ooff Inchunteeng",
+	}
+    
 class OfEnduranceUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1302,11 +1615,23 @@ class OfEnduranceUpgrade(WeaponSuffix):
         ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
         ItemType.Staff: ItemUpgradeId.OfEndurance_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HealthPlusStance,
     ]
-
+    names = {
+		ServerLanguage.English: "of Endurance",
+		ServerLanguage.Spanish: "(de resistencia)",
+		ServerLanguage.Italian: "della Resistenza",
+		ServerLanguage.German: "d. Ausdauer",
+		ServerLanguage.Korean: "(인내)",
+		ServerLanguage.French: "(d'endurance)",
+		ServerLanguage.TraditionalChinese: "忍耐",
+		ServerLanguage.Japanese: "(インデュランス)",
+		ServerLanguage.Polish: "(Wytrzymałości)",
+		ServerLanguage.Russian: "of Endurance",
+		ServerLanguage.BorkBorkBork: "ooff Indoorunce-a",
+	}
+    
 class OfFortitudeUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1321,70 +1646,153 @@ class OfFortitudeUpgrade(WeaponSuffix):
         ItemType.Offhand: ItemUpgradeId.OfFortitude_Focus,
         ItemType.Shield: ItemUpgradeId.OfFortitude_Shield,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
-
+    names = {
+		ServerLanguage.English: "of Fortitude",
+		ServerLanguage.Spanish: "(con poder)",
+		ServerLanguage.Italian: "del Coraggio",
+		ServerLanguage.German: "d. Tapferkeit",
+		ServerLanguage.Korean: "(견고)",
+		ServerLanguage.French: "(de Courage)",
+		ServerLanguage.TraditionalChinese: "堅忍",
+		ServerLanguage.Japanese: "(フォーティチュード)",
+		ServerLanguage.Polish: "(Wytrwałości)",
+		ServerLanguage.Russian: "of Fortitude",
+		ServerLanguage.BorkBorkBork: "ooff Furteetoode-a",
+	}
+    
 class OfHammerMasteryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-
+    names = {
+		ServerLanguage.English: "of Hammer Mastery",
+		ServerLanguage.Spanish: "(Dominio del martillo)",
+		ServerLanguage.Italian: "Abilità col Martello",
+		ServerLanguage.German: "d. Hammerbeherrschung",
+		ServerLanguage.Korean: "(해머술)",
+		ServerLanguage.French: "(Maîtrise du marteau)",
+		ServerLanguage.TraditionalChinese: "精通鎚術",
+		ServerLanguage.Japanese: "(ハンマー マスタリー)",
+		ServerLanguage.Polish: "(Biegłość w Młotach)",
+		ServerLanguage.Russian: "of Hammer Mastery",
+		ServerLanguage.BorkBorkBork: "ooff Haemmer Maestery",
+	}
+    
 class OfMarksmanshipUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Bow: ItemUpgradeId.OfMarksmanship,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-
+    names = {
+		ServerLanguage.English: "of Marksmanship",
+		ServerLanguage.Spanish: "(Puntería)",
+		ServerLanguage.Italian: "Precisione",
+		ServerLanguage.German: "d. Treffsicherheit",
+		ServerLanguage.Korean: "(궁술)",
+		ServerLanguage.French: "(Adresse au tir)",
+		ServerLanguage.TraditionalChinese: "弓術精通",
+		ServerLanguage.Japanese: "(ボウ マスタリー)",
+		ServerLanguage.Polish: "(Umiejętności Strzeleckie)",
+		ServerLanguage.Russian: "of Marksmanship",
+		ServerLanguage.BorkBorkBork: "ooff Maerksmunsheep",
+	}
+    
 class OfMasteryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
-
+    names = {
+		ServerLanguage.English: "of Mastery",
+		ServerLanguage.Spanish: "(de maestría)",
+		ServerLanguage.Italian: "della Destrezza da Difesa",
+		ServerLanguage.German: "d. Beherrschung",
+		ServerLanguage.Korean: "(지배)",
+		ServerLanguage.French: "(de maîtrise)",
+		ServerLanguage.TraditionalChinese: "支配",
+		ServerLanguage.Japanese: "(マスタリー)",
+		ServerLanguage.Polish: "(Mistrzostwa)",
+		ServerLanguage.Russian: "of Mastery",
+		ServerLanguage.BorkBorkBork: "ooff Maestery",
+	}
+    
 class OfMemoryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
     ]
-
+    names = {
+		ServerLanguage.English: "of Memory",
+		ServerLanguage.Spanish: "(de memoria)",
+		ServerLanguage.Italian: "della Memoria",
+		ServerLanguage.German: "d. Erinnerung",
+		ServerLanguage.Korean: "(기억)",
+		ServerLanguage.French: "(de mémoire)",
+		ServerLanguage.TraditionalChinese: "記憶",
+		ServerLanguage.Japanese: "(メモリー)",
+		ServerLanguage.Polish: "(Pamięci)",
+		ServerLanguage.Russian: "of Memory",
+		ServerLanguage.BorkBorkBork: "ooff Memury",
+	}
 class OfQuickeningUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
-
+    names = {
+		ServerLanguage.English: "of Quickening",
+		ServerLanguage.Spanish: "(de aceleración)",
+		ServerLanguage.Italian: "dell'Accelerazione",
+		ServerLanguage.German: "d. Beschleunigung",
+		ServerLanguage.Korean: "(활기)",
+		ServerLanguage.French: "(de rapidité)",
+		ServerLanguage.TraditionalChinese: "復甦",
+		ServerLanguage.Japanese: "(クイックニング)",
+		ServerLanguage.Polish: "(Przyspieszenia)",
+		ServerLanguage.Russian: "of Quickening",
+		ServerLanguage.BorkBorkBork: "ooff Qooeeckeneeng",
+	}
+    
 class OfScytheMasteryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
+    names = {
+		ServerLanguage.English: "of Scythe Mastery",
+		ServerLanguage.Spanish: "(Dominio de la guadaña)",
+		ServerLanguage.Italian: "Abilità con la Falce",
+		ServerLanguage.German: "d. Sensenbeherrschung",
+		ServerLanguage.Korean: "(사이드술)",
+		ServerLanguage.French: "(Maîtrise de la faux)",
+		ServerLanguage.TraditionalChinese: "鐮刀精通",
+		ServerLanguage.Japanese: "(サイズ マスタリー)",
+		ServerLanguage.Polish: "(Biegłość w Kosach)",
+		ServerLanguage.Russian: "of Scythe Mastery",
+		ServerLanguage.BorkBorkBork: "ooff Scyzee Maestery",
+	}
     
 class OfShelterUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
@@ -1398,11 +1806,23 @@ class OfShelterUpgrade(WeaponSuffix):
         ItemType.Spear: ItemUpgradeId.OfShelter_Spear,
         ItemType.Sword: ItemUpgradeId.OfShelter_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
-
+    names = {
+		ServerLanguage.English: "of Shelter",
+		ServerLanguage.Spanish: "(de refugio)",
+		ServerLanguage.Italian: "del Riparo",
+		ServerLanguage.German: "d. Zuflucht",
+		ServerLanguage.Korean: "(보호)",
+		ServerLanguage.French: "(de Refuge)",
+		ServerLanguage.TraditionalChinese: "庇護",
+		ServerLanguage.Japanese: "(シェルター)",
+		ServerLanguage.Polish: "(Ochrony)",
+		ServerLanguage.Russian: "of Shelter",
+		ServerLanguage.BorkBorkBork: "ooff Shelter",
+	}
+    
 class OfSlayingUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1412,41 +1832,78 @@ class OfSlayingUpgrade(WeaponSuffix):
         ItemType.Sword: ItemUpgradeId.OfSlaying_Sword,
         ItemType.Staff: ItemUpgradeId.OfSlaying_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsSpecies,
     ]
+
+    #TODO: Localize the name of this suffix
 
 class OfSpearMasteryUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Spear: ItemUpgradeId.OfSpearMastery,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-
+    names = {
+		ServerLanguage.English: "of Spear Mastery",
+		ServerLanguage.Spanish: "(Dominio de la lanza)",
+		ServerLanguage.Italian: "Abilità con la Lancia",
+		ServerLanguage.German: "d. Speerbeherrschung",
+		ServerLanguage.Korean: "(창술)",
+		ServerLanguage.French: "(Maîtrise du javelot)",
+		ServerLanguage.TraditionalChinese: "矛術精通",
+		ServerLanguage.Japanese: "(スピア マスタリー)",
+		ServerLanguage.Polish: "(Biegłość we Włóczniach)",
+		ServerLanguage.Russian: "of Spear Mastery",
+		ServerLanguage.BorkBorkBork: "ooff Speaer Maestery",
+	}
+    
 class OfSwiftnessUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
-
+    names = {
+		ServerLanguage.English: "of Swiftness",
+		ServerLanguage.Spanish: "(de rapidez)",
+		ServerLanguage.Italian: "della Rapidità",
+		ServerLanguage.German: "d. Eile",
+		ServerLanguage.Korean: "(신속)",
+		ServerLanguage.French: "(de Rapidité)",
+		ServerLanguage.TraditionalChinese: "迅捷",
+		ServerLanguage.Japanese: "(スウィフトネス)",
+		ServerLanguage.Polish: "(Szybkości)",
+		ServerLanguage.Russian: "of Swiftness",
+		ServerLanguage.BorkBorkBork: "ooff Sveefftness",
+	}
+    
 class OfSwordsmanshipUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
     }
-    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-
+    names = {
+		ServerLanguage.English: "of Swordsmanship",
+		ServerLanguage.Spanish: "(Esgrima)",
+		ServerLanguage.Italian: "Scherma",
+		ServerLanguage.German: "d. Schwertkunst",
+		ServerLanguage.Korean: "(검술)",
+		ServerLanguage.French: "(Maîtrise de l'épée)",
+		ServerLanguage.TraditionalChinese: "精通劍術",
+		ServerLanguage.Japanese: "(ソード マスタリー)",
+		ServerLanguage.Polish: "(Biegłość w Mieczach)",
+		ServerLanguage.Russian: "of Swordsmanship",
+		ServerLanguage.BorkBorkBork: "ooff Svurdsmunsheep",
+	}
+    
 class OfTheProfessionUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1460,11 +1917,22 @@ class OfTheProfessionUpgrade(WeaponSuffix):
         ItemType.Sword: ItemUpgradeId.OfTheProfession_Sword,
         ItemType.Wand: ItemUpgradeId.OfTheProfession_Wand,
     }
-    
     property_identifiers = [
         ModifierIdentifier.OfTheProfession,
     ]
-
+    names = {
+		ServerLanguage.English: "of the {profession}",
+		ServerLanguage.Spanish: "(el {profession})",
+		ServerLanguage.Italian: "dell'arco il {profession}",
+		ServerLanguage.German: "d. des {profession}",
+		ServerLanguage.Korean: "({profession})",
+		ServerLanguage.French: "(le {profession})",
+		ServerLanguage.TraditionalChinese: "{profession}",
+		ServerLanguage.Japanese: "({profession})",
+		ServerLanguage.Polish: "({profession})",
+		ServerLanguage.Russian: "of {profession}",
+		ServerLanguage.BorkBorkBork: "ooff zee {profession}",
+	}
 class OfValorUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1472,11 +1940,23 @@ class OfValorUpgrade(WeaponSuffix):
         ItemType.Shield: ItemUpgradeId.OfValor_Shield,
         ItemType.Staff: ItemUpgradeId.OfValor_Staff,
     }
-    
     property_identifiers = [
         ModifierIdentifier.HealthPlusHexed,
     ]
-
+    names = {
+		ServerLanguage.English: "of Valor",
+		ServerLanguage.Spanish: "(de valor)",
+		ServerLanguage.Italian: "del Valore",
+		ServerLanguage.German: "d. Wertschätzung",
+		ServerLanguage.Korean: "(용맹)",
+		ServerLanguage.French: "(de valeur)",
+		ServerLanguage.TraditionalChinese: "英勇",
+		ServerLanguage.Japanese: "(ヴァラー)",
+		ServerLanguage.Polish: "(Odwagi)",
+		ServerLanguage.Russian: "of Valor",
+		ServerLanguage.BorkBorkBork: "ooff Faelur",
+	}
+    
 class OfWardingUpgrade(WeaponSuffix):
     mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
@@ -1489,17 +1969,29 @@ class OfWardingUpgrade(WeaponSuffix):
         ItemType.Spear: ItemUpgradeId.OfWarding_Spear,
         ItemType.Sword: ItemUpgradeId.OfWarding_Sword,
     }
-    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
     ]
+    names = {
+		ServerLanguage.English: "of Warding",
+		ServerLanguage.Spanish: "(de guardia)",
+		ServerLanguage.Italian: "della Protezione",
+		ServerLanguage.German: "d. Abwehr",
+		ServerLanguage.Korean: "(결계)",
+		ServerLanguage.French: "(du Protecteur)",
+		ServerLanguage.TraditionalChinese: "結界",
+		ServerLanguage.Japanese: "(ウォーディング)",
+		ServerLanguage.Polish: "(Zapobiegliwości)",
+		ServerLanguage.Russian: "of Warding",
+		ServerLanguage.BorkBorkBork: "ooff Vaerdeeng",
+	}
 #endregion Suffixes
 
 #region Inscriptions
 class Inscription(Upgrade):
     inventory_icon : str
     id : ItemUpgradeId
-    localized_names : dict[ServerLanguage, str] = {}
+    names : dict[ServerLanguage, str] = {}
     target_item_type : ItemType
     
     INSCRIPTION_LOCALIZATION = {
@@ -1524,7 +2016,7 @@ class Inscription(Upgrade):
     def name(self) -> str:
         language = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))
         inscription_format = self.INSCRIPTION_LOCALIZATION.get(language, self.INSCRIPTION_LOCALIZATION[ServerLanguage.English])
-        return inscription_format.format(name=self.localized_names.get(language, self.localized_names.get(ServerLanguage.English, "")))
+        return inscription_format.format(name=self.names.get(language, self.names.get(ServerLanguage.English, "")))
 
 #region Offhand
 class BeJustAndFearNot(Inscription):
@@ -1534,7 +2026,10 @@ class BeJustAndFearNot(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusHexed,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Be Just and Fear Not\"",
+	}
+    
 class DownButNotOut(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1542,7 +2037,10 @@ class DownButNotOut(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusWhileDown
     ]
-
+    names = {
+		ServerLanguage.English: "\"Down But Not Out\"",
+	}
+    
 class FaithIsMyShield(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1550,7 +2048,20 @@ class FaithIsMyShield(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusEnchanted,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Faith is My Shield\"",
+		ServerLanguage.Spanish: "\"La fe es mi escudo\"",
+		ServerLanguage.Italian: "\"La Fede è il Mio Scudo\"",
+		ServerLanguage.German: "\"Der Glaube ist mein Schild!\"",
+		ServerLanguage.Korean: "신념은 나의 방패다",
+		ServerLanguage.French: "\"La foi est mon bouclier\"",
+		ServerLanguage.TraditionalChinese: "\"信念是盾\"",
+		ServerLanguage.Japanese: "フェイス イズ マイ シールド",
+		ServerLanguage.Polish: "\"Wiara jest mą tarczą\"",
+		ServerLanguage.Russian: "\"Вера послужит мне щитом\"",
+		ServerLanguage.BorkBorkBork: "\"Faeeet is My Sheeeld\"",
+	}
+    
 class ForgetMeNot(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1558,7 +2069,20 @@ class ForgetMeNot(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Forget Me Not\"",
+		ServerLanguage.Spanish: "\"No me olvides\"",
+		ServerLanguage.Italian: "\"Non Ti Scordar di Me\"",
+		ServerLanguage.German: "\"Vergesst mein nicht!\"",
+		ServerLanguage.Korean: "물망초",
+		ServerLanguage.French: "\"Souvenir gravé à jamais\"",
+		ServerLanguage.TraditionalChinese: "\"勿忘我\"",
+		ServerLanguage.Japanese: "フォーゲット ミー ノット",
+		ServerLanguage.Polish: "\"Nie zapomnij mnie\"",
+		ServerLanguage.Russian: "\"Незабудка\"",
+		ServerLanguage.BorkBorkBork: "\"Furget Me-a Nut\"",
+	}
+    
 class HailToTheKing(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1566,7 +2090,20 @@ class HailToTheKing(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAbove,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Hail to the King\"",
+		ServerLanguage.Spanish: "\"Viva el rey\"",
+		ServerLanguage.Italian: "\"Viva il Re\"",
+		ServerLanguage.German: "\"Gelobt sei der König\"",
+		ServerLanguage.Korean: "국왕 폐하 만세",
+		ServerLanguage.French: "\"Longue vie au roi\"",
+		ServerLanguage.TraditionalChinese: "\"與王致敬\"",
+		ServerLanguage.Japanese: "ヘイル トゥ ザ キング",
+		ServerLanguage.Polish: "\"Niech żyje król\"",
+		ServerLanguage.Russian: "\"Да здравствует король!\"",
+		ServerLanguage.BorkBorkBork: "\"Haeeel tu zee Keeng\"",
+	}
+    
 class IgnoranceIsBliss(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1575,7 +2112,20 @@ class IgnoranceIsBliss(Inscription):
         ModifierIdentifier.ArmorPlus,
         ModifierIdentifier.EnergyMinus,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Ignorance is Bliss\"",
+		ServerLanguage.Spanish: "\"La ignorancia es felicidad\"",
+		ServerLanguage.Italian: "\"Benedetta Ignoranza\"",
+		ServerLanguage.German: "\"Was ich nicht weiß ...\"",
+		ServerLanguage.Korean: "모르는 게 약이다",
+		ServerLanguage.French: "\"Il vaut mieux ne pas savoir\"",
+		ServerLanguage.TraditionalChinese: "\"傻人有傻福\"",
+		ServerLanguage.Japanese: "イグノーランス イズ ブリス",
+		ServerLanguage.Polish: "\"Ignorancja jest błogosławieństwem\"",
+		ServerLanguage.Russian: "\"Счастлив в неведении\"",
+		ServerLanguage.BorkBorkBork: "\"Ignurunce-a is Bleess\"",
+	}
+    
 class KnowingIsHalfTheBattle(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1583,7 +2133,10 @@ class KnowingIsHalfTheBattle(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusCasting,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Knowing is Half the Battle\"",
+	}
+    
 class LifeIsPain(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1592,7 +2145,10 @@ class LifeIsPain(Inscription):
         ModifierIdentifier.ArmorPlus,
         ModifierIdentifier.HealthMinus,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Life is Pain\"",
+	}
+    
 class LiveForToday(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1601,7 +2157,20 @@ class LiveForToday(Inscription):
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Live for Today\"",
+		ServerLanguage.Spanish: "\"Vive el presente\"",
+		ServerLanguage.Italian: "\"Vivi alla Giornata\"",
+		ServerLanguage.German: "\"Lebt den Tag\"",
+		ServerLanguage.Korean: "오늘을 위해 최선을",
+		ServerLanguage.French: "\"Aujourd'hui, la vie\"",
+		ServerLanguage.TraditionalChinese: "\"活在當下\"",
+		ServerLanguage.Japanese: "リブ フォー トゥデイ",
+		ServerLanguage.Polish: "\"Żyj dniem dzisiejszym\"",
+		ServerLanguage.Russian: "\"Живи сегодняшним днем\"",
+		ServerLanguage.BorkBorkBork: "\"Leefe-a fur Tudaey\"",
+	}
+    
 class ManForAllSeasons(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1609,7 +2178,10 @@ class ManForAllSeasons(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Man for All Seasons\"",
+	}
+    
 class MightMakesRight(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1617,7 +2189,10 @@ class MightMakesRight(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAttacking,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Might Makes Right\"",
+	}
+    
 class SerenityNow(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1625,7 +2200,20 @@ class SerenityNow(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Serenity Now\"",
+		ServerLanguage.Spanish: "\"Calma ahora\"",
+		ServerLanguage.Italian: "\"Serenità Immediata\"",
+		ServerLanguage.German: "\"Auf die Gelassenheit\"",
+		ServerLanguage.Korean: "평정을 찾아라",
+		ServerLanguage.French: "\"Un peu de sérénité\"",
+		ServerLanguage.TraditionalChinese: "\"平靜\"",
+		ServerLanguage.Japanese: "セレニティ ナウ",
+		ServerLanguage.Polish: "\"Niech nastanie spokój\"",
+		ServerLanguage.Russian: "\"Спокойствие, только спокойствие!\"",
+		ServerLanguage.BorkBorkBork: "\"Sereneety Noo\"",
+	}
+    
 class SurvivalOfTheFittest(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
@@ -1633,6 +2221,19 @@ class SurvivalOfTheFittest(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
+    names = {
+		ServerLanguage.English: "\"Survival of the Fittest\"",
+		ServerLanguage.Spanish: "\"Supervivencia del más fuerte\"",
+		ServerLanguage.Italian: "\"Sopravvivenza Integrale\"",
+		ServerLanguage.German: "\"Hart wie Stahl\"",
+		ServerLanguage.Korean: "적자생존",
+		ServerLanguage.French: "\"La survie du plus fort\"",
+		ServerLanguage.TraditionalChinese: "\"適者生存\"",
+		ServerLanguage.Japanese: "サバイバル オブ ザ フィッテスト",
+		ServerLanguage.Polish: "\"Przetrwają najsilniejsi\"",
+		ServerLanguage.Russian: "\"Естественный отбор\"",
+		ServerLanguage.BorkBorkBork: "\"Soorfeefael ooff zee Feettest\"",
+	}
 #endregion Offhand
 
 #region Weapon
@@ -1645,7 +2246,20 @@ class BrawnOverBrains(Inscription):
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.EnergyMinus,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Brawn over Brains\"",
+		ServerLanguage.Spanish: "\"Más vale maña que fuerza\"",
+		ServerLanguage.Italian: "\"Più Muscoli che Cervello\"",
+		ServerLanguage.German: "\"Körper über Geist\"",
+		ServerLanguage.Korean: "힘보다는 머리",
+		ServerLanguage.French: "\"Tout en muscles\"",
+		ServerLanguage.TraditionalChinese: "\"有勇無謀\"",
+		ServerLanguage.Japanese: "ブローン オーバー ブレイン",
+		ServerLanguage.Polish: "\"Siła ponad umysł\"",
+		ServerLanguage.Russian: "\"Сила есть -ума не надо\"",
+		ServerLanguage.BorkBorkBork: "\"Braevn oofer Braeeens\"",
+	}
+        
 class DanceWithDeath(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
@@ -1653,7 +2267,20 @@ class DanceWithDeath(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusStance,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Dance with Death\"",
+		ServerLanguage.Spanish: "\"Baila con la muerte\"",
+		ServerLanguage.Italian: "\"Balla coi Lutti\"",
+		ServerLanguage.German: "\"Tanz mit dem Tod\"",
+		ServerLanguage.Korean: "마력석: 죽음과 함께 춤을",
+		ServerLanguage.French: "\"Danse avec la mort\"",
+		ServerLanguage.TraditionalChinese: "\"與死亡共舞\"",
+		ServerLanguage.Japanese: "ダンス ウィズ デス",
+		ServerLanguage.Polish: "\"Taniec ze śmiercią\"",
+		ServerLanguage.Russian: "\"Танец со смертью\"",
+		ServerLanguage.BorkBorkBork: "\"Dunce-a veet Deaet\"",
+	}
+         
 class DontFearTheReaper(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
@@ -1661,7 +2288,20 @@ class DontFearTheReaper(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusHexed,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Don't Fear the Reaper\"",
+		ServerLanguage.Spanish: "\"No temas la guadaña\"",
+		ServerLanguage.Italian: "\"Non Temere la Falce\"",
+		ServerLanguage.German: "\"Keine Angst vorm Sensenmann\"",
+		ServerLanguage.Korean: "사신을 두려워하지 마라",
+		ServerLanguage.French: "\"Ne craignez pas le Faucheur\"",
+		ServerLanguage.TraditionalChinese: "\"無懼死亡\"",
+		ServerLanguage.Japanese: "ドント フィアー ザ リーパー",
+		ServerLanguage.Polish: "\"Nie bój się żniwiarza\"",
+		ServerLanguage.Russian: "\"Не бойся жнеца\"",
+		ServerLanguage.BorkBorkBork: "\"Dun't Feaer zee Reaeper\"",
+	}
+    
 class DontThinkTwice(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
@@ -1669,7 +2309,20 @@ class DontThinkTwice(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Don't Think Twice\"",
+		ServerLanguage.Spanish: "\"No te lo pienses\"",
+		ServerLanguage.Italian: "\"Non Pensarci Due Volte\"",
+		ServerLanguage.German: "\"Zauderei ist keine Zier\"",
+		ServerLanguage.Korean: "두 번 생각하지 마라",
+		ServerLanguage.French: "\"Pas le temps de réfléchir\"",
+		ServerLanguage.TraditionalChinese: "\"別再考慮\"",
+		ServerLanguage.Japanese: "ドント シンク トゥワイス",
+		ServerLanguage.Polish: "\"Nie zastanawiaj się\"",
+		ServerLanguage.Russian: "\"А что тут думать?\"",
+		ServerLanguage.BorkBorkBork: "\"Dun't Theenk Tveece-a\"",
+	}
+    
 class GuidedByFate(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
@@ -1677,7 +2330,20 @@ class GuidedByFate(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusEnchanted,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Guided by Fate\"",
+		ServerLanguage.Spanish: "\"Guiado por el destino\"",
+		ServerLanguage.Italian: "\"Guidato dal Fato\"",
+		ServerLanguage.German: "\"Wink des Schicksals\"",
+		ServerLanguage.Korean: "마력석: 운명의 이끌림",
+		ServerLanguage.French: "\"Soyez maître de votre destin\"",
+		ServerLanguage.TraditionalChinese: "\"命運\"",
+		ServerLanguage.Japanese: "ガイデッド バイ フェイト",
+		ServerLanguage.Polish: "\"Prowadzi mnie przeznaczenie\"",
+		ServerLanguage.Russian: "\"Ведомый роком\"",
+		ServerLanguage.BorkBorkBork: "\"Gooeeded by Faete-a\"",
+	}
+    
 class StrengthAndHonor(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
@@ -1685,7 +2351,20 @@ class StrengthAndHonor(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileUp,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Strength and Honor\"",
+		ServerLanguage.Spanish: "\"Fuerza y honor\"",
+		ServerLanguage.Italian: "\"Forza e Onore\"",
+		ServerLanguage.German: "\"Stärke und Ehre\"",
+		ServerLanguage.Korean: "마력석: 힘과 명예",
+		ServerLanguage.French: "\"Force et honneur\"",
+		ServerLanguage.TraditionalChinese: "\"力與榮耀\"",
+		ServerLanguage.Japanese: "ストレングス アンド オナー",
+		ServerLanguage.Polish: "\"Siła i honor\"",
+		ServerLanguage.Russian: "\"Сила и честь\"",
+		ServerLanguage.BorkBorkBork: "\"Strengt und Hunur\"",
+	}
+    
 class ToThePain(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
@@ -1694,25 +2373,61 @@ class ToThePain(Inscription):
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.ArmorMinusAttacking
     ]
-
+    names = {
+		ServerLanguage.English: "\"To the Pain!\"",
+		ServerLanguage.Spanish: "\"¡A que duele!\"",
+		ServerLanguage.Italian: "\"Patisci!\"",
+		ServerLanguage.German: "\"Fühlt den Schmerz!\"",
+		ServerLanguage.Korean: "오직 공격뿐!",
+		ServerLanguage.French: "\"Vive la douleur !\"",
+		ServerLanguage.TraditionalChinese: "\"受死吧！\"",
+		ServerLanguage.Japanese: "トゥ ザ ペイン！",
+		ServerLanguage.Polish: "\"Niech żyje ból!\"",
+		ServerLanguage.Russian: "\"Боль!\"",
+		ServerLanguage.BorkBorkBork: "\"Tu zee Paeeen!\"",
+	}
+    
 class TooMuchInformation(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.TooMuchInformation
-    
+    id = ItemUpgradeId.TooMuchInformation    
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsHexed,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Too Much Information\"",
+		ServerLanguage.Spanish: "\"Demasiada información\"",
+		ServerLanguage.Italian: "\"Troppe Informazioni\"",
+		ServerLanguage.German: "\"Zuviel Information\"",
+		ServerLanguage.Korean: "너무 많은 정보",
+		ServerLanguage.French: "\"Trop de détails\"",
+		ServerLanguage.TraditionalChinese: "\"多說無益\"",
+		ServerLanguage.Japanese: "トゥー マッチ インフォメーション",
+		ServerLanguage.Polish: "\"Za dużo informacji\"",
+		ServerLanguage.Russian: "\"Слишком много информации\"",
+		ServerLanguage.BorkBorkBork: "\"Tuu Mooch Inffurmaeshun\"",
+	}
+    
 class VengeanceIsMine(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.VengeanceIsMine
-    
+    id = ItemUpgradeId.VengeanceIsMine    
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileDown,
-    ]
-
+    ]    
+    names = {
+		ServerLanguage.English: "\"Vengeance is Mine\"",
+		ServerLanguage.Spanish: "\"La venganza será mía\"",
+		ServerLanguage.Italian: "\"La Vendetta è Mia\"",
+		ServerLanguage.German: "\"Die Rache ist mein\"",
+		ServerLanguage.Korean: "복수는 나의 것",
+		ServerLanguage.French: "\"La vengeance sera mienne\"",
+		ServerLanguage.TraditionalChinese: "\"我要報仇\"",
+		ServerLanguage.Japanese: "ヴェンジャンス イズ マイン",
+		ServerLanguage.Polish: "\"Zemsta należy do mnie\"",
+		ServerLanguage.Russian: "\"Аз воздам\"",
+		ServerLanguage.BorkBorkBork: "\"Fengeunce-a is Meene-a\"",
+	}
 #endregion Weapon
 
 #region MartialWeapon
@@ -1723,7 +2438,20 @@ class IHaveThePower(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
-
+    names = {
+		ServerLanguage.English: "\"I have the power!\"",
+		ServerLanguage.Spanish: "\"¡Tengo el poder!\"",
+		ServerLanguage.Italian: "\"A Me Il Potere!\"",
+		ServerLanguage.German: "\"Ich habe die Kraft!\"",
+		ServerLanguage.Korean: "마력석: 내겐 에너지가 있다!",
+		ServerLanguage.French: "\"Je détiens le pouvoir !\"",
+		ServerLanguage.TraditionalChinese: "\"充滿力量！\"",
+		ServerLanguage.Japanese: "アイ ハブ ザ パワー！",
+		ServerLanguage.Polish: "\"Mam moc!\"",
+		ServerLanguage.Russian: "\"Сила в моих руках!\"",
+		ServerLanguage.BorkBorkBork: "\"I haefe-a zee pooer!\"",
+	}
+    
 class LetTheMemoryLiveAgain(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.MartialWeapon
@@ -1731,7 +2459,20 @@ class LetTheMemoryLiveAgain(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Let the Memory Live Again\"",
+		ServerLanguage.Spanish: "\"Que vuelvan los recuerdos\"",
+		ServerLanguage.Italian: "\"Facciamo Rivivere i Ricordi\"",
+		ServerLanguage.German: "\"Auf die Erinnerung!\"",
+		ServerLanguage.Korean: "기억이여, 되살아나라",
+		ServerLanguage.French: "\"Vers l'infini et au-delà\"",
+		ServerLanguage.TraditionalChinese: "\"記憶復甦\"",
+		ServerLanguage.Japanese: "レット ザ メモリー リブ アゲイン",
+		ServerLanguage.Polish: "\"Niech pamięć ponownie ożyje\"",
+		ServerLanguage.Russian: "\"Пусть оживут воспоминания\"",
+		ServerLanguage.BorkBorkBork: "\"Let zee Memury Leefe-a Aegaeeen\"",
+	}
+    
 #endregion MartialWeapon
 
 #region OffhandOrShield
@@ -1742,7 +2483,20 @@ class CastOutTheUnclean(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Cast Out the Unclean\"",
+		ServerLanguage.Spanish: "\"Desterremos a los impuros\"",
+		ServerLanguage.Italian: "\"Esorcizza l'Eresia\"",
+		ServerLanguage.German: "\"Gute Besserung!\"",
+		ServerLanguage.Korean: "불결한 건 가랏!",
+		ServerLanguage.French: "\"Au rebut les impurs\"",
+		ServerLanguage.TraditionalChinese: "\"驅除不潔\"",
+		ServerLanguage.Japanese: "キャスト アウト ザ アンクリーン",
+		ServerLanguage.Polish: "\"Wyrzuć nieczystych\"",
+		ServerLanguage.Russian: "\"Изгнать нечистых\"",
+		ServerLanguage.BorkBorkBork: "\"Caest Oooot zee Uncleun\"",
+	}
+    
 class FearCutsDeeper(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1750,7 +2504,20 @@ class FearCutsDeeper(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Fear Cuts Deeper\"",
+		ServerLanguage.Spanish: "\"El miedo hace más daño\"",
+		ServerLanguage.Italian: "\"Il Timore Trafigge\"",
+		ServerLanguage.German: "\"Die Furcht schneidet tiefer\"",
+		ServerLanguage.Korean: "공포는 더 깊은 상처를 낸다",
+		ServerLanguage.French: "\"La peur fait plus de mal\"",
+		ServerLanguage.TraditionalChinese: "\"戒除恐懼\"",
+		ServerLanguage.Japanese: "フィアー カッツ ディーパー",
+		ServerLanguage.Polish: "\"Strach rani głęboko\"",
+		ServerLanguage.Russian: "\"Страх острее бритвы\"",
+		ServerLanguage.BorkBorkBork: "\"Feaer Coots Deeper\"",
+	}
+    
 class ICanSeeClearlyNow(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1758,7 +2525,20 @@ class ICanSeeClearlyNow(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,   
     ]
-
+    names = {
+		ServerLanguage.English: "\"I Can See Clearly Now\"",
+		ServerLanguage.Spanish: "\"He abierto los ojos\"",
+		ServerLanguage.Italian: "\"Chiara Come Un'Alba\"",
+		ServerLanguage.German: "\"Klar wie Morgentau\"",
+		ServerLanguage.Korean: "마력석: 모든 게 뚜렷하게 보인다",
+		ServerLanguage.French: "\"Je vois clair à présent\"",
+		ServerLanguage.TraditionalChinese: "\"光明再現\"",
+		ServerLanguage.Japanese: "アイ キャン シー クリアリー ナウ",
+		ServerLanguage.Polish: "\"Widzę to teraz wyraźnie\"",
+		ServerLanguage.Russian: "\"Теперь я ясно вижу\"",
+		ServerLanguage.BorkBorkBork: "\"I Cun See-a Cleaerly Noo\"",
+	}
+    
 class LeafOnTheWind(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1766,7 +2546,20 @@ class LeafOnTheWind(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Leaf on the Wind\"",
+		ServerLanguage.Spanish: "\"Hoja en el viento\"",
+		ServerLanguage.Italian: "\"Foglia nel Vento\"",
+		ServerLanguage.German: "\"Grashalm im Wind\"",
+		ServerLanguage.Korean: "바람에 떠다니는 나뭇잎",
+		ServerLanguage.French: "\"La feuille portée par le vent\"",
+		ServerLanguage.TraditionalChinese: "\"風中之葉\"",
+		ServerLanguage.Japanese: "リーフ オン ザ ウインド",
+		ServerLanguage.Polish: "\"Liść na wietrze\"",
+		ServerLanguage.Russian: "\"Лист на ветру\"",
+		ServerLanguage.BorkBorkBork: "\"Leaeff oon zee Veend\"",
+	}
+    
 class LikeARollingStone(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1774,7 +2567,20 @@ class LikeARollingStone(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Like a Rolling Stone\"",
+		ServerLanguage.Spanish: "\"Like a Rolling Stone\"",
+		ServerLanguage.Italian: "\"Come Una Pietra Scalciata\"",
+		ServerLanguage.German: "\"Marmor, Stein und Erde bricht\"",
+		ServerLanguage.Korean: "구르는 돌처럼",
+		ServerLanguage.French: "\"Solide comme le roc\"",
+		ServerLanguage.TraditionalChinese: "\"漂泊者\"",
+		ServerLanguage.Japanese: "ライク ア ローリング ストーン",
+		ServerLanguage.Polish: "\"Jak wędrowiec\"",
+		ServerLanguage.Russian: "\"Как перекати-поле\"",
+		ServerLanguage.BorkBorkBork: "\"Leeke-a a Rulleeng Stune-a\"",
+	}
+    
 class LuckOfTheDraw(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1782,7 +2588,20 @@ class LuckOfTheDraw(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessDamage,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Luck of the Draw\"",
+		ServerLanguage.Spanish: "\"La suerte del apostante\"",
+		ServerLanguage.Italian: "\"La Fortuna è Cieca\"",
+		ServerLanguage.German: "\"Glück im Spiel ...\"",
+		ServerLanguage.Korean: "비김의 행운",
+		ServerLanguage.French: "\"Une question de chance\"",
+		ServerLanguage.TraditionalChinese: "\"全憑運氣\"",
+		ServerLanguage.Japanese: "ラック オブ ザ ドロー",
+		ServerLanguage.Polish: "\"Szczęśliwe rozdanie\"",
+		ServerLanguage.Russian: "\"Счастливый жребий\"",
+		ServerLanguage.BorkBorkBork: "\"Loock ooff zee Draev\"",
+	}
+    
 class MasterOfMyDomain(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1790,7 +2609,20 @@ class MasterOfMyDomain(Inscription):
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Master of My Domain!\"",
+		ServerLanguage.Spanish: "\"Amo de mi reino\"",
+		ServerLanguage.Italian: "\"Padrone in Casa Mia\"",
+		ServerLanguage.German: "\"Herr in meinem Haus\"",
+		ServerLanguage.Korean: "마력석: 내 공간의 지배자",
+		ServerLanguage.French: "\"Maître du Domaine\"",
+		ServerLanguage.TraditionalChinese: "\"這是我的地盤！\"",
+		ServerLanguage.Japanese: "マスター オブ マイ ドメイン",
+		ServerLanguage.Polish: "\"Pan mego królestwa\"",
+		ServerLanguage.Russian: "\"Я сам себе хозяин\"",
+		ServerLanguage.BorkBorkBork: "\"Maester ooff My Dumaeeen\"",
+	}
+    
 class NotTheFace(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1798,7 +2630,20 @@ class NotTheFace(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage
     ]
-
+    names = {
+		ServerLanguage.English: "\"Not the Face!\"",
+		ServerLanguage.Spanish: "\"¡En la cara no!\"",
+		ServerLanguage.Italian: "\"Non al Volto!\"",
+		ServerLanguage.German: "\"Nicht das Gesicht!\"",
+		ServerLanguage.Korean: "얼굴은 안 돼!",
+		ServerLanguage.French: "\"Pas le visage !\"",
+		ServerLanguage.TraditionalChinese: "\"不要打臉！\"",
+		ServerLanguage.Japanese: "ノット ザ フェース！",
+		ServerLanguage.Polish: "\"Nie po twarzy!\"",
+		ServerLanguage.Russian: "\"Только не в лицо!\"",
+		ServerLanguage.BorkBorkBork: "\"Nut zee faece-a!\"",
+	}
+    
 class NothingToFear(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1806,7 +2651,20 @@ class NothingToFear(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageHexed,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Nothing to Fear\"",
+		ServerLanguage.Spanish: "\"Nada que temer\"",
+		ServerLanguage.Italian: "\"Niente Paura\"",
+		ServerLanguage.German: "\"Nichts zu befürchten\"",
+		ServerLanguage.Korean: "두려울 건 없다",
+		ServerLanguage.French: "\"Rien à craindre\"",
+		ServerLanguage.TraditionalChinese: "\"無畏無懼\"",
+		ServerLanguage.Japanese: "ナッシング トゥ フィアー",
+		ServerLanguage.Polish: "\"Nieulękły\"",
+		ServerLanguage.Russian: "\"Нечего бояться\"",
+		ServerLanguage.BorkBorkBork: "\"Nutheeng tu Feaer\"",
+	}
+    
 class OnlyTheStrongSurvive(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1814,7 +2672,20 @@ class OnlyTheStrongSurvive(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Only the Strong Survive\"",
+		ServerLanguage.Spanish: "\"Sólo sobreviven los más fuertes\"",
+		ServerLanguage.Italian: "\"Superstite è soltanto il Forte\"",
+		ServerLanguage.German: "\"Nur die Stärksten überleben!\"",
+		ServerLanguage.Korean: "강자만이 살아남는다",
+		ServerLanguage.French: "\"Seuls les plus forts survivent\"",
+		ServerLanguage.TraditionalChinese: "\"強者生存\"",
+		ServerLanguage.Japanese: "オンリー ザ ストロング サバイブ",
+		ServerLanguage.Polish: "\"Tylko silni przetrwają\"",
+		ServerLanguage.Russian: "\"Выживает сильнейший\"",
+		ServerLanguage.BorkBorkBork: "\"Oonly zee Strung Soorfeefe-a\"",
+	}
+    
 class PureOfHeart(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1822,7 +2693,20 @@ class PureOfHeart(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Pure of Heart\"",
+		ServerLanguage.Spanish: "\"Puro de corazón\"",
+		ServerLanguage.Italian: "\"Purezza di Cuore\"",
+		ServerLanguage.German: "\"Mein Herz ist rein\"",
+		ServerLanguage.Korean: "심장의 깨끗함",
+		ServerLanguage.French: "\"Pureté du coeur\"",
+		ServerLanguage.TraditionalChinese: "\"純淨之心\"",
+		ServerLanguage.Japanese: "ピュア オブ ハート",
+		ServerLanguage.Polish: "\"Czystość serca\"",
+		ServerLanguage.Russian: "\"Чистые сердцем\"",
+		ServerLanguage.BorkBorkBork: "\"Poore-a ooff Heaert\"",
+	}
+    
 class RidersOnTheStorm(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1830,7 +2714,20 @@ class RidersOnTheStorm(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Riders on the Storm\"",
+		ServerLanguage.Spanish: "\"Jinetes de la tormenta\"",
+		ServerLanguage.Italian: "\"Viaggiatori nella Burrasca\"",
+		ServerLanguage.German: "\"Geblitzt wird nicht!\"",
+		ServerLanguage.Korean: "폭풍의 기수",
+		ServerLanguage.French: "\"Les chevaliers du ciel\"",
+		ServerLanguage.TraditionalChinese: "\"暴風騎士\"",
+		ServerLanguage.Japanese: "ライダー オン ザ ストーム",
+		ServerLanguage.Polish: "\"Jeźdźcy burzy\"",
+		ServerLanguage.Russian: "\"Всадники бури\"",
+		ServerLanguage.BorkBorkBork: "\"Reeders oon zee Sturm\"",
+	}
+    
 class RunForYourLife(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1838,7 +2735,20 @@ class RunForYourLife(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageStance,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Run For Your Life!\"",
+		ServerLanguage.Spanish: "\"¡Ponte a salvo!\"",
+		ServerLanguage.Italian: "\"Gambe in Spalla!\"",
+		ServerLanguage.German: "\"Rennt um Euer Leben!\"",
+		ServerLanguage.Korean: "살기 위해 달려라!",
+		ServerLanguage.French: "\"Sauve-qui-peut !\"",
+		ServerLanguage.TraditionalChinese: "\"逃命\"",
+		ServerLanguage.Japanese: "ラン フォー ユア ライフ！",
+		ServerLanguage.Polish: "\"Ratuj się kto może!\"",
+		ServerLanguage.Russian: "\"Спасайся, кто может!\"",
+		ServerLanguage.BorkBorkBork: "\"Roon Fur Yuoor Leeffe-a!\"",
+	}
+    
 class ShelteredByFaith(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1846,7 +2756,20 @@ class ShelteredByFaith(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageEnchanted,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Sheltered by Faith\"",
+		ServerLanguage.Spanish: "\"Fe ciega\"",
+		ServerLanguage.Italian: "\"Rifugio della Speranza\"",
+		ServerLanguage.German: "\"Vertrauen ist gut\"",
+		ServerLanguage.Korean: "신념의 보호",
+		ServerLanguage.French: "\"Protégé par la Foi\"",
+		ServerLanguage.TraditionalChinese: "\"信念守護\"",
+		ServerLanguage.Japanese: "シェルター バイ フェイス",
+		ServerLanguage.Polish: "\"Chroniony przez wiarę\"",
+		ServerLanguage.Russian: "\"Под защитой веры\"",
+		ServerLanguage.BorkBorkBork: "\"Sheltered by Faeeet\"",
+	}
+    
 class SleepNowInTheFire(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1854,7 +2777,20 @@ class SleepNowInTheFire(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Sleep Now in the Fire\"",
+		ServerLanguage.Spanish: "\"Descansa en la hoguera\"",
+		ServerLanguage.Italian: "\"Dormi Ardentemente\"",
+		ServerLanguage.German: "\"Geborgenheit im Feuer\"",
+		ServerLanguage.Korean: "화염 속에 잠들라",
+		ServerLanguage.French: "\"Faisons la lumière sur les ténèbres\"",
+		ServerLanguage.TraditionalChinese: "\"烈焰中歇息\"",
+		ServerLanguage.Japanese: "スリープ ナウ イン ザ ファイア",
+		ServerLanguage.Polish: "\"Zaśnij w ogniu\"",
+		ServerLanguage.Russian: "\"Покойся в пламени\"",
+		ServerLanguage.BorkBorkBork: "\"Sleep Noo in zee Fure-a\"",
+	}
+    
 class SoundnessOfMind(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1862,7 +2798,20 @@ class SoundnessOfMind(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Soundness of Mind\"",
+		ServerLanguage.Spanish: "\"Sano juicio\"",
+		ServerLanguage.Italian: "\"Mente Sana\"",
+		ServerLanguage.German: "\"Ein gesunder Geist ...\"",
+		ServerLanguage.Korean: "마음의 소리",
+		ServerLanguage.French: "\"Bon sens\"",
+		ServerLanguage.TraditionalChinese: "\"堅定意念\"",
+		ServerLanguage.Japanese: "サウンドネス オブ マインド",
+		ServerLanguage.Polish: "\"Mądrość umysłu\"",
+		ServerLanguage.Russian: "\"Здравый рассудок\"",
+		ServerLanguage.BorkBorkBork: "\"Suoondness ooff Meend\"",
+	}
+    
 class StrengthOfBody(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1870,7 +2819,20 @@ class StrengthOfBody(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Strength of Body\"",
+		ServerLanguage.Spanish: "\"Fuerza bruta\"",
+		ServerLanguage.Italian: "\"Corpo Gagliardo\"",
+		ServerLanguage.German: "\"Hart im Nehmen\"",
+		ServerLanguage.Korean: "육체의 힘",
+		ServerLanguage.French: "\"La Force réside du corps\"",
+		ServerLanguage.TraditionalChinese: "\"力貫全身\"",
+		ServerLanguage.Japanese: "ストレングス オブ ボディ",
+		ServerLanguage.Polish: "\"Siła ciała\"",
+		ServerLanguage.Russian: "\"Сила тела\"",
+		ServerLanguage.BorkBorkBork: "\"Strengt ooff Budy\"",
+	}
+    
 class SwiftAsTheWind(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1878,6 +2840,19 @@ class SwiftAsTheWind(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
+    names = {
+		ServerLanguage.English: "\"Swift as the Wind\"",
+		ServerLanguage.Spanish: "\"Veloz como el viento\"",
+		ServerLanguage.Italian: "\"Raffica di Bora\"",
+		ServerLanguage.German: "\"Schnell wie der Wind\"",
+		ServerLanguage.Korean: "바람처럼 빠르게",
+		ServerLanguage.French: "\"Rapide comme le vent\"",
+		ServerLanguage.TraditionalChinese: "\"迅捷如風\"",
+		ServerLanguage.Japanese: "スウィフト アズ ザ ウインド",
+		ServerLanguage.Polish: "\"Szybki niczym wiatr\"",
+		ServerLanguage.Russian: "\"Быстрый как ветер\"",
+		ServerLanguage.BorkBorkBork: "\"Sveefft aes zee Veend\"",
+	}
 
 class TheRiddleOfSteel(Inscription):
     mod_type = ItemUpgradeType.Inscription
@@ -1886,7 +2861,20 @@ class TheRiddleOfSteel(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-
+    names = {
+		ServerLanguage.English: "\"The Riddle of Steel\"",
+		ServerLanguage.Spanish: "\"El enigma de acero\"",
+		ServerLanguage.Italian: "\"Enigma d'Acciaio\"",
+		ServerLanguage.German: "\"Hieb-und stahlfest\"",
+		ServerLanguage.Korean: "강철의 수수께끼",
+		ServerLanguage.French: "\"L'énigme de l'acier\"",
+		ServerLanguage.TraditionalChinese: "\"鋼鐵之謎\"",
+		ServerLanguage.Japanese: "ザ リドル オブ スチール",
+		ServerLanguage.Polish: "\"Zagadka stali\"",
+		ServerLanguage.Russian: "\"Стальной щит\"",
+		ServerLanguage.BorkBorkBork: "\"Zee Reeddle-a ooff Steel\"",
+	}
+    
 class ThroughThickAndThin(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
@@ -1894,6 +2882,19 @@ class ThroughThickAndThin(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
+    names = {
+		ServerLanguage.English: "\"Through Thick and Thin\"",
+		ServerLanguage.Spanish: "\"En lo bueno y en lo malo\"",
+		ServerLanguage.Italian: "\"Nella Buona e nella Cattiva Sorte\"",
+		ServerLanguage.German: "\"Durch Dick und Dünn\"",
+		ServerLanguage.Korean: "무엇이든 막아내리",
+		ServerLanguage.French: "\"Contre vents et marées\"",
+		ServerLanguage.TraditionalChinese: "\"同甘共苦\"",
+		ServerLanguage.Japanese: "スルー シック アンド シン",
+		ServerLanguage.Polish: "\"Poprzez gąszcz\"",
+		ServerLanguage.Russian: "\"Сквозь огонь и воду\"",
+		ServerLanguage.BorkBorkBork: "\"Thruoogh Theeck und Theen\"",
+	}
 #endregion OffhandOrShield
 
 #region EquippableItem
@@ -1904,7 +2905,20 @@ class MeasureForMeasure(Inscription):
     property_identifiers = [
         ModifierIdentifier.HighlySalvageable,
     ]
-    
+    names = {
+		ServerLanguage.English: "\"Measure for Measure\"",
+		ServerLanguage.Spanish: "\"Ojo por ojo\"",
+		ServerLanguage.Italian: "\"Occhio per Occhio\"",
+		ServerLanguage.German: "\"Maß für Maß\"",
+		ServerLanguage.Korean: "다다익선",
+		ServerLanguage.French: "\"Mesure pour mesure.\"",
+		ServerLanguage.TraditionalChinese: "\"以牙還牙\"",
+		ServerLanguage.Japanese: "メジャー フォー メジャー",
+		ServerLanguage.Polish: "\"Miarka za miarkę\"",
+		ServerLanguage.Russian: "\"Око за око\"",
+		ServerLanguage.BorkBorkBork: "\"Meaesoore-a fur Meaesoore-a\"",
+	}
+        
 class ShowMeTheMoney(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.EquippableItem
@@ -1912,6 +2926,19 @@ class ShowMeTheMoney(Inscription):
     property_identifiers = [
         ModifierIdentifier.IncreasedSaleValue,
     ]    
+    names = {
+		ServerLanguage.English: "\"Show me the money!\"",
+		ServerLanguage.Spanish: "\"¡Enséñame la pasta!\"",
+		ServerLanguage.Italian: "\"Mostrami la Grana!\"",
+		ServerLanguage.German: "\"Geld macht glücklich!\"",
+		ServerLanguage.Korean: "돈이다!",
+		ServerLanguage.French: "\"Par ici la monnaie !\"",
+		ServerLanguage.TraditionalChinese: "\"給我錢！\"",
+		ServerLanguage.Japanese: "ショー ミー ザ マネー！",
+		ServerLanguage.Polish: "\"Pokaż pieniądze!\"",
+		ServerLanguage.Russian: "\"Покажи мне деньги!\"",
+		ServerLanguage.BorkBorkBork: "\"Shoo me-a zee muney!\"",
+	}
 #endregion EquippableItem
 
 #region SpellcastingWeapon
@@ -1922,7 +2949,20 @@ class AptitudeNotAttitude(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Aptitude not Attitude\"",
+		ServerLanguage.Spanish: "\"Aptitud, no actitud\"",
+		ServerLanguage.Italian: "\"Inclinazione non Finzione\"",
+		ServerLanguage.German: "\"Gut gewirkt ist halb gewonnen\"",
+		ServerLanguage.Korean: "마력석: 특성이 아니라 재능이다",
+		ServerLanguage.French: "\"Les compétences prévalent\"",
+		ServerLanguage.TraditionalChinese: "\"能力而非態度\"",
+		ServerLanguage.Japanese: "アプティテュード ノット アティテュード",
+		ServerLanguage.Polish: "\"Talent a nie nastawienie\"",
+		ServerLanguage.Russian: "\"Главное -способности, а не отношение к делу\"",
+		ServerLanguage.BorkBorkBork: "\"Aepteetoode-a nut Aetteetoode-a\"",
+	}
+    
 class DontCallItAComeback(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
@@ -1930,7 +2970,20 @@ class DontCallItAComeback(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileBelow,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Don't call it a comeback!\"",
+		ServerLanguage.Spanish: "\"¡No será la última palabra!\"",
+		ServerLanguage.Italian: "\"Non Consideratelo un Ritorno!\"",
+		ServerLanguage.German: "\"Sie kehren niemals wieder\"",
+		ServerLanguage.Korean: "단순한 회복이 아니다!",
+		ServerLanguage.French: "\"Aucun recours !\"",
+		ServerLanguage.TraditionalChinese: "\"別說我不行！\"",
+		ServerLanguage.Japanese: "ドント コール イット ア カムバック！",
+		ServerLanguage.Polish: "\"Nie nazywaj tego powrotem!\"",
+		ServerLanguage.Russian: "\"Не считай это местью!\"",
+		ServerLanguage.BorkBorkBork: "\"Dun't caell it a cumebaeck!\"",
+	}
+    
 class HaleAndHearty(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
@@ -1938,7 +2991,20 @@ class HaleAndHearty(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileDown,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Hale and Hearty\"",
+		ServerLanguage.Spanish: "\"Viejo pero joven\"",
+		ServerLanguage.Italian: "\"Vivo e Vegeto\"",
+		ServerLanguage.German: "\"Gesund und munter\"",
+		ServerLanguage.Korean: "마력석: 원기왕성하게!",
+		ServerLanguage.French: "\"En pleine santé\"",
+		ServerLanguage.TraditionalChinese: "\"健壯的\"",
+		ServerLanguage.Japanese: "ヘイル アンド ハーティー",
+		ServerLanguage.Polish: "\"Zdrowy i krzepki\"",
+		ServerLanguage.Russian: "\"Сильный и здоровый\"",
+		ServerLanguage.BorkBorkBork: "\"Haele-a und Heaerty\"",
+	}
+    
 class HaveFaith(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
@@ -1946,7 +3012,20 @@ class HaveFaith(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusEnchanted,
     ]
-
+    names = {
+		ServerLanguage.English: "\"Have Faith\"",
+		ServerLanguage.Spanish: "\"Tened fe\"",
+		ServerLanguage.Italian: "\"Abbi Fede\"",
+		ServerLanguage.German: "\"Habt Vertrauen\"",
+		ServerLanguage.Korean: "신념을 가져라",
+		ServerLanguage.French: "\"Ayez la foi\"",
+		ServerLanguage.TraditionalChinese: "\"信念\"",
+		ServerLanguage.Japanese: "ハブ フェイス",
+		ServerLanguage.Polish: "\"Miej wiarę\"",
+		ServerLanguage.Russian: "\"Не теряй веру\"",
+		ServerLanguage.BorkBorkBork: "\"Haefe-a Faeeet\"",
+	}
+    
 class IAmSorrow(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
@@ -1954,7 +3033,20 @@ class IAmSorrow(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusHexed,
     ]
-
+    names = {
+		ServerLanguage.English: "\"I am Sorrow.\"",
+		ServerLanguage.Spanish: "\"Un mar de lágrimas\"",
+		ServerLanguage.Italian: "\"Io Sono la Sofferenza\"",
+		ServerLanguage.German: "\"Ich bin es Leid\"",
+		ServerLanguage.Korean: "너무 슬프군",
+		ServerLanguage.French: "\"Je suis la douleur\"",
+		ServerLanguage.TraditionalChinese: "\"倍感憂傷\"",
+		ServerLanguage.Japanese: "アイ アム ソロウ",
+		ServerLanguage.Polish: "\"Jestem smutkiem.\"",
+		ServerLanguage.Russian: "\"Я -воплощение скорби\"",
+		ServerLanguage.BorkBorkBork: "\"I aem Surroo.\"",
+	}
+    
 class SeizeTheDay(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
@@ -1963,6 +3055,19 @@ class SeizeTheDay(Inscription):
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
     ]
+    names = {
+		ServerLanguage.English: "\"Seize the Day\"",
+		ServerLanguage.Spanish: "\"Vive el presente\"",
+		ServerLanguage.Italian: "\"Vivi alla Giornata\"",
+		ServerLanguage.German: "\"Lebt den Tag\"",
+		ServerLanguage.Korean: "오늘을 위해 최선을",
+		ServerLanguage.French: "\"Aujourd'hui, la vie\"",
+		ServerLanguage.TraditionalChinese: "\"活在當下\"",
+		ServerLanguage.Japanese: "リブ フォー トゥデイ",
+		ServerLanguage.Polish: "\"Żyj dniem dzisiejszym\"",
+		ServerLanguage.Russian: "\"Живи сегодняшним днем\"",
+		ServerLanguage.BorkBorkBork: "\"Leefe-a fur Tudaey\"",
+	}
 #endregion SpellcastingWeapon
 #endregion Inscriptions
 
@@ -3620,6 +4725,7 @@ class AppliesToSuperiorRuneParagon(Upgrade):
 #endregion Paragon
 
 #endregion Armor Upgrades
+
 _UPGRADES: list[type[Upgrade]] = [
     IcyUpgrade,
     EbonUpgrade,
