@@ -647,8 +647,6 @@ class Upgrade:
         upgrade = cls()
         upgrade.properties = []
         
-        Py4GW.Console.Log("ItemHandling", f"Composing upgrade {upgrade.__class__.__name__} from modifiers...")
-        
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
             
@@ -2104,8 +2102,6 @@ class AttributeRune(Rune):
 
         cls.attribute = Attribute(mod.arg1)
         cls.attribute_level = mod.arg2
-
-        Py4GW.Console.Log("ItemHandling", f"Composing upgrade {upgrade.__class__.__name__} from modifiers...")
 
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
