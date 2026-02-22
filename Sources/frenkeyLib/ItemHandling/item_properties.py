@@ -1729,8 +1729,6 @@ class LetTheMemoryLiveAgain(Inscription):
     mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.MartialWeapon
     id = ItemUpgradeId.LetTheMemoryLiveAgain
-    
-    id = ItemUpgradeId.LetTheMemoryLiveAgain
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
@@ -2162,6 +2160,7 @@ class SentrysInsignia(Insignia):
     
 class RuneOfMinorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorVigor,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorVigor,
@@ -2174,6 +2173,7 @@ class RuneOfMinorVigor(Rune):
     
 class RuneOfMinorVigor2(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorVigor2,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorVigor2,
@@ -2186,6 +2186,7 @@ class RuneOfMinorVigor2(Rune):
 
 class RuneOfVitae(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfVitae,
         ItemType.Chestpiece: ItemUpgradeId.OfVitae,
@@ -2198,6 +2199,7 @@ class RuneOfVitae(Rune):
 
 class RuneOfAttunement(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfAttunement,
         ItemType.Chestpiece: ItemUpgradeId.OfAttunement,
@@ -2210,6 +2212,7 @@ class RuneOfAttunement(Rune):
 
 class RuneOfMajorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorVigor,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorVigor,
@@ -2222,6 +2225,7 @@ class RuneOfMajorVigor(Rune):
 
 class RuneOfRecovery(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfRecovery,
         ItemType.Chestpiece: ItemUpgradeId.OfRecovery,
@@ -2236,6 +2240,7 @@ class RuneOfRecovery(Rune):
 
 class RuneOfRestoration(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfRestoration,
         ItemType.Chestpiece: ItemUpgradeId.OfRestoration,
@@ -2250,6 +2255,7 @@ class RuneOfRestoration(Rune):
 
 class RuneOfClarity(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfClarity,
         ItemType.Chestpiece: ItemUpgradeId.OfClarity,
@@ -2264,6 +2270,7 @@ class RuneOfClarity(Rune):
     
 class RuneOfPurity(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfPurity,
         ItemType.Chestpiece: ItemUpgradeId.OfPurity,
@@ -2278,6 +2285,7 @@ class RuneOfPurity(Rune):
 
 class RuneOfSuperiorVigor(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorVigor,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorVigor,
@@ -2352,6 +2360,7 @@ class SentinelsInsignia(Insignia):
     
 class RuneOfMinorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorAbsorption,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorAbsorption,
@@ -2364,6 +2373,7 @@ class RuneOfMinorAbsorption(Rune):
 
 class RuneOfMinorTactics(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorTactics,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorTactics,
@@ -2376,6 +2386,7 @@ class RuneOfMinorTactics(AttributeRune):
 
 class RuneOfMinorStrength(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorStrength,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorStrength,
@@ -2388,6 +2399,7 @@ class RuneOfMinorStrength(AttributeRune):
 
 class RuneOfMinorAxeMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorAxeMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorAxeMastery,
@@ -2400,6 +2412,7 @@ class RuneOfMinorAxeMastery(AttributeRune):
     
 class RuneOfMinorHammerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorHammerMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorHammerMastery,
@@ -2412,6 +2425,7 @@ class RuneOfMinorHammerMastery(AttributeRune):
     
 class RuneOfMinorSwordsmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorSwordsmanship,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorSwordsmanship,
@@ -2424,6 +2438,7 @@ class RuneOfMinorSwordsmanship(AttributeRune):
     
 class RuneOfMajorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorAbsorption,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorAbsorption,
@@ -2436,6 +2451,7 @@ class RuneOfMajorAbsorption(Rune):
     
 class RuneOfMajorTactics(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorTactics,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorTactics,
@@ -2450,6 +2466,7 @@ class RuneOfMajorTactics(AttributeRune):
     
 class RuneOfMajorStrength(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorStrength,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorStrength,
@@ -2464,6 +2481,7 @@ class RuneOfMajorStrength(AttributeRune):
 
 class RuneOfMajorAxeMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorAxeMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorAxeMastery,
@@ -2478,6 +2496,7 @@ class RuneOfMajorAxeMastery(AttributeRune):
     
 class RuneOfMajorHammerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorHammerMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorHammerMastery,
@@ -2492,6 +2511,7 @@ class RuneOfMajorHammerMastery(AttributeRune):
     
 class RuneOfMajorSwordsmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorSwordsmanship,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorSwordsmanship,
@@ -2506,6 +2526,7 @@ class RuneOfMajorSwordsmanship(AttributeRune):
     
 class RuneOfSuperiorAbsorption(Rune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorAbsorption,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorAbsorption,
@@ -2518,6 +2539,7 @@ class RuneOfSuperiorAbsorption(Rune):
 
 class RuneOfSuperiorTactics(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorTactics,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorTactics,
@@ -2532,6 +2554,7 @@ class RuneOfSuperiorTactics(AttributeRune):
 
 class RuneOfSuperiorStrength(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorStrength,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorStrength,
@@ -2546,6 +2569,7 @@ class RuneOfSuperiorStrength(AttributeRune):
 
 class RuneOfSuperiorAxeMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorAxeMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorAxeMastery,
@@ -2560,6 +2584,7 @@ class RuneOfSuperiorAxeMastery(AttributeRune):
     
 class RuneOfSuperiorHammerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorHammerMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorHammerMastery,
@@ -2574,6 +2599,7 @@ class RuneOfSuperiorHammerMastery(AttributeRune):
     
 class RuneOfSuperiorSwordsmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorSwordsmanship,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSwordsmanship,
@@ -2734,6 +2760,7 @@ class BeastmastersInsignia(Insignia):
 
 class RuneOfMinorWildernessSurvival(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorWildernessSurvival,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorWildernessSurvival,
@@ -2746,6 +2773,7 @@ class RuneOfMinorWildernessSurvival(AttributeRune):
 
 class RuneOfMinorExpertise(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorExpertise,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorExpertise,
@@ -2758,6 +2786,7 @@ class RuneOfMinorExpertise(AttributeRune):
 
 class RuneOfMinorBeastMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorBeastMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorBeastMastery,
@@ -2770,6 +2799,7 @@ class RuneOfMinorBeastMastery(AttributeRune):
     
 class RuneOfMinorMarksmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorMarksmanship,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorMarksmanship,
@@ -2782,6 +2812,7 @@ class RuneOfMinorMarksmanship(AttributeRune):
     
 class RuneOfMajorWildernessSurvival(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorWildernessSurvival,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorWildernessSurvival,
@@ -2796,6 +2827,7 @@ class RuneOfMajorWildernessSurvival(AttributeRune):
     
 class RuneOfMajorExpertise(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorExpertise,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorExpertise,
@@ -2810,6 +2842,7 @@ class RuneOfMajorExpertise(AttributeRune):
     
 class RuneOfMajorBeastMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorBeastMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorBeastMastery,
@@ -2824,6 +2857,7 @@ class RuneOfMajorBeastMastery(AttributeRune):
     
 class RuneOfMajorMarksmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorMarksmanship,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorMarksmanship,
@@ -2838,6 +2872,7 @@ class RuneOfMajorMarksmanship(AttributeRune):
     
 class RuneOfSuperiorWildernessSurvival(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorWildernessSurvival,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorWildernessSurvival,
@@ -2852,6 +2887,7 @@ class RuneOfSuperiorWildernessSurvival(AttributeRune):
     
 class RuneOfSuperiorExpertise(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorExpertise,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorExpertise,
@@ -2866,6 +2902,7 @@ class RuneOfSuperiorExpertise(AttributeRune):
     
 class RuneOfSuperiorBeastMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorBeastMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorBeastMastery,
@@ -2880,6 +2917,7 @@ class RuneOfSuperiorBeastMastery(AttributeRune):
     
 class RuneOfSuperiorMarksmanship(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorMarksmanship,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorMarksmanship,
@@ -3004,6 +3042,7 @@ class AnchoritesInsignia(Insignia):
 
 class RuneOfMinorHealingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorHealingPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorHealingPrayers,
@@ -3016,6 +3055,7 @@ class RuneOfMinorHealingPrayers(AttributeRune):
     
 class RuneOfMinorSmitingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorSmitingPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorSmitingPrayers,
@@ -3028,6 +3068,7 @@ class RuneOfMinorSmitingPrayers(AttributeRune):
     
 class RuneOfMinorProtectionPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorProtectionPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorProtectionPrayers,
@@ -3040,6 +3081,7 @@ class RuneOfMinorProtectionPrayers(AttributeRune):
     
 class RuneOfMinorDivineFavor(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorDivineFavor,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorDivineFavor,
@@ -3052,6 +3094,7 @@ class RuneOfMinorDivineFavor(AttributeRune):
     
 class RuneOfMajorHealingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorHealingPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorHealingPrayers,
@@ -3066,6 +3109,7 @@ class RuneOfMajorHealingPrayers(AttributeRune):
 
 class RuneOfMajorSmitingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorSmitingPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorSmitingPrayers,
@@ -3080,6 +3124,7 @@ class RuneOfMajorSmitingPrayers(AttributeRune):
     
 class RuneOfMajorProtectionPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorProtectionPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorProtectionPrayers,
@@ -3094,6 +3139,7 @@ class RuneOfMajorProtectionPrayers(AttributeRune):
     
 class RuneOfMajorDivineFavor(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorDivineFavor,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorDivineFavor,
@@ -3108,6 +3154,7 @@ class RuneOfMajorDivineFavor(AttributeRune):
 
 class RuneOfSuperiorHealingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorHealingPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorHealingPrayers,
@@ -3122,6 +3169,7 @@ class RuneOfSuperiorHealingPrayers(AttributeRune):
 
 class RuneOfSuperiorSmitingPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorSmitingPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSmitingPrayers,
@@ -3136,6 +3184,7 @@ class RuneOfSuperiorSmitingPrayers(AttributeRune):
     
 class RuneOfSuperiorProtectionPrayers(AttributeRune): 
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorProtectionPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorProtectionPrayers,
@@ -3150,6 +3199,7 @@ class RuneOfSuperiorProtectionPrayers(AttributeRune):
 
 class RuneOfSuperiorDivineFavor(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorDivineFavor,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDivineFavor,
@@ -3310,6 +3360,7 @@ class UndertakersInsignia(Insignia):
 
 class RuneOfMinorBloodMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorBloodMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorBloodMagic,
@@ -3322,6 +3373,7 @@ class RuneOfMinorBloodMagic(AttributeRune):
 
 class RuneOfMinorDeathMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorDeathMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorDeathMagic,
@@ -3334,6 +3386,7 @@ class RuneOfMinorDeathMagic(AttributeRune):
     
 class RuneOfMinorCurses(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorCurses,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorCurses,
@@ -3346,6 +3399,7 @@ class RuneOfMinorCurses(AttributeRune):
     
 class RuneOfMinorSoulReaping(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorSoulReaping,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorSoulReaping,
@@ -3358,6 +3412,7 @@ class RuneOfMinorSoulReaping(AttributeRune):
 
 class RuneOfMajorBloodMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorBloodMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorBloodMagic,
@@ -3372,6 +3427,7 @@ class RuneOfMajorBloodMagic(AttributeRune):
     
 class RuneOfMajorDeathMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorDeathMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorDeathMagic,
@@ -3386,6 +3442,7 @@ class RuneOfMajorDeathMagic(AttributeRune):
     
 class RuneOfMajorCurses(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorCurses,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorCurses,
@@ -3400,6 +3457,7 @@ class RuneOfMajorCurses(AttributeRune):
     
 class RuneOfMajorSoulReaping(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorSoulReaping,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorSoulReaping,
@@ -3414,6 +3472,7 @@ class RuneOfMajorSoulReaping(AttributeRune):
     
 class RuneOfSuperiorBloodMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorBloodMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorBloodMagic,
@@ -3428,6 +3487,7 @@ class RuneOfSuperiorBloodMagic(AttributeRune):
     
 class RuneOfSuperiorDeathMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorDeathMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDeathMagic,
@@ -3442,6 +3502,7 @@ class RuneOfSuperiorDeathMagic(AttributeRune):
     
 class RuneOfSuperiorCurses(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorCurses,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCurses,
@@ -3456,6 +3517,7 @@ class RuneOfSuperiorCurses(AttributeRune):
     
 class RuneOfSuperiorSoulReaping(AttributeRune):    
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorSoulReaping,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSoulReaping,
@@ -3580,6 +3642,7 @@ class ProdigysInsignia(Insignia):
 
 class RuneOfMinorFastCasting(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorFastCasting,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorFastCasting,
@@ -3592,6 +3655,7 @@ class RuneOfMinorFastCasting(AttributeRune):
     
 class RuneOfMinorDominationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorDominationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorDominationMagic,
@@ -3604,6 +3668,7 @@ class RuneOfMinorDominationMagic(AttributeRune):
     
 class RuneOfMinorIllusionMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorIllusionMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorIllusionMagic,
@@ -3616,6 +3681,7 @@ class RuneOfMinorIllusionMagic(AttributeRune):
     
 class RuneOfMinorInspirationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorInspirationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorInspirationMagic,
@@ -3628,6 +3694,7 @@ class RuneOfMinorInspirationMagic(AttributeRune):
 
 class RuneOfMajorFastCasting(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorFastCasting,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorFastCasting,
@@ -3642,6 +3709,7 @@ class RuneOfMajorFastCasting(AttributeRune):
     
 class RuneOfMajorDominationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorDominationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorDominationMagic,
@@ -3656,6 +3724,7 @@ class RuneOfMajorDominationMagic(AttributeRune):
     
 class RuneOfMajorIllusionMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorIllusionMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorIllusionMagic,
@@ -3670,6 +3739,7 @@ class RuneOfMajorIllusionMagic(AttributeRune):
     
 class RuneOfMajorInspirationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorInspirationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorInspirationMagic,
@@ -3684,6 +3754,7 @@ class RuneOfMajorInspirationMagic(AttributeRune):
     
 class RuneOfSuperiorFastCasting(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorFastCasting,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorFastCasting,
@@ -3698,6 +3769,7 @@ class RuneOfSuperiorFastCasting(AttributeRune):
     
 class RuneOfSuperiorDominationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorDominationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDominationMagic,
@@ -3712,6 +3784,7 @@ class RuneOfSuperiorDominationMagic(AttributeRune):
     
 class RuneOfSuperiorIllusionMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorIllusionMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorIllusionMagic,
@@ -3726,6 +3799,7 @@ class RuneOfSuperiorIllusionMagic(AttributeRune):
     
 class RuneOfSuperiorInspirationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorInspirationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorInspirationMagic,
@@ -3874,6 +3948,7 @@ class PrismaticInsignia(Insignia):
 
 class RuneOfMinorEnergyStorage(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorEnergyStorage,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorEnergyStorage,
@@ -3886,6 +3961,7 @@ class RuneOfMinorEnergyStorage(AttributeRune):
     
 class RuneOfMinorFireMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorFireMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorFireMagic,
@@ -3898,6 +3974,7 @@ class RuneOfMinorFireMagic(AttributeRune):
     
 class RuneOfMinorAirMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorAirMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorAirMagic,
@@ -3910,6 +3987,7 @@ class RuneOfMinorAirMagic(AttributeRune):
 
 class RuneOfMinorEarthMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorEarthMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorEarthMagic,
@@ -3922,6 +4000,7 @@ class RuneOfMinorEarthMagic(AttributeRune):
     
 class RuneOfMinorWaterMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorWaterMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorWaterMagic,
@@ -3934,6 +4013,7 @@ class RuneOfMinorWaterMagic(AttributeRune):
     
 class RuneOfMajorEnergyStorage(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorEnergyStorage,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorEnergyStorage,
@@ -3948,6 +4028,7 @@ class RuneOfMajorEnergyStorage(AttributeRune):
     
 class RuneOfMajorFireMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorFireMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorFireMagic,
@@ -3962,6 +4043,7 @@ class RuneOfMajorFireMagic(AttributeRune):
     
 class RuneOfMajorAirMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorAirMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorAirMagic,
@@ -3976,6 +4058,7 @@ class RuneOfMajorAirMagic(AttributeRune):
     
 class RuneOfMajorEarthMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorEarthMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorEarthMagic,
@@ -3990,6 +4073,7 @@ class RuneOfMajorEarthMagic(AttributeRune):
     
 class RuneOfMajorWaterMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorWaterMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorWaterMagic,
@@ -4004,6 +4088,7 @@ class RuneOfMajorWaterMagic(AttributeRune):
     
 class RuneOfSuperiorEnergyStorage(AttributeRune): 
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorEnergyStorage,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorEnergyStorage,
@@ -4018,6 +4103,7 @@ class RuneOfSuperiorEnergyStorage(AttributeRune):
     
 class RuneOfSuperiorFireMagic(AttributeRune): 
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorFireMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorFireMagic,
@@ -4032,6 +4118,7 @@ class RuneOfSuperiorFireMagic(AttributeRune):
     
 class RuneOfSuperiorAirMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorAirMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorAirMagic,
@@ -4046,6 +4133,7 @@ class RuneOfSuperiorAirMagic(AttributeRune):
     
 class RuneOfSuperiorEarthMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorEarthMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorEarthMagic,
@@ -4060,6 +4148,7 @@ class RuneOfSuperiorEarthMagic(AttributeRune):
     
 class RuneOfSuperiorWaterMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorWaterMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorWaterMagic,
@@ -4196,6 +4285,7 @@ class NightstalkersInsignia(Insignia):
 
 class RuneOfMinorCriticalStrikes(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorCriticalStrikes,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorCriticalStrikes,
@@ -4208,6 +4298,7 @@ class RuneOfMinorCriticalStrikes(AttributeRune):
     
 class RuneOfMinorDaggerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorDaggerMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorDaggerMastery,
@@ -4220,6 +4311,7 @@ class RuneOfMinorDaggerMastery(AttributeRune):
     
 class RuneOfMinorDeadlyArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorDeadlyArts,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorDeadlyArts,
@@ -4230,6 +4322,7 @@ class RuneOfMinorDeadlyArts(AttributeRune):
 
 class RuneOfMinorShadowArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorShadowArts,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorShadowArts,
@@ -4242,6 +4335,7 @@ class RuneOfMinorShadowArts(AttributeRune):
 
 class RuneOfMajorCriticalStrikes(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorCriticalStrikes,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorCriticalStrikes,
@@ -4256,6 +4350,7 @@ class RuneOfMajorCriticalStrikes(AttributeRune):
     
 class RuneOfMajorDaggerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorDaggerMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorDaggerMastery,
@@ -4270,6 +4365,7 @@ class RuneOfMajorDaggerMastery(AttributeRune):
     
 class RuneOfMajorDeadlyArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorDeadlyArts,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorDeadlyArts,
@@ -4284,6 +4380,7 @@ class RuneOfMajorDeadlyArts(AttributeRune):
     
 class RuneOfMajorShadowArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorShadowArts,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorShadowArts,
@@ -4298,6 +4395,7 @@ class RuneOfMajorShadowArts(AttributeRune):
     
 class RuneOfSuperiorCriticalStrikes(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorCriticalStrikes,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCriticalStrikes,
@@ -4312,6 +4410,7 @@ class RuneOfSuperiorCriticalStrikes(AttributeRune):
     
 class RuneOfSuperiorDaggerMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorDaggerMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDaggerMastery,
@@ -4326,6 +4425,7 @@ class RuneOfSuperiorDaggerMastery(AttributeRune):
     
 class RuneOfSuperiorDeadlyArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorDeadlyArts,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorDeadlyArts,
@@ -4340,6 +4440,7 @@ class RuneOfSuperiorDeadlyArts(AttributeRune):
     
 class RuneOfSuperiorShadowArts(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorShadowArts,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorShadowArts,
@@ -4464,6 +4565,7 @@ class MysticsInsignia(Insignia):
 
 class RuneOfMinorChannelingMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorChannelingMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorChannelingMagic,
@@ -4476,6 +4578,7 @@ class RuneOfMinorChannelingMagic(AttributeRune):
     
 class RuneOfMinorRestorationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorRestorationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorRestorationMagic,
@@ -4488,6 +4591,7 @@ class RuneOfMinorRestorationMagic(AttributeRune):
     
 class RuneOfMinorCommuning(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorCommuning,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorCommuning,
@@ -4500,6 +4604,7 @@ class RuneOfMinorCommuning(AttributeRune):
     
 class RuneOfMinorSpawningPower(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorSpawningPower,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorSpawningPower,
@@ -4512,6 +4617,7 @@ class RuneOfMinorSpawningPower(AttributeRune):
 
 class RuneOfMajorChannelingMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorChannelingMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorChannelingMagic,
@@ -4526,6 +4632,7 @@ class RuneOfMajorChannelingMagic(AttributeRune):
     
 class RuneOfMajorRestorationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorRestorationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorRestorationMagic,
@@ -4540,6 +4647,7 @@ class RuneOfMajorRestorationMagic(AttributeRune):
     
 class RuneOfMajorCommuning(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorCommuning,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorCommuning,
@@ -4554,6 +4662,7 @@ class RuneOfMajorCommuning(AttributeRune):
     
 class RuneOfMajorSpawningPower(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorSpawningPower,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorSpawningPower,
@@ -4568,6 +4677,7 @@ class RuneOfMajorSpawningPower(AttributeRune):
     
 class RuneOfSuperiorChannelingMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorChannelingMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorChannelingMagic,
@@ -4582,6 +4692,7 @@ class RuneOfSuperiorChannelingMagic(AttributeRune):
     
 class RuneOfSuperiorRestorationMagic(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorRestorationMagic,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorRestorationMagic,
@@ -4596,6 +4707,7 @@ class RuneOfSuperiorRestorationMagic(AttributeRune):
     
 class RuneOfSuperiorCommuning(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorCommuning,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCommuning,
@@ -4610,6 +4722,7 @@ class RuneOfSuperiorCommuning(AttributeRune):
     
 class RuneOfSuperiorSpawningPower(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorSpawningPower,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSpawningPower,
@@ -4722,6 +4835,7 @@ class ForsakenInsignia(Insignia):
 
 class RuneOfMinorMysticsm(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorMysticism,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorMysticism,
@@ -4734,6 +4848,7 @@ class RuneOfMinorMysticsm(AttributeRune):
 
 class RuneOfMinorEarthPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorEarthPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorEarthPrayers,
@@ -4746,6 +4861,7 @@ class RuneOfMinorEarthPrayers(AttributeRune):
     
 class RuneOfMinorScytheMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorScytheMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorScytheMastery,
@@ -4758,6 +4874,7 @@ class RuneOfMinorScytheMastery(AttributeRune):
     
 class RuneOfMinorWindPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorWindPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorWindPrayers,
@@ -4770,6 +4887,7 @@ class RuneOfMinorWindPrayers(AttributeRune):
     
 class RuneOfMajorMysticsm(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorMysticism,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorMysticism,
@@ -4784,6 +4902,7 @@ class RuneOfMajorMysticsm(AttributeRune):
     
 class RuneOfMajorEarthPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorEarthPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorEarthPrayers,
@@ -4798,6 +4917,7 @@ class RuneOfMajorEarthPrayers(AttributeRune):
     
 class RuneOfMajorScytheMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorScytheMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorScytheMastery,
@@ -4812,6 +4932,7 @@ class RuneOfMajorScytheMastery(AttributeRune):
     
 class RuneOfMajorWindPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorWindPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorWindPrayers,
@@ -4826,6 +4947,7 @@ class RuneOfMajorWindPrayers(AttributeRune):
     
 class RuneOfSuperiorMysticsm(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorMysticism,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorMysticism,
@@ -4840,6 +4962,7 @@ class RuneOfSuperiorMysticsm(AttributeRune):
     
 class RuneOfSuperiorEarthPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorEarthPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorEarthPrayers,
@@ -4854,6 +4977,7 @@ class RuneOfSuperiorEarthPrayers(AttributeRune):
     
 class RuneOfSuperiorScytheMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorScytheMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorScytheMastery,
@@ -4868,6 +4992,7 @@ class RuneOfSuperiorScytheMastery(AttributeRune):
     
 class RuneOfSuperiorWindPrayers(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorWindPrayers,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorWindPrayers,
@@ -4968,6 +5093,7 @@ class CenturionsInsignia(Insignia):
 
 class RuneOfMinorLeadership(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorLeadership,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorLeadership,
@@ -4980,6 +5106,7 @@ class RuneOfMinorLeadership(AttributeRune):
     
 class RuneOfMinorMotivation(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorMotivation,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorMotivation,
@@ -4992,6 +5119,7 @@ class RuneOfMinorMotivation(AttributeRune):
 
 class RuneOfMinorCommand(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorCommand,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorCommand,
@@ -5004,6 +5132,7 @@ class RuneOfMinorCommand(AttributeRune):
     
 class RuneOfMinorSpearMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Blue
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMinorSpearMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMinorSpearMastery,
@@ -5016,6 +5145,7 @@ class RuneOfMinorSpearMastery(AttributeRune):
     
 class RuneOfMajorLeadership(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorLeadership,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorLeadership,
@@ -5030,6 +5160,7 @@ class RuneOfMajorLeadership(AttributeRune):
     
 class RuneOfMajorMotivation(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorMotivation,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorMotivation,
@@ -5044,6 +5175,7 @@ class RuneOfMajorMotivation(AttributeRune):
     
 class RuneOfMajorCommand(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorCommand,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorCommand,
@@ -5058,6 +5190,7 @@ class RuneOfMajorCommand(AttributeRune):
     
 class RuneOfMajorSpearMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Purple
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfMajorSpearMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfMajorSpearMastery,
@@ -5072,6 +5205,7 @@ class RuneOfMajorSpearMastery(AttributeRune):
     
 class RuneOfSuperiorLeadership(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorLeadership,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorLeadership,
@@ -5086,6 +5220,7 @@ class RuneOfSuperiorLeadership(AttributeRune):
     
 class RuneOfSuperiorMotivation(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorMotivation,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorMotivation,
@@ -5100,6 +5235,7 @@ class RuneOfSuperiorMotivation(AttributeRune):
     
 class RuneOfSuperiorCommand(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorCommand,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorCommand,
@@ -5114,6 +5250,7 @@ class RuneOfSuperiorCommand(AttributeRune):
     
 class RuneOfSuperiorSpearMastery(AttributeRune):
     mod_type = ItemUpgradeType.Suffix
+    rarity = Rarity.Gold
     item_type_id_map = {
         ItemType.Headpiece: ItemUpgradeId.OfSuperiorSpearMastery,
         ItemType.Chestpiece: ItemUpgradeId.OfSuperiorSpearMastery,
