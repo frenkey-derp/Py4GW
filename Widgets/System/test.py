@@ -12,6 +12,7 @@ from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Sources.frenkeyLib.ItemHandling.mod_parser_stream import ModifierParser
 
 Utils.ClearSubModules("ItemHandling")
 
@@ -39,7 +40,7 @@ def check_item(item_id):
 HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=run_test, identifier="test_item_modifier_parser", name="Test Item Modifier Parser")
 
 hovered_item_id = Inventory.GetHoveredItemID()
-parser : Optional[ItemModifierParser] = None
+parser : Optional[ModifierParser] = None
 item : Optional[Item] = None
 
 def main():
@@ -53,7 +54,9 @@ def main():
         item_id = Inventory.GetHoveredItemID()
         if hovered_item_id != item_id and item_id != 0:
             hovered_item_id = item_id
-            parser = ItemModifierParser(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(hovered_item_id))
+            parser = ModifierParser(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(hovered_item_id))
+            parser.parse()
+            
             item  = Item.from_item_id(hovered_item_id)
         
         lang = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))
@@ -62,7 +65,7 @@ def main():
         if parser:
             item_name = GLOBAL_CACHE.Item.GetName(hovered_item_id) or "Unknown Item"
             
-            properties = parser.get_properties()
+            properties = parser.properties
             
             prefixes = [prefix for prefix in properties if isinstance(prefix, PrefixProperty)]
             #Sort first Insignia then Runes
