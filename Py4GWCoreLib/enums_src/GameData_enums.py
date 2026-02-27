@@ -373,18 +373,27 @@ AttributeNames = {
     Attribute.None_: "None",
 }
 
-class ProfessionAttributes(Enum):
-    _None = [],
-    Warrior = [Attribute.Strength, Attribute.AxeMastery, Attribute.HammerMastery, Attribute.Swordsmanship, Attribute.Tactics],
-    Ranger = [Attribute.BeastMastery, Attribute.Expertise, Attribute.WildernessSurvival, Attribute.Marksmanship],
-    Monk = [Attribute.HealingPrayers, Attribute.SmitingPrayers, Attribute.ProtectionPrayers, Attribute.DivineFavor],
-    Necromancer = [Attribute.BloodMagic, Attribute.DeathMagic, Attribute.SoulReaping, Attribute.Curses],
-    Mesmer = [Attribute.FastCasting, Attribute.IllusionMagic, Attribute.DominationMagic, Attribute.InspirationMagic],
-    Elementalist = [Attribute.AirMagic, Attribute.EarthMagic, Attribute.FireMagic, Attribute.WaterMagic],
-    Assassin = [Attribute.DaggerMastery, Attribute.DeadlyArts, Attribute.ShadowArts, Attribute.CriticalStrikes],
-    Ritualist = [Attribute.Communing, Attribute.RestorationMagic, Attribute.ChannelingMagic, Attribute.SpawningPower],
-    Paragon = [Attribute.Command, Attribute.Motivation, Attribute.Leadership, Attribute.SpearMastery],
-    Dervish = [Attribute.ScytheMastery, Attribute.WindPrayers, Attribute.EarthPrayers, Attribute.Mysticism],
+PROFESSION_ATTRIBUTES : dict[Profession, list[Attribute]] = {
+    Profession._None: [],
+    Profession.Warrior: [Attribute.Strength, Attribute.AxeMastery, Attribute.HammerMastery, Attribute.Swordsmanship, Attribute.Tactics],
+    Profession.Ranger: [Attribute.BeastMastery, Attribute.Expertise, Attribute.WildernessSurvival, Attribute.Marksmanship],
+    Profession.Monk: [Attribute.HealingPrayers, Attribute.SmitingPrayers, Attribute.ProtectionPrayers, Attribute.DivineFavor],
+    Profession.Necromancer: [Attribute.BloodMagic, Attribute.DeathMagic, Attribute.SoulReaping, Attribute.Curses],
+    Profession.Mesmer: [Attribute.FastCasting, Attribute.IllusionMagic, Attribute.DominationMagic, Attribute.InspirationMagic],
+    Profession.Elementalist: [Attribute.AirMagic, Attribute.EarthMagic, Attribute.FireMagic, Attribute.WaterMagic],
+    Profession.Assassin: [Attribute.DaggerMastery, Attribute.DeadlyArts, Attribute.ShadowArts, Attribute.CriticalStrikes],
+    Profession.Ritualist: [Attribute.Communing, Attribute.RestorationMagic, Attribute.ChannelingMagic, Attribute.SpawningPower],
+    Profession.Paragon: [Attribute.Command, Attribute.Motivation, Attribute.Leadership, Attribute.SpearMastery],
+    Profession.Dervish: [Attribute.ScytheMastery, Attribute.WindPrayers, Attribute.EarthPrayers, Attribute.Mysticism],
+}
+
+_ATTRIBUTE_TO_PROFESSION: dict[Attribute, Profession] = {}
+for profession_enum, attributes in PROFESSION_ATTRIBUTES.items():
+    if not attributes:
+        continue
+
+    for attr in attributes:
+        _ATTRIBUTE_TO_PROFESSION[attr] = Profession[profession_enum.name]
 
 #region Inscription
 class Inscription(IntEnum):

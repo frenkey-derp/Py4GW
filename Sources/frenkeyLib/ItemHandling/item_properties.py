@@ -5,7 +5,7 @@ from typing import Callable, Optional
 import Py4GW
 
 from Py4GWCoreLib.UIManager import UIManager
-from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, ProfessionAttributes, Reduced_Ailment
+from Py4GWCoreLib.enums_src.GameData_enums import _ATTRIBUTE_TO_PROFESSION, Ailment, Attribute, AttributeNames, DamageType, Profession, PROFESSION_ATTRIBUTES, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
@@ -548,7 +548,7 @@ class OfTheProfession(ItemProperty):
     profession: Profession
 
     def describe(self) -> str:
-        return f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)"
+        return f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.) | {self.profession.name if self.profession != Profession._None else f'Unknown Profession (ID {self.modifier.arg1})'}"
 
 @dataclass
 class PrefixProperty(ItemProperty):
@@ -683,10 +683,14 @@ class TargetItemTypeProperty(ItemProperty):
 #endregion Item Properties
 
 def get_profession_from_attribute(attribute: Attribute) -> Optional[Profession]:
-    for prof, attr in ProfessionAttributes.__dict__.items():
-        if isinstance(attr, list) and attribute in attr:
-            return Profession[prof]
-    return None
+    return _ATTRIBUTE_TO_PROFESSION.get(attribute, Profession._None)
+
+def get_species(modifiers: list[DecodedModifier]) -> ItemBaneSpecies:
+    bane_mod = next((m for m in modifiers if m.identifier == ModifierIdentifier.BaneSpecies), None)
+    if bane_mod:
+        return ItemBaneSpecies(bane_mod.arg1)
+    
+    return ItemBaneSpecies.Unknown
 
 def get_upgrade_property(modifier: DecodedModifier, modifiers: list[DecodedModifier], upgrade_type: ItemUpgradeType | None = None) -> Optional[ItemProperty]:
     upgrade, upgrade_type = get_upgrade(modifier, modifiers, upgrade_type)
@@ -1514,7 +1518,6 @@ class OfAttributeUpgrade(WeaponSuffix):
         ModifierIdentifier.AttributePlusOne,
     ]
     
-    #TODO: This is a temporary solution to the fact that the name of this upgrade is not localized in the game files. Once it is, this can be removed and the name can be pulled from the game files like all other upgrades.
     names = {
 		ServerLanguage.English: "of {attribute}",
 		ServerLanguage.Spanish: "({attribute})",
@@ -1528,6 +1531,36 @@ class OfAttributeUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of {attribute}",
 		ServerLanguage.BorkBorkBork: "ooff {attribute}",
 	}
+    
+    attribute : Attribute = Attribute.None_
+        
+    @classmethod
+    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
+        upgrade = cls()
+        upgrade.properties = []
+                
+        for prop_id in upgrade.property_identifiers:
+            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
+            
+            if prop_mod:
+                prop = _PROPERTY_FACTORY.get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
+                upgrade.properties.append(prop)
+                
+            else:
+                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
+                return None
+        
+        attribute_property = next((p for p in upgrade.properties if isinstance(p, AttributePlusOne)), None)
+        upgrade.attribute = attribute_property.attribute if attribute_property else Attribute.None_
+        
+        return upgrade
+    
+    @property
+    def name(self) -> str:
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        
+        return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__)).format(attribute=AttributeNames.get(self.attribute) if self.attribute != Attribute.None_ else "Unknown Attribute")
     
 class OfAptitudeUpgrade(WeaponSuffix):
     item_type_id_map = {
@@ -1886,7 +1919,8 @@ class OfSlayingUpgrade(WeaponSuffix):
         ItemType.Staff: ItemUpgradeId.OfSlaying_Staff,
     }
     property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsSpecies,
+        ModifierIdentifier.DamagePlusVsSpecies,
+        # ModifierIdentifier.BaneSpecies,
     ]
 
     #TODO: Localize the name of this suffix
@@ -1966,9 +2000,11 @@ class OfTheProfessionUpgrade(WeaponSuffix):
         ItemType.Sword: ItemUpgradeId.OfTheProfession_Sword,
         ItemType.Wand: ItemUpgradeId.OfTheProfession_Wand,
     }
+    
     property_identifiers = [
         ModifierIdentifier.OfTheProfession,
     ]
+        
     names = {
 		ServerLanguage.English: "of the {profession}",
 		ServerLanguage.Spanish: "(el {profession})",
@@ -1982,6 +2018,39 @@ class OfTheProfessionUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of {profession}",
 		ServerLanguage.BorkBorkBork: "ooff zee {profession}",
 	}
+    
+    profession : Profession = Profession._None
+    
+    @classmethod
+    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
+        upgrade = cls()
+        upgrade.properties = []
+                
+        for prop_id in upgrade.property_identifiers:
+            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
+            
+            if prop_mod:
+                prop = _PROPERTY_FACTORY.get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
+                upgrade.properties.append(prop)
+                
+            else:
+                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
+                return None
+        
+        profession_property = next((p for p in upgrade.properties if isinstance(p, OfTheProfession)), None)
+        upgrade.profession = profession_property.profession if profession_property else Profession._None
+        
+        return upgrade
+    
+    @property
+    def name(self) -> str:
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        
+        return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__)).format(profession=self.profession.name if self.profession != Profession._None else "Unknown Profession")
+    
+    
+    
 class OfValorUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfValor_Focus,
@@ -7818,7 +7887,7 @@ _PROPERTY_FACTORY: dict[ModifierIdentifier, Callable[[DecodedModifier, list[Deco
     ModifierIdentifier.DamagePlusPercent: lambda m, _: DamagePlusPercent(modifier=m, damage_increase=m.arg2),
     ModifierIdentifier.DamagePlusStance: lambda m, _: DamagePlusStance(modifier=m, damage_increase=m.arg2),
     ModifierIdentifier.DamagePlusVsHexed: lambda m, _: DamagePlusVsHexed(modifier=m, damage_increase=m.arg2),
-    ModifierIdentifier.DamagePlusVsSpecies: lambda m, _: DamagePlusVsSpecies(modifier=m, damage_increase=m.arg1, species=ItemBaneSpecies(m.arg2)),
+    ModifierIdentifier.DamagePlusVsSpecies: lambda m, mods: DamagePlusVsSpecies(modifier=m, damage_increase=m.arg1, species=get_species(mods)),
     ModifierIdentifier.DamagePlusWhileDown: lambda m, _: DamagePlusWhileDown(modifier=m, damage_increase=m.arg2, health_threshold=m.arg1),
     ModifierIdentifier.DamagePlusWhileUp: lambda m, _: DamagePlusWhileUp(modifier=m, damage_increase=m.arg2, health_threshold=m.arg1),
     ModifierIdentifier.DamageTypeProperty: lambda m, _: DamageTypeProperty(modifier=m, damage_type=DamageType(m.arg1)),
