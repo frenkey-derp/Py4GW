@@ -9,9 +9,8 @@ from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeN
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
-from Sources.frenkeyLib.ItemHandling.item_modifiers import DecodedModifier
-from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeType, ModifierIdentifier
-from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgradeId
+from Sources.frenkeyLib.ItemHandling.decoded_modifier import DecodedModifier
+from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
 
 class LocalizedString:    
     def __init__(self, localization: Optional[dict[ServerLanguage, str]] = None):
@@ -653,7 +652,7 @@ class InscriptionProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def describe(self) -> str:
-        return f"INSCRIPTION\n{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}"
+        return f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}"
     
 @dataclass
 class UpgradeRuneProperty(ItemProperty):
@@ -689,10 +688,10 @@ def get_profession_from_attribute(attribute: Attribute) -> Optional[Profession]:
             return Profession[prof]
     return None
 
-def get_upgrade_property(modifier: DecodedModifier, modifiers: list[DecodedModifier], upgrade_type: ItemUpgradeType | None = None) -> ItemProperty:
+def get_upgrade_property(modifier: DecodedModifier, modifiers: list[DecodedModifier], upgrade_type: ItemUpgradeType | None = None) -> Optional[ItemProperty]:
     upgrade, upgrade_type = get_upgrade(modifier, modifiers, upgrade_type)
-    
-    if upgrade:
+        
+    if upgrade and upgrade.mod_type != ItemUpgradeType.Unknown:
         match upgrade_type:
             case ItemUpgradeType.Prefix:
                 return PrefixProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
@@ -709,18 +708,16 @@ def get_upgrade_property(modifier: DecodedModifier, modifiers: list[DecodedModif
             case ItemUpgradeType.AppliesToRune:
                 return AppliesToRuneProperty(modifier=modifier, upgrade_id=modifier.upgrade_id, upgrade=upgrade)
     
-    return UnknownUpgradeProperty(modifier=modifier, upgrade_id=modifier.upgrade_id)
+    return None
 
 def get_upgrade(modifier : DecodedModifier, modifiers: list[DecodedModifier], upgrade_type: ItemUpgradeType | None = None) -> tuple["Upgrade", ItemUpgradeType]:
-    Py4GW.Console.Log("ItemHandling", f"Attempting to identify upgrade for modifier with upgrade ID {modifier.upgrade_id} and type {upgrade_type.name if upgrade_type else 'Any'}")
     creator_type = next((t for t in _UPGRADES if t.has_id(modifier.upgrade_id) and (upgrade_type is None or t.mod_type == upgrade_type)), None)     
 
     if creator_type is not None:        
         upgrade = creator_type.compose_from_modifiers(modifier, modifiers)
         if upgrade is not None:
-            Py4GW.Console.Log("ItemHandling", f"Identified upgrade: {upgrade.name} (ID {modifier.upgrade_id})")
             return upgrade, creator_type.mod_type
-    
+        
     return UnknownUpgrade(), ItemUpgradeType.Unknown
         
 class Upgrade:
@@ -876,7 +873,6 @@ class WeaponPrefix(WeaponUpgrade):
         return None
     
 class AdeptStaffUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Adept_Staff,
     }
@@ -898,7 +894,6 @@ class AdeptStaffUpgrade(WeaponPrefix):
 	}
     
 class BarbedUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Barbed_Axe,
         ItemType.Bow: ItemUpgradeId.Barbed_Bow,
@@ -925,7 +920,6 @@ class BarbedUpgrade(WeaponPrefix):
 	}
     
 class CripplingUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Crippling_Axe,
         ItemType.Bow: ItemUpgradeId.Crippling_Bow,
@@ -952,7 +946,6 @@ class CripplingUpgrade(WeaponPrefix):
 	}
         
 class CruelUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Cruel_Axe,
         ItemType.Daggers: ItemUpgradeId.Cruel_Daggers,
@@ -979,7 +972,6 @@ class CruelUpgrade(WeaponPrefix):
 	}
 
 class DefensiveUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Defensive_Staff,
     }
@@ -1001,7 +993,6 @@ class DefensiveUpgrade(WeaponPrefix):
 	}
     
 class EbonUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Ebon_Axe,
         ItemType.Bow: ItemUpgradeId.Ebon_Bow,
@@ -1029,7 +1020,6 @@ class EbonUpgrade(WeaponPrefix):
 	}
     
 class FieryUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Fiery_Axe,
         ItemType.Bow: ItemUpgradeId.Fiery_Bow,
@@ -1057,7 +1047,6 @@ class FieryUpgrade(WeaponPrefix):
 	}
     
 class FuriousUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Furious_Axe,
         ItemType.Daggers: ItemUpgradeId.Furious_Daggers,
@@ -1084,7 +1073,6 @@ class FuriousUpgrade(WeaponPrefix):
 	}
     
 class HaleUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Hale_Staff,
     }
@@ -1106,7 +1094,6 @@ class HaleUpgrade(WeaponPrefix):
 	}
     
 class HeavyUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Heavy_Axe,
         ItemType.Hammer: ItemUpgradeId.Heavy_Hammer,
@@ -1131,7 +1118,6 @@ class HeavyUpgrade(WeaponPrefix):
 	}
     
 class IcyUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Icy_Axe,
         ItemType.Bow: ItemUpgradeId.Icy_Bow,
@@ -1159,7 +1145,6 @@ class IcyUpgrade(WeaponPrefix):
 	}
     
 class InsightfulUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Insightful_Staff,
     }
@@ -1181,7 +1166,6 @@ class InsightfulUpgrade(WeaponPrefix):
 	}
     
 class PoisonousUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Poisonous_Axe,
         ItemType.Bow: ItemUpgradeId.Poisonous_Bow,
@@ -1208,7 +1192,6 @@ class PoisonousUpgrade(WeaponPrefix):
 	}
     
 class ShockingUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Shocking_Axe,
         ItemType.Bow: ItemUpgradeId.Shocking_Bow,
@@ -1236,7 +1219,6 @@ class ShockingUpgrade(WeaponPrefix):
 	}
     
 class SilencingUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Bow: ItemUpgradeId.Silencing_Bow,
         ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
@@ -1260,7 +1242,6 @@ class SilencingUpgrade(WeaponPrefix):
 	}
     
 class SunderingUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Sundering_Axe,
         ItemType.Bow: ItemUpgradeId.Sundering_Bow,
@@ -1288,7 +1269,6 @@ class SunderingUpgrade(WeaponPrefix):
 	}
     
 class SwiftStaffUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Swift_Staff,
     }
@@ -1310,7 +1290,6 @@ class SwiftStaffUpgrade(WeaponPrefix):
 	}
     
 class VampiricUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Vampiric_Axe,
         ItemType.Bow: ItemUpgradeId.Vampiric_Bow,
@@ -1339,7 +1318,6 @@ class VampiricUpgrade(WeaponPrefix):
 	}
     
 class ZealousUpgrade(WeaponPrefix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Zealous_Axe,
         ItemType.Bow: ItemUpgradeId.Zealous_Bow,
@@ -1529,7 +1507,6 @@ class WeaponSuffix(WeaponUpgrade):
         return None
     
 class OfAttributeUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
     }
@@ -1553,7 +1530,6 @@ class OfAttributeUpgrade(WeaponSuffix):
 	}
     
 class OfAptitudeUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
     }
@@ -1575,7 +1551,6 @@ class OfAptitudeUpgrade(WeaponSuffix):
 	}
     
 class OfAxeMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfAxeMastery,
     }
@@ -1597,7 +1572,6 @@ class OfAxeMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfDaggerMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
     }
@@ -1619,7 +1593,6 @@ class OfDaggerMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfDefenseUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfDefense_Axe,
         ItemType.Bow: ItemUpgradeId.OfDefense_Bow,
@@ -1648,7 +1621,6 @@ class OfDefenseUpgrade(WeaponSuffix):
 	}
     
 class OfDevotionUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Shield: ItemUpgradeId.OfDevotion_Shield,
         ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
@@ -1672,7 +1644,6 @@ class OfDevotionUpgrade(WeaponSuffix):
 	}
     
 class OfEnchantingUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfEnchanting_Axe,
         ItemType.Bow: ItemUpgradeId.OfEnchanting_Bow,
@@ -1701,7 +1672,6 @@ class OfEnchantingUpgrade(WeaponSuffix):
 	}
     
 class OfEnduranceUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfEndurance_Focus,
         ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
@@ -1725,7 +1695,6 @@ class OfEnduranceUpgrade(WeaponSuffix):
 	}
     
 class OfFortitudeUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfFortitude_Axe,
         ItemType.Bow: ItemUpgradeId.OfFortitude_Bow,
@@ -1756,7 +1725,6 @@ class OfFortitudeUpgrade(WeaponSuffix):
 	}
     
 class OfHammerMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
     }
@@ -1778,7 +1746,6 @@ class OfHammerMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfMarksmanshipUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Bow: ItemUpgradeId.OfMarksmanship,
     }
@@ -1800,7 +1767,6 @@ class OfMarksmanshipUpgrade(WeaponSuffix):
 	}
     
 class OfMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
     }
@@ -1822,7 +1788,6 @@ class OfMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfMemoryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
     }
@@ -1843,7 +1808,6 @@ class OfMemoryUpgrade(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Memury",
 	}
 class OfQuickeningUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
     }
@@ -1865,7 +1829,6 @@ class OfQuickeningUpgrade(WeaponSuffix):
 	}
     
 class OfScytheMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
     }
@@ -1887,7 +1850,6 @@ class OfScytheMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfShelterUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfShelter_Axe,
         ItemType.Bow: ItemUpgradeId.OfShelter_Bow,
@@ -1916,7 +1878,6 @@ class OfShelterUpgrade(WeaponSuffix):
 	}
     
 class OfSlayingUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfSlaying_Axe,
         ItemType.Bow: ItemUpgradeId.OfSlaying_Bow,
@@ -1931,7 +1892,6 @@ class OfSlayingUpgrade(WeaponSuffix):
     #TODO: Localize the name of this suffix
 
 class OfSpearMasteryUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Spear: ItemUpgradeId.OfSpearMastery,
     }
@@ -1953,7 +1913,6 @@ class OfSpearMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfSwiftnessUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
     }
@@ -1975,7 +1934,6 @@ class OfSwiftnessUpgrade(WeaponSuffix):
 	}
     
 class OfSwordsmanshipUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Prefix
     item_type_id_map = {
         ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
     }
@@ -1997,7 +1955,6 @@ class OfSwordsmanshipUpgrade(WeaponSuffix):
 	}
     
 class OfTheProfessionUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfTheProfession_Axe,
         ItemType.Bow: ItemUpgradeId.OfTheProfession_Bow,
@@ -2026,7 +1983,6 @@ class OfTheProfessionUpgrade(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff zee {profession}",
 	}
 class OfValorUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfValor_Focus,
         ItemType.Shield: ItemUpgradeId.OfValor_Shield,
@@ -2050,7 +2006,6 @@ class OfValorUpgrade(WeaponSuffix):
 	}
     
 class OfWardingUpgrade(WeaponSuffix):
-    mod_type = ItemUpgradeType.Suffix
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfWarding_Axe,
         ItemType.Bow: ItemUpgradeId.OfWarding_Bow,
@@ -2081,6 +2036,7 @@ class OfWardingUpgrade(WeaponSuffix):
 
 #region Inscriptions
 class Inscription(Upgrade):
+    mod_type = ItemUpgradeType.Inscription
     inventory_icon : str
     id : ItemUpgradeId
     names : dict[ServerLanguage, str] = {}
@@ -2112,7 +2068,6 @@ class Inscription(Upgrade):
 
 #region Offhand
 class BeJustAndFearNot(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.BeJustAndFearNot    
     property_identifiers = [
@@ -2123,7 +2078,6 @@ class BeJustAndFearNot(Inscription):
 	}
     
 class DownButNotOut(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.DownButNotOut    
     property_identifiers = [
@@ -2134,7 +2088,6 @@ class DownButNotOut(Inscription):
 	}
     
 class FaithIsMyShield(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.FaithIsMyShield    
     property_identifiers = [
@@ -2155,7 +2108,6 @@ class FaithIsMyShield(Inscription):
 	}
     
 class ForgetMeNot(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.ForgetMeNot    
     property_identifiers = [
@@ -2176,7 +2128,6 @@ class ForgetMeNot(Inscription):
 	}
     
 class HailToTheKing(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.HailToTheKing    
     property_identifiers = [
@@ -2197,7 +2148,6 @@ class HailToTheKing(Inscription):
 	}
     
 class IgnoranceIsBliss(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.IgnoranceIsBliss    
     property_identifiers = [
@@ -2219,7 +2169,6 @@ class IgnoranceIsBliss(Inscription):
 	}
     
 class KnowingIsHalfTheBattle(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.KnowingIsHalfTheBattle
     property_identifiers = [
@@ -2230,7 +2179,6 @@ class KnowingIsHalfTheBattle(Inscription):
 	}
     
 class LifeIsPain(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.LifeIsPain    
     property_identifiers = [
@@ -2242,7 +2190,6 @@ class LifeIsPain(Inscription):
 	}
     
 class LiveForToday(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.LiveForToday    
     property_identifiers = [
@@ -2264,7 +2211,6 @@ class LiveForToday(Inscription):
 	}
     
 class ManForAllSeasons(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.ManForAllSeasons    
     property_identifiers = [
@@ -2275,7 +2221,6 @@ class ManForAllSeasons(Inscription):
 	}
     
 class MightMakesRight(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.MightMakesRight    
     property_identifiers = [
@@ -2286,7 +2231,6 @@ class MightMakesRight(Inscription):
 	}
     
 class SerenityNow(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.SerenityNow        
     property_identifiers = [
@@ -2307,7 +2251,6 @@ class SerenityNow(Inscription):
 	}
     
 class SurvivalOfTheFittest(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Offhand
     id = ItemUpgradeId.SurvivalOfTheFittest    
     property_identifiers = [
@@ -2331,7 +2274,6 @@ class SurvivalOfTheFittest(Inscription):
 #region Weapon
 
 class BrawnOverBrains(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.BrawnOverBrains
     property_identifiers = [
@@ -2353,7 +2295,6 @@ class BrawnOverBrains(Inscription):
 	}
         
 class DanceWithDeath(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.DanceWithDeath
     property_identifiers = [
@@ -2374,7 +2315,6 @@ class DanceWithDeath(Inscription):
 	}
          
 class DontFearTheReaper(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.DontFearTheReaper
     property_identifiers = [
@@ -2395,7 +2335,6 @@ class DontFearTheReaper(Inscription):
 	}
     
 class DontThinkTwice(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.DontThinkTwice
     property_identifiers = [
@@ -2416,7 +2355,6 @@ class DontThinkTwice(Inscription):
 	}
     
 class GuidedByFate(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.GuidedByFate
     property_identifiers = [
@@ -2437,7 +2375,6 @@ class GuidedByFate(Inscription):
 	}
     
 class StrengthAndHonor(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.StrengthAndHonor
     property_identifiers = [
@@ -2458,7 +2395,6 @@ class StrengthAndHonor(Inscription):
 	}
     
 class ToThePain(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.ToThePain
     property_identifiers = [
@@ -2480,7 +2416,6 @@ class ToThePain(Inscription):
 	}
     
 class TooMuchInformation(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.TooMuchInformation    
     property_identifiers = [
@@ -2501,7 +2436,6 @@ class TooMuchInformation(Inscription):
 	}
     
 class VengeanceIsMine(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.Weapon
     id = ItemUpgradeId.VengeanceIsMine    
     property_identifiers = [
@@ -2524,7 +2458,6 @@ class VengeanceIsMine(Inscription):
 
 #region MartialWeapon
 class IHaveThePower(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.MartialWeapon
     id = ItemUpgradeId.IHaveThePower
     property_identifiers = [
@@ -2545,7 +2478,6 @@ class IHaveThePower(Inscription):
 	}
     
 class LetTheMemoryLiveAgain(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.MartialWeapon
     id = ItemUpgradeId.LetTheMemoryLiveAgain
     property_identifiers = [
@@ -2569,7 +2501,6 @@ class LetTheMemoryLiveAgain(Inscription):
 
 #region OffhandOrShield
 class CastOutTheUnclean(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.CastOutTheUnclean    
     property_identifiers = [
@@ -2590,7 +2521,6 @@ class CastOutTheUnclean(Inscription):
 	}
     
 class FearCutsDeeper(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.FearCutsDeeper    
     property_identifiers = [
@@ -2611,7 +2541,6 @@ class FearCutsDeeper(Inscription):
 	}
     
 class ICanSeeClearlyNow(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.ICanSeeClearlyNow
     property_identifiers = [
@@ -2632,7 +2561,6 @@ class ICanSeeClearlyNow(Inscription):
 	}
     
 class LeafOnTheWind(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.LeafOnTheWind    
     property_identifiers = [
@@ -2653,7 +2581,6 @@ class LeafOnTheWind(Inscription):
 	}
     
 class LikeARollingStone(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.LikeARollingStone    
     property_identifiers = [
@@ -2674,7 +2601,6 @@ class LikeARollingStone(Inscription):
 	}
     
 class LuckOfTheDraw(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.LuckOfTheDraw
     property_identifiers = [
@@ -2695,7 +2621,6 @@ class LuckOfTheDraw(Inscription):
 	}
     
 class MasterOfMyDomain(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.MasterOfMyDomain    
     property_identifiers = [
@@ -2716,7 +2641,6 @@ class MasterOfMyDomain(Inscription):
 	}
     
 class NotTheFace(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.NotTheFace    
     property_identifiers = [
@@ -2737,7 +2661,6 @@ class NotTheFace(Inscription):
 	}
     
 class NothingToFear(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.NothingToFear
     property_identifiers = [
@@ -2758,7 +2681,6 @@ class NothingToFear(Inscription):
 	}
     
 class OnlyTheStrongSurvive(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.OnlyTheStrongSurvive    
     property_identifiers = [
@@ -2779,7 +2701,6 @@ class OnlyTheStrongSurvive(Inscription):
 	}
     
 class PureOfHeart(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.PureOfHeart
     property_identifiers = [
@@ -2800,7 +2721,6 @@ class PureOfHeart(Inscription):
 	}
     
 class RidersOnTheStorm(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.RidersOnTheStorm
     property_identifiers = [
@@ -2821,7 +2741,6 @@ class RidersOnTheStorm(Inscription):
 	}
     
 class RunForYourLife(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.RunForYourLife
     property_identifiers = [
@@ -2842,7 +2761,6 @@ class RunForYourLife(Inscription):
 	}
     
 class ShelteredByFaith(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.ShelteredByFaith    
     property_identifiers = [
@@ -2863,7 +2781,6 @@ class ShelteredByFaith(Inscription):
 	}
     
 class SleepNowInTheFire(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.SleepNowInTheFire        
     property_identifiers = [
@@ -2884,7 +2801,6 @@ class SleepNowInTheFire(Inscription):
 	}
     
 class SoundnessOfMind(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.SoundnessOfMind
     property_identifiers = [
@@ -2905,7 +2821,6 @@ class SoundnessOfMind(Inscription):
 	}
     
 class StrengthOfBody(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.StrengthOfBody
     property_identifiers = [
@@ -2926,7 +2841,6 @@ class StrengthOfBody(Inscription):
 	}
     
 class SwiftAsTheWind(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.SwiftAsTheWind
     property_identifiers = [
@@ -2947,7 +2861,6 @@ class SwiftAsTheWind(Inscription):
 	}
 
 class TheRiddleOfSteel(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.TheRiddleOfSteel    
     property_identifiers = [
@@ -2968,7 +2881,6 @@ class TheRiddleOfSteel(Inscription):
 	}
     
 class ThroughThickAndThin(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.OffhandOrShield
     id = ItemUpgradeId.ThroughThickAndThin
     property_identifiers = [
@@ -2991,7 +2903,6 @@ class ThroughThickAndThin(Inscription):
 
 #region EquippableItem
 class MeasureForMeasure(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.EquippableItem
     id = ItemUpgradeId.MeasureForMeasure
     property_identifiers = [
@@ -3012,7 +2923,6 @@ class MeasureForMeasure(Inscription):
 	}
         
 class ShowMeTheMoney(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.EquippableItem
     id = ItemUpgradeId.ShowMeTheMoney
     property_identifiers = [
@@ -3035,7 +2945,6 @@ class ShowMeTheMoney(Inscription):
 
 #region SpellcastingWeapon
 class AptitudeNotAttitude(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
     id = ItemUpgradeId.AptitudeNotAttitude
     property_identifiers = [
@@ -3056,7 +2965,6 @@ class AptitudeNotAttitude(Inscription):
 	}
     
 class DontCallItAComeback(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
     id = ItemUpgradeId.DontCallItAComeback    
     property_identifiers = [
@@ -3077,7 +2985,6 @@ class DontCallItAComeback(Inscription):
 	}
     
 class HaleAndHearty(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
     id = ItemUpgradeId.HaleAndHearty
     property_identifiers = [
@@ -3098,7 +3005,6 @@ class HaleAndHearty(Inscription):
 	}
     
 class HaveFaith(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
     id = ItemUpgradeId.HaveFaith
     property_identifiers = [
@@ -3119,7 +3025,6 @@ class HaveFaith(Inscription):
 	}
     
 class IAmSorrow(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
     id = ItemUpgradeId.IAmSorrow        
     property_identifiers = [
@@ -3140,7 +3045,6 @@ class IAmSorrow(Inscription):
 	}
     
 class SeizeTheDay(Inscription):
-    mod_type = ItemUpgradeType.Inscription
     target_item_type = ItemType.SpellcastingWeapon
     id = ItemUpgradeId.SeizeTheDay    
     property_identifiers = [
@@ -3178,6 +3082,18 @@ class Insignia(Upgrade):
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return cls.id is not None and upgrade_id == cls.id
 
+    @property
+    def description(self) -> str:
+        return self.get_description()
+    
+    def get_description(self, language: ServerLanguage | None = None) -> str:
+        if language is None:
+            language = ServerLanguage(
+                UIManager.GetIntPreference(NumberPreference.TextLanguage)
+            )
+            
+        return self.descriptions.get(language, self.descriptions.get(ServerLanguage.English, ""))
+    
     @property
     def name(self) -> str:
         return self.get_name()
@@ -3343,7 +3259,6 @@ class AttributeRune(Rune):
 
 class SurvivorInsignia(Insignia):
     id = ItemUpgradeId.Survivor
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Survivor Insignia",
@@ -3358,10 +3273,13 @@ class SurvivorInsignia(Insignia):
         ServerLanguage.Russian: "Survivor Insignia",
         ServerLanguage.BorkBorkBork: "Soorfeefur Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: "Health +15 (on chest armor)\nHealth +10 (on leg armor)\nHealth +5 (on other armor)",
+    }
 
 class RadiantInsignia(Insignia):
     id = ItemUpgradeId.Radiant
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Radiant Insignia",
@@ -3376,10 +3294,13 @@ class RadiantInsignia(Insignia):
         ServerLanguage.Russian: "Radiant Insignia",
         ServerLanguage.BorkBorkBork: "Raedeeunt Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: "Energy +3 (on chest armor)\nEnergy +2 (on leg armor)\nEnergy +1 (on other armor)"
+    }
 
 class StalwartInsignia(Insignia):
     id = ItemUpgradeId.Stalwart
-    mod_type = ItemUpgradeType.Prefix
 
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
@@ -3398,10 +3319,13 @@ class StalwartInsignia(Insignia):
         ServerLanguage.Russian: "Stalwart Insignia",
         ServerLanguage.BorkBorkBork: "Staelvaert Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: "Armor +10 (vs. physical damage)"
+    }
 
 class BrawlersInsignia(Insignia):
     id = ItemUpgradeId.Brawlers
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Brawler's Insignia",
@@ -3416,10 +3340,14 @@ class BrawlersInsignia(Insignia):
         ServerLanguage.Russian: "Brawler's Insignia",
         ServerLanguage.BorkBorkBork: "Braevler's Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: "Armor +10 (while attacking)"
+    }
+
 
 class BlessedInsignia(Insignia):
     id = ItemUpgradeId.Blessed
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Blessed Insignia",
@@ -3434,10 +3362,14 @@ class BlessedInsignia(Insignia):
         ServerLanguage.Russian: "Blessed Insignia",
         ServerLanguage.BorkBorkBork: "Blessed Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: "Armor +10 (while affected by an Enchantment Spell)",
+    }
+
 
 class HeraldsInsignia(Insignia):
     id = ItemUpgradeId.Heralds
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Herald's Insignia",
@@ -3452,10 +3384,14 @@ class HeraldsInsignia(Insignia):
         ServerLanguage.Russian: "Herald's Insignia",
         ServerLanguage.BorkBorkBork: "Heraeld's Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (while holding an item)"
+    }
+
 
 class SentrysInsignia(Insignia):
     id = ItemUpgradeId.Sentrys
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Sentry's Insignia",
@@ -3470,10 +3406,14 @@ class SentrysInsignia(Insignia):
         ServerLanguage.Russian: "Sentry's Insignia",
         ServerLanguage.BorkBorkBork: "Sentry's Inseegneea",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (while in a stance)"
+    }
+
 
 class RuneOfMinorVigor(Rune):
     id = ItemUpgradeId.OfMinorVigor
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Blue
 
     names = {
@@ -3492,7 +3432,6 @@ class RuneOfMinorVigor(Rune):
 
 class RuneOfMinorVigor2(Rune):
     id = ItemUpgradeId.OfMinorVigor2
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Blue
 
     names = {
@@ -3511,7 +3450,6 @@ class RuneOfMinorVigor2(Rune):
 
 class RuneOfVitae(Rune):
     id = ItemUpgradeId.OfVitae
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Blue
 
     names = {
@@ -3530,7 +3468,6 @@ class RuneOfVitae(Rune):
 
 class RuneOfAttunement(Rune):
     id = ItemUpgradeId.OfAttunement
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Blue
 
     names = {
@@ -3549,7 +3486,6 @@ class RuneOfAttunement(Rune):
 
 class RuneOfMajorVigor(Rune):
     id = ItemUpgradeId.OfMajorVigor
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Purple
 
     names = {
@@ -3568,7 +3504,6 @@ class RuneOfMajorVigor(Rune):
 
 class RuneOfRecovery(Rune):
     id = ItemUpgradeId.OfRecovery
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3591,7 +3526,6 @@ class RuneOfRecovery(Rune):
 
 class RuneOfRestoration(Rune):
     id = ItemUpgradeId.OfRestoration
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3614,7 +3548,6 @@ class RuneOfRestoration(Rune):
 
 class RuneOfClarity(Rune):
     id = ItemUpgradeId.OfClarity
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3637,7 +3570,6 @@ class RuneOfClarity(Rune):
 
 class RuneOfPurity(Rune):
     id = ItemUpgradeId.OfPurity
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3660,7 +3592,6 @@ class RuneOfPurity(Rune):
 
 class RuneOfSuperiorVigor(Rune):
     id = ItemUpgradeId.OfSuperiorVigor
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Gold
 
     names = {
@@ -3683,7 +3614,6 @@ class RuneOfSuperiorVigor(Rune):
 
 class KnightsInsignia(Insignia):
     id = ItemUpgradeId.Knights
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Knight's Insignia [Warrior]",
@@ -3698,10 +3628,13 @@ class KnightsInsignia(Insignia):
         ServerLanguage.Russian: "Knight's Insignia [Warrior]",
         ServerLanguage.BorkBorkBork: "Kneeght's Inseegneea [Vaerreeur]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: "Received physical damage -3"
+    }
 
 class LieutenantsInsignia(Insignia):
     id = ItemUpgradeId.Lieutenants
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Lieutenant's Insignia [Warrior]",
@@ -3716,10 +3649,14 @@ class LieutenantsInsignia(Insignia):
         ServerLanguage.Russian: "Lieutenant's Insignia [Warrior]",
         ServerLanguage.BorkBorkBork: "Leeeootenunt's Inseegneea [Vaerreeur]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Reduces Hex durations on you by 20% and damage dealt by you by 5% (Non-stacking)\nArmor -20"
+    }
+
 
 class StonefistInsignia(Insignia):
     id = ItemUpgradeId.Stonefist
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Stonefist Insignia [Warrior]",
@@ -3734,10 +3671,14 @@ class StonefistInsignia(Insignia):
         ServerLanguage.Russian: "Stonefist Insignia [Warrior]",
         ServerLanguage.BorkBorkBork: "Stuneffeest Inseegneea [Vaerreeur]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Increases knockdown time on foes by 1 second.\n(Maximum: 3 seconds)"
+    }
+
 
 class DreadnoughtInsignia(Insignia):
     id = ItemUpgradeId.Dreadnought
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Dreadnought Insignia [Warrior]",
@@ -3752,10 +3693,14 @@ class DreadnoughtInsignia(Insignia):
         ServerLanguage.Russian: "Dreadnought Insignia [Warrior]",
         ServerLanguage.BorkBorkBork: "Dreaednuooght Inseegneea [Vaerreeur]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. elemental damage)"
+    }
+
 
 class SentinelsInsignia(Insignia):
     id = ItemUpgradeId.Sentinels
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Sentinel's Insignia [Warrior]",
@@ -3770,10 +3715,14 @@ class SentinelsInsignia(Insignia):
         ServerLanguage.Russian: "Sentinel's Insignia [Warrior]",
         ServerLanguage.BorkBorkBork: "Senteenel's Inseegneea [Vaerreeur]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +20 (Requires 13 Strength, vs. elemental damage)"
+    }
+
 
 class WarriorRuneOfMinorAbsorption(Rune):
     id = ItemUpgradeId.OfMinorAbsorption
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Blue
 
     names = {
@@ -3792,7 +3741,6 @@ class WarriorRuneOfMinorAbsorption(Rune):
 
 class WarriorRuneOfMinorTactics(AttributeRune):
     id = ItemUpgradeId.OfMinorTactics
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -3811,7 +3759,6 @@ class WarriorRuneOfMinorTactics(AttributeRune):
 
 class WarriorRuneOfMinorStrength(AttributeRune):
     id = ItemUpgradeId.OfMinorStrength
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -3830,7 +3777,6 @@ class WarriorRuneOfMinorStrength(AttributeRune):
 
 class WarriorRuneOfMinorAxeMastery(AttributeRune):
     id = ItemUpgradeId.OfMinorAxeMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -3849,7 +3795,6 @@ class WarriorRuneOfMinorAxeMastery(AttributeRune):
 
 class WarriorRuneOfMinorHammerMastery(AttributeRune):
     id = ItemUpgradeId.OfMinorHammerMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -3868,7 +3813,6 @@ class WarriorRuneOfMinorHammerMastery(AttributeRune):
 
 class WarriorRuneOfMinorSwordsmanship(AttributeRune):
     id = ItemUpgradeId.OfMinorSwordsmanship
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -3887,7 +3831,6 @@ class WarriorRuneOfMinorSwordsmanship(AttributeRune):
 
 class WarriorRuneOfMajorAbsorption(Rune):
     id = ItemUpgradeId.OfMajorAbsorption
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Purple
 
     names = {
@@ -3906,7 +3849,6 @@ class WarriorRuneOfMajorAbsorption(Rune):
 
 class WarriorRuneOfMajorTactics(AttributeRune):
     id = ItemUpgradeId.OfMajorTactics
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3929,7 +3871,6 @@ class WarriorRuneOfMajorTactics(AttributeRune):
 
 class WarriorRuneOfMajorStrength(AttributeRune):
     id = ItemUpgradeId.OfMajorStrength
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3952,7 +3893,6 @@ class WarriorRuneOfMajorStrength(AttributeRune):
 
 class WarriorRuneOfMajorAxeMastery(AttributeRune):
     id = ItemUpgradeId.OfMajorAxeMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3975,7 +3915,6 @@ class WarriorRuneOfMajorAxeMastery(AttributeRune):
 
 class WarriorRuneOfMajorHammerMastery(AttributeRune):
     id = ItemUpgradeId.OfMajorHammerMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3998,7 +3937,6 @@ class WarriorRuneOfMajorHammerMastery(AttributeRune):
 
 class WarriorRuneOfMajorSwordsmanship(AttributeRune):
     id = ItemUpgradeId.OfMajorSwordsmanship
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4021,7 +3959,6 @@ class WarriorRuneOfMajorSwordsmanship(AttributeRune):
 
 class WarriorRuneOfSuperiorAbsorption(Rune):
     id = ItemUpgradeId.OfSuperiorAbsorption
-    mod_type = ItemUpgradeType.Prefix
     rarity = Rarity.Gold
 
     names = {
@@ -4040,7 +3977,6 @@ class WarriorRuneOfSuperiorAbsorption(Rune):
 
 class WarriorRuneOfSuperiorTactics(AttributeRune):
     id = ItemUpgradeId.OfSuperiorTactics
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4063,7 +3999,6 @@ class WarriorRuneOfSuperiorTactics(AttributeRune):
 
 class WarriorRuneOfSuperiorStrength(AttributeRune):
     id = ItemUpgradeId.OfSuperiorStrength
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4086,7 +4021,6 @@ class WarriorRuneOfSuperiorStrength(AttributeRune):
 
 class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
     id = ItemUpgradeId.OfSuperiorAxeMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4109,7 +4043,6 @@ class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
 
 class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
     id = ItemUpgradeId.OfSuperiorHammerMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4132,7 +4065,6 @@ class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
 
 class WarriorRuneOfSuperiorSwordsmanship(AttributeRune):
     id = ItemUpgradeId.OfSuperiorSwordsmanship
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4183,7 +4115,6 @@ class AppliesToSuperiorRuneWarrior(Upgrade):
 
 class FrostboundInsignia(Insignia):
     id = ItemUpgradeId.Frostbound
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Frostbound Insignia [Ranger]",
@@ -4198,10 +4129,14 @@ class FrostboundInsignia(Insignia):
         ServerLanguage.Russian: "Frostbound Insignia [Ranger]",
         ServerLanguage.BorkBorkBork: "Frustbuoond Inseegneea [Runger]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (vs. Cold damage)"
+    }
+
 
 class PyreboundInsignia(Insignia):
     id = ItemUpgradeId.Pyrebound
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Pyrebound Insignia [Ranger]",
@@ -4216,10 +4151,14 @@ class PyreboundInsignia(Insignia):
         ServerLanguage.Russian: "Pyrebound Insignia [Ranger]",
         ServerLanguage.BorkBorkBork: "Pyrebuoond Inseegneea [Runger]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (vs. Fire damage)"
+    }
+
 
 class StormboundInsignia(Insignia):
     id = ItemUpgradeId.Stormbound
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Stormbound Insignia [Ranger]",
@@ -4234,10 +4173,14 @@ class StormboundInsignia(Insignia):
         ServerLanguage.Russian: "Stormbound Insignia [Ranger]",
         ServerLanguage.BorkBorkBork: "Sturmbuoond Inseegneea [Runger]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (vs. Lightning damage)"
+    }
+
 
 class ScoutsInsignia(Insignia):
     id = ItemUpgradeId.Scouts
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Scout's Insignia [Ranger]",
@@ -4252,10 +4195,14 @@ class ScoutsInsignia(Insignia):
         ServerLanguage.Russian: "Scout's Insignia [Ranger]",
         ServerLanguage.BorkBorkBork: "Scuoot's Inseegneea [Runger]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (while using a Preparation)"
+    }
+
 
 class EarthboundInsignia(Insignia):
     id = ItemUpgradeId.Earthbound
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Earthbound Insignia [Ranger]",
@@ -4270,10 +4217,14 @@ class EarthboundInsignia(Insignia):
         ServerLanguage.Russian: "Earthbound Insignia [Ranger]",
         ServerLanguage.BorkBorkBork: "Iaerthbuoond Inseegneea [Runger]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (vs. Earth damage)"
+    }
+
 
 class BeastmastersInsignia(Insignia):
     id = ItemUpgradeId.Beastmasters
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Beastmaster's Insignia [Ranger]",
@@ -4288,10 +4239,14 @@ class BeastmastersInsignia(Insignia):
         ServerLanguage.Russian: "Beastmaster's Insignia [Ranger]",
         ServerLanguage.BorkBorkBork: "Beaestmaester's Inseegneea [Runger]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (while your pet is alive)"
+    }
+
 
 class RangerRuneOfMinorWildernessSurvival(AttributeRune):
     id = ItemUpgradeId.OfMinorWildernessSurvival
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4310,7 +4265,6 @@ class RangerRuneOfMinorWildernessSurvival(AttributeRune):
 
 class RangerRuneOfMinorExpertise(AttributeRune):
     id = ItemUpgradeId.OfMinorExpertise
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4329,7 +4283,6 @@ class RangerRuneOfMinorExpertise(AttributeRune):
 
 class RangerRuneOfMinorBeastMastery(AttributeRune):
     id = ItemUpgradeId.OfMinorBeastMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4348,7 +4301,6 @@ class RangerRuneOfMinorBeastMastery(AttributeRune):
 
 class RangerRuneOfMinorMarksmanship(AttributeRune):
     id = ItemUpgradeId.OfMinorMarksmanship
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4367,7 +4319,6 @@ class RangerRuneOfMinorMarksmanship(AttributeRune):
 
 class RangerRuneOfMajorWildernessSurvival(AttributeRune):
     id = ItemUpgradeId.OfMajorWildernessSurvival
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4390,7 +4341,6 @@ class RangerRuneOfMajorWildernessSurvival(AttributeRune):
 
 class RangerRuneOfMajorExpertise(AttributeRune):
     id = ItemUpgradeId.OfMajorExpertise
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4413,7 +4363,6 @@ class RangerRuneOfMajorExpertise(AttributeRune):
 
 class RangerRuneOfMajorBeastMastery(AttributeRune):
     id = ItemUpgradeId.OfMajorBeastMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4436,7 +4385,6 @@ class RangerRuneOfMajorBeastMastery(AttributeRune):
 
 class RangerRuneOfMajorMarksmanship(AttributeRune):
     id = ItemUpgradeId.OfMajorMarksmanship
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4459,7 +4407,6 @@ class RangerRuneOfMajorMarksmanship(AttributeRune):
 
 class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
     id = ItemUpgradeId.OfSuperiorWildernessSurvival
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4482,7 +4429,6 @@ class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
 
 class RangerRuneOfSuperiorExpertise(AttributeRune):
     id = ItemUpgradeId.OfSuperiorExpertise
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4505,7 +4451,6 @@ class RangerRuneOfSuperiorExpertise(AttributeRune):
 
 class RangerRuneOfSuperiorBeastMastery(AttributeRune):
     id = ItemUpgradeId.OfSuperiorBeastMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4528,7 +4473,6 @@ class RangerRuneOfSuperiorBeastMastery(AttributeRune):
 
 class RangerRuneOfSuperiorMarksmanship(AttributeRune):
     id = ItemUpgradeId.OfSuperiorMarksmanship
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4579,7 +4523,6 @@ class AppliesToSuperiorRuneRanger(Upgrade):
 
 class WanderersInsignia(Insignia):
     id = ItemUpgradeId.Wanderers
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Wanderer's Insignia [Monk]",
@@ -4594,10 +4537,14 @@ class WanderersInsignia(Insignia):
         ServerLanguage.Russian: "Wanderer's Insignia [Monk]",
         ServerLanguage.BorkBorkBork: "Vunderer's Inseegneea [Munk]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. elemental damage)"
+    }
+
 
 class DisciplesInsignia(Insignia):
     id = ItemUpgradeId.Disciples
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Disciple's Insignia [Monk]",
@@ -4612,10 +4559,14 @@ class DisciplesInsignia(Insignia):
         ServerLanguage.Russian: "Disciple's Insignia [Monk]",
         ServerLanguage.BorkBorkBork: "Deesceeple-a's Inseegneea [Munk]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (while affected by a Condition)"
+    }
+
 
 class AnchoritesInsignia(Insignia):
     id = ItemUpgradeId.Anchorites
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Anchorite's Insignia [Monk]",
@@ -4630,10 +4581,15 @@ class AnchoritesInsignia(Insignia):
         ServerLanguage.Russian: "Anchorite's Insignia [Monk]",
         ServerLanguage.BorkBorkBork: "Unchureete-a's Inseegneea [Munk]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
+
+    }
+
 
 class MonkRuneOfMinorHealingPrayers(AttributeRune):
     id = ItemUpgradeId.OfMinorHealingPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4652,7 +4608,6 @@ class MonkRuneOfMinorHealingPrayers(AttributeRune):
 
 class MonkRuneOfMinorSmitingPrayers(AttributeRune):
     id = ItemUpgradeId.OfMinorSmitingPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4671,7 +4626,6 @@ class MonkRuneOfMinorSmitingPrayers(AttributeRune):
 
 class MonkRuneOfMinorProtectionPrayers(AttributeRune):
     id = ItemUpgradeId.OfMinorProtectionPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4690,7 +4644,6 @@ class MonkRuneOfMinorProtectionPrayers(AttributeRune):
 
 class MonkRuneOfMinorDivineFavor(AttributeRune):
     id = ItemUpgradeId.OfMinorDivineFavor
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -4709,7 +4662,6 @@ class MonkRuneOfMinorDivineFavor(AttributeRune):
 
 class MonkRuneOfMajorHealingPrayers(AttributeRune):
     id = ItemUpgradeId.OfMajorHealingPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4732,7 +4684,6 @@ class MonkRuneOfMajorHealingPrayers(AttributeRune):
 
 class MonkRuneOfMajorSmitingPrayers(AttributeRune):
     id = ItemUpgradeId.OfMajorSmitingPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4755,7 +4706,6 @@ class MonkRuneOfMajorSmitingPrayers(AttributeRune):
 
 class MonkRuneOfMajorProtectionPrayers(AttributeRune):
     id = ItemUpgradeId.OfMajorProtectionPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4778,7 +4728,6 @@ class MonkRuneOfMajorProtectionPrayers(AttributeRune):
 
 class MonkRuneOfMajorDivineFavor(AttributeRune):
     id = ItemUpgradeId.OfMajorDivineFavor
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4801,7 +4750,6 @@ class MonkRuneOfMajorDivineFavor(AttributeRune):
 
 class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
     id = ItemUpgradeId.OfSuperiorHealingPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4824,7 +4772,6 @@ class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
 
 class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
     id = ItemUpgradeId.OfSuperiorSmitingPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4847,7 +4794,6 @@ class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
 
 class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
     id = ItemUpgradeId.OfSuperiorProtectionPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4870,7 +4816,6 @@ class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
 
 class MonkRuneOfSuperiorDivineFavor(AttributeRune):
     id = ItemUpgradeId.OfSuperiorDivineFavor
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4921,7 +4866,6 @@ class AppliesToSuperiorRuneMonk(Upgrade):
 
 class BloodstainedInsignia(Insignia):
     id = ItemUpgradeId.Bloodstained
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Bloodstained Insignia [Necromancer]",
@@ -4936,10 +4880,14 @@ class BloodstainedInsignia(Insignia):
         ServerLanguage.Russian: "Bloodstained Insignia [Necromancer]",
         ServerLanguage.BorkBorkBork: "Bluudstaeeened Inseegneea [Necrumuncer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Reduces casting time of spells that exploit corpses by 25% (Non-stacking)"
+    }
+
 
 class TormentorsInsignia(Insignia):
     id = ItemUpgradeId.Tormentors
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Tormentor's Insignia [Necromancer]",
@@ -4954,10 +4902,15 @@ class TormentorsInsignia(Insignia):
         ServerLanguage.Russian: "Tormentor's Insignia [Necromancer]",
         ServerLanguage.BorkBorkBork: "Turmentur's Inseegneea [Necrumuncer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Holy damage you receive increased by 6 (on chest armor)\nHoly damage you receive increased by 4 (on leg armor)\nHoly damage you receive increased by 2 (on other armor)\nArmor +10"
+
+    }
+
 
 class BonelaceInsignia(Insignia):
     id = ItemUpgradeId.Bonelace
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Bonelace Insignia [Necromancer]",
@@ -4972,10 +4925,14 @@ class BonelaceInsignia(Insignia):
         ServerLanguage.Russian: "Bonelace Insignia [Necromancer]",
         ServerLanguage.BorkBorkBork: "Bunelaece-a Inseegneea [Necrumuncer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (vs. Piercing damage)"
+    }
+
 
 class MinionMastersInsignia(Insignia):
     id = ItemUpgradeId.MinionMasters
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Minion Master's Insignia [Necromancer]",
@@ -4990,10 +4947,15 @@ class MinionMastersInsignia(Insignia):
         ServerLanguage.Russian: "Minion Master's Insignia [Necromancer]",
         ServerLanguage.BorkBorkBork: "Meeneeun Maester's Inseegneea [Necrumuncer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (while you control 1 or more minions)\nArmor +5 (while you control 3 or more minions)\nArmor +5 (while you control 5 or more minions)"
+
+    }
+
 
 class BlightersInsignia(Insignia):
     id = ItemUpgradeId.Blighters
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Blighter's Insignia [Necromancer]",
@@ -5008,10 +4970,14 @@ class BlightersInsignia(Insignia):
         ServerLanguage.Russian: "Blighter's Insignia [Necromancer]",
         ServerLanguage.BorkBorkBork: "Bleeghter's Inseegneea [Necrumuncer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +20 (while affected by a Hex Spell)"
+    }
+
 
 class UndertakersInsignia(Insignia):
     id = ItemUpgradeId.Undertakers
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Undertaker's Insignia [Necromancer]",
@@ -5026,10 +4992,15 @@ class UndertakersInsignia(Insignia):
         ServerLanguage.Russian: "Undertaker's Insignia [Necromancer]",
         ServerLanguage.BorkBorkBork: "Undertaeker's Inseegneea [Necrumuncer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (while health is below 80%)\nArmor +5 (while health is below 60%)\nArmor +5 (while health is below 40%)\nArmor +5 (while health is below 20%)"
+
+    }
+
 
 class NecromancerRuneOfMinorBloodMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorBloodMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5048,7 +5019,6 @@ class NecromancerRuneOfMinorBloodMagic(AttributeRune):
 
 class NecromancerRuneOfMinorDeathMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorDeathMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5067,7 +5037,6 @@ class NecromancerRuneOfMinorDeathMagic(AttributeRune):
 
 class NecromancerRuneOfMinorCurses(AttributeRune):
     id = ItemUpgradeId.OfMinorCurses
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5086,7 +5055,6 @@ class NecromancerRuneOfMinorCurses(AttributeRune):
 
 class NecromancerRuneOfMinorSoulReaping(AttributeRune):
     id = ItemUpgradeId.OfMinorSoulReaping
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5105,7 +5073,6 @@ class NecromancerRuneOfMinorSoulReaping(AttributeRune):
 
 class NecromancerRuneOfMajorBloodMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorBloodMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5128,7 +5095,6 @@ class NecromancerRuneOfMajorBloodMagic(AttributeRune):
 
 class NecromancerRuneOfMajorDeathMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorDeathMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5151,7 +5117,6 @@ class NecromancerRuneOfMajorDeathMagic(AttributeRune):
 
 class NecromancerRuneOfMajorCurses(AttributeRune):
     id = ItemUpgradeId.OfMajorCurses
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5174,7 +5139,6 @@ class NecromancerRuneOfMajorCurses(AttributeRune):
 
 class NecromancerRuneOfMajorSoulReaping(AttributeRune):
     id = ItemUpgradeId.OfMajorSoulReaping
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5197,7 +5161,6 @@ class NecromancerRuneOfMajorSoulReaping(AttributeRune):
 
 class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorBloodMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5220,7 +5183,6 @@ class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
 
 class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorDeathMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5243,7 +5205,6 @@ class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
 
 class NecromancerRuneOfSuperiorCurses(AttributeRune):
     id = ItemUpgradeId.OfSuperiorCurses
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5266,7 +5227,6 @@ class NecromancerRuneOfSuperiorCurses(AttributeRune):
 
 class NecromancerRuneOfSuperiorSoulReaping(AttributeRune):
     id = ItemUpgradeId.OfSuperiorSoulReaping
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5317,7 +5277,6 @@ class AppliesToSuperiorRuneNecromancer(Upgrade):
 
 class VirtuososInsignia(Insignia):
     id = ItemUpgradeId.Virtuosos
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Virtuoso's Insignia [Mesmer]",
@@ -5332,10 +5291,14 @@ class VirtuososInsignia(Insignia):
         ServerLanguage.Russian: "Virtuoso's Insignia [Mesmer]",
         ServerLanguage.BorkBorkBork: "Furtoousu's Inseegneea [Mesmer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (while activating skills)"
+    }
+
 
 class ArtificersInsignia(Insignia):
     id = ItemUpgradeId.Artificers
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Artificer's Insignia [Mesmer]",
@@ -5350,10 +5313,14 @@ class ArtificersInsignia(Insignia):
         ServerLanguage.Russian: "Artificer's Insignia [Mesmer]",
         ServerLanguage.BorkBorkBork: "Aerteeffeecer's Inseegneea [Mesmer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +3 (for each equipped Signet)"
+    }
+
 
 class ProdigysInsignia(Insignia):
     id = ItemUpgradeId.Prodigys
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Prodigy's Insignia [Mesmer]",
@@ -5368,10 +5335,14 @@ class ProdigysInsignia(Insignia):
         ServerLanguage.Russian: "Prodigy's Insignia [Mesmer]",
         ServerLanguage.BorkBorkBork: "Prudeegy's Inseegneea [Mesmer]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
+    }
+
 
 class MesmerRuneOfMinorFastCasting(AttributeRune):
     id = ItemUpgradeId.OfMinorFastCasting
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5390,7 +5361,6 @@ class MesmerRuneOfMinorFastCasting(AttributeRune):
 
 class MesmerRuneOfMinorDominationMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorDominationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5409,7 +5379,6 @@ class MesmerRuneOfMinorDominationMagic(AttributeRune):
 
 class MesmerRuneOfMinorIllusionMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorIllusionMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5428,7 +5397,6 @@ class MesmerRuneOfMinorIllusionMagic(AttributeRune):
 
 class MesmerRuneOfMinorInspirationMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorInspirationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5447,7 +5415,6 @@ class MesmerRuneOfMinorInspirationMagic(AttributeRune):
 
 class MesmerRuneOfMajorFastCasting(AttributeRune):
     id = ItemUpgradeId.OfMajorFastCasting
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5470,7 +5437,6 @@ class MesmerRuneOfMajorFastCasting(AttributeRune):
 
 class MesmerRuneOfMajorDominationMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorDominationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5493,7 +5459,6 @@ class MesmerRuneOfMajorDominationMagic(AttributeRune):
 
 class MesmerRuneOfMajorIllusionMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorIllusionMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5516,7 +5481,6 @@ class MesmerRuneOfMajorIllusionMagic(AttributeRune):
 
 class MesmerRuneOfMajorInspirationMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorInspirationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5539,7 +5503,6 @@ class MesmerRuneOfMajorInspirationMagic(AttributeRune):
 
 class MesmerRuneOfSuperiorFastCasting(AttributeRune):
     id = ItemUpgradeId.OfSuperiorFastCasting
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5562,7 +5525,6 @@ class MesmerRuneOfSuperiorFastCasting(AttributeRune):
 
 class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorDominationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5585,7 +5547,6 @@ class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
 
 class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorIllusionMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5608,7 +5569,6 @@ class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
 
 class MesmerRuneOfSuperiorInspirationMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorInspirationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5659,7 +5619,6 @@ class AppliesToSuperiorRuneMesmer(Upgrade):
 
 class HydromancerInsignia(Insignia):
     id = ItemUpgradeId.Hydromancer
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Hydromancer Insignia [Elementalist]",
@@ -5674,10 +5633,14 @@ class HydromancerInsignia(Insignia):
         ServerLanguage.Russian: "Hydromancer Insignia [Elementalist]",
         ServerLanguage.BorkBorkBork: "Hydrumuncer Inseegneea [Ilementaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Cold damage)"
+    }
+
 
 class GeomancerInsignia(Insignia):
     id = ItemUpgradeId.Geomancer
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Geomancer Insignia [Elementalist]",
@@ -5692,10 +5655,14 @@ class GeomancerInsignia(Insignia):
         ServerLanguage.Russian: "Geomancer Insignia [Elementalist]",
         ServerLanguage.BorkBorkBork: "Geumuncer Inseegneea [Ilementaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Earth damage)"
+    }
+
 
 class PyromancerInsignia(Insignia):
     id = ItemUpgradeId.Pyromancer
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Pyromancer Insignia [Elementalist]",
@@ -5710,10 +5677,14 @@ class PyromancerInsignia(Insignia):
         ServerLanguage.Russian: "Pyromancer Insignia [Elementalist]",
         ServerLanguage.BorkBorkBork: "Pyrumuncer Inseegneea [Ilementaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Fire damage)"
+    }
+
 
 class AeromancerInsignia(Insignia):
     id = ItemUpgradeId.Aeromancer
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Aeromancer Insignia [Elementalist]",
@@ -5728,10 +5699,14 @@ class AeromancerInsignia(Insignia):
         ServerLanguage.Russian: "Aeromancer Insignia [Elementalist]",
         ServerLanguage.BorkBorkBork: "Aeerumuncer Inseegneea [Ilementaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Lightning damage)"
+    }
+
 
 class PrismaticInsignia(Insignia):
     id = ItemUpgradeId.Prismatic
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Prismatic Insignia [Elementalist]",
@@ -5746,10 +5721,15 @@ class PrismaticInsignia(Insignia):
         ServerLanguage.Russian: "Prismatic Insignia [Elementalist]",
         ServerLanguage.BorkBorkBork: "Preesmaeteec Inseegneea [Ilementaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (requires 9 Air Magic)\nArmor +5 (requires 9 Earth Magic)\nArmor +5 (requires 9 Fire Magic)\nArmor +5 (requires 9 Water Magic)"
+
+    }
+
 
 class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
     id = ItemUpgradeId.OfMinorEnergyStorage
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5768,7 +5748,6 @@ class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
 
 class ElementalistRuneOfMinorFireMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorFireMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5787,7 +5766,6 @@ class ElementalistRuneOfMinorFireMagic(AttributeRune):
 
 class ElementalistRuneOfMinorAirMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorAirMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5806,7 +5784,6 @@ class ElementalistRuneOfMinorAirMagic(AttributeRune):
 
 class ElementalistRuneOfMinorEarthMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorEarthMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5825,7 +5802,6 @@ class ElementalistRuneOfMinorEarthMagic(AttributeRune):
 
 class ElementalistRuneOfMinorWaterMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorWaterMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -5844,7 +5820,6 @@ class ElementalistRuneOfMinorWaterMagic(AttributeRune):
 
 class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
     id = ItemUpgradeId.OfMajorEnergyStorage
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5867,7 +5842,6 @@ class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
 
 class ElementalistRuneOfMajorFireMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorFireMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5890,7 +5864,6 @@ class ElementalistRuneOfMajorFireMagic(AttributeRune):
 
 class ElementalistRuneOfMajorAirMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorAirMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5913,7 +5886,6 @@ class ElementalistRuneOfMajorAirMagic(AttributeRune):
 
 class ElementalistRuneOfMajorEarthMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorEarthMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5936,7 +5908,6 @@ class ElementalistRuneOfMajorEarthMagic(AttributeRune):
 
 class ElementalistRuneOfMajorWaterMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorWaterMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5959,7 +5930,6 @@ class ElementalistRuneOfMajorWaterMagic(AttributeRune):
 
 class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
     id = ItemUpgradeId.OfSuperiorEnergyStorage
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5982,7 +5952,6 @@ class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
 
 class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorFireMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6005,7 +5974,6 @@ class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
 
 class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorAirMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6028,7 +5996,6 @@ class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
 
 class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorEarthMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6051,7 +6018,6 @@ class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
 
 class ElementalistRuneOfSuperiorWaterMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorWaterMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6102,7 +6068,6 @@ class AppliesToSuperiorRuneElementalist(Upgrade):
 
 class VanguardsInsignia(Insignia):
     id = ItemUpgradeId.Vanguards
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Vanguard's Insignia [Assassin]",
@@ -6117,10 +6082,14 @@ class VanguardsInsignia(Insignia):
         ServerLanguage.Russian: "Vanguard's Insignia [Assassin]",
         ServerLanguage.BorkBorkBork: "Fungooaerd's Inseegneea [Aessaesseen]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. physical damage)\nArmor +10 (vs. Blunt damage)"
+    }
+
 
 class InfiltratorsInsignia(Insignia):
     id = ItemUpgradeId.Infiltrators
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Infiltrator's Insignia [Assassin]",
@@ -6135,10 +6104,14 @@ class InfiltratorsInsignia(Insignia):
         ServerLanguage.Russian: "Infiltrator's Insignia [Assassin]",
         ServerLanguage.BorkBorkBork: "Inffeeltraetur's Inseegneea [Aessaesseen]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. physical damage)\nArmor +10 (vs. Piercing damage)"
+    }
+
 
 class SaboteursInsignia(Insignia):
     id = ItemUpgradeId.Saboteurs
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Saboteur's Insignia [Assassin]",
@@ -6153,10 +6126,14 @@ class SaboteursInsignia(Insignia):
         ServerLanguage.Russian: "Saboteur's Insignia [Assassin]",
         ServerLanguage.BorkBorkBork: "Saebuteoor's Inseegneea [Aessaesseen]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (vs. physical damage)\nArmor +10 (vs. Slashing damage)"
+    }
+
 
 class NightstalkersInsignia(Insignia):
     id = ItemUpgradeId.Nightstalkers
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Nightstalker's Insignia [Assassin]",
@@ -6171,10 +6148,14 @@ class NightstalkersInsignia(Insignia):
         ServerLanguage.Russian: "Nightstalker's Insignia [Assassin]",
         ServerLanguage.BorkBorkBork: "Neeghtstaelker's Inseegneea [Aessaesseen]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (while attacking)"
+    }
+
 
 class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
     id = ItemUpgradeId.OfMinorCriticalStrikes
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6193,7 +6174,6 @@ class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
 
 class AssassinRuneOfMinorDaggerMastery(AttributeRune):
     id = ItemUpgradeId.OfMinorDaggerMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6212,7 +6192,6 @@ class AssassinRuneOfMinorDaggerMastery(AttributeRune):
 
 class AssassinRuneOfMinorDeadlyArts(AttributeRune):
     id = ItemUpgradeId.OfMinorDeadlyArts
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6231,7 +6210,6 @@ class AssassinRuneOfMinorDeadlyArts(AttributeRune):
 
 class AssassinRuneOfMinorShadowArts(AttributeRune):
     id = ItemUpgradeId.OfMinorShadowArts
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6250,7 +6228,6 @@ class AssassinRuneOfMinorShadowArts(AttributeRune):
 
 class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
     id = ItemUpgradeId.OfMajorCriticalStrikes
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6273,7 +6250,6 @@ class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
 
 class AssassinRuneOfMajorDaggerMastery(AttributeRune):
     id = ItemUpgradeId.OfMajorDaggerMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6296,7 +6272,6 @@ class AssassinRuneOfMajorDaggerMastery(AttributeRune):
 
 class AssassinRuneOfMajorDeadlyArts(AttributeRune):
     id = ItemUpgradeId.OfMajorDeadlyArts
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6319,7 +6294,6 @@ class AssassinRuneOfMajorDeadlyArts(AttributeRune):
 
 class AssassinRuneOfMajorShadowArts(AttributeRune):
     id = ItemUpgradeId.OfMajorShadowArts
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6342,7 +6316,6 @@ class AssassinRuneOfMajorShadowArts(AttributeRune):
 
 class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
     id = ItemUpgradeId.OfSuperiorCriticalStrikes
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6365,7 +6338,6 @@ class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
 
 class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
     id = ItemUpgradeId.OfSuperiorDaggerMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6388,7 +6360,6 @@ class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
 
 class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
     id = ItemUpgradeId.OfSuperiorDeadlyArts
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6411,7 +6382,6 @@ class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
 
 class AssassinRuneOfSuperiorShadowArts(AttributeRune):
     id = ItemUpgradeId.OfSuperiorShadowArts
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6462,7 +6432,6 @@ class AppliesToSuperiorRuneAssassin(Upgrade):
 
 class ShamansInsignia(Insignia):
     id = ItemUpgradeId.Shamans
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Shaman's Insignia [Ritualist]",
@@ -6477,10 +6446,14 @@ class ShamansInsignia(Insignia):
         ServerLanguage.Russian: "Shaman's Insignia [Ritualist]",
         ServerLanguage.BorkBorkBork: "Shaemun's Inseegneea [Reetooaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (while you control 1 or more Spirits)\nArmor +5 (while you control 2 or more Spirits)\nArmor +5 (while you control 3 or more Spirits)"
+
+    }
 
 class GhostForgeInsignia(Insignia):
     id = ItemUpgradeId.GhostForge
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Ghost Forge Insignia [Ritualist]",
@@ -6495,10 +6468,15 @@ class GhostForgeInsignia(Insignia):
         ServerLanguage.Russian: "Ghost Forge Insignia [Ritualist]",
         ServerLanguage.BorkBorkBork: "Ghust Furge-a Inseegneea [Reetooaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (while affected by a Weapon Spell)"
+
+    }
+
 
 class MysticsInsignia(Insignia):
     id = ItemUpgradeId.Mystics
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Mystic's Insignia [Ritualist]",
@@ -6513,10 +6491,14 @@ class MysticsInsignia(Insignia):
         ServerLanguage.Russian: "Mystic's Insignia [Ritualist]",
         ServerLanguage.BorkBorkBork: "Mysteec's Inseegneea [Reetooaeleest]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +15 (while activating skills)"
+    }
+
 
 class RitualistRuneOfMinorChannelingMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorChannelingMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6535,7 +6517,6 @@ class RitualistRuneOfMinorChannelingMagic(AttributeRune):
 
 class RitualistRuneOfMinorRestorationMagic(AttributeRune):
     id = ItemUpgradeId.OfMinorRestorationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6554,7 +6535,6 @@ class RitualistRuneOfMinorRestorationMagic(AttributeRune):
 
 class RitualistRuneOfMinorCommuning(AttributeRune):
     id = ItemUpgradeId.OfMinorCommuning
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6573,7 +6553,6 @@ class RitualistRuneOfMinorCommuning(AttributeRune):
 
 class RitualistRuneOfMinorSpawningPower(AttributeRune):
     id = ItemUpgradeId.OfMinorSpawningPower
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6592,7 +6571,6 @@ class RitualistRuneOfMinorSpawningPower(AttributeRune):
 
 class RitualistRuneOfMajorChannelingMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorChannelingMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6615,7 +6593,6 @@ class RitualistRuneOfMajorChannelingMagic(AttributeRune):
 
 class RitualistRuneOfMajorRestorationMagic(AttributeRune):
     id = ItemUpgradeId.OfMajorRestorationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6638,7 +6615,6 @@ class RitualistRuneOfMajorRestorationMagic(AttributeRune):
 
 class RitualistRuneOfMajorCommuning(AttributeRune):
     id = ItemUpgradeId.OfMajorCommuning
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6661,7 +6637,6 @@ class RitualistRuneOfMajorCommuning(AttributeRune):
 
 class RitualistRuneOfMajorSpawningPower(AttributeRune):
     id = ItemUpgradeId.OfMajorSpawningPower
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6684,7 +6659,6 @@ class RitualistRuneOfMajorSpawningPower(AttributeRune):
 
 class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorChannelingMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6707,7 +6681,6 @@ class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
 
 class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
     id = ItemUpgradeId.OfSuperiorRestorationMagic
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6730,7 +6703,6 @@ class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
 
 class RitualistRuneOfSuperiorCommuning(AttributeRune):
     id = ItemUpgradeId.OfSuperiorCommuning
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6753,7 +6725,6 @@ class RitualistRuneOfSuperiorCommuning(AttributeRune):
 
 class RitualistRuneOfSuperiorSpawningPower(AttributeRune):
     id = ItemUpgradeId.OfSuperiorSpawningPower
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6804,7 +6775,6 @@ class AppliesToSuperiorRuneRitualist(Upgrade):
 
 class WindwalkerInsignia(Insignia):
     id = ItemUpgradeId.Windwalker
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Windwalker Insignia [Dervish]",
@@ -6819,10 +6789,15 @@ class WindwalkerInsignia(Insignia):
         ServerLanguage.Russian: "Windwalker Insignia [Dervish]",
         ServerLanguage.BorkBorkBork: "Veendvaelker Inseegneea [Derfeesh]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +5 (while affected by 1 or more Enchantment Spells)\nArmor +5 (while affected by 2 or more Enchantment Spells)\nArmor +5 (while affected by 3 or more Enchantment Spells)\nArmor +5 (while affected by 4 or more Enchantment Spells)"
+
+    }
+
 
 class ForsakenInsignia(Insignia):
     id = ItemUpgradeId.Forsaken
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Forsaken Insignia [Dervish]",
@@ -6837,10 +6812,14 @@ class ForsakenInsignia(Insignia):
         ServerLanguage.Russian: "Forsaken Insignia [Dervish]",
         ServerLanguage.BorkBorkBork: "Fursaekee Inseegneea [Derfeesh]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (while not affected by an Enchantment Spell)"
+    }
+
 
 class DervishRuneOfMinorMysticism(AttributeRune):
     id = ItemUpgradeId.OfMinorMysticism
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6859,7 +6838,6 @@ class DervishRuneOfMinorMysticism(AttributeRune):
 
 class DervishRuneOfMinorEarthPrayers(AttributeRune):
     id = ItemUpgradeId.OfMinorEarthPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6878,7 +6856,6 @@ class DervishRuneOfMinorEarthPrayers(AttributeRune):
 
 class DervishRuneOfMinorScytheMastery(AttributeRune):
     id = ItemUpgradeId.OfMinorScytheMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6897,7 +6874,6 @@ class DervishRuneOfMinorScytheMastery(AttributeRune):
 
 class DervishRuneOfMinorWindPrayers(AttributeRune):
     id = ItemUpgradeId.OfMinorWindPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -6916,7 +6892,6 @@ class DervishRuneOfMinorWindPrayers(AttributeRune):
 
 class DervishRuneOfMajorMysticism(AttributeRune):
     id = ItemUpgradeId.OfMajorMysticism
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6939,7 +6914,6 @@ class DervishRuneOfMajorMysticism(AttributeRune):
 
 class DervishRuneOfMajorEarthPrayers(AttributeRune):
     id = ItemUpgradeId.OfMajorEarthPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6962,7 +6936,6 @@ class DervishRuneOfMajorEarthPrayers(AttributeRune):
 
 class DervishRuneOfMajorScytheMastery(AttributeRune):
     id = ItemUpgradeId.OfMajorScytheMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6985,7 +6958,6 @@ class DervishRuneOfMajorScytheMastery(AttributeRune):
 
 class DervishRuneOfMajorWindPrayers(AttributeRune):
     id = ItemUpgradeId.OfMajorWindPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -7008,7 +6980,6 @@ class DervishRuneOfMajorWindPrayers(AttributeRune):
 
 class DervishRuneOfSuperiorMysticism(AttributeRune):
     id = ItemUpgradeId.OfSuperiorMysticism
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7031,7 +7002,6 @@ class DervishRuneOfSuperiorMysticism(AttributeRune):
 
 class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
     id = ItemUpgradeId.OfSuperiorEarthPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7054,7 +7024,6 @@ class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
 
 class DervishRuneOfSuperiorScytheMastery(AttributeRune):
     id = ItemUpgradeId.OfSuperiorScytheMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7077,7 +7046,6 @@ class DervishRuneOfSuperiorScytheMastery(AttributeRune):
 
 class DervishRuneOfSuperiorWindPrayers(AttributeRune):
     id = ItemUpgradeId.OfSuperiorWindPrayers
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7128,7 +7096,6 @@ class AppliesToSuperiorRuneDervish(Upgrade):
 
 class CenturionsInsignia(Insignia):
     id = ItemUpgradeId.Centurions
-    mod_type = ItemUpgradeType.Prefix
 
     names = {
         ServerLanguage.English: "Centurion's Insignia [Paragon]",
@@ -7143,10 +7110,14 @@ class CenturionsInsignia(Insignia):
         ServerLanguage.Russian: "Centurion's Insignia [Paragon]",
         ServerLanguage.BorkBorkBork: "Centooreeun's Inseegneea [Paeraegun]",
     }
+    
+    descriptions = {
+        ServerLanguage.English: f"Armor +10 (while affected by a Shout, Echo, or Chant)"
+    }
+
 
 class ParagonRuneOfMinorLeadership(AttributeRune):
     id = ItemUpgradeId.OfMinorLeadership
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -7165,7 +7136,6 @@ class ParagonRuneOfMinorLeadership(AttributeRune):
 
 class ParagonRuneOfMinorMotivation(AttributeRune):
     id = ItemUpgradeId.OfMinorMotivation
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -7184,7 +7154,6 @@ class ParagonRuneOfMinorMotivation(AttributeRune):
 
 class ParagonRuneOfMinorCommand(AttributeRune):
     id = ItemUpgradeId.OfMinorCommand
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -7203,7 +7172,6 @@ class ParagonRuneOfMinorCommand(AttributeRune):
 
 class ParagonRuneOfMinorSpearMastery(AttributeRune):
     id = ItemUpgradeId.OfMinorSpearMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Blue
 
     names = {
@@ -7222,7 +7190,6 @@ class ParagonRuneOfMinorSpearMastery(AttributeRune):
 
 class ParagonRuneOfMajorLeadership(AttributeRune):
     id = ItemUpgradeId.OfMajorLeadership
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -7245,7 +7212,6 @@ class ParagonRuneOfMajorLeadership(AttributeRune):
 
 class ParagonRuneOfMajorMotivation(AttributeRune):
     id = ItemUpgradeId.OfMajorMotivation
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -7268,7 +7234,6 @@ class ParagonRuneOfMajorMotivation(AttributeRune):
 
 class ParagonRuneOfMajorCommand(AttributeRune):
     id = ItemUpgradeId.OfMajorCommand
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -7291,7 +7256,6 @@ class ParagonRuneOfMajorCommand(AttributeRune):
 
 class ParagonRuneOfMajorSpearMastery(AttributeRune):
     id = ItemUpgradeId.OfMajorSpearMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -7314,7 +7278,6 @@ class ParagonRuneOfMajorSpearMastery(AttributeRune):
 
 class ParagonRuneOfSuperiorLeadership(AttributeRune):
     id = ItemUpgradeId.OfSuperiorLeadership
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7337,7 +7300,6 @@ class ParagonRuneOfSuperiorLeadership(AttributeRune):
 
 class ParagonRuneOfSuperiorMotivation(AttributeRune):
     id = ItemUpgradeId.OfSuperiorMotivation
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7360,7 +7322,6 @@ class ParagonRuneOfSuperiorMotivation(AttributeRune):
 
 class ParagonRuneOfSuperiorCommand(AttributeRune):
     id = ItemUpgradeId.OfSuperiorCommand
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7383,7 +7344,6 @@ class ParagonRuneOfSuperiorCommand(AttributeRune):
 
 class ParagonRuneOfSuperiorSpearMastery(AttributeRune):
     id = ItemUpgradeId.OfSuperiorSpearMastery
-    mod_type = ItemUpgradeType.Suffix
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -7903,7 +7863,14 @@ _PROPERTY_FACTORY: dict[ModifierIdentifier, Callable[[DecodedModifier, list[Deco
     ModifierIdentifier.ReducesDiseaseDuration: lambda m, _: ReducesDiseaseDuration(modifier=m),
     ModifierIdentifier.ReceiveLessDamage: lambda m, _: ReceiveLessDamage(modifier=m, damage_reduction=m.arg2, chance=m.arg1),
     ModifierIdentifier.TargetItemType: lambda m, _: TargetItemTypeProperty(modifier=m, item_type=ItemType(m.arg1)),
-    ModifierIdentifier.AttributeRune: lambda m, mods: get_upgrade_property(m, mods, ItemUpgradeType.Suffix),
-    ModifierIdentifier.Insignia_RuneOfAbsorption: lambda m, mods: get_upgrade_property(m, mods, ItemUpgradeType.Prefix),
+    
+    ModifierIdentifier.AttributeRune: lambda m, mods:   get_upgrade_property(m, mods, ItemUpgradeType.Suffix) or
+                                                        UnknownUpgradeProperty(modifier=m, upgrade_id=m.upgrade_id),
+                                                        
+    ModifierIdentifier.Upgrade: lambda m, mods: 
+                                                                    get_upgrade_property(m, mods, ItemUpgradeType.Prefix) or
+                                                                    get_upgrade_property(m, mods, ItemUpgradeType.Inscription) or
+                                                                    get_upgrade_property(m, mods, ItemUpgradeType.Suffix) or
+                                                                    UnknownUpgradeProperty(modifier=m, upgrade_id=m.upgrade_id),
 }
 

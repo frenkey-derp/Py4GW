@@ -12,11 +12,11 @@ from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Sources.frenkeyLib.ItemHandling.mod_parser_stream import ModifierParser
+from Sources.frenkeyLib.ItemHandling.types import ItemUpgradeType
 
 Utils.ClearSubModules("ItemHandling")
 
-from Sources.frenkeyLib.ItemHandling.item_properties import Insignia, PrefixProperty, SuffixProperty
+from Sources.frenkeyLib.ItemHandling.item_properties import InscriptionProperty, Insignia, PrefixProperty, SuffixProperty
 from Sources.frenkeyLib.ItemHandling.item_types.base_item import Item
 
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
@@ -40,11 +40,11 @@ def check_item(item_id):
 HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=run_test, identifier="test_item_modifier_parser", name="Test Item Modifier Parser")
 
 hovered_item_id = Inventory.GetHoveredItemID()
-parser : Optional[ModifierParser] = None
+parser : Optional[ItemModifierParser] = None
 item : Optional[Item] = None
 
 def main():
-    global hovered_item_id, parser, item
+    global hovered_item_id, parser, item, parser_stream
     
     open = ImGui.begin("Item Modifier Parser Test")
     if open:
@@ -54,17 +54,19 @@ def main():
         item_id = Inventory.GetHoveredItemID()
         if hovered_item_id != item_id and item_id != 0:
             hovered_item_id = item_id
-            parser = ModifierParser(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(hovered_item_id))
-            parser.parse()
+            
+            parser = ItemModifierParser(GLOBAL_CACHE.Item.Customization.Modifiers.GetModifiers(hovered_item_id))
             
             item  = Item.from_item_id(hovered_item_id)
         
         lang = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))
         ImGui.text(f"Hovered Item ID: {hovered_item_id} | Language: {lang.name}")
+        ImGui.text(f"9224 | {get_true_identifier_with_hex(9224)} | weapon prefix, suffix, inscription, rune, insignia")
+        ImGui.text(f"8680 | {get_true_identifier_with_hex(8680)} | attribute rune")
+        ImGui.text(f"9520 | {get_true_identifier_with_hex(9520)} | end upgrade")
         
         if parser:
-            item_name = GLOBAL_CACHE.Item.GetName(hovered_item_id) or "Unknown Item"
-            
+            item_name = "ITEM" or GLOBAL_CACHE.Item.GetName(hovered_item_id) or "Unknown Item"            
             properties = parser.properties
             
             prefixes = [prefix for prefix in properties if isinstance(prefix, PrefixProperty)]
@@ -94,6 +96,52 @@ def main():
             
             ImGui.text(f"{item_name}")
             
+            ImGui.text("Item", 18, "Bold")
+            if ImGui.begin_table("item properties", 2, PyImGui.TableFlags.Borders):
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+            
+                ImGui.text("Prefix")
+                PyImGui.table_next_column()
+                prefix = next((p for p in properties if isinstance(p, PrefixProperty) and p.upgrade.mod_type == ItemUpgradeType.Prefix), None)
+                ImGui.text(prefix.describe() if prefix else "None")
+                PyImGui.table_next_column()
+                
+                ImGui.text("Inscription")
+                PyImGui.table_next_column()
+                inscription = next((p for p in properties if isinstance(p, InscriptionProperty) and p.upgrade.mod_type == ItemUpgradeType.Inscription), None)
+                ImGui.text(inscription.describe() if inscription else "None")
+                PyImGui.table_next_column()
+                
+                
+                ImGui.text("Suffix")
+                PyImGui.table_next_column()
+                suffix = next((p for p in properties if (isinstance(p, SuffixProperty) or isinstance(p, PrefixProperty)) and p.upgrade.mod_type == ItemUpgradeType.Suffix), None)
+                ImGui.text(suffix.describe() if suffix else "None")
+                PyImGui.table_next_column()
+                    
+                ImGui.end_table()
+            
+            if False and ImGui.begin_table("raw properties", 4, PyImGui.TableFlags.Borders):
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                for mod in parser.modifiers:
+                    ImGui.text(f"{mod.identifier} ({mod.raw_identifier})")
+                    PyImGui.table_next_column()      
+                    
+                    ImGui.text(f"{mod.arg1}")
+                    PyImGui.table_next_column()
+                    
+                    ImGui.text(f"{mod.arg2}")
+                    PyImGui.table_next_column()
+                                      
+                    ImGui.text(f"{mod.arg}")
+                    PyImGui.table_next_column()
+                    
+                ImGui.end_table()
+            
+            ImGui.text("Parser", 18, "Bold")
             if ImGui.begin_table("properties", 2, PyImGui.TableFlags.Borders):
                 PyImGui.table_next_row()
                 PyImGui.table_next_column()
@@ -105,6 +153,8 @@ def main():
                         ImGui.text(f"{prop.describe()}")
                         PyImGui.table_next_column()
                 ImGui.end_table()
+               
+            
         
         ImGui.separator()
         # if item:
