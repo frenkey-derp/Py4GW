@@ -4,8 +4,7 @@ from typing import Optional
 
 from PyItem import ItemModifier
 
-from Sources.frenkeyLib.ItemHandling.types import ItemModifierParam, ModifierIdentifier
-from Sources.frenkeyLib.ItemHandling.upgrades import ItemUpgradeId
+from Sources.frenkeyLib.ItemHandling.types import ItemModifierParam, ItemUpgradeId, ModifierIdentifier
 
 @dataclass(frozen=True)
 class DecodedModifier:

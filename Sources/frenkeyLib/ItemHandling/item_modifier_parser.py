@@ -1,8 +1,3 @@
-# ---------------------------------------------------------
-# MODIFIER PARSER ENGINE
-# ---------------------------------------------------------
-
-
 from PyItem import ItemModifier
 from Sources.frenkeyLib.ItemHandling.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.item_properties import _PROPERTY_FACTORY, ItemProperty
