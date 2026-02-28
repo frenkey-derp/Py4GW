@@ -8,7 +8,7 @@ from Py4GWCoreLib.GlobalCache.SharedMemory import AccountStruct
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.Textures import TextureState, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
-from Py4GWCoreLib.ImGui_src.types import Alignment
+from Py4GWCoreLib.ImGui_src.types import Alignment, StyleTheme
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
@@ -26,13 +26,23 @@ from Sources.frenkeyLib.PartyQuestLog.settings import Settings
 from Sources.ApoSource.account_data_src.quest_data_src import QuestData, QuestNode
 
 class UI():
-    COLOR_MAP: dict[str, tuple[float, float, float, float]] = {
+    COLOR_TUPLES_MAP: dict[str, tuple[float, float, float, float]] = {
         "@warning": ColorPalette.GetColor("red").to_tuple_normalized(),
         "@Warning": ColorPalette.GetColor("red").to_tuple_normalized(),
         "@Quest":   ColorPalette.GetColor("bright_green").to_tuple_normalized(),
         "@quest":   ColorPalette.GetColor("bright_green").to_tuple_normalized(),
         "@completed":   ColorPalette.GetColor("creme").to_tuple_normalized(),
         "Header":  ColorPalette.GetColor("creme").to_tuple_normalized(),   
+    }
+    
+    
+    COLOR_MAP: dict[str, Color] = {
+        "@warning": ColorPalette.GetColor("red"),
+        "@Warning": ColorPalette.GetColor("red"),
+        "@Quest":   ColorPalette.GetColor("bright_green"),
+        "@quest":   ColorPalette.GetColor("bright_green"),
+        "@completed":   ColorPalette.GetColor("creme"),
+        "Header":  ColorPalette.GetColor("creme"),   
     }
     
     QUEST_STATE_COLOR_MAP: dict[str, Color] = {
@@ -46,6 +56,8 @@ class UI():
     QuestLogWindow : WindowModule = WindowModule("PartyQuestLog", "Party Quest Log", window_size=(Settings.LogPosWidth, Settings.LogPosHeight), window_pos=(Settings.LogPosX, Settings.LogPosY), can_close=True)
     ConfigWindow : WindowModule = WindowModule("PartyQuestLog#Config", "Party Quest Log - Settings", window_size=(500, 300), can_close=True)
     ActiveQuest : QuestNode | None = None
+    ActiveQuestObjectiveTokens = []
+    ActiveQuestDescriptionTokens = []
     AnimationTimer : Timer = Timer()
         
     @staticmethod
@@ -68,6 +80,7 @@ class UI():
             grouped_quests : dict[str, list[QuestNode]] = {}
             avail = PyImGui.get_content_region_avail()
             _, height = avail[0], avail[1] / 2
+            textured = style.Theme in ImGui.Textured_Themes
                     
             if quest_data.mission_map_quest is not None:
                 grouped_quests.setdefault(quest_data.mission_map_quest.quest_location, []).append(quest_data.mission_map_quest)
@@ -97,7 +110,14 @@ class UI():
                     PyImGui.set_next_item_open(True, PyImGui.ImGuiCond.Always)
                 
                 ImGui.push_font("Regular", 16)
+                if not textured:
+                    ImGui.push_theme(StyleTheme.Guild_Wars)
+                
                 location_open = ImGui.tree_node(f"{location}")
+                
+                if not textured:
+                    ImGui.pop_theme()
+                    
                 ImGui.pop_font()
                                 
                 if location_open:                    
@@ -121,7 +141,7 @@ class UI():
                         style.Border.push_color(color.opacity(0.1).rgb_tuple if color else (0,0,0,0))
                         style.WindowPadding.push_style_var(4, 4)
                         ImGui.begin_child(f"QuestSelectable_{quest.quest_id}", (0, height_selectable), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)  
-                        ImGui.render_tokenized_markup(tokenized_lines, max_width=max_width, COLOR_MAP=UI.COLOR_MAP)
+                        ImGui.render_tokenized_markup(tokenized_lines, max_width=max_width, COLOR_MAP=UI.COLOR_TUPLES_MAP)
                         ImGui.end_child()
                         style.WindowPadding.pop_style_var()
                                     
@@ -139,6 +159,8 @@ class UI():
                                     ConsoleLog("Party Quest Log", f"Cannot travel to locked map '{Map.GetMapName(quest.map_to)}' ({quest.map_to}).")
                             else:
                                 UI.ActiveQuest = quest
+                                UI.ActiveQuestObjectiveTokens = []
+                                UI.ActiveQuestDescriptionTokens = []
                                 Quest.SetActiveQuest(quest.quest_id)
                             
                         if PyImGui.is_item_hovered():
@@ -250,7 +272,7 @@ class UI():
         cursor_pos = PyImGui.get_cursor_screen_pos()
         
         PyImGui.push_clip_rect(cursor_pos[0], cursor_pos[1], text_clip, 50, True)
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Text, UI.COLOR_MAP["Header"])
+        PyImGui.push_style_color(PyImGui.ImGuiCol.Text, UI.COLOR_TUPLES_MAP["Header"])
         ImGui.text("Quest Summary", font_size=16)
         PyImGui.pop_style_color(1)
         PyImGui.pop_clip_rect()
@@ -270,17 +292,16 @@ class UI():
             ImGui.end_tooltip()
         
         PyImGui.spacing()
-                                                
         
-        tokens = Utils.TokenizeMarkupText(quest.objectives, max_width=child_width)
-        ImGui.render_tokenized_markup(tokens, max_width=child_width, COLOR_MAP=UI.COLOR_MAP)
+        UI.ActiveQuestObjectiveTokens = UI.ActiveQuestObjectiveTokens or Utils.TokenizeMarkupText(quest.objectives, max_width=child_width)
+        ImGui.render_tokenized_markup(UI.ActiveQuestObjectiveTokens, max_width=child_width, COLOR_MAP=UI.COLOR_TUPLES_MAP)
 
-        PyImGui.push_style_color(PyImGui.ImGuiCol.Text, UI.COLOR_MAP["Header"])
+        PyImGui.push_style_color(PyImGui.ImGuiCol.Text, UI.COLOR_TUPLES_MAP["Header"])
         PyImGui.text_wrapped(f"{quest.npc_quest_giver}")
         PyImGui.pop_style_color(1)
 
-        tokens = Utils.TokenizeMarkupText(quest.description, max_width=child_width)
-        ImGui.render_tokenized_markup(tokens, max_width=child_width, COLOR_MAP=UI.COLOR_MAP)
+        UI.ActiveQuestDescriptionTokens = UI.ActiveQuestDescriptionTokens or Utils.TokenizeMarkupText(quest.description, max_width=child_width)
+        ImGui.render_tokenized_markup(UI.ActiveQuestDescriptionTokens, max_width=child_width, COLOR_MAP=UI.COLOR_TUPLES_MAP)
 
         PyImGui.separator()
         PyImGui.text(f"From: {Map.GetMapName(quest.map_from)}")
