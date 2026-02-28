@@ -5,7 +5,7 @@ from HeroAI.utils import SameMapAsAccount, SameMapOrPartyAsAccount
 from Py4GWCoreLib import Quest
 from Py4GWCoreLib import Utils
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountStruct
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER, HotkeyManager
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Player import Player
@@ -31,7 +31,7 @@ quest_cache = QuestCache()
 fetch_and_handle_quests = True
 previous_quest_log : list[int] = [quest.quest_id for quest in quest_cache.quest_data.quest_log.values()]
 
-accounts : dict[int, AccountData] = {}
+accounts : dict[int, AccountStruct] = {}
 widget_handler = get_widget_handler()
 module_info = None
 
@@ -102,8 +102,8 @@ def main():
     accounts.clear()
     for acc in shmem_accounts:        
         if acc.AccountEmail != acc_mail and acc.IsSlotActive:
-            if  SameMapOrPartyAsAccount(acc) and acc.PartyID == GLOBAL_CACHE.Party.GetPartyID():
-                accounts[acc.PlayerID] = acc     
+            if  SameMapOrPartyAsAccount(acc) and acc.AgentPartyData.PartyID == GLOBAL_CACHE.Party.GetPartyID():
+                accounts[acc.AgentData.AgentID] = acc     
 
     if settings.ShowOnlyInParty and not accounts:
         return
