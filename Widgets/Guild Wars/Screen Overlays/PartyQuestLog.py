@@ -46,7 +46,7 @@ def open_quest_log_hotkey_callback():
         settings.LogOpen = True
         settings.save_settings()
 
-def on_enabled():
+def on_enable():
     global settings
     settings.load_settings()
     
@@ -58,7 +58,7 @@ def on_enabled():
     modifiers=settings.Modifiers
 )
     
-def on_disabled():
+def on_disable():
     global settings
     HOTKEY_MANAGER.unregister_hotkey(f"{MODULE_NAME}_OpenQuestLog")
 
