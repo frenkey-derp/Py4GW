@@ -22,15 +22,19 @@ INI_FILENAME = "WidgetManager.ini"
 
 def _add_config_vars():
     global INI_KEY
-    IniManager().add_bool(key=INI_KEY, var_name="enable_all", section="Configuration", name="enable_all", default=False)
+    IniManager().add_bool(key=INI_KEY, var_name="enable_all", section="Configuration", name="enable_all", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="use_library", section="Configuration", name="use_library", default=True)
     
     IniManager().add_int(key=INI_KEY, var_name="max_suggestions", section="Configuration", name="max_suggestions", default=10)
     IniManager().add_int(key=INI_KEY, var_name="single_button_size", section="Configuration", name="single_button_size", default=48)
-    IniManager().add_str(key=INI_KEY, var_name="default_layout", section="Configuration", name="default_layout", default=LayoutMode.Minimalistic.name)  
-    IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)  
+    IniManager().add_str(key=INI_KEY, var_name="startup_layout", section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)  
+    IniManager().add_str(key=INI_KEY, var_name="layout", section="Configuration", name="layout", default=LayoutMode.Library.name)  
+    IniManager().add_str(key=INI_KEY, var_name="hotkey", section="Configuration", name="hotkey", default=Key.Unmapped.name)
     IniManager().add_str(key=INI_KEY, var_name="hotkey_modifiers", section="Configuration", name="hotkey_modifiers", default="NoneKey")
     IniManager().add_bool(key=INI_KEY, var_name="single_filter", section="Configuration", name="single_filter", default=True)
+    IniManager().add_bool(key=INI_KEY, var_name="jump_to_minimalistic", section="Configuration", name="jump_to_minimalistic", default=False)
+    IniManager().add_float(key=INI_KEY, var_name="library_width", section="Configuration", name="library_width", default=900)
+    IniManager().add_float(key=INI_KEY, var_name="library_height", section="Configuration", name="library_height", default=600)
                             
     IniManager().add_str(key=INI_KEY, var_name="favorites", section="Favorites", name="favorites", default="")
     
@@ -40,6 +44,7 @@ def _add_config_vars():
     IniManager().add_bool(key=INI_KEY, var_name="show_category", section="Card Configuration", name="show_category", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="show_tags", section="Card Configuration", name="show_tags", default=True)
     IniManager().add_bool(key=INI_KEY, var_name="fixed_card_width", section="Card Configuration", name="fixed_card_width", default=False)
+    
     IniManager().add_float(key=INI_KEY, var_name="card_width", section="Card Configuration", name="card_width", default=300)
     
     IniManager().add_str(key=INI_KEY, var_name="card_color", section="Card Configuration", name="card_color", default="200, 200, 200, 20")
@@ -64,10 +69,12 @@ def _add_config_vars():
         )
         
 def update():
+    #return #deprecated in place of callbacks
     if widget_manager.enable_all:
         widget_manager.execute_enabled_widgets_update()
     
 def draw():
+    return #deprecated in place of callbacks
     if widget_manager.enable_all:
         widget_manager.execute_enabled_widgets_draw()     
         
@@ -75,7 +82,7 @@ widget_manager_initialized = False
 widget_manager_initializing = False
 
 def main():
-    global INI_KEY, init_coro, widget_manager_initialized, widget_manager_initializing, py4_gw_library
+    global INI_KEY, widget_manager_initialized, widget_manager_initializing, py4_gw_library
 
     if not INI_KEY:
         if not os.path.exists(INI_PATH):
@@ -112,7 +119,8 @@ def main():
             ImGui.End(INI_KEY)
     
     if widget_manager.enable_all:
-        widget_manager.execute_enabled_widgets_main()
+        #deprecated in place of callbacks
+        #widget_manager.execute_enabled_widgets_main()
         widget_manager.execute_configuring_widgets()
 
 

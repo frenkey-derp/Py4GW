@@ -114,6 +114,18 @@ class Yield:
             yield from _run_bt_tree(tree, throttle_ms=300)
 
         @staticmethod
+        def BuySkill(skill_id: int, log: bool = False):
+            """
+            Purpose: Buy/Learn a skill from a Skill Trainer.
+            Args:
+                skill_id (int): The ID of the skill to purchase.
+                log (bool) Optional: Whether to log the action. Default is False.
+            Returns: None
+            """
+            tree = BT.Player.BuySkill(skill_id, log=log)
+            yield from _run_bt_tree(tree, throttle_ms=300)
+
+        @staticmethod
         def SendChatCommand(command:str, log=False):
             """
             Purpose: Send a chat command.
@@ -1074,22 +1086,42 @@ class Yield:
             return item_name
 
         @staticmethod
-        def _wait_for_salvage_materials_window():
+        def _wait_for_salvage_materials_window(timeout_ms: int = 1200, poll_ms: int = 50, initial_wait_ms: int = 150):
             from ..UIManager import UIManager
-            yield from Yield.wait(150)
-            salvage_materials_frame = UIManager.GetChildFrameID(140452905, [6, 110, 6])
+            yield from Yield.wait(max(0, initial_wait_ms))
 
-            retries = 0
-            while ((not UIManager.FrameExists(salvage_materials_frame)) and (retries < 20)):
-                yield from Yield.wait(50)
-                retries += 1
-            yield from Yield.wait(50)
+            parent_hash = 140452905
+            yes_button_offsets = [6, 110, 6]
+            waited_ms = 0
+
+            while waited_ms < max(0, timeout_ms):
+                salvage_materials_frame = UIManager.GetChildFrameID(parent_hash, yes_button_offsets)
+                if salvage_materials_frame and UIManager.FrameExists(salvage_materials_frame):
+                    yield from Yield.wait(max(0, poll_ms))
+                    return True
+
+                yield from Yield.wait(max(1, poll_ms))
+                waited_ms += max(1, poll_ms)
+
+            yield from Yield.wait(max(0, poll_ms))
+            return False
             
         @staticmethod
-        def _wait_for_empty_queue(queue_name:str):
+        def _wait_for_empty_queue(queue_name:str, timeout_ms: Optional[int] = None, poll_ms: int = 50):
             from ..Py4GWcorelib import ActionQueueManager
+            poll_ms = max(1, poll_ms)
+            waited_ms = 0
             while not ActionQueueManager().IsEmpty(queue_name):
-                yield from Yield.wait(50)
+                if timeout_ms is not None and waited_ms >= max(0, timeout_ms):
+                    ConsoleLog(
+                        "Yield.Items",
+                        f"Timed out waiting for queue '{queue_name}' to empty.",
+                        Console.MessageType.Warning
+                    )
+                    return False
+                yield from Yield.wait(poll_ms)
+                waited_ms += poll_ms
+            return True
         
         @staticmethod
         def _salvage_item(item_id):
@@ -1106,6 +1138,7 @@ class Yield:
         def SalvageItems(item_array:list[int], log=False):
             from ..Py4GWcorelib import ActionQueueManager, ConsoleLog, Console
             from ..Inventory import Inventory
+            queue_wait_timeout_ms = 5000
             
             if len(item_array) == 0:
                 ActionQueueManager().ResetQueue("SALVAGE")
@@ -1116,12 +1149,21 @@ class Yield:
                 is_purple = rarity == "Purple"
                 is_gold = rarity == "Gold"
                 ActionQueueManager().AddAction("SALVAGE", Yield.Items._salvage_item, item_id)
-                yield from Yield.Items._wait_for_empty_queue("SALVAGE")
+                queue_drained = yield from Yield.Items._wait_for_empty_queue("SALVAGE", timeout_ms=queue_wait_timeout_ms)
+                if not queue_drained:
+                    ConsoleLog("SalvageItems", f"Timed out waiting for salvage queue after starting salvage (item_id={item_id}).", Console.MessageType.Warning)
+                    continue
                 
                 if (is_purple or is_gold):
-                    yield from Yield.Items._wait_for_salvage_materials_window()
+                    found_confirm_window = yield from Yield.Items._wait_for_salvage_materials_window()
+                    if not found_confirm_window:
+                        ConsoleLog("SalvageItems", f"Timed out waiting for salvage confirmation window (item_id={item_id}).", Console.MessageType.Warning)
+                        continue
                     ActionQueueManager().AddAction("SALVAGE", Inventory.AcceptSalvageMaterialsWindow)
-                    yield from Yield.Items._wait_for_empty_queue("SALVAGE")
+                    queue_drained = yield from Yield.Items._wait_for_empty_queue("SALVAGE", timeout_ms=queue_wait_timeout_ms)
+                    if not queue_drained:
+                        ConsoleLog("SalvageItems", f"Timed out waiting for salvage queue after confirmation (item_id={item_id}).", Console.MessageType.Warning)
+                        continue
                     
                 yield from Yield.wait(100)
                 
@@ -1224,6 +1266,38 @@ class Yield:
                 ConsoleLog("DepositGold", f"Gold already balanced at {gold_amount_to_leave_on_character}.", Console.MessageType.Info)
             return True
 
+
+        @staticmethod
+        def WithdrawGold(target_gold: int, deposit_all: bool = True, log: bool = False):
+            """Ensure the character has exactly `target_gold` on hand.
+            If deposit_all is True and the character has more than target_gold, the excess is deposited first.
+            Then, if the character has less than target_gold, the shortfall is withdrawn from storage.
+            """
+            gold_on_char = GLOBAL_CACHE.Inventory.GetGoldOnCharacter()
+
+            if deposit_all and gold_on_char > target_gold:
+                to_deposit = gold_on_char - target_gold
+                gold_in_storage = GLOBAL_CACHE.Inventory.GetGoldInStorage()
+                available_space = 1_000_000 - gold_in_storage
+                to_deposit = min(to_deposit, available_space)
+                if to_deposit > 0:
+                    GLOBAL_CACHE.Inventory.DepositGold(to_deposit)
+                    yield from Yield.wait(350)
+                    if log:
+                        ConsoleLog("WithdrawGold", f"Deposited {to_deposit} gold (excess).", Console.MessageType.Info)
+                    gold_on_char = GLOBAL_CACHE.Inventory.GetGoldOnCharacter()
+
+            if gold_on_char < target_gold:
+                to_withdraw = target_gold - gold_on_char
+                gold_in_storage = GLOBAL_CACHE.Inventory.GetGoldInStorage()
+                to_withdraw = min(to_withdraw, gold_in_storage)
+                if to_withdraw > 0:
+                    GLOBAL_CACHE.Inventory.WithdrawGold(to_withdraw)
+                    yield from Yield.wait(350)
+                    if log:
+                        ConsoleLog("WithdrawGold", f"Withdrew {to_withdraw} gold.", Console.MessageType.Info)
+                elif log:
+                    ConsoleLog("WithdrawGold", "Not enough gold in storage to reach target.", Console.MessageType.Warning)
 
         @staticmethod
         def LootItems(item_array:list[int], log=False, progress_callback: Optional[Callable[[float], None]] = None, pickup_timeout:int=5000):
@@ -1364,7 +1438,7 @@ class Yield:
 
         @staticmethod
         def WithdrawItems(model_id:int, quantity:int) -> Generator[Any, Any, bool]:
-            
+
             item_in_storage = GLOBAL_CACHE.Inventory.GetModelCountInStorage(model_id)
             if item_in_storage < quantity:
                 return False
@@ -1375,7 +1449,35 @@ class Yield:
                 return False
 
             return True
-        
+
+        @staticmethod
+        def WithdrawUpTo(model_id: int, max_quantity: int) -> Generator[Any, Any, None]:
+            """Withdraw up to max_quantity of model_id from storage. No-op if none available."""
+            available = GLOBAL_CACHE.Inventory.GetModelCountInStorage(model_id)
+            to_withdraw = min(available, max_quantity)
+            if to_withdraw > 0:
+                GLOBAL_CACHE.Inventory.WithdrawItemFromStorageByModelID(model_id, to_withdraw)
+                yield from Yield.wait(500)
+
+        @staticmethod
+        def WithdrawFirstAvailable(model_ids: list, max_quantity: int) -> Generator[Any, Any, None]:
+            """Withdraw up to max_quantity from the first model_id in the list that has stock in storage."""
+            for model_id in model_ids:
+                available = GLOBAL_CACHE.Inventory.GetModelCountInStorage(model_id)
+                if available > 0:
+                    to_withdraw = min(available, max_quantity)
+                    GLOBAL_CACHE.Inventory.WithdrawItemFromStorageByModelID(model_id, to_withdraw)
+                    yield from Yield.wait(500)
+                    return
+
+        @staticmethod
+        def DepositAllInventory() -> Generator[Any, Any, None]:
+            """Deposits all items from inventory bags (Backpack, Belt Pouch, Bag 1, Bag 2) to storage."""
+            item_ids = GLOBAL_CACHE.Inventory.GetAllInventoryItemIds()
+            for item_id in item_ids:
+                GLOBAL_CACHE.Inventory.DepositItemToStorage(item_id)
+                yield from Yield.wait(350)
+
         @staticmethod
         def RestockItems(model_id: int, desired_quantity: int) -> Generator[Any, Any, bool]:
             """

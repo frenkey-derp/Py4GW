@@ -162,7 +162,8 @@ class UIManager:
             "UIManager.UpdateFrameIOEvents",
             PyCallback.Phase.Data,
             UIManager._UpdateFrameIOEvents,
-            priority=2
+            priority=2,
+            context=PyCallback.Context.Draw
         )
    
     @staticmethod
@@ -1195,7 +1196,6 @@ MiniMapFrame = FrameInfo(
 )
 
 PartyWindowFrame = FrameInfo(
-    WindowID=WindowID.WindowID_PartyWindow,
     WindowName="PartyWindow",
     FrameHash=3332025202,
     ChildOffsets=[1]

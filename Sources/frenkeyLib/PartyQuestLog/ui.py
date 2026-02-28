@@ -4,7 +4,7 @@ import PyImGui
 import PyOverlay
 from HeroAI.ui import get_display_name
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.GlobalCache.SharedMemory import AccountData
+from Py4GWCoreLib.GlobalCache.SharedMemory import AccountStruct
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.Textures import TextureState, ThemeTextures
 from Py4GWCoreLib.ImGui_src.WindowModule import WindowModule
@@ -36,9 +36,9 @@ class UI():
     }
     
     QUEST_STATE_COLOR_MAP: dict[str, Color] = {
-        "Completed": ColorPalette.GetColor("bright_green").opacify(0.6),
-        "Active": ColorPalette.GetColor("white").opacify(0.6),
-        "Inactive": ColorPalette.GetColor("light_gray").opacify(0.3),
+        "Completed": ColorPalette.GetColor("bright_green").opacity(0.6),
+        "Active": ColorPalette.GetColor("white").opacity(0.6),
+        "Inactive": ColorPalette.GetColor("light_gray").opacity(0.3),
     }
     gray_color = Color(150, 150, 150, 255)
     
@@ -49,7 +49,7 @@ class UI():
     AnimationTimer : Timer = Timer()
         
     @staticmethod
-    def draw_log(quest_data : QuestData, accounts: dict[int, AccountData]):
+    def draw_log(quest_data : QuestData, accounts: dict[int, AccountStruct]):
         UI.QuestLogWindow.open = UI.Settings.LogOpen
         
         if not UI.QuestLogWindow.open:
@@ -118,7 +118,7 @@ class UI():
                         if color:
                             style.ChildBg.push_color(color.rgb_tuple)                        
                             
-                        style.Border.push_color(color.opacify(0.1).rgb_tuple if color else (0,0,0,0))
+                        style.Border.push_color(color.opacity(0.1).rgb_tuple if color else (0,0,0,0))
                         style.WindowPadding.push_style_var(4, 4)
                         ImGui.begin_child(f"QuestSelectable_{quest.quest_id}", (0, height_selectable), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse)  
                         ImGui.render_tokenized_markup(tokenized_lines, max_width=max_width, COLOR_MAP=UI.COLOR_MAP)
@@ -154,7 +154,7 @@ class UI():
                                 
                                 for acc in accounts.values():
                                     name = get_display_name(acc)
-                                    acc_quest = next((q for q in acc.PlayerData.QuestsData.Quests if q.QuestID == quest.quest_id), None)
+                                    acc_quest = next((q for q in acc.QuestLog.Quests if q.QuestID == quest.quest_id), None)
                                     
                                     active = acc_quest is not None
                                     completed = acc_quest and acc_quest.IsCompleted
@@ -169,9 +169,9 @@ class UI():
                                                                     
                                     prof_primary, prof_secondary = "", ""
                                     prof_primary = ProfessionShort(
-                                        acc.PlayerProfession[0]).name if acc.PlayerProfession[0] != 0 else ""
+                                        acc.AgentData.Profession[0]).name if acc.AgentData.Profession[0] != 0 else ""
                                     prof_secondary = ProfessionShort(
-                                        acc.PlayerProfession[1]).name if acc.PlayerProfession[1] != 0 else ""
+                                        acc.AgentData.Profession[1]).name if acc.AgentData.Profession[1] != 0 else ""
                                     PyImGui.table_next_column()
                                     ImGui.text(f"{prof_primary}{('/' if prof_secondary else '')}{prof_secondary}")
                                     
@@ -199,7 +199,7 @@ class UI():
                         for i, acc in enumerate(accounts.values()):
                             PyImGui.set_cursor_pos(width - (i * 10) - 20, posY + 2)
                             ## chek if quest.quest_id is in active quests (.QuestID) 
-                            acc_quest = next((q for q in acc.PlayerData.QuestsData.Quests if q.QuestID == quest.quest_id), None)
+                            acc_quest = next((q for q in acc.QuestLog.Quests if q.QuestID == quest.quest_id), None)
                             
                             active = acc_quest is not None
                             completed = acc_quest and acc_quest.IsCompleted
@@ -244,7 +244,7 @@ class UI():
         
     
     @staticmethod
-    def draw_quest_details(quest: QuestNode, accounts: dict[int, AccountData]):
+    def draw_quest_details(quest: QuestNode, accounts: dict[int, AccountStruct]):
         child_width = PyImGui.get_content_region_avail()[0]
         text_clip = child_width - 120
         cursor_pos = PyImGui.get_cursor_screen_pos()
@@ -381,11 +381,11 @@ class UI():
         )
         
     @staticmethod
-    def draw_overlays(accounts : dict[int, AccountData]):
+    def draw_overlays(accounts : dict[int, AccountStruct]):
         if not UI.Settings.ShowFollowerActiveQuestOnMinimap and not UI.Settings.ShowFollowerActiveQuestOnMissionMap:
             return
 
-        active_quests = [acc.PlayerData.QuestsData.ActiveQuest for acc in accounts.values() if acc.PlayerData.QuestsData.ActiveQuest.QuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
+        active_quests = [acc.QuestLog.ActiveQuest for acc in accounts.values() if acc.QuestLog.ActiveQuest.QuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
         
         if not active_quests:
             return
@@ -480,7 +480,7 @@ class UI():
         
     
     @staticmethod
-    def draw_configure(accounts : dict[int, AccountData]):
+    def draw_configure(accounts : dict[int, AccountStruct]):
         if not UI.ConfigWindow.open:
             return
         

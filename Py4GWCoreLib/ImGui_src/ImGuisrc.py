@@ -181,6 +181,9 @@ class ImGui:
         py_io = PyImGui.get_io()
         display_size_x = py_io.display_size_x
         display_size_y = py_io.display_size_y
+        
+        if display_size_x == 0 or display_size_y == 0:
+            return pos
 
         # Compute required visible margin in pixels
         if min_visible_x is None:
@@ -282,7 +285,7 @@ class ImGui:
         from Py4GWCoreLib.IniManager import IniManager
         IniManager().begin_window_config(ini_key)
 
-        result = ImGui.begin(name, p_open, flags)
+        _, result = ImGui.begin_with_close(name, p_open, flags)
 
         # mark only if window is active
         IniManager().track_window_collapsed(ini_key, result)

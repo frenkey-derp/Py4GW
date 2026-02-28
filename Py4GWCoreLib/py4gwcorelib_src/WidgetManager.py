@@ -1,3 +1,4 @@
+from enum import IntEnum
 from typing import Callable
 from types import ModuleType
 import traceback
@@ -5,12 +6,9 @@ import Py4GW
 import PyImGui
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER, HotKey
 from Py4GWCoreLib.ImGui_src.Style import Style
-from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER, HotKey
-from Py4GWCoreLib.ImGui_src.Style import Style
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.ImGui import ImGui
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.Player import Player
@@ -19,19 +17,21 @@ import importlib.util
 import os
 import sys
 import PyImGui
+import PyCallback
 from dataclasses import dataclass, field
 from types import ModuleType
 from typing import Callable, Optional
 
-import os
-import traceback
-import Py4GW
-import PyImGui
-
-from enum import IntEnum
-
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 
+_profiling_registry = None
+
+def _get_profiling():
+    global _profiling_registry
+    if _profiling_registry is None:
+        from Py4GWCoreLib.py4gwcorelib_src.Profiling import ProfilingRegistry
+        _profiling_registry = ProfilingRegistry()
+    return _profiling_registry
 
 #region Py4GW Library
 class LayoutMode(IntEnum):
@@ -39,6 +39,8 @@ class LayoutMode(IntEnum):
     Compact = 1
     Minimalistic = 2
     SingleButton = 3
+    
+    LastView = 100
     
 class SortMode(IntEnum):
     ByName = 0
@@ -86,6 +88,7 @@ class WidgetTreeNode:
 class Py4GWLibrary:
     CATEGORY_COLUMN_MAX_WIDTH = 200
     SYSTEM_COLOR = Color(255, 0, 0, 255)
+    TEXT_TINTED = Color(128, 128, 128, 255)
     IMAGE_SIZE = 40
     PADDING = 10
     TAG_HEIGHT = 18
@@ -99,7 +102,8 @@ class Py4GWLibrary:
         self.widget_filter = ""
         
         self.view_mode = ViewMode.All
-        self.layout_mode = LayoutMode.Minimalistic
+        self.layout_mode = LayoutMode.Library
+        self.previous_mode = self.layout_mode
         self.sort_mode = SortMode.ByName
         
         self.filtered_widgets : list[Widget] = []
@@ -119,13 +123,17 @@ class Py4GWLibrary:
         self.win_size : Optional[tuple[float, float]] = None
         self.previous_size : Optional[tuple[float, float]] = None
         self.ui_active = False
+        
+        self.queue_filter_widgets = False
         self.focus_search = False
         self.popup_opened = False
         
         self.context_menu_widget = None
         self.context_menu_id = ""
         
-        self.default_layout = LayoutMode.Minimalistic
+        self.active_card_style_pushed = False
+        
+        self.startup_layout = LayoutMode.LastView
         self.show_configure_button = True
         self.show_images = True
         self.show_separator = True
@@ -145,6 +153,7 @@ class Py4GWLibrary:
         self.card_rounding = 4.0
         self.max_suggestions = 10
         self.single_button_size = 48
+        self.jump_to_minimalistic = True
         
         self.focus_keybind : HotKey = HOTKEY_MANAGER.register_hotkey(
             key=Key.Unmapped,
@@ -165,9 +174,16 @@ class Py4GWLibrary:
             self.max_suggestions = IniManager().read_int(key=self.ini_key, section="Configuration", name="max_suggestions", default=10)
             self.single_button_size = IniManager().read_int(key=self.ini_key, section="Configuration", name="single_button_size", default=48)
             
+            self.jump_to_minimalistic = IniManager().read_bool(key=self.ini_key, section="Configuration", name="jump_to_minimalistic", default=False)
             self.single_filter = IniManager().read_bool(key=self.ini_key, section="Configuration", name="single_filter", default=True)
-            self.default_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="default_layout", default=LayoutMode.Compact.name)]
-            self.set_layout_mode(self.default_layout)
+            self.startup_layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="startup_layout", default=LayoutMode.LastView.name)]
+            
+            x = IniManager().read_float(key=self.ini_key, section="Configuration", name="library_width", default=900)
+            y = IniManager().read_float(key=self.ini_key, section="Configuration", name="library_height", default=600)
+            self.previous_size = (x, y)
+            
+            layout = LayoutMode[IniManager().read_key(key=self.ini_key, section="Configuration", name="layout", default=LayoutMode.Library.name)] if self.startup_layout is LayoutMode.LastView else self.startup_layout
+            self.set_layout_mode(layout)
             
             self.show_configure_button = IniManager().read_bool(key=self.ini_key, section="Card Configuration", name="show_configure_button", default=True)
             self.show_images = IniManager().read_bool(key=self.ini_key, section="Card Configuration", name="show_images", default=True)
@@ -246,36 +262,57 @@ class Py4GWLibrary:
     def set_layout_mode(self, mode : LayoutMode):
         match mode:
             case LayoutMode.Library:                
-                self.win_size = self.previous_size or (800, 600)
+                self.win_size = self.previous_size or (900, 600)
             case LayoutMode.Compact:
+                self.focus_search = True
                 self.win_size = (300, 80)
             case LayoutMode.Minimalistic:
                 self.win_size = (200, 45)
             case LayoutMode.SingleButton:
-                if self.layout_mode is LayoutMode.Library:
-                    self.previous_size = self.win_size
-                    
                 self.win_size = (self.single_button_size, self.single_button_size)
+                self.previous_mode = self.layout_mode
                 
         self.layout_mode = mode
-        self.filter_widgets(self.widget_filter)
+        IniManager().set(key=self.ini_key, section="Configuration", var_name="layout", value=mode.name)
+        self.queue_filter_widgets = True
         pass
 
     def set_search_focus(self):
         match self.layout_mode:
             case LayoutMode.SingleButton:
-                self.set_layout_mode(LayoutMode.Library)
+                self.set_layout_mode(LayoutMode.Library if self.previous_mode is LayoutMode.Library else LayoutMode.Compact)
                 self.focus_search = True
                 
             case LayoutMode.Library:
                 self.focus_search = True
                 
             case LayoutMode.Compact | LayoutMode.Minimalistic:
-                self.set_layout_mode(LayoutMode.Compact)
                 self.focus_search = True
+                self.set_layout_mode(LayoutMode.Compact)
+
+    def draw_search_tooltip(self):
+        if PyImGui.is_item_hovered():
+            PyImGui.begin_tooltip()
+            ImGui.text("Search widgets by name, folder, category or tags. Use ';' to separate multiple keywords.")            
+            ImGui.text("Special keywords:")
+            ImGui.bullet_text("#enabled / #active / #on - Show only enabled widgets")
+            ImGui.bullet_text("#disabled / #inactive / #off - Show only disabled widgets")
+            ImGui.bullet_text("#favorites / #favs / #fav - Show only favorite widgets")
+            ImGui.bullet_text("#system / #sys - Show only widgets in the 'System' category")
+            
+            PyImGui.separator()
+            
+            ImGui.text_colored("Press " + self.focus_keybind.format_hotkey() + " to focus.", self.TEXT_TINTED.color_tuple)
+            PyImGui.end_tooltip()
+
+
 
     def draw_window(self): 
         win_size = self.win_size
+        
+        if self.queue_filter_widgets:
+            self.filter_widgets(self.widget_filter)
+            self.queue_filter_widgets = False
         
         match self.layout_mode:
             case LayoutMode.Library:
@@ -290,18 +327,19 @@ class Py4GWLibrary:
         if self.first_run:    
             self.win_size = win_size                    
             self.first_run = False
-        
+            
     def filter_widgets(self, filter_text: str):        
         self.filtered_widgets.clear()     
         prefiltered = list(self.widget_manager.widgets.values()).copy()
         
         keywords = [kw.strip().lower() for kw in filter_text.lower().strip().split(";")]
         
-        preset_words = [
-            "enabled", "active", "on",
-            "disabled", "inactive", "off",
-            "favorites", "favs", "fav",
-            "system", "sys"]
+        preset_words : dict[str, list[str]]= {
+            "enabled": ["#enabled", "#active", "#on"],
+            "disabled": ["#disabled", "#inactive", "#off"],
+            "favorites": ["#favorites", "#favs", "#fav"],
+            "system": ["#system", "#sys"]
+        }
         
         enabled_check = False
         disabled_check = False
@@ -309,10 +347,10 @@ class Py4GWLibrary:
         system_check = False
         
         for kw in list(keywords):            
-            enabled_check = enabled_check or kw == "enabled" or kw == "active" or kw == "on"
-            disabled_check = disabled_check or kw == "disabled" or kw == "inactive" or kw == "off"
-            favorites_check = favorites_check or kw == "favorites" or kw == "favs" or kw == "fav"
-            system_check = system_check or kw == "system" or kw == "sys"
+            enabled_check = enabled_check or any(kw == preset_kw for preset_kw in preset_words["enabled"])
+            disabled_check = disabled_check or any(kw == preset_kw for preset_kw in preset_words["disabled"])
+            favorites_check = favorites_check or any(kw == preset_kw for preset_kw in preset_words["favorites"])
+            system_check = system_check or any(kw == preset_kw for preset_kw in preset_words["system"])
             
             prefiltered = [w for w in prefiltered if 
                             (not enabled_check or w.enabled) and
@@ -320,8 +358,9 @@ class Py4GWLibrary:
                             (not favorites_check or w in self.favorites) and
                             (not system_check or w.category == "System")]
             
-            if kw in preset_words:
-                keywords.remove(kw)
+            for preset, preset_keywords in preset_words.items():
+                if kw in preset_keywords:
+                    keywords.remove(kw)
             
         
         match self.layout_mode:
@@ -353,65 +392,118 @@ class Py4GWLibrary:
                 # check if all keywords are in name or folder
                 self.filtered_widgets = [w for w in prefiltered if all(kw in w.plain_name.lower() or kw in w.folder.lower() for kw in keywords if keywords and kw)]
 
-    def draw_toggle_view_mode_button(self):
+    def draw_toggle_view_mode_button(self) -> bool:
+        clicked = False
+        hovered = False
+        
         match self.layout_mode:
             case LayoutMode.Library:
                 if ImGui.icon_button(IconsFontAwesome5.ICON_BARS, 28, 24):
                     self.set_layout_mode(LayoutMode.Compact)
-                    
+                    clicked = True
+                
+                hovered = PyImGui.is_item_hovered()
                 ImGui.show_tooltip("Switch to Compact View")
                     
             case LayoutMode.Compact:
                 if ImGui.icon_button(IconsFontAwesome5.ICON_TH_LIST, 28, 24):
                     self.set_layout_mode(LayoutMode.Library)
+                    clicked = True
                     
+                hovered = PyImGui.is_item_hovered()
                 ImGui.show_tooltip("Switch to Library View")
-    
-    def draw_global_toggles(self, button_width : float, spacing : float):       
-        if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", button_width):
-            self.widget_manager.discovered = False
-            self.widget_manager.discover()
-            self.filter_widgets(self.widget_filter)
                 
-        ImGui.show_tooltip("Reload all widgets")
+        return clicked or hovered
+    
+    def draw_global_toggles(self, button_width : float, spacing : float, search : bool = False, library : bool = False): 
+        any_hovered_or_clicked = False
+        
+        if ImGui.button("##one_button_layout", width=button_width):
+            any_hovered_or_clicked = True
+            
+            if self.layout_mode != LayoutMode.SingleButton:
+                self.set_layout_mode(LayoutMode.SingleButton)
+        
+        any_hovered_or_clicked = PyImGui.is_item_hovered() or PyImGui.is_item_clicked(0) or any_hovered_or_clicked
+        item_min, _, item_size = ImGui.get_item_rect()
+        image_size = item_size[1] - 4
+        pos_x = item_min[0] + ((item_size[0] - image_size) / 2)
+        pos_y = item_min[1] + ((item_size[1] - image_size) / 2)
+        ImGui.DrawTextureInDrawList((pos_x, pos_y), (image_size, image_size), "python_icon_round_20px.png")
+        ImGui.show_tooltip("Switch to Single Button View")        
         PyImGui.same_line(0, spacing)
         
-        new_enable_all = ImGui.toggle_icon_button(
-            (IconsFontAwesome5.ICON_TOGGLE_ON if self.widget_manager.enable_all else IconsFontAwesome5.ICON_TOGGLE_OFF) + "##widget_disable",
-            self.widget_manager.enable_all,
+        if library:
+            if ImGui.icon_button(IconsFontAwesome5.ICON_TH_LIST, button_width):
+                any_hovered_or_clicked = True
+                self.set_layout_mode(LayoutMode.Library)
+            
+            any_hovered_or_clicked = PyImGui.is_item_hovered() or PyImGui.is_item_clicked(0) or any_hovered_or_clicked
+            ImGui.show_tooltip("Switch to Library view")            
+            PyImGui.same_line(0, spacing)     
+            
+        if search:
+            if ImGui.icon_button(IconsFontAwesome5.ICON_SEARCH + "##FocusSearch", button_width):
+                any_hovered_or_clicked = True
+                self.set_layout_mode(LayoutMode.Compact)
+            
+            any_hovered_or_clicked = PyImGui.is_item_hovered() or PyImGui.is_item_clicked(0) or any_hovered_or_clicked
+            ImGui.show_tooltip("Search widgets")            
+            PyImGui.same_line(0, spacing)  
+        
+        if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", button_width):
+            any_hovered_or_clicked = True
+            self.widget_manager.discovered = False
+            self.widget_manager.discover()
+            self.queue_filter_widgets = True
+                
+        any_hovered_or_clicked = PyImGui.is_item_hovered() or PyImGui.is_item_clicked(0) or any_hovered_or_clicked
+        ImGui.show_tooltip("Reload all widgets")
+        
+        ### Deprecated the user does not need a quick toggle for ALL widgets. System critical widgets will be protected and optional widgets can be toggled in bulk with the next button.
+        """PyImGui.same_line(0, spacing)
+        
+        paused = ImGui.toggle_icon_button(
+            (IconsFontAwesome5.ICON_TOGGLE_ON if not self.widget_manager.paused else IconsFontAwesome5.ICON_TOGGLE_OFF) + "##widget_disable",
+            not self.widget_manager.paused,
             button_width
         )
 
-        if new_enable_all != self.widget_manager.enable_all:
-            self.widget_manager.enable_all = new_enable_all
-            IniManager().set(key= self.ini_key, var_name="enable_all", value=new_enable_all, section="Configuration")
-            IniManager().save_vars(self.ini_key)
+        if paused != (not self.widget_manager.paused):
+            if paused:
+                self.widget_manager.ResumeAllWidgets()
+            else:
+                self.widget_manager.PauseAllWidgets()                
 
-
-        ImGui.show_tooltip(f"{("Run" if not self.widget_manager.enable_all else "Pause")} all widgets")
+        ImGui.show_tooltip(f"{("Resume" if self.widget_manager.paused else "Pause")} all widgets")"""
         
-        PyImGui.same_line(0, spacing)
+        ### Deprecated since the widget system now runs on callbacks on cpp side
+        """PyImGui.same_line(0, spacing)
         show_widget_ui = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_EYE if self.widget_manager.show_widget_ui else IconsFontAwesome5.ICON_EYE_SLASH) + "##Show Widget UIs", self.widget_manager.show_widget_ui, button_width)
         if show_widget_ui != self.widget_manager.show_widget_ui:
             self.widget_manager.set_widget_ui_visibility(show_widget_ui)
-        ImGui.show_tooltip(f"{("Show" if not self.widget_manager.show_widget_ui else "Hide")} all widget UIs")
+        ImGui.show_tooltip(f"{("Show" if not self.widget_manager.show_widget_ui else "Hide")} all widget UIs")"""
         
         PyImGui.same_line(0, spacing)
-        pause_non_env = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_PAUSE if self.widget_manager.pause_optional_widgets else IconsFontAwesome5.ICON_PLAY) + "##Pause Non-Env Widgets", not self.widget_manager.pause_optional_widgets, button_width)
-        if pause_non_env != (not self.widget_manager.pause_optional_widgets):
-            if not self.widget_manager.pause_optional_widgets:
-                self.widget_manager.pause_widgets()
+        pause_non_env = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_TOGGLE_OFF if self.widget_manager.optional_widgets_paused else IconsFontAwesome5.ICON_TOGGLE_ON) + "##Pause Non-Env Widgets", not self.widget_manager.optional_widgets_paused, button_width)
+        if pause_non_env != (not self.widget_manager.optional_widgets_paused):
+            any_hovered_or_clicked = True
+            
+            if not self.widget_manager.optional_widgets_paused:
+                self.widget_manager.pause_optional_widgets()
             else:
-                self.widget_manager.resume_widgets()
+                self.widget_manager.resume_optional_widgets()
                 
             own_email = Player.GetAccountEmail()
             for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
                 if acc.AccountEmail == own_email:
                     continue
                 
-                GLOBAL_CACHE.ShMem.SendMessage(own_email, acc.AccountEmail, SharedCommandType.PauseWidgets if self.widget_manager.pause_optional_widgets else SharedCommandType.ResumeWidgets)
+                GLOBAL_CACHE.ShMem.SendMessage(own_email, acc.AccountEmail, SharedCommandType.PauseWidgets if self.widget_manager.optional_widgets_paused else SharedCommandType.ResumeWidgets)
             
-        ImGui.show_tooltip(f"{("Pause" if not self.widget_manager.pause_optional_widgets else "Resume")} all optional widgets")
+        any_hovered_or_clicked = PyImGui.is_item_hovered() or PyImGui.is_item_clicked(0) or any_hovered_or_clicked
+        ImGui.show_tooltip(f"{("Pause" if not self.widget_manager.optional_widgets_paused else "Resume")} all optional widgets")
+        return any_hovered_or_clicked
     
     def get_button_width(self, width, num_buttons, spacing) -> float:        
         button_width = (width - spacing * (num_buttons - 1)) / num_buttons
@@ -424,7 +516,7 @@ class Py4GWLibrary:
         if self.focus_search:
             PyImGui.set_next_window_focus()
             
-        if ImGui.Begin(ini_key=self.ini_key, name=self.module_name, flags=PyImGui.WindowFlags(PyImGui.WindowFlags.NoResize|PyImGui.WindowFlags.NoTitleBar)):   
+        if ImGui.Begin(ini_key=self.ini_key, name=self.module_name, flags=PyImGui.WindowFlags(PyImGui.WindowFlags.NoResize|PyImGui.WindowFlags.NoTitleBar|PyImGui.WindowFlags.NoScrollbar|PyImGui.WindowFlags.NoScrollWithMouse)):   
             win_size = PyImGui.get_window_size()
             self.win_size = (win_size[0], win_size[1])
             ImGui.set_window_within_displayport(*self.win_size)
@@ -432,44 +524,46 @@ class Py4GWLibrary:
             
             spacing = 5
             width = win_size[0] - style.WindowPadding.value1 * 2
-            button_width = self.get_button_width(width, 5, spacing)            
-            if ImGui.icon_button(IconsFontAwesome5.ICON_SEARCH + "##FocusSearch", button_width):
-                self.set_layout_mode(LayoutMode.Compact)
-            
-            ImGui.show_tooltip("Search widgets")
-            
-            PyImGui.same_line(0, spacing)            
-            self.draw_global_toggles(button_width, spacing)
+            button_width = self.get_button_width(width, 5, spacing)        
+            self.draw_global_toggles(button_width, spacing, search=True, library=True)
                             
         ImGui.End(self.ini_key)
             
     def draw_presets_button(self) -> bool:
+        clicked = False
         if ImGui.icon_button(IconsFontAwesome5.ICON_FILTER, 28, 24):
+            clicked = True
+            
             if not self.popup_opened:
                 PyImGui.open_popup("PreSets##WidgetBrowser")
                 self.popup_opened = True
-                Py4GW.Console.Log("Widget Browser", "Opening presets popup", Py4GW.Console.MessageType.Info)
-            
+        ImGui.show_tooltip("Filter presets")
+        
         self.popup_opened = PyImGui.begin_popup("PreSets##WidgetBrowser")
         if self.popup_opened:
             if ImGui.menu_item("Show Enabled"):
                 self.widget_filter = "enabled; "
                 self.focus_search = True
-                self.filter_widgets(self.widget_filter)
+                self.queue_filter_widgets = True
+                
+            if ImGui.menu_item("Show Disabled"):
+                self.widget_filter = "disabled; "
+                self.focus_search = True
+                self.queue_filter_widgets = True
             
             if ImGui.menu_item("Show Favorites"):
                 self.widget_filter = "favorites; "
                 self.focus_search = True
-                self.filter_widgets(self.widget_filter)
+                self.queue_filter_widgets = True
                 
             if ImGui.menu_item("Show System"):
                 self.widget_filter = "system; "  
                 self.focus_search = True
-                self.filter_widgets(self.widget_filter)
+                self.queue_filter_widgets = True
             
             PyImGui.end_popup()   
                     
-        return self.popup_opened
+        return self.popup_opened or clicked
             
     def draw_compact_view(self):
         if self.win_size:
@@ -479,7 +573,7 @@ class Py4GWLibrary:
             PyImGui.set_next_window_focus()
             
         if ImGui.Begin(ini_key=self.ini_key, name=self.module_name, flags=PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoTitleBar):   
-            window_hovered = PyImGui.is_window_hovered() or PyImGui.is_window_focused()
+            window_hovered = PyImGui.is_window_hovered()
             win_size = PyImGui.get_window_size()
             self.win_size = (win_size[0], win_size[1])
             ImGui.set_window_within_displayport(*self.win_size)
@@ -489,10 +583,8 @@ class Py4GWLibrary:
             
             spacing = 5
             button_width = self.get_button_width(width, 4, spacing)     
-            self.draw_global_toggles(button_width, spacing)
-            ImGui.separator()
-            self.draw_toggle_view_mode_button()   
-            PyImGui.same_line(0, spacing)      
+            toggle_hovered_or_clicked = self.draw_global_toggles(button_width, spacing, library=True)
+            ImGui.separator()     
             
             search_width = PyImGui.get_content_region_avail()[0] - 30
             PyImGui.push_item_width(search_width)
@@ -503,27 +595,26 @@ class Py4GWLibrary:
                     self.category = ""
                     self.path = ""
                     
-                self.filter_widgets(self.widget_filter)
+                self.queue_filter_widgets = True
             PyImGui.pop_item_width()
-            search_active = PyImGui.is_item_active()
+            search_active = PyImGui.is_item_active() or PyImGui.is_item_focused() or self.focus_search
             
             if self.focus_search:
                 PyImGui.set_keyboard_focus_here(-1)
                 self.focus_search = False
             
+            self.draw_search_tooltip()
             PyImGui.same_line(0, spacing)
             
             presets_opened = self.draw_presets_button()      
-            window_hovered = PyImGui.is_window_hovered() or PyImGui.is_window_focused() or PyImGui.is_item_hovered() or window_hovered 
+            window_hovered = PyImGui.is_window_hovered() or PyImGui.is_item_hovered() or window_hovered 
+            suggestions_opened = self.draw_suggestions(win_size, style, search_active, window_hovered, presets_opened)
             
-            
-            if not self.draw_suggestions(win_size, style, search_active, window_hovered, presets_opened) and not search_active and not window_hovered and not presets_opened:
-                self.widget_filter = ""
-                self.filtered_widgets.clear()
-                
-                if self.default_layout is LayoutMode.Minimalistic:
-                    self.set_layout_mode(LayoutMode.Minimalistic)
-                
+            if not toggle_hovered_or_clicked and not presets_opened and not suggestions_opened and not window_hovered and not PyImGui.is_window_appearing():
+                clicked_outside = PyImGui.is_mouse_down(0) and not PyImGui.is_any_item_hovered()
+                if (clicked_outside or not search_active):
+                    if self.jump_to_minimalistic and self.layout_mode is LayoutMode.Compact:
+                        self.set_layout_mode(LayoutMode.Minimalistic)
                             
         ImGui.End(self.ini_key)
 
@@ -544,37 +635,45 @@ class Py4GWLibrary:
                 )
                 
             suggestion_hovered = False
-            if PyImGui.begin(
-                    "##WidgetsList",
-                    False,
-                    PyImGui.WindowFlags(PyImGui.WindowFlags.NoTitleBar
-                    | PyImGui.WindowFlags.NoMove
-                    | PyImGui.WindowFlags.NoResize
-                    | PyImGui.WindowFlags.NoSavedSettings
-                    | PyImGui.WindowFlags.NoFocusOnAppearing
-                )):
+            
+            if PyImGui.begin("##WidgetsList", False, PyImGui.WindowFlags(PyImGui.WindowFlags.NoTitleBar | PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoSavedSettings | PyImGui.WindowFlags.NoFocusOnAppearing )):
                 suggestion_hovered = PyImGui.is_window_hovered()
                 card_width = PyImGui.get_content_region_avail()[0]
                 open = True
-                    
+                
+                self._push_card_style(style, enabled=False)
+                
+                first_visible = False
+                last_visible = False
                 for widget in self.filtered_widgets:
-                    suggestion_hovered = self.draw_compact_widget_card(widget, card_width) or suggestion_hovered
-                    if PyImGui.is_item_clicked(0):
-                        self.filter_widgets(self.widget_filter)
+                    if first_visible and last_visible:
+                        ImGui.dummy(card_width, 30)
+                        continue
+                    
+                    clicked, hovered = self.draw_compact_widget_card(widget, card_width, style) or suggestion_hovered
+                    suggestion_hovered = suggestion_hovered or hovered or clicked
+                    if clicked:
+                        self.queue_filter_widgets = True
                         self.focus_search = True
                         
                         # ---- RIGHT CLICK DETECTION ----
-                    if PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
+                    if hovered and PyImGui.is_mouse_clicked(1):
                         self.context_menu_id = f"WidgetContext##{widget.folder_script_name}"
                         self.context_menu_widget = widget
                         PyImGui.open_popup(self.context_menu_id)
                         
+                        
+                if self.active_card_style_pushed:
+                    self._pop_card_style(style)
+                
+                self._pop_card_style(style)
+                
                 if self.context_menu_id and self.context_menu_widget:
                     self.card_context_menu(self.context_menu_id, self.context_menu_widget)
                             
-                if suggestion_hovered and not self.context_menu_id and not search_active and not self.focus_search and not presets_opened:
+                if suggestion_hovered and not (self.context_menu_id or self.context_menu_widget) and not search_active and not self.focus_search and not presets_opened:
                     PyImGui.set_window_focus("##WidgetsList")
-                    
+                
             if (
                     not PyImGui.is_window_focused()
                     and not search_active
@@ -595,8 +694,8 @@ class Py4GWLibrary:
             
         return open
     
-    def card_context_menu(self, popup_id: str, widget : "Widget"):
-        
+    def card_context_menu(self, popup_id: str, widget : "Widget"):   
+                     
         if PyImGui.begin_popup(popup_id):
             if PyImGui.menu_item("Add to Favorites" if widget not in self.favorites else "Remove from Favorites"):
                 if widget not in self.favorites:
@@ -634,11 +733,12 @@ class Py4GWLibrary:
         else:
             self.context_menu_id = ""
             self.context_menu_widget = None
-    
+        
     def draw_sorting_button(self):
         if ImGui.icon_button(IconsFontAwesome5.ICON_SORT_AMOUNT_DOWN, 28, 24):
             PyImGui.open_popup("SortingPopup##WidgetBrowser")
-    
+        ImGui.show_tooltip("Sorting options")
+        
         if PyImGui.begin_popup("SortingPopup##WidgetBrowser"):
             sort_mode = ImGui.radio_button("Sort by Name", self.sort_mode, SortMode.ByName)
             if self.sort_mode != sort_mode:
@@ -688,7 +788,7 @@ class Py4GWLibrary:
                 self.category = ""
                 self.widget_filter = ""
             
-            self.filter_widgets(self.widget_filter)
+            self.queue_filter_widgets = True
         
         if node_open and node.children:                
             for child in node.children.values():
@@ -705,39 +805,77 @@ class Py4GWLibrary:
             win_size = PyImGui.get_window_size()
             win_pos = PyImGui.get_window_pos()
             self.win_size = (win_size[0], win_size[1])
+            collapsed = PyImGui.is_window_collapsed()
+            io = PyImGui.get_io()
+            mouse_pos = (io.mouse_pos_x, io.mouse_pos_y)
+    
+            if self.previous_size != self.win_size and self.layout_mode is LayoutMode.Library and not collapsed:
+                self.previous_size = self.win_size
+                IniManager().set(key=self.ini_key, section="Configuration", var_name="library_width", value=self.win_size[0])
+                IniManager().set(key=self.ini_key, section="Configuration", var_name="library_height", value=self.win_size[1])
+                IniManager().save_vars(self.ini_key)
+                
             ImGui.set_window_within_displayport(*self.win_size, PyImGui.ImGuiCond.Once)            
             style = ImGui.get_style()
             
             PyImGui.push_clip_rect(*win_pos, self.win_size[0], self.win_size[1], False)
             ImGui.DrawTextureInDrawList((win_pos[0] + 4, win_pos[1] + 2), (20, 20), "python_icon_round_20px.png")
+            if ImGui.is_mouse_in_rect((win_pos[0] + 4, win_pos[1] + 2, 20, 20)):
+                PyImGui.begin_tooltip()
+                PyImGui.text(f"Collapse to a single button showing only the Python icon.\nOpening the full library view when clicked." )
+                PyImGui.end_tooltip()
+            
+            close_rect = (win_pos[0] + win_size[0] - 21, win_pos[1] + 2, 16, 16)
+            minimize_rect = (win_pos[0] + 4 + win_size[0] - 50, win_pos[1] + 2, 24, 20)
+            cursor_pos = PyImGui.get_cursor_screen_pos()
+            PyImGui.set_cursor_screen_pos(minimize_rect[0], minimize_rect[1])
+                
+            fontawesome_font_size = int(int(PyImGui.get_text_line_height()) * 0.8)
+            ImGui.push_font("Regular", fontawesome_font_size)
+            style.Button.push_color_direct((0, 0, 0, 0))
+            
+            if PyImGui.button(IconsFontAwesome5.ICON_MINUS + "##MinimizeLibraryView", minimize_rect[2], minimize_rect[3]):
+                self.set_layout_mode(LayoutMode.Minimalistic)
+            style.Button.pop_color_direct()
+            ImGui.pop_font()
+            ImGui.show_tooltip("Switch to Minimalistic View")
+            
+            if ImGui.is_mouse_in_rect(close_rect):
+                PyImGui.begin_tooltip()
+                PyImGui.text("Switch to One Button View")
+                PyImGui.end_tooltip()
+            
+            PyImGui.set_cursor_screen_pos(cursor_pos[0], cursor_pos[1])
             PyImGui.pop_clip_rect()
             
             if ImGui.begin_menu_bar():
                 if ImGui.begin_menu("Widgets"):
                     if ImGui.menu_item("Reload Widgets"):
-                        Py4GW.Console.Log("Widget Manager", "Reloading Widgets...", Py4GW.Console.MessageType.Info)
                         self.widget_manager.discovered = False
                         self.widget_manager.discover()
-                        self.filter_widgets(self.widget_filter)
+                        self.queue_filter_widgets = True
                     ImGui.show_tooltip("Reload all widgets")
                     
-                    if ImGui.menu_item(f"{("Run" if not self.widget_manager.enable_all else "Pause")} all widgets"):
-                        self.widget_manager.enable_all = not self.widget_manager.enable_all
-                        IniManager().save_vars(self.ini_key)
-                        IniManager().set(key=self.ini_key, var_name="enable_all", value=self.widget_manager.enable_all, section="Configuration")
-                    ImGui.show_tooltip(f"{("Run" if not self.widget_manager.enable_all else "Pause")} all widgets")
+                    if ImGui.menu_item(f"{("Resume" if self.widget_manager.paused else "Pause")} all widgets"):
+                        if self.widget_manager.paused:
+                            self.widget_manager.ResumeAllWidgets()
+                        else:
+                            self.widget_manager.PauseAllWidgets()
+                            
+                    ImGui.show_tooltip(f"{("Resume" if self.widget_manager.paused else "Pause")} all widgets")
                     
-                    if ImGui.menu_item(f"{("Show" if not self.widget_manager.show_widget_ui else "Hide")} all widget UIs"):
+                    ### Deprecated since the widget system now runs on callbacks on cpp side
+                    """if ImGui.menu_item(f"{("Show" if not self.widget_manager.show_widget_ui else "Hide")} all widget UIs"):
                         show_widget_ui = not self.widget_manager.show_widget_ui
                         self.widget_manager.set_widget_ui_visibility(show_widget_ui)
-                    ImGui.show_tooltip(f"{("Show" if not self.widget_manager.show_widget_ui else "Hide")} all widget UIs by setting the alpha of imgui to 0 or 1")
+                    ImGui.show_tooltip(f"{("Show" if not self.widget_manager.show_widget_ui else "Hide")} all widget UIs by setting the alpha of imgui to 0 or 1")"""
                         
-                    if ImGui.menu_item(f"{("Pause" if not self.widget_manager.pause_optional_widgets else "Resume")} all optional widgets"):
-                        pause_non_env = not self.widget_manager.pause_optional_widgets
-                        if not self.widget_manager.pause_optional_widgets:
-                            self.widget_manager.pause_widgets()
+                    if ImGui.menu_item(f"{("Pause" if not self.widget_manager.optional_widgets_paused else "Resume")} all optional widgets"):
+                        pause_non_env = not self.widget_manager.optional_widgets_paused
+                        if not self.widget_manager.optional_widgets_paused:
+                            self.widget_manager.pause_optional_widgets()
                         else:
-                            self.widget_manager.resume_widgets()
+                            self.widget_manager.resume_optional_widgets()
                             
                         own_email = Player.GetAccountEmail()
                         for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
@@ -745,38 +883,52 @@ class Py4GWLibrary:
                                 continue
                             
                             GLOBAL_CACHE.ShMem.SendMessage(own_email, acc.AccountEmail, SharedCommandType.PauseWidgets if pause_non_env else SharedCommandType.ResumeWidgets)
-                    ImGui.show_tooltip(f"{("Pause" if not self.widget_manager.pause_optional_widgets else "Resume")} all optional/non system widgets")
+                    ImGui.show_tooltip(f"{("Pause" if not self.widget_manager.optional_widgets_paused else "Resume")} all optional/non system widgets")
                     
                     ImGui.end_menu()                   
                 
                 if ImGui.begin_menu("Preferences"):
                     if ImGui.begin_menu("Layout"):                        
-                        if ImGui.begin_menu("Default Mode"):
-                            layout_mode = ImGui.radio_button("Library View", self.default_layout, LayoutMode.Library)
-                            if self.default_layout != layout_mode:
-                                self.default_layout = LayoutMode.Library
-                                self.set_layout_mode(self.default_layout)
-                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
+                        if ImGui.begin_menu("Startup View Mode"):
+                            layout_mode = ImGui.radio_button("Last View", self.startup_layout, LayoutMode.LastView)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.LastView                                
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
+                                IniManager().save_vars(self.ini_key)                                
+                            ImGui.show_tooltip("Open the widget browser in the same view mode as when it was last closed.")
+                                                        
+                            layout_mode = ImGui.radio_button("Library View", self.startup_layout, LayoutMode.Library)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.Library
+                                self.set_layout_mode(self.startup_layout)
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in library view by default,\nshowing all details and options for each widget.")
                                 
-                            layout_mode = ImGui.radio_button("Compact View", self.default_layout, LayoutMode.Compact)
-                            if self.default_layout != layout_mode:
-                                self.default_layout = LayoutMode.Compact
-                                self.set_layout_mode(self.default_layout)
-                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
+                            layout_mode = ImGui.radio_button("Compact View", self.startup_layout, LayoutMode.Compact)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.Compact
+                                self.set_layout_mode(self.startup_layout)
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in compact view by default,\nshowing a simplified card for each widget.")
                                 
-                            layout_mode = ImGui.radio_button("Minimalistic View", self.default_layout, LayoutMode.Minimalistic)
-                            if self.default_layout != layout_mode:
-                                self.default_layout = LayoutMode.Minimalistic
-                                self.set_layout_mode(self.default_layout)
-                                IniManager().set(key=self.ini_key, var_name="default_layout", value=self.default_layout.name, section="Configuration")
+                            layout_mode = ImGui.radio_button("Minimalistic View", self.startup_layout, LayoutMode.Minimalistic)
+                            if self.startup_layout != layout_mode:
+                                self.startup_layout = LayoutMode.Minimalistic
+                                self.set_layout_mode(self.startup_layout)
+                                IniManager().set(key=self.ini_key, var_name="startup_layout", value=self.startup_layout.name, section="Configuration")
                                 IniManager().save_vars(self.ini_key)
                             ImGui.show_tooltip("Open the widget browser in minimalistic view by default,\nshowing only a search icon which switches to compact view when clicked.\nIf the widget filter is cleared while in compact view, it will switch back to minimalistic view.")
                             
                             ImGui.end_menu()
+                        
+                        jump_to_minimalistic = ImGui.checkbox("Jump to Minimalistic View", self.jump_to_minimalistic)
+                        if jump_to_minimalistic != self.jump_to_minimalistic:
+                            self.jump_to_minimalistic = jump_to_minimalistic
+                            IniManager().set(key=self.ini_key, var_name="jump_to_minimalistic", value=self.jump_to_minimalistic, section="Configuration")
+                            IniManager().save_vars(self.ini_key)
+                        ImGui.show_tooltip("Automatically switch to Minimalistic View after clearing the search field while in Compact View.\nIf the widget filter is cleared while in compact view, it will switch back to minimalistic view.")
                         
                         PyImGui.push_item_width(100)
                         max_suggestions = ImGui.slider_int("Max Suggestions", self.max_suggestions, 1, 50)
@@ -921,7 +1073,7 @@ class Py4GWLibrary:
                             IniManager().set(self.ini_key, var_name="hotkey_modifiers", section="Configuration", value=self.focus_keybind.modifiers.name)
                             IniManager().save_vars(self.ini_key)
                         
-                        ImGui.show_tooltip("Set the hotkey used to focus the search field in the widget browser.\nPressing this hotkey will move the keyboard focus to the search field, allowing you to start typing immediately to filter widgets.")
+                        ImGui.show_tooltip("Set the hotkey used to focus the search field in the widget browser.\nPressing this hotkey will move the keyboard focus to the search field, allowing you to start typing immediately to filter widgets.\nWorks only ingame due to limitations with our Hotkey system.")
                         
                         PyImGui.same_line(0, 0)
                         ImGui.dummy(200, 0)
@@ -943,7 +1095,7 @@ class Py4GWLibrary:
                     ImGui.end_menu()
                 ImGui.end_menu_bar()
             
-            self.draw_toggle_view_mode_button()   
+            _ = self.draw_toggle_view_mode_button()   
             PyImGui.same_line(0, 5)    
             search_width = PyImGui.get_content_region_avail()[0] - 32
             PyImGui.push_item_width(search_width)
@@ -951,6 +1103,8 @@ class Py4GWLibrary:
             if self.focus_search:
                 PyImGui.set_keyboard_focus_here(-1)
                 self.focus_search = False
+            
+            self.draw_search_tooltip()
             PyImGui.pop_item_width()
             if changed:
                 if self.single_filter:
@@ -958,16 +1112,16 @@ class Py4GWLibrary:
                     self.category = ""
                     self.path = ""
                     
-                self.filter_widgets(self.widget_filter)
+                self.queue_filter_widgets = True
             
             PyImGui.same_line(0, 5)
             self.draw_sorting_button()
             ImGui.separator()
             
-            if ImGui.begin_table("navigation_view", 2, PyImGui.TableFlags.SizingStretchProp | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.BordersInnerV):
+            if ImGui.begin_table("navigation_view2", 2, PyImGui.TableFlags.SizingStretchProp | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.BordersInnerV):
                 max_width = PyImGui.get_content_region_avail()[0]
                                 
-                PyImGui.table_setup_column("##categories", PyImGui.TableColumnFlags.WidthFixed, min(self.CATEGORY_COLUMN_MAX_WIDTH, max_width * 0.5))
+                PyImGui.table_setup_column("##categories", PyImGui.TableColumnFlags.WidthFixed, 200)
                 PyImGui.table_setup_column("##widgets", PyImGui.TableColumnFlags.WidthStretch)
                 PyImGui.table_next_row()
                 
@@ -981,7 +1135,7 @@ class Py4GWLibrary:
                             self.widget_filter = ""
                             self.path = ""
                             
-                        self.filter_widgets(self.widget_filter)            
+                        self.queue_filter_widgets = True      
                         
                     if ImGui.selectable("Favorites", self.view_mode is ViewMode.Favorites):
                         self.view_mode = ViewMode.Favorites if not self.view_mode is ViewMode.Favorites else ViewMode.All
@@ -990,7 +1144,7 @@ class Py4GWLibrary:
                             self.category = ""
                             self.widget_filter = ""
                             self.path = ""
-                        self.filter_widgets(self.widget_filter)
+                        self.queue_filter_widgets = True
                         
                     if ImGui.selectable("Active", self.view_mode is ViewMode.Actives):
                         self.view_mode = ViewMode.Actives if not self.view_mode is ViewMode.Actives else ViewMode.All
@@ -999,7 +1153,7 @@ class Py4GWLibrary:
                             self.category = ""
                             self.widget_filter = ""
                             self.path = ""
-                        self.filter_widgets(self.widget_filter)
+                        self.queue_filter_widgets = True
                         
                     if ImGui.selectable("Inactive", self.view_mode is ViewMode.Inactives):
                         self.view_mode = ViewMode.Inactives if not self.view_mode is ViewMode.Inactives else ViewMode.All
@@ -1008,10 +1162,10 @@ class Py4GWLibrary:
                             self.category = ""
                             self.widget_filter = ""
                             self.path = ""
-                        self.filter_widgets(self.widget_filter)
+                        self.queue_filter_widgets = True
                         
                     ImGui.separator()
-                    style.ScrollbarSize.push_style_var(5)
+                    style.ScrollbarSize.push_style_var_direct(5)
                     
                     if ImGui.begin_child("##tags", (0, 0), flags=PyImGui.WindowFlags.HorizontalScrollbar):  
                         ##Create tree of selectables self.folder_tree, indent based on depth
@@ -1019,13 +1173,13 @@ class Py4GWLibrary:
                             self.draw_tree(node)
                             
                     ImGui.end_child()
-                    style.ScrollbarSize.pop_style_var()
+                    style.ScrollbarSize.pop_style_var_direct()
                 ImGui.end_child()
                 
                 PyImGui.table_set_column_index(1)
                 
                 if ImGui.begin_child("##widgets", (0, 0)):  
-                    style.DisabledAlpha.push_style_var(0.4)
+                    style.DisabledAlpha.push_style_var_direct(0.4)
                     
                     min_card_width = self.card_width if self.fixed_card_width else 250
                     available_width = PyImGui.get_content_region_avail()[0] - (style.ScrollbarSize.value1 if PyImGui.get_scroll_y() == 0 else 0)
@@ -1033,33 +1187,56 @@ class Py4GWLibrary:
                     card_width = 0
                     PyImGui.columns(num_columns, "widget_cards", False)
                     card_height = self.get_card_height()
-                            
+                    
+                    first_visible = False
+                    last_visible = False
+                    
+                    self._push_card_style(style, enabled=False)
                     for widget in (self.filtered_widgets):
                         card_width = self.card_width if self.fixed_card_width else PyImGui.get_content_region_avail()[0]
+                        if first_visible and last_visible:
+                            ImGui.dummy(card_width, card_height)
+                            PyImGui.next_column()
+                            continue
                         
-                        self.draw_widget_card(widget, card_width, card_height, widget in self.favorites)
-                        if PyImGui.is_item_clicked(0):
-                            self.filter_widgets(self.widget_filter)
-                                                                        
-                        popup_id = f"WidgetContext##{widget.folder_script_name}"
-                        # ---- RIGHT CLICK DETECTION ----
-                        if PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
-                            PyImGui.open_popup(popup_id)
-
-                        # ---- CONTEXT MENU ----
-                        self.card_context_menu(popup_id, widget)
+                        is_visible = PyImGui.is_rect_visible(card_width, card_height)                        
+                        if is_visible:
+                            first_visible = True
+                            
+                            clicked, hovered = self.draw_widget_card(widget, card_width, card_height, widget in self.favorites, mouse_pos, style)
+                            if clicked:
+                                self.queue_filter_widgets = True
+                                                                            
+                            # ---- RIGHT CLICK DETECTION ----
+                            if hovered and PyImGui.is_mouse_clicked(1):
+                                self.context_menu_id = f"WidgetContext##{widget.folder_script_name}"
+                                self.context_menu_widget = widget
+                                PyImGui.open_popup(self.context_menu_id)
                         
+                        else:
+                            if first_visible:
+                                last_visible = True
+                            
+                            ImGui.dummy(card_width, card_height)
+                            
                         PyImGui.next_column()
-                                            
                         
-                    style.DisabledAlpha.pop_style_var()
+                    if self.active_card_style_pushed:
+                        self._pop_card_style(style)
+                    
+                    self._pop_card_style(style)
+                        
+                    style.DisabledAlpha.pop_style_var_direct()
                     PyImGui.end_columns()
                     
+                    if self.context_menu_id and self.context_menu_widget:
+                        self.card_context_menu(self.context_menu_id, self.context_menu_widget)
                 ImGui.end_child()
                 ImGui.end_table()
-        
-        if PyImGui.is_window_collapsed():
+                                
+        if PyImGui.is_window_collapsed() or not window_open:
             self.set_layout_mode(LayoutMode.SingleButton)   
+
         
         ImGui.End(self.ini_key)
         
@@ -1127,31 +1304,34 @@ class Py4GWLibrary:
             PyImGui.end_popup()
 
     def _push_card_style(self, style : Style, enabled : bool):
-        style.ChildBg.push_color(self.card_enabled_color.rgb_tuple if enabled else self.card_color.rgb_tuple)
-        style.ChildBorderSize.push_style_var(2.0 if enabled else 1.0) 
-        style.ChildRounding.push_style_var(self.card_rounding)
-        style.Border.push_color(self.card_enabled_color.opacify(0.6).rgb_tuple if enabled else self.card_color.opacify(0.6).rgb_tuple)
+        self.active_card_style_pushed = enabled
+            
+        style.ChildBg.push_color_direct(self.card_enabled_color.rgb_tuple if enabled else self.card_color.rgb_tuple)
+        style.ChildBorderSize.push_style_var_direct(2.0 if enabled else 1.0) 
+        style.ChildRounding.push_style_var_direct(self.card_rounding)
+        style.Border.push_color_direct(self.card_enabled_color.opacity(0.6).rgb_tuple if enabled else self.card_color.opacity(0.6).rgb_tuple)
         pass
 
     def _pop_card_style(self, style : Style):
-        style.ChildBg.pop_color()
-        style.ChildBorderSize.pop_style_var()
-        style.ChildRounding.pop_style_var()
-        style.Border.pop_color()
+        self.active_card_style_pushed = False
+        style.ChildBg.pop_color_direct()
+        style.ChildBorderSize.pop_style_var_direct()
+        style.ChildRounding.pop_style_var_direct()
+        style.Border.pop_color_direct()
         pass
 
-    def _push_tag_style(self, style : Style, color : tuple):
-        style.FramePadding.push_style_var(4, 4)
-        style.Button.push_color(color)
-        style.ButtonHovered.push_color(color)
-        style.ButtonActive.push_color(color)
+    def _push_tag_style(self, style : Style, color : tuple):        
+        style.FramePadding.push_style_var_direct(4, 4)
+        style.Button.push_color_direct(color)
+        style.ButtonHovered.push_color_direct(color)
+        style.ButtonActive.push_color_direct(color)
         ImGui.push_font("Regular", 12)
 
     def _pop_tag_style(self, style : Style):
-        style.FramePadding.pop_style_var()
-        style.Button.pop_color()
-        style.ButtonHovered.pop_color()
-        style.ButtonActive.pop_color()
+        style.FramePadding.pop_style_var_direct()
+        style.Button.pop_color_direct()
+        style.ButtonHovered.pop_color_direct()
+        style.ButtonActive.pop_color_direct()        
         ImGui.pop_font()
     
     def get_card_height(self):
@@ -1172,167 +1352,212 @@ class Py4GWLibrary:
         
         return height
 
-    def draw_widget_card(self, widget : "Widget", width : float, height: float, is_favorite: bool = False):
+    def draw_widget_card(self, widget : "Widget", width : float, height: float, is_favorite: bool, mouse_pos: tuple, style : Style) -> tuple[bool, bool]:
         """
         Draws a single widget card.
         Must be called inside a grid / SameLine layout.
         """
-        style = ImGui.get_style()
-        self._push_card_style(style, widget.enabled)
+    
+        rect_visible = PyImGui.is_rect_visible(width, height)
+        clicked = False
+        hovered = False
+        cog_hovered = False
         
-        opened = PyImGui.begin_child(
-            f"##widget_card_{widget.folder_script_name}",
-            (width, height),
-            border=True,
-            flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
-        )
+        if rect_visible:
+            enabled = widget.enabled
+            
+            if enabled:
+                if not self.active_card_style_pushed:
+                    self._push_card_style(style, enabled)
+            else:
+                if self.active_card_style_pushed:
+                    self._pop_card_style(style)
         
-        if opened and PyImGui.is_rect_visible(width, height):
-            available_width = PyImGui.get_content_region_avail()[0]
             
-            # --- Top Row: Icon + Title ---
-            PyImGui.begin_group()
-
-            # Icon
-            if self.show_images:
-                ImGui.image(widget.image, (self.IMAGE_SIZE, self.IMAGE_SIZE), border_color=self.category_color.rgb_tuple)
-                PyImGui.same_line(0, 5)
-
-            # Title + Category
-            PyImGui.begin_group()
-            # ImGui.push_font("Regular", 16)
-            name = ImGui.trim_text_to_width(text=f"{widget.name}", max_width=width - self.IMAGE_SIZE - self.BUTTON_HEIGHT - self.PADDING * 4 - (15 if is_favorite else 0))
-            if is_favorite:
-                ImGui.text_colored(f"{IconsFontAwesome5.ICON_STAR} ", self.favorites_color.color_tuple, font_size=10)
-                PyImGui.same_line(0, 3)
-                
-            ImGui.text_colored(name, self.name_color.color_tuple if not widget.enabled else self.name_enabled_color.color_tuple)
-            # ImGui.pop_font()
+            cx, cy = PyImGui.get_cursor_screen_pos()
+            opened = PyImGui.begin_child(
+                f"##widget_card_{widget.folder_script_name}",
+                (width, height),
+                border=True,
+                flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
+            )
             
-
-            if self.show_separator:
-                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
-                PyImGui.separator()
+            if  opened:
+                available_width = PyImGui.get_content_region_avail()[0]
                 
-            if self.show_category:
-                PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
-                ImGui.text_colored(f"{widget.category}", self.category_color.color_tuple if widget.category != "System" else self.SYSTEM_COLOR.color_tuple, 12)
-
-            PyImGui.end_group()
-                    
-            if widget.has_configure_property and self.show_configure_button:
-                PyImGui.set_cursor_pos(available_width - 10, 2)
-                configuring = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
-                if configuring != widget.configuring:
-                    widget.set_configuring(configuring)
-                    
-            PyImGui.end_group()
-
-            if self.show_tags:
-                # --- Tags ---
-                self._push_tag_style(style, self.tag_color.rgb_tuple)
+                # --- Top Row: Icon + Title ---
                 PyImGui.begin_group()
-                
-                for i in range(1, len(widget.tags)):
-                    if i > 1:
-                        PyImGui.same_line(0, 2)
+
+                # Icon
+                if self.show_images:
+                    ImGui.image(widget.image, (self.IMAGE_SIZE, self.IMAGE_SIZE), border_color=self.category_color.rgb_tuple)
+                    PyImGui.same_line(0, 5)
+
+                # Title + Category
+                PyImGui.begin_group()
+                # name = widget.name
+                name = ImGui.trim_text_to_width(text=f"{widget.name}", max_width=width - self.IMAGE_SIZE - (self.BUTTON_HEIGHT if widget.has_configure_property and self.show_configure_button else 0) - self.PADDING * 4 - (15 if is_favorite else 0))
+                if is_favorite:
+                    ImGui.text_colored(f"{IconsFontAwesome5.ICON_STAR} ", self.favorites_color.color_tuple, font_size=10)
+                    PyImGui.same_line(0, 3)
                     
-                    PyImGui.button(widget.tags[i])
-                                        
+                ImGui.text_colored(name, self.name_color.color_tuple if not widget.enabled else self.name_enabled_color.color_tuple)
+
+                if self.show_separator:
+                    PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 4)
+                    PyImGui.separator()
+                    
+                if self.show_category:
+                    PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 2)
+                    ImGui.text_colored(f"{widget.category}", self.category_color.color_tuple if widget.category != "System" else self.SYSTEM_COLOR.color_tuple, 12)
+
                 PyImGui.end_group()
-                self._pop_tag_style(style)
+                        
+                if widget.has_configure_property and self.show_configure_button:
+                    PyImGui.set_cursor_pos(available_width - 10, 2)
+                    configuring = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
+                    if configuring != widget.configuring:
+                        widget.set_configuring(configuring)
+                    
+                    cog_hovered = PyImGui.is_item_hovered()
+                    if cog_hovered:
+                        ImGui.begin_tooltip()
+                        ImGui.text("Configure Widget")
+                        ImGui.end_tooltip()
+                    
+                    
+                        
+                PyImGui.end_group()
+
+                if self.show_tags:
+                    # --- Tags ---
+                    self._push_tag_style(style, self.tag_color.rgb_tuple)
+                    
+                    for i in range(1, len(widget.tags)):
+                        if i > 1:
+                            PyImGui.same_line(0, 2)
+                        
+                        PyImGui.button(widget.tags[i])
+                        
+                    self._pop_tag_style(style)
 
 
-        PyImGui.end_child()
-        clicked = False
-        hovered = False
-        self._pop_card_style(style)
-        
-        if PyImGui.is_item_clicked(0):
-            clicked = True
+            PyImGui.end_child()
+                    
+            if ImGui.is_mouse_in_rect((cx, cy, cx + width, cy + height), mouse_pos):
+                if PyImGui.is_item_clicked(0):
+                    clicked = True
+                    
+                    if not widget.enabled:
+                        self.widget_manager.enable_widget(widget.plain_name)
+                    else:                        
+                        if widget.category == "System":
+                            self._pending_disable_widget = widget
+                            self._request_disable_popup = True
+                        else:
+                            self.widget_manager.disable_widget(widget.plain_name)
+                        
+                if not cog_hovered and PyImGui.is_item_hovered():
+                        hovered = True
+                        self._pop_card_style(style)
+                        
+                        if widget.has_tooltip_property:
+                            if widget.tooltip:
+                                
+                                try:
+                                    widget.tooltip()                                
+                                except Exception as e:
+                                    Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                                    Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+                                
+                        else:
+                            PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+                            
+                        self._push_card_style(style, enabled)
+        else:
+            ImGui.dummy(width, height)
             
-            if not widget.enabled:
-                self.widget_manager.enable_widget(widget.plain_name)
-            else:                        
-                if widget.category == "System":
-                    self._pending_disable_widget = widget
-                    self._request_disable_popup = True
-                else:
-                    self.widget_manager.disable_widget(widget.plain_name)
-                
-        if PyImGui.is_item_hovered():
-            hovered = True
-            if widget.has_tooltip_property:
-                try:
-                    if widget.tooltip:
-                        widget.tooltip()
-                except Exception as e:
-                    Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                    Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-            else:
-                PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
-
-        return clicked or hovered
+        return clicked, (hovered or cog_hovered)
         
-    def draw_compact_widget_card(self, widget : "Widget", width : float) -> bool:
+    def draw_compact_widget_card(self, widget : "Widget", width : float, style : Style) -> tuple[bool, bool]:
         """
         Draws a single widget card.
         Must be called inside a grid / SameLine layout.
         """
-
-        style = ImGui.get_style()
-        self._push_card_style(style, widget.enabled)
         
-        opened = PyImGui.begin_child(
-            f"##widget_card_{widget.folder_script_name}",
-            (width, 30),
-            border=True,
-            flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
-        )
-        
-        if opened and PyImGui.is_rect_visible(width, 30):
-            available_width = PyImGui.get_content_region_avail()[0]
-
-            ImGui.push_font("Regular", 15)
-            name = ImGui.trim_text_to_width(text=widget.name, max_width=available_width - 20)
-            ImGui.text_colored(name, self.name_color.color_tuple if not widget.enabled else self.name_enabled_color.color_tuple, 15)
-            ImGui.pop_font()
-                            
-            if widget.has_configure_property:
-                PyImGui.set_cursor_pos(available_width - 10, 2)
-                configuring = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
-                if configuring != widget.configuring:
-                    widget.set_configuring(configuring)
-
-        PyImGui.end_child()
-        self._pop_card_style(style)
+        rect_visible = PyImGui.is_rect_visible(width, 30)
         clicked = False
         hovered = False
-        
-        if PyImGui.is_item_clicked(0):
-            clicked = True
-            if not widget.enabled:
-                self.widget_manager.enable_widget(widget.plain_name)
-            else:
-                if widget.category == "System":
-                    self._pending_disable_widget = widget
-                    self._request_disable_popup = True
-                else:
-                    self.widget_manager.disable_widget(widget.plain_name)
-            
-        if PyImGui.is_item_hovered():
-            hovered = True
-            if widget.has_tooltip_property:
-                try:
-                    if widget.tooltip:
-                        widget.tooltip()
-                except Exception as e:
-                    Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                    Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-            else:
-                PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+        cog_hovered = False
 
-        return clicked or hovered     
+        if rect_visible:
+            enabled = widget.enabled
+            
+            if enabled:
+                if not self.active_card_style_pushed:
+                    self._push_card_style(style, enabled)
+            else:
+                if self.active_card_style_pushed:
+                    self._pop_card_style(style)
+        
+            opened = PyImGui.begin_child(
+                f"##widget_card_{widget.folder_script_name}",
+                (width, 30),
+                border=True,
+                flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse
+            )
+            
+            if opened and PyImGui.is_rect_visible(width, 30):
+                available_width = PyImGui.get_content_region_avail()[0]
+
+                ImGui.push_font("Regular", 15)
+                name = ImGui.trim_text_to_width(text=widget.name, max_width=available_width - 20)
+                ImGui.text_colored(name, self.name_color.color_tuple if not widget.enabled else self.name_enabled_color.color_tuple, 15)
+                ImGui.pop_font()
+                                
+                if widget.has_configure_property:
+                    PyImGui.set_cursor_pos(available_width - 10, 2)
+                    configuring = ImGui.toggle_icon_button(IconsFontAwesome5.ICON_COG, widget.configuring, self.BUTTON_HEIGHT, self.BUTTON_HEIGHT)
+                    if configuring != widget.configuring:
+                        widget.set_configuring(configuring)
+                        
+                    cog_hovered = PyImGui.is_item_hovered()
+
+            PyImGui.end_child()
+            
+            if PyImGui.is_item_clicked(0):
+                clicked = True
+                if not widget.enabled:
+                    self.widget_manager.enable_widget(widget.plain_name)
+                else:
+                    if widget.category == "System":
+                        self._pending_disable_widget = widget
+                        self._request_disable_popup = True
+                    else:
+                        self.widget_manager.disable_widget(widget.plain_name)
+                
+            if not cog_hovered and PyImGui.is_item_hovered():
+                hovered = True
+                self._pop_card_style(style)
+                
+                if widget.has_tooltip_property:
+                    try:
+                        if widget.tooltip:
+                            self._pop_card_style(style)                        
+                            
+                            widget.tooltip()
+                            
+                    except Exception as e:
+                        Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                        Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+                else:
+                    PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+                    
+                self._push_card_style(style, enabled)
+        else:
+            ImGui.dummy(width, 30)
+            
+        return clicked, (hovered or cog_hovered)     
 
     def draw_one_button_view(self): 
         if self.win_size:       
@@ -1342,13 +1567,13 @@ class Py4GWLibrary:
         style = ImGui.get_style()
         
         padding = self.single_button_size * 0.05
-        style.WindowPadding.push_style_var(padding, padding)
+        style.WindowPadding.push_style_var_direct(padding, padding)
         win_open = ImGui.Begin(ini_key=self.ini_key, name=self.module_name, flags=PyImGui.WindowFlags(PyImGui.WindowFlags.NoResize|
                                                                                                       PyImGui.WindowFlags.NoCollapse|
                                                                                                       PyImGui.WindowFlags.NoTitleBar|
                                                                                                       PyImGui.WindowFlags.NoScrollbar|
                                                                                                       PyImGui.WindowFlags.NoScrollWithMouse))   
-        style.WindowPadding.pop_style_var()
+        style.WindowPadding.pop_style_var_direct()
         
         if win_open:
             win_size = PyImGui.get_window_size()
@@ -1366,11 +1591,14 @@ class Py4GWLibrary:
             
             if not win_hovered:
                 PyImGui.set_cursor_pos((self.win_size[0] - button_size) / 2, (self.win_size[1] - button_size) / 2)
-                
-            ImGui.image("python_icon_round.png", (button_size, button_size))     
+            
+            cx, cy = PyImGui.get_cursor_pos()
+            ImGui.image("python_icon_round.png", (button_size, button_size))              
+            PyImGui.set_cursor_pos(cx, cy)
+            ImGui.dummy(button_size, button_size)
             if in_radius:       
                 if PyImGui.is_item_clicked(0):
-                    self.set_layout_mode(LayoutMode.Library)
+                    self.set_layout_mode(self.previous_mode)
                 
                 ImGui.show_tooltip(f"Open Widget Manager")
                 
@@ -1388,6 +1616,11 @@ class Widget:
     plain_name: str = ""          # script without extension
     widget_path: str = ""         # folder relative path (no script)
     script_path: str = ""         # script full path
+    
+    #callback data
+    update_callback_id: int = 0
+    draw_callback_id: int = 0   
+    main_callback_id: int = 0
     
     #Extra_execution data
     has_update_property: bool = False
@@ -1415,13 +1648,19 @@ class Widget:
     module: Optional[ModuleType] = field(default=None, init=False, repr=False)
     __enabled: bool = field(default=False, init=False,)
     __configuring: bool = field(default=False, init=False)
+    __paused: bool = field(default=False, init=False)
     
     # Optional properties to be displayed in widget manager ui
     name : str = field(default="", init=False, repr=False)
     image : str = field(default="", init=False, repr=False)
     tags : list[str] = field(default_factory=list, init=False)
     category : str = field(default="", init=False)    
-        
+    
+    @property
+    def is_paused(self) -> bool:
+        """Check if the widget is paused"""
+        return self.__paused
+    
     @property
     def enabled(self) -> bool:
         """Check if the widget is enabled"""
@@ -1477,12 +1716,15 @@ class Widget:
             self.minimal = getattr(self.module, "minimal", None) if callable(getattr(self.module, "minimal", None)) else None
             self.on_enable = getattr(self.module, "on_enable", None) if callable(getattr(self.module, "on_enable", None)) else None
             self.on_disable = getattr(self.module, "on_disable", None) if callable(getattr(self.module, "on_disable", None)) else None
-            self.optional = getattr(self.module, 'OPTIONAL', True) if hasattr(self.module, 'OPTIONAL') else True
             
             self.name = getattr(self.module, 'MODULE_NAME', "") if hasattr(self.module, 'MODULE_NAME') else self.cleaned_name()
             self.category = getattr(self.module, 'MODULE_CATEGORY', "") if hasattr(self.module, 'MODULE_CATEGORY') else (self.widget_path.split('/')[0] if self.widget_path else "") #get first folder after Widgets 
             self.tags = getattr(self.module, 'MODULE_TAGS', []) if hasattr(self.module, 'MODULE_TAGS') else [folder for folder in self.widget_path.split('/') if folder]
             self.image = getattr(self.module, 'MODULE_ICON', "") if hasattr(self.module, 'MODULE_ICON') else "Textures\\missing_texture.png"
+            
+            self.optional = getattr(self.module, 'OPTIONAL', True) if hasattr(self.module, 'OPTIONAL') else self.category not in ["System", "Py4GW"] # System and Py4GW widgets are non-optional by default, all others are optional by default
+            self.RegisterCallbacks()
+            self.PauseCallbacks()  # Start paused until explicitly enabled
             
         return True
     
@@ -1498,8 +1740,88 @@ class Widget:
         """Disable configuring state"""
         self.set_configuring(False)
         
+    def pause(self):
+        """Pause the widget"""
+        self.__paused = True
+        self.PauseCallbacks()
+        
+    def resume(self):
+        """Resume the widget"""
+        self.__paused = False
+        self.ResumeCallbacks()
+        
+    def PauseCallbacks(self):
+        """Pause callbacks by id if they exist"""
+        self.RegisterCallbacks()  # Ensure callbacks are registered before trying to pause
+        if self.update_callback_id:
+            PyCallback.PyCallback.PauseById(self.update_callback_id)
+        if self.draw_callback_id:
+            PyCallback.PyCallback.PauseById(self.draw_callback_id)
+        if self.main_callback_id:
+            PyCallback.PyCallback.PauseById(self.main_callback_id)
+            
+    def ResumeCallbacks(self):
+        """Resume callbacks by id if they exist"""
+        self.RegisterCallbacks()  # Ensure callbacks are registered before trying to resume
+        if self.update_callback_id:
+            PyCallback.PyCallback.ResumeById(self.update_callback_id)
+        if self.draw_callback_id:
+            PyCallback.PyCallback.ResumeById(self.draw_callback_id)
+        if self.main_callback_id:
+            PyCallback.PyCallback.ResumeById(self.main_callback_id)
+            
+    def RegisterCallbacks(self):
+        """Register callbacks if they exist in the module"""
+        def wrap_profiler(key: str, fn: Callable):
+            # We return a NEW function (lambda) that the C++ Callback system 
+            # will store and execute every frame.
+            def callback_wrapper():
+                profiling = _get_profiling()
+                if profiling.enabled:
+                    # Executes fn() inside the profiling scope
+                    return profiling.runcall_scope("widgets", f"{self.folder_script_name}:{key}", fn)
+                else:
+                    # Executes fn() normally
+                    return fn()
+            
+            return callback_wrapper
+       
+        if self.module is None:
+            return
+        
+        # 1. Update Callback (Logic Loop)
+        if self.has_update_property and self.update is not None and self.update_callback_id == 0:
+            self.update_callback_id = PyCallback.PyCallback.Register(
+                self.folder_script_name,
+                PyCallback.Phase.Update,
+                wrap_profiler("update", self.update), # Pass the wrapper
+                priority=99,
+                context=PyCallback.Context.Update
+            )
+            
+        # 2. Draw Callback (Visual Loop)
+        if self.has_draw_property and self.draw is not None and self.draw_callback_id == 0:
+            self.draw_callback_id = PyCallback.PyCallback.Register(
+                self.folder_script_name,
+                PyCallback.Phase.Update,
+                wrap_profiler("draw", self.draw), # Pass the wrapper
+                priority=99,
+                context=PyCallback.Context.Draw
+            )
+            
+        # 3. Main Callback (System Loop)
+        if self.has_main_property and self.main is not None and self.main_callback_id == 0:
+            self.main_callback_id = PyCallback.PyCallback.Register(
+                self.folder_script_name,
+                PyCallback.Phase.Update,
+                wrap_profiler("main", self.main), # Pass the wrapper
+                priority=99,
+                context=PyCallback.Context.Main
+            )
+        
     def disable(self):
         """Disable the widget"""
+        self.PauseCallbacks()
         if self.__enabled:
             if self.module is not None:
                 try:
@@ -1508,14 +1830,17 @@ class Widget:
                     
                 except Exception as e:
                     Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                    Py4GW.Console.Log("WidgetManager", f"Error during on_disable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
                 
             self.__enabled = False
         
     def enable(self):
         """Enable the widget"""
-        if self.enabled and self.module is not None:
+        
+        #ensure callback
+        self.ResumeCallbacks()
+
+        if self.enabled and self.module is not None: 
             return  # Already enabled
         
         # enable widget only if module loads successfully
@@ -1527,7 +1852,6 @@ class Widget:
                     self.on_enable()
                 
             except Exception as e:
-                Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 Py4GW.Console.Log("WidgetManager", f"Error during on_enable of widget {self.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                 Py4GW.Console.Log("WidgetManager", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
         
@@ -1603,8 +1927,8 @@ class Widget:
             self.__dict__[key] = value
         else:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
-   
-   
+#endregion
+
 class WidgetConfigVars:
     def __init__(self, widget_id: str, section: str, var_name: str):
         self.widget_id = widget_id
@@ -1642,9 +1966,11 @@ class WidgetHandler:
         # Core state
         self.widgets: dict[str, Widget] = {}
         self.show_ui = True
-        self.pause_optionals = False
+        self.__pause_optionals = False
         self.run_once = False
         self.enable_all = True
+        
+        self.paused = False
         
         self.discovered = False
         self.widget_initialized = False
@@ -1655,8 +1981,8 @@ class WidgetHandler:
         
     # Properties
     @property
-    def pause_optional_widgets(self):
-        return self.pause_optionals
+    def optional_widgets_paused(self):
+        return self.__pause_optionals
     
     @property
     def show_widget_ui(self):
@@ -1697,7 +2023,6 @@ class WidgetHandler:
             widget.disable()
         
         widget_id = widget.folder_script_name  # full id: "folder/file.py"
-        widget_id = widget.folder_script_name  # full id: "folder/file.py"
         v_enabled = self._widget_var(widget_id, "enabled")  # "folder/file.py__enabled"
 
         cv = self._get_config_var(widget_id, v_enabled)
@@ -1706,32 +2031,12 @@ class WidgetHandler:
             # Correct order: key, section, var_name, value
             IniManager().set(key=INI_KEY, section=cv.section, var_name=cv.var_name, value=state)
             IniManager().save_vars(INI_KEY)
-                        
+    #endregion        
 
         
     # --------------------------------------------
     # region discovery
-    def _coro_discover(self):
-        if self.discovered:
-            return
-        
-        """Phase 0: Unload currently enabled widgets"""
-        for widget in self.widgets.values():
-            if widget.enabled:
-                widget.disable()
-                yield
-                                
-        """Phase 1: Discover widgets without INI configuration"""
-        self.widgets.clear()
-        
-        try:
-            yield from self._coro_scan_widget_folders()
-            self.discovered = True
-        except Exception as e:
-            self._log_error(f"Discovery failed: {e}")
-            raise 
-        
-        
+           
     def discover(self):
         if self.discovered:
             return
@@ -1751,20 +2056,6 @@ class WidgetHandler:
             self._log_error(f"Discovery failed: {e}")
             raise
     
-    def _coro_scan_widget_folders(self):
-        """Find .widget folders and load .py files throughout the entire tree"""
-        if not os.path.isdir(self.widgets_path):
-            raise FileNotFoundError(f"Widgets folder missing: {self.widgets_path}")
-        
-        for current_dir, dirs, files in os.walk(self.widgets_path):
-            # Check if this specific folder is marked as a widget container
-            if ".widget" in files:
-                for py_file in [f for f in files if f.endswith(".py")]:
-                    yield from self._coro_load_widget_module(current_dir, py_file)
-                    
-        yield
-                    
-    
     
     def _scan_widget_folders(self):
         """Find .widget folders and load .py files throughout the entire tree"""
@@ -1776,67 +2067,7 @@ class WidgetHandler:
             if ".widget" in files:
                 for py_file in [f for f in files if f.endswith(".py")]:
                     self._load_widget_module(current_dir, py_file)
-    
-    def _coro_load_widget_module(self, folder: str, filename: str):
-        """Load a widget module without INI configuration"""
-        # Create widget ID
-        rel_folder = os.path.relpath(folder, self.widgets_path)
-        widget_id = f"{rel_folder}/{filename}" if rel_folder != "." else filename
 
-        plain = os.path.splitext(filename)[0]
-        widget_path = "" if rel_folder == "." else rel_folder.replace("\\", "/")
-
-                
-        if widget_id in self.widgets:
-            yield
-            return
-        
-        script_path = os.path.join(folder, filename)
-        
-        try:
-            # 1. Create Widget with EMPTY INI data
-            widget = Widget(
-                folder_script_name=widget_id,
-                plain_name=plain,
-                widget_path=widget_path,
-                script_path=script_path,
-                ini_key="",           # Empty - will be set later
-                ini_path="",          # Empty - will be set later  
-                ini_filename="",      # Empty - will be set later                
-            )
-            
-            # 3. Register
-            self.widgets[widget_id] = widget
-            
-            #4. Ini handling (SECTION PER WIDGET)
-            self.config_vars.append(WidgetConfigVars(
-                widget_id=widget_id,
-                section=f"Widget:{widget_id}",
-                var_name=f"{widget_id}__enabled"
-            ))
-            self.config_vars.append(WidgetConfigVars(
-                widget_id=widget_id,
-                section=f"Widget:{widget_id}",
-                var_name=f"{widget_id}__optional"
-            ))                    
-
-            yield
-            
-            cv = self._get_config_var(widget.name, self._widget_var(widget.name, "enabled"))
-            
-            enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=cv.section, var_name=cv.var_name, default=False)) if cv else False
-            if enabled:
-                widget.enable()
-            
-            yield
-                
-            #keep logging minimal
-            #self._log_success(f"Discovered: {widget_id}")
-            
-        except Exception as e:
-            self._log_error(f"Failed to discover {widget_id}: {e}")
-    
-            
     def _load_widget_module(self, folder: str, filename: str):
         """Load a widget module without INI configuration"""
         # Create widget ID
@@ -1880,7 +2111,6 @@ class WidgetHandler:
             ))                    
 
             cv = self._get_config_var(widget.folder_script_name, self._widget_var(widget.folder_script_name, "enabled"))
-            cv = self._get_config_var(widget.folder_script_name, self._widget_var(widget.folder_script_name, "enabled"))
             
             enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=cv.section, var_name=cv.var_name, default=False)) if cv else False
             if enabled:
@@ -1920,7 +2150,8 @@ class WidgetHandler:
             if enabled:
                 w.enable()
                 
-            
+    #endregion
+    
     #region UI       
     def draw_node(self, INI_KEY: str, node: dict, depth: int = 0):
         style = ImGui.get_style()
@@ -2021,9 +2252,26 @@ class WidgetHandler:
                 self.draw_node(INI_KEY, value, depth + 1)
                 if depth > 0:
                     ImGui.tree_pop()
+                    
+    def PauseAllWidgets(self):
+        for widget in self.widgets.values():
+            if widget.enabled:
+                widget.pause()
+            
+        self.paused = True
+                
+    def ResumeAllWidgets(self):
+        for widget in self.widgets.values():
+            if widget.is_paused:
+                widget.resume()
+                
+        self.paused = False
             
     def draw_ui(self, INI_KEY: str):
-        if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", 40):           
+        if ImGui.icon_button(IconsFontAwesome5.ICON_RETWEET + "##Reload Widgets", 40):
+            Py4GW.Console.Log("Widget Manager", "Reloading Widgets...", Py4GW.Console.MessageType.Info)
+            
+            
             self.widget_initialized = False
             self.discovered = False
             self.discover()
@@ -2032,44 +2280,45 @@ class WidgetHandler:
         ImGui.show_tooltip("Reload all widgets")
         PyImGui.same_line(0, 5)
         
-        e_all = bool(IniManager().get(key=INI_KEY, var_name="enable_all", default=True, section="Configuration"))
-        new_enable_all = ImGui.toggle_icon_button(
-            (IconsFontAwesome5.ICON_TOGGLE_ON if e_all else IconsFontAwesome5.ICON_TOGGLE_OFF) + "##widget_disable",
-            e_all,
+        paused = ImGui.toggle_icon_button(
+            (IconsFontAwesome5.ICON_TOGGLE_ON if not self.paused else IconsFontAwesome5.ICON_TOGGLE_OFF) + "##widget_disable",
+            not self.paused,
             40
         )
 
-        if new_enable_all != e_all:
-            IniManager().set(key= INI_KEY, var_name="enable_all", value=new_enable_all, section="Configuration")
-            IniManager().save_vars(INI_KEY)
+        if paused != (not self.paused):
+            if paused:
+                self.ResumeAllWidgets()
+            else:
+                self.PauseAllWidgets()    
+            
 
-        self.enable_all = new_enable_all
-
-
-        ImGui.show_tooltip(f"{("Run" if not self.enable_all else "Pause")} all widgets")
+        ImGui.show_tooltip(f"{("Resume" if not self.paused else "Pause")} all widgets")
         
-        PyImGui.same_line(0, 5)
+        
+        ### Deprecated since the widget system now runs on callbacks on cpp side
+        """PyImGui.same_line(0, 5)
         show_widget_ui = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_EYE if self.show_widget_ui else IconsFontAwesome5.ICON_EYE_SLASH) + "##Show Widget UIs", self.show_widget_ui, 40)
         if show_widget_ui != self.show_widget_ui:
             self.set_widget_ui_visibility(show_widget_ui)
-        ImGui.show_tooltip(f"{("Show" if not self.show_widget_ui else "Hide")} all widget UIs")
+        ImGui.show_tooltip(f"{("Show" if not self.show_widget_ui else "Hide")} all widget UIs")"""
         
         PyImGui.same_line(0, 5)
-        pause_non_env = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_PAUSE if self.pause_optional_widgets else IconsFontAwesome5.ICON_PLAY) + "##Pause Non-Env Widgets", not self.pause_optional_widgets, 40)
-        if pause_non_env != (not self.pause_optional_widgets):
-            if not self.pause_optional_widgets:
-                self.pause_widgets()
+        pause_non_env = ImGui.toggle_icon_button((IconsFontAwesome5.ICON_PAUSE if self.optional_widgets_paused else IconsFontAwesome5.ICON_PLAY) + "##Pause Non-Env Widgets", not self.optional_widgets_paused, 40)
+        if pause_non_env != (not self.optional_widgets_paused):
+            if not self.optional_widgets_paused:
+                self.pause_optional_widgets()
             else:
-                self.resume_widgets()
+                self.resume_optional_widgets()
                 
             own_email = Player.GetAccountEmail()
             for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
                 if acc.AccountEmail == own_email:
                     continue
                 
-                GLOBAL_CACHE.ShMem.SendMessage(own_email, acc.AccountEmail, SharedCommandType.PauseWidgets if self.pause_optional_widgets else SharedCommandType.ResumeWidgets)
+                GLOBAL_CACHE.ShMem.SendMessage(own_email, acc.AccountEmail, SharedCommandType.PauseWidgets if self.optional_widgets_paused else SharedCommandType.ResumeWidgets)
             
-        ImGui.show_tooltip(f"{("Pause" if not self.pause_optional_widgets else "Resume")} all optional widgets")
+        ImGui.show_tooltip(f"{("Pause" if not self.optional_widgets_paused else "Resume")} all optional widgets")
         ImGui.separator()
         
         # ------------------------------------------------------------
@@ -2088,41 +2337,52 @@ class WidgetHandler:
             node.setdefault("__widgets__", []).append(widget_id)
             
         self.draw_node(INI_KEY, tree)
+    #endregion
         
     def execute_enabled_widgets_update(self):
+        profiling = _get_profiling()
+        profiling_enabled = profiling.enabled
         pause_optional = self.pause_optional_widgets
 
         for widget_name, widget_info in self.widgets.items():
-            if not widget_info.enabled:
+            if not widget_info.enabled or widget_info.is_paused:
                 continue
- 
+
             if pause_optional and widget_info.optional:
                 continue
 
             if widget_info.update is not None:
                 try:
-                    widget_info.update()
+                    if profiling_enabled:
+                        profiling.runcall_scope("widgets", f"{widget_name}:update", widget_info.update)
+                    else:
+                        widget_info.update()
                 except Exception as e:
                     Py4GW.Console.Log("WidgetHandler", f"Error executing widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
 
     def execute_enabled_widgets_draw(self):
+        profiling = _get_profiling()
+        profiling_enabled = profiling.enabled
         style = ImGui.Selected_Style.pyimgui_style
         alpha = style.Alpha
         ui_enabled = self.show_widget_ui
-        pause_optional = self.pause_optional_widgets
+        pause_optional = self.optional_widgets_paused
 
         if not ui_enabled:
             style.Alpha = 0.0
             style.Push()
 
         for widget_name, widget_info in self.widgets.items():
-            if not widget_info.enabled:
+            if not widget_info.enabled or widget_info.is_paused:
                 continue
- 
+
             if widget_info.minimal is not None:
                 try:
-                    widget_info.minimal()
+                    if profiling_enabled:
+                        profiling.runcall_scope("widgets", f"{widget_name}:minimal", widget_info.minimal)
+                    else:
+                        widget_info.minimal()
                 except Exception as e:
                     Py4GW.Console.Log("WidgetHandler", f"Error executing minimal of widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
@@ -2132,7 +2392,10 @@ class WidgetHandler:
 
             if widget_info.draw is not None:
                 try:
-                    widget_info.draw()
+                    if profiling_enabled:
+                        profiling.runcall_scope("widgets", f"{widget_name}:draw", widget_info.draw)
+                    else:
+                        widget_info.draw()
                 except Exception as e:
                     Py4GW.Console.Log("WidgetHandler", f"Error executing widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
@@ -2140,24 +2403,29 @@ class WidgetHandler:
         if not ui_enabled:
             style.Alpha = alpha
             style.Push()
-            
+
     def execute_enabled_widgets_main(self):
+        profiling = _get_profiling()
+        profiling_enabled = profiling.enabled
         style = ImGui.Selected_Style.pyimgui_style
         alpha = style.Alpha
         ui_enabled = self.show_widget_ui
-        pause_optional = self.pause_optional_widgets
+        pause_optional = self.optional_widgets_paused
 
         if not ui_enabled:
             style.Alpha = 0.0
             style.Push()
 
         for widget_name, widget_info in self.widgets.items():
-            if not widget_info.enabled:
+            if not widget_info.enabled or widget_info.is_paused:
                 continue
- 
+
             if widget_info.minimal is not None:
                 try:
-                    widget_info.minimal()
+                    if profiling_enabled:
+                        profiling.runcall_scope("widgets", f"{widget_name}:minimal", widget_info.minimal)
+                    else:
+                        widget_info.minimal()
                 except Exception as e:
                     Py4GW.Console.Log("WidgetHandler", f"Error executing minimal of widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
@@ -2167,7 +2435,10 @@ class WidgetHandler:
 
             if widget_info.main is not None:
                 try:
-                    widget_info.main()
+                    if profiling_enabled:
+                        profiling.runcall_scope("widgets", f"{widget_name}:main", widget_info.main)
+                    else:
+                        widget_info.main()
                 except Exception as e:
                     Py4GW.Console.Log("WidgetHandler", f"Error executing widget {widget_name}: {str(e)}", Py4GW.Console.MessageType.Error)
                     Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
@@ -2190,14 +2461,22 @@ class WidgetHandler:
       
       
     #region  Public API
-    def set_widget_ui_visibility(self, visible: bool):
+    def set_widget_ui_visibility(self, visible: bool):            
         self.show_ui = visible
         
-    def pause_widgets(self):
-        self.pause_optionals = True
+    def pause_optional_widgets(self):
+        for widget in self.widgets.values():
+            if widget.enabled and widget.optional and not widget.is_paused:
+                widget.pause()
+                
+        self.__pause_optionals = True
         
-    def resume_widgets(self):
-        self.pause_optionals = False
+    def resume_optional_widgets(self):
+        for widget in self.widgets.values():
+            if widget.enabled and widget.optional and widget.is_paused:
+                widget.resume()
+                
+        self.__pause_optionals = False
     
     def is_widget_enabled(self, name: str) -> bool:
         widget = self._get_widget_by_plain_name(name)
@@ -2227,6 +2506,8 @@ class WidgetHandler:
 
         # 2) fallback to plain_name lookup
         return self._get_widget_by_plain_name(name)
+    #endregion
+#endregion
 
 _widget_handler = WidgetHandler()
 
