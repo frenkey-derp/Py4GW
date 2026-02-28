@@ -384,8 +384,8 @@ class UI():
     def draw_overlays(accounts : dict[int, AccountStruct]):
         if not UI.Settings.ShowFollowerActiveQuestOnMinimap and not UI.Settings.ShowFollowerActiveQuestOnMissionMap:
             return
-
-        active_quests = [acc.QuestLog.ActiveQuest for acc in accounts.values() if acc.QuestLog.ActiveQuest.QuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
+        
+        active_quests = [acc.QuestLog.Quests[acc.QuestLog.ActiveQuestID] for acc in accounts.values() if acc.QuestLog.ActiveQuestID != 0 and UI.Settings.show_quests_for_accounts.get(acc.AccountEmail, True)]
         
         if not active_quests:
             return
