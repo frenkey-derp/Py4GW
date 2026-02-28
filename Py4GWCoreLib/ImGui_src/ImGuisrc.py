@@ -3534,6 +3534,7 @@ class ImGui:
                         state=TextureState.Normal if completed else TextureState.Active,
                     )
                 else:
+                    PyImGui.set_cursor_screen_pos(cursor[0] - 4, cursor[1])
                     ImGui.bullet_text("")  # draw bullet using ImGui's bullet
                 
                 PyImGui.table_set_column_index(1)
