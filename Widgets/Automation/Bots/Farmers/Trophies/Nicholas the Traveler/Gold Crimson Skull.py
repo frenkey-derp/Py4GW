@@ -4,7 +4,8 @@ MODULE_ICON = "Textures\\Items\\Gold Crimson Skull Coin.png"
 #QUEST TO INCREASE SPAWNS https://wiki.guildwars.com/wiki/Lady_Mukei_Musagi
 BOT_NAME = "Gold_Crimson_Skull_farm"
 MODEL_ID_TO_FARM = ModelID.Gold_Crimson_Skull_Coin
-MODULE_ICON = "Textures\\Module_Icons\\Gold Crimson Skull Coin.png"
+MODULE_NAME = "Gold Crimson Skull Coin Farm (Nicholas the Traveler)"
+MODULE_ICON = "Textures\\Module_Icons\\Nicholas the Traveler - Gold Crimson Skull Coin.png"
 OUTPOST_TO_TRAVEL = 213 #zen daijun
 COORD_TO_EXIT_MAP = (19453, 14369) #zen daijun exit to haiju lagoon
 EXPLORABLE_TO_TRAVEL = 237 #haiju lagoon

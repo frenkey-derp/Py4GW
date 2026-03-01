@@ -3,7 +3,8 @@ import PyImGui
 
 MODULE_ICON = "Textures\\Items\\Behemoth Hide.png"
 BOT_NAME = "Behemoth Hide Farm"
-MODULE_ICON = "Textures\\Module_Icons\\Behemoth Hide.png"
+MODULE_ICON = "Textures\\Module_Icons\\Nicholas the Traveler - Behemoth Hide.png"
+MODULE_NAME = "Behemoth Hide Farm (Nicholas the Traveler)"
 MODEL_ID_TO_FARM = ModelID.Behemoth_Hide
 OUTPOST_TO_TRAVEL = 433 #Dzagonur Bastion
 COORD_TO_EXIT_MAP = (4950.00, 1176.77)

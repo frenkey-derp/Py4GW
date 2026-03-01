@@ -4,7 +4,8 @@ import PyImGui
 MODULE_ICON = "Textures\\Items\\Minotaur Horn.png"
 #QUEST TO INCREASE SPAWNS 
 BOT_NAME = "Minotaur_Horn_farm"
-MODULE_ICON = "Textures\\Module_Icons\\Minotaur Horn.png"
+MODULE_NAME = "Minotaur Horn Farm (Nicholas the Traveler)"
+MODULE_ICON = "Textures\\Module_Icons\\Nicholas the Traveler - Minotaur Horn.png"
 MODEL_ID_TO_FARM = ModelID.Minotaur_Horn
 MAP_TO_TRAVEL = 118 #Elona reach
 
