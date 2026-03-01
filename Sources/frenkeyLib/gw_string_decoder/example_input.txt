@@ -1,0 +1,8 @@
+# Sunspear Scout (encrypted)
+0x8101 0x47D8 0xB358 0xFFE1 0x4077
+# www.GuildWars.com (unencrypted, no key)
+010C
+# Ritualist (unencrypted)
+0900
+# Player name (inline ASCII — language-independent)
+0BA9 0107 004E 0065 0078 0001

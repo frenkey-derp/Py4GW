@@ -1,0 +1,8 @@
+# Sunspear Scout (encrypted)
+サンスピア スカウト
+# www.GuildWars.com (unencrypted, no key)
+www.GuildWars.com
+# Ritualist (unencrypted)
+リチュアリスト
+# Player name (inline ASCII â€” language-independent)
+Nex
