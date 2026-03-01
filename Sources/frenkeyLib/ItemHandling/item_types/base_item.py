@@ -9,7 +9,8 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
-from Sources.frenkeyLib.ItemHandling.item_properties import ArmorProperty, AttributeRequirement, DamageCustomized, DamageProperty, DamageTypeProperty, EnergyProperty, InscriptionProperty, ItemProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
+from Sources.frenkeyLib.ItemHandling.item_properties import ArmorEnergyRegen, ArmorProperty, AttributeRequirement, DamageCustomized, DamageProperty, DamageTypeProperty, EnergyProperty, HeadpieceAttribute, HeadpieceGenericAttribute, InscriptionProperty, ItemProperty, PrefixProperty, SuffixProperty, UpgradeRuneProperty
+from Sources.frenkeyLib.ItemHandling.types import ItemUpgradeType
 
 class Item:
     item_id : int
@@ -123,19 +124,28 @@ class UnknownItem(Item):
         return item
 
 class Salvage(Item):
-    suffix: Optional[ItemProperty] = None
-    prefix : Optional[ItemProperty] = None
+    insignia: Optional[ItemProperty] = None
+    rune : Optional[ItemProperty] = None
     profession : Optional[Profession] = None
     
     commonly_salvaged_to : list[Item] = []
     rarely_salvaged_to : list[Item] = []
     item_type : ItemType = ItemType.Salvage
-    
+        
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Salvage']:
         item = Salvage()
-        item.item_id = item_id            
+        item.item_id = item_id
+            
+        runtime_modifiers = GameItem.Customization.Modifiers.GetModifiers(item_id)
+        parser = ItemModifierParser(runtime_modifiers)
+        item.assign_properties(parser.get_properties())
+        
         return item
+    
+    def assign_properties(self, properties: list[ItemProperty]):
+        self.insignia = next((p for p in properties if isinstance(p, PrefixProperty) and p.upgrade.mod_type == ItemUpgradeType.Prefix), None)
+        self.rune = next((p for p in properties if (isinstance(p, SuffixProperty) or isinstance(p, PrefixProperty)) and p.upgrade.mod_type == ItemUpgradeType.Suffix), None)
             
 class Bag(Item):
     item_type : ItemType = ItemType.Bag
@@ -332,51 +342,49 @@ class Armor(Item):
     commonly_salvaged_to : list[Item] = []
     rarely_salvaged_to : list[Item] = []
     
+    @classmethod
+    def from_item_id(cls, item_id: int) -> Optional['Armor']:
+        item = Armor()
+        item.item_id = item_id
+            
+        runtime_modifiers = GameItem.Customization.Modifiers.GetModifiers(item_id)
+        parser = ItemModifierParser(runtime_modifiers)
+        item.assign_properties(parser.get_properties())
+        
+        return item
+    
+    def assign_properties(self, properties: list[ItemProperty]):
+        self.insignia = next((p for p in properties if isinstance(p, PrefixProperty) and p.upgrade.mod_type == ItemUpgradeType.Prefix), None)
+        self.rune = next((p for p in properties if (isinstance(p, SuffixProperty) or isinstance(p, PrefixProperty)) and p.upgrade.mod_type == ItemUpgradeType.Suffix), None)
+        
+        for prop in properties:
+            if hasattr(self, 'energy_bonus') and isinstance(prop, EnergyProperty):
+                self.energy_bonus = prop.energy
+            
+            elif hasattr(self, 'energy_regen_bonus') and isinstance(prop, ArmorEnergyRegen):
+                self.energy_regen_bonus = prop.energy_regen
+                
+            elif hasattr(self, 'armor') and isinstance(prop, ArmorProperty):
+                self.armor = prop.armor
+                
+            elif hasattr(self, 'attribute_bonus') and isinstance(prop, HeadpieceAttribute):
+                self.attribute_bonus = (prop.attribute, prop.attribute_level)
+    
 class Boots(Armor):
     item_type : ItemType = ItemType.Boots
     
-    @classmethod
-    def from_item_id(cls, item_id: int) -> Optional['Boots']:
-        item = Boots()
-        item.item_id = item_id            
-        return item
-
 class Chestpiece(Armor):
     item_type : ItemType = ItemType.Chestpiece
     
-    @classmethod
-    def from_item_id(cls, item_id: int) -> Optional['Chestpiece']:
-        item = Chestpiece()
-        item.item_id = item_id            
-        return item
-
 class Gloves(Armor):
     item_type : ItemType = ItemType.Gloves
     
-    @classmethod
-    def from_item_id(cls, item_id: int) -> Optional['Gloves']:
-        item = Gloves()
-        item.item_id = item_id            
-        return item
-
 class Headpiece(Armor):
     item_type : ItemType = ItemType.Headpiece
     attribute_bonus : Optional[tuple[Attribute, int]]  = None
     
-    @classmethod
-    def from_item_id(cls, item_id: int) -> Optional['Headpiece']:
-        item = Headpiece()
-        item.item_id = item_id            
-        return item
-
 class Leggings(Armor):
     item_type : ItemType = ItemType.Leggings
-    
-    @classmethod
-    def from_item_id(cls, item_id: int) -> Optional['Leggings']:
-        item = Leggings()
-        item.item_id = item_id            
-        return item
 
 class Weapon(Item):
     attribute : Attribute
@@ -400,13 +408,13 @@ class Weapon(Item):
                 self.requirement = prop
                 
             if hasattr(self, 'prefix') and isinstance(prop, PrefixProperty):
-                self.prefix = prop
+                self.prefix = next((p for p in properties if isinstance(p, PrefixProperty) and p.upgrade.mod_type == ItemUpgradeType.Prefix), None)
                 
             elif hasattr(self, 'suffix') and isinstance(prop, SuffixProperty):
-                self.suffix = prop
+                self.suffix = next((p for p in properties if (isinstance(p, SuffixProperty) or isinstance(p, PrefixProperty)) and p.upgrade.mod_type == ItemUpgradeType.Suffix), None)
                 
-            elif hasattr(self, 'inherent') and isinstance(prop, InscriptionProperty):
-                self.inherent = prop
+            elif hasattr(self, 'inscription') and isinstance(prop, InscriptionProperty):
+                self.inscription = next((p for p in properties if isinstance(p, InscriptionProperty) and p.upgrade.mod_type == ItemUpgradeType.Inscription), None)
                 
             elif hasattr(self, 'customized') and isinstance(prop, DamageCustomized):
                 self.customized = True
@@ -425,7 +433,7 @@ class Axe(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Axe']:
@@ -446,7 +454,7 @@ class Bow(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Bow']:
@@ -463,7 +471,7 @@ class Offhand(Weapon):
     energy : Optional[EnergyProperty] = None
     
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Offhand']:
@@ -482,7 +490,7 @@ class Hammer(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Hammer']:
@@ -500,7 +508,7 @@ class Wand(Weapon):
     damage_type : Optional[DamageTypeProperty] = None
 
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Wand']:
@@ -517,7 +525,7 @@ class Shield(Weapon):
     armor : Optional[ArmorProperty] = None
     
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Shield']:
@@ -538,7 +546,7 @@ class Staff(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Staff']:
@@ -557,7 +565,7 @@ class Sword(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Sword']:
@@ -576,7 +584,7 @@ class Daggers(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Daggers']:
@@ -596,7 +604,7 @@ class Scythe(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Scythe']:
@@ -617,7 +625,7 @@ class Spear(Weapon):
     
     prefix : Optional[ItemProperty] = None
     suffix: Optional[ItemProperty] = None
-    inherent : Optional[ItemProperty] = None
+    inscription : Optional[ItemProperty] = None
     
     @classmethod
     def from_item_id(cls, item_id: int) -> Optional['Spear']:
