@@ -1918,12 +1918,96 @@ class OfSlayingUpgrade(WeaponSuffix):
         ItemType.Sword: ItemUpgradeId.OfSlaying_Sword,
         ItemType.Staff: ItemUpgradeId.OfSlaying_Staff,
     }
+    
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsSpecies,
         # ModifierIdentifier.BaneSpecies,
     ]
-
-    #TODO: Localize the name of this suffix
+    
+    names_by_species = {
+        ItemBaneSpecies.Undead: {
+            ServerLanguage.German: "d. Todesfluches",
+            ServerLanguage.English: "of Deathbane",
+            ServerLanguage.Korean: "(언데드 상대 무기)",
+            ServerLanguage.French: "(anti-mort)",
+            ServerLanguage.Italian: "del Flagello Mortale",
+            ServerLanguage.Spanish: "(matamuertos)",
+            ServerLanguage.TraditionalChinese: "不死族剋星",
+            ServerLanguage.Japanese: "(デスベイン)",
+            ServerLanguage.Polish: "(Zabijania Nieumarłych)",
+            ServerLanguage.Russian: "of Deathbane",
+            ServerLanguage.BorkBorkBork: "ooff Deaethbune-a"
+        },
+        
+        ItemBaneSpecies.Charr: {
+            ServerLanguage.English: "of Charrslaying",
+        },
+        
+        ItemBaneSpecies.Trolls: {
+            ServerLanguage.English: "of Trollslaying",
+        },
+        
+        ItemBaneSpecies.Plants: {            
+            ServerLanguage.German: "d. Pflanzentötung",
+            ServerLanguage.English: "of Pruning",
+            ServerLanguage.Korean: "(식물 상대 무기)",
+            ServerLanguage.French: "(anti-plantes)",
+            ServerLanguage.Italian: "del martello da Sfoltimento",
+            ServerLanguage.Spanish: "(mataplantas)",
+            ServerLanguage.TraditionalChinese: "枝葉修整",
+            ServerLanguage.Japanese: "(プルーニング)",
+            ServerLanguage.Polish: "(Obcinania)",
+            ServerLanguage.Russian: "of Pruning",
+            ServerLanguage.BorkBorkBork: "ooff Prooneeng"
+        },
+        
+        ItemBaneSpecies.Skeletons: {
+            ServerLanguage.English: "of Skeletonslaying",
+        },
+        
+        ItemBaneSpecies.Giants: {
+            ServerLanguage.English: "of Giantslaying",
+        },
+        
+        ItemBaneSpecies.Dwarves: {
+            ServerLanguage.English: "of Dwarfslaying",
+        },
+        
+        ItemBaneSpecies.Tengus: {
+            ServerLanguage.English: "of Tenguslaying",
+        },
+        
+        ItemBaneSpecies.Demons: {
+            ServerLanguage.German: "d. Dämonentötung",
+            ServerLanguage.English: "of Demonslaying",
+            ServerLanguage.Korean: "(데몬 상대 무기)",
+            ServerLanguage.French: "(anti-démons)",
+            ServerLanguage.Italian: "dell'arco Ammazza-demoni",
+            ServerLanguage.Spanish: "(matademonios)",
+            ServerLanguage.TraditionalChinese: "惡魔殺手",
+            ServerLanguage.Japanese: "(デーモン キラー)",
+            ServerLanguage.Polish: "(Zabijania Demonów)",
+            ServerLanguage.Russian: "of Demonslaying",
+            ServerLanguage.BorkBorkBork: "ooff Demunslaeyeeng"
+        },
+        
+        ItemBaneSpecies.Dragons: {
+            ServerLanguage.English: "of Dragonslaying",
+        },
+        
+        ItemBaneSpecies.Ogres: {
+            ServerLanguage.English: "of Ogreslaying",
+        },
+    }
+    
+    @property
+    def name(self) -> str:
+        species_property = next((p for p in self.properties if isinstance(p, DamagePlusVsSpecies)), None)
+        species = species_property.species if species_property else ItemBaneSpecies.Unknown
+        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
+        server_language = ServerLanguage(preference)
+        name_by_species = self.names_by_species.get(species, {})
+        return name_by_species.get(server_language, name_by_species.get(ServerLanguage.English, f"Unknown Slaying Suffix for {species.name}"))
 
 class OfSpearMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
@@ -3497,6 +3581,10 @@ class RuneOfMinorVigor(Rune):
         ServerLanguage.Polish: "Runa (Wigoru niższego poziomu)",
         ServerLanguage.Russian: "Rune of Minor Vigor",
         ServerLanguage.BorkBorkBork: "Roone-a ooff Meenur Feegur",
+    }
+    
+    descriptions = {
+        ServerLanguage.English: "Health +30 (Non-stacking)"
     }
 
 class RuneOfMinorVigor2(Rune):
@@ -7876,7 +7964,7 @@ _PROPERTY_FACTORY: dict[ModifierIdentifier, Callable[[DecodedModifier, list[Deco
     ModifierIdentifier.ArmorPlusVsSpecies: lambda m, _: ArmorPlusVsSpecies(modifier=m, armor=m.arg2, species=ItemBaneSpecies(m.arg1)),
     ModifierIdentifier.ArmorPlusWhileDown: lambda m, _: ArmorPlusWhileDown(modifier=m, armor=m.arg2, health_threshold=m.arg1),
     ModifierIdentifier.AttributePlusOne: lambda m, _: AttributePlusOne(modifier=m, attribute=Attribute(m.arg1), chance=m.arg2),
-    ModifierIdentifier.AttributePlusOneItem: lambda m, _: AttributePlusOneItem(modifier=m, chance=m.arg2),
+    ModifierIdentifier.AttributePlusOneItem: lambda m, _: AttributePlusOneItem(modifier=m, chance=m.arg1),
     ModifierIdentifier.AttributeRequirement: lambda m, _: AttributeRequirement(modifier=m, attribute=Attribute(m.arg1), attribute_level=m.arg2),
     ModifierIdentifier.BaneSpecies: lambda m, _: BaneProperty(modifier=m, species=ItemBaneSpecies(m.arg1)),
     ModifierIdentifier.Damage: lambda m, _: DamageProperty(modifier=m, min_damage=m.arg2, max_damage=m.arg1),
