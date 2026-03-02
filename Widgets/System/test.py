@@ -94,7 +94,7 @@ def main():
                 is_zealous_scythe = prefix is not None and prefix.id == ItemUpgrade.Zealous and prefix.item_type == ItemType.Scythe
                 
                 #Optional different approach
-                is_zealous_scythe_alt = prefix is not None and prefix.id == ItemUpgradeId.Zealous_Scythe
+                is_zealous_scythe_alt = prefix is not None and prefix.upgrade_id == ItemUpgradeId.Zealous_Scythe
 
                 ImGui.text(f"Is Zealous: {is_zealous}")
                 ImGui.text(f"Is Zealous Scythe: {is_zealous_scythe}")
