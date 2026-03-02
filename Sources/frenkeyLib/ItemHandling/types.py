@@ -1156,4 +1156,4 @@ class ItemUpgrade(Enum):
         if isinstance(self.value, dict):
             return upgrade_id in self.value.values()
         
-        return upgrade_id == self.value
+        return upgrade_id == self.value    

@@ -22,6 +22,7 @@ class Upgrade:
     """
     mod_type : ItemUpgradeType
     id: ItemUpgrade = ItemUpgrade.Unknown
+    upgrade_id: ItemUpgradeId = ItemUpgradeId.Unknown
     property_identifiers: list[ModifierIdentifier] = []
     properties: list[ItemProperty] = []
     
@@ -32,6 +33,7 @@ class Upgrade:
     def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
         upgrade = cls()
         upgrade.properties = []
+        upgrade.upgrade_id = mod.upgrade_id
         
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
@@ -84,8 +86,8 @@ class WeaponUpgrade(Upgrade):
         upgrade = cls()
         upgrade.properties = []
         
-        upgrade_id = mod.upgrade_id
-        upgrade.target_item_type = cls.id.get_item_type(upgrade_id)
+        upgrade.upgrade_id = mod.upgrade_id
+        upgrade.target_item_type = cls.id.get_item_type(upgrade.upgrade_id)
         
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
@@ -745,6 +747,8 @@ class OfAttributeUpgrade(WeaponSuffix):
     def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
         upgrade = cls()
         upgrade.properties = []
+        upgrade.upgrade_id = mod.upgrade_id
+        upgrade.target_item_type = cls.id.get_item_type(upgrade.upgrade_id)
                 
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
@@ -1230,6 +1234,8 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
         upgrade = cls()
         upgrade.properties = []
+        upgrade.upgrade_id = mod.upgrade_id
+        upgrade.target_item_type = cls.id.get_item_type(upgrade.upgrade_id)
                 
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
@@ -2494,6 +2500,7 @@ class AttributeRune(Rune):
     def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["AttributeRune"]:
         upgrade = cls()
         upgrade.properties = []
+        upgrade.upgrade_id = mod.upgrade_id
 
         cls.attribute = Attribute(mod.arg1)
         cls.attribute_level = mod.arg2

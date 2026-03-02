@@ -16,7 +16,7 @@ from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.native_src.internals.string_table import decode
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.ItemMod import ItemMod
-from Sources.frenkeyLib.ItemHandling.types import ItemUpgrade
+from Sources.frenkeyLib.ItemHandling.types import ItemUpgrade, ItemUpgradeId
 
 Utils.ClearSubModules("ItemHandling")
 
@@ -90,8 +90,15 @@ def main():
                 ImGui.text("Prefix")
                 PyImGui.table_next_column()
                 ImGui.text(prefix.name if prefix else "None")
-                ImGui.text(f"Is Zealous: {prefix.id == ItemUpgrade.Zealous if prefix else False}")
-                ImGui.text(f"Is Zealous Scythe: {(prefix.id == ItemUpgrade.Zealous and prefix.item_type == ItemType.Scythe) if prefix else False}")
+                is_zealous = prefix is not None and prefix.id == ItemUpgrade.Zealous
+                is_zealous_scythe = prefix is not None and prefix.id == ItemUpgrade.Zealous and prefix.item_type == ItemType.Scythe
+                
+                #Optional different approach
+                is_zealous_scythe_alt = prefix is not None and prefix.id == ItemUpgradeId.Zealous_Scythe
+
+                ImGui.text(f"Is Zealous: {is_zealous}")
+                ImGui.text(f"Is Zealous Scythe: {is_zealous_scythe}")
+                ImGui.text(f"Is Zealous Scythe (alt): {is_zealous_scythe_alt}")
                 PyImGui.table_next_column()
                 
                 ImGui.text("Inscription")
