@@ -445,7 +445,7 @@ class Infused(ItemProperty):
         return f"Infused"
 
 @dataclass
-class OfTheProfession(ItemProperty):
+class OfTheProfessionProperty(ItemProperty):
     attribute: Attribute
     attribute_level: int
     profession: Profession

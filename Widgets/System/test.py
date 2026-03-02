@@ -15,6 +15,7 @@ from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.native_src.internals.string_table import decode
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.ItemMod import ItemMod
+from Sources.frenkeyLib.ItemHandling.upgrades import *
 
 Utils.ClearSubModules("ItemHandling")
 
@@ -88,6 +89,7 @@ def main():
                 ImGui.text("Prefix")
                 PyImGui.table_next_column()
                 ImGui.text(prefix.name if prefix else "None")
+                ImGui.text(f"Is Zealous: {(prefix.is_upgrade(Zealous) if prefix else 'N/A')}")
                 PyImGui.table_next_column()
                 
                 ImGui.text("Inscription")
