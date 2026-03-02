@@ -9,7 +9,7 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Sources.frenkeyLib.ItemHandling.decoded_modifier import DecodedModifier
-from Sources.frenkeyLib.ItemHandling.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfessionProperty
+from Sources.frenkeyLib.ItemHandling.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfession
 from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
 
 
@@ -59,10 +59,6 @@ class Upgrade:
     def description(self) -> str:
         parts = [prop.describe() for prop in self.properties if prop.is_valid()]
         return "\n".join(parts)
-    
-    @classmethod
-    def is_upgrade(cls, upgrade_type: type) -> bool:
-        return isinstance(cls, upgrade_type)
     
 class UnknownUpgrade(Upgrade):
     mod_type = ItemUpgradeType.Unknown
@@ -173,7 +169,7 @@ class WeaponPrefix(WeaponUpgrade):
         
         return None
     
-class Adept(WeaponPrefix):
+class AdeptStaffUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Adept_Staff,
     }
@@ -194,7 +190,7 @@ class Adept(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Aedept",
 	}
     
-class Barbed(WeaponPrefix):
+class BarbedUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Barbed_Axe,
         ItemType.Bow: ItemUpgradeId.Barbed_Bow,
@@ -220,7 +216,7 @@ class Barbed(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Baerbed",
 	}
     
-class Crippling(WeaponPrefix):
+class CripplingUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Crippling_Axe,
         ItemType.Bow: ItemUpgradeId.Crippling_Bow,
@@ -246,7 +242,7 @@ class Crippling(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Creeppleeng",
 	}
         
-class Cruel(WeaponPrefix):
+class CruelUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Cruel_Axe,
         ItemType.Daggers: ItemUpgradeId.Cruel_Daggers,
@@ -272,7 +268,7 @@ class Cruel(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Crooel",
 	}
 
-class Defensive(WeaponPrefix):
+class DefensiveUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Defensive_Staff,
     }
@@ -293,7 +289,7 @@ class Defensive(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Deffenseefe-a",
 	}
     
-class Ebon(WeaponPrefix):
+class EbonUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Ebon_Axe,
         ItemType.Bow: ItemUpgradeId.Ebon_Bow,
@@ -320,7 +316,7 @@ class Ebon(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Ibun",
 	}
     
-class Fiery(WeaponPrefix):
+class FieryUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Fiery_Axe,
         ItemType.Bow: ItemUpgradeId.Fiery_Bow,
@@ -347,7 +343,7 @@ class Fiery(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Feeery",
 	}
     
-class Furious(WeaponPrefix):
+class FuriousUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Furious_Axe,
         ItemType.Daggers: ItemUpgradeId.Furious_Daggers,
@@ -373,7 +369,7 @@ class Furious(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Fooreeuoos",
 	}
     
-class Hale(WeaponPrefix):
+class HaleUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Hale_Staff,
     }
@@ -394,7 +390,7 @@ class Hale(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Haele-a",
 	}
     
-class Heavy(WeaponPrefix):
+class HeavyUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Heavy_Axe,
         ItemType.Hammer: ItemUpgradeId.Heavy_Hammer,
@@ -418,7 +414,7 @@ class Heavy(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Heaefy",
 	}
     
-class Icy(WeaponPrefix):
+class IcyUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Icy_Axe,
         ItemType.Bow: ItemUpgradeId.Icy_Bow,
@@ -445,7 +441,7 @@ class Icy(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Icy",
 	}
     
-class Insightful(WeaponPrefix):
+class InsightfulUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Insightful_Staff,
     }
@@ -466,7 +462,7 @@ class Insightful(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Inseeghtffool",
 	}
     
-class Poisonous(WeaponPrefix):
+class PoisonousUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Poisonous_Axe,
         ItemType.Bow: ItemUpgradeId.Poisonous_Bow,
@@ -492,7 +488,7 @@ class Poisonous(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Pueesunuoos",
 	}
     
-class Shocking(WeaponPrefix):
+class ShockingUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Shocking_Axe,
         ItemType.Bow: ItemUpgradeId.Shocking_Bow,
@@ -519,7 +515,7 @@ class Shocking(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Shuckeeng",
 	}
     
-class Silencing(WeaponPrefix):
+class SilencingUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Bow: ItemUpgradeId.Silencing_Bow,
         ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
@@ -542,7 +538,7 @@ class Silencing(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Seelenceeng",
 	}
     
-class Sundering(WeaponPrefix):
+class SunderingUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Sundering_Axe,
         ItemType.Bow: ItemUpgradeId.Sundering_Bow,
@@ -569,7 +565,7 @@ class Sundering(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Soondereeng",
 	}
     
-class Swift(WeaponPrefix):
+class SwiftStaffUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.Swift_Staff,
     }
@@ -590,7 +586,7 @@ class Swift(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Sveefft",
 	}
     
-class Vampiric(WeaponPrefix):
+class VampiricUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Vampiric_Axe,
         ItemType.Bow: ItemUpgradeId.Vampiric_Bow,
@@ -618,7 +614,7 @@ class Vampiric(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Faempureec",
 	}
     
-class Zealous(WeaponPrefix):
+class ZealousUpgrade(WeaponPrefix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.Zealous_Axe,
         ItemType.Bow: ItemUpgradeId.Zealous_Bow,
@@ -801,13 +797,13 @@ class WeaponSuffix(WeaponUpgrade):
     def get_weapon_upgrade_name(cls, item_type: ItemType, server_language: ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> Optional[str]:
         if item_type in WEAPON_PREFIX_ITEM_NAME_FORMAT:
             item_type_name_formats = WEAPON_PREFIX_ITEM_NAME_FORMAT.get(item_type, {})
-            item_type_name_format = item_type_name_formats.get(server_language, item_type_name_formats.get(ServerLanguage.English, item_type.name + "  of {prefix}"))
+            item_type_name_format = item_type_name_formats.get(server_language, item_type_name_formats.get(ServerLanguage.English, item_type.name + " Upgrade of {prefix}"))
             name = cls.names.get(server_language, cls.names.get(ServerLanguage.English, f"Unknown Weapon Suffix {cls.__class__.__name__}"))
             return item_type_name_format.format(prefix=name)
         
         return None
     
-class OfAttribute(WeaponSuffix):
+class OfAttributeUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
     }
@@ -844,7 +840,7 @@ class OfAttribute(WeaponSuffix):
                 upgrade.properties.append(prop)
                 
             else:
-                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}.  composition failed.")
+                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
                 return None
         
         attribute_property = next((p for p in upgrade.properties if isinstance(p, AttributePlusOne)), None)
@@ -859,7 +855,7 @@ class OfAttribute(WeaponSuffix):
         
         return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__)).format(attribute=AttributeNames.get(self.attribute) if self.attribute != Attribute.None_ else "Unknown Attribute")
     
-class OfAptitude(WeaponSuffix):
+class OfAptitudeUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
     }
@@ -880,7 +876,7 @@ class OfAptitude(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Aepteetoode-a",
 	}
     
-class OfAxeMastery(WeaponSuffix):
+class OfAxeMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfAxeMastery,
     }
@@ -901,7 +897,7 @@ class OfAxeMastery(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Aexe-a Maestery",
 	}
     
-class OfDaggerMastery(WeaponSuffix):
+class OfDaggerMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
     }
@@ -922,7 +918,7 @@ class OfDaggerMastery(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Daegger Maestery",
 	}
     
-class OfDefense(WeaponSuffix):
+class OfDefenseUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfDefense_Axe,
         ItemType.Bow: ItemUpgradeId.OfDefense_Bow,
@@ -950,7 +946,7 @@ class OfDefense(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Deffense-a",
 	}
     
-class OfDevotion(WeaponSuffix):
+class OfDevotionUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Shield: ItemUpgradeId.OfDevotion_Shield,
         ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
@@ -973,7 +969,7 @@ class OfDevotion(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Defushun",
 	}
     
-class OfEnchanting(WeaponSuffix):
+class OfEnchantingUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfEnchanting_Axe,
         ItemType.Bow: ItemUpgradeId.OfEnchanting_Bow,
@@ -1001,7 +997,7 @@ class OfEnchanting(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Inchunteeng",
 	}
     
-class OfEndurance(WeaponSuffix):
+class OfEnduranceUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfEndurance_Focus,
         ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
@@ -1024,7 +1020,7 @@ class OfEndurance(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Indoorunce-a",
 	}
     
-class OfFortitude(WeaponSuffix):
+class OfFortitudeUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfFortitude_Axe,
         ItemType.Bow: ItemUpgradeId.OfFortitude_Bow,
@@ -1054,7 +1050,7 @@ class OfFortitude(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Furteetoode-a",
 	}
     
-class OfHammerMastery(WeaponSuffix):
+class OfHammerMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
     }
@@ -1075,7 +1071,7 @@ class OfHammerMastery(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Haemmer Maestery",
 	}
     
-class OfMarksmanship(WeaponSuffix):
+class OfMarksmanshipUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Bow: ItemUpgradeId.OfMarksmanship,
     }
@@ -1096,7 +1092,7 @@ class OfMarksmanship(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Maerksmunsheep",
 	}
     
-class OfMastery(WeaponSuffix):
+class OfMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
     }
@@ -1117,7 +1113,7 @@ class OfMastery(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Maestery",
 	}
     
-class OfMemory(WeaponSuffix):
+class OfMemoryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
     }
@@ -1137,7 +1133,7 @@ class OfMemory(WeaponSuffix):
 		ServerLanguage.Russian: "of Memory",
 		ServerLanguage.BorkBorkBork: "ooff Memury",
 	}
-class OfQuickening(WeaponSuffix):
+class OfQuickeningUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
     }
@@ -1158,7 +1154,7 @@ class OfQuickening(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Qooeeckeneeng",
 	}
     
-class OfScytheMastery(WeaponSuffix):
+class OfScytheMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
     }
@@ -1179,7 +1175,7 @@ class OfScytheMastery(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Scyzee Maestery",
 	}
     
-class OfShelter(WeaponSuffix):
+class OfShelterUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfShelter_Axe,
         ItemType.Bow: ItemUpgradeId.OfShelter_Bow,
@@ -1207,7 +1203,7 @@ class OfShelter(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Shelter",
 	}
     
-class OfSlaying(WeaponSuffix):
+class OfSlayingUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfSlaying_Axe,
         ItemType.Bow: ItemUpgradeId.OfSlaying_Bow,
@@ -1306,7 +1302,7 @@ class OfSlaying(WeaponSuffix):
         name_by_species = self.names_by_species.get(species, {})
         return name_by_species.get(server_language, name_by_species.get(ServerLanguage.English, f"Unknown Slaying Suffix for {species.name}"))
 
-class OfSpearMastery(WeaponSuffix):
+class OfSpearMasteryUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Spear: ItemUpgradeId.OfSpearMastery,
     }
@@ -1327,7 +1323,7 @@ class OfSpearMastery(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Speaer Maestery",
 	}
     
-class OfSwiftness(WeaponSuffix):
+class OfSwiftnessUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
     }
@@ -1348,7 +1344,7 @@ class OfSwiftness(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Sveefftness",
 	}
     
-class OfSwordsmanship(WeaponSuffix):
+class OfSwordsmanshipUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
     }
@@ -1369,7 +1365,7 @@ class OfSwordsmanship(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Svurdsmunsheep",
 	}
     
-class OfTheProfession(WeaponSuffix):
+class OfTheProfessionUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfTheProfession_Axe,
         ItemType.Bow: ItemUpgradeId.OfTheProfession_Bow,
@@ -1415,10 +1411,10 @@ class OfTheProfession(WeaponSuffix):
                 upgrade.properties.append(prop)
                 
             else:
-                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}.  composition failed.")
+                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
                 return None
         
-        profession_property = next((p for p in upgrade.properties if isinstance(p, OfTheProfessionProperty)), None)
+        profession_property = next((p for p in upgrade.properties if isinstance(p, OfTheProfession)), None)
         upgrade.profession = profession_property.profession if profession_property else Profession._None
         
         return upgrade
@@ -1432,7 +1428,7 @@ class OfTheProfession(WeaponSuffix):
     
     
     
-class OfValor(WeaponSuffix):
+class OfValorUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Offhand: ItemUpgradeId.OfValor_Focus,
         ItemType.Shield: ItemUpgradeId.OfValor_Shield,
@@ -1455,7 +1451,7 @@ class OfValor(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Faelur",
 	}
     
-class OfWarding(WeaponSuffix):
+class OfWardingUpgrade(WeaponSuffix):
     item_type_id_map = {
         ItemType.Axe: ItemUpgradeId.OfWarding_Axe,
         ItemType.Bow: ItemUpgradeId.OfWarding_Bow,
@@ -1485,7 +1481,7 @@ class OfWarding(WeaponSuffix):
 #endregion Suffixes
 
 #region Inscriptions
-class Inscription():
+class Inscription(Upgrade):
     mod_type = ItemUpgradeType.Inscription
     inventory_icon : str
     id : ItemUpgradeId
@@ -6847,48 +6843,48 @@ class AppliesToSuperiorRuneParagon(Upgrade):
 #endregion Armor Upgrades
 
 _UPGRADES: list[type[Upgrade]] = [
-    Icy,
-    Ebon,
-    Shocking,
-    Fiery,
-    Barbed,
-    Crippling,
-    Cruel,
-    Poisonous,
-    Silencing,
-    Furious,
-    Heavy,
-    Zealous,
-    Vampiric,
-    Sundering,
-    Defensive,
-    Insightful,
-    Hale,
-    OfDefense,
-    OfWarding,
-    OfShelter,
-    OfSlaying,
-    OfFortitude,
-    OfEnchanting,
-    OfTheProfession,
-    OfAxeMastery,
-    OfMarksmanship,
-    OfDaggerMastery,
-    OfHammerMastery,
-    OfScytheMastery,
-    OfSpearMastery,
-    OfSwordsmanship,
-    OfAttribute,
-    OfMastery,
-    Swift,
-    Adept,
-    OfMemory,
-    OfQuickening,
-    OfAptitude,
-    OfDevotion,
-    OfValor,
-    OfEndurance,
-    OfSwiftness,
+    IcyUpgrade,
+    EbonUpgrade,
+    ShockingUpgrade,
+    FieryUpgrade,
+    BarbedUpgrade,
+    CripplingUpgrade,
+    CruelUpgrade,
+    PoisonousUpgrade,
+    SilencingUpgrade,
+    FuriousUpgrade,
+    HeavyUpgrade,
+    ZealousUpgrade,
+    VampiricUpgrade,
+    SunderingUpgrade,
+    DefensiveUpgrade,
+    InsightfulUpgrade,
+    HaleUpgrade,
+    OfDefenseUpgrade,
+    OfWardingUpgrade,
+    OfShelterUpgrade,
+    OfSlayingUpgrade,
+    OfFortitudeUpgrade,
+    OfEnchantingUpgrade,
+    OfTheProfessionUpgrade,
+    OfAxeMasteryUpgrade,
+    OfMarksmanshipUpgrade,
+    OfDaggerMasteryUpgrade,
+    OfHammerMasteryUpgrade,
+    OfScytheMasteryUpgrade,
+    OfSpearMasteryUpgrade,
+    OfSwordsmanshipUpgrade,
+    OfAttributeUpgrade,
+    OfMasteryUpgrade,
+    SwiftStaffUpgrade,
+    AdeptStaffUpgrade,
+    OfMemoryUpgrade,
+    OfQuickeningUpgrade,
+    OfAptitudeUpgrade,
+    OfDevotionUpgrade,
+    OfValorUpgrade,
+    OfEnduranceUpgrade,
+    OfSwiftnessUpgrade,
     
     BeJustAndFearNot,
     DownButNotOut,
