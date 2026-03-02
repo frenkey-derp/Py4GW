@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Optional, cast
 
 import Py4GW
 
@@ -28,23 +28,35 @@ class Upgrade:
     
     names: dict[ServerLanguage, str] = {}
     descriptions: dict[ServerLanguage, str] = {}
+
+    @classmethod
+    def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        return None
+
+    @classmethod
+    def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        return None
     
     @classmethod
     def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
         upgrade = cls()
         upgrade.properties = []
         upgrade.upgrade_id = mod.upgrade_id
-        
+
+        cls._pre_compose(upgrade, mod, modifiers)
+
+        property_factory = _get_property_factory()
         for prop_id in upgrade.property_identifiers:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
             
             if prop_mod:
-                prop = _get_property_factory().get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
+                prop = property_factory.get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
                 upgrade.properties.append(prop)
             else:
                 Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
                 return None
-        
+
+        cls._post_compose(upgrade, mod, modifiers)
         return upgrade
 
     @classmethod
@@ -82,24 +94,9 @@ class WeaponUpgrade(Upgrade):
     target_item_type : ItemType
 
     @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
-        upgrade = cls()
-        upgrade.properties = []
-        
-        upgrade.upgrade_id = mod.upgrade_id
-        upgrade.target_item_type = cls.id.get_item_type(upgrade.upgrade_id)
-        
-        for prop_id in upgrade.property_identifiers:
-            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
-            
-            if prop_mod:
-                prop = _get_property_factory().get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
-                upgrade.properties.append(prop)
-            else:
-                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
-                return None
-        
-        return upgrade
+    def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        weapon_upgrade = cast("WeaponUpgrade", upgrade)
+        weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)
 
 #region Prefixes
 WEAPON_PREFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
@@ -744,27 +741,10 @@ class OfAttributeUpgrade(WeaponSuffix):
     attribute : Attribute = Attribute.None_
         
     @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
-        upgrade = cls()
-        upgrade.properties = []
-        upgrade.upgrade_id = mod.upgrade_id
-        upgrade.target_item_type = cls.id.get_item_type(upgrade.upgrade_id)
-                
-        for prop_id in upgrade.property_identifiers:
-            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
-            
-            if prop_mod:
-                prop = _get_property_factory().get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
-                upgrade.properties.append(prop)
-                
-            else:
-                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
-                return None
-        
+    def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        of_attribute_upgrade = cast("OfAttributeUpgrade", upgrade)
         attribute_property = next((p for p in upgrade.properties if isinstance(p, AttributePlusOne)), None)
-        upgrade.attribute = attribute_property.attribute if attribute_property else Attribute.None_
-        
-        return upgrade
+        of_attribute_upgrade.attribute = attribute_property.attribute if attribute_property else Attribute.None_
     
     @property
     def name(self) -> str:
@@ -1231,27 +1211,10 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     profession : Profession = Profession._None
     
     @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
-        upgrade = cls()
-        upgrade.properties = []
-        upgrade.upgrade_id = mod.upgrade_id
-        upgrade.target_item_type = cls.id.get_item_type(upgrade.upgrade_id)
-                
-        for prop_id in upgrade.property_identifiers:
-            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
-            
-            if prop_mod:
-                prop = _get_property_factory().get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
-                upgrade.properties.append(prop)
-                
-            else:
-                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
-                return None
-        
+    def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        of_the_profession_upgrade = cast("OfTheProfessionUpgrade", upgrade)
         profession_property = next((p for p in upgrade.properties if isinstance(p, OfTheProfession)), None)
-        upgrade.profession = profession_property.profession if profession_property else Profession._None
-        
-        return upgrade
+        of_the_profession_upgrade.profession = profession_property.profession if profession_property else Profession._None
     
     @property
     def name(self) -> str:
@@ -2497,25 +2460,10 @@ class AttributeRune(Rune):
     attribute_level : int
 
     @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["AttributeRune"]:
-        upgrade = cls()
-        upgrade.properties = []
-        upgrade.upgrade_id = mod.upgrade_id
-
-        cls.attribute = Attribute(mod.arg1)
-        cls.attribute_level = mod.arg2
-
-        for prop_id in upgrade.property_identifiers:
-            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
-
-            if prop_mod:
-                prop = _get_property_factory().get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
-                upgrade.properties.append(prop)
-            else:
-                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
-                return None
-
-        return upgrade
+    def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        attribute_rune = cast("AttributeRune", upgrade)
+        attribute_rune.attribute = Attribute(mod.arg1)
+        attribute_rune.attribute_level = mod.arg2
 
     @property
     def description(self) -> str:
