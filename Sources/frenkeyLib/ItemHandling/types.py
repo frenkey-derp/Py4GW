@@ -1136,13 +1136,21 @@ class ItemUpgrade(Enum):
     @property
     def item_type_id_map(self) -> dict[ItemType, "ItemUpgradeId"]:
         return self.value if isinstance(self.value, dict) else {}
-
+    
     @property
     def upgrade_ids(self) -> tuple["ItemUpgradeId", ...]:
         if isinstance(self.value, dict):
             return tuple(self.value.values())
         
         return (self.value,)
+
+    def get_item_type(self, upgrade_id: "ItemUpgradeId") -> ItemType:
+        if isinstance(self.value, dict):
+            for item_type, item_upgrade_id in self.value.items():
+                if item_upgrade_id == upgrade_id:
+                    return item_type
+        
+        return ItemType.Unknown
 
     def has_id(self, upgrade_id: "ItemUpgradeId") -> bool:
         if isinstance(self.value, dict):

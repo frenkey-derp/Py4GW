@@ -10,6 +10,7 @@ from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.native_src.internals.string_table import decode
@@ -90,6 +91,7 @@ def main():
                 PyImGui.table_next_column()
                 ImGui.text(prefix.name if prefix else "None")
                 ImGui.text(f"Is Zealous: {prefix.id == ItemUpgrade.Zealous if prefix else False}")
+                ImGui.text(f"Is Zealous Scythe: {(prefix.id == ItemUpgrade.Zealous and prefix.item_type == ItemType.Scythe) if prefix else False}")
                 PyImGui.table_next_column()
                 
                 ImGui.text("Inscription")

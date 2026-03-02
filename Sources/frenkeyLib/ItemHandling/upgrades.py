@@ -60,6 +60,16 @@ class Upgrade:
         parts = [prop.describe() for prop in self.properties if prop.is_valid()]
         return "\n".join(parts)
     
+    @property
+    def item_type(self) -> Optional[ItemType]:
+        if isinstance(self, WeaponUpgrade):
+            return self.target_item_type
+        
+        elif isinstance(self, Inscription):
+            return self.target_item_type
+        
+        return None
+    
 class UnknownUpgrade(Upgrade):
     mod_type = ItemUpgradeType.Unknown
     id = ItemUpgrade.Unknown
@@ -67,7 +77,27 @@ class UnknownUpgrade(Upgrade):
     
 #region Weapon Upgrades
 class WeaponUpgrade(Upgrade):
-    pass
+    target_item_type : ItemType
+
+    @classmethod
+    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
+        upgrade = cls()
+        upgrade.properties = []
+        
+        upgrade_id = mod.upgrade_id
+        upgrade.target_item_type = cls.id.get_item_type(upgrade_id)
+        
+        for prop_id in upgrade.property_identifiers:
+            prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
+            
+            if prop_mod:
+                prop = _get_property_factory().get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
+                upgrade.properties.append(prop)
+            else:
+                Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
+                return None
+        
+        return upgrade
 
 #region Prefixes
 WEAPON_PREFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
