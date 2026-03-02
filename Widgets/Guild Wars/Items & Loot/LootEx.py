@@ -189,8 +189,7 @@ class LootEx:
             return
             
         if not self.current_character:
-            self.current_character = GLOBAL_CACHE.Party._party_instance.GetPlayerNameByLoginNumber(GLOBAL_CACHE.ShMem.GetLoginNumber()) if GLOBAL_CACHE.Party._party_instance and GLOBAL_CACHE.Party.IsPartyLoaded() and GLOBAL_CACHE.ShMem.GetLoginNumber() > 0 else ""  
-            # self.current_character = Player.GetName()
+            self.current_character = Player.GetName()
                 
         if self.current_character == "Timeout":
             ConsoleLog(MODULE_NAME, "Character name request timed out. Try again...", Console.MessageType.Error)
