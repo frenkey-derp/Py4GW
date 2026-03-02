@@ -10,8 +10,7 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Sources.frenkeyLib.ItemHandling.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfession
-from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
-
+from Sources.frenkeyLib.ItemHandling.types import ItemBaneSpecies, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
 
 def _get_property_factory():
     from Sources.frenkeyLib.ItemHandling.upgrade_parser import _PROPERTY_FACTORY
@@ -22,6 +21,7 @@ class Upgrade:
     Abstract base class for item upgrades. Each specific upgrade type (e.g., Prefix, Suffix, Inscription) should inherit from this class and implement the necessary properties and methods.
     """
     mod_type : ItemUpgradeType
+    id: ItemUpgrade = ItemUpgrade.Unknown
     property_identifiers: list[ModifierIdentifier] = []
     properties: list[ItemProperty] = []
     
@@ -47,7 +47,7 @@ class Upgrade:
 
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return False
+        return cls.id.has_id(upgrade_id)
     
     @property
     def name(self) -> str:
@@ -62,16 +62,12 @@ class Upgrade:
     
 class UnknownUpgrade(Upgrade):
     mod_type = ItemUpgradeType.Unknown
-    item_type_id_map = {}
+    id = ItemUpgrade.Unknown
     property_identifiers = []
     
 #region Weapon Upgrades
 class WeaponUpgrade(Upgrade):
-    item_type_id_map : dict[ItemType, ItemUpgradeId]
-    
-    @classmethod
-    def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return upgrade_id in cls.item_type_id_map.values()
+    pass
 
 #region Prefixes
 WEAPON_PREFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
@@ -170,9 +166,7 @@ class WeaponPrefix(WeaponUpgrade):
         return None
     
 class AdeptStaffUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Adept_Staff,
-    }
+    id = ItemUpgrade.Adept
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
@@ -191,14 +185,7 @@ class AdeptStaffUpgrade(WeaponPrefix):
 	}
     
 class BarbedUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Barbed_Axe,
-        ItemType.Bow: ItemUpgradeId.Barbed_Bow,
-        ItemType.Daggers: ItemUpgradeId.Barbed_Daggers,
-        ItemType.Scythe: ItemUpgradeId.Barbed_Scythe,
-        ItemType.Spear: ItemUpgradeId.Barbed_Spear,
-        ItemType.Sword: ItemUpgradeId.Barbed_Sword,
-    }
+    id = ItemUpgrade.Barbed
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
@@ -217,14 +204,7 @@ class BarbedUpgrade(WeaponPrefix):
 	}
     
 class CripplingUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Crippling_Axe,
-        ItemType.Bow: ItemUpgradeId.Crippling_Bow,
-        ItemType.Daggers: ItemUpgradeId.Crippling_Daggers,
-        ItemType.Scythe: ItemUpgradeId.Crippling_Scythe,
-        ItemType.Spear: ItemUpgradeId.Crippling_Spear,
-        ItemType.Sword: ItemUpgradeId.Crippling_Sword,
-    }
+    id = ItemUpgrade.Crippling
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
@@ -243,14 +223,7 @@ class CripplingUpgrade(WeaponPrefix):
 	}
         
 class CruelUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Cruel_Axe,
-        ItemType.Daggers: ItemUpgradeId.Cruel_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Cruel_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Cruel_Scythe,
-        ItemType.Spear: ItemUpgradeId.Cruel_Spear,
-        ItemType.Sword: ItemUpgradeId.Cruel_Sword,
-    }
+    id = ItemUpgrade.Cruel
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
@@ -269,9 +242,7 @@ class CruelUpgrade(WeaponPrefix):
 	}
 
 class DefensiveUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Defensive_Staff,
-    }
+    id = ItemUpgrade.Defensive
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
@@ -290,15 +261,7 @@ class DefensiveUpgrade(WeaponPrefix):
 	}
     
 class EbonUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Ebon_Axe,
-        ItemType.Bow: ItemUpgradeId.Ebon_Bow,
-        ItemType.Daggers: ItemUpgradeId.Ebon_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Ebon_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Ebon_Scythe,
-        ItemType.Spear: ItemUpgradeId.Ebon_Spear,
-        ItemType.Sword: ItemUpgradeId.Ebon_Sword,
-    }
+    id = ItemUpgrade.Ebon
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
@@ -317,15 +280,7 @@ class EbonUpgrade(WeaponPrefix):
 	}
     
 class FieryUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Fiery_Axe,
-        ItemType.Bow: ItemUpgradeId.Fiery_Bow,
-        ItemType.Daggers: ItemUpgradeId.Fiery_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Fiery_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Fiery_Scythe,
-        ItemType.Spear: ItemUpgradeId.Fiery_Spear,
-        ItemType.Sword: ItemUpgradeId.Fiery_Sword,
-    }
+    id = ItemUpgrade.Fiery
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
@@ -344,14 +299,7 @@ class FieryUpgrade(WeaponPrefix):
 	}
     
 class FuriousUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Furious_Axe,
-        ItemType.Daggers: ItemUpgradeId.Furious_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Furious_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Furious_Scythe,
-        ItemType.Spear: ItemUpgradeId.Furious_Spear,
-        ItemType.Sword: ItemUpgradeId.Furious_Sword,
-    }
+    id = ItemUpgrade.Furious
     property_identifiers = [
         ModifierIdentifier.Furious,
     ]
@@ -370,9 +318,7 @@ class FuriousUpgrade(WeaponPrefix):
 	}
     
 class HaleUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Hale_Staff,
-    }
+    id = ItemUpgrade.Hale
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
@@ -391,12 +337,7 @@ class HaleUpgrade(WeaponPrefix):
 	}
     
 class HeavyUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Heavy_Axe,
-        ItemType.Hammer: ItemUpgradeId.Heavy_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Heavy_Scythe,
-        ItemType.Spear: ItemUpgradeId.Heavy_Spear,
-    }
+    id = ItemUpgrade.Heavy
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
@@ -415,15 +356,7 @@ class HeavyUpgrade(WeaponPrefix):
 	}
     
 class IcyUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Icy_Axe,
-        ItemType.Bow: ItemUpgradeId.Icy_Bow,
-        ItemType.Daggers: ItemUpgradeId.Icy_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Icy_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Icy_Scythe,
-        ItemType.Spear: ItemUpgradeId.Icy_Spear,
-        ItemType.Sword: ItemUpgradeId.Icy_Sword,
-    }
+    id = ItemUpgrade.Icy
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
@@ -442,9 +375,7 @@ class IcyUpgrade(WeaponPrefix):
 	}
     
 class InsightfulUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Insightful_Staff,
-    }
+    id = ItemUpgrade.Insightful
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
@@ -463,14 +394,7 @@ class InsightfulUpgrade(WeaponPrefix):
 	}
     
 class PoisonousUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Poisonous_Axe,
-        ItemType.Bow: ItemUpgradeId.Poisonous_Bow,
-        ItemType.Daggers: ItemUpgradeId.Poisonous_Daggers,
-        ItemType.Scythe: ItemUpgradeId.Poisonous_Scythe,
-        ItemType.Spear: ItemUpgradeId.Poisonous_Spear,
-        ItemType.Sword: ItemUpgradeId.Poisonous_Sword,
-    }
+    id = ItemUpgrade.Poisonous
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
@@ -489,15 +413,7 @@ class PoisonousUpgrade(WeaponPrefix):
 	}
     
 class ShockingUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Shocking_Axe,
-        ItemType.Bow: ItemUpgradeId.Shocking_Bow,
-        ItemType.Daggers: ItemUpgradeId.Shocking_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Shocking_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Shocking_Scythe,
-        ItemType.Spear: ItemUpgradeId.Shocking_Spear,
-        ItemType.Sword: ItemUpgradeId.Shocking_Sword,
-    }
+    id = ItemUpgrade.Shocking
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
@@ -516,11 +432,7 @@ class ShockingUpgrade(WeaponPrefix):
 	}
     
 class SilencingUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Bow: ItemUpgradeId.Silencing_Bow,
-        ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
-        ItemType.Spear: ItemUpgradeId.Silencing_Spear,
-    }
+    id = ItemUpgrade.Silencing
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
@@ -539,15 +451,7 @@ class SilencingUpgrade(WeaponPrefix):
 	}
     
 class SunderingUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Sundering_Axe,
-        ItemType.Bow: ItemUpgradeId.Sundering_Bow,
-        ItemType.Daggers: ItemUpgradeId.Sundering_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Sundering_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Sundering_Scythe,
-        ItemType.Spear: ItemUpgradeId.Sundering_Spear,
-        ItemType.Sword: ItemUpgradeId.Sundering_Sword,
-    }
+    id = ItemUpgrade.Sundering
     property_identifiers = [
         ModifierIdentifier.ArmorPenetration,
     ]
@@ -566,9 +470,7 @@ class SunderingUpgrade(WeaponPrefix):
 	}
     
 class SwiftStaffUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.Swift_Staff,
-    }
+    id = ItemUpgrade.Swift
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
@@ -587,15 +489,7 @@ class SwiftStaffUpgrade(WeaponPrefix):
 	}
     
 class VampiricUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Vampiric_Axe,
-        ItemType.Bow: ItemUpgradeId.Vampiric_Bow,
-        ItemType.Daggers: ItemUpgradeId.Vampiric_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Vampiric_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Vampiric_Scythe,
-        ItemType.Spear: ItemUpgradeId.Vampiric_Spear,
-        ItemType.Sword: ItemUpgradeId.Vampiric_Sword,
-    }
+    id = ItemUpgrade.Vampiric
     property_identifiers = [
         ModifierIdentifier.HealthDegen,
         ModifierIdentifier.HealthStealOnHit,
@@ -615,15 +509,7 @@ class VampiricUpgrade(WeaponPrefix):
 	}
     
 class ZealousUpgrade(WeaponPrefix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.Zealous_Axe,
-        ItemType.Bow: ItemUpgradeId.Zealous_Bow,
-        ItemType.Daggers: ItemUpgradeId.Zealous_Daggers,
-        ItemType.Hammer: ItemUpgradeId.Zealous_Hammer,
-        ItemType.Scythe: ItemUpgradeId.Zealous_Scythe,
-        ItemType.Spear: ItemUpgradeId.Zealous_Spear,
-        ItemType.Sword: ItemUpgradeId.Zealous_Sword,
-    }
+    id = ItemUpgrade.Zealous
     property_identifiers = [
         ModifierIdentifier.EnergyDegen,
         ModifierIdentifier.EnergyGainOnHit,
@@ -804,9 +690,7 @@ class WeaponSuffix(WeaponUpgrade):
         return None
     
 class OfAttributeUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
-    }
+    id = ItemUpgrade.OfAttribute
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -856,9 +740,7 @@ class OfAttributeUpgrade(WeaponSuffix):
         return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__)).format(attribute=AttributeNames.get(self.attribute) if self.attribute != Attribute.None_ else "Unknown Attribute")
     
 class OfAptitudeUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
-    }
+    id = ItemUpgrade.OfAptitude
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
@@ -877,9 +759,7 @@ class OfAptitudeUpgrade(WeaponSuffix):
 	}
     
 class OfAxeMasteryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfAxeMastery,
-    }
+    id = ItemUpgrade.OfAxeMastery
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -898,9 +778,7 @@ class OfAxeMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfDaggerMasteryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
-    }
+    id = ItemUpgrade.OfDaggerMastery
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]   
@@ -919,16 +797,7 @@ class OfDaggerMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfDefenseUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfDefense_Axe,
-        ItemType.Bow: ItemUpgradeId.OfDefense_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfDefense_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfDefense_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfDefense_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfDefense_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfDefense_Spear,
-        ItemType.Sword: ItemUpgradeId.OfDefense_Sword,
-    }
+    id = ItemUpgrade.OfDefense
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
@@ -947,11 +816,7 @@ class OfDefenseUpgrade(WeaponSuffix):
 	}
     
 class OfDevotionUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Shield: ItemUpgradeId.OfDevotion_Shield,
-        ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
-        ItemType.Staff: ItemUpgradeId.OfDevotion_Staff,
-    }
+    id = ItemUpgrade.OfDevotion
     property_identifiers = [
         ModifierIdentifier.HealthPlusEnchanted,
     ]
@@ -970,16 +835,7 @@ class OfDevotionUpgrade(WeaponSuffix):
 	}
     
 class OfEnchantingUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfEnchanting_Axe,
-        ItemType.Bow: ItemUpgradeId.OfEnchanting_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfEnchanting_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfEnchanting_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfEnchanting_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfEnchanting_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfEnchanting_Spear,
-        ItemType.Sword: ItemUpgradeId.OfEnchanting_Sword,
-    }
+    id = ItemUpgrade.OfEnchanting
     property_identifiers = [
         ModifierIdentifier.IncreaseEnchantmentDuration,
     ]
@@ -998,11 +854,7 @@ class OfEnchantingUpgrade(WeaponSuffix):
 	}
     
 class OfEnduranceUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfEndurance_Focus,
-        ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
-        ItemType.Staff: ItemUpgradeId.OfEndurance_Staff,
-    }
+    id = ItemUpgrade.OfEndurance
     property_identifiers = [
         ModifierIdentifier.HealthPlusStance,
     ]
@@ -1021,18 +873,7 @@ class OfEnduranceUpgrade(WeaponSuffix):
 	}
     
 class OfFortitudeUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfFortitude_Axe,
-        ItemType.Bow: ItemUpgradeId.OfFortitude_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfFortitude_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfFortitude_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfFortitude_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfFortitude_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfFortitude_Spear,
-        ItemType.Sword: ItemUpgradeId.OfFortitude_Sword,
-        ItemType.Offhand: ItemUpgradeId.OfFortitude_Focus,
-        ItemType.Shield: ItemUpgradeId.OfFortitude_Shield,
-    }
+    id = ItemUpgrade.OfFortitude
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
@@ -1051,9 +892,7 @@ class OfFortitudeUpgrade(WeaponSuffix):
 	}
     
 class OfHammerMasteryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
-    }
+    id = ItemUpgrade.OfHammerMastery
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -1072,9 +911,7 @@ class OfHammerMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfMarksmanshipUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Bow: ItemUpgradeId.OfMarksmanship,
-    }
+    id = ItemUpgrade.OfMarksmanship
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -1093,9 +930,7 @@ class OfMarksmanshipUpgrade(WeaponSuffix):
 	}
     
 class OfMasteryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
-    }
+    id = ItemUpgrade.OfMastery
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
@@ -1114,9 +949,7 @@ class OfMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfMemoryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
-    }
+    id = ItemUpgrade.OfMemory
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
     ]
@@ -1134,9 +967,7 @@ class OfMemoryUpgrade(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff Memury",
 	}
 class OfQuickeningUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
-    }
+    id = ItemUpgrade.OfQuickening
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
@@ -1155,9 +986,7 @@ class OfQuickeningUpgrade(WeaponSuffix):
 	}
     
 class OfScytheMasteryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
-    }
+    id = ItemUpgrade.OfScytheMastery
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -1176,16 +1005,7 @@ class OfScytheMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfShelterUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfShelter_Axe,
-        ItemType.Bow: ItemUpgradeId.OfShelter_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfShelter_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfShelter_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfShelter_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfShelter_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfShelter_Spear,
-        ItemType.Sword: ItemUpgradeId.OfShelter_Sword,
-    }
+    id = ItemUpgrade.OfShelter
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
@@ -1204,13 +1024,7 @@ class OfShelterUpgrade(WeaponSuffix):
 	}
     
 class OfSlayingUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfSlaying_Axe,
-        ItemType.Bow: ItemUpgradeId.OfSlaying_Bow,
-        ItemType.Hammer: ItemUpgradeId.OfSlaying_Hammer,
-        ItemType.Sword: ItemUpgradeId.OfSlaying_Sword,
-        ItemType.Staff: ItemUpgradeId.OfSlaying_Staff,
-    }
+    id = ItemUpgrade.OfSlaying
     
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsSpecies,
@@ -1303,9 +1117,7 @@ class OfSlayingUpgrade(WeaponSuffix):
         return name_by_species.get(server_language, name_by_species.get(ServerLanguage.English, f"Unknown Slaying Suffix for {species.name}"))
 
 class OfSpearMasteryUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Spear: ItemUpgradeId.OfSpearMastery,
-    }
+    id = ItemUpgrade.OfSpearMastery
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -1324,9 +1136,7 @@ class OfSpearMasteryUpgrade(WeaponSuffix):
 	}
     
 class OfSwiftnessUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
-    }
+    id = ItemUpgrade.OfSwiftness
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
@@ -1345,9 +1155,7 @@ class OfSwiftnessUpgrade(WeaponSuffix):
 	}
     
 class OfSwordsmanshipUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
-    }
+    id = ItemUpgrade.OfSwordsmanship
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
@@ -1366,17 +1174,7 @@ class OfSwordsmanshipUpgrade(WeaponSuffix):
 	}
     
 class OfTheProfessionUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfTheProfession_Axe,
-        ItemType.Bow: ItemUpgradeId.OfTheProfession_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfTheProfession_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfTheProfession_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfTheProfession_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfTheProfession_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfTheProfession_Spear,
-        ItemType.Sword: ItemUpgradeId.OfTheProfession_Sword,
-        ItemType.Wand: ItemUpgradeId.OfTheProfession_Wand,
-    }
+    id = ItemUpgrade.OfTheProfession
     
     property_identifiers = [
         ModifierIdentifier.OfTheProfession,
@@ -1429,11 +1227,7 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
     
 class OfValorUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Offhand: ItemUpgradeId.OfValor_Focus,
-        ItemType.Shield: ItemUpgradeId.OfValor_Shield,
-        ItemType.Staff: ItemUpgradeId.OfValor_Staff,
-    }
+    id = ItemUpgrade.OfValor
     property_identifiers = [
         ModifierIdentifier.HealthPlusHexed,
     ]
@@ -1452,16 +1246,7 @@ class OfValorUpgrade(WeaponSuffix):
 	}
     
 class OfWardingUpgrade(WeaponSuffix):
-    item_type_id_map = {
-        ItemType.Axe: ItemUpgradeId.OfWarding_Axe,
-        ItemType.Bow: ItemUpgradeId.OfWarding_Bow,
-        ItemType.Daggers: ItemUpgradeId.OfWarding_Daggers,
-        ItemType.Hammer: ItemUpgradeId.OfWarding_Hammer,
-        ItemType.Staff: ItemUpgradeId.OfWarding_Staff,
-        ItemType.Scythe: ItemUpgradeId.OfWarding_Scythe,
-        ItemType.Spear: ItemUpgradeId.OfWarding_Spear,
-        ItemType.Sword: ItemUpgradeId.OfWarding_Sword,
-    }
+    id = ItemUpgrade.OfWarding
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
     ]
@@ -1484,7 +1269,7 @@ class OfWardingUpgrade(WeaponSuffix):
 class Inscription(Upgrade):
     mod_type = ItemUpgradeType.Inscription
     inventory_icon : str
-    id : ItemUpgradeId
+    id : ItemUpgrade
     names : dict[ServerLanguage, str] = {}
     target_item_type : ItemType
     
@@ -1504,7 +1289,7 @@ class Inscription(Upgrade):
     
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return upgrade_id == cls.id
+        return cls.id.has_id(upgrade_id)
     
     @property
     def name(self) -> str:
@@ -1514,8 +1299,8 @@ class Inscription(Upgrade):
 
 #region Offhand
 class BeJustAndFearNot(Inscription):
+    id = ItemUpgrade.BeJustAndFearNot
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.BeJustAndFearNot    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusHexed,
     ]
@@ -1524,8 +1309,8 @@ class BeJustAndFearNot(Inscription):
 	}
     
 class DownButNotOut(Inscription):
+    id = ItemUpgrade.DownButNotOut
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.DownButNotOut    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusWhileDown
     ]
@@ -1534,8 +1319,8 @@ class DownButNotOut(Inscription):
 	}
     
 class FaithIsMyShield(Inscription):
+    id = ItemUpgrade.FaithIsMyShield
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.FaithIsMyShield    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusEnchanted,
     ]
@@ -1554,8 +1339,8 @@ class FaithIsMyShield(Inscription):
 	}
     
 class ForgetMeNot(Inscription):
+    id = ItemUpgrade.ForgetMeNot
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.ForgetMeNot    
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
     ]
@@ -1574,8 +1359,8 @@ class ForgetMeNot(Inscription):
 	}
     
 class HailToTheKing(Inscription):
+    id = ItemUpgrade.HailToTheKing
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.HailToTheKing    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAbove,
     ]
@@ -1594,8 +1379,8 @@ class HailToTheKing(Inscription):
 	}
     
 class IgnoranceIsBliss(Inscription):
+    id = ItemUpgrade.IgnoranceIsBliss
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.IgnoranceIsBliss    
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
         ModifierIdentifier.EnergyMinus,
@@ -1615,8 +1400,8 @@ class IgnoranceIsBliss(Inscription):
 	}
     
 class KnowingIsHalfTheBattle(Inscription):
+    id = ItemUpgrade.KnowingIsHalfTheBattle
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.KnowingIsHalfTheBattle
     property_identifiers = [
         ModifierIdentifier.ArmorPlusCasting,
     ]
@@ -1625,8 +1410,8 @@ class KnowingIsHalfTheBattle(Inscription):
 	}
     
 class LifeIsPain(Inscription):
+    id = ItemUpgrade.LifeIsPain
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.LifeIsPain    
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
         ModifierIdentifier.HealthMinus,
@@ -1636,8 +1421,8 @@ class LifeIsPain(Inscription):
 	}
     
 class LiveForToday(Inscription):
+    id = ItemUpgrade.LiveForToday
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.LiveForToday    
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
@@ -1657,8 +1442,8 @@ class LiveForToday(Inscription):
 	}
     
 class ManForAllSeasons(Inscription):
+    id = ItemUpgrade.ManForAllSeasons
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.ManForAllSeasons    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
     ]
@@ -1667,8 +1452,8 @@ class ManForAllSeasons(Inscription):
 	}
     
 class MightMakesRight(Inscription):
+    id = ItemUpgrade.MightMakesRight
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.MightMakesRight    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAttacking,
     ]
@@ -1677,8 +1462,8 @@ class MightMakesRight(Inscription):
 	}
     
 class SerenityNow(Inscription):
+    id = ItemUpgrade.SerenityNow
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.SerenityNow        
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
@@ -1697,8 +1482,8 @@ class SerenityNow(Inscription):
 	}
     
 class SurvivalOfTheFittest(Inscription):
+    id = ItemUpgrade.SurvivalOfTheFittest
     target_item_type = ItemType.Offhand
-    id = ItemUpgradeId.SurvivalOfTheFittest    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
@@ -1720,8 +1505,8 @@ class SurvivalOfTheFittest(Inscription):
 #region Weapon
 
 class BrawnOverBrains(Inscription):
+    id = ItemUpgrade.BrawnOverBrains
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.BrawnOverBrains
     property_identifiers = [
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.EnergyMinus,
@@ -1741,8 +1526,8 @@ class BrawnOverBrains(Inscription):
 	}
         
 class DanceWithDeath(Inscription):
+    id = ItemUpgrade.DanceWithDeath
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.DanceWithDeath
     property_identifiers = [
         ModifierIdentifier.DamagePlusStance,
     ]
@@ -1761,8 +1546,8 @@ class DanceWithDeath(Inscription):
 	}
          
 class DontFearTheReaper(Inscription):
+    id = ItemUpgrade.DontFearTheReaper
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.DontFearTheReaper
     property_identifiers = [
         ModifierIdentifier.DamagePlusHexed,
     ]
@@ -1781,8 +1566,8 @@ class DontFearTheReaper(Inscription):
 	}
     
 class DontThinkTwice(Inscription):
+    id = ItemUpgrade.DontThinkTwice
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.DontThinkTwice
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
@@ -1801,8 +1586,8 @@ class DontThinkTwice(Inscription):
 	}
     
 class GuidedByFate(Inscription):
+    id = ItemUpgrade.GuidedByFate
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.GuidedByFate
     property_identifiers = [
         ModifierIdentifier.DamagePlusEnchanted,
     ]
@@ -1821,8 +1606,8 @@ class GuidedByFate(Inscription):
 	}
     
 class StrengthAndHonor(Inscription):
+    id = ItemUpgrade.StrengthAndHonor
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.StrengthAndHonor
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileUp,
     ]
@@ -1841,8 +1626,8 @@ class StrengthAndHonor(Inscription):
 	}
     
 class ToThePain(Inscription):
+    id = ItemUpgrade.ToThePain
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.ToThePain
     property_identifiers = [
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.ArmorMinusAttacking
@@ -1862,8 +1647,8 @@ class ToThePain(Inscription):
 	}
     
 class TooMuchInformation(Inscription):
+    id = ItemUpgrade.TooMuchInformation
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.TooMuchInformation    
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsHexed,
     ]
@@ -1882,8 +1667,8 @@ class TooMuchInformation(Inscription):
 	}
     
 class VengeanceIsMine(Inscription):
+    id = ItemUpgrade.VengeanceIsMine
     target_item_type = ItemType.Weapon
-    id = ItemUpgradeId.VengeanceIsMine    
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileDown,
     ]    
@@ -1904,8 +1689,8 @@ class VengeanceIsMine(Inscription):
 
 #region MartialWeapon
 class IHaveThePower(Inscription):
+    id = ItemUpgrade.IHaveThePower
     target_item_type = ItemType.MartialWeapon
-    id = ItemUpgradeId.IHaveThePower
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
@@ -1924,8 +1709,8 @@ class IHaveThePower(Inscription):
 	}
     
 class LetTheMemoryLiveAgain(Inscription):
+    id = ItemUpgrade.LetTheMemoryLiveAgain
     target_item_type = ItemType.MartialWeapon
-    id = ItemUpgradeId.LetTheMemoryLiveAgain
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
@@ -1947,8 +1732,8 @@ class LetTheMemoryLiveAgain(Inscription):
 
 #region OffhandOrShield
 class CastOutTheUnclean(Inscription):
+    id = ItemUpgrade.CastOutTheUnclean
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.CastOutTheUnclean    
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -1967,8 +1752,8 @@ class CastOutTheUnclean(Inscription):
 	}
     
 class FearCutsDeeper(Inscription):
+    id = ItemUpgrade.FearCutsDeeper
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.FearCutsDeeper    
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -1987,8 +1772,8 @@ class FearCutsDeeper(Inscription):
 	}
     
 class ICanSeeClearlyNow(Inscription):
+    id = ItemUpgrade.ICanSeeClearlyNow
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.ICanSeeClearlyNow
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,   
     ]
@@ -2007,8 +1792,8 @@ class ICanSeeClearlyNow(Inscription):
 	}
     
 class LeafOnTheWind(Inscription):
+    id = ItemUpgrade.LeafOnTheWind
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.LeafOnTheWind    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -2027,8 +1812,8 @@ class LeafOnTheWind(Inscription):
 	}
     
 class LikeARollingStone(Inscription):
+    id = ItemUpgrade.LikeARollingStone
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.LikeARollingStone    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -2047,8 +1832,8 @@ class LikeARollingStone(Inscription):
 	}
     
 class LuckOfTheDraw(Inscription):
+    id = ItemUpgrade.LuckOfTheDraw
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.LuckOfTheDraw
     property_identifiers = [
         ModifierIdentifier.ReceiveLessDamage,
     ]
@@ -2067,8 +1852,8 @@ class LuckOfTheDraw(Inscription):
 	}
     
 class MasterOfMyDomain(Inscription):
+    id = ItemUpgrade.MasterOfMyDomain
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.MasterOfMyDomain    
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
@@ -2087,8 +1872,8 @@ class MasterOfMyDomain(Inscription):
 	}
     
 class NotTheFace(Inscription):
+    id = ItemUpgrade.NotTheFace
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.NotTheFace    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage
     ]
@@ -2107,8 +1892,8 @@ class NotTheFace(Inscription):
 	}
     
 class NothingToFear(Inscription):
+    id = ItemUpgrade.NothingToFear
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.NothingToFear
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageHexed,
     ]
@@ -2127,8 +1912,8 @@ class NothingToFear(Inscription):
 	}
     
 class OnlyTheStrongSurvive(Inscription):
+    id = ItemUpgrade.OnlyTheStrongSurvive
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.OnlyTheStrongSurvive    
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -2147,8 +1932,8 @@ class OnlyTheStrongSurvive(Inscription):
 	}
     
 class PureOfHeart(Inscription):
+    id = ItemUpgrade.PureOfHeart
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.PureOfHeart
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -2167,8 +1952,8 @@ class PureOfHeart(Inscription):
 	}
     
 class RidersOnTheStorm(Inscription):
+    id = ItemUpgrade.RidersOnTheStorm
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.RidersOnTheStorm
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -2187,8 +1972,8 @@ class RidersOnTheStorm(Inscription):
 	}
     
 class RunForYourLife(Inscription):
+    id = ItemUpgrade.RunForYourLife
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.RunForYourLife
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageStance,
     ]
@@ -2207,8 +1992,8 @@ class RunForYourLife(Inscription):
 	}
     
 class ShelteredByFaith(Inscription):
+    id = ItemUpgrade.ShelteredByFaith
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.ShelteredByFaith    
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageEnchanted,
     ]
@@ -2227,8 +2012,8 @@ class ShelteredByFaith(Inscription):
 	}
     
 class SleepNowInTheFire(Inscription):
+    id = ItemUpgrade.SleepNowInTheFire
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.SleepNowInTheFire        
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -2247,8 +2032,8 @@ class SleepNowInTheFire(Inscription):
 	}
     
 class SoundnessOfMind(Inscription):
+    id = ItemUpgrade.SoundnessOfMind
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.SoundnessOfMind
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -2267,8 +2052,8 @@ class SoundnessOfMind(Inscription):
 	}
     
 class StrengthOfBody(Inscription):
+    id = ItemUpgrade.StrengthOfBody
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.StrengthOfBody
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -2287,8 +2072,8 @@ class StrengthOfBody(Inscription):
 	}
     
 class SwiftAsTheWind(Inscription):
+    id = ItemUpgrade.SwiftAsTheWind
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.SwiftAsTheWind
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
@@ -2307,8 +2092,8 @@ class SwiftAsTheWind(Inscription):
 	}
 
 class TheRiddleOfSteel(Inscription):
+    id = ItemUpgrade.TheRiddleOfSteel
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.TheRiddleOfSteel    
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -2327,8 +2112,8 @@ class TheRiddleOfSteel(Inscription):
 	}
     
 class ThroughThickAndThin(Inscription):
+    id = ItemUpgrade.ThroughThickAndThin
     target_item_type = ItemType.OffhandOrShield
-    id = ItemUpgradeId.ThroughThickAndThin
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
@@ -2349,8 +2134,8 @@ class ThroughThickAndThin(Inscription):
 
 #region EquippableItem
 class MeasureForMeasure(Inscription):
+    id = ItemUpgrade.MeasureForMeasure
     target_item_type = ItemType.EquippableItem
-    id = ItemUpgradeId.MeasureForMeasure
     property_identifiers = [
         ModifierIdentifier.HighlySalvageable,
     ]
@@ -2369,8 +2154,8 @@ class MeasureForMeasure(Inscription):
 	}
         
 class ShowMeTheMoney(Inscription):
+    id = ItemUpgrade.ShowMeTheMoney
     target_item_type = ItemType.EquippableItem
-    id = ItemUpgradeId.ShowMeTheMoney
     property_identifiers = [
         ModifierIdentifier.IncreasedSaleValue,
     ]    
@@ -2391,8 +2176,8 @@ class ShowMeTheMoney(Inscription):
 
 #region SpellcastingWeapon
 class AptitudeNotAttitude(Inscription):
+    id = ItemUpgrade.AptitudeNotAttitude
     target_item_type = ItemType.SpellcastingWeapon
-    id = ItemUpgradeId.AptitudeNotAttitude
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
@@ -2411,8 +2196,8 @@ class AptitudeNotAttitude(Inscription):
 	}
     
 class DontCallItAComeback(Inscription):
+    id = ItemUpgrade.DontCallItAComeback
     target_item_type = ItemType.SpellcastingWeapon
-    id = ItemUpgradeId.DontCallItAComeback    
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileBelow,
     ]
@@ -2431,8 +2216,8 @@ class DontCallItAComeback(Inscription):
 	}
     
 class HaleAndHearty(Inscription):
+    id = ItemUpgrade.HaleAndHearty
     target_item_type = ItemType.SpellcastingWeapon
-    id = ItemUpgradeId.HaleAndHearty
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileDown,
     ]
@@ -2451,8 +2236,8 @@ class HaleAndHearty(Inscription):
 	}
     
 class HaveFaith(Inscription):
+    id = ItemUpgrade.HaveFaith
     target_item_type = ItemType.SpellcastingWeapon
-    id = ItemUpgradeId.HaveFaith
     property_identifiers = [
         ModifierIdentifier.EnergyPlusEnchanted,
     ]
@@ -2471,8 +2256,8 @@ class HaveFaith(Inscription):
 	}
     
 class IAmSorrow(Inscription):
+    id = ItemUpgrade.IAmSorrow
     target_item_type = ItemType.SpellcastingWeapon
-    id = ItemUpgradeId.IAmSorrow        
     property_identifiers = [
         ModifierIdentifier.EnergyPlusHexed,
     ]
@@ -2491,8 +2276,8 @@ class IAmSorrow(Inscription):
 	}
     
 class SeizeTheDay(Inscription):
+    id = ItemUpgrade.SeizeTheDay
     target_item_type = ItemType.SpellcastingWeapon
-    id = ItemUpgradeId.SeizeTheDay    
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
@@ -2519,14 +2304,14 @@ class SeizeTheDay(Inscription):
 class Insignia(Upgrade):
     mod_type = ItemUpgradeType.Prefix
 
-    id : ItemUpgradeId
+    id : ItemUpgrade
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
 
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return cls.id is not None and upgrade_id == cls.id
+        return cls.id.has_id(upgrade_id)
 
     @property
     def description(self) -> str:
@@ -2614,16 +2399,15 @@ class Rune(Upgrade):
     
     mod_type = ItemUpgradeType.Suffix
 
-    id : ItemUpgradeId
+    id : ItemUpgrade
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
     names: dict[ServerLanguage, str] = {}
 
-
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return cls.id is not None and upgrade_id == cls.id
+        return cls.id.has_id(upgrade_id)
 
     @property
     def name(self) -> str:
@@ -2704,8 +2488,7 @@ class AttributeRune(Rune):
 #region No Profession
 
 class SurvivorInsignia(Insignia):
-    id = ItemUpgradeId.Survivor
-
+    id = ItemUpgrade.SurvivorInsignia
     names = {
         ServerLanguage.English: "Survivor Insignia",
         ServerLanguage.Korean: "생존자의 휘장",
@@ -2725,8 +2508,7 @@ class SurvivorInsignia(Insignia):
     }
 
 class RadiantInsignia(Insignia):
-    id = ItemUpgradeId.Radiant
-
+    id = ItemUpgrade.RadiantInsignia
     names = {
         ServerLanguage.English: "Radiant Insignia",
         ServerLanguage.Korean: "눈부신 휘장",
@@ -2746,8 +2528,7 @@ class RadiantInsignia(Insignia):
     }
 
 class StalwartInsignia(Insignia):
-    id = ItemUpgradeId.Stalwart
-
+    id = ItemUpgrade.StalwartInsignia
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
@@ -2771,8 +2552,7 @@ class StalwartInsignia(Insignia):
     }
 
 class BrawlersInsignia(Insignia):
-    id = ItemUpgradeId.Brawlers
-
+    id = ItemUpgrade.BrawlersInsignia
     names = {
         ServerLanguage.English: "Brawler's Insignia",
         ServerLanguage.Korean: "싸움꾼의 휘장",
@@ -2791,10 +2571,8 @@ class BrawlersInsignia(Insignia):
         ServerLanguage.English: "Armor +10 (while attacking)"
     }
 
-
 class BlessedInsignia(Insignia):
-    id = ItemUpgradeId.Blessed
-
+    id = ItemUpgrade.BlessedInsignia
     names = {
         ServerLanguage.English: "Blessed Insignia",
         ServerLanguage.Korean: "축복의 휘장",
@@ -2813,10 +2591,8 @@ class BlessedInsignia(Insignia):
         ServerLanguage.English: "Armor +10 (while affected by an Enchantment Spell)",
     }
 
-
 class HeraldsInsignia(Insignia):
-    id = ItemUpgradeId.Heralds
-
+    id = ItemUpgrade.HeraldsInsignia
     names = {
         ServerLanguage.English: "Herald's Insignia",
         ServerLanguage.Korean: "전령의 휘장",
@@ -2835,10 +2611,8 @@ class HeraldsInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (while holding an item)"
     }
 
-
 class SentrysInsignia(Insignia):
-    id = ItemUpgradeId.Sentrys
-
+    id = ItemUpgrade.SentrysInsignia
     names = {
         ServerLanguage.English: "Sentry's Insignia",
         ServerLanguage.Korean: "보초병의 휘장",
@@ -2857,9 +2631,8 @@ class SentrysInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (while in a stance)"
     }
 
-
 class RuneOfMinorVigor(Rune):
-    id = ItemUpgradeId.OfMinorVigor
+    id = ItemUpgrade.RuneOfMinorVigor
     rarity = Rarity.Blue
 
     names = {
@@ -2881,7 +2654,7 @@ class RuneOfMinorVigor(Rune):
     }
 
 class RuneOfMinorVigor2(Rune):
-    id = ItemUpgradeId.OfMinorVigor2
+    id = ItemUpgrade.RuneOfMinorVigor2
     rarity = Rarity.Blue
 
     names = {
@@ -2899,7 +2672,7 @@ class RuneOfMinorVigor2(Rune):
     }
 
 class RuneOfVitae(Rune):
-    id = ItemUpgradeId.OfVitae
+    id = ItemUpgrade.RuneOfVitae
     rarity = Rarity.Blue
 
     names = {
@@ -2917,7 +2690,7 @@ class RuneOfVitae(Rune):
     }
 
 class RuneOfAttunement(Rune):
-    id = ItemUpgradeId.OfAttunement
+    id = ItemUpgrade.RuneOfAttunement
     rarity = Rarity.Blue
 
     names = {
@@ -2935,7 +2708,7 @@ class RuneOfAttunement(Rune):
     }
 
 class RuneOfMajorVigor(Rune):
-    id = ItemUpgradeId.OfMajorVigor
+    id = ItemUpgrade.RuneOfMajorVigor
     rarity = Rarity.Purple
 
     names = {
@@ -2953,7 +2726,7 @@ class RuneOfMajorVigor(Rune):
     }
 
 class RuneOfRecovery(Rune):
-    id = ItemUpgradeId.OfRecovery
+    id = ItemUpgrade.RuneOfRecovery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -2975,7 +2748,7 @@ class RuneOfRecovery(Rune):
     }
 
 class RuneOfRestoration(Rune):
-    id = ItemUpgradeId.OfRestoration
+    id = ItemUpgrade.RuneOfRestoration
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -2997,7 +2770,7 @@ class RuneOfRestoration(Rune):
     }
 
 class RuneOfClarity(Rune):
-    id = ItemUpgradeId.OfClarity
+    id = ItemUpgrade.RuneOfClarity
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3019,7 +2792,7 @@ class RuneOfClarity(Rune):
     }
 
 class RuneOfPurity(Rune):
-    id = ItemUpgradeId.OfPurity
+    id = ItemUpgrade.RuneOfPurity
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3041,7 +2814,7 @@ class RuneOfPurity(Rune):
     }
 
 class RuneOfSuperiorVigor(Rune):
-    id = ItemUpgradeId.OfSuperiorVigor
+    id = ItemUpgrade.RuneOfSuperiorVigor
     rarity = Rarity.Gold
 
     names = {
@@ -3063,8 +2836,7 @@ class RuneOfSuperiorVigor(Rune):
 #region Warrior
 
 class KnightsInsignia(Insignia):
-    id = ItemUpgradeId.Knights
-
+    id = ItemUpgrade.KnightsInsignia
     names = {
         ServerLanguage.English: "Knight's Insignia [Warrior]",
         ServerLanguage.Korean: "기사의 휘장 [워리어]",
@@ -3084,8 +2856,7 @@ class KnightsInsignia(Insignia):
     }
 
 class LieutenantsInsignia(Insignia):
-    id = ItemUpgradeId.Lieutenants
-
+    id = ItemUpgrade.LieutenantsInsignia
     names = {
         ServerLanguage.English: "Lieutenant's Insignia [Warrior]",
         ServerLanguage.Korean: "부관의 휘장 [워리어]",
@@ -3104,10 +2875,8 @@ class LieutenantsInsignia(Insignia):
         ServerLanguage.English: f"Reduces Hex durations on you by 20% and damage dealt by you by 5% (Non-stacking)\nArmor -20"
     }
 
-
 class StonefistInsignia(Insignia):
-    id = ItemUpgradeId.Stonefist
-
+    id = ItemUpgrade.StonefistInsignia
     names = {
         ServerLanguage.English: "Stonefist Insignia [Warrior]",
         ServerLanguage.Korean: "돌주먹의 휘장 [워리어]",
@@ -3126,10 +2895,8 @@ class StonefistInsignia(Insignia):
         ServerLanguage.English: f"Increases knockdown time on foes by 1 second.\n(Maximum: 3 seconds)"
     }
 
-
 class DreadnoughtInsignia(Insignia):
-    id = ItemUpgradeId.Dreadnought
-
+    id = ItemUpgrade.DreadnoughtInsignia
     names = {
         ServerLanguage.English: "Dreadnought Insignia [Warrior]",
         ServerLanguage.Korean: "용자의 휘장 [워리어]",
@@ -3148,10 +2915,8 @@ class DreadnoughtInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. elemental damage)"
     }
 
-
 class SentinelsInsignia(Insignia):
-    id = ItemUpgradeId.Sentinels
-
+    id = ItemUpgrade.SentinelsInsignia
     names = {
         ServerLanguage.English: "Sentinel's Insignia [Warrior]",
         ServerLanguage.Korean: "감시병의 휘장 [워리어]",
@@ -3170,9 +2935,8 @@ class SentinelsInsignia(Insignia):
         ServerLanguage.English: f"Armor +20 (Requires 13 Strength, vs. elemental damage)"
     }
 
-
 class WarriorRuneOfMinorAbsorption(Rune):
-    id = ItemUpgradeId.OfMinorAbsorption
+    id = ItemUpgrade.WarriorRuneOfMinorAbsorption
     rarity = Rarity.Blue
 
     names = {
@@ -3190,7 +2954,7 @@ class WarriorRuneOfMinorAbsorption(Rune):
     }
 
 class WarriorRuneOfMinorTactics(AttributeRune):
-    id = ItemUpgradeId.OfMinorTactics
+    id = ItemUpgrade.WarriorRuneOfMinorTactics
     rarity = Rarity.Blue
 
     names = {
@@ -3208,7 +2972,7 @@ class WarriorRuneOfMinorTactics(AttributeRune):
     }
 
 class WarriorRuneOfMinorStrength(AttributeRune):
-    id = ItemUpgradeId.OfMinorStrength
+    id = ItemUpgrade.WarriorRuneOfMinorStrength
     rarity = Rarity.Blue
 
     names = {
@@ -3226,7 +2990,7 @@ class WarriorRuneOfMinorStrength(AttributeRune):
     }
 
 class WarriorRuneOfMinorAxeMastery(AttributeRune):
-    id = ItemUpgradeId.OfMinorAxeMastery
+    id = ItemUpgrade.WarriorRuneOfMinorAxeMastery
     rarity = Rarity.Blue
 
     names = {
@@ -3244,7 +3008,7 @@ class WarriorRuneOfMinorAxeMastery(AttributeRune):
     }
 
 class WarriorRuneOfMinorHammerMastery(AttributeRune):
-    id = ItemUpgradeId.OfMinorHammerMastery
+    id = ItemUpgrade.WarriorRuneOfMinorHammerMastery
     rarity = Rarity.Blue
 
     names = {
@@ -3262,7 +3026,7 @@ class WarriorRuneOfMinorHammerMastery(AttributeRune):
     }
 
 class WarriorRuneOfMinorSwordsmanship(AttributeRune):
-    id = ItemUpgradeId.OfMinorSwordsmanship
+    id = ItemUpgrade.WarriorRuneOfMinorSwordsmanship
     rarity = Rarity.Blue
 
     names = {
@@ -3280,7 +3044,7 @@ class WarriorRuneOfMinorSwordsmanship(AttributeRune):
     }
 
 class WarriorRuneOfMajorAbsorption(Rune):
-    id = ItemUpgradeId.OfMajorAbsorption
+    id = ItemUpgrade.WarriorRuneOfMajorAbsorption
     rarity = Rarity.Purple
 
     names = {
@@ -3298,7 +3062,7 @@ class WarriorRuneOfMajorAbsorption(Rune):
     }
 
 class WarriorRuneOfMajorTactics(AttributeRune):
-    id = ItemUpgradeId.OfMajorTactics
+    id = ItemUpgrade.WarriorRuneOfMajorTactics
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3320,7 +3084,7 @@ class WarriorRuneOfMajorTactics(AttributeRune):
     }
 
 class WarriorRuneOfMajorStrength(AttributeRune):
-    id = ItemUpgradeId.OfMajorStrength
+    id = ItemUpgrade.WarriorRuneOfMajorStrength
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3342,7 +3106,7 @@ class WarriorRuneOfMajorStrength(AttributeRune):
     }
 
 class WarriorRuneOfMajorAxeMastery(AttributeRune):
-    id = ItemUpgradeId.OfMajorAxeMastery
+    id = ItemUpgrade.WarriorRuneOfMajorAxeMastery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3364,7 +3128,7 @@ class WarriorRuneOfMajorAxeMastery(AttributeRune):
     }
 
 class WarriorRuneOfMajorHammerMastery(AttributeRune):
-    id = ItemUpgradeId.OfMajorHammerMastery
+    id = ItemUpgrade.WarriorRuneOfMajorHammerMastery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3386,7 +3150,7 @@ class WarriorRuneOfMajorHammerMastery(AttributeRune):
     }
 
 class WarriorRuneOfMajorSwordsmanship(AttributeRune):
-    id = ItemUpgradeId.OfMajorSwordsmanship
+    id = ItemUpgrade.WarriorRuneOfMajorSwordsmanship
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3408,7 +3172,7 @@ class WarriorRuneOfMajorSwordsmanship(AttributeRune):
     }
 
 class WarriorRuneOfSuperiorAbsorption(Rune):
-    id = ItemUpgradeId.OfSuperiorAbsorption
+    id = ItemUpgrade.WarriorRuneOfSuperiorAbsorption
     rarity = Rarity.Gold
 
     names = {
@@ -3426,7 +3190,7 @@ class WarriorRuneOfSuperiorAbsorption(Rune):
     }
 
 class WarriorRuneOfSuperiorTactics(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorTactics
+    id = ItemUpgrade.WarriorRuneOfSuperiorTactics
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3448,7 +3212,7 @@ class WarriorRuneOfSuperiorTactics(AttributeRune):
     }
 
 class WarriorRuneOfSuperiorStrength(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorStrength
+    id = ItemUpgrade.WarriorRuneOfSuperiorStrength
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3470,7 +3234,7 @@ class WarriorRuneOfSuperiorStrength(AttributeRune):
     }
 
 class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorAxeMastery
+    id = ItemUpgrade.WarriorRuneOfSuperiorAxeMastery
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3492,7 +3256,7 @@ class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
     }
 
 class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorHammerMastery
+    id = ItemUpgrade.WarriorRuneOfSuperiorHammerMastery
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3514,7 +3278,7 @@ class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
     }
 
 class WarriorRuneOfSuperiorSwordsmanship(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorSwordsmanship
+    id = ItemUpgrade.WarriorRuneOfSuperiorSwordsmanship
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3536,27 +3300,27 @@ class WarriorRuneOfSuperiorSwordsmanship(AttributeRune):
     }
 
 class UpgradeMinorRuneWarrior(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Warrior
+    id = ItemUpgrade.UpgradeMinorRuneWarrior
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneWarrior(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Warrior
+    id = ItemUpgrade.UpgradeMajorRuneWarrior
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneWarrior(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Warrior
+    id = ItemUpgrade.UpgradeSuperiorRuneWarrior
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneWarrior(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Warrior
+    id = ItemUpgrade.AppliesToMinorRuneWarrior
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneWarrior(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Warrior
+    id = ItemUpgrade.AppliesToMajorRuneWarrior
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneWarrior(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Warrior
+    id = ItemUpgrade.AppliesToSuperiorRuneWarrior
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Warrior
@@ -3564,8 +3328,7 @@ class AppliesToSuperiorRuneWarrior(Upgrade):
 #region Ranger
 
 class FrostboundInsignia(Insignia):
-    id = ItemUpgradeId.Frostbound
-
+    id = ItemUpgrade.FrostboundInsignia
     names = {
         ServerLanguage.English: "Frostbound Insignia [Ranger]",
         ServerLanguage.Korean: "얼음결계의 휘장 [레인저]",
@@ -3584,10 +3347,8 @@ class FrostboundInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (vs. Cold damage)"
     }
 
-
 class PyreboundInsignia(Insignia):
-    id = ItemUpgradeId.Pyrebound
-
+    id = ItemUpgrade.PyreboundInsignia
     names = {
         ServerLanguage.English: "Pyrebound Insignia [Ranger]",
         ServerLanguage.Korean: "화염결계의 휘장 [레인저]",
@@ -3606,10 +3367,8 @@ class PyreboundInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (vs. Fire damage)"
     }
 
-
 class StormboundInsignia(Insignia):
-    id = ItemUpgradeId.Stormbound
-
+    id = ItemUpgrade.StormboundInsignia
     names = {
         ServerLanguage.English: "Stormbound Insignia [Ranger]",
         ServerLanguage.Korean: "폭풍결계의 휘장 [레인저]",
@@ -3628,10 +3387,8 @@ class StormboundInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (vs. Lightning damage)"
     }
 
-
 class ScoutsInsignia(Insignia):
-    id = ItemUpgradeId.Scouts
-
+    id = ItemUpgrade.ScoutsInsignia
     names = {
         ServerLanguage.English: "Scout's Insignia [Ranger]",
         ServerLanguage.Korean: "정찰병의 휘장 [레인저]",
@@ -3650,10 +3407,8 @@ class ScoutsInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (while using a Preparation)"
     }
 
-
 class EarthboundInsignia(Insignia):
-    id = ItemUpgradeId.Earthbound
-
+    id = ItemUpgrade.EarthboundInsignia
     names = {
         ServerLanguage.English: "Earthbound Insignia [Ranger]",
         ServerLanguage.Korean: "대지결계의 휘장 [레인저]",
@@ -3672,10 +3427,8 @@ class EarthboundInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (vs. Earth damage)"
     }
 
-
 class BeastmastersInsignia(Insignia):
-    id = ItemUpgradeId.Beastmasters
-
+    id = ItemUpgrade.BeastmastersInsignia
     names = {
         ServerLanguage.English: "Beastmaster's Insignia [Ranger]",
         ServerLanguage.Korean: "조련사의 휘장 [레인저]",
@@ -3694,9 +3447,8 @@ class BeastmastersInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (while your pet is alive)"
     }
 
-
 class RangerRuneOfMinorWildernessSurvival(AttributeRune):
-    id = ItemUpgradeId.OfMinorWildernessSurvival
+    id = ItemUpgrade.RangerRuneOfMinorWildernessSurvival
     rarity = Rarity.Blue
 
     names = {
@@ -3714,7 +3466,7 @@ class RangerRuneOfMinorWildernessSurvival(AttributeRune):
     }
 
 class RangerRuneOfMinorExpertise(AttributeRune):
-    id = ItemUpgradeId.OfMinorExpertise
+    id = ItemUpgrade.RangerRuneOfMinorExpertise
     rarity = Rarity.Blue
 
     names = {
@@ -3732,7 +3484,7 @@ class RangerRuneOfMinorExpertise(AttributeRune):
     }
 
 class RangerRuneOfMinorBeastMastery(AttributeRune):
-    id = ItemUpgradeId.OfMinorBeastMastery
+    id = ItemUpgrade.RangerRuneOfMinorBeastMastery
     rarity = Rarity.Blue
 
     names = {
@@ -3750,7 +3502,7 @@ class RangerRuneOfMinorBeastMastery(AttributeRune):
     }
 
 class RangerRuneOfMinorMarksmanship(AttributeRune):
-    id = ItemUpgradeId.OfMinorMarksmanship
+    id = ItemUpgrade.RangerRuneOfMinorMarksmanship
     rarity = Rarity.Blue
 
     names = {
@@ -3768,7 +3520,7 @@ class RangerRuneOfMinorMarksmanship(AttributeRune):
     }
 
 class RangerRuneOfMajorWildernessSurvival(AttributeRune):
-    id = ItemUpgradeId.OfMajorWildernessSurvival
+    id = ItemUpgrade.RangerRuneOfMajorWildernessSurvival
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3790,7 +3542,7 @@ class RangerRuneOfMajorWildernessSurvival(AttributeRune):
     }
 
 class RangerRuneOfMajorExpertise(AttributeRune):
-    id = ItemUpgradeId.OfMajorExpertise
+    id = ItemUpgrade.RangerRuneOfMajorExpertise
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3812,7 +3564,7 @@ class RangerRuneOfMajorExpertise(AttributeRune):
     }
 
 class RangerRuneOfMajorBeastMastery(AttributeRune):
-    id = ItemUpgradeId.OfMajorBeastMastery
+    id = ItemUpgrade.RangerRuneOfMajorBeastMastery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3834,7 +3586,7 @@ class RangerRuneOfMajorBeastMastery(AttributeRune):
     }
 
 class RangerRuneOfMajorMarksmanship(AttributeRune):
-    id = ItemUpgradeId.OfMajorMarksmanship
+    id = ItemUpgrade.RangerRuneOfMajorMarksmanship
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -3856,7 +3608,7 @@ class RangerRuneOfMajorMarksmanship(AttributeRune):
     }
 
 class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorWildernessSurvival
+    id = ItemUpgrade.RangerRuneOfSuperiorWildernessSurvival
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3878,7 +3630,7 @@ class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
     }
 
 class RangerRuneOfSuperiorExpertise(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorExpertise
+    id = ItemUpgrade.RangerRuneOfSuperiorExpertise
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3900,7 +3652,7 @@ class RangerRuneOfSuperiorExpertise(AttributeRune):
     }
 
 class RangerRuneOfSuperiorBeastMastery(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorBeastMastery
+    id = ItemUpgrade.RangerRuneOfSuperiorBeastMastery
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3922,7 +3674,7 @@ class RangerRuneOfSuperiorBeastMastery(AttributeRune):
     }
 
 class RangerRuneOfSuperiorMarksmanship(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorMarksmanship
+    id = ItemUpgrade.RangerRuneOfSuperiorMarksmanship
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -3944,27 +3696,27 @@ class RangerRuneOfSuperiorMarksmanship(AttributeRune):
     }
 
 class UpgradeMinorRuneRanger(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Ranger
+    id = ItemUpgrade.UpgradeMinorRuneRanger
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneRanger(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Ranger
+    id = ItemUpgrade.UpgradeMajorRuneRanger
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneRanger(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Ranger
+    id = ItemUpgrade.UpgradeSuperiorRuneRanger
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneRanger(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Ranger
+    id = ItemUpgrade.AppliesToMinorRuneRanger
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneRanger(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Ranger
+    id = ItemUpgrade.AppliesToMajorRuneRanger
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneRanger(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Ranger
+    id = ItemUpgrade.AppliesToSuperiorRuneRanger
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Ranger
@@ -3972,8 +3724,7 @@ class AppliesToSuperiorRuneRanger(Upgrade):
 #region Monk
 
 class WanderersInsignia(Insignia):
-    id = ItemUpgradeId.Wanderers
-
+    id = ItemUpgrade.WanderersInsignia
     names = {
         ServerLanguage.English: "Wanderer's Insignia [Monk]",
         ServerLanguage.Korean: "방랑자의 휘장 [몽크]",
@@ -3992,10 +3743,8 @@ class WanderersInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. elemental damage)"
     }
 
-
 class DisciplesInsignia(Insignia):
-    id = ItemUpgradeId.Disciples
-
+    id = ItemUpgrade.DisciplesInsignia
     names = {
         ServerLanguage.English: "Disciple's Insignia [Monk]",
         ServerLanguage.Korean: "사도의 휘장 [몽크]",
@@ -4014,10 +3763,8 @@ class DisciplesInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (while affected by a Condition)"
     }
 
-
 class AnchoritesInsignia(Insignia):
-    id = ItemUpgradeId.Anchorites
-
+    id = ItemUpgrade.AnchoritesInsignia
     names = {
         ServerLanguage.English: "Anchorite's Insignia [Monk]",
         ServerLanguage.Korean: "은둔자의 휘장 [몽크]",
@@ -4037,9 +3784,8 @@ class AnchoritesInsignia(Insignia):
 
     }
 
-
 class MonkRuneOfMinorHealingPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMinorHealingPrayers
+    id = ItemUpgrade.MonkRuneOfMinorHealingPrayers
     rarity = Rarity.Blue
 
     names = {
@@ -4057,7 +3803,7 @@ class MonkRuneOfMinorHealingPrayers(AttributeRune):
     }
 
 class MonkRuneOfMinorSmitingPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMinorSmitingPrayers
+    id = ItemUpgrade.MonkRuneOfMinorSmitingPrayers
     rarity = Rarity.Blue
 
     names = {
@@ -4075,7 +3821,7 @@ class MonkRuneOfMinorSmitingPrayers(AttributeRune):
     }
 
 class MonkRuneOfMinorProtectionPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMinorProtectionPrayers
+    id = ItemUpgrade.MonkRuneOfMinorProtectionPrayers
     rarity = Rarity.Blue
 
     names = {
@@ -4093,7 +3839,7 @@ class MonkRuneOfMinorProtectionPrayers(AttributeRune):
     }
 
 class MonkRuneOfMinorDivineFavor(AttributeRune):
-    id = ItemUpgradeId.OfMinorDivineFavor
+    id = ItemUpgrade.MonkRuneOfMinorDivineFavor
     rarity = Rarity.Blue
 
     names = {
@@ -4111,7 +3857,7 @@ class MonkRuneOfMinorDivineFavor(AttributeRune):
     }
 
 class MonkRuneOfMajorHealingPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMajorHealingPrayers
+    id = ItemUpgrade.MonkRuneOfMajorHealingPrayers
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4133,7 +3879,7 @@ class MonkRuneOfMajorHealingPrayers(AttributeRune):
     }
 
 class MonkRuneOfMajorSmitingPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMajorSmitingPrayers
+    id = ItemUpgrade.MonkRuneOfMajorSmitingPrayers
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4155,7 +3901,7 @@ class MonkRuneOfMajorSmitingPrayers(AttributeRune):
     }
 
 class MonkRuneOfMajorProtectionPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMajorProtectionPrayers
+    id = ItemUpgrade.MonkRuneOfMajorProtectionPrayers
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4177,7 +3923,7 @@ class MonkRuneOfMajorProtectionPrayers(AttributeRune):
     }
 
 class MonkRuneOfMajorDivineFavor(AttributeRune):
-    id = ItemUpgradeId.OfMajorDivineFavor
+    id = ItemUpgrade.MonkRuneOfMajorDivineFavor
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4199,7 +3945,7 @@ class MonkRuneOfMajorDivineFavor(AttributeRune):
     }
 
 class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorHealingPrayers
+    id = ItemUpgrade.MonkRuneOfSuperiorHealingPrayers
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4221,7 +3967,7 @@ class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
     }
 
 class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorSmitingPrayers
+    id = ItemUpgrade.MonkRuneOfSuperiorSmitingPrayers
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4243,7 +3989,7 @@ class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
     }
 
 class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorProtectionPrayers
+    id = ItemUpgrade.MonkRuneOfSuperiorProtectionPrayers
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4265,7 +4011,7 @@ class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
     }
 
 class MonkRuneOfSuperiorDivineFavor(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorDivineFavor
+    id = ItemUpgrade.MonkRuneOfSuperiorDivineFavor
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4287,27 +4033,27 @@ class MonkRuneOfSuperiorDivineFavor(AttributeRune):
     }
 
 class UpgradeMinorRuneMonk(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Monk
+    id = ItemUpgrade.UpgradeMinorRuneMonk
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneMonk(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Monk
+    id = ItemUpgrade.UpgradeMajorRuneMonk
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneMonk(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Monk
+    id = ItemUpgrade.UpgradeSuperiorRuneMonk
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneMonk(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Monk
+    id = ItemUpgrade.AppliesToMinorRuneMonk
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneMonk(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Monk
+    id = ItemUpgrade.AppliesToMajorRuneMonk
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneMonk(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Monk
+    id = ItemUpgrade.AppliesToSuperiorRuneMonk
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Monk
@@ -4315,8 +4061,7 @@ class AppliesToSuperiorRuneMonk(Upgrade):
 #region Necromancer
 
 class BloodstainedInsignia(Insignia):
-    id = ItemUpgradeId.Bloodstained
-
+    id = ItemUpgrade.BloodstainedInsignia
     names = {
         ServerLanguage.English: "Bloodstained Insignia [Necromancer]",
         ServerLanguage.Korean: "혈흔의 휘장 [네크로맨서]",
@@ -4335,10 +4080,8 @@ class BloodstainedInsignia(Insignia):
         ServerLanguage.English: f"Reduces casting time of spells that exploit corpses by 25% (Non-stacking)"
     }
 
-
 class TormentorsInsignia(Insignia):
-    id = ItemUpgradeId.Tormentors
-
+    id = ItemUpgrade.TormentorsInsignia
     names = {
         ServerLanguage.English: "Tormentor's Insignia [Necromancer]",
         ServerLanguage.Korean: "고문가의 휘장 [네크로맨서]",
@@ -4358,10 +4101,8 @@ class TormentorsInsignia(Insignia):
 
     }
 
-
 class BonelaceInsignia(Insignia):
-    id = ItemUpgradeId.Bonelace
-
+    id = ItemUpgrade.BonelaceInsignia
     names = {
         ServerLanguage.English: "Bonelace Insignia [Necromancer]",
         ServerLanguage.Korean: "해골장식 휘장 [네크로맨서]",
@@ -4380,10 +4121,8 @@ class BonelaceInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (vs. Piercing damage)"
     }
 
-
 class MinionMastersInsignia(Insignia):
-    id = ItemUpgradeId.MinionMasters
-
+    id = ItemUpgrade.MinionMastersInsignia
     names = {
         ServerLanguage.English: "Minion Master's Insignia [Necromancer]",
         ServerLanguage.Korean: "언데드마스터의 휘장 [네크로맨서]",
@@ -4403,10 +4142,8 @@ class MinionMastersInsignia(Insignia):
 
     }
 
-
 class BlightersInsignia(Insignia):
-    id = ItemUpgradeId.Blighters
-
+    id = ItemUpgrade.BlightersInsignia
     names = {
         ServerLanguage.English: "Blighter's Insignia [Necromancer]",
         ServerLanguage.Korean: "오염자의 휘장 [네크로맨서]",
@@ -4425,10 +4162,8 @@ class BlightersInsignia(Insignia):
         ServerLanguage.English: f"Armor +20 (while affected by a Hex Spell)"
     }
 
-
 class UndertakersInsignia(Insignia):
-    id = ItemUpgradeId.Undertakers
-
+    id = ItemUpgrade.UndertakersInsignia
     names = {
         ServerLanguage.English: "Undertaker's Insignia [Necromancer]",
         ServerLanguage.Korean: "장의사의 휘장 [네크로맨서]",
@@ -4448,9 +4183,8 @@ class UndertakersInsignia(Insignia):
 
     }
 
-
 class NecromancerRuneOfMinorBloodMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorBloodMagic
+    id = ItemUpgrade.NecromancerRuneOfMinorBloodMagic
     rarity = Rarity.Blue
 
     names = {
@@ -4468,7 +4202,7 @@ class NecromancerRuneOfMinorBloodMagic(AttributeRune):
     }
 
 class NecromancerRuneOfMinorDeathMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorDeathMagic
+    id = ItemUpgrade.NecromancerRuneOfMinorDeathMagic
     rarity = Rarity.Blue
 
     names = {
@@ -4486,7 +4220,7 @@ class NecromancerRuneOfMinorDeathMagic(AttributeRune):
     }
 
 class NecromancerRuneOfMinorCurses(AttributeRune):
-    id = ItemUpgradeId.OfMinorCurses
+    id = ItemUpgrade.NecromancerRuneOfMinorCurses
     rarity = Rarity.Blue
 
     names = {
@@ -4504,7 +4238,7 @@ class NecromancerRuneOfMinorCurses(AttributeRune):
     }
 
 class NecromancerRuneOfMinorSoulReaping(AttributeRune):
-    id = ItemUpgradeId.OfMinorSoulReaping
+    id = ItemUpgrade.NecromancerRuneOfMinorSoulReaping
     rarity = Rarity.Blue
 
     names = {
@@ -4522,7 +4256,7 @@ class NecromancerRuneOfMinorSoulReaping(AttributeRune):
     }
 
 class NecromancerRuneOfMajorBloodMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorBloodMagic
+    id = ItemUpgrade.NecromancerRuneOfMajorBloodMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4544,7 +4278,7 @@ class NecromancerRuneOfMajorBloodMagic(AttributeRune):
     }
 
 class NecromancerRuneOfMajorDeathMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorDeathMagic
+    id = ItemUpgrade.NecromancerRuneOfMajorDeathMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4566,7 +4300,7 @@ class NecromancerRuneOfMajorDeathMagic(AttributeRune):
     }
 
 class NecromancerRuneOfMajorCurses(AttributeRune):
-    id = ItemUpgradeId.OfMajorCurses
+    id = ItemUpgrade.NecromancerRuneOfMajorCurses
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4588,7 +4322,7 @@ class NecromancerRuneOfMajorCurses(AttributeRune):
     }
 
 class NecromancerRuneOfMajorSoulReaping(AttributeRune):
-    id = ItemUpgradeId.OfMajorSoulReaping
+    id = ItemUpgrade.NecromancerRuneOfMajorSoulReaping
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4610,7 +4344,7 @@ class NecromancerRuneOfMajorSoulReaping(AttributeRune):
     }
 
 class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorBloodMagic
+    id = ItemUpgrade.NecromancerRuneOfSuperiorBloodMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4632,7 +4366,7 @@ class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
     }
 
 class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorDeathMagic
+    id = ItemUpgrade.NecromancerRuneOfSuperiorDeathMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4654,7 +4388,7 @@ class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
     }
 
 class NecromancerRuneOfSuperiorCurses(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorCurses
+    id = ItemUpgrade.NecromancerRuneOfSuperiorCurses
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4676,7 +4410,7 @@ class NecromancerRuneOfSuperiorCurses(AttributeRune):
     }
 
 class NecromancerRuneOfSuperiorSoulReaping(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorSoulReaping
+    id = ItemUpgrade.NecromancerRuneOfSuperiorSoulReaping
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4698,27 +4432,27 @@ class NecromancerRuneOfSuperiorSoulReaping(AttributeRune):
     }
 
 class UpgradeMinorRuneNecromancer(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Necromancer
+    id = ItemUpgrade.UpgradeMinorRuneNecromancer
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneNecromancer(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Necromancer
+    id = ItemUpgrade.UpgradeMajorRuneNecromancer
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneNecromancer(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Necromancer
+    id = ItemUpgrade.UpgradeSuperiorRuneNecromancer
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneNecromancer(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Necromancer
+    id = ItemUpgrade.AppliesToMinorRuneNecromancer
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneNecromancer(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Necromancer
+    id = ItemUpgrade.AppliesToMajorRuneNecromancer
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneNecromancer(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Necromancer
+    id = ItemUpgrade.AppliesToSuperiorRuneNecromancer
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Necromancer
@@ -4726,8 +4460,7 @@ class AppliesToSuperiorRuneNecromancer(Upgrade):
 #region Mesmer
 
 class VirtuososInsignia(Insignia):
-    id = ItemUpgradeId.Virtuosos
-
+    id = ItemUpgrade.VirtuososInsignia
     names = {
         ServerLanguage.English: "Virtuoso's Insignia [Mesmer]",
         ServerLanguage.Korean: "거장의 휘장 [메스머]",
@@ -4746,10 +4479,8 @@ class VirtuososInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (while activating skills)"
     }
 
-
 class ArtificersInsignia(Insignia):
-    id = ItemUpgradeId.Artificers
-
+    id = ItemUpgrade.ArtificersInsignia
     names = {
         ServerLanguage.English: "Artificer's Insignia [Mesmer]",
         ServerLanguage.Korean: "장인의 휘장 [메스머]",
@@ -4768,10 +4499,8 @@ class ArtificersInsignia(Insignia):
         ServerLanguage.English: f"Armor +3 (for each equipped Signet)"
     }
 
-
 class ProdigysInsignia(Insignia):
-    id = ItemUpgradeId.Prodigys
-
+    id = ItemUpgrade.ProdigysInsignia
     names = {
         ServerLanguage.English: "Prodigy's Insignia [Mesmer]",
         ServerLanguage.Korean: "천재의 휘장 [메스머]",
@@ -4790,9 +4519,8 @@ class ProdigysInsignia(Insignia):
         ServerLanguage.English: f"Armor +5 (while recharging 1 or more skills)\nArmor +5 (while recharging 3 or more skills)\nArmor +5 (while recharging 5 or more skills)"
     }
 
-
 class MesmerRuneOfMinorFastCasting(AttributeRune):
-    id = ItemUpgradeId.OfMinorFastCasting
+    id = ItemUpgrade.MesmerRuneOfMinorFastCasting
     rarity = Rarity.Blue
 
     names = {
@@ -4810,7 +4538,7 @@ class MesmerRuneOfMinorFastCasting(AttributeRune):
     }
 
 class MesmerRuneOfMinorDominationMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorDominationMagic
+    id = ItemUpgrade.MesmerRuneOfMinorDominationMagic
     rarity = Rarity.Blue
 
     names = {
@@ -4828,7 +4556,7 @@ class MesmerRuneOfMinorDominationMagic(AttributeRune):
     }
 
 class MesmerRuneOfMinorIllusionMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorIllusionMagic
+    id = ItemUpgrade.MesmerRuneOfMinorIllusionMagic
     rarity = Rarity.Blue
 
     names = {
@@ -4846,7 +4574,7 @@ class MesmerRuneOfMinorIllusionMagic(AttributeRune):
     }
 
 class MesmerRuneOfMinorInspirationMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorInspirationMagic
+    id = ItemUpgrade.MesmerRuneOfMinorInspirationMagic
     rarity = Rarity.Blue
 
     names = {
@@ -4864,7 +4592,7 @@ class MesmerRuneOfMinorInspirationMagic(AttributeRune):
     }
 
 class MesmerRuneOfMajorFastCasting(AttributeRune):
-    id = ItemUpgradeId.OfMajorFastCasting
+    id = ItemUpgrade.MesmerRuneOfMajorFastCasting
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4886,7 +4614,7 @@ class MesmerRuneOfMajorFastCasting(AttributeRune):
     }
 
 class MesmerRuneOfMajorDominationMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorDominationMagic
+    id = ItemUpgrade.MesmerRuneOfMajorDominationMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4908,7 +4636,7 @@ class MesmerRuneOfMajorDominationMagic(AttributeRune):
     }
 
 class MesmerRuneOfMajorIllusionMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorIllusionMagic
+    id = ItemUpgrade.MesmerRuneOfMajorIllusionMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4930,7 +4658,7 @@ class MesmerRuneOfMajorIllusionMagic(AttributeRune):
     }
 
 class MesmerRuneOfMajorInspirationMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorInspirationMagic
+    id = ItemUpgrade.MesmerRuneOfMajorInspirationMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -4952,7 +4680,7 @@ class MesmerRuneOfMajorInspirationMagic(AttributeRune):
     }
 
 class MesmerRuneOfSuperiorFastCasting(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorFastCasting
+    id = ItemUpgrade.MesmerRuneOfSuperiorFastCasting
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4974,7 +4702,7 @@ class MesmerRuneOfSuperiorFastCasting(AttributeRune):
     }
 
 class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorDominationMagic
+    id = ItemUpgrade.MesmerRuneOfSuperiorDominationMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -4996,7 +4724,7 @@ class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
     }
 
 class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorIllusionMagic
+    id = ItemUpgrade.MesmerRuneOfSuperiorIllusionMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5018,7 +4746,7 @@ class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
     }
 
 class MesmerRuneOfSuperiorInspirationMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorInspirationMagic
+    id = ItemUpgrade.MesmerRuneOfSuperiorInspirationMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5040,27 +4768,27 @@ class MesmerRuneOfSuperiorInspirationMagic(AttributeRune):
     }
 
 class UpgradeMinorRuneMesmer(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Mesmer
+    id = ItemUpgrade.UpgradeMinorRuneMesmer
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneMesmer(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Mesmer
+    id = ItemUpgrade.UpgradeMajorRuneMesmer
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneMesmer(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Mesmer
+    id = ItemUpgrade.UpgradeSuperiorRuneMesmer
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneMesmer(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Mesmer
+    id = ItemUpgrade.AppliesToMinorRuneMesmer
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneMesmer(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Mesmer
+    id = ItemUpgrade.AppliesToMajorRuneMesmer
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneMesmer(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Mesmer
+    id = ItemUpgrade.AppliesToSuperiorRuneMesmer
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Mesmer
@@ -5068,8 +4796,7 @@ class AppliesToSuperiorRuneMesmer(Upgrade):
 #region Elementalist
 
 class HydromancerInsignia(Insignia):
-    id = ItemUpgradeId.Hydromancer
-
+    id = ItemUpgrade.HydromancerInsignia
     names = {
         ServerLanguage.English: "Hydromancer Insignia [Elementalist]",
         ServerLanguage.Korean: "물의술사의 휘장 [엘리멘탈리스트]",
@@ -5088,10 +4815,8 @@ class HydromancerInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Cold damage)"
     }
 
-
 class GeomancerInsignia(Insignia):
-    id = ItemUpgradeId.Geomancer
-
+    id = ItemUpgrade.GeomancerInsignia
     names = {
         ServerLanguage.English: "Geomancer Insignia [Elementalist]",
         ServerLanguage.Korean: "대지술사의 휘장 [엘리멘탈리스트]",
@@ -5110,10 +4835,8 @@ class GeomancerInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Earth damage)"
     }
 
-
 class PyromancerInsignia(Insignia):
-    id = ItemUpgradeId.Pyromancer
-
+    id = ItemUpgrade.PyromancerInsignia
     names = {
         ServerLanguage.English: "Pyromancer Insignia [Elementalist]",
         ServerLanguage.Korean: "화염술사의 휘장 [엘리멘탈리스트]",
@@ -5132,10 +4855,8 @@ class PyromancerInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Fire damage)"
     }
 
-
 class AeromancerInsignia(Insignia):
-    id = ItemUpgradeId.Aeromancer
-
+    id = ItemUpgrade.AeromancerInsignia
     names = {
         ServerLanguage.English: "Aeromancer Insignia [Elementalist]",
         ServerLanguage.Korean: "바람술사의 휘장 [엘리멘탈리스트]",
@@ -5154,10 +4875,8 @@ class AeromancerInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. elemental damage)\nArmor +10 (vs. Lightning damage)"
     }
 
-
 class PrismaticInsignia(Insignia):
-    id = ItemUpgradeId.Prismatic
-
+    id = ItemUpgrade.PrismaticInsignia
     names = {
         ServerLanguage.English: "Prismatic Insignia [Elementalist]",
         ServerLanguage.Korean: "무지갯빛 휘장 [엘리멘탈리스트]",
@@ -5177,9 +4896,8 @@ class PrismaticInsignia(Insignia):
 
     }
 
-
 class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
-    id = ItemUpgradeId.OfMinorEnergyStorage
+    id = ItemUpgrade.ElementalistRuneOfMinorEnergyStorage
     rarity = Rarity.Blue
 
     names = {
@@ -5197,7 +4915,7 @@ class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
     }
 
 class ElementalistRuneOfMinorFireMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorFireMagic
+    id = ItemUpgrade.ElementalistRuneOfMinorFireMagic
     rarity = Rarity.Blue
 
     names = {
@@ -5215,7 +4933,7 @@ class ElementalistRuneOfMinorFireMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMinorAirMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorAirMagic
+    id = ItemUpgrade.ElementalistRuneOfMinorAirMagic
     rarity = Rarity.Blue
 
     names = {
@@ -5233,7 +4951,7 @@ class ElementalistRuneOfMinorAirMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMinorEarthMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorEarthMagic
+    id = ItemUpgrade.ElementalistRuneOfMinorEarthMagic
     rarity = Rarity.Blue
 
     names = {
@@ -5251,7 +4969,7 @@ class ElementalistRuneOfMinorEarthMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMinorWaterMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorWaterMagic
+    id = ItemUpgrade.ElementalistRuneOfMinorWaterMagic
     rarity = Rarity.Blue
 
     names = {
@@ -5269,7 +4987,7 @@ class ElementalistRuneOfMinorWaterMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
-    id = ItemUpgradeId.OfMajorEnergyStorage
+    id = ItemUpgrade.ElementalistRuneOfMajorEnergyStorage
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5291,7 +5009,7 @@ class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
     }
 
 class ElementalistRuneOfMajorFireMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorFireMagic
+    id = ItemUpgrade.ElementalistRuneOfMajorFireMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5313,7 +5031,7 @@ class ElementalistRuneOfMajorFireMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMajorAirMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorAirMagic
+    id = ItemUpgrade.ElementalistRuneOfMajorAirMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5335,7 +5053,7 @@ class ElementalistRuneOfMajorAirMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMajorEarthMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorEarthMagic
+    id = ItemUpgrade.ElementalistRuneOfMajorEarthMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5357,7 +5075,7 @@ class ElementalistRuneOfMajorEarthMagic(AttributeRune):
     }
 
 class ElementalistRuneOfMajorWaterMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorWaterMagic
+    id = ItemUpgrade.ElementalistRuneOfMajorWaterMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5379,7 +5097,7 @@ class ElementalistRuneOfMajorWaterMagic(AttributeRune):
     }
 
 class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorEnergyStorage
+    id = ItemUpgrade.ElementalistRuneOfSuperiorEnergyStorage
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5401,7 +5119,7 @@ class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
     }
 
 class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorFireMagic
+    id = ItemUpgrade.ElementalistRuneOfSuperiorFireMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5423,7 +5141,7 @@ class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
     }
 
 class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorAirMagic
+    id = ItemUpgrade.ElementalistRuneOfSuperiorAirMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5445,7 +5163,7 @@ class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
     }
 
 class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorEarthMagic
+    id = ItemUpgrade.ElementalistRuneOfSuperiorEarthMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5467,7 +5185,7 @@ class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
     }
 
 class ElementalistRuneOfSuperiorWaterMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorWaterMagic
+    id = ItemUpgrade.ElementalistRuneOfSuperiorWaterMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5489,27 +5207,27 @@ class ElementalistRuneOfSuperiorWaterMagic(AttributeRune):
     }
 
 class UpgradeMinorRuneElementalist(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Elementalist
+    id = ItemUpgrade.UpgradeMinorRuneElementalist
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneElementalist(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Elementalist
+    id = ItemUpgrade.UpgradeMajorRuneElementalist
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneElementalist(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Elementalist
+    id = ItemUpgrade.UpgradeSuperiorRuneElementalist
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneElementalist(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Elementalist
+    id = ItemUpgrade.AppliesToMinorRuneElementalist
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneElementalist(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Elementalist
+    id = ItemUpgrade.AppliesToMajorRuneElementalist
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneElementalist(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Elementalist
+    id = ItemUpgrade.AppliesToSuperiorRuneElementalist
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Elementalist
@@ -5517,8 +5235,7 @@ class AppliesToSuperiorRuneElementalist(Upgrade):
 #region Assassin
 
 class VanguardsInsignia(Insignia):
-    id = ItemUpgradeId.Vanguards
-
+    id = ItemUpgrade.VanguardsInsignia
     names = {
         ServerLanguage.English: "Vanguard's Insignia [Assassin]",
         ServerLanguage.Korean: "선봉대의 휘장 [어새신]",
@@ -5537,10 +5254,8 @@ class VanguardsInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. physical damage)\nArmor +10 (vs. Blunt damage)"
     }
 
-
 class InfiltratorsInsignia(Insignia):
-    id = ItemUpgradeId.Infiltrators
-
+    id = ItemUpgrade.InfiltratorsInsignia
     names = {
         ServerLanguage.English: "Infiltrator's Insignia [Assassin]",
         ServerLanguage.Korean: "침입자의 휘장 [어새신]",
@@ -5559,10 +5274,8 @@ class InfiltratorsInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. physical damage)\nArmor +10 (vs. Piercing damage)"
     }
 
-
 class SaboteursInsignia(Insignia):
-    id = ItemUpgradeId.Saboteurs
-
+    id = ItemUpgrade.SaboteursInsignia
     names = {
         ServerLanguage.English: "Saboteur's Insignia [Assassin]",
         ServerLanguage.Korean: "파괴자의 휘장 [어새신]",
@@ -5581,10 +5294,8 @@ class SaboteursInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (vs. physical damage)\nArmor +10 (vs. Slashing damage)"
     }
 
-
 class NightstalkersInsignia(Insignia):
-    id = ItemUpgradeId.Nightstalkers
-
+    id = ItemUpgrade.NightstalkersInsignia
     names = {
         ServerLanguage.English: "Nightstalker's Insignia [Assassin]",
         ServerLanguage.Korean: "밤추종자의 휘장 [어새신]",
@@ -5603,9 +5314,8 @@ class NightstalkersInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (while attacking)"
     }
 
-
 class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
-    id = ItemUpgradeId.OfMinorCriticalStrikes
+    id = ItemUpgrade.AssassinRuneOfMinorCriticalStrikes
     rarity = Rarity.Blue
 
     names = {
@@ -5623,7 +5333,7 @@ class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
     }
 
 class AssassinRuneOfMinorDaggerMastery(AttributeRune):
-    id = ItemUpgradeId.OfMinorDaggerMastery
+    id = ItemUpgrade.AssassinRuneOfMinorDaggerMastery
     rarity = Rarity.Blue
 
     names = {
@@ -5641,7 +5351,7 @@ class AssassinRuneOfMinorDaggerMastery(AttributeRune):
     }
 
 class AssassinRuneOfMinorDeadlyArts(AttributeRune):
-    id = ItemUpgradeId.OfMinorDeadlyArts
+    id = ItemUpgrade.AssassinRuneOfMinorDeadlyArts
     rarity = Rarity.Blue
 
     names = {
@@ -5659,7 +5369,7 @@ class AssassinRuneOfMinorDeadlyArts(AttributeRune):
     }
 
 class AssassinRuneOfMinorShadowArts(AttributeRune):
-    id = ItemUpgradeId.OfMinorShadowArts
+    id = ItemUpgrade.AssassinRuneOfMinorShadowArts
     rarity = Rarity.Blue
 
     names = {
@@ -5677,7 +5387,7 @@ class AssassinRuneOfMinorShadowArts(AttributeRune):
     }
 
 class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
-    id = ItemUpgradeId.OfMajorCriticalStrikes
+    id = ItemUpgrade.AssassinRuneOfMajorCriticalStrikes
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5699,7 +5409,7 @@ class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
     }
 
 class AssassinRuneOfMajorDaggerMastery(AttributeRune):
-    id = ItemUpgradeId.OfMajorDaggerMastery
+    id = ItemUpgrade.AssassinRuneOfMajorDaggerMastery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5721,7 +5431,7 @@ class AssassinRuneOfMajorDaggerMastery(AttributeRune):
     }
 
 class AssassinRuneOfMajorDeadlyArts(AttributeRune):
-    id = ItemUpgradeId.OfMajorDeadlyArts
+    id = ItemUpgrade.AssassinRuneOfMajorDeadlyArts
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5743,7 +5453,7 @@ class AssassinRuneOfMajorDeadlyArts(AttributeRune):
     }
 
 class AssassinRuneOfMajorShadowArts(AttributeRune):
-    id = ItemUpgradeId.OfMajorShadowArts
+    id = ItemUpgrade.AssassinRuneOfMajorShadowArts
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -5765,7 +5475,7 @@ class AssassinRuneOfMajorShadowArts(AttributeRune):
     }
 
 class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorCriticalStrikes
+    id = ItemUpgrade.AssassinRuneOfSuperiorCriticalStrikes
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5787,7 +5497,7 @@ class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
     }
 
 class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorDaggerMastery
+    id = ItemUpgrade.AssassinRuneOfSuperiorDaggerMastery
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5809,7 +5519,7 @@ class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
     }
 
 class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorDeadlyArts
+    id = ItemUpgrade.AssassinRuneOfSuperiorDeadlyArts
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5831,7 +5541,7 @@ class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
     }
 
 class AssassinRuneOfSuperiorShadowArts(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorShadowArts
+    id = ItemUpgrade.AssassinRuneOfSuperiorShadowArts
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -5853,27 +5563,27 @@ class AssassinRuneOfSuperiorShadowArts(AttributeRune):
     }
 
 class UpgradeMinorRuneAssassin(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Assassin
+    id = ItemUpgrade.UpgradeMinorRuneAssassin
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneAssassin(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Assassin
+    id = ItemUpgrade.UpgradeMajorRuneAssassin
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneAssassin(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Assassin
+    id = ItemUpgrade.UpgradeSuperiorRuneAssassin
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneAssassin(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Assassin
+    id = ItemUpgrade.AppliesToMinorRuneAssassin
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneAssassin(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Assassin
+    id = ItemUpgrade.AppliesToMajorRuneAssassin
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneAssassin(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Assassin
+    id = ItemUpgrade.AppliesToSuperiorRuneAssassin
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Assassin
@@ -5881,8 +5591,7 @@ class AppliesToSuperiorRuneAssassin(Upgrade):
 #region Ritualist
 
 class ShamansInsignia(Insignia):
-    id = ItemUpgradeId.Shamans
-
+    id = ItemUpgrade.ShamansInsignia
     names = {
         ServerLanguage.English: "Shaman's Insignia [Ritualist]",
         ServerLanguage.Korean: "주술사의 휘장 [리추얼리스트]",
@@ -5903,8 +5612,7 @@ class ShamansInsignia(Insignia):
     }
 
 class GhostForgeInsignia(Insignia):
-    id = ItemUpgradeId.GhostForge
-
+    id = ItemUpgrade.GhostForgeInsignia
     names = {
         ServerLanguage.English: "Ghost Forge Insignia [Ritualist]",
         ServerLanguage.Korean: "유령화로의 휘장 [리추얼리스트]",
@@ -5924,10 +5632,8 @@ class GhostForgeInsignia(Insignia):
 
     }
 
-
 class MysticsInsignia(Insignia):
-    id = ItemUpgradeId.Mystics
-
+    id = ItemUpgrade.MysticsInsignia
     names = {
         ServerLanguage.English: "Mystic's Insignia [Ritualist]",
         ServerLanguage.Korean: "신비술사의 휘장 [리추얼리스트]",
@@ -5946,9 +5652,8 @@ class MysticsInsignia(Insignia):
         ServerLanguage.English: f"Armor +15 (while activating skills)"
     }
 
-
 class RitualistRuneOfMinorChannelingMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorChannelingMagic
+    id = ItemUpgrade.RitualistRuneOfMinorChannelingMagic
     rarity = Rarity.Blue
 
     names = {
@@ -5966,7 +5671,7 @@ class RitualistRuneOfMinorChannelingMagic(AttributeRune):
     }
 
 class RitualistRuneOfMinorRestorationMagic(AttributeRune):
-    id = ItemUpgradeId.OfMinorRestorationMagic
+    id = ItemUpgrade.RitualistRuneOfMinorRestorationMagic
     rarity = Rarity.Blue
 
     names = {
@@ -5984,7 +5689,7 @@ class RitualistRuneOfMinorRestorationMagic(AttributeRune):
     }
 
 class RitualistRuneOfMinorCommuning(AttributeRune):
-    id = ItemUpgradeId.OfMinorCommuning
+    id = ItemUpgrade.RitualistRuneOfMinorCommuning
     rarity = Rarity.Blue
 
     names = {
@@ -6002,7 +5707,7 @@ class RitualistRuneOfMinorCommuning(AttributeRune):
     }
 
 class RitualistRuneOfMinorSpawningPower(AttributeRune):
-    id = ItemUpgradeId.OfMinorSpawningPower
+    id = ItemUpgrade.RitualistRuneOfMinorSpawningPower
     rarity = Rarity.Blue
 
     names = {
@@ -6020,7 +5725,7 @@ class RitualistRuneOfMinorSpawningPower(AttributeRune):
     }
 
 class RitualistRuneOfMajorChannelingMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorChannelingMagic
+    id = ItemUpgrade.RitualistRuneOfMajorChannelingMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6042,7 +5747,7 @@ class RitualistRuneOfMajorChannelingMagic(AttributeRune):
     }
 
 class RitualistRuneOfMajorRestorationMagic(AttributeRune):
-    id = ItemUpgradeId.OfMajorRestorationMagic
+    id = ItemUpgrade.RitualistRuneOfMajorRestorationMagic
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6064,7 +5769,7 @@ class RitualistRuneOfMajorRestorationMagic(AttributeRune):
     }
 
 class RitualistRuneOfMajorCommuning(AttributeRune):
-    id = ItemUpgradeId.OfMajorCommuning
+    id = ItemUpgrade.RitualistRuneOfMajorCommuning
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6086,7 +5791,7 @@ class RitualistRuneOfMajorCommuning(AttributeRune):
     }
 
 class RitualistRuneOfMajorSpawningPower(AttributeRune):
-    id = ItemUpgradeId.OfMajorSpawningPower
+    id = ItemUpgrade.RitualistRuneOfMajorSpawningPower
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6108,7 +5813,7 @@ class RitualistRuneOfMajorSpawningPower(AttributeRune):
     }
 
 class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorChannelingMagic
+    id = ItemUpgrade.RitualistRuneOfSuperiorChannelingMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6130,7 +5835,7 @@ class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
     }
 
 class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorRestorationMagic
+    id = ItemUpgrade.RitualistRuneOfSuperiorRestorationMagic
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6152,7 +5857,7 @@ class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
     }
 
 class RitualistRuneOfSuperiorCommuning(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorCommuning
+    id = ItemUpgrade.RitualistRuneOfSuperiorCommuning
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6174,7 +5879,7 @@ class RitualistRuneOfSuperiorCommuning(AttributeRune):
     }
 
 class RitualistRuneOfSuperiorSpawningPower(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorSpawningPower
+    id = ItemUpgrade.RitualistRuneOfSuperiorSpawningPower
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6196,27 +5901,27 @@ class RitualistRuneOfSuperiorSpawningPower(AttributeRune):
     }
 
 class UpgradeMinorRuneRitualist(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Ritualist
+    id = ItemUpgrade.UpgradeMinorRuneRitualist
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneRitualist(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Ritualist
+    id = ItemUpgrade.UpgradeMajorRuneRitualist
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneRitualist(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Ritualist
+    id = ItemUpgrade.UpgradeSuperiorRuneRitualist
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneRitualist(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Ritualist
+    id = ItemUpgrade.AppliesToMinorRuneRitualist
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneRitualist(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Ritualist
+    id = ItemUpgrade.AppliesToMajorRuneRitualist
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneRitualist(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Ritualist
+    id = ItemUpgrade.AppliesToSuperiorRuneRitualist
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Ritualist
@@ -6224,8 +5929,7 @@ class AppliesToSuperiorRuneRitualist(Upgrade):
 #region Dervish
 
 class WindwalkerInsignia(Insignia):
-    id = ItemUpgradeId.Windwalker
-
+    id = ItemUpgrade.WindwalkerInsignia
     names = {
         ServerLanguage.English: "Windwalker Insignia [Dervish]",
         ServerLanguage.Korean: "여행가의 휘장 [더비시]",
@@ -6245,10 +5949,8 @@ class WindwalkerInsignia(Insignia):
 
     }
 
-
 class ForsakenInsignia(Insignia):
-    id = ItemUpgradeId.Forsaken
-
+    id = ItemUpgrade.ForsakenInsignia
     names = {
         ServerLanguage.English: "Forsaken Insignia [Dervish]",
         ServerLanguage.Korean: "고독한 휘장 [더비시]",
@@ -6267,9 +5969,8 @@ class ForsakenInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (while not affected by an Enchantment Spell)"
     }
 
-
 class DervishRuneOfMinorMysticism(AttributeRune):
-    id = ItemUpgradeId.OfMinorMysticism
+    id = ItemUpgrade.DervishRuneOfMinorMysticism
     rarity = Rarity.Blue
 
     names = {
@@ -6287,7 +5988,7 @@ class DervishRuneOfMinorMysticism(AttributeRune):
     }
 
 class DervishRuneOfMinorEarthPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMinorEarthPrayers
+    id = ItemUpgrade.DervishRuneOfMinorEarthPrayers
     rarity = Rarity.Blue
 
     names = {
@@ -6305,7 +6006,7 @@ class DervishRuneOfMinorEarthPrayers(AttributeRune):
     }
 
 class DervishRuneOfMinorScytheMastery(AttributeRune):
-    id = ItemUpgradeId.OfMinorScytheMastery
+    id = ItemUpgrade.DervishRuneOfMinorScytheMastery
     rarity = Rarity.Blue
 
     names = {
@@ -6323,7 +6024,7 @@ class DervishRuneOfMinorScytheMastery(AttributeRune):
     }
 
 class DervishRuneOfMinorWindPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMinorWindPrayers
+    id = ItemUpgrade.DervishRuneOfMinorWindPrayers
     rarity = Rarity.Blue
 
     names = {
@@ -6341,7 +6042,7 @@ class DervishRuneOfMinorWindPrayers(AttributeRune):
     }
 
 class DervishRuneOfMajorMysticism(AttributeRune):
-    id = ItemUpgradeId.OfMajorMysticism
+    id = ItemUpgrade.DervishRuneOfMajorMysticism
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6363,7 +6064,7 @@ class DervishRuneOfMajorMysticism(AttributeRune):
     }
 
 class DervishRuneOfMajorEarthPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMajorEarthPrayers
+    id = ItemUpgrade.DervishRuneOfMajorEarthPrayers
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6385,7 +6086,7 @@ class DervishRuneOfMajorEarthPrayers(AttributeRune):
     }
 
 class DervishRuneOfMajorScytheMastery(AttributeRune):
-    id = ItemUpgradeId.OfMajorScytheMastery
+    id = ItemUpgrade.DervishRuneOfMajorScytheMastery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6407,7 +6108,7 @@ class DervishRuneOfMajorScytheMastery(AttributeRune):
     }
 
 class DervishRuneOfMajorWindPrayers(AttributeRune):
-    id = ItemUpgradeId.OfMajorWindPrayers
+    id = ItemUpgrade.DervishRuneOfMajorWindPrayers
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6429,7 +6130,7 @@ class DervishRuneOfMajorWindPrayers(AttributeRune):
     }
 
 class DervishRuneOfSuperiorMysticism(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorMysticism
+    id = ItemUpgrade.DervishRuneOfSuperiorMysticism
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6451,7 +6152,7 @@ class DervishRuneOfSuperiorMysticism(AttributeRune):
     }
 
 class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorEarthPrayers
+    id = ItemUpgrade.DervishRuneOfSuperiorEarthPrayers
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6473,7 +6174,7 @@ class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
     }
 
 class DervishRuneOfSuperiorScytheMastery(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorScytheMastery
+    id = ItemUpgrade.DervishRuneOfSuperiorScytheMastery
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6495,7 +6196,7 @@ class DervishRuneOfSuperiorScytheMastery(AttributeRune):
     }
 
 class DervishRuneOfSuperiorWindPrayers(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorWindPrayers
+    id = ItemUpgrade.DervishRuneOfSuperiorWindPrayers
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6517,27 +6218,27 @@ class DervishRuneOfSuperiorWindPrayers(AttributeRune):
     }
 
 class UpgradeMinorRuneDervish(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Dervish
+    id = ItemUpgrade.UpgradeMinorRuneDervish
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneDervish(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Dervish
+    id = ItemUpgrade.UpgradeMajorRuneDervish
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneDervish(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Dervish
+    id = ItemUpgrade.UpgradeSuperiorRuneDervish
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneDervish(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Dervish
+    id = ItemUpgrade.AppliesToMinorRuneDervish
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneDervish(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Dervish
+    id = ItemUpgrade.AppliesToMajorRuneDervish
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneDervish(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Dervish
+    id = ItemUpgrade.AppliesToSuperiorRuneDervish
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Dervish
@@ -6545,8 +6246,7 @@ class AppliesToSuperiorRuneDervish(Upgrade):
 #region Paragon
 
 class CenturionsInsignia(Insignia):
-    id = ItemUpgradeId.Centurions
-
+    id = ItemUpgrade.CenturionsInsignia
     names = {
         ServerLanguage.English: "Centurion's Insignia [Paragon]",
         ServerLanguage.Korean: "백부장의 휘장 [파라곤]",
@@ -6565,9 +6265,8 @@ class CenturionsInsignia(Insignia):
         ServerLanguage.English: f"Armor +10 (while affected by a Shout, Echo, or Chant)"
     }
 
-
 class ParagonRuneOfMinorLeadership(AttributeRune):
-    id = ItemUpgradeId.OfMinorLeadership
+    id = ItemUpgrade.ParagonRuneOfMinorLeadership
     rarity = Rarity.Blue
 
     names = {
@@ -6585,7 +6284,7 @@ class ParagonRuneOfMinorLeadership(AttributeRune):
     }
 
 class ParagonRuneOfMinorMotivation(AttributeRune):
-    id = ItemUpgradeId.OfMinorMotivation
+    id = ItemUpgrade.ParagonRuneOfMinorMotivation
     rarity = Rarity.Blue
 
     names = {
@@ -6603,7 +6302,7 @@ class ParagonRuneOfMinorMotivation(AttributeRune):
     }
 
 class ParagonRuneOfMinorCommand(AttributeRune):
-    id = ItemUpgradeId.OfMinorCommand
+    id = ItemUpgrade.ParagonRuneOfMinorCommand
     rarity = Rarity.Blue
 
     names = {
@@ -6621,7 +6320,7 @@ class ParagonRuneOfMinorCommand(AttributeRune):
     }
 
 class ParagonRuneOfMinorSpearMastery(AttributeRune):
-    id = ItemUpgradeId.OfMinorSpearMastery
+    id = ItemUpgrade.ParagonRuneOfMinorSpearMastery
     rarity = Rarity.Blue
 
     names = {
@@ -6639,7 +6338,7 @@ class ParagonRuneOfMinorSpearMastery(AttributeRune):
     }
 
 class ParagonRuneOfMajorLeadership(AttributeRune):
-    id = ItemUpgradeId.OfMajorLeadership
+    id = ItemUpgrade.ParagonRuneOfMajorLeadership
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6661,7 +6360,7 @@ class ParagonRuneOfMajorLeadership(AttributeRune):
     }
 
 class ParagonRuneOfMajorMotivation(AttributeRune):
-    id = ItemUpgradeId.OfMajorMotivation
+    id = ItemUpgrade.ParagonRuneOfMajorMotivation
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6683,7 +6382,7 @@ class ParagonRuneOfMajorMotivation(AttributeRune):
     }
 
 class ParagonRuneOfMajorCommand(AttributeRune):
-    id = ItemUpgradeId.OfMajorCommand
+    id = ItemUpgrade.ParagonRuneOfMajorCommand
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6705,7 +6404,7 @@ class ParagonRuneOfMajorCommand(AttributeRune):
     }
 
 class ParagonRuneOfMajorSpearMastery(AttributeRune):
-    id = ItemUpgradeId.OfMajorSpearMastery
+    id = ItemUpgrade.ParagonRuneOfMajorSpearMastery
     rarity = Rarity.Purple
 
     property_identifiers = [
@@ -6727,7 +6426,7 @@ class ParagonRuneOfMajorSpearMastery(AttributeRune):
     }
 
 class ParagonRuneOfSuperiorLeadership(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorLeadership
+    id = ItemUpgrade.ParagonRuneOfSuperiorLeadership
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6749,7 +6448,7 @@ class ParagonRuneOfSuperiorLeadership(AttributeRune):
     }
 
 class ParagonRuneOfSuperiorMotivation(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorMotivation
+    id = ItemUpgrade.ParagonRuneOfSuperiorMotivation
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6771,7 +6470,7 @@ class ParagonRuneOfSuperiorMotivation(AttributeRune):
     }
 
 class ParagonRuneOfSuperiorCommand(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorCommand
+    id = ItemUpgrade.ParagonRuneOfSuperiorCommand
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6793,7 +6492,7 @@ class ParagonRuneOfSuperiorCommand(AttributeRune):
     }
 
 class ParagonRuneOfSuperiorSpearMastery(AttributeRune):
-    id = ItemUpgradeId.OfSuperiorSpearMastery
+    id = ItemUpgrade.ParagonRuneOfSuperiorSpearMastery
     rarity = Rarity.Gold
 
     property_identifiers = [
@@ -6815,27 +6514,27 @@ class ParagonRuneOfSuperiorSpearMastery(AttributeRune):
     }
 
 class UpgradeMinorRuneParagon(Upgrade):
-    id = ItemUpgradeId.UpgradeMinorRune_Paragon
+    id = ItemUpgrade.UpgradeMinorRuneParagon
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeMajorRuneParagon(Upgrade):
-    id = ItemUpgradeId.UpgradeMajorRune_Paragon
+    id = ItemUpgrade.UpgradeMajorRuneParagon
     mod_type = ItemUpgradeType.UpgradeRune
 
 class UpgradeSuperiorRuneParagon(Upgrade):
-    id = ItemUpgradeId.UpgradeSuperiorRune_Paragon
+    id = ItemUpgrade.UpgradeSuperiorRuneParagon
     mod_type = ItemUpgradeType.UpgradeRune
 
 class AppliesToMinorRuneParagon(Upgrade):
-    id = ItemUpgradeId.AppliesToMinorRune_Paragon
+    id = ItemUpgrade.AppliesToMinorRuneParagon
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToMajorRuneParagon(Upgrade):
-    id = ItemUpgradeId.AppliesToMajorRune_Paragon
+    id = ItemUpgrade.AppliesToMajorRuneParagon
     mod_type = ItemUpgradeType.AppliesToRune
 
 class AppliesToSuperiorRuneParagon(Upgrade):
-    id = ItemUpgradeId.AppliesToSuperiorRune_Paragon
+    id = ItemUpgrade.AppliesToSuperiorRuneParagon
     mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Paragon
@@ -7237,5 +6936,4 @@ _UPGRADES: list[type[Upgrade]] = [
     AppliesToMajorRuneParagon,
     AppliesToSuperiorRuneParagon, 
 ]
-
 

@@ -1,4 +1,6 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
+
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
 
 class ItemBaneSpecies(IntEnum):
     Undead = 0
@@ -578,3 +580,572 @@ class ItemUpgradeId(IntEnum):
     AppliesToMajorRune_Paragon = 0x030D
     UpgradeSuperiorRune_Paragon = 0x0187
     AppliesToSuperiorRune_Paragon = 0x030F
+
+class ItemUpgrade(Enum):
+    Unknown = ItemUpgradeId.Unknown
+    Adept = {
+        ItemType.Staff: ItemUpgradeId.Adept_Staff,
+    }
+    Icy = {
+        ItemType.Axe: ItemUpgradeId.Icy_Axe,
+        ItemType.Bow: ItemUpgradeId.Icy_Bow,
+        ItemType.Daggers: ItemUpgradeId.Icy_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Icy_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Icy_Scythe,
+        ItemType.Spear: ItemUpgradeId.Icy_Spear,
+        ItemType.Sword: ItemUpgradeId.Icy_Sword,
+    }
+    Ebon = {
+        ItemType.Axe: ItemUpgradeId.Ebon_Axe,
+        ItemType.Bow: ItemUpgradeId.Ebon_Bow,
+        ItemType.Daggers: ItemUpgradeId.Ebon_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Ebon_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Ebon_Scythe,
+        ItemType.Spear: ItemUpgradeId.Ebon_Spear,
+        ItemType.Sword: ItemUpgradeId.Ebon_Sword,
+    }
+    Shocking = {
+        ItemType.Axe: ItemUpgradeId.Shocking_Axe,
+        ItemType.Bow: ItemUpgradeId.Shocking_Bow,
+        ItemType.Daggers: ItemUpgradeId.Shocking_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Shocking_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Shocking_Scythe,
+        ItemType.Spear: ItemUpgradeId.Shocking_Spear,
+        ItemType.Sword: ItemUpgradeId.Shocking_Sword,
+    }
+    Fiery = {
+        ItemType.Axe: ItemUpgradeId.Fiery_Axe,
+        ItemType.Bow: ItemUpgradeId.Fiery_Bow,
+        ItemType.Daggers: ItemUpgradeId.Fiery_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Fiery_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Fiery_Scythe,
+        ItemType.Spear: ItemUpgradeId.Fiery_Spear,
+        ItemType.Sword: ItemUpgradeId.Fiery_Sword,
+    }
+    Barbed = {
+        ItemType.Axe: ItemUpgradeId.Barbed_Axe,
+        ItemType.Bow: ItemUpgradeId.Barbed_Bow,
+        ItemType.Daggers: ItemUpgradeId.Barbed_Daggers,
+        ItemType.Scythe: ItemUpgradeId.Barbed_Scythe,
+        ItemType.Spear: ItemUpgradeId.Barbed_Spear,
+        ItemType.Sword: ItemUpgradeId.Barbed_Sword,
+    }
+    Crippling = {
+        ItemType.Axe: ItemUpgradeId.Crippling_Axe,
+        ItemType.Bow: ItemUpgradeId.Crippling_Bow,
+        ItemType.Daggers: ItemUpgradeId.Crippling_Daggers,
+        ItemType.Scythe: ItemUpgradeId.Crippling_Scythe,
+        ItemType.Spear: ItemUpgradeId.Crippling_Spear,
+        ItemType.Sword: ItemUpgradeId.Crippling_Sword,
+    }
+    Cruel = {
+        ItemType.Axe: ItemUpgradeId.Cruel_Axe,
+        ItemType.Daggers: ItemUpgradeId.Cruel_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Cruel_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Cruel_Scythe,
+        ItemType.Spear: ItemUpgradeId.Cruel_Spear,
+        ItemType.Sword: ItemUpgradeId.Cruel_Sword,
+    }
+    Poisonous = {
+        ItemType.Axe: ItemUpgradeId.Poisonous_Axe,
+        ItemType.Bow: ItemUpgradeId.Poisonous_Bow,
+        ItemType.Daggers: ItemUpgradeId.Poisonous_Daggers,
+        ItemType.Scythe: ItemUpgradeId.Poisonous_Scythe,
+        ItemType.Spear: ItemUpgradeId.Poisonous_Spear,
+        ItemType.Sword: ItemUpgradeId.Poisonous_Sword,
+    }
+    Silencing = {
+        ItemType.Bow: ItemUpgradeId.Silencing_Bow,
+        ItemType.Daggers: ItemUpgradeId.Silencing_Daggers,
+        ItemType.Spear: ItemUpgradeId.Silencing_Spear,
+    }
+    Furious = {
+        ItemType.Axe: ItemUpgradeId.Furious_Axe,
+        ItemType.Daggers: ItemUpgradeId.Furious_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Furious_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Furious_Scythe,
+        ItemType.Spear: ItemUpgradeId.Furious_Spear,
+        ItemType.Sword: ItemUpgradeId.Furious_Sword,
+    }
+    Heavy = {
+        ItemType.Axe: ItemUpgradeId.Heavy_Axe,
+        ItemType.Hammer: ItemUpgradeId.Heavy_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Heavy_Scythe,
+        ItemType.Spear: ItemUpgradeId.Heavy_Spear,
+    }
+    Zealous = {
+        ItemType.Axe: ItemUpgradeId.Zealous_Axe,
+        ItemType.Bow: ItemUpgradeId.Zealous_Bow,
+        ItemType.Daggers: ItemUpgradeId.Zealous_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Zealous_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Zealous_Scythe,
+        ItemType.Spear: ItemUpgradeId.Zealous_Spear,
+        ItemType.Sword: ItemUpgradeId.Zealous_Sword,
+    }
+    Vampiric = {
+        ItemType.Axe: ItemUpgradeId.Vampiric_Axe,
+        ItemType.Bow: ItemUpgradeId.Vampiric_Bow,
+        ItemType.Daggers: ItemUpgradeId.Vampiric_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Vampiric_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Vampiric_Scythe,
+        ItemType.Spear: ItemUpgradeId.Vampiric_Spear,
+        ItemType.Sword: ItemUpgradeId.Vampiric_Sword,
+    }
+    Swift = {
+        ItemType.Staff: ItemUpgradeId.Swift_Staff,
+    }
+    Sundering = {
+        ItemType.Axe: ItemUpgradeId.Sundering_Axe,
+        ItemType.Bow: ItemUpgradeId.Sundering_Bow,
+        ItemType.Daggers: ItemUpgradeId.Sundering_Daggers,
+        ItemType.Hammer: ItemUpgradeId.Sundering_Hammer,
+        ItemType.Scythe: ItemUpgradeId.Sundering_Scythe,
+        ItemType.Spear: ItemUpgradeId.Sundering_Spear,
+        ItemType.Sword: ItemUpgradeId.Sundering_Sword,
+    }
+    Defensive = {
+        ItemType.Staff: ItemUpgradeId.Defensive_Staff,
+    }
+    Insightful = {
+        ItemType.Staff: ItemUpgradeId.Insightful_Staff,
+    }
+    Hale = {
+        ItemType.Staff: ItemUpgradeId.Hale_Staff,
+    }
+    OfDefense = {
+        ItemType.Axe: ItemUpgradeId.OfDefense_Axe,
+        ItemType.Bow: ItemUpgradeId.OfDefense_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfDefense_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfDefense_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfDefense_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfDefense_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfDefense_Spear,
+        ItemType.Sword: ItemUpgradeId.OfDefense_Sword,
+    }
+    OfWarding = {
+        ItemType.Axe: ItemUpgradeId.OfWarding_Axe,
+        ItemType.Bow: ItemUpgradeId.OfWarding_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfWarding_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfWarding_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfWarding_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfWarding_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfWarding_Spear,
+        ItemType.Sword: ItemUpgradeId.OfWarding_Sword,
+    }
+    OfShelter = {
+        ItemType.Axe: ItemUpgradeId.OfShelter_Axe,
+        ItemType.Bow: ItemUpgradeId.OfShelter_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfShelter_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfShelter_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfShelter_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfShelter_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfShelter_Spear,
+        ItemType.Sword: ItemUpgradeId.OfShelter_Sword,
+    }
+    OfSlaying = {
+        ItemType.Axe: ItemUpgradeId.OfSlaying_Axe,
+        ItemType.Bow: ItemUpgradeId.OfSlaying_Bow,
+        ItemType.Hammer: ItemUpgradeId.OfSlaying_Hammer,
+        ItemType.Sword: ItemUpgradeId.OfSlaying_Sword,
+        ItemType.Staff: ItemUpgradeId.OfSlaying_Staff,
+    }
+    OfFortitude = {
+        ItemType.Axe: ItemUpgradeId.OfFortitude_Axe,
+        ItemType.Bow: ItemUpgradeId.OfFortitude_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfFortitude_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfFortitude_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfFortitude_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfFortitude_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfFortitude_Spear,
+        ItemType.Sword: ItemUpgradeId.OfFortitude_Sword,
+        ItemType.Offhand: ItemUpgradeId.OfFortitude_Focus,
+        ItemType.Shield: ItemUpgradeId.OfFortitude_Shield,
+    }
+    OfEnchanting = {
+        ItemType.Axe: ItemUpgradeId.OfEnchanting_Axe,
+        ItemType.Bow: ItemUpgradeId.OfEnchanting_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfEnchanting_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfEnchanting_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfEnchanting_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfEnchanting_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfEnchanting_Spear,
+        ItemType.Sword: ItemUpgradeId.OfEnchanting_Sword,
+    }
+    OfTheProfession = {
+        ItemType.Axe: ItemUpgradeId.OfTheProfession_Axe,
+        ItemType.Bow: ItemUpgradeId.OfTheProfession_Bow,
+        ItemType.Daggers: ItemUpgradeId.OfTheProfession_Daggers,
+        ItemType.Hammer: ItemUpgradeId.OfTheProfession_Hammer,
+        ItemType.Staff: ItemUpgradeId.OfTheProfession_Staff,
+        ItemType.Scythe: ItemUpgradeId.OfTheProfession_Scythe,
+        ItemType.Spear: ItemUpgradeId.OfTheProfession_Spear,
+        ItemType.Sword: ItemUpgradeId.OfTheProfession_Sword,
+        ItemType.Wand: ItemUpgradeId.OfTheProfession_Wand,
+    }
+    OfAxeMastery = {
+        ItemType.Axe: ItemUpgradeId.OfAxeMastery,
+    }
+    OfMarksmanship = {
+        ItemType.Bow: ItemUpgradeId.OfMarksmanship,
+    }
+    OfDaggerMastery = {
+        ItemType.Daggers: ItemUpgradeId.OfDaggerMastery,
+    }
+    OfHammerMastery = {
+        ItemType.Hammer: ItemUpgradeId.OfHammerMastery,
+    }
+    OfScytheMastery = {
+        ItemType.Scythe: ItemUpgradeId.OfScytheMastery,
+    }
+    OfSpearMastery = {
+        ItemType.Spear: ItemUpgradeId.OfSpearMastery,
+    }
+    OfSwordsmanship = {
+        ItemType.Sword: ItemUpgradeId.OfSwordsmanship,
+    }
+    OfAttribute = {
+        ItemType.Staff: ItemUpgradeId.OfAttribute_Staff,
+    }
+    OfMastery = {
+        ItemType.Staff: ItemUpgradeId.OfMastery_Staff,
+    }
+    OfMemory = {
+        ItemType.Wand: ItemUpgradeId.OfMemory_Wand,
+    }
+    OfQuickening = {
+        ItemType.Wand: ItemUpgradeId.OfQuickening_Wand,
+    }
+    OfAptitude = {
+        ItemType.Offhand: ItemUpgradeId.OfAptitude_Focus,
+    }
+    OfDevotion = {
+        ItemType.Shield: ItemUpgradeId.OfDevotion_Shield,
+        ItemType.Offhand: ItemUpgradeId.OfDevotion_Focus,
+        ItemType.Staff: ItemUpgradeId.OfDevotion_Staff,
+    }
+    OfValor = {
+        ItemType.Offhand: ItemUpgradeId.OfValor_Focus,
+        ItemType.Shield: ItemUpgradeId.OfValor_Shield,
+        ItemType.Staff: ItemUpgradeId.OfValor_Staff,
+    }
+    OfEndurance = {
+        ItemType.Offhand: ItemUpgradeId.OfEndurance_Focus,
+        ItemType.Shield: ItemUpgradeId.OfEndurance_Shield,
+        ItemType.Staff: ItemUpgradeId.OfEndurance_Staff,
+    }
+    OfSwiftness = {
+        ItemType.Offhand: ItemUpgradeId.OfSwiftness_Focus,
+    }
+    BeJustAndFearNot = ItemUpgradeId.BeJustAndFearNot
+    DownButNotOut = ItemUpgradeId.DownButNotOut
+    FaithIsMyShield = ItemUpgradeId.FaithIsMyShield
+    ForgetMeNot = ItemUpgradeId.ForgetMeNot
+    HailToTheKing = ItemUpgradeId.HailToTheKing
+    IgnoranceIsBliss = ItemUpgradeId.IgnoranceIsBliss
+    KnowingIsHalfTheBattle = ItemUpgradeId.KnowingIsHalfTheBattle
+    LifeIsPain = ItemUpgradeId.LifeIsPain
+    LiveForToday = ItemUpgradeId.LiveForToday
+    ManForAllSeasons = ItemUpgradeId.ManForAllSeasons
+    MightMakesRight = ItemUpgradeId.MightMakesRight
+    SerenityNow = ItemUpgradeId.SerenityNow
+    SurvivalOfTheFittest = ItemUpgradeId.SurvivalOfTheFittest
+    BrawnOverBrains = ItemUpgradeId.BrawnOverBrains
+    DanceWithDeath = ItemUpgradeId.DanceWithDeath
+    DontFearTheReaper = ItemUpgradeId.DontFearTheReaper
+    DontThinkTwice = ItemUpgradeId.DontThinkTwice
+    GuidedByFate = ItemUpgradeId.GuidedByFate
+    StrengthAndHonor = ItemUpgradeId.StrengthAndHonor
+    ToThePain = ItemUpgradeId.ToThePain
+    TooMuchInformation = ItemUpgradeId.TooMuchInformation
+    VengeanceIsMine = ItemUpgradeId.VengeanceIsMine
+    IHaveThePower = ItemUpgradeId.IHaveThePower
+    LetTheMemoryLiveAgain = ItemUpgradeId.LetTheMemoryLiveAgain
+    CastOutTheUnclean = ItemUpgradeId.CastOutTheUnclean
+    FearCutsDeeper = ItemUpgradeId.FearCutsDeeper
+    ICanSeeClearlyNow = ItemUpgradeId.ICanSeeClearlyNow
+    LeafOnTheWind = ItemUpgradeId.LeafOnTheWind
+    LikeARollingStone = ItemUpgradeId.LikeARollingStone
+    LuckOfTheDraw = ItemUpgradeId.LuckOfTheDraw
+    MasterOfMyDomain = ItemUpgradeId.MasterOfMyDomain
+    NotTheFace = ItemUpgradeId.NotTheFace
+    NothingToFear = ItemUpgradeId.NothingToFear
+    OnlyTheStrongSurvive = ItemUpgradeId.OnlyTheStrongSurvive
+    PureOfHeart = ItemUpgradeId.PureOfHeart
+    RidersOnTheStorm = ItemUpgradeId.RidersOnTheStorm
+    RunForYourLife = ItemUpgradeId.RunForYourLife
+    ShelteredByFaith = ItemUpgradeId.ShelteredByFaith
+    SleepNowInTheFire = ItemUpgradeId.SleepNowInTheFire
+    SoundnessOfMind = ItemUpgradeId.SoundnessOfMind
+    StrengthOfBody = ItemUpgradeId.StrengthOfBody
+    SwiftAsTheWind = ItemUpgradeId.SwiftAsTheWind
+    TheRiddleOfSteel = ItemUpgradeId.TheRiddleOfSteel
+    ThroughThickAndThin = ItemUpgradeId.ThroughThickAndThin
+    MeasureForMeasure = ItemUpgradeId.MeasureForMeasure
+    ShowMeTheMoney = ItemUpgradeId.ShowMeTheMoney
+    AptitudeNotAttitude = ItemUpgradeId.AptitudeNotAttitude
+    DontCallItAComeback = ItemUpgradeId.DontCallItAComeback
+    HaleAndHearty = ItemUpgradeId.HaleAndHearty
+    HaveFaith = ItemUpgradeId.HaveFaith
+    IAmSorrow = ItemUpgradeId.IAmSorrow
+    SeizeTheDay = ItemUpgradeId.SeizeTheDay
+    SurvivorInsignia = ItemUpgradeId.Survivor
+    RadiantInsignia = ItemUpgradeId.Radiant
+    StalwartInsignia = ItemUpgradeId.Stalwart
+    BrawlersInsignia = ItemUpgradeId.Brawlers
+    BlessedInsignia = ItemUpgradeId.Blessed
+    HeraldsInsignia = ItemUpgradeId.Heralds
+    SentrysInsignia = ItemUpgradeId.Sentrys
+    KnightsInsignia = ItemUpgradeId.Knights
+    LieutenantsInsignia = ItemUpgradeId.Lieutenants
+    StonefistInsignia = ItemUpgradeId.Stonefist
+    DreadnoughtInsignia = ItemUpgradeId.Dreadnought
+    SentinelsInsignia = ItemUpgradeId.Sentinels
+    FrostboundInsignia = ItemUpgradeId.Frostbound
+    PyreboundInsignia = ItemUpgradeId.Pyrebound
+    StormboundInsignia = ItemUpgradeId.Stormbound
+    ScoutsInsignia = ItemUpgradeId.Scouts
+    EarthboundInsignia = ItemUpgradeId.Earthbound
+    BeastmastersInsignia = ItemUpgradeId.Beastmasters
+    WanderersInsignia = ItemUpgradeId.Wanderers
+    DisciplesInsignia = ItemUpgradeId.Disciples
+    AnchoritesInsignia = ItemUpgradeId.Anchorites
+    BloodstainedInsignia = ItemUpgradeId.Bloodstained
+    TormentorsInsignia = ItemUpgradeId.Tormentors
+    BonelaceInsignia = ItemUpgradeId.Bonelace
+    MinionMastersInsignia = ItemUpgradeId.MinionMasters
+    BlightersInsignia = ItemUpgradeId.Blighters
+    UndertakersInsignia = ItemUpgradeId.Undertakers
+    VirtuososInsignia = ItemUpgradeId.Virtuosos
+    ArtificersInsignia = ItemUpgradeId.Artificers
+    ProdigysInsignia = ItemUpgradeId.Prodigys
+    HydromancerInsignia = ItemUpgradeId.Hydromancer
+    GeomancerInsignia = ItemUpgradeId.Geomancer
+    PyromancerInsignia = ItemUpgradeId.Pyromancer
+    AeromancerInsignia = ItemUpgradeId.Aeromancer
+    PrismaticInsignia = ItemUpgradeId.Prismatic
+    VanguardsInsignia = ItemUpgradeId.Vanguards
+    InfiltratorsInsignia = ItemUpgradeId.Infiltrators
+    SaboteursInsignia = ItemUpgradeId.Saboteurs
+    NightstalkersInsignia = ItemUpgradeId.Nightstalkers
+    ShamansInsignia = ItemUpgradeId.Shamans
+    GhostForgeInsignia = ItemUpgradeId.GhostForge
+    MysticsInsignia = ItemUpgradeId.Mystics
+    WindwalkerInsignia = ItemUpgradeId.Windwalker
+    ForsakenInsignia = ItemUpgradeId.Forsaken
+    CenturionsInsignia = ItemUpgradeId.Centurions
+    RuneOfMinorVigor = ItemUpgradeId.OfMinorVigor
+    RuneOfMinorVigor2 = ItemUpgradeId.OfMinorVigor2
+    RuneOfVitae = ItemUpgradeId.OfVitae
+    RuneOfAttunement = ItemUpgradeId.OfAttunement
+    RuneOfMajorVigor = ItemUpgradeId.OfMajorVigor
+    RuneOfRecovery = ItemUpgradeId.OfRecovery
+    RuneOfRestoration = ItemUpgradeId.OfRestoration
+    RuneOfClarity = ItemUpgradeId.OfClarity
+    RuneOfPurity = ItemUpgradeId.OfPurity
+    RuneOfSuperiorVigor = ItemUpgradeId.OfSuperiorVigor
+    WarriorRuneOfMinorAbsorption = ItemUpgradeId.OfMinorAbsorption
+    WarriorRuneOfMinorTactics = ItemUpgradeId.OfMinorTactics
+    WarriorRuneOfMinorStrength = ItemUpgradeId.OfMinorStrength
+    WarriorRuneOfMinorAxeMastery = ItemUpgradeId.OfMinorAxeMastery
+    WarriorRuneOfMinorHammerMastery = ItemUpgradeId.OfMinorHammerMastery
+    WarriorRuneOfMinorSwordsmanship = ItemUpgradeId.OfMinorSwordsmanship
+    WarriorRuneOfMajorAbsorption = ItemUpgradeId.OfMajorAbsorption
+    WarriorRuneOfMajorTactics = ItemUpgradeId.OfMajorTactics
+    WarriorRuneOfMajorStrength = ItemUpgradeId.OfMajorStrength
+    WarriorRuneOfMajorAxeMastery = ItemUpgradeId.OfMajorAxeMastery
+    WarriorRuneOfMajorHammerMastery = ItemUpgradeId.OfMajorHammerMastery
+    WarriorRuneOfMajorSwordsmanship = ItemUpgradeId.OfMajorSwordsmanship
+    WarriorRuneOfSuperiorAbsorption = ItemUpgradeId.OfSuperiorAbsorption
+    WarriorRuneOfSuperiorTactics = ItemUpgradeId.OfSuperiorTactics
+    WarriorRuneOfSuperiorStrength = ItemUpgradeId.OfSuperiorStrength
+    WarriorRuneOfSuperiorAxeMastery = ItemUpgradeId.OfSuperiorAxeMastery
+    WarriorRuneOfSuperiorHammerMastery = ItemUpgradeId.OfSuperiorHammerMastery
+    WarriorRuneOfSuperiorSwordsmanship = ItemUpgradeId.OfSuperiorSwordsmanship
+    UpgradeMinorRuneWarrior = ItemUpgradeId.UpgradeMinorRune_Warrior
+    UpgradeMajorRuneWarrior = ItemUpgradeId.UpgradeMajorRune_Warrior
+    UpgradeSuperiorRuneWarrior = ItemUpgradeId.UpgradeSuperiorRune_Warrior
+    AppliesToMinorRuneWarrior = ItemUpgradeId.AppliesToMinorRune_Warrior
+    AppliesToMajorRuneWarrior = ItemUpgradeId.AppliesToMajorRune_Warrior
+    AppliesToSuperiorRuneWarrior = ItemUpgradeId.AppliesToSuperiorRune_Warrior
+    RangerRuneOfMinorWildernessSurvival = ItemUpgradeId.OfMinorWildernessSurvival
+    RangerRuneOfMinorExpertise = ItemUpgradeId.OfMinorExpertise
+    RangerRuneOfMinorBeastMastery = ItemUpgradeId.OfMinorBeastMastery
+    RangerRuneOfMinorMarksmanship = ItemUpgradeId.OfMinorMarksmanship
+    RangerRuneOfMajorWildernessSurvival = ItemUpgradeId.OfMajorWildernessSurvival
+    RangerRuneOfMajorExpertise = ItemUpgradeId.OfMajorExpertise
+    RangerRuneOfMajorBeastMastery = ItemUpgradeId.OfMajorBeastMastery
+    RangerRuneOfMajorMarksmanship = ItemUpgradeId.OfMajorMarksmanship
+    RangerRuneOfSuperiorWildernessSurvival = ItemUpgradeId.OfSuperiorWildernessSurvival
+    RangerRuneOfSuperiorExpertise = ItemUpgradeId.OfSuperiorExpertise
+    RangerRuneOfSuperiorBeastMastery = ItemUpgradeId.OfSuperiorBeastMastery
+    RangerRuneOfSuperiorMarksmanship = ItemUpgradeId.OfSuperiorMarksmanship
+    UpgradeMinorRuneRanger = ItemUpgradeId.UpgradeMinorRune_Ranger
+    UpgradeMajorRuneRanger = ItemUpgradeId.UpgradeMajorRune_Ranger
+    UpgradeSuperiorRuneRanger = ItemUpgradeId.UpgradeSuperiorRune_Ranger
+    AppliesToMinorRuneRanger = ItemUpgradeId.AppliesToMinorRune_Ranger
+    AppliesToMajorRuneRanger = ItemUpgradeId.AppliesToMajorRune_Ranger
+    AppliesToSuperiorRuneRanger = ItemUpgradeId.AppliesToSuperiorRune_Ranger
+    MonkRuneOfMinorHealingPrayers = ItemUpgradeId.OfMinorHealingPrayers
+    MonkRuneOfMinorSmitingPrayers = ItemUpgradeId.OfMinorSmitingPrayers
+    MonkRuneOfMinorProtectionPrayers = ItemUpgradeId.OfMinorProtectionPrayers
+    MonkRuneOfMinorDivineFavor = ItemUpgradeId.OfMinorDivineFavor
+    MonkRuneOfMajorHealingPrayers = ItemUpgradeId.OfMajorHealingPrayers
+    MonkRuneOfMajorSmitingPrayers = ItemUpgradeId.OfMajorSmitingPrayers
+    MonkRuneOfMajorProtectionPrayers = ItemUpgradeId.OfMajorProtectionPrayers
+    MonkRuneOfMajorDivineFavor = ItemUpgradeId.OfMajorDivineFavor
+    MonkRuneOfSuperiorHealingPrayers = ItemUpgradeId.OfSuperiorHealingPrayers
+    MonkRuneOfSuperiorSmitingPrayers = ItemUpgradeId.OfSuperiorSmitingPrayers
+    MonkRuneOfSuperiorProtectionPrayers = ItemUpgradeId.OfSuperiorProtectionPrayers
+    MonkRuneOfSuperiorDivineFavor = ItemUpgradeId.OfSuperiorDivineFavor
+    UpgradeMinorRuneMonk = ItemUpgradeId.UpgradeMinorRune_Monk
+    UpgradeMajorRuneMonk = ItemUpgradeId.UpgradeMajorRune_Monk
+    UpgradeSuperiorRuneMonk = ItemUpgradeId.UpgradeSuperiorRune_Monk
+    AppliesToMinorRuneMonk = ItemUpgradeId.AppliesToMinorRune_Monk
+    AppliesToMajorRuneMonk = ItemUpgradeId.AppliesToMajorRune_Monk
+    AppliesToSuperiorRuneMonk = ItemUpgradeId.AppliesToSuperiorRune_Monk
+    NecromancerRuneOfMinorBloodMagic = ItemUpgradeId.OfMinorBloodMagic
+    NecromancerRuneOfMinorDeathMagic = ItemUpgradeId.OfMinorDeathMagic
+    NecromancerRuneOfMinorCurses = ItemUpgradeId.OfMinorCurses
+    NecromancerRuneOfMinorSoulReaping = ItemUpgradeId.OfMinorSoulReaping
+    NecromancerRuneOfMajorBloodMagic = ItemUpgradeId.OfMajorBloodMagic
+    NecromancerRuneOfMajorDeathMagic = ItemUpgradeId.OfMajorDeathMagic
+    NecromancerRuneOfMajorCurses = ItemUpgradeId.OfMajorCurses
+    NecromancerRuneOfMajorSoulReaping = ItemUpgradeId.OfMajorSoulReaping
+    NecromancerRuneOfSuperiorBloodMagic = ItemUpgradeId.OfSuperiorBloodMagic
+    NecromancerRuneOfSuperiorDeathMagic = ItemUpgradeId.OfSuperiorDeathMagic
+    NecromancerRuneOfSuperiorCurses = ItemUpgradeId.OfSuperiorCurses
+    NecromancerRuneOfSuperiorSoulReaping = ItemUpgradeId.OfSuperiorSoulReaping
+    UpgradeMinorRuneNecromancer = ItemUpgradeId.UpgradeMinorRune_Necromancer
+    UpgradeMajorRuneNecromancer = ItemUpgradeId.UpgradeMajorRune_Necromancer
+    UpgradeSuperiorRuneNecromancer = ItemUpgradeId.UpgradeSuperiorRune_Necromancer
+    AppliesToMinorRuneNecromancer = ItemUpgradeId.AppliesToMinorRune_Necromancer
+    AppliesToMajorRuneNecromancer = ItemUpgradeId.AppliesToMajorRune_Necromancer
+    AppliesToSuperiorRuneNecromancer = ItemUpgradeId.AppliesToSuperiorRune_Necromancer
+    MesmerRuneOfMinorFastCasting = ItemUpgradeId.OfMinorFastCasting
+    MesmerRuneOfMinorDominationMagic = ItemUpgradeId.OfMinorDominationMagic
+    MesmerRuneOfMinorIllusionMagic = ItemUpgradeId.OfMinorIllusionMagic
+    MesmerRuneOfMinorInspirationMagic = ItemUpgradeId.OfMinorInspirationMagic
+    MesmerRuneOfMajorFastCasting = ItemUpgradeId.OfMajorFastCasting
+    MesmerRuneOfMajorDominationMagic = ItemUpgradeId.OfMajorDominationMagic
+    MesmerRuneOfMajorIllusionMagic = ItemUpgradeId.OfMajorIllusionMagic
+    MesmerRuneOfMajorInspirationMagic = ItemUpgradeId.OfMajorInspirationMagic
+    MesmerRuneOfSuperiorFastCasting = ItemUpgradeId.OfSuperiorFastCasting
+    MesmerRuneOfSuperiorDominationMagic = ItemUpgradeId.OfSuperiorDominationMagic
+    MesmerRuneOfSuperiorIllusionMagic = ItemUpgradeId.OfSuperiorIllusionMagic
+    MesmerRuneOfSuperiorInspirationMagic = ItemUpgradeId.OfSuperiorInspirationMagic
+    UpgradeMinorRuneMesmer = ItemUpgradeId.UpgradeMinorRune_Mesmer
+    UpgradeMajorRuneMesmer = ItemUpgradeId.UpgradeMajorRune_Mesmer
+    UpgradeSuperiorRuneMesmer = ItemUpgradeId.UpgradeSuperiorRune_Mesmer
+    AppliesToMinorRuneMesmer = ItemUpgradeId.AppliesToMinorRune_Mesmer
+    AppliesToMajorRuneMesmer = ItemUpgradeId.AppliesToMajorRune_Mesmer
+    AppliesToSuperiorRuneMesmer = ItemUpgradeId.AppliesToSuperiorRune_Mesmer
+    ElementalistRuneOfMinorEnergyStorage = ItemUpgradeId.OfMinorEnergyStorage
+    ElementalistRuneOfMinorFireMagic = ItemUpgradeId.OfMinorFireMagic
+    ElementalistRuneOfMinorAirMagic = ItemUpgradeId.OfMinorAirMagic
+    ElementalistRuneOfMinorEarthMagic = ItemUpgradeId.OfMinorEarthMagic
+    ElementalistRuneOfMinorWaterMagic = ItemUpgradeId.OfMinorWaterMagic
+    ElementalistRuneOfMajorEnergyStorage = ItemUpgradeId.OfMajorEnergyStorage
+    ElementalistRuneOfMajorFireMagic = ItemUpgradeId.OfMajorFireMagic
+    ElementalistRuneOfMajorAirMagic = ItemUpgradeId.OfMajorAirMagic
+    ElementalistRuneOfMajorEarthMagic = ItemUpgradeId.OfMajorEarthMagic
+    ElementalistRuneOfMajorWaterMagic = ItemUpgradeId.OfMajorWaterMagic
+    ElementalistRuneOfSuperiorEnergyStorage = ItemUpgradeId.OfSuperiorEnergyStorage
+    ElementalistRuneOfSuperiorFireMagic = ItemUpgradeId.OfSuperiorFireMagic
+    ElementalistRuneOfSuperiorAirMagic = ItemUpgradeId.OfSuperiorAirMagic
+    ElementalistRuneOfSuperiorEarthMagic = ItemUpgradeId.OfSuperiorEarthMagic
+    ElementalistRuneOfSuperiorWaterMagic = ItemUpgradeId.OfSuperiorWaterMagic
+    UpgradeMinorRuneElementalist = ItemUpgradeId.UpgradeMinorRune_Elementalist
+    UpgradeMajorRuneElementalist = ItemUpgradeId.UpgradeMajorRune_Elementalist
+    UpgradeSuperiorRuneElementalist = ItemUpgradeId.UpgradeSuperiorRune_Elementalist
+    AppliesToMinorRuneElementalist = ItemUpgradeId.AppliesToMinorRune_Elementalist
+    AppliesToMajorRuneElementalist = ItemUpgradeId.AppliesToMajorRune_Elementalist
+    AppliesToSuperiorRuneElementalist = ItemUpgradeId.AppliesToSuperiorRune_Elementalist
+    AssassinRuneOfMinorCriticalStrikes = ItemUpgradeId.OfMinorCriticalStrikes
+    AssassinRuneOfMinorDaggerMastery = ItemUpgradeId.OfMinorDaggerMastery
+    AssassinRuneOfMinorDeadlyArts = ItemUpgradeId.OfMinorDeadlyArts
+    AssassinRuneOfMinorShadowArts = ItemUpgradeId.OfMinorShadowArts
+    AssassinRuneOfMajorCriticalStrikes = ItemUpgradeId.OfMajorCriticalStrikes
+    AssassinRuneOfMajorDaggerMastery = ItemUpgradeId.OfMajorDaggerMastery
+    AssassinRuneOfMajorDeadlyArts = ItemUpgradeId.OfMajorDeadlyArts
+    AssassinRuneOfMajorShadowArts = ItemUpgradeId.OfMajorShadowArts
+    AssassinRuneOfSuperiorCriticalStrikes = ItemUpgradeId.OfSuperiorCriticalStrikes
+    AssassinRuneOfSuperiorDaggerMastery = ItemUpgradeId.OfSuperiorDaggerMastery
+    AssassinRuneOfSuperiorDeadlyArts = ItemUpgradeId.OfSuperiorDeadlyArts
+    AssassinRuneOfSuperiorShadowArts = ItemUpgradeId.OfSuperiorShadowArts
+    UpgradeMinorRuneAssassin = ItemUpgradeId.UpgradeMinorRune_Assassin
+    UpgradeMajorRuneAssassin = ItemUpgradeId.UpgradeMajorRune_Assassin
+    UpgradeSuperiorRuneAssassin = ItemUpgradeId.UpgradeSuperiorRune_Assassin
+    AppliesToMinorRuneAssassin = ItemUpgradeId.AppliesToMinorRune_Assassin
+    AppliesToMajorRuneAssassin = ItemUpgradeId.AppliesToMajorRune_Assassin
+    AppliesToSuperiorRuneAssassin = ItemUpgradeId.AppliesToSuperiorRune_Assassin
+    RitualistRuneOfMinorChannelingMagic = ItemUpgradeId.OfMinorChannelingMagic
+    RitualistRuneOfMinorRestorationMagic = ItemUpgradeId.OfMinorRestorationMagic
+    RitualistRuneOfMinorCommuning = ItemUpgradeId.OfMinorCommuning
+    RitualistRuneOfMinorSpawningPower = ItemUpgradeId.OfMinorSpawningPower
+    RitualistRuneOfMajorChannelingMagic = ItemUpgradeId.OfMajorChannelingMagic
+    RitualistRuneOfMajorRestorationMagic = ItemUpgradeId.OfMajorRestorationMagic
+    RitualistRuneOfMajorCommuning = ItemUpgradeId.OfMajorCommuning
+    RitualistRuneOfMajorSpawningPower = ItemUpgradeId.OfMajorSpawningPower
+    RitualistRuneOfSuperiorChannelingMagic = ItemUpgradeId.OfSuperiorChannelingMagic
+    RitualistRuneOfSuperiorRestorationMagic = ItemUpgradeId.OfSuperiorRestorationMagic
+    RitualistRuneOfSuperiorCommuning = ItemUpgradeId.OfSuperiorCommuning
+    RitualistRuneOfSuperiorSpawningPower = ItemUpgradeId.OfSuperiorSpawningPower
+    UpgradeMinorRuneRitualist = ItemUpgradeId.UpgradeMinorRune_Ritualist
+    UpgradeMajorRuneRitualist = ItemUpgradeId.UpgradeMajorRune_Ritualist
+    UpgradeSuperiorRuneRitualist = ItemUpgradeId.UpgradeSuperiorRune_Ritualist
+    AppliesToMinorRuneRitualist = ItemUpgradeId.AppliesToMinorRune_Ritualist
+    AppliesToMajorRuneRitualist = ItemUpgradeId.AppliesToMajorRune_Ritualist
+    AppliesToSuperiorRuneRitualist = ItemUpgradeId.AppliesToSuperiorRune_Ritualist
+    DervishRuneOfMinorMysticism = ItemUpgradeId.OfMinorMysticism
+    DervishRuneOfMinorEarthPrayers = ItemUpgradeId.OfMinorEarthPrayers
+    DervishRuneOfMinorScytheMastery = ItemUpgradeId.OfMinorScytheMastery
+    DervishRuneOfMinorWindPrayers = ItemUpgradeId.OfMinorWindPrayers
+    DervishRuneOfMajorMysticism = ItemUpgradeId.OfMajorMysticism
+    DervishRuneOfMajorEarthPrayers = ItemUpgradeId.OfMajorEarthPrayers
+    DervishRuneOfMajorScytheMastery = ItemUpgradeId.OfMajorScytheMastery
+    DervishRuneOfMajorWindPrayers = ItemUpgradeId.OfMajorWindPrayers
+    DervishRuneOfSuperiorMysticism = ItemUpgradeId.OfSuperiorMysticism
+    DervishRuneOfSuperiorEarthPrayers = ItemUpgradeId.OfSuperiorEarthPrayers
+    DervishRuneOfSuperiorScytheMastery = ItemUpgradeId.OfSuperiorScytheMastery
+    DervishRuneOfSuperiorWindPrayers = ItemUpgradeId.OfSuperiorWindPrayers
+    UpgradeMinorRuneDervish = ItemUpgradeId.UpgradeMinorRune_Dervish
+    UpgradeMajorRuneDervish = ItemUpgradeId.UpgradeMajorRune_Dervish
+    UpgradeSuperiorRuneDervish = ItemUpgradeId.UpgradeSuperiorRune_Dervish
+    AppliesToMinorRuneDervish = ItemUpgradeId.AppliesToMinorRune_Dervish
+    AppliesToMajorRuneDervish = ItemUpgradeId.AppliesToMajorRune_Dervish
+    AppliesToSuperiorRuneDervish = ItemUpgradeId.AppliesToSuperiorRune_Dervish
+    ParagonRuneOfMinorLeadership = ItemUpgradeId.OfMinorLeadership
+    ParagonRuneOfMinorMotivation = ItemUpgradeId.OfMinorMotivation
+    ParagonRuneOfMinorCommand = ItemUpgradeId.OfMinorCommand
+    ParagonRuneOfMinorSpearMastery = ItemUpgradeId.OfMinorSpearMastery
+    ParagonRuneOfMajorLeadership = ItemUpgradeId.OfMajorLeadership
+    ParagonRuneOfMajorMotivation = ItemUpgradeId.OfMajorMotivation
+    ParagonRuneOfMajorCommand = ItemUpgradeId.OfMajorCommand
+    ParagonRuneOfMajorSpearMastery = ItemUpgradeId.OfMajorSpearMastery
+    ParagonRuneOfSuperiorLeadership = ItemUpgradeId.OfSuperiorLeadership
+    ParagonRuneOfSuperiorMotivation = ItemUpgradeId.OfSuperiorMotivation
+    ParagonRuneOfSuperiorCommand = ItemUpgradeId.OfSuperiorCommand
+    ParagonRuneOfSuperiorSpearMastery = ItemUpgradeId.OfSuperiorSpearMastery
+    UpgradeMinorRuneParagon = ItemUpgradeId.UpgradeMinorRune_Paragon
+    UpgradeMajorRuneParagon = ItemUpgradeId.UpgradeMajorRune_Paragon
+    UpgradeSuperiorRuneParagon = ItemUpgradeId.UpgradeSuperiorRune_Paragon
+    AppliesToMinorRuneParagon = ItemUpgradeId.AppliesToMinorRune_Paragon
+    AppliesToMajorRuneParagon = ItemUpgradeId.AppliesToMajorRune_Paragon
+    AppliesToSuperiorRuneParagon = ItemUpgradeId.AppliesToSuperiorRune_Paragon
+
+    @property
+    def item_type_id_map(self) -> dict[ItemType, "ItemUpgradeId"]:
+        return self.value if isinstance(self.value, dict) else {}
+
+    @property
+    def upgrade_ids(self) -> tuple["ItemUpgradeId", ...]:
+        if isinstance(self.value, dict):
+            return tuple(self.value.values())
+        
+        return (self.value,)
+
+    def has_id(self, upgrade_id: "ItemUpgradeId") -> bool:
+        if isinstance(self.value, dict):
+            return upgrade_id in self.value.values()
+        
+        return upgrade_id == self.value
