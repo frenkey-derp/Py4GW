@@ -1,8 +1,9 @@
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Item import Item
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
-from Sources.frenkeyLib.ItemHandling.item_properties import InscriptionProperty, PrefixProperty, SuffixProperty, Upgrade
+from Sources.frenkeyLib.ItemHandling.properties import InscriptionProperty, PrefixProperty, SuffixProperty
 from Sources.frenkeyLib.ItemHandling.types import ItemUpgradeType
+from Sources.frenkeyLib.ItemHandling.upgrades import Upgrade
 
 
 class ItemMod:

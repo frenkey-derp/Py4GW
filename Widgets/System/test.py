@@ -1,4 +1,5 @@
 
+import struct
 from typing import Optional
 import Py4GW
 import PyImGui
@@ -14,25 +15,34 @@ from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.native_src.internals.string_table import decode
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.ItemMod import ItemMod
-from Sources.frenkeyLib.ItemHandling.types import ItemUpgradeType
 
 Utils.ClearSubModules("ItemHandling")
 
-from Sources.frenkeyLib.ItemHandling.item_properties import InscriptionProperty, Insignia, PrefixProperty, SuffixProperty
 
 from Sources.frenkeyLib.ItemHandling.item_modifier_parser import ItemModifierParser
 
 MODULE_NAME = "ItemModifier Tests"
+
+def ParseHex(hex_string: str) -> int:
+    return int(hex_string, 16)
 
 def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     value = (runtime_identifier >> 4) & 0x3FF
     return value, hex(value)
 
 def run_test():
-    encoded : list[int] = [0xA3F, 0x10A, 0xA33, 0x10A, 0x22BE, 0x1, 0x10B, 0xA64, 0x1, 0x1]
-    decoded = decode(bytes(encoded))
+    Py4GW.Console.Log(MODULE_NAME, f"Trying to decode ...")
     
-    Py4GW.Console.Log(MODULE_NAME, f"Decoded: {decoded}")
+    code_point_string = ""
+    codepoints = [ParseHex(code_point) for code_point in code_point_string.strip().split()]
+
+    encoded = struct.pack(f"<{len(codepoints)}H", *codepoints)
+    
+    Py4GW.Console.Log(MODULE_NAME, f"Encoded: {str(encoded)}")
+    
+    decoded = decode(encoded)
+    
+    Py4GW.Console.Log(MODULE_NAME, f"Decoded: {str(decoded)}")
     pass
 
 def check_item(item_id):

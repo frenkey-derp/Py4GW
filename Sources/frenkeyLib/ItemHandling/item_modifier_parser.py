@@ -1,6 +1,7 @@
 from PyItem import ItemModifier
 from Sources.frenkeyLib.ItemHandling.decoded_modifier import DecodedModifier
-from Sources.frenkeyLib.ItemHandling.item_properties import _PROPERTY_FACTORY, ItemProperty
+from Sources.frenkeyLib.ItemHandling.upgrade_parser import _PROPERTY_FACTORY
+from Sources.frenkeyLib.ItemHandling.properties import ItemProperty
 from typing import TypeVar
 
 T = TypeVar("T", bound=ItemProperty)
@@ -25,10 +26,10 @@ class ItemModifierParser:
             if factory:
                 prop = factory(mod, self.modifiers)
                     
-                if prop and isinstance(prop, ItemProperty) and type(prop) is not ItemProperty:
+                if prop:
                     #only add if no property of that type already exists, since some modifiers have multiple entries with the same identifier but different args
-                    if not any(isinstance(p, type(prop)) and p.modifier.arg == prop.modifier.arg for p in self.properties):
-                        self.properties.append(prop)
+                    # if not any(isinstance(p, type(prop)) and p.modifier.arg == prop.modifier.arg for p in self.properties):
+                    self.properties.append(prop)
                         
     def get_properties(self) -> list[ItemProperty]:
         return self.properties
