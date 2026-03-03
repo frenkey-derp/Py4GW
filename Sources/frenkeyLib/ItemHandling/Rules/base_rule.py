@@ -508,7 +508,6 @@ class UpgradeRule(BaseRule):
         from Sources.frenkeyLib.ItemHandling.Mods import upgrades as upgrades_module        
 
         upgrade_cls = getattr(upgrades_module, upgrade_class_name, None)
-        Py4GW.Console.Log("UpgradeRule", f"Deserializing upgrade rule, found upgrade class '{upgrade_class_name}' -> {upgrade_cls}", Py4GW.Console.MessageType.Debug)
 
         if not isinstance(upgrade_cls, type):
             return
@@ -532,4 +531,3 @@ class UpgradeRule(BaseRule):
             return
 
         self.upgrade = instance
-        Py4GW.Console.Log("UpgradeRule", f"Instantiated upgrade '{upgrade_class_name}' for rule '{self.name}'", Py4GW.Console.MessageType.Debug)
