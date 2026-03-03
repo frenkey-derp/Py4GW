@@ -14,7 +14,6 @@ class ItemAction(IntEnum):
     
     # Item processing actions:
     Identify = auto()
-    Salvage = auto()
     Salvage_Mods = auto()
     Salvage_Rare_Materials = auto()
     Salvage_Common_Materials = auto()
@@ -28,5 +27,18 @@ class ItemAction(IntEnum):
     Sell_To_Trader = auto()
     Buy_From_Trader = auto() 
     
+    Use = auto() # Use the item. The target or context should be specified in the rule's parameters.
+    
     ## Some stuff we might be able to implement at some point in the future, but not a priority right now:
     TradeToPlayer = auto() # Open the trade window with a specific player and offer the item. The player name should be specified in the rule's parameters.
+
+
+ACTION_LIMITS_PER_FRAME = [
+    # These are actions which we have to handle yield based, 
+    # we would also want to always continue with the previous item if its not finished processing
+    ItemAction.Salvage_Common_Materials,
+    ItemAction.Salvage_Rare_Materials,
+    ItemAction.Salvage_Mods,
+    ItemAction.Sell_To_Trader,
+    ItemAction.Buy_From_Trader,
+]

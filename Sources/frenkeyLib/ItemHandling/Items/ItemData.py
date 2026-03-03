@@ -199,8 +199,8 @@ class ItemDataContainer():
             Optional[ItemData]: The item data for the given item ID or item type + model ID, or None if no data is found.
         """   
         
-        item_type = item_type or ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]) if item_id else None
-        model_id = model_id or GLOBAL_CACHE.Item.GetModelID(item_id) if item_id else None
+        item_type = item_type if item_type is not None else (ItemType(GLOBAL_CACHE.Item.GetItemType(item_id)[0]) if item_id else None)
+        model_id = model_id if model_id is not None else (GLOBAL_CACHE.Item.GetModelID(item_id) if item_id else None)
         
         if item_type is None or model_id is None:
             return None

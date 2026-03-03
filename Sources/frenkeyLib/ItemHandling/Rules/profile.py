@@ -210,8 +210,13 @@ class RuleProfile:
 
     @classmethod
     def load(cls, path: str) -> "RuleProfile":
-        with open(path, "r", encoding="utf-8") as file:
-            payload = json.load(file)
+        try:
+            with open(path, "r", encoding="utf-8") as file:
+                payload = json.load(file)
+        
+        except (FileNotFoundError, json.JSONDecodeError):
+            return cls.from_dict({})
+        
         return cls.from_dict(payload)
 
     @classmethod

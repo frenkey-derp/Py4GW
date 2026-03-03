@@ -7,6 +7,7 @@ from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.Inventory import Inventory
+from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 
@@ -15,6 +16,7 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.native_src.internals.string_table import decode
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA
 from Sources.frenkeyLib.ItemHandling.Mods.ItemMod import ItemMod
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemUpgrade, ItemUpgradeId
@@ -22,6 +24,7 @@ from Sources.frenkeyLib.ItemHandling.Mods.upgrades import OfEnchantingUpgrade, U
 from Sources.frenkeyLib.ItemHandling.Rules.base_rule import ItemTypesRule, UpgradeRule, WeaponSkinRule
 from Sources.frenkeyLib.ItemHandling.Rules.profile import RuleProfile
 from Sources.frenkeyLib.ItemHandling.Rules.types import ItemAction
+from Sources.frenkeyLib.LootEx import utility
 
 Utils.ClearSubModules("ItemHandling")
 
@@ -38,9 +41,11 @@ def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     return value, hex(value)
 
 def run_test():
+    global loaded_profile
+    
     my_profile = RuleProfile("Test Profile")
     
-    item_type_rule = ItemTypesRule("All Staves", item_types=[ItemType.Staff], action=ItemAction.Salvage)
+    item_type_rule = ItemTypesRule("All Usables", item_types=[ItemType.Usable], action=ItemAction.Use)
     my_profile.add_rule(item_type_rule)
     
     weapon_skin_rule = WeaponSkinRule("Divine Staff", weapon_skins=["Divine Staff.png"], action=ItemAction.Hold)
@@ -49,11 +54,12 @@ def run_test():
     upgrade_rule = UpgradeRule("Upgrade Rule", upgrade=OfEnchantingUpgrade(), action=ItemAction.Salvage_Mods) 
     my_profile.add_rule(upgrade_rule)
     
-    # my_profile.save()
+    my_profile.save()
     
     loaded_profile = RuleProfile.load(my_profile.default_path)
     loaded_profile.save()
-    Py4GW.Console.Log(MODULE_NAME, f"Loaded profile '{loaded_profile.name}' with {len(loaded_profile.rules)} rules.", Py4GW.Console.MessageType.Info)
+    total_rules = sum(len(group) for group in loaded_profile.rule_groups.values())
+    Py4GW.Console.Log(MODULE_NAME, f"Loaded profile '{loaded_profile.name}' with {len(loaded_profile.rule_groups)} rule groups with a total of {total_rules} rules.", Py4GW.Console.MessageType.Info)
     
     pass
 
@@ -69,9 +75,27 @@ HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=r
 
 hovered_item_id = Inventory.GetHoveredItemID()
 parser : Optional[ItemModifierParser] = None
+loaded_profile : Optional[RuleProfile] = None
 
 def main():
     global hovered_item_id, parser
+    start_bag : Bag = Bag.Backpack
+    end_bag : Bag = Bag.Bag_2
+    inventory_array, inventory_sizes = utility.Util.GetZeroFilledBags(start_bag, end_bag)
+    ITEM_CACHE.items.clear()  # Clear the cache to ensure fresh snapshots for testing
+    
+    if loaded_profile:
+        for i in range(10):
+            for item_id in inventory_array:
+                if item_id == 0:
+                    continue
+                
+                rule = loaded_profile.get_matching_rule(item_id)
+                action = rule.action if rule else ItemAction.NONE
+                
+                # if action != ItemAction.NONE and rule:
+                #     Py4GW.Console.Log(MODULE_NAME, f"Item ID {item_id} matches {rule.name} with action: {action.name}", Py4GW.Console.MessageType.Info)
+                # Py4GW.Console.Log(MODULE_NAME, f"[{format(item_id, "#06")}] - {snapshot.data.names.get(ServerLanguage.English) if snapshot.data else f'Unknown {snapshot.item_type.name} Item [{format(snapshot.model_id, "#06")}]'}", Py4GW.Console.MessageType.Info)
     
     open = ImGui.begin("Item Modifier Parser Test")
     if open:

@@ -68,7 +68,7 @@ class ItemSnapshot:
         
         target_item_type = next((p for p in self.properties if isinstance(p, TargetItemTypeProperty)), None)
         self.target_item_type : ItemType = target_item_type.item_type if target_item_type else ItemType.Unknown
-            
+        
         self.data : Optional[ItemData] = ITEM_DATA.get_item_data(model_id=self.model_id, item_type=self.item_type) if self.model_id != -1 else None
 
     
