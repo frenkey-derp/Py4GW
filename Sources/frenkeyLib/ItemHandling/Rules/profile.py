@@ -8,22 +8,6 @@ from Py4GW import Console
 from Sources.frenkeyLib.ItemHandling.Rules.base_rule import BaseRule
 from Sources.frenkeyLib.ItemHandling.Rules.types import ItemAction
 
-
-def rule_to_dict(rule: BaseRule) -> dict[str, Any]:
-    return rule.to_dict()
-
-
-def rule_from_dict(payload: dict[str, Any]) -> Optional[BaseRule]:
-    rule = BaseRule.from_dict(payload)
-    if rule is None:
-        Console.Log(
-            "RuleProfile",
-            f"Unknown rule type '{payload.get('rule_type', '')}', skipping.",
-            Console.MessageType.Warning,
-        )
-    return rule
-
-
 class RuleProfile:
     def __init__(self, name: str, rules: Optional[list[BaseRule]] = None):
         self.name = name
@@ -66,7 +50,7 @@ class RuleProfile:
             "format": "itemhandling-rule-profile",
             "version": 1,
             "name": self.name,
-            "rules": [rule_to_dict(rule) for rule in self.rules],
+            "rules": [rule.to_dict() for rule in self.rules],
         }
 
     @classmethod
@@ -76,7 +60,7 @@ class RuleProfile:
         for row in payload.get("rules", []):
             if not isinstance(row, dict):
                 continue
-            rule = rule_from_dict(row)
+            rule = BaseRule.from_dict(row)
             if rule is not None:
                 rules.append(rule)
         return cls(name=name, rules=rules)
