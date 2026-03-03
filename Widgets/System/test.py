@@ -18,6 +18,10 @@ from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA
 from Sources.frenkeyLib.ItemHandling.Mods.ItemMod import ItemMod
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemUpgrade, ItemUpgradeId
+from Sources.frenkeyLib.ItemHandling.Mods.upgrades import OfEnchantingUpgrade, Upgrade
+from Sources.frenkeyLib.ItemHandling.Rules.base_rule import ItemTypesRule, UpgradeRule, WeaponSkinRule
+from Sources.frenkeyLib.ItemHandling.Rules.profile import RuleProfile
+from Sources.frenkeyLib.ItemHandling.Rules.types import ItemAction
 
 Utils.ClearSubModules("ItemHandling")
 
@@ -34,8 +38,23 @@ def get_true_identifier_with_hex(runtime_identifier: int) -> tuple[int, str]:
     return value, hex(value)
 
 def run_test():
-    some_item = ITEM_DATA.get_item_data(59)
-    Py4GW.Console.Log(MODULE_NAME, f"Item Name: {some_item.names if some_item else 'Unknown'}", Py4GW.Console.MessageType.Info)
+    my_profile = RuleProfile("Test Profile")
+    
+    item_type_rule = ItemTypesRule("All Staves", item_types=[ItemType.Staff], action=ItemAction.Salvage)
+    my_profile.add_rule(item_type_rule)
+    
+    weapon_skin_rule = WeaponSkinRule("Divine Staff", weapon_skins=["Divine Staff.png"], action=ItemAction.Hold)
+    my_profile.add_rule(weapon_skin_rule)
+    
+    upgrade_rule = UpgradeRule("Upgrade Rule", upgrade=OfEnchantingUpgrade(), action=ItemAction.Salvage_Mods) 
+    my_profile.add_rule(upgrade_rule)
+    
+    # my_profile.save()
+    
+    loaded_profile = RuleProfile.load(my_profile.default_path)
+    loaded_profile.save()
+    Py4GW.Console.Log(MODULE_NAME, f"Loaded profile '{loaded_profile.name}' with {len(loaded_profile.rules)} rules.", Py4GW.Console.MessageType.Info)
+    
     pass
 
 def check_item(item_id):
