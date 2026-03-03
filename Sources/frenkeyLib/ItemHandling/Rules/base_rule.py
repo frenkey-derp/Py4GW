@@ -24,6 +24,7 @@ class RulePriority(IntEnum):
     UpgradeRule = 700
     WeaponTypeRule = 600
     DyesRule = 400
+    SalvagesToMaterialRule = 350
     ItemTypeAndRarityRule = 300
     ItemTypesRule = 200
     RaritiesRule = 100
@@ -531,3 +532,29 @@ class UpgradeRule(BaseRule):
             return
 
         self.upgrade = instance
+
+class SalvagesToMaterialRule(BaseRule):
+    priority = RulePriority.SalvagesToMaterialRule
+    
+    """
+    A rule that checks if an item can be salvaged into a specific materials. This is determined by the item's salvage data, which is derived from the item data in :file:`items.json`.
+    """
+
+    def __init__(self, name: str, action: ItemAction = ItemAction.NONE, materials: Optional[list[ModelID]] = None):
+        super().__init__(name, action)
+        self.materials = materials if materials is not None else []
+
+    def is_valid(self) -> bool:
+        return super().is_valid() and len(self.materials) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item = self.get_item(item_id)
+        if not item.is_salvageable or item.data is None:
+            return False
+        
+        common = [m.model_id for m in (item.data.common_salvage.values() if item.data.common_salvage else {})]
+        rare = [m.model_id for m in (item.data.rare_salvage.values() if item.data.rare_salvage else {})]
+        return any(mat in common + rare for mat in self.materials)
