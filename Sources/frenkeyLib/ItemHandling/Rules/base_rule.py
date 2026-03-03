@@ -84,7 +84,6 @@ class BaseRule:
         rule._deserialize_data(payload)
         return rule
 
-
 class ModelIdRule(BaseRule):
     priority = RulePriority.ModelIdRule
     
@@ -117,7 +116,6 @@ class ModelIdRule(BaseRule):
             except ValueError:
                 self.model_id = None
 
-
 class ItemTypesRule(BaseRule):
     priority = RulePriority.ItemTypesRule
     
@@ -148,7 +146,6 @@ class ItemTypesRule(BaseRule):
             for name in data.get("item_types", [])
             if isinstance(name, str) and name in ItemType.__members__
         ]
-
 
 class RaritiesRule(BaseRule):
     priority = RulePriority.RaritiesRule
@@ -181,7 +178,6 @@ class RaritiesRule(BaseRule):
             if isinstance(name, str) and name in Rarity.__members__
         ]
 
-
 class DyesRule(BaseRule):
     priority = RulePriority.DyesRule
     
@@ -212,7 +208,6 @@ class DyesRule(BaseRule):
             for name in data.get("dye_colors", [])
             if isinstance(name, str) and name in DyeColor.__members__
         ]
-
 
 class ItemSkinRule(BaseRule):
     priority = RulePriority.ItemSkinRule
@@ -245,7 +240,6 @@ class ItemSkinRule(BaseRule):
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         self.item_skins = [str(name) for name in data.get("item_skins", []) if isinstance(name, str)]
-
 
 class ItemTypeAndRarityRule(BaseRule):
     priority = RulePriority.ItemTypeAndRarityRule
@@ -286,7 +280,6 @@ class ItemTypeAndRarityRule(BaseRule):
             for name in data.get("rarities", [])
             if isinstance(name, str) and name in Rarity.__members__
         ]
-
 
 class WeaponSkinRule(BaseRule):
     priority = RulePriority.WeaponSkinRule
@@ -385,7 +378,6 @@ class WeaponSkinRule(BaseRule):
             if isinstance(prop, dict)
         ]
 
-
 class WeaponTypeRule(BaseRule):
     priority = RulePriority.WeaponTypeRule
     
@@ -483,7 +475,6 @@ class WeaponTypeRule(BaseRule):
             for prop in data.get("properties", [])
             if isinstance(prop, dict)
         ]
-
 
 class UpgradeRule(BaseRule):
     priority = RulePriority.UpgradeRule
