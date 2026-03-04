@@ -14,6 +14,7 @@ from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
+from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
@@ -343,6 +344,19 @@ class BTNodes:
         ):
             def _reset_state(node: BehaviorTree.Node):
                 node.blackboard.pop(state_key, None)
+                
+            def _is_mod_salvaged(item: ItemSnapshot, salvage_mode: SalvageMode) -> bool:
+                match salvage_mode:
+                    case SalvageMode.Prefix:
+                        return item.prefix is None
+                    
+                    case SalvageMode.Suffix:
+                        return item.suffix is None
+                    
+                    case SalvageMode.Inherent:
+                        return item.inscription is None
+            
+                return False
             
             def _salvage(node: BehaviorTree.Node):        
                 if item_id is None or item_id <= 0:
@@ -363,7 +377,7 @@ class BTNodes:
                 
                 log_prefix = f"{node.name}|Item '{item.data.names.get(ServerLanguage.English, 'Unknown') if item and item.data else 'Unknown'} ({item_id})"
                 
-                if (state and item_id != state.item_id) or item is None or not item.is_valid or not item.is_salvageable or not item.is_inventory_item:
+                if (state and item_id != state.item_id) or item is None or not item.is_valid or not item.is_salvageable or not item.is_inventory_item or _is_mod_salvaged(item, mode):
                     _reset_state(node)                        
                     return BehaviorTree.NodeState.SUCCESS
                 
@@ -372,6 +386,10 @@ class BTNodes:
                     node.blackboard[state_key] = state
                     
                 now = time.monotonic()
+
+                if Inventory.GetFreeSlotCount() <= 0:
+                    _reset_state(node)
+                    return BehaviorTree.NodeState.FAILURE
 
                 # Start salvage once per item.
                 if not state.salvage_started_at:
@@ -418,14 +436,14 @@ class BTNodes:
 
                 qty_changed = current_qty < initial_qty
                 item_gone = not item.is_inventory_item
-                
+                mod_salvaged = _is_mod_salvaged(item, mode)
                 windows_closed_after_confirm = (
                     confirm_clicked_at > 0.0
                     and not UIManagerExtensions.AnySalvageRelatedWindowOpen()
                     and (now - confirm_clicked_at) >= 0.20
                 )
 
-                if qty_changed or item_gone or windows_closed_after_confirm:
+                if qty_changed or item_gone or windows_closed_after_confirm or mod_salvaged:
                     return BehaviorTree.NodeState.SUCCESS
 
                 if (now - float(state.salvage_started_at)) * 1000 >= timeout_ms_per_item:

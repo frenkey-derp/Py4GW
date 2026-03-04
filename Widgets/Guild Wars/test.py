@@ -186,7 +186,22 @@ def _create_tree() -> BehaviorTree:
     
     for item in items:
         if item is not None:
-            n = BTNodes.Items.SalvageItem(item_id=item.id, salvage_mode=SalvageMode.LesserCraftingMaterials)
+            salvage_mode = SalvageMode.LesserCraftingMaterials
+            
+            if rarity == Rarity.Gold:
+                if item.suffix is not None:
+                    salvage_mode = SalvageMode.Suffix
+                    
+                elif item.prefix is not None:
+                    salvage_mode = SalvageMode.Prefix
+                    
+                elif item.inscription is not None:
+                    salvage_mode = SalvageMode.Inherent
+                    
+                else:
+                    salvage_mode = SalvageMode.LesserCraftingMaterials
+                
+            n = BTNodes.Items.SalvageItem(item_id=item.id, salvage_mode=salvage_mode)
             node.children.append(n)
 
     return BehaviorTree(node)
