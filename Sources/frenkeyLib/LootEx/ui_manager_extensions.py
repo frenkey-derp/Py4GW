@@ -33,9 +33,7 @@ class UIManagerExtensions:
         # merchant_window_buy_button_id = UIManager.GetFrameIDByHash(1532320307)
 
         return UIManagerExtensions.IsElementVisible(merchant_window_frame_id)
-    
-    @staticmethod
-    
+        
     @staticmethod
     def IsCollectorOpen() -> bool:        
         merchant_buy_button = 1532320307

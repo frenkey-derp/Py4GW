@@ -42,3 +42,12 @@ ACTION_LIMITS_PER_FRAME = [
     ItemAction.Sell_To_Trader,
     ItemAction.Buy_From_Trader,
 ]
+
+class SalvageMode(IntEnum):
+    NONE = 0
+    CraftingMaterials = 1
+    LesserCraftingMaterials = 2
+    RareCraftingMaterials = 3
+    Prefix = 4
+    Suffix = 5
+    Inherent = 6

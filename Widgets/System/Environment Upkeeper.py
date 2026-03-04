@@ -1,6 +1,7 @@
 import PyImGui
 from Py4GWCoreLib import *
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
+from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 
 
 #do not ever disable this module, it is the main module for everything
@@ -90,6 +91,7 @@ def main():
     global widget_config
 
     HOTKEY_MANAGER.update()
+    ITEM_CACHE.reset()
     
     if Routines.Checks.Map.MapValid():
         GLOBAL_CACHE._update_cache()

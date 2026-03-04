@@ -1,7 +1,7 @@
 
 from typing import Optional
 
-from PyItem import DyeInfo
+from PyItem import DyeInfo, PyItem
 
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, DyeColor
@@ -14,8 +14,8 @@ from Sources.frenkeyLib.ItemHandling.Mods.upgrades import Upgrade
 
 
 class ItemSnapshot:
-    def __init__(self, item_id: int):
-        item = Item.item_instance(item_id) if item_id > 0 else None
+    def __init__(self, item_id: int, item_instance: Optional[PyItem] = None):
+        item = item_instance if item_instance and item_id == item_instance.item_id else Item.item_instance(item_id) if item_id > 0 else None
         
         self.id: int = item_id
         self.is_valid: bool = item.IsItemValid(item_id) if item else False
@@ -23,8 +23,7 @@ class ItemSnapshot:
         self.model_file_id: int = item.model_file_id if item else -1
         self.item_type: ItemType = ItemType(
             item.item_type.ToInt()) if item else ItemType.Unknown
-        self.rarity: Rarity = Rarity(
-            item.rarity.value) if item and item.rarity and item.rarity.value in Rarity else Rarity.White
+        self.rarity: Rarity = Rarity(item.rarity.value) if item and item.rarity and item.rarity.value in Rarity._value2member_map_ else Rarity.White
         self.profession : Profession = Profession(
             item.profession) if item and item.profession in Profession else Profession._None
         
