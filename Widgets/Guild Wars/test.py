@@ -68,7 +68,8 @@ def _build_tree() -> BehaviorTree | None:
 
     try:
         if TESTS[selected_test] == "Identify Hovered":
-            return BehaviorTree(BTNodes.Items.IdentifyItems(item_ids=[item_id]))
+            
+            return BehaviorTree(BTNodes.Items.IdentifyItems(item_ids=_inventory_item_ids() if item_id <= 0 else [item_id]))
 
         if TESTS[selected_test] == "Salvage Hovered":
             return BehaviorTree(BTNodes.Items.SalvageItem(item_id=item_id, salvage_mode=salvage_mode))
