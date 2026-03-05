@@ -6,18 +6,19 @@ from typing import Any, Callable, Optional, cast
 
 import Py4GW
 import PyInventory
+from PyItem import DyeColor
 
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.UIManager import UIManager
-from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
+from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, ItemType
 from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
+from Sources.frenkeyLib.ItemHandling.Rules.types import MATERIAL_SLOTS, SalvageMode
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemHandling.utility import GetDestinationSlots, GetItemsLocations
 
@@ -512,6 +513,8 @@ class BTNodes:
                 )
                 + MAX_STACK_SIZE - 1
             ) // MAX_STACK_SIZE * MAX_STACK_SIZE
+            if material_storage_capacity <= 0:
+                material_storage_capacity = MAX_STACK_SIZE
                                             
             for item_id in item_ids:                            
                 item = ITEM_CACHE.get_item_snapshot(item_id)
@@ -522,7 +525,7 @@ class BTNodes:
                 if item.is_stackable:
                     if fill_materials_first and from_inventory and (item.is_material or item.is_rare_material):
                         for slot, stack_item in material_storage_snapshot.items():
-                            if stack_item and stack_item.is_valid and stack_item.is_stackable and stack_item.model_id == item.model_id and stack_item.item_type == item.item_type and stack_item.quantity < material_storage_capacity:
+                            if stack_item and stack_item.is_valid and stack_item.is_stackable and stack_item.same_kind_as(item) and stack_item.quantity < material_storage_capacity:
                                 moving_instructions.setdefault(Bag.Material_Storage, {})
                                 dest = moving_instructions[Bag.Material_Storage].setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bag.Material_Storage, slot, stack_item, available_space=material_storage_capacity))
                                 
@@ -543,7 +546,7 @@ class BTNodes:
                             break                                
                         
                     # get all items with the same model and type that have free space in their stacks and add them as potential destinations for the current item until we have found enough space for the whole stack. This way we minimize fragmentation in the bank and maximize the chances of fitting all items. We get them all from bag_enum, bag in inventory_snapshot.items()
-                    stacks_of_same_kind_with_space = [(i, bag_id) for bag_id, bag in target_snapshot.items() for i in bag.values() if i and i.is_valid and i.is_stackable and i.model_id == item.model_id and i.item_type == item.item_type and i.quantity < MAX_STACK_SIZE]
+                    stacks_of_same_kind_with_space = [(i, bag_id) for bag_id, bag in target_snapshot.items() for i in bag.values() if i and i.is_valid and i.is_stackable and i.same_kind_as(item) and i.quantity < MAX_STACK_SIZE]
                     
                     #sorted by least free space to most free space to fill up more full stacks first, then by bag and slot, so we fill from the beginning of the bank to the end to minimize fragmentation
                     stacks_of_same_kind_with_space.sort(key=lambda x: (-x[0].quantity, x[1].value, x[0].slot))
@@ -646,15 +649,66 @@ class BTNodes:
 
             return BehaviorTree.ActionNode(name="Items.WithdrawItems", action_fn=_withdraw, aftercast_ms=aftercast_ms)
 
-    class InventoryOps:
+    class Bags:
         @staticmethod
         def FillMaterialStorage(
-            bags : list[Bag] = STORAGE_BAGS,
+            source : list[Bag] = STORAGE_BAGS,
             aftercast_ms: int = 150,
+            succeed_if_already_filled: bool = True,
         ):
-            def _fill_material_storage():
-                # Move all materials and rare materials from (source_start_bag ... source_end_bag) to material storage, filling up existing stacks first
-                pass
+            def _fill_material_storage(node: BehaviorTree.Node):
+                source_bags = [bag for bag in source if bag != Bag.Material_Storage]
+                if not source_bags:
+                    return BehaviorTree.NodeState.FAILURE
+
+                source_snapshot = ITEM_CACHE.get_bags_snapshot(source_bags)
+                material_snapshot = ITEM_CACHE.get_bag_snapshot(Bag.Material_Storage)
+
+                material_storage_capacity = (
+                    max((item.quantity for item in material_snapshot.values() if item), default=0) + MAX_STACK_SIZE - 1
+                ) // MAX_STACK_SIZE * MAX_STACK_SIZE
+                if material_storage_capacity <= 0:
+                    material_storage_capacity = MAX_STACK_SIZE
+
+                moved_any = False
+                transfer_instructions: dict[int, BTNodes.Items.ItemTransferInstructions] = {}
+                bag_item_map : dict[int, Bag] = {item_id: bag for bag, bag_items in source_snapshot.items() for item_id, item in bag_items.items() if item}
+                
+                for _, bag_items in source_snapshot.items():
+                    for _, item in bag_items.items():
+                        if item is None or not item.is_valid or not item.is_stackable or bag_item_map.get(item.id) == Bag.Material_Storage:
+                            continue
+                        
+                        if not (item.is_material or item.is_rare_material):
+                            continue
+                        
+                        slot = MATERIAL_SLOTS.get(item.model_id, None)
+                        if slot is None:
+                            continue
+                        
+                        material = material_snapshot.get(slot, None)
+                        transfer_instructions.setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bag.Material_Storage, slot, material, available_space=material_storage_capacity))
+                        inst = transfer_instructions.get(slot)
+                        
+                        if inst is None:
+                            continue
+                        
+                        qty_to_move = min(inst.available_space, item.quantity)
+                        
+                        if qty_to_move <= 0:
+                            continue
+                        
+                        inst.available_space -= qty_to_move
+                        inst.items.append((item, qty_to_move))
+                        item.quantity -= qty_to_move
+                
+                for dest in transfer_instructions.values():
+                    for item, qty in dest.items:
+                        Inventory.MoveItem(item.id, dest.bag.value, dest.slot, qty)
+                        Py4GW.Console.Log(node.name, f"Moving {qty} of '{item.data.names.get(ServerLanguage.English, 'Unknown') if item.data else 'Unknown Item'}' (ID: {item.id}) to Material Storage slot {dest.slot}")
+                        moved_any = True
+
+                return BTNodes._success_if(moved_any or succeed_if_already_filled)
 
             return BehaviorTree.ActionNode(name="Inventory.FillMaterialStorage", action_fn=_fill_material_storage, aftercast_ms=aftercast_ms)
         
@@ -663,22 +717,98 @@ class BTNodes:
             bags : list[Bag] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
         ):
-            def _compact():
-                # Condense item stacks. If we condense storage bags take the material storage into account. We want to move all materials to the 
-                pass
-
-            return BehaviorTree.ActionNode(name="Inventory.CompactInventory", action_fn=_compact, aftercast_ms=aftercast_ms)
+            def _compact(node: BehaviorTree.Node):
+                snapshot = ITEM_CACHE.get_bags_snapshot(bags)
+                grouped_items : dict[tuple[ItemType, int, int], list[tuple[Bag, int, ItemSnapshot]]] = {}
+                moved_any = False
+                
+                for bag in bags:
+                    for slot, item in snapshot.get(bag, {}).items():
+                        if item and item.is_valid and item.is_stackable and item.quantity < MAX_STACK_SIZE:
+                            key = (item.item_type, item.model_id, item.color.value)
+                            grouped_items.setdefault(key, []).append((bag, slot, item))
+                            
+                for _, items in grouped_items.items():
+                    if len(items) <= 1:
+                        continue
+                    
+                    items.sort(key=lambda x: x[2].quantity, reverse=True)
+                    target_bag, target_slot, target_item = items[0]
+                    
+                    for source_bag, source_slot, source_item in items[1:]:
+                        if target_item.quantity >= MAX_STACK_SIZE:
+                            break
+                        
+                        qty_to_move = min(source_item.quantity, MAX_STACK_SIZE - target_item.quantity)
+                        if qty_to_move <= 0:
+                            continue
+                        
+                        Inventory.MoveItem(source_item.id, target_bag.value, target_slot, qty_to_move)
+                        Py4GW.Console.Log(node.name, f"Moved {qty_to_move} of '{source_item.data.names.get(ServerLanguage.English, 'Unknown') if source_item.data else 'Unknown Item'}' (ID: {source_item.id}) from bag {source_bag.name} slot {source_slot} to bag {target_bag.name} slot {target_slot}")
+                        moved_any = True
+                        target_item.quantity += qty_to_move
+                        source_item.quantity -= qty_to_move
+                
+                
+                return BTNodes._success_if(moved_any)
+            return BehaviorTree.ActionNode(name="Inventory.CompactBags", action_fn=_compact, aftercast_ms=aftercast_ms)
 
         @staticmethod
         def SortBags(
             bags : list[Bag] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
         ):
-            def _sort():
-                # Sort by item type, then rarity, then model, then value, then item ID to ensure a consistent order
-                pass
+            def _sort(node: BehaviorTree.Node):
+                snapshot = ITEM_CACHE.get_bags_snapshot(bags)
 
-            return BehaviorTree.ActionNode(name="Inventory.SortInventory", action_fn=_sort, aftercast_ms=aftercast_ms)
+                # TODO: Here we want to implement our sorting configuration, for now this is just the default behavior
+                item_typeOrder = [
+                    int(ItemType.Kit),
+                    int(ItemType.Key),
+                    int(ItemType.Usable),
+                    int(ItemType.Trophy),
+                    int(ItemType.Quest_Item),
+                    int(ItemType.Materials_Zcoins)
+                ]
+
+                # then everything else
+                item_typeOrder += [int(item)
+                                for item in ItemType if int(item) not in item_typeOrder]
+                
+                index_to_bag_map : dict[int, tuple[Bag, int]] = {}
+                index = 0
+                
+                for bag in bags:
+                    for slot in snapshot.get(bag, {}).keys():
+                        index_to_bag_map[index] = (bag, slot)
+                        index += 1
+                            
+                items = [item for bag in bags for slot, item in snapshot.get(bag, {}).items() if item and item.is_valid]
+                sorted_items = sorted(
+                    items,
+                    key=lambda item: (
+                        item.item_type == ItemType.Unknown,
+                        item_typeOrder.index(item.item_type),
+                        item.model_id,
+                        -item.rarity.value,
+                        -item.quantity,
+                        -item.value,
+                        item.color.value,
+                        item.id
+                    )
+                )
+                
+                for index, item in enumerate(sorted_items):
+                    bag, slot = index_to_bag_map.get(index, (None, None))
+                    
+                    if bag is None or slot is None:
+                        continue
+                
+                    Inventory.MoveItem(item.id, bag.value, slot, item.quantity)
+                
+                return BehaviorTree.NodeState.SUCCESS
+
+            return BehaviorTree.ActionNode(name="Inventory.SortBags", action_fn=_sort, aftercast_ms=aftercast_ms)
 
     class Crafting:
         @staticmethod

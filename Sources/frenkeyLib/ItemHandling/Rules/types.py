@@ -1,6 +1,8 @@
 
 from enum import IntEnum, auto
 
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
+
 
 class ItemAction(IntEnum):
     NONE = 0
@@ -51,3 +53,42 @@ class SalvageMode(IntEnum):
     Prefix = 4
     Suffix = 5
     Inherent = 6
+
+MATERIAL_SLOTS : dict[int, int] = {
+    ModelID.Amber_Chunk : 36,
+    ModelID.Bolt_Of_Cloth : 5,
+    ModelID.Bolt_Of_Damask : 14,
+    ModelID.Bolt_Of_Linen : 13,
+    ModelID.Bolt_Of_Silk : 15,
+    ModelID.Bone : 0,
+    ModelID.Chitin_Fragment : 4,
+    ModelID.Deldrimor_Steel_Ingot : 18,
+    ModelID.Diamond : 24,
+    ModelID.Elonian_Leather_Square : 31,
+    ModelID.Feather : 11,
+    ModelID.Fur_Square : 12,
+    ModelID.Glob_Of_Ectoplasm : 16,
+    ModelID.Granite_Slab : 8,
+    ModelID.Iron_Ingot : 1,
+    ModelID.Jadeite_Shard : 37,
+    ModelID.Leather_Square : 30,
+    ModelID.Lump_Of_Charcoal : 26,
+    ModelID.Monstrous_Claw : 19,
+    ModelID.Monstrous_Eye : 20,
+    ModelID.Monstrous_Fang : 21,
+    ModelID.Obsidian_Shard : 27,
+    ModelID.Onyx_Gemstone : 25,
+    ModelID.Pile_Of_Glittering_Dust : 9,
+    ModelID.Plant_Fiber : 10,
+    ModelID.Roll_Of_Parchment : 33,
+    ModelID.Roll_Of_Vellum : 34,
+    ModelID.Ruby : 22,
+    ModelID.Sapphire : 23,
+    ModelID.Scale : 3,
+    ModelID.Spiritwood_Plank : 35,
+    ModelID.Steel_Ingot : 17,
+    ModelID.Tanned_Hide_Square : 2,
+    ModelID.Tempered_Glass_Vial : 29,
+    ModelID.Vial_Of_Ink : 32,
+    ModelID.Wood_Plank : 6,
+}

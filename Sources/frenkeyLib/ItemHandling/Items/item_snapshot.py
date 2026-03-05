@@ -77,6 +77,15 @@ class ItemSnapshot:
         
         self.data : Optional[ItemData] = ITEM_DATA.get_item_data(model_id=self.model_id, item_type=self.item_type) if self.model_id != -1 else None
 
+    def same_kind_as(self, other: 'ItemSnapshot') -> bool:
+        """
+        Check if this item snapshot represents the same kind of item as another snapshot.
+        Args:
+            other (ItemSnapshot): The other item snapshot to compare against.   
+        Returns:
+            bool: True if both snapshots represent the same item kind, False otherwise.
+        """
+        return self.model_id == other.model_id and self.item_type == other.item_type and (self.item_type != ItemType.Dye or self.color == other.color)
     
     def update(self):
         item = Item.item_instance(self.id) if self.id > 0 else None
