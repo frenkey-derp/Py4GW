@@ -148,8 +148,18 @@ def _tick_tree():
         tree = None
 
 def _create_tree() -> BehaviorTree:
+    inventory = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+    all_items_of_modelid = [item for bag in inventory.values() for item in bag.values() if item is not None and item.is_valid and item.model_id == ModelID.Pile_Of_Glittering_Dust]
+    item_ids = [item.id for item in all_items_of_modelid]
     
-    node = BTNodes.Trader.SellItem(2331, 10)    
+    node = BehaviorTree.SequenceNode(
+            name="SellAllPilesOfDust",
+            children=[],
+        )
+    
+    for item in all_items_of_modelid:
+        node.children.append(BTNodes.Trader.SellItem(item_id=item.id, quantity=item.quantity if item.is_stackable else 1))    
+    
     return BehaviorTree(node)
     
 def _create_salvage_tree() -> BehaviorTree:
@@ -163,7 +173,7 @@ def _create_salvage_tree() -> BehaviorTree:
     node = BehaviorTree.SequenceNode(
             name="IdentifySalvageAllWhite",
             children=[
-                BTNodes.Items.IdentifyItems(item_ids=item_ids),
+                # BTNodes.Items.IdentifyItems(item_ids=item_ids),
             ],
         )
     
@@ -185,7 +195,7 @@ def _create_salvage_tree() -> BehaviorTree:
                 else:
                     salvage_mode = SalvageMode.LesserCraftingMaterials
                 
-            n = BTNodes.Items.SalvageItem(item_id=item.id, salvage_mode=salvage_mode)
+            n = BTNodes.Items.SalvageItem(item_id=item.id, salvage_mode=salvage_mode, quantity=item.quantity if item.is_stackable else 1)
             node.children.append(n)
 
     return BehaviorTree(node)
@@ -208,7 +218,7 @@ def main():
         rarity = Rarity(selected_rarity_idx)
         if PyImGui.button(f"Test BT"):
             tree = _create_tree()
-            # auto_tick = True
+            auto_tick = True
             pass
         
         selected_rarity_idx = PyImGui.combo("Rarity for batch salvage/identify", selected_rarity_idx, [r.name for r in Rarity])

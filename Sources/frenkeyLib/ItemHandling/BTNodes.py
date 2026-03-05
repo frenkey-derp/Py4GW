@@ -254,7 +254,7 @@ class BTNodes:
                 item = ITEM_CACHE.get_item_snapshot(item_id)
                 
                 if not item or not item.is_valid or not item.is_inventory_item:
-                    return BehaviorTree.NodeState.FAILURE
+                    return BehaviorTree.NodeState.SUCCESS
                                  
                 state = node.blackboard.get("trader_sell_progress")
                 state = cast(BTNodes.Trader.TraderProgress, state) if state else None
@@ -264,8 +264,8 @@ class BTNodes:
                     inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
                     state.initial_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.same_kind_as(item)) if inventory_snapshot else 0
                     state.current_qty = state.initial_qty
-                    state.desired_qty = state.initial_qty - quantity
-                    node.blackboard["trader_sell_progress"] = state
+                    state.desired_qty = state.initial_qty - (quantity if not item.is_material or item.is_rare_material else quantity // 10 * 10)
+                    node.blackboard["trader_sell_progress"] = state 
                 
                 if state.current_qty > state.desired_qty:
                     quote = Trading.Trader.GetQuotedValue()
@@ -319,13 +319,13 @@ class BTNodes:
 
     class Items:
         class SavalvageProgress():
-            def __init__(self, item_id: int, salvage_started_at: float, initial_qty: int):
+            def __init__(self, item_id: int, salvage_started_at: float, initial_qty: int, desired_qty: int):
                 self.item_id = item_id
                 self.salvage_started_at = salvage_started_at
                 self.initial_qty = initial_qty
+                self.desired_qty = initial_qty - desired_qty
                 self.confirm_clicked_at = 0.0
                 self.salvaged_any = False
-                self.waiting_started = False
                 
         @staticmethod
         def IdentifyItems(
@@ -361,6 +361,7 @@ class BTNodes:
         def SalvageItem(
             item_id : int,
             salvage_mode: "SalvageMode | int" = 0,
+            quantity: Optional[int] = 1,
             allow_expert_for_common_materials: bool = False,
             state_key: str = "_salvage_state",
             timeout_ms_per_item: int = 500,
@@ -402,7 +403,6 @@ class BTNodes:
             
             def _salvage(node: BehaviorTree.Node):        
                 if item_id is None or item_id <= 0:
-                    _reset_state(node)
                     return BehaviorTree.NodeState.FAILURE
                 
                 try:
@@ -418,17 +418,15 @@ class BTNodes:
                 item = ITEM_CACHE.get_item_snapshot(item_id)
                 
                 if (state and item_id != state.item_id) or item is None or not item.is_valid or not item.is_salvageable or not item.is_inventory_item or _is_mod_salvaged(item, mode):
-                    _reset_state(node)                        
                     return BehaviorTree.NodeState.SUCCESS
                 
                 if state is None:
-                    state = BTNodes.Items.SavalvageProgress(item_id=item.id, salvage_started_at=0.0, initial_qty=item.quantity)                   
+                    state = BTNodes.Items.SavalvageProgress(item_id=item.id, salvage_started_at=0.0, initial_qty=item.quantity, desired_qty=min(item.quantity, quantity if quantity and item.is_stackable else 1))                   
                     node.blackboard[state_key] = state
                     
                 now = time.monotonic()
 
                 if Inventory.GetFreeSlotCount() <= 0:
-                    _reset_state(node)
                     return BehaviorTree.NodeState.FAILURE
 
                 # Start salvage once per item.
@@ -442,12 +440,10 @@ class BTNodes:
                             kit_id = _get_expert_salvage_kit()
 
                     if kit_id <= 0:
-                        _reset_state(node)
                         return BehaviorTree.NodeState.FAILURE
 
                     Inventory.SalvageItem(item_id, kit_id)
                     state.salvage_started_at = now
-                    state.waiting_started = True
                     return BehaviorTree.NodeState.RUNNING
 
                 # Handle salvage windows/frames while waiting for completion.
@@ -462,12 +458,12 @@ class BTNodes:
                         return BehaviorTree.NodeState.RUNNING
                     else:
                         UIManagerExtensions.CancelSalvageOption()
-                        _reset_state(node)
                         return BehaviorTree.NodeState.FAILURE
 
                 # Completion checks.
                 current_qty = item.quantity
                 initial_qty = state.initial_qty
+                desired_qty = state.desired_qty
                 confirm_clicked_at = state.confirm_clicked_at
 
                 qty_changed = current_qty < initial_qty
@@ -478,11 +474,19 @@ class BTNodes:
                     and not UIManagerExtensions.AnySalvageRelatedWindowOpen()
                     and (now - confirm_clicked_at) >= 0.20
                 )
+                
+                if not item_gone and item.is_stackable and qty_changed and current_qty > desired_qty:
+                    Py4GW.Console.Log("BTNodes.Items.SalvageItem", f"Partially salvaged item id {item.id}, quantity reduced from {initial_qty} to {current_qty}, desired quantity is {desired_qty}. Continuing to salvage the remaining quantity.")
+                    state.salvage_started_at = 0.0
+                    state.initial_qty = item.quantity
+                    
+                    return BehaviorTree.NodeState.RUNNING
 
                 if qty_changed or item_gone or windows_closed_after_confirm or mod_salvaged:
                     return BehaviorTree.NodeState.SUCCESS
 
                 if (now - float(state.salvage_started_at)) * 1000 >= timeout_ms_per_item:
+                    Py4GW.Console.Log("BTNodes.Items.SalvageItem", f"Salvage of item id {item.id} timed out after {timeout_ms_per_item} ms. Failing salvage action.")
                     node.blackboard.pop(state_key, None)
                     return BehaviorTree.NodeState.FAILURE
 
