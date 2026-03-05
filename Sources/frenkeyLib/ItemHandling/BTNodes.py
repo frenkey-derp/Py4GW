@@ -154,7 +154,7 @@ class BTNodes:
                 self.requested = False
                 self.traded = False
                 self.trade_confirmed = False
-            
+        
         @staticmethod
         def BuyItem(
             item_id : int,
@@ -360,8 +360,6 @@ class BTNodes:
         @staticmethod
         def SalvageItem(
             item_id : int,
-            use_lesser_kit: bool = True,
-            fail_if_no_kit: bool = True,
             salvage_mode: "SalvageMode | int" = 0,
             allow_expert_for_common_materials: bool = False,
             state_key: str = "_salvage_state",
@@ -389,36 +387,6 @@ class BTNodes:
                 
                 return min(lesser_kits, key=lambda k: k.uses).id
             
-            def _find_salvage_kit(prefer_expert: bool = False, allow_lesser_fallback: bool = True) -> int:
-                inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
-                salvage_kits = [item for item in inventory_snapshot.get(Bag.Backpack, {}).values() if item and item.is_valid and item.is_salvage_kit]
-                if not salvage_kits:
-                    return 0
-
-                expert_kits = [item for item in salvage_kits if item.model_id == ModelID.Expert_Salvage_Kit or item.model_id == ModelID.Superior_Salvage_Kit]
-                lesser_kits = [item for item in salvage_kits if item.model_id == ModelID.Salvage_Kit]
-
-                def _pick_lowest_uses(items: list[ItemSnapshot]) -> int:
-                    if not items:
-                        return 0
-                    return min(items, key=lambda k: k.uses).id
-
-                if prefer_expert:
-                    expert = _pick_lowest_uses(expert_kits)
-                    if expert != 0:
-                        return expert
-                    
-                    if allow_lesser_fallback:
-                        return _pick_lowest_uses(lesser_kits)
-                    return 0
-
-                lesser = _pick_lowest_uses(lesser_kits)
-                
-                if lesser != 0:
-                    return lesser
-                
-                return _pick_lowest_uses(expert_kits)
-
             def _is_mod_salvaged(item: ItemSnapshot, salvage_mode: SalvageMode) -> bool:
                 match salvage_mode:
                     case SalvageMode.Prefix:
