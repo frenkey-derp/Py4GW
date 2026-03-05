@@ -516,7 +516,7 @@ class BTNodes:
             for item_id in item_ids:                            
                 item = ITEM_CACHE.get_item_snapshot(item_id)
                 
-                if not item or not item.is_valid or (not item.is_inventory_item and from_inventory) or (not item.is_storage_item and from_storage):
+                if not item or not item.is_valid or (item.is_inventory_item and to_inventory) or (item.is_storage_item and to_storage) or (not item.is_inventory_item and from_inventory) or (not item.is_storage_item and from_storage):
                     continue
                 
                 if item.is_stackable:
