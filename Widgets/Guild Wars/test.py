@@ -4,13 +4,15 @@ import PyImGui
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.ItemArray import ItemArray
-from Py4GWCoreLib.enums_src.Item_enums import Rarity
+from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
+from Sources.frenkeyLib.LootEx.data import Data
 
 Utils.ClearSubModules("ItemHandling")
-from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
+from Sources.frenkeyLib.ItemHandling.BTNodes import INVENTORY_BAGS, STORAGE_BAGS, BTNodes
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 
@@ -84,10 +86,10 @@ def _build_tree() -> BehaviorTree | None:
             return BehaviorTree(BTNodes.Items.DestroyItems(item_ids=[item_id]))
 
         if TESTS[selected_test] == "Compact Inventory":
-            return BehaviorTree(BTNodes.InventoryOps.CompactBags())
+            return BehaviorTree(BTNodes.Bags.CompactBags())
 
         if TESTS[selected_test] == "Sort Inventory":
-            return BehaviorTree(BTNodes.InventoryOps.SortBags())
+            return BehaviorTree(BTNodes.Bags.SortBags())
 
         if TESTS[selected_test] == "Identify + Salvage Hovered":
             return BehaviorTree(
@@ -117,36 +119,12 @@ def _build_tree() -> BehaviorTree | None:
                 BehaviorTree.SequenceNode(
                     name="Combo.CompactSort",
                     children=[
-                        BTNodes.InventoryOps.CompactBags(),
-                        BTNodes.InventoryOps.SortBags(),
+                        BTNodes.Bags.CompactBags(),
+                        BTNodes.Bags.SortBags(),
                     ],
                 )
             )
-
-        if TESTS[selected_test] == "Trader Buy (single item id)":
-            if trader_item_id <= 0:
-                last_error = "Set trader item id first."
-                return None
-            costs = [trader_cost] if trader_cost >= 0 else None
-            return BehaviorTree(BTNodes.Trader.BuyItems(item_ids=[trader_item_id], costs=costs))
-
-        if TESTS[selected_test] == "Trader Sell (single item id)":
-            if trader_item_id <= 0:
-                last_error = "Set trader item id first."
-                return None
-            costs = [trader_cost] if trader_cost >= 0 else None
-            return BehaviorTree(BTNodes.Trader.SellItems(item_ids=[trader_item_id], costs=costs))
-
-        if TESTS[selected_test] == "Merchant Buy (single item id)":
-            if merchant_item_id <= 0:
-                last_error = "Set merchant item id first."
-                return None
-            costs = [merchant_cost] if merchant_cost >= 0 else None
-            return BehaviorTree(BTNodes.Merchant.BuyItems(item_ids=[merchant_item_id], costs=costs))
-
-        if TESTS[selected_test] == "Merchant Sell Hovered":
-            return BehaviorTree(BTNodes.Merchant.SellItems(item_ids=[item_id]))
-
+            
         last_error = "Unknown test selection."
         return None
 
@@ -171,7 +149,7 @@ def _tick_tree():
 
 def _create_tree() -> BehaviorTree:
     
-    node = BTNodes.Items.DepositItems([hovered])    
+    node = BTNodes.Trader.SellItem(2331, 10)    
     return BehaviorTree(node)
     
 def _create_salvage_tree() -> BehaviorTree:
@@ -230,7 +208,8 @@ def main():
         rarity = Rarity(selected_rarity_idx)
         if PyImGui.button(f"Test BT"):
             tree = _create_tree()
-            auto_tick = True
+            # auto_tick = True
+            pass
         
         selected_rarity_idx = PyImGui.combo("Rarity for batch salvage/identify", selected_rarity_idx, [r.name for r in Rarity])
             
