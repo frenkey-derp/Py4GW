@@ -44,15 +44,6 @@ class BTNodes:
         return BehaviorTree.NodeState.SUCCESS if condition else BehaviorTree.NodeState.FAILURE
 
     @staticmethod
-    def _bag_sizes(bags: list[Bag]) -> dict[Bag, int]:
-        sizes: dict[Bag, int] = {}
-        for bag in bags:
-            bag_obj = PyInventory.Bag(bag.value, bag.name)
-            bag_obj.GetContext()
-            sizes[bag] = bag_obj.GetSize()
-        return sizes
-
-    @staticmethod
     def _iter_bag_items(bags: list[Bag]) -> list[tuple[int, Bag, int]]:
         out: list[tuple[int, Bag, int]] = []
         for bag in bags:
@@ -61,67 +52,6 @@ class BTNodes:
             for itm in bag_obj.GetItems():
                 out.append((itm.item_id, bag, itm.slot))
         return out
-
-    @staticmethod
-    def _build_sort_key(mode: str) -> Callable[[int], tuple]:
-        if mode == "value_desc":
-            return lambda item_id: (-Item.Properties.GetValue(item_id), Item.GetModelID(item_id), item_id)
-        if mode == "rarity_desc":
-            return lambda item_id: (-Item.Rarity.GetRarity(item_id)[0], Item.GetModelID(item_id), item_id)
-        # default: item type, rarity, model, value
-        return lambda item_id: (
-            Item.GetItemType(item_id)[0],
-            Item.Rarity.GetRarity(item_id)[0],
-            Item.GetModelID(item_id),
-            Item.Properties.GetValue(item_id),
-            item_id,
-        )
-
-    @staticmethod
-    def _frame_exists(frame_id: int) -> bool:
-        return isinstance(frame_id, int) and frame_id > 0 and UIManager.FrameExists(frame_id)
-
-    @staticmethod
-    def _safe_quantity(item_id: int) -> int:
-        try:
-            return Item.Properties.GetQuantity(item_id)
-        except Exception:
-            return 0
-
-    @staticmethod
-    def _safe_is_inventory_item(item_id: int) -> bool:
-        try:
-            return Item.Type.IsInventoryItem(item_id)
-        except Exception:
-            return False
-
-    @staticmethod
-    def _find_salvage_kit(prefer_expert: bool = False, allow_lesser_fallback: bool = True) -> int:
-        inventory_item_ids = [item_id for item_id, _, _ in BTNodes._iter_bag_items(INVENTORY_BAGS)]
-        salvage_kits = [item_id for item_id in inventory_item_ids if Item.Usage.IsSalvageKit(item_id)]
-        if not salvage_kits:
-            return 0
-
-        expert_kits = [item_id for item_id in salvage_kits if Item.Usage.IsExpertSalvageKit(item_id) or Item.Usage.IsPerfectSalvageKit(item_id)]
-        lesser_kits = [item_id for item_id in salvage_kits if Item.Usage.IsLesserKit(item_id)]
-
-        def _pick_lowest_uses(items: list[int]) -> int:
-            if not items:
-                return 0
-            return min(items, key=lambda item_id: Item.Usage.GetUses(item_id))
-
-        if prefer_expert:
-            expert = _pick_lowest_uses(expert_kits)
-            if expert != 0:
-                return expert
-            if allow_lesser_fallback:
-                return _pick_lowest_uses(lesser_kits)
-            return 0
-
-        lesser = _pick_lowest_uses(lesser_kits)
-        if lesser != 0:
-            return lesser
-        return _pick_lowest_uses(expert_kits)
 
     class Merchant:
         @staticmethod
@@ -343,7 +273,34 @@ class BTNodes:
         ):
             def _reset_state(node: BehaviorTree.Node):
                 node.blackboard.pop(state_key, None)
-                
+                        
+            def _find_salvage_kit(prefer_expert: bool = False, allow_lesser_fallback: bool = True) -> int:
+                inventory_item_ids = [item_id for item_id, _, _ in BTNodes._iter_bag_items(INVENTORY_BAGS)]
+                salvage_kits = [item_id for item_id in inventory_item_ids if Item.Usage.IsSalvageKit(item_id)]
+                if not salvage_kits:
+                    return 0
+
+                expert_kits = [item_id for item_id in salvage_kits if Item.Usage.IsExpertSalvageKit(item_id)]
+                lesser_kits = [item_id for item_id in salvage_kits if Item.Usage.IsLesserKit(item_id)]
+
+                def _pick_lowest_uses(items: list[int]) -> int:
+                    if not items:
+                        return 0
+                    return min(items, key=lambda item_id: Item.Usage.GetUses(item_id))
+
+                if prefer_expert:
+                    expert = _pick_lowest_uses(expert_kits)
+                    if expert != 0:
+                        return expert
+                    if allow_lesser_fallback:
+                        return _pick_lowest_uses(lesser_kits)
+                    return 0
+
+                lesser = _pick_lowest_uses(lesser_kits)
+                if lesser != 0:
+                    return lesser
+                return _pick_lowest_uses(expert_kits)
+
             def _is_mod_salvaged(item: ItemSnapshot, salvage_mode: SalvageMode) -> bool:
                 match salvage_mode:
                     case SalvageMode.Prefix:
@@ -400,9 +357,9 @@ class BTNodes:
                     )
                     
                     if prefer_expert:
-                        kit_id = BTNodes._find_salvage_kit(prefer_expert=True, allow_lesser_fallback=allow_lesser_fallback_for_expert)
+                        kit_id = _find_salvage_kit(prefer_expert=True, allow_lesser_fallback=allow_lesser_fallback_for_expert)
                     else:
-                        kit_id = BTNodes._find_salvage_kit(prefer_expert=False, allow_lesser_fallback=use_lesser_kit)
+                        kit_id = _find_salvage_kit(prefer_expert=False, allow_lesser_fallback=use_lesser_kit)
 
                     if kit_id <= 0:
                         _reset_state(node)
