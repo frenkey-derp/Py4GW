@@ -176,16 +176,17 @@ def main():
                 
             if ImGui.begin_tab_item("Items"):   
                 if item and item.is_valid:
-                    PyImGui.begin_disabled(True or item.is_usable)
+                    # PyImGui.begin_disabled(not item.is_usable)
                     if ImGui.button(f"Use {item_name}", -1):
-                        # tree = BehaviorTree(BTNodes.UseItem(item.id))
+                        tree = BehaviorTree(BTNodes.Items.UseItems([item.id]))
                         pass
-                    PyImGui.end_disabled()
+                    # PyImGui.end_disabled()
                     
-                    PyImGui.begin_disabled(True or not Map.IsExplorable())
+                    PyImGui.begin_disabled(not Map.IsExplorable())
                     if ImGui.button(f"Drop {item_name}", -1):
-                        # tree = BehaviorTree(BTNodes.DropItem(item.id))
+                        tree = BehaviorTree(BTNodes.Items.DropItems([item.id]))
                         pass
+                    ImGui.show_tooltip("Will only drop a single item on the ground at your current location.")
                     PyImGui.end_disabled()
                     
                     PyImGui.separator()

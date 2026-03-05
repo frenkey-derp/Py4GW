@@ -318,16 +318,57 @@ class BTNodes:
             return BehaviorTree.ActionNode(name="Trader.SellItems", action_fn=_sell, aftercast_ms=aftercast_ms)
 
     class Items:
-        class SavalvageProgress():
-            def __init__(self, item_id: int, salvage_started_at: float, initial_qty: int, salvage_amount: int):
-                self.item_id = item_id
-                self.salvage_started_at = salvage_started_at
-                self.initial_qty = initial_qty
-                self.desired_qty = initial_qty - salvage_amount
-                self.salvage_amount = salvage_amount
-                self.confirm_clicked_at = 0.0
-                self.salvaged_any = False
+        @staticmethod
+        def UseItems(
+            item_ids: list[int],
+            quantities: Optional[list[int]] = None,
+            aftercast_ms: int = 150,
+            succeed_if_any_used: bool = True,
+        ):
+            def _use(node: BehaviorTree.Node):
+                if not item_ids:
+                    return BehaviorTree.NodeState.FAILURE
+
+                used_any = False
+                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]
                 
+                for item in items:
+                    if item is None or not item.is_valid or not item.is_inventory_item:
+                        continue
+                    
+                    quantity = quantities[items.index(item)] if quantities and items.index(item) < len(quantities) else 1
+                    for _ in range(max(0, quantity)):
+                        Inventory.UseItem(item.id)
+                        used_any = True
+
+                return BehaviorTree.NodeState.SUCCESS if used_any else BehaviorTree.NodeState.FAILURE
+
+            return BehaviorTree.ActionNode(name="Items.UseItems", action_fn=_use, aftercast_ms=aftercast_ms)
+        
+        @staticmethod
+        def DropItems(
+            item_ids: list[int],
+            aftercast_ms: int = 150,
+            succeed_if_any_dropped: bool = True,
+        ):
+            def _drop(node: BehaviorTree.Node):
+                if not item_ids:
+                    return BehaviorTree.NodeState.FAILURE
+
+                dropped_any = False
+                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]
+                
+                for item in items:
+                    if item is None or not item.is_valid or not item.is_inventory_item:
+                        continue
+                    
+                    Inventory.DropItem(item.id, item.quantity)
+                    dropped_any = True
+
+                return BehaviorTree.NodeState.SUCCESS if dropped_any else BehaviorTree.NodeState.FAILURE
+
+            return BehaviorTree.ActionNode(name="Items.DropItems", action_fn=_drop, aftercast_ms=aftercast_ms)
+        
         @staticmethod
         def IdentifyItems(
             item_ids: list[int] | None = None,
@@ -358,6 +399,39 @@ class BTNodes:
 
             return BehaviorTree.ActionNode(name="Items.IdentifyItems", action_fn=_identify, aftercast_ms=aftercast_ms)
 
+        @staticmethod
+        def DestroyItems(
+            item_ids: list[int] | None = None,
+            aftercast_ms: int = 100,
+            succeed_always: bool = True,
+        ):
+            def _destroy(node: BehaviorTree.Node):
+                if not item_ids:
+                    return BehaviorTree.NodeState.FAILURE
+
+                destroyed_any = False
+                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]                
+                for item in items:
+                    if item is None or not item.is_valid or not item.is_inventory_item:
+                        continue
+                    
+                    Inventory.DestroyItem(item.id)
+                    destroyed_any = True
+
+                return BehaviorTree.NodeState.SUCCESS if succeed_always else BTNodes._success_if(destroyed_any)
+
+            return BehaviorTree.ActionNode(name="Items.DestroyItems", action_fn=_destroy, aftercast_ms=aftercast_ms)
+
+        class SavalvageProgress():
+            def __init__(self, item_id: int, salvage_started_at: float, initial_qty: int, salvage_amount: int):
+                self.item_id = item_id
+                self.salvage_started_at = salvage_started_at
+                self.initial_qty = initial_qty
+                self.desired_qty = initial_qty - salvage_amount
+                self.salvage_amount = salvage_amount
+                self.confirm_clicked_at = 0.0
+                self.salvaged_any = False
+                
         @staticmethod
         def SalvageItem(
             item_id : int,
@@ -494,29 +568,6 @@ class BTNodes:
                 return BehaviorTree.NodeState.RUNNING
 
             return BehaviorTree.ActionNode(name="Items.SalvageItems", action_fn=_salvage, aftercast_ms=aftercast_ms)
-
-        @staticmethod
-        def DestroyItems(
-            item_ids: list[int] | None = None,
-            aftercast_ms: int = 100,
-            succeed_always: bool = True,
-        ):
-            def _destroy(node: BehaviorTree.Node):
-                if not item_ids:
-                    return BehaviorTree.NodeState.FAILURE
-
-                destroyed_any = False
-                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]                
-                for item in items:
-                    if item is None or not item.is_valid or not item.is_inventory_item:
-                        continue
-                    
-                    Inventory.DestroyItem(item.id)
-                    destroyed_any = True
-
-                return BehaviorTree.NodeState.SUCCESS if succeed_always else BTNodes._success_if(destroyed_any)
-
-            return BehaviorTree.ActionNode(name="Items.DestroyItems", action_fn=_destroy, aftercast_ms=aftercast_ms)
 
         class ItemTransferInstructions:
             def __init__(self, bag: Bag, slot: int, stack_item: Optional[ItemSnapshot], available_space: int = MAX_STACK_SIZE):                
