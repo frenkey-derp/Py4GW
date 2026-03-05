@@ -29,6 +29,7 @@ class ItemSnapshot:
         
         self.is_identified: bool = item.is_identified if item else False
         self.value: int = item.value if item else 0
+        self.is_usable: bool = item.is_usable if item else False
         self.is_salvageable: bool = item.is_salvageable if item else False
         self.is_salvage_kit: bool = item.is_salvage_kit if item else False
         self.is_perfect_salvage_kit: bool = item.is_perfect_salvage_kit if item else False

@@ -39,7 +39,7 @@ class UIManagerExtensions:
             options[SalvageMode.Suffix] = salvage_window_mod_two_id
 
         if UIManagerExtensions.IsElementVisible(salvage_window_mod_three_id):
-            options[SalvageMode.Inherent] = salvage_window_mod_three_id
+            options[SalvageMode.Inscription] = salvage_window_mod_three_id
 
         if UIManagerExtensions.IsElementVisible(salvage_window_materials_id):
             options[SalvageMode.RareCraftingMaterials] = salvage_window_materials_id

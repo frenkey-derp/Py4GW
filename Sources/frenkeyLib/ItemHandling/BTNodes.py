@@ -319,11 +319,12 @@ class BTNodes:
 
     class Items:
         class SavalvageProgress():
-            def __init__(self, item_id: int, salvage_started_at: float, initial_qty: int, desired_qty: int):
+            def __init__(self, item_id: int, salvage_started_at: float, initial_qty: int, salvage_amount: int):
                 self.item_id = item_id
                 self.salvage_started_at = salvage_started_at
                 self.initial_qty = initial_qty
-                self.desired_qty = initial_qty - desired_qty
+                self.desired_qty = initial_qty - salvage_amount
+                self.salvage_amount = salvage_amount
                 self.confirm_clicked_at = 0.0
                 self.salvaged_any = False
                 
@@ -361,7 +362,7 @@ class BTNodes:
         def SalvageItem(
             item_id : int,
             salvage_mode: "SalvageMode | int" = 0,
-            quantity: Optional[int] = 1,
+            salvage_amount: Optional[int] = None,
             allow_expert_for_common_materials: bool = False,
             state_key: str = "_salvage_state",
             timeout_ms_per_item: int = 500,
@@ -396,7 +397,7 @@ class BTNodes:
                     case SalvageMode.Suffix:
                         return item.suffix is None
                     
-                    case SalvageMode.Inherent:
+                    case SalvageMode.Inscription:
                         return item.inscription is None
             
                 return False
@@ -421,7 +422,7 @@ class BTNodes:
                     return BehaviorTree.NodeState.SUCCESS
                 
                 if state is None:
-                    state = BTNodes.Items.SavalvageProgress(item_id=item.id, salvage_started_at=0.0, initial_qty=item.quantity, desired_qty=min(item.quantity, quantity if quantity and item.is_stackable else 1))                   
+                    state = BTNodes.Items.SavalvageProgress(item_id=item.id, salvage_started_at=0.0, initial_qty=item.quantity, salvage_amount=min(item.quantity, salvage_amount if salvage_amount else item.quantity))                   
                     node.blackboard[state_key] = state
                     
                 now = time.monotonic()

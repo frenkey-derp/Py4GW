@@ -46,13 +46,12 @@ ACTION_LIMITS_PER_FRAME = [
 ]
 
 class SalvageMode(IntEnum):
-    NONE = 0
-    CraftingMaterials = 1
-    LesserCraftingMaterials = 2
-    RareCraftingMaterials = 3
-    Prefix = 4
-    Suffix = 5
-    Inherent = 6
+    NONE = auto()
+    LesserCraftingMaterials = auto()
+    RareCraftingMaterials = auto()
+    Prefix = auto()
+    Suffix = auto()
+    Inscription = auto()
 
 MATERIAL_SLOTS : dict[int, int] = {
     ModelID.Amber_Chunk : 36,
