@@ -30,7 +30,10 @@ class ItemSnapshot:
         self.is_identified: bool = item.is_identified if item else False
         self.value: int = item.value if item else 0
         self.is_salvageable: bool = item.is_salvageable if item else False
-        self.is_inscribable: bool = item.is_inscribable if item else False
+        
+        self.is_inscribable: bool = item.is_inscribable if item else False        
+        self.is_prefix_upgradable: bool = item.is_prefix_upgradable if item else False
+        self.is_suffix_upgradable: bool = item.is_suffix_upgradable if item else False
         
         self.quantity: int = item.quantity if item else 0
         self.uses: int = item.uses if item else 0
@@ -41,6 +44,10 @@ class ItemSnapshot:
         self.slot: int = item.slot if item else -1
         self.is_inventory_item: bool = item.is_inventory_item if item else False
         self.is_storage_item: bool = item.is_storage_item if item else False
+        
+        self.is_material = item.is_material if item else False
+        self.is_rare_material = item.is_rare_material if item else False
+        self.is_material_salvageable = item.is_material_salvageable if item else False
 
         self.color: DyeColor = ItemSnapshot.get_color_from_info(self.dye_info)
 

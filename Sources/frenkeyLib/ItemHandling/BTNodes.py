@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 from enum import IntEnum
-from typing import Any, Callable, cast
+from typing import Any, Callable, Optional, cast
 
 import Py4GW
 import PyInventory
@@ -11,30 +11,36 @@ from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.UIManager import UIManager
+from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
+from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
+from Sources.frenkeyLib.ItemHandling.utility import GetDestinationSlots, GetItemsLocations
 
+INVENTORY_BAGS = [Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]
+STORAGE_BAGS = [Bag.Storage_1, Bag.Storage_2, Bag.Storage_3, Bag.Storage_4, Bag.Storage_5, Bag.Storage_6, Bag.Storage_7, Bag.Storage_8, Bag.Storage_9, Bag.Storage_10, Bag.Storage_11, Bag.Storage_12, Bag.Storage_13, Bag.Storage_14]
+SALVAGE_WINDOW_HASH = 684387150
+LESSER_CONFIRM_HASH = 140452905
 
 class BTNodes:
     NodeState = BehaviorTree.NodeState
-    INVENTORY_BAGS = [Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]
-    SALVAGE_WINDOW_HASH = 684387150
-    LESSER_CONFIRM_HASH = 140452905
+
+    @staticmethod
+    def _resolve_item_ids(node: BehaviorTree.Node, item_ids: Optional[list[int]], item_ids_key: str) -> list[int]:
+        if item_ids is not None:
+            return item_ids
+        elif item_ids_key in node.blackboard:
+            return node.blackboard[item_ids_key]
+        else:
+            return []
 
     @staticmethod
     def _success_if(condition: bool) -> BehaviorTree.NodeState:
         return BehaviorTree.NodeState.SUCCESS if condition else BehaviorTree.NodeState.FAILURE
-
-    @staticmethod
-    def _resolve_item_ids(node: BehaviorTree.Node, item_ids: list[int] | None, item_ids_key: str) -> list[int]:
-        if item_ids is not None:
-            return [iid for iid in item_ids if iid]
-        value = node.blackboard.get(item_ids_key, [])
-        return [iid for iid in value if iid]
 
     @staticmethod
     def _bag_sizes(bags: list[Bag]) -> dict[Bag, int]:
@@ -90,7 +96,7 @@ class BTNodes:
 
     @staticmethod
     def _find_salvage_kit(prefer_expert: bool = False, allow_lesser_fallback: bool = True) -> int:
-        inventory_item_ids = [item_id for item_id, _, _ in BTNodes._iter_bag_items(BTNodes.INVENTORY_BAGS)]
+        inventory_item_ids = [item_id for item_id, _, _ in BTNodes._iter_bag_items(INVENTORY_BAGS)]
         salvage_kits = [item_id for item_id in inventory_item_ids if Item.Usage.IsSalvageKit(item_id)]
         if not salvage_kits:
             return 0
@@ -296,38 +302,30 @@ class BTNodes:
         @staticmethod
         def IdentifyItems(
             item_ids: list[int] | None = None,
-            item_ids_key: str = "item_ids",
             fail_if_no_kit: bool = True,
             succeed_if_already_identified: bool = True,
             aftercast_ms: int = 150,
         ):
             def _identify(node: BehaviorTree.Node):
-                ids = BTNodes._resolve_item_ids(node, item_ids, item_ids_key)
-                if not ids:
+                if not item_ids:
                     return BehaviorTree.NodeState.FAILURE
 
                 identified_any = False
-                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in ids]
+                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]
                 
                 for item in items:
-                    if item is None:
-                        continue
-                    
-                    if item.is_identified:
-                        if succeed_if_already_identified:
-                            identified_any = True
-                            
+                    if item is None or not item.is_valid or not item.is_inventory_item:
                         continue
                     
                     kit_id = Inventory.GetFirstIDKit()
                     
                     if kit_id == 0:
-                        return BehaviorTree.NodeState.FAILURE if fail_if_no_kit else BTNodes._success_if(identified_any)
+                        return BehaviorTree.NodeState.FAILURE if fail_if_no_kit else (BehaviorTree.NodeState.SUCCESS if identified_any else (BehaviorTree.NodeState.SUCCESS if succeed_if_already_identified else BehaviorTree.NodeState.FAILURE))
                     
                     Inventory.IdentifyItem(item.id, kit_id)
                     identified_any = True
 
-                return BTNodes._success_if(identified_any or all(item.is_identified for item in items if item is not None))
+                return BehaviorTree.NodeState.SUCCESS if identified_any else (BehaviorTree.NodeState.SUCCESS if succeed_if_already_identified else BehaviorTree.NodeState.FAILURE)
 
             return BehaviorTree.ActionNode(name="Items.IdentifyItems", action_fn=_identify, aftercast_ms=aftercast_ms)
 
@@ -457,119 +455,228 @@ class BTNodes:
         @staticmethod
         def DestroyItems(
             item_ids: list[int] | None = None,
-            item_ids_key: str = "item_ids",
             aftercast_ms: int = 100,
+            succeed_always: bool = True,
         ):
             def _destroy(node: BehaviorTree.Node):
-                ids = BTNodes._resolve_item_ids(node, item_ids, item_ids_key)
-                if not ids:
+                if not item_ids:
                     return BehaviorTree.NodeState.FAILURE
 
                 destroyed_any = False
-                for item_id in ids:
-                    Inventory.DestroyItem(item_id)
+                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]                
+                for item in items:
+                    if item is None or not item.is_valid or not item.is_inventory_item:
+                        continue
+                    
+                    Inventory.DestroyItem(item.id)
                     destroyed_any = True
 
-                return BTNodes._success_if(destroyed_any)
+                return BehaviorTree.NodeState.SUCCESS if succeed_always else BTNodes._success_if(destroyed_any)
 
             return BehaviorTree.ActionNode(name="Items.DestroyItems", action_fn=_destroy, aftercast_ms=aftercast_ms)
 
+        class ItemTransferInstructions:
+            def __init__(self, bag: Bag, slot: int, stack_item: Optional[ItemSnapshot], available_space: int = MAX_STACK_SIZE):                
+                self.bag = bag
+                self.slot = slot
+                self.stack_item = stack_item                
+                self.available_space = available_space - stack_item.quantity if stack_item and stack_item.is_stackable else available_space
+                
+                self.items : list[tuple[ItemSnapshot, int]] = []
+        
+        @staticmethod
+        def GetTransferInstructions(
+            item_ids: list[int],
+            target : list[Bag],
+            fill_materials_first: bool = True,
+        ) -> dict[Bag, dict[int, BTNodes.Items.ItemTransferInstructions]]:
+            
+            locations = GetItemsLocations(item_ids)
+            source = list(set(bag for bag, _ in locations))
+            
+            to_inventory = any(bag in INVENTORY_BAGS for bag in target)
+            to_storage = any(bag in STORAGE_BAGS or bag == Bag.Material_Storage for bag in target)
+            
+            from_inventory = any(bag in INVENTORY_BAGS for bag in source)
+            from_storage = any(bag in STORAGE_BAGS or bag == Bag.Material_Storage for bag in source)
+           
+            material_storage_snapshot = ITEM_CACHE.get_bag_snapshot(Bag.Material_Storage) if (from_storage or to_storage) else {}
+            target_snapshot = ITEM_CACHE.get_bags_snapshot(target)
+            moving_instructions : dict[Bag, dict[int, BTNodes.Items.ItemTransferInstructions]] = {}
+            
+            #get max quantity from material_storage_snapshot.get(Bag.Material_Storage, {}).values() and ceil to the next MAX_STACK_SIZE to determine the max capacity
+            material_storage_capacity = (
+                max(
+                    (item.quantity for item in material_storage_snapshot.values() if item),
+                    default=0
+                )
+                + MAX_STACK_SIZE - 1
+            ) // MAX_STACK_SIZE * MAX_STACK_SIZE
+                                            
+            for item_id in item_ids:                            
+                item = ITEM_CACHE.get_item_snapshot(item_id)
+                
+                if not item or not item.is_valid or (not item.is_inventory_item and from_inventory) or (not item.is_storage_item and from_storage):
+                    continue
+                
+                if item.is_stackable:
+                    if fill_materials_first and from_inventory and (item.is_material or item.is_rare_material):
+                        for slot, stack_item in material_storage_snapshot.items():
+                            if stack_item and stack_item.is_valid and stack_item.is_stackable and stack_item.model_id == item.model_id and stack_item.item_type == item.item_type and stack_item.quantity < material_storage_capacity:
+                                moving_instructions.setdefault(Bag.Material_Storage, {})
+                                dest = moving_instructions[Bag.Material_Storage].setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bag.Material_Storage, slot, stack_item, available_space=material_storage_capacity))
+                                
+                                if dest.available_space > 0:
+                                    qty_to_move = min(dest.available_space, item.quantity)
+                                    dest.available_space -= qty_to_move
+                                    dest.items.append((item, qty_to_move))
+                                    item.quantity -= qty_to_move
+                                    
+                                    stack_item.quantity += qty_to_move  # simulate the move in the cache to get correct available space for subsequent stacks of the same item
+                                    
+                                    if item.quantity <= 0:
+                                        Py4GW.Console.Log("GetTransferInstructions", f"Planned to move {qty_to_move} of '{item.data.names.get(ServerLanguage.English, 'Unknown') if item.data else 'Unknown Item'}' (ID: {item.id}) to Material Storage bag {Bag.Material_Storage.name} slot {slot}")
+                                        break
+                        
+                        if item.quantity <= 0:
+                            Py4GW.Console.Log("GetTransferInstructions", f"Item quantity reduced to 0, moving on to next item.")
+                            break                                
+                        
+                    # get all items with the same model and type that have free space in their stacks and add them as potential destinations for the current item until we have found enough space for the whole stack. This way we minimize fragmentation in the bank and maximize the chances of fitting all items. We get them all from bag_enum, bag in inventory_snapshot.items()
+                    stacks_of_same_kind_with_space = [(i, bag_id) for bag_id, bag in target_snapshot.items() for i in bag.values() if i and i.is_valid and i.is_stackable and i.model_id == item.model_id and i.item_type == item.item_type and i.quantity < MAX_STACK_SIZE]
+                    
+                    #sorted by least free space to most free space to fill up more full stacks first, then by bag and slot, so we fill from the beginning of the bank to the end to minimize fragmentation
+                    stacks_of_same_kind_with_space.sort(key=lambda x: (-x[0].quantity, x[1].value, x[0].slot))
+                    
+                    for stack_item, bag in stacks_of_same_kind_with_space:
+                        if stack_item.quantity >= MAX_STACK_SIZE:
+                            continue
+                        
+                        moving_instructions.setdefault(bag, {})
+                        dest = moving_instructions[bag].setdefault(stack_item.slot, BTNodes.Items.ItemTransferInstructions(bag, stack_item.slot, stack_item))
+                        if dest.available_space > 0:
+                            qty_to_move = min(dest.available_space, item.quantity)
+                            dest.available_space -= qty_to_move
+                            dest.items.append((item, qty_to_move))
+                            item.quantity -= qty_to_move
+                            
+                            stack_item.quantity += qty_to_move  # simulate the move in the cache to get correct available space for subsequent stacks of the same item
+                            
+                            if item.quantity <= 0:
+                                Py4GW.Console.Log("GetTransferInstructions", f"Item quantity reduced to 0, moving on to next item.")
+                                break
+                    
+                    
+                        if item.quantity <= 0:
+                            break
+                    
+                if item.quantity > 0:
+                    for bag_enum, bag in target_snapshot.items():
+                        for slot, stack_item in bag.items():
+                            if stack_item is None:
+                                moving_instructions.setdefault(bag_enum, {})
+                                dest = moving_instructions[bag_enum].setdefault(slot, BTNodes.Items.ItemTransferInstructions(bag_enum, slot, None))
+                                
+                                qty_to_move = min(dest.available_space, item.quantity)
+                                dest.available_space -= qty_to_move
+                                dest.items.append((item, qty_to_move))
+                                item.quantity -= qty_to_move
+                                                                
+                                if item.quantity <= 0:
+                                    break
+                        
+                        if item.quantity <= 0:
+                            break
+                
+            return moving_instructions            
+        
         @staticmethod
         def DepositItems(
-            item_ids: list[int] | None = None,
-            item_ids_key: str = "item_ids",
-            anniversary_panel: bool = True,
-            aftercast_ms: int = 200,
+            item_ids: list[int],
+            target : list[Bag] = STORAGE_BAGS,
+            anniversary_panel: bool = False,
+            fill_materials_first: bool = True,
+            fail_if_no_space: bool = True,
+            aftercast_ms: int = 25,
         ):
+            if not anniversary_panel and Bag.Storage_14 in target:
+                target = [b for b in target if b != Bag.Storage_14]
+            
             def _deposit(node: BehaviorTree.Node):
+                instructions = BTNodes.Items.GetTransferInstructions(item_ids, target, fill_materials_first)
                 moved_any = False
-                return BTNodes._success_if(moved_any)
+                
+                if not instructions:
+                    return BehaviorTree.NodeState.FAILURE if fail_if_no_space else BehaviorTree.NodeState.SUCCESS
+                
+                for bag in instructions.values():
+                    for dest in bag.values():
+                        for item, qty in dest.items:
+                            Inventory.MoveItem(item.id, dest.bag.value, dest.slot, qty)
+                            Py4GW.Console.Log(node.name, f"Moving {qty} of '{item.data.names.get(ServerLanguage.English, 'Unknown') if item.data else 'Unknown Item'}' (ID: {item.id}) to bag {dest.bag.name} slot {dest.slot}")
+                            moved_any = True
+                
+                return BehaviorTree.NodeState.SUCCESS if moved_any else BehaviorTree.NodeState.FAILURE
 
             return BehaviorTree.ActionNode(name="Items.DepositItems", action_fn=_deposit, aftercast_ms=aftercast_ms)
+        
+        @staticmethod
+        def WithdrawItems(
+            item_ids: list[int],
+            target : list[Bag] = INVENTORY_BAGS,
+            fill_materials_first: bool = True,
+            fail_if_no_space: bool = True,
+            aftercast_ms: int = 25,
+        ):                   
+            def _withdraw(node: BehaviorTree.Node):
+                instructions = BTNodes.Items.GetTransferInstructions(item_ids, target, fill_materials_first)
+                moved_any = False
+                
+                if not instructions:
+                    return BehaviorTree.NodeState.FAILURE if fail_if_no_space else BehaviorTree.NodeState.SUCCESS
+                
+                for bag in instructions.values():
+                    for dest in bag.values():
+                        for item, qty in dest.items:
+                            Inventory.MoveItem(item.id, dest.bag.value, dest.slot, qty)
+                            Py4GW.Console.Log(node.name, f"Moving {qty} of '{item.data.names.get(ServerLanguage.English, 'Unknown') if item.data else 'Unknown Item'}' (ID: {item.id}) to bag {dest.bag.name} slot {dest.slot}")
+                            moved_any = True
+                
+                return BehaviorTree.NodeState.SUCCESS if moved_any else BehaviorTree.NodeState.FAILURE
+
+            return BehaviorTree.ActionNode(name="Items.WithdrawItems", action_fn=_withdraw, aftercast_ms=aftercast_ms)
 
     class InventoryOps:
         @staticmethod
-        def CompactInventory(
-            bags: list[Bag] | None = None,
-            max_stack_size: int = 250,
+        def FillMaterialStorage(
+            bags : list[Bag] = STORAGE_BAGS,
+            aftercast_ms: int = 150,
+        ):
+            def _fill_material_storage():
+                # Move all materials and rare materials from (source_start_bag ... source_end_bag) to material storage, filling up existing stacks first
+                pass
+
+            return BehaviorTree.ActionNode(name="Inventory.FillMaterialStorage", action_fn=_fill_material_storage, aftercast_ms=aftercast_ms)
+        
+        @staticmethod
+        def CompactBags(
+            bags : list[Bag] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
         ):
             def _compact():
-                bag_list = bags if bags is not None else BTNodes.INVENTORY_BAGS
-                items = BTNodes._iter_bag_items(bag_list)
-
-                by_model: dict[int, list[int]] = {}
-                for item_id, _, _ in items:
-                    if not Item.Customization.IsStackable(item_id):
-                        continue
-                    by_model.setdefault(Item.GetModelID(item_id), []).append(item_id)
-
-                moved_any = False
-                for _, stack_ids in by_model.items():
-                    while True:
-                        # Refresh quantities each round; item IDs can vanish after merges.
-                        live = []
-                        for stack_id in stack_ids:
-                            qty = Item.Properties.GetQuantity(stack_id)
-                            if qty > 0:
-                                live.append((stack_id, qty))
-                        if len(live) <= 1:
-                            break
-
-                        live.sort(key=lambda x: x[1])  # small -> large
-                        src_id, src_qty = live[0]
-                        dst_id, dst_qty = next((i, q) for i, q in reversed(live) if q < max_stack_size)
-                        to_move = min(src_qty, max_stack_size - dst_qty)
-                        if to_move <= 0:
-                            break
-
-                        dst_bag, dst_slot = Inventory.FindItemBagAndSlot(dst_id)
-                        if dst_bag is None or dst_slot is None:
-                            break
-
-                        Inventory.MoveItem(src_id, dst_bag, dst_slot, to_move)
-                        moved_any = True
-
-                return BTNodes._success_if(moved_any)
+                # Condense item stacks. If we condense storage bags take the material storage into account. We want to move all materials to the 
+                pass
 
             return BehaviorTree.ActionNode(name="Inventory.CompactInventory", action_fn=_compact, aftercast_ms=aftercast_ms)
 
         @staticmethod
-        def SortInventory(
-            bags: list[Bag] | None = None,
-            sort_mode: str = "type_rarity_model_value",
-            descending: bool = False,
+        def SortBags(
+            bags : list[Bag] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
         ):
             def _sort():
-                bag_list = bags if bags is not None else BTNodes.INVENTORY_BAGS
-                sizes = BTNodes._bag_sizes(bag_list)
-                items = [item_id for item_id, _, _ in BTNodes._iter_bag_items(bag_list)]
-                if not items:
-                    return BehaviorTree.NodeState.FAILURE
-
-                key_fn = BTNodes._build_sort_key(sort_mode)
-                sorted_items = sorted(items, key=key_fn, reverse=descending)
-
-                target_slots: list[tuple[Bag, int]] = []
-                for bag in bag_list:
-                    for slot in range(sizes[bag]):
-                        target_slots.append((bag, slot))
-
-                moved_any = False
-                for idx, item_id in enumerate(sorted_items):
-                    if idx >= len(target_slots):
-                        break
-                    target_bag, target_slot = target_slots[idx]
-                    cur_bag, cur_slot = Inventory.FindItemBagAndSlot(item_id)
-                    if cur_bag is None or cur_slot is None:
-                        continue
-                    if cur_bag == target_bag.value and cur_slot == target_slot:
-                        continue
-                    Inventory.MoveItem(item_id, target_bag.value, target_slot, Item.Properties.GetQuantity(item_id))
-                    moved_any = True
-
-                return BTNodes._success_if(moved_any)
+                # Sort by item type, then rarity, then model, then value, then item ID to ensure a consistent order
+                pass
 
             return BehaviorTree.ActionNode(name="Inventory.SortInventory", action_fn=_sort, aftercast_ms=aftercast_ms)
 

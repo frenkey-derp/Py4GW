@@ -55,6 +55,9 @@ class ItemCache:
     
     def get_inventory_snapshot(self, start_bag: Bag, end_bag: Bag) -> dict[Bag, dict[int, Optional[ItemSnapshot]]]:
         bags = [Bag(bag_id) for bag_id in range(start_bag.value, end_bag.value + 1)]
+        return self.get_bags_snapshot(bags)
+    
+    def get_bags_snapshot(self, bags: list[Bag]) -> dict[Bag, dict[int, Optional[ItemSnapshot]]]:
         snapshot = {}
 
         for bag in bags:

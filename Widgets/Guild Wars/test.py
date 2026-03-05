@@ -84,10 +84,10 @@ def _build_tree() -> BehaviorTree | None:
             return BehaviorTree(BTNodes.Items.DestroyItems(item_ids=[item_id]))
 
         if TESTS[selected_test] == "Compact Inventory":
-            return BehaviorTree(BTNodes.InventoryOps.CompactInventory())
+            return BehaviorTree(BTNodes.InventoryOps.CompactBags())
 
         if TESTS[selected_test] == "Sort Inventory":
-            return BehaviorTree(BTNodes.InventoryOps.SortInventory())
+            return BehaviorTree(BTNodes.InventoryOps.SortBags())
 
         if TESTS[selected_test] == "Identify + Salvage Hovered":
             return BehaviorTree(
@@ -117,8 +117,8 @@ def _build_tree() -> BehaviorTree | None:
                 BehaviorTree.SequenceNode(
                     name="Combo.CompactSort",
                     children=[
-                        BTNodes.InventoryOps.CompactInventory(),
-                        BTNodes.InventoryOps.SortInventory(),
+                        BTNodes.InventoryOps.CompactBags(),
+                        BTNodes.InventoryOps.SortBags(),
                     ],
                 )
             )
@@ -170,6 +170,11 @@ def _tick_tree():
         tree = None
 
 def _create_tree() -> BehaviorTree:
+    
+    node = BTNodes.Items.DepositItems([hovered])    
+    return BehaviorTree(node)
+    
+def _create_salvage_tree() -> BehaviorTree:
     # Create tree to identify and salvage to materials all white items in inventory, then deposit them into the bank
     inventory = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
     rarity = Rarity(selected_rarity_idx)
@@ -223,7 +228,7 @@ def main():
         PyImGui.separator()
         
         rarity = Rarity(selected_rarity_idx)
-        if PyImGui.button(f"Identify + Salvage + Deposit All Items of {rarity.name} ({selected_rarity_idx}) in Inventory"):
+        if PyImGui.button(f"Test BT"):
             tree = _create_tree()
             auto_tick = True
         
