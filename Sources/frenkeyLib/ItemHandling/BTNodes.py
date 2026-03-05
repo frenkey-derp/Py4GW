@@ -363,7 +363,7 @@ class BTNodes:
             salvage_mode: "SalvageMode | int" = 0,
             allow_expert_for_common_materials: bool = False,
             state_key: str = "_salvage_state",
-            timeout_ms_per_item: int = 1500,
+            timeout_ms_per_item: int = 500,
             aftercast_ms: int = 0,
         ):
             def _reset_state(node: BehaviorTree.Node):
