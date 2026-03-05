@@ -48,7 +48,7 @@ class BaseRule:
     def applies(self, item_id: int) -> bool:
         raise NotImplementedError("Subclasses must implement the applies method.")
 
-    def get_item(self, item_id: int) -> ItemSnapshot:
+    def get_item(self, item_id: int) -> Optional[ItemSnapshot]:
         return ITEM_CACHE.get_item_snapshot(item_id)
 
     def get_priority_score(self) -> int:
@@ -104,7 +104,7 @@ class ModelIdRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return item.model_id == self.model_id.value if self.model_id else False
+        return item.model_id == self.model_id.value if item and self.model_id else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"model_id": int(self.model_id.value) if self.model_id is not None else None}
@@ -136,7 +136,7 @@ class ItemTypesRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return item.item_type in self.item_types
+        return item.item_type in self.item_types if item else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"item_types": [item_type.name for item_type in self.item_types]}
@@ -167,7 +167,7 @@ class RaritiesRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return item.rarity in self.rarities
+        return item.rarity in self.rarities if item else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"rarities": [rarity.name for rarity in self.rarities]}
@@ -198,7 +198,7 @@ class DyesRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return item.color in self.dye_colors and item.item_type == ItemType.Dye
+        return item.color in self.dye_colors and item.item_type == ItemType.Dye if item else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"dye_colors": [color.name for color in self.dye_colors]}
@@ -234,7 +234,7 @@ class ItemSkinRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return item.data is not None and item.data.skin in self.item_skins
+        return item.data is not None and item.data.skin in self.item_skins if item else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"item_skins": list(self.item_skins)}
@@ -262,7 +262,7 @@ class ItemTypeAndRarityRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return item.item_type in self.item_types and item.rarity in self.rarities
+        return item.item_type in self.item_types and item.rarity in self.rarities if item else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -309,7 +309,7 @@ class WeaponSkinRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        if item.data is None or item.data.skin not in self.weapon_skins:
+        if item is None or item.data is None or item.data.skin not in self.weapon_skins:
             return False
 
         if self.requirement_min > item.requirement or self.requirement_max < item.requirement:
@@ -404,7 +404,7 @@ class WeaponTypeRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        if item.data is None or item.item_type != self.item_type:
+        if item is None or item.data is None or item.item_type != self.item_type:
             return False
 
         if self.requirement_min > item.requirement or self.requirement_max < item.requirement:
@@ -496,7 +496,7 @@ class UpgradeRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        return self.upgrade in [item.prefix, item.suffix, item.inscription]
+        return self.upgrade in [item.prefix, item.suffix, item.inscription] if item else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"upgrade_class": type(self.upgrade).__name__ if self.upgrade is not None else None}
@@ -552,7 +552,7 @@ class SalvagesToMaterialRule(BaseRule):
             return False
 
         item = self.get_item(item_id)
-        if not item.is_salvageable or item.data is None:
+        if item is None or not item.is_salvageable or item.data is None:
             return False
         
         common = [m.model_id for m in (item.data.common_salvage.values() if item.data.common_salvage else {})]
