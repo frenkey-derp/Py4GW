@@ -14,6 +14,7 @@ from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, ItemType
 from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
@@ -31,27 +32,8 @@ class BTNodes:
     NodeState = BehaviorTree.NodeState
 
     @staticmethod
-    def _resolve_item_ids(node: BehaviorTree.Node, item_ids: Optional[list[int]], item_ids_key: str) -> list[int]:
-        if item_ids is not None:
-            return item_ids
-        elif item_ids_key in node.blackboard:
-            return node.blackboard[item_ids_key]
-        else:
-            return []
-
-    @staticmethod
     def _success_if(condition: bool) -> BehaviorTree.NodeState:
         return BehaviorTree.NodeState.SUCCESS if condition else BehaviorTree.NodeState.FAILURE
-
-    @staticmethod
-    def _iter_bag_items(bags: list[Bag]) -> list[tuple[int, Bag, int]]:
-        out: list[tuple[int, Bag, int]] = []
-        for bag in bags:
-            bag_obj = PyInventory.Bag(bag.value, bag.name)
-            bag_obj.GetContext()
-            for itm in bag_obj.GetItems():
-                out.append((itm.item_id, bag, itm.slot))
-        return out
 
     class Merchant:
         @staticmethod 
@@ -152,115 +134,186 @@ class BTNodes:
             return BehaviorTree.ActionNode(name="Merchant.BuyItems", action_fn=_buy, aftercast_ms=aftercast_ms)
 
     class Trader:
+        class TraderProgress:
+            def __init__(self):                
+                self.initial_qty = 0
+                self.current_qty = 0
+                self.desired_qty = 0
+                
+                self.quote_requested_at = 0.0
+                self.traded_at = 0.0
+                
+                self.requested = False
+                self.traded = False
+                self.trade_confirmed = False
+            
+            def reset(self):        
+                self.quote_requested_at = 0.0
+                self.traded_at = 0.0
+                
+                self.requested = False
+                self.traded = False
+                self.trade_confirmed = False
+            
         @staticmethod
-        def BuyItems(
-            item_ids: list[int] | None = None,
-            costs: list[int] | None = None,
-            item_ids_key: str = "trader_buy_item_ids",
-            costs_key: str = "trader_buy_costs",
-            state_key: str = "_trader_buy_state",
-            quote_timeout_ms: int = 1500,
-            aftercast_ms: int = 100,
+        def BuyItem(
+            item_id : int,
+            quantity: int = 1,
+            quote_timeout_ms: int = 500,
+            aftercast_ms: int = 0,
         ):
             def _buy(node: BehaviorTree.Node):
-                ids = BTNodes._resolve_item_ids(node, item_ids, item_ids_key)
-                if not ids:
+                now = time.monotonic()
+                
+                if not UIManagerExtensions.IsMerchantWindowOpen():
                     return BehaviorTree.NodeState.FAILURE
-
-                given_costs = costs if costs is not None else node.blackboard.get(costs_key, [])
-                if given_costs:
-                    any_action = False
-                    for i, item_id in enumerate(ids):
-                        if i < len(given_costs):
-                            Trading.Trader.BuyItem(item_id, int(given_costs[i]))
-                            any_action = True
-                    return BTNodes._success_if(any_action)
-
-                state = node.blackboard.get(state_key)
+                
+                offered_items = Trading.Trader.GetOfferedItems()
+                
+                if item_id not in offered_items:
+                    return BehaviorTree.NodeState.FAILURE
+                
+                item = ITEM_CACHE.get_item_snapshot(item_id)
+                if not item or not item.is_valid:
+                    return BehaviorTree.NodeState.FAILURE
+                                 
+                state = node.blackboard.get("trader_buy_progress")
+                state = cast(BTNodes.Trader.TraderProgress, state) if state else None
+                
                 if state is None:
-                    state = {"index": 0, "requested_at": 0.0}
-                    node.blackboard[state_key] = state
-
-                idx = state["index"]
-                if idx >= len(ids):
-                    node.blackboard.pop(state_key, None)
-                    return BehaviorTree.NodeState.SUCCESS
-
-                item_id = ids[idx]
-                if state["requested_at"] <= 0:
-                    Trading.Trader.RequestQuote(item_id)
-                    state["requested_at"] = time.monotonic()
+                    state = BTNodes.Trader.TraderProgress()
+                    inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                    state.initial_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.same_kind_as(item)) if inventory_snapshot else 0
+                    state.desired_qty = state.initial_qty + quantity
+                    node.blackboard["trader_buy_progress"] = state
+                
+                if state.current_qty < state.desired_qty:
+                    quote = Trading.Trader.GetQuotedValue()
+                    quote_available = Trading.Trader.GetQuotedItemID() == item_id
+                    
+                    if not state.requested:
+                        Trading.Trader.RequestQuote(item_id)
+                        state.quote_requested_at = now
+                        state.requested = True
+                        return BehaviorTree.NodeState.RUNNING
+                                        
+                    if not state.traded:                        
+                        if quote_available and quote > 0:
+                            Trading.Trader.BuyItem(item_id, quote)
+                            state.traded = True
+                            state.traded_at = now
+                            
+                            return BehaviorTree.NodeState.RUNNING
+                    
+                    if not state.trade_confirmed:
+                        inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                        state.current_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.same_kind_as(item)) if inventory_snapshot else 0
+                        state.trade_confirmed = state.current_qty > state.initial_qty
+                        
+                        
+                        if state.trade_confirmed:
+                            state.initial_qty = state.current_qty
+                            state.requested = False
+                            state.traded = False
+                            state.trade_confirmed = False
+                            state.quote_requested_at = 0.0
+                            state.traded_at = 0.0
+                            return BehaviorTree.NodeState.RUNNING
+                                        
+                    if state.traded_at and (now - state.traded_at) * 1000 >= quote_timeout_ms:
+                        state.traded = False
+                        state.trade_confirmed = False
+                        state.traded_at = 0.0
+                        return BehaviorTree.NodeState.RUNNING
+                    
+                    if state.quote_requested_at and (now - state.quote_requested_at) * 1000 >= quote_timeout_ms:
+                        state.requested = False
+                        state.quote_requested_at = 0.0
+                        return BehaviorTree.NodeState.RUNNING
+                    
                     return BehaviorTree.NodeState.RUNNING
-
-                quoted_item_id = Trading.Trader.GetQuotedItemID()
-                quoted_cost = Trading.Trader.GetQuotedValue()
-                if quoted_item_id == item_id and quoted_cost >= 0:
-                    Trading.Trader.BuyItem(item_id, quoted_cost)
-                    state["index"] += 1
-                    state["requested_at"] = 0.0
-                    return BehaviorTree.NodeState.RUNNING if state["index"] < len(ids) else BehaviorTree.NodeState.SUCCESS
-
-                if (time.monotonic() - state["requested_at"]) * 1000 >= quote_timeout_ms:
-                    node.blackboard.pop(state_key, None)
-                    return BehaviorTree.NodeState.FAILURE
-
-                return BehaviorTree.NodeState.RUNNING
+                
+                else:
+                    return BehaviorTree.NodeState.SUCCESS
 
             return BehaviorTree.ActionNode(name="Trader.BuyItems", action_fn=_buy, aftercast_ms=aftercast_ms)
 
         @staticmethod
-        def SellItems(
-            item_ids: list[int] | None = None,
-            costs: list[int] | None = None,
-            item_ids_key: str = "trader_sell_item_ids",
-            costs_key: str = "trader_sell_costs",
-            state_key: str = "_trader_sell_state",
-            quote_timeout_ms: int = 1500,
-            aftercast_ms: int = 100,
+        def SellItem(
+            item_id : int,
+            quantity: int = 1,
+            quote_timeout_ms: int = 500,
+            aftercast_ms: int = 0,
         ):
             def _sell(node: BehaviorTree.Node):
-                ids = BTNodes._resolve_item_ids(node, item_ids, item_ids_key)
-                if not ids:
+                now = time.monotonic()
+                
+                if not UIManagerExtensions.IsMerchantWindowOpen():
                     return BehaviorTree.NodeState.FAILURE
-
-                given_costs = costs if costs is not None else node.blackboard.get(costs_key, [])
-                if given_costs:
-                    any_action = False
-                    for i, item_id in enumerate(ids):
-                        if i < len(given_costs):
-                            Trading.Trader.SellItem(item_id, int(given_costs[i]))
-                            any_action = True
-                    return BTNodes._success_if(any_action)
-
-                state = node.blackboard.get(state_key)
+                                
+                item = ITEM_CACHE.get_item_snapshot(item_id)
+                
+                if not item or not item.is_valid or not item.is_inventory_item:
+                    return BehaviorTree.NodeState.FAILURE
+                                 
+                state = node.blackboard.get("trader_sell_progress")
+                state = cast(BTNodes.Trader.TraderProgress, state) if state else None
+                
                 if state is None:
-                    state = {"index": 0, "requested_at": 0.0}
-                    node.blackboard[state_key] = state
-
-                idx = state["index"]
-                if idx >= len(ids):
-                    node.blackboard.pop(state_key, None)
-                    return BehaviorTree.NodeState.SUCCESS
-
-                item_id = ids[idx]
-                if state["requested_at"] <= 0:
-                    Trading.Trader.RequestSellQuote(item_id)
-                    state["requested_at"] = time.monotonic()
+                    state = BTNodes.Trader.TraderProgress()
+                    inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                    state.initial_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.same_kind_as(item)) if inventory_snapshot else 0
+                    state.current_qty = state.initial_qty
+                    state.desired_qty = state.initial_qty - quantity
+                    node.blackboard["trader_sell_progress"] = state
+                
+                if state.current_qty > state.desired_qty:
+                    quote = Trading.Trader.GetQuotedValue()
+                    quote_available = Trading.Trader.GetQuotedItemID() == item_id
+                    
+                    if not state.requested:
+                        Trading.Trader.RequestSellQuote(item_id)
+                        state.quote_requested_at = now
+                        state.requested = True
+                        return BehaviorTree.NodeState.RUNNING
+                                        
+                    if not state.traded:                        
+                        if quote_available and quote > 0:
+                            Trading.Trader.SellItem(item_id, quote)
+                            state.traded = True
+                            state.traded_at = now
+                            
+                            return BehaviorTree.NodeState.RUNNING
+                    
+                    if not state.trade_confirmed:
+                        inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                        state.current_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.same_kind_as(item)) if inventory_snapshot else 0
+                        state.trade_confirmed = state.current_qty < state.initial_qty
+                        
+                        if state.trade_confirmed:
+                            state.initial_qty = state.current_qty
+                            state.requested = False
+                            state.traded = False
+                            state.trade_confirmed = False
+                            state.quote_requested_at = 0.0
+                            state.traded_at = 0.0
+                            return BehaviorTree.NodeState.RUNNING
+                                        
+                    if state.traded_at and (now - state.traded_at) * 1000 >= quote_timeout_ms:
+                        state.traded = False
+                        state.trade_confirmed = False
+                        state.traded_at = 0.0
+                        return BehaviorTree.NodeState.RUNNING
+                    
+                    if state.quote_requested_at and (now - state.quote_requested_at) * 1000 >= quote_timeout_ms:
+                        state.requested = False
+                        state.quote_requested_at = 0.0
+                        return BehaviorTree.NodeState.RUNNING
+                    
                     return BehaviorTree.NodeState.RUNNING
-
-                quoted_item_id = Trading.Trader.GetQuotedItemID()
-                quoted_cost = Trading.Trader.GetQuotedValue()
-                if quoted_item_id == item_id and quoted_cost >= 0:
-                    Trading.Trader.SellItem(item_id, quoted_cost)
-                    state["index"] += 1
-                    state["requested_at"] = 0.0
-                    return BehaviorTree.NodeState.RUNNING if state["index"] < len(ids) else BehaviorTree.NodeState.SUCCESS
-
-                if (time.monotonic() - state["requested_at"]) * 1000 >= quote_timeout_ms:
-                    node.blackboard.pop(state_key, None)
-                    return BehaviorTree.NodeState.FAILURE
-
-                return BehaviorTree.NodeState.RUNNING
+                
+                else:
+                    return BehaviorTree.NodeState.SUCCESS
 
             return BehaviorTree.ActionNode(name="Trader.SellItems", action_fn=_sell, aftercast_ms=aftercast_ms)
 
@@ -310,39 +363,60 @@ class BTNodes:
             use_lesser_kit: bool = True,
             fail_if_no_kit: bool = True,
             salvage_mode: "SalvageMode | int" = 0,
-            allow_lesser_fallback_for_expert: bool = True,
+            allow_expert_for_common_materials: bool = False,
             state_key: str = "_salvage_state",
             timeout_ms_per_item: int = 1500,
             aftercast_ms: int = 0,
         ):
             def _reset_state(node: BehaviorTree.Node):
                 node.blackboard.pop(state_key, None)
-                        
+            
+            def _get_expert_salvage_kit() -> int:
+                inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                expert_kits = [i for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.is_salvage_kit and i.model_id in (ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit)]
+                
+                if not expert_kits:
+                    return 0
+                
+                return min(expert_kits, key=lambda k: k.uses).id
+            
+            def _get_lesser_salvage_kit() -> int:
+                inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                lesser_kits = [i for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.is_salvage_kit and i.model_id == ModelID.Salvage_Kit]
+                
+                if not lesser_kits:
+                    return 0
+                
+                return min(lesser_kits, key=lambda k: k.uses).id
+            
             def _find_salvage_kit(prefer_expert: bool = False, allow_lesser_fallback: bool = True) -> int:
-                inventory_item_ids = [item_id for item_id, _, _ in BTNodes._iter_bag_items(INVENTORY_BAGS)]
-                salvage_kits = [item_id for item_id in inventory_item_ids if Item.Usage.IsSalvageKit(item_id)]
+                inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                salvage_kits = [item for item in inventory_snapshot.get(Bag.Backpack, {}).values() if item and item.is_valid and item.is_salvage_kit]
                 if not salvage_kits:
                     return 0
 
-                expert_kits = [item_id for item_id in salvage_kits if Item.Usage.IsExpertSalvageKit(item_id)]
-                lesser_kits = [item_id for item_id in salvage_kits if Item.Usage.IsLesserKit(item_id)]
+                expert_kits = [item for item in salvage_kits if item.model_id == ModelID.Expert_Salvage_Kit or item.model_id == ModelID.Superior_Salvage_Kit]
+                lesser_kits = [item for item in salvage_kits if item.model_id == ModelID.Salvage_Kit]
 
-                def _pick_lowest_uses(items: list[int]) -> int:
+                def _pick_lowest_uses(items: list[ItemSnapshot]) -> int:
                     if not items:
                         return 0
-                    return min(items, key=lambda item_id: Item.Usage.GetUses(item_id))
+                    return min(items, key=lambda k: k.uses).id
 
                 if prefer_expert:
                     expert = _pick_lowest_uses(expert_kits)
                     if expert != 0:
                         return expert
+                    
                     if allow_lesser_fallback:
                         return _pick_lowest_uses(lesser_kits)
                     return 0
 
                 lesser = _pick_lowest_uses(lesser_kits)
+                
                 if lesser != 0:
                     return lesser
+                
                 return _pick_lowest_uses(expert_kits)
 
             def _is_mod_salvaged(item: ItemSnapshot, salvage_mode: SalvageMode) -> bool:
@@ -375,8 +449,6 @@ class BTNodes:
                 state = cast(BTNodes.Items.SavalvageProgress, state) if state else None
                 item = ITEM_CACHE.get_item_snapshot(item_id)
                 
-                log_prefix = f"{node.name}|Item '{item.data.names.get(ServerLanguage.English, 'Unknown') if item and item.data else 'Unknown'} ({item_id})"
-                
                 if (state and item_id != state.item_id) or item is None or not item.is_valid or not item.is_salvageable or not item.is_inventory_item or _is_mod_salvaged(item, mode):
                     _reset_state(node)                        
                     return BehaviorTree.NodeState.SUCCESS
@@ -392,18 +464,14 @@ class BTNodes:
                     return BehaviorTree.NodeState.FAILURE
 
                 # Start salvage once per item.
-                if not state.salvage_started_at:
-                    prefer_expert = mode in (
-                        SalvageMode.Prefix,
-                        SalvageMode.Suffix,
-                        SalvageMode.Inherent,
-                        SalvageMode.RareCraftingMaterials,
-                    )
-                    
-                    if prefer_expert:
-                        kit_id = _find_salvage_kit(prefer_expert=True, allow_lesser_fallback=allow_lesser_fallback_for_expert)
+                if not state.salvage_started_at:                    
+                    if salvage_mode != SalvageMode.LesserCraftingMaterials:
+                        kit_id = _get_expert_salvage_kit()
+                        
                     else:
-                        kit_id = _find_salvage_kit(prefer_expert=False, allow_lesser_fallback=use_lesser_kit)
+                        kit_id = _get_lesser_salvage_kit()
+                        if allow_expert_for_common_materials and kit_id == 0:
+                            kit_id = _get_expert_salvage_kit()
 
                     if kit_id <= 0:
                         _reset_state(node)
@@ -870,68 +938,38 @@ class BTNodes:
 
     class Crafting:
         @staticmethod
-        def CraftItemByOutputModel(
-            output_model_id: int,
-            cost: int,
-            trade_item_ids: list[int],
-            trade_item_quantities: list[int],
-            aftercast_ms: int = 250,
-        ):
-            def _craft():
-                offered_items = Trading.Crafter.GetOfferedItems()
-                output_item_id = next((iid for iid in offered_items if Item.GetModelID(iid) == output_model_id), 0)
-                if output_item_id <= 0:
-                    return BehaviorTree.NodeState.FAILURE
-
-                k = min(len(trade_item_ids), len(trade_item_quantities))
-                if k == 0:
-                    return BehaviorTree.NodeState.FAILURE
-
-                Trading.Crafter.CraftItem(output_item_id, cost, trade_item_ids[:k], trade_item_quantities[:k])
-                return BehaviorTree.NodeState.SUCCESS
-
-            return BehaviorTree.ActionNode(name="Crafting.CraftItemByOutputModel", action_fn=_craft, aftercast_ms=aftercast_ms)
-
-        @staticmethod
         def CraftItem(
             output_item_id: int,
             cost: int,
-            trade_item_ids: list[int],
-            trade_item_quantities: list[int],
+            material_item_ids: list[int],
+            material_quantities: list[int],
             aftercast_ms: int = 250,
         ):
             def _craft():
-                k = min(len(trade_item_ids), len(trade_item_quantities))
+                k = min(len(material_item_ids), len(material_quantities))
                 if output_item_id <= 0 or k == 0:
                     return BehaviorTree.NodeState.FAILURE
-                Trading.Crafter.CraftItem(output_item_id, cost, trade_item_ids[:k], trade_item_quantities[:k])
+                Trading.Crafter.CraftItem(output_item_id, cost, material_item_ids[:k], material_quantities[:k])
                 return BehaviorTree.NodeState.SUCCESS
 
             return BehaviorTree.ActionNode(name="Crafting.CraftItem", action_fn=_craft, aftercast_ms=aftercast_ms)
 
         @staticmethod
         def CraftItems(
-            recipes: list[dict[str, Any]] | None = None,
-            recipes_key: str = "craft_recipes",
+            recipes: dict[int, tuple[list[int], list[int]]],
             aftercast_ms: int = 250,
         ):
             def _craft(node: BehaviorTree.Node):
-                payload = recipes if recipes is not None else node.blackboard.get(recipes_key, [])
-                if not payload:
-                    return BehaviorTree.NodeState.FAILURE
-
                 crafted_any = False
-                for recipe in payload:
-                    output_item_id = int(recipe.get("output_item_id", 0))
-                    cost = int(recipe.get("cost", 0))
-                    item_ids = recipe.get("trade_item_ids", [])
-                    quantities = recipe.get("trade_item_quantities", [])
-                    k = min(len(item_ids), len(quantities))
+                for output_item_id, (material_item_ids, material_quantities) in recipes.items():
+                    k = min(len(material_item_ids), len(material_quantities))
+                    
                     if output_item_id <= 0 or k == 0:
                         continue
-                    Trading.Crafter.CraftItem(output_item_id, cost, item_ids[:k], quantities[:k])
+                    
+                    Trading.Crafter.CraftItem(output_item_id, 0, material_item_ids[:k], material_quantities[:k])
                     crafted_any = True
-
+                    
                 return BTNodes._success_if(crafted_any)
 
             return BehaviorTree.ActionNode(name="Crafting.CraftItems", action_fn=_craft, aftercast_ms=aftercast_ms)
