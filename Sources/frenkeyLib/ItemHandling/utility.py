@@ -45,11 +45,12 @@ def GetZeroFilledBags(start_bag: Bag, end_bag: Bag) -> tuple[list[int], dict[Bag
     return inventory, bag_sizes
 
 @staticmethod
-def HasSpaceForItem(item_id: int, start_bag: Bag, end_bag: Bag) -> bool:
+def HasSpaceForItem(item_id: int, start_bag: Bag, end_bag: Bag, quantity: Optional[int] = None) -> tuple[bool, int]:
     item = ITEM_CACHE.get_item_snapshot(item_id)
+    quantity = quantity if quantity is not None else item.quantity if item else 0
     
     if not item or not item.is_valid:
-        return False
+        return False, 0
     
     inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(start_bag, end_bag)
     item_stacks = [i for bag in inventory_snapshot.values() for i in bag.values() if i is not None and 
@@ -59,12 +60,12 @@ def HasSpaceForItem(item_id: int, start_bag: Bag, end_bag: Bag) -> bool:
     # Check for existing stacks with space for (partial) item.quantity. If we can fit the item into existing stacks, we don't need to check for free slots
     if item_stacks:
         total_available_space = sum(MAX_STACK_SIZE - stack.quantity for stack in item_stacks)
-        if total_available_space >= item.quantity:
-            return True 
+        if total_available_space >= quantity:
+            return True, total_available_space
     
     # If the item is not stackable or we don't have enough space in existing stacks, check for free slots
-    free_slots = sum(1 for bag in inventory_snapshot.values() for i in bag.values() if i is None)
-    return free_slots > 0
+    free_slots = sum((MAX_STACK_SIZE if item.is_stackable else 1) for bag in inventory_snapshot.values() for i in bag.values() if i is None)
+    return free_slots > 0, free_slots
 
 @staticmethod
 def GetDestinationSlots(item_id: int, start_bag: Bag, end_bag: Bag) -> list[tuple[Bag, int, Optional[ItemSnapshot]]]:

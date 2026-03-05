@@ -20,7 +20,7 @@ from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import MATERIAL_SLOTS, SalvageMode
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
-from Sources.frenkeyLib.ItemHandling.utility import GetDestinationSlots, GetItemsLocations
+from Sources.frenkeyLib.ItemHandling.utility import GetDestinationSlots, GetItemsLocations, HasSpaceForItem
 
 INVENTORY_BAGS = [Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]
 STORAGE_BAGS = [Bag.Storage_1, Bag.Storage_2, Bag.Storage_3, Bag.Storage_4, Bag.Storage_5, Bag.Storage_6, Bag.Storage_7, Bag.Storage_8, Bag.Storage_9, Bag.Storage_10, Bag.Storage_11, Bag.Storage_12, Bag.Storage_13, Bag.Storage_14]
@@ -54,23 +54,62 @@ class BTNodes:
         return out
 
     class Merchant:
+        @staticmethod 
+        def Restock(
+            model_id: int,
+            item_type: ItemType,
+            quantity: int,
+        ):
+            def _restock(node: BehaviorTree.Node):
+                if not UIManagerExtensions.IsMerchantWindowOpen():
+                    return BehaviorTree.NodeState.FAILURE
+                
+                inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                current_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.model_id == model_id and i.item_type == item_type) if inventory_snapshot else 0
+                
+                if current_qty >= quantity:
+                    return BehaviorTree.NodeState.SUCCESS
+                
+                offered_items = Trading.Merchant.GetOfferedItems()
+                item_id = next((iid for iid in offered_items if Item.GetModelID(iid) == model_id and Item.GetItemType(iid)[0] == item_type), None)
+                
+                if not item_id:
+                    return BehaviorTree.NodeState.FAILURE
+
+                available_gold = Inventory.GetGoldOnCharacter()
+                quantity_to_buy = quantity - current_qty
+            
+                price = (Item.Properties.GetValue(item_id) * 2)
+                affordable_qty = available_gold // price if price > 0 else quantity_to_buy
+                has_space, space_for_qty = HasSpaceForItem(item_id, Bag.Backpack, Bag.Bag_2, quantity=affordable_qty)
+                count = min(quantity_to_buy, affordable_qty, space_for_qty)
+                
+                if not has_space or count <= 0:
+                    return BehaviorTree.NodeState.FAILURE
+                                    
+                for _ in range(max(0, count)):
+                    Trading.Merchant.BuyItem(item_id, price)
+
+                return BehaviorTree.NodeState.SUCCESS
+
+            return BehaviorTree.ActionNode(name="Merchant.Restock", action_fn=_restock)
+        
         @staticmethod
         def SellItems(
-            item_ids: list[int] | None = None,
-            item_ids_key: str = "item_ids",
+            item_ids: list[int],
             aftercast_ms: int = 150,
         ):
             def _sell(node: BehaviorTree.Node):
-                ids = BTNodes._resolve_item_ids(node, item_ids, item_ids_key)
-                if not ids:
+                if not UIManagerExtensions.IsMerchantWindowOpen():
                     return BehaviorTree.NodeState.FAILURE
-
+                
+                items = [ITEM_CACHE.get_item_snapshot(iid) for iid in item_ids]
                 sold_any = False
-                for item_id in ids:
-                    qty = Item.Properties.GetQuantity(item_id)
-                    if qty <= 0:
+                for item in items:
+                    if item is None or not item.is_valid or not item.is_inventory_item:
                         continue
-                    Trading.Merchant.SellItem(item_id, Item.Properties.GetValue(item_id) * qty)
+                    
+                    Trading.Merchant.SellItem(item.id, Item.Properties.GetValue(item.id) * item.quantity)
                     sold_any = True
 
                 return BTNodes._success_if(sold_any)
@@ -79,26 +118,31 @@ class BTNodes:
 
         @staticmethod
         def BuyItems(
-            item_ids: list[int] | None = None,
-            quantities: list[int] | None = None,
-            costs: list[int] | None = None,
-            item_ids_key: str = "merchant_item_ids",
-            quantities_key: str = "merchant_quantities",
-            costs_key: str = "merchant_costs",
+            item_ids_quantities: list[tuple[int, int]],
             aftercast_ms: int = 150,
         ):
             def _buy(node: BehaviorTree.Node):
-                ids = BTNodes._resolve_item_ids(node, item_ids, item_ids_key)
-                if not ids:
+                if not UIManagerExtensions.IsMerchantWindowOpen():  
+                    return BehaviorTree.NodeState.FAILURE
+                
+                offered_items = Trading.Merchant.GetOfferedItems()
+                valid_item_ids_quantities = [(item_id, qty) for item_id, qty in item_ids_quantities if item_id in offered_items]
+                
+                if not valid_item_ids_quantities:
                     return BehaviorTree.NodeState.FAILURE
 
-                qtys = quantities if quantities is not None else node.blackboard.get(quantities_key, [])
-                prices = costs if costs is not None else node.blackboard.get(costs_key, [])
-
                 bought_any = False
-                for i, offered_item_id in enumerate(ids):
-                    count = qtys[i] if i < len(qtys) else 1
-                    price = prices[i] if i < len(prices) else Item.Properties.GetValue(offered_item_id) * 2
+                available_gold = Inventory.GetGoldOnCharacter()
+                
+                for i, (offered_item_id, quantity) in enumerate(item_ids_quantities):
+                    price =  (Item.Properties.GetValue(offered_item_id) * 2)
+                    affordable_qty = available_gold // price if price > 0 else quantity
+                    has_space, qty = HasSpaceForItem(offered_item_id, Bag.Backpack, Bag.Bag_2, quantity=affordable_qty)
+                    count = min(quantity, affordable_qty, qty)
+                    
+                    if not has_space or count <= 0:
+                        continue
+                                        
                     for _ in range(max(0, count)):
                         Trading.Merchant.BuyItem(offered_item_id, price)
                         bought_any = True
@@ -446,7 +490,8 @@ class BTNodes:
         def GetTransferInstructions(
             item_ids: list[int],
             target : list[Bag],
-            fill_materials_first: bool = True,
+            quantities: Optional[list[int]] = None,
+            fill_materials_first: bool = False,
         ) -> dict[Bag, dict[int, BTNodes.Items.ItemTransferInstructions]]:
             
             locations = GetItemsLocations(item_ids)
@@ -473,8 +518,9 @@ class BTNodes:
             if material_storage_capacity <= 0:
                 material_storage_capacity = MAX_STACK_SIZE
                                             
-            for item_id in item_ids:                            
+            for index, item_id in enumerate(item_ids):
                 item = ITEM_CACHE.get_item_snapshot(item_id)
+                qty = quantities[index] if quantities and index < len(quantities) else item.quantity if item else 0            
                 
                 if not item or not item.is_valid or (item.is_inventory_item and to_inventory) or (item.is_storage_item and to_storage) or (not item.is_inventory_item and from_inventory) or (not item.is_storage_item and from_storage):
                     continue
@@ -487,19 +533,18 @@ class BTNodes:
                                 dest = moving_instructions[Bag.Material_Storage].setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bag.Material_Storage, slot, stack_item, available_space=material_storage_capacity))
                                 
                                 if dest.available_space > 0:
-                                    qty_to_move = min(dest.available_space, item.quantity)
+                                    qty_to_move = min(dest.available_space, qty)
                                     dest.available_space -= qty_to_move
                                     dest.items.append((item, qty_to_move))
-                                    item.quantity -= qty_to_move
+                                    qty -= qty_to_move
                                     
                                     stack_item.quantity += qty_to_move  # simulate the move in the cache to get correct available space for subsequent stacks of the same item
                                     
-                                    if item.quantity <= 0:
+                                    if qty <= 0:
                                         Py4GW.Console.Log("GetTransferInstructions", f"Planned to move {qty_to_move} of '{item.data.names.get(ServerLanguage.English, 'Unknown') if item.data else 'Unknown Item'}' (ID: {item.id}) to Material Storage bag {Bag.Material_Storage.name} slot {slot}")
                                         break
                         
-                        if item.quantity <= 0:
-                            Py4GW.Console.Log("GetTransferInstructions", f"Item quantity reduced to 0, moving on to next item.")
+                        if qty <= 0:
                             break                                
                         
                     # get all items with the same model and type that have free space in their stacks and add them as potential destinations for the current item until we have found enough space for the whole stack. This way we minimize fragmentation in the bank and maximize the chances of fitting all items. We get them all from bag_enum, bag in inventory_snapshot.items()
@@ -515,37 +560,37 @@ class BTNodes:
                         moving_instructions.setdefault(bag, {})
                         dest = moving_instructions[bag].setdefault(stack_item.slot, BTNodes.Items.ItemTransferInstructions(bag, stack_item.slot, stack_item))
                         if dest.available_space > 0:
-                            qty_to_move = min(dest.available_space, item.quantity)
+                            qty_to_move = min(dest.available_space, qty)
                             dest.available_space -= qty_to_move
                             dest.items.append((item, qty_to_move))
-                            item.quantity -= qty_to_move
+                            qty -= qty_to_move
                             
                             stack_item.quantity += qty_to_move  # simulate the move in the cache to get correct available space for subsequent stacks of the same item
                             
-                            if item.quantity <= 0:
+                            if qty <= 0:
                                 Py4GW.Console.Log("GetTransferInstructions", f"Item quantity reduced to 0, moving on to next item.")
                                 break
                     
                     
-                        if item.quantity <= 0:
+                        if qty <= 0:
                             break
                     
-                if item.quantity > 0:
+                if qty > 0:
                     for bag_enum, bag in target_snapshot.items():
                         for slot, stack_item in bag.items():
                             if stack_item is None:
                                 moving_instructions.setdefault(bag_enum, {})
                                 dest = moving_instructions[bag_enum].setdefault(slot, BTNodes.Items.ItemTransferInstructions(bag_enum, slot, None))
                                 
-                                qty_to_move = min(dest.available_space, item.quantity)
+                                qty_to_move = min(dest.available_space, qty)
                                 dest.available_space -= qty_to_move
                                 dest.items.append((item, qty_to_move))
-                                item.quantity -= qty_to_move
+                                qty -= qty_to_move
                                                                 
-                                if item.quantity <= 0:
+                                if qty <= 0:
                                     break
                         
-                        if item.quantity <= 0:
+                        if qty <= 0:
                             break
                 
             return moving_instructions            
@@ -563,7 +608,7 @@ class BTNodes:
                 target = [b for b in target if b != Bag.Storage_14]
             
             def _deposit(node: BehaviorTree.Node):
-                instructions = BTNodes.Items.GetTransferInstructions(item_ids, target, fill_materials_first)
+                instructions = BTNodes.Items.GetTransferInstructions(item_ids, target, fill_materials_first=fill_materials_first)
                 moved_any = False
                 
                 if not instructions:
@@ -589,7 +634,7 @@ class BTNodes:
             aftercast_ms: int = 25,
         ):                   
             def _withdraw(node: BehaviorTree.Node):
-                instructions = BTNodes.Items.GetTransferInstructions(item_ids, target, fill_materials_first)
+                instructions = BTNodes.Items.GetTransferInstructions(item_ids, target, fill_materials_first=fill_materials_first)
                 moved_any = False
                 
                 if not instructions:
@@ -607,6 +652,62 @@ class BTNodes:
             return BehaviorTree.ActionNode(name="Items.WithdrawItems", action_fn=_withdraw, aftercast_ms=aftercast_ms)
 
     class Bags:
+        @staticmethod
+        def Restock(
+            model_id: int,
+            item_type: ItemType,
+            quantity: int,
+        ):
+            def _restock(node: BehaviorTree.Node):        
+                inventory_snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Bag_2)
+                current_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.model_id == model_id and i.item_type == item_type) if inventory_snapshot else 0
+                left_to_restock = max(0, quantity - current_qty)
+                
+                if left_to_restock <= 0:
+                    return BehaviorTree.NodeState.SUCCESS
+                
+                storage_snapshot = ITEM_CACHE.get_bags_snapshot(STORAGE_BAGS)
+                desired_items = [i for bag in storage_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.model_id == model_id and i.item_type == item_type] if storage_snapshot else []
+                
+                if not desired_items:
+                    return BehaviorTree.NodeState.FAILURE
+                
+                item_ids = []
+                quantities = []
+                
+                sort_by_lowest_qty = sorted(desired_items, key=lambda i: i.quantity)
+                for item in sort_by_lowest_qty:
+                    if item.quantity <= 0:
+                        continue
+                    
+                    has_space, space_for_qty = HasSpaceForItem(item.id, Bag.Backpack, Bag.Bag_2, quantity=item.quantity)
+                    if not has_space or space_for_qty <= 0:
+                        continue
+                                        
+                    qty_to_move = min(space_for_qty, item.quantity, left_to_restock)
+                    current_qty += qty_to_move
+                    
+                    item_ids.append(item.id)
+                    quantities.append(qty_to_move)
+                    left_to_restock -= qty_to_move
+                    
+                    if left_to_restock <= 0:
+                        break
+                
+                instructions = BTNodes.Items.GetTransferInstructions(item_ids, INVENTORY_BAGS, quantities=quantities)
+                if not instructions:
+                    return BehaviorTree.NodeState.FAILURE
+                
+                for bag in instructions.values():
+                    for dest in bag.values():
+                        for item, qty in dest.items:
+                            Inventory.MoveItem(item.id, dest.bag.value, dest.slot, qty)
+                            Py4GW.Console.Log(node.name, f"Moving {qty} of '{item.data.names.get(ServerLanguage.English, 'Unknown') if item.data else 'Unknown Item'}' (ID: {item.id}) to bag {dest.bag.name} slot {dest.slot}")
+
+                return BehaviorTree.NodeState.SUCCESS
+
+            return BehaviorTree.ActionNode(name="Bags.Restock", action_fn=_restock)
+        
         @staticmethod
         def FillMaterialStorage(
             source : list[Bag] = STORAGE_BAGS,
