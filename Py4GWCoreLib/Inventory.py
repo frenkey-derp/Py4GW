@@ -2,6 +2,8 @@ import Py4GW
 import PyInventory
 from typing import TypedDict, cast
 
+from Py4GWCoreLib.enums_src.Item_enums import Bags
+
 from .Item import Item
 from .ItemArray import ItemArray
 
