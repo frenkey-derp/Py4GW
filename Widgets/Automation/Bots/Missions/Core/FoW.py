@@ -250,6 +250,9 @@ def _draw_prestart_window() -> None:
 
 
 def _draw_main() -> None:
+    if bot is None:
+        return
+    
     is_running = bool(bot.bot.config.fsm_running)
     current_step = _fsm_step_name() or "Idle"
     phase_index, phase_total, phase_name = _phase_progress()
