@@ -27,11 +27,50 @@ import ctypes
 import ctypes.wintypes
 import re
 import struct
-from typing import Optional
+from typing import NamedTuple, Optional
 
 from Py4GWCoreLib.native_src.context.TextContext import TextParser
 from Py4GWCoreLib.native_src.internals.helpers import read_wstr
 from Py4GWCoreLib.native_src.methods.DatFileMethods import read_dat_file_by_hash
+
+
+class ItemNameParts(NamedTuple):
+    markdown: Optional[str]
+    prefix: Optional[str]
+    item_name: Optional[str]
+    suffix: Optional[str]
+    num: Optional[int]
+    singular_form: Optional[str] = None
+    plural_form: Optional[str] = None
+
+    @property
+    def singular(self) -> Optional[str]:
+        return self.singular_form if self.singular_form is not None else self.item_name
+
+    @property
+    def plural(self) -> Optional[str]:
+        if self.plural_form is not None:
+            return self.plural_form
+        return self.item_name
+    
+
+
+class ItemNamePartsEncoded(NamedTuple):
+    markdown: Optional[bytes]
+    prefix: Optional[bytes]
+    item_name: Optional[bytes]
+    suffix: Optional[bytes]
+    num: Optional[int]
+    singular_form: Optional[bytes] = None
+    plural_form: Optional[bytes] = None
+
+    @property
+    def singular(self) -> Optional[bytes]:
+        return self.singular_form if self.singular_form is not None else self.item_name
+
+    @property
+    def plural(self) -> Optional[bytes]:
+        return self.plural_form if self.plural_form is not None else self.item_name
 
 
 # ─── Codepoint parsing (base-0x7F00 encoding) ────────────────────────────
@@ -204,29 +243,12 @@ _load_enqueued: bool = False
 _loaded_language: int = 0
 
 _decode_cache: dict[bytes, str] = {}
-_parts_cache: dict[bytes, tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[int]]] = {}
-_item_name_forms_cache: dict[bytes, tuple[Optional[str], Optional[str]]] = {}
-_parts_encoded_cache: dict[bytes, tuple[Optional[bytes], Optional[bytes], Optional[bytes], Optional[bytes], Optional[int]]] = {}
 _pending: set[bytes] = set()
 
 from concurrent.futures import ThreadPoolExecutor as _TPE
 _decode_pool = _TPE(max_workers=1)
 
 
-# Language-specific item part order (prefix/item/suffix).
-_PART_ORDER_BY_LANG: dict[int, tuple[str, str, str]] = {
-    0: ("prefix", "item", "suffix"),   # English
-    1: ("prefix", "item", "suffix"),   # Korean (suffix usually parenthesized)
-    2: ("item", "prefix", "suffix"),   # French
-    3: ("prefix", "item", "suffix"),   # German
-    4: ("item", "suffix", "prefix"),   # Italian
-    5: ("item", "prefix", "suffix"),   # Spanish
-    6: ("suffix", "prefix", "item"),   # Traditional Chinese
-    8: ("prefix", "item", "suffix"),   # Japanese (suffix usually parenthesized)
-    9: ("item", "prefix", "suffix"),   # Polish
-    10: ("prefix", "item", "suffix"),  # Russian
-    17: ("prefix", "item", "suffix"),  # BorkBorkBork
-}
 
 
 # ─── Postprocessing ──────────────────────────────────────────────────────
@@ -529,7 +551,7 @@ def _assign_prefix_suffix_by_language(
 ) -> tuple[Optional[object], Optional[object]]:
     """Assign prefix/suffix from candidates using client-language order."""
     lang = _loaded_language if _string_table_loaded else _get_client_language()
-    order = _PART_ORDER_BY_LANG.get(lang, ("prefix", "item", "suffix"))
+    order = ItemName._PART_ORDER_BY_LANG.get(lang, ("prefix", "item", "suffix"))
     p_idx = order.index("prefix")
     s_idx = order.index("suffix")
 
@@ -578,7 +600,7 @@ def _assign_prefix_suffix_by_language(
     return prefix, suffix
 
 
-def _extract_parts_from_tree(tree: dict) -> tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[int]]:
+def _extract_parts_from_tree(tree: dict) -> ItemNameParts:
     """Return (markdown, prefix, item_name, suffix, num)."""
     markdown = tree.get("template") or None
     prefix: Optional[str] = None
@@ -655,16 +677,19 @@ def _extract_parts_from_tree(tree: dict) -> tuple[Optional[str], Optional[str], 
     if markdown and "%str" not in markdown and "<c=" not in markdown:
         markdown = None
 
-    return (markdown, prefix, item_name, suffix, num)
+    singular, plural = _extract_item_name_forms_from_tree(tree)
+    return ItemNameParts(markdown, prefix, item_name, suffix, num, singular, plural)
 
 
-def _extract_parts_encoded_from_tree(tree: dict) -> tuple[Optional[bytes], Optional[bytes], Optional[bytes], Optional[bytes], Optional[int]]:
+def _extract_parts_encoded_from_tree(tree: dict) -> ItemNamePartsEncoded:
     """Return encoded (markdown, prefix, item_name, suffix, num)."""
     markdown = _codepoints_to_raw(tree.get("head_cp") or ())
     prefix: Optional[bytes] = None
     item_name: Optional[bytes] = None
     suffix: Optional[bytes] = None
     num = _find_num_arg(tree, 1)
+    singular_form: Optional[bytes] = None
+    plural_form: Optional[bytes] = None
 
     args = tree.get("args") or {}
     str1 = args.get(1)
@@ -673,8 +698,12 @@ def _extract_parts_encoded_from_tree(tree: dict) -> tuple[Optional[bytes], Optio
         item_node = _select_item_name_node(tree)
         if item_node is not None:
             item_name = _codepoints_to_raw(item_node.get("expr_cp") or ())
+            singular_form = item_name
+            plural_form = item_name
         else:
             item_name = _codepoints_to_raw(str1.get("expr_cp") or ())
+            singular_form = item_name
+            plural_form = item_name
 
         str1_args = str1.get("args") or {}
         tpl = str1.get("template") or ""
@@ -704,10 +733,12 @@ def _extract_parts_encoded_from_tree(tree: dict) -> tuple[Optional[bytes], Optio
             suffix = s  # type: ignore[assignment]
     else:
         item_name = _codepoints_to_raw(tree.get("expr_cp") or ())
+        singular_form = item_name
+        plural_form = item_name
         # If there is no wrapper args, this is plain text; no markdown wrapper.
         markdown = None
 
-    return (markdown, prefix, item_name, suffix, num)
+    return ItemNamePartsEncoded(markdown, prefix, item_name, suffix, num, singular_form, plural_form)
 
 
 # ─── Loading ─────────────────────────────────────────────────────────────
@@ -795,11 +826,10 @@ def _get_client_language() -> int:
     return tp.language_id
 
 def switch_language(language: int) -> None:
-    global _string_table, _decode_cache, _parts_cache, _item_name_forms_cache, _parts_encoded_cache, _string_table_loaded, _load_enqueued, _loaded_language
+    global _string_table, _decode_cache, _string_table_loaded, _load_enqueued, _loaded_language
     _decode_cache.clear()
-    _parts_cache.clear()
-    _item_name_forms_cache.clear()
-    _parts_encoded_cache.clear()
+    ItemName._parts_cache.clear()
+    ItemName._parts_encoded_cache.clear()
     _string_table_loaded = False
     _load_enqueued = False
     _loaded_language = language
@@ -868,36 +898,47 @@ def _decode_and_cache(raw: bytes) -> None:
     """Unpack, parse, decode, postprocess in background thread, cache result."""
     try:
         n = len(raw) & ~1
+        if n < 2:
+            return
         cp = struct.unpack_from(f'<{n >> 1}H', raw)
         try:
             cp = cp[:cp.index(0)]
         except ValueError:
             pass
-        # Preferred path: decode inline formatted expressions with arg tags
-        # (e.g. 0x010A/0x010B carrying %str1%/%str2% replacements).
-        tree, _ = _decode_formatted_tree(cp, 0)
-        text = tree.get("rendered", "")
-        if text:
-            _decode_cache[raw] = _postprocess(text)
-            _parts_cache[raw] = _extract_parts_from_tree(tree)
-            _item_name_forms_cache[raw] = _extract_item_name_forms_from_tree(tree)
-            _parts_encoded_cache[raw] = _extract_parts_encoded_from_tree(tree)
+        if not cp:
             return
 
-        # Fallback: legacy single-segment decode path.
+        # 1) Legacy path first: this keeps skills/agents/general strings stable.
         idx, key = _parse_codepoints(cp)
-        if idx == 0:
-            return
-        entry = _string_table.get(idx)
-        if entry is None:
-            return
-        text = _decode_entry(entry, key)
-        if text:
-            text = _postprocess(text)
-            _decode_cache[raw] = text
-            _parts_cache[raw] = (None, None, text, None, None)
-            _item_name_forms_cache[raw] = (text, text)
-            _parts_encoded_cache[raw] = (None, None, raw, None, None)
+        legacy_text = ""
+        if idx != 0:
+            entry = _string_table.get(idx)
+            if entry is not None:
+                t = _decode_entry(entry, key)
+                if t:
+                    legacy_text = _postprocess(t)
+
+        # 2) Use formatted-tree decoding only when payload looks formatted
+        #    or legacy output still contains unresolved placeholders.
+        has_arg_tags = any(_is_arg_tag(v) for v in cp)
+        has_term = any(v == 1 for v in cp)
+        looks_formatted = has_arg_tags and has_term
+        unresolved = bool(re.search(r'%str\d+%|%num\d+%|\[pl:"', legacy_text))
+
+        if looks_formatted or unresolved:
+            tree, _ = _decode_formatted_tree(cp, 0)
+            text = tree.get("rendered", "")
+            if text:
+                text = _postprocess(text)
+                _decode_cache[raw] = text
+                ItemName._parts_cache[raw] = _extract_parts_from_tree(tree)
+                ItemName._parts_encoded_cache[raw] = _extract_parts_encoded_from_tree(tree)
+                return
+
+        if legacy_text:
+            _decode_cache[raw] = legacy_text
+            ItemName._parts_cache[raw] = ItemNameParts(None, None, legacy_text, None, None, legacy_text, legacy_text)
+            ItemName._parts_encoded_cache[raw] = ItemNamePartsEncoded(None, None, raw, None, None, raw, raw)
     finally:
         _pending.discard(raw)
 
@@ -913,7 +954,7 @@ def decode(raw: bytes) -> str:
     Accepts the raw wchar_t bytes from GetAgentEncName (little-endian uint16
     with null terminator). Handles player names, cache, and async decode.
     """
-    if len(raw) < 4:
+    if len(raw) < 2:
         return ""
 
     # Player names: prefix 0xBA9, inline ASCII
@@ -944,136 +985,83 @@ def decode(raw: bytes) -> str:
     _decode_pool.submit(_decode_and_cache, raw)
     return ""
 
+class ItemName:
+    """Structured facade for item/encoded name decoding helpers."""
+    _parts_cache: dict[bytes, ItemNameParts] = {}
+    _parts_encoded_cache: dict[bytes, ItemNamePartsEncoded] = {}
+    _PART_ORDER_BY_LANG: dict[int, tuple[str, str, str]] = {
+        0: ("prefix", "item", "suffix"),   # English
+        1: ("prefix", "item", "suffix"),   # Korean
+        2: ("item", "prefix", "suffix"),   # French
+        3: ("prefix", "item", "suffix"),   # German
+        4: ("item", "suffix", "prefix"),   # Italian
+        5: ("item", "prefix", "suffix"),   # Spanish
+        6: ("suffix", "prefix", "item"),   # Traditional Chinese
+        8: ("prefix", "item", "suffix"),   # Japanese
+        9: ("item", "prefix", "suffix"),   # Polish
+        10: ("prefix", "item", "suffix"),  # Russian
+        17: ("prefix", "item", "suffix"),  # BorkBorkBork
+    }
 
-def decode_parts(raw: bytes) -> tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[int]]:
-    """Decode to (markdown, prefix, item_name, suffix, num)."""
-    if len(raw) < 4:
-        return (None, None, None, None, None)
+    decode = staticmethod(decode)
+    
+    @staticmethod
+    def decode_parts(raw: bytes) -> ItemNameParts:
+        """Decode to (markdown, prefix, item_name, suffix, num)."""
+        if len(raw) < 2:
+            return ItemNameParts(None, None, None, None, None)
 
-    # Player names: plain ASCII inline data.
-    if raw[0:2] == _PLAYER_PREFIX:
-        chars: list[int] = []
-        for i in range(4, len(raw) - 1, 2):
-            lo = raw[i]
-            hi = raw[i + 1]
-            if lo <= 1 and hi == 0:
-                break
-            chars.append(lo)
-        name = bytes(chars).decode('ascii', 'ignore') or None
-        _item_name_forms_cache[raw] = (name, name)
-        return (None, None, name, None, None)
+        # Player names: plain ASCII inline data.
+        if raw[0:2] == _PLAYER_PREFIX:
+            chars: list[int] = []
+            for i in range(4, len(raw) - 1, 2):
+                lo = raw[i]
+                hi = raw[i + 1]
+                if lo <= 1 and hi == 0:
+                    break
+                chars.append(lo)
+            name = bytes(chars).decode('ascii', 'ignore') or None
+            return ItemNameParts(None, None, name, None, None, name, name)
 
-    cached = _parts_cache.get(raw)
-    if cached is not None:
-        return cached
+        cached = ItemName._parts_cache.get(raw)
+        if cached is not None:
+            return cached
 
-    # Back-compat: if full text is already cached but parts are not.
-    cached_text = _decode_cache.get(raw)
-    if cached_text is not None:
-        return (None, None, cached_text or None, None, None)
+        # Back-compat: if full text is already cached but parts are not.
+        cached_text = _decode_cache.get(raw)
+        if cached_text is not None:
+            return ItemNameParts(None, None, cached_text or None, None, None)
 
-    if not _string_table_loaded and not _load_enqueued:
-        load_string_table(_get_client_language())
+        if not _string_table_loaded and not _load_enqueued:
+            load_string_table(_get_client_language())
 
-    if not _string_table or raw in _pending:
-        return (None, None, None, None, None)
+        if not _string_table or raw in _pending:
+            return ItemNameParts(None, None, None, None, None)
 
-    _pending.add(raw)
-    _decode_pool.submit(_decode_and_cache, raw)
-    return (None, None, None, None, None)
+        _pending.add(raw)
+        _decode_pool.submit(_decode_and_cache, raw)
+        return ItemNameParts(None, None, None, None, None)
 
+    @staticmethod
+    def encoded_parts(raw: bytes) -> ItemNamePartsEncoded:
+        """Decode to encoded parts: (markdown, prefix, item_name, suffix, num)."""
+        if len(raw) < 2:
+            return ItemNamePartsEncoded(None, None, None, None, None)
 
-def decode_parts_encoded(raw: bytes) -> tuple[Optional[bytes], Optional[bytes], Optional[bytes], Optional[bytes], Optional[int]]:
-    """Decode to encoded parts: (markdown, prefix, item_name, suffix, num)."""
-    if len(raw) < 4:
-        return (None, None, None, None, None)
+        # Player names are inline plain data; keep item part as original bytes.
+        if raw[0:2] == _PLAYER_PREFIX:
+            return ItemNamePartsEncoded(None, None, raw, None, None, raw, raw)
 
-    # Player names are inline plain data; keep item part as original bytes.
-    if raw[0:2] == _PLAYER_PREFIX:
-        return (None, None, raw, None, None)
+        cached = ItemName._parts_encoded_cache.get(raw)
+        if cached is not None:
+            return cached
 
-    cached = _parts_encoded_cache.get(raw)
-    if cached is not None:
-        return cached
+        if not _string_table_loaded and not _load_enqueued:
+            load_string_table(_get_client_language())
 
-    if not _string_table_loaded and not _load_enqueued:
-        load_string_table(_get_client_language())
+        if not _string_table or raw in _pending:
+            return ItemNamePartsEncoded(None, None, None, None, None)
 
-    if not _string_table or raw in _pending:
-        return (None, None, None, None, None)
-
-    _pending.add(raw)
-    _decode_pool.submit(_decode_and_cache, raw)
-    return (None, None, None, None, None)
-
-
-def decode_markdown(raw: bytes) -> Optional[str]:
-    return decode_parts(raw)[0]
-
-
-def decode_prefix(raw: bytes) -> Optional[str]:
-    return decode_parts(raw)[1]
-
-
-def decode_item_name(raw: bytes) -> Optional[str]:
-    return decode_parts(raw)[2]
-
-
-def decode_suffix(raw: bytes) -> Optional[str]:
-    return decode_parts(raw)[3]
-
-
-def decode_num(raw: bytes) -> Optional[int]:
-    return decode_parts(raw)[4]
-
-def num_encoded(raw: bytes) -> Optional[int]:
-    return decode_parts_encoded(raw)[4]
-
-def markdown_encoded(raw: bytes) -> Optional[bytes]:
-    return decode_parts_encoded(raw)[0]
-
-
-def prefix_encoded(raw: bytes) -> Optional[bytes]:
-    return decode_parts_encoded(raw)[1]
-
-
-def item_name_encoded(raw: bytes) -> Optional[bytes]:
-    return decode_parts_encoded(raw)[2]
-
-
-def suffix_encoded(raw: bytes) -> Optional[bytes]:
-    return decode_parts_encoded(raw)[3]
-
-
-def decode_item_name_singular(raw: bytes) -> Optional[str]:
-    cached = _item_name_forms_cache.get(raw)
-    if cached is not None:
-        return cached[0]
-    decode_parts(raw)
-    cached = _item_name_forms_cache.get(raw)
-    return cached[0] if cached is not None else None
-
-def item_name_singular_encoded(raw: bytes) -> Optional[bytes]:
-    cached = _parts_encoded_cache.get(raw)
-    if cached is not None:
-        return cached[2]
-    decode_parts_encoded(raw)
-    cached = _parts_encoded_cache.get(raw)
-    return cached[2] if cached is not None else None
-
-
-def decode_item_name_plural(raw: bytes) -> Optional[str]:
-    cached = _item_name_forms_cache.get(raw)
-    if cached is not None:
-        return cached[1]
-    decode_parts(raw)
-    cached = _item_name_forms_cache.get(raw)
-    return cached[1] if cached is not None else None
-
-def item_name_plural_encoded(raw: bytes) -> Optional[bytes]:
-    cached = _parts_encoded_cache.get(raw)
-    if cached is not None:
-        return cached[2]
-    decode_parts_encoded(raw)
-    cached = _parts_encoded_cache.get(raw)
-    return cached[2] if cached is not None else None
+        _pending.add(raw)
+        _decode_pool.submit(_decode_and_cache, raw)
+        return ItemNamePartsEncoded(None, None, None, None, None)
