@@ -1,4 +1,5 @@
 import os
+import struct
 
 import Py4GW
 import PyImGui
@@ -13,6 +14,7 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.native_src.internals.string_table import decode as decode_raw
 
 Utils.ClearSubModules("ItemHandling")
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
@@ -32,9 +34,15 @@ INI_FILENAME = f"{MODULE_NAME}.ini"
 hovered_item_id = 0
 tree : BehaviorTree | None = None
 auto_tick = True
+enc_item_name = ""
+decoded_name = ""
 
 RED = Color(255, 0, 0, 255)
 GREEN = Color(0, 255, 0, 255)
+
+def hex_string_to_bytes(hex_string: str) -> bytes:
+    values = [int(x, 16) for x in hex_string.split()]
+    return struct.pack(f"<{len(values)}H", *values)
 
 def main():
     global INI_KEY, hovered_item_id, auto_tick, tree
@@ -311,6 +319,23 @@ def main():
                 
                 ImGui.end_tab_item()
             
+            if ImGui.begin_tab_item("Data Collection"):
+                global enc_item_name, decoded_name
+                enc_bytes : bytes = b""
+                
+                enc = ImGui.input_text("Encoded Name", enc_item_name)
+                if enc != enc_item_name:
+                    enc_item_name = enc
+                    decoded_name = ""
+                
+                if enc_item_name:
+                    enc_bytes = hex_string_to_bytes(enc_item_name)
+                    decoded_name = decode_raw(enc_bytes)
+                
+                ImGui.input_text("Bytes", enc_bytes.hex(), PyImGui.InputTextFlags.ReadOnly)
+                ImGui.input_text("Decoded Name", decoded_name, PyImGui.InputTextFlags.ReadOnly)
+                
+                ImGui.end_tab_item()
             ImGui.end_tab_bar()
             
     ImGui.End(INI_KEY)
