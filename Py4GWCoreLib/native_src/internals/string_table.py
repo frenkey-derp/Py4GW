@@ -30,6 +30,7 @@ import struct
 from typing import Optional
 
 from ..context.TextContext import TextParser
+from .helpers import read_wstr
 
 
 # ─── Codepoint parsing (base-0x7F00 encoding) ────────────────────────────
@@ -219,12 +220,118 @@ _GRAMMAR_TAG_RE = re.compile(
 )
 
 
-def _postprocess(text: str) -> str:
+def _postprocess_basic(text: str) -> str:
     text = _GRAMMAR_TAG_RE.sub('', text)
     for old, new in _BRACKET_SUBS.items():
         if old in text:
             text = text.replace(old, new)
     return text
+
+
+def _postprocess(text: str) -> str:
+    text = _postprocess_basic(text)
+    if "%str" in text:
+        text = _apply_substitutions(text)
+    return text
+
+
+def _get_substitute_text(slot: int) -> str:
+    """Resolve TextParser substitute_1/substitute_2 to display text."""
+    tp = TextParser.get_context()
+    if tp is None:
+        return ""
+
+    sub = tp.substitute_1 if slot == 1 else tp.substitute_2
+    if not sub:
+        return ""
+
+    # Most common path in our custom decoder: substitute is another string-table index.
+    entry = _string_table.get(sub)
+    if entry is not None:
+        text = _decode_entry(entry, 0)
+        if text:
+            return _postprocess_basic(text)
+
+    # Fallback: game may store a direct wchar pointer in substitute fields.
+    if sub >= 0x10000:
+        try:
+            return read_wstr(sub) or ""
+        except Exception:
+            return ""
+    return ""
+
+
+def _apply_substitutions(text: str) -> str:
+    if "%str1%" in text:
+        sub1 = _get_substitute_text(1)
+        if sub1:
+            text = text.replace("%str1%", sub1)
+    if "%str2%" in text:
+        sub2 = _get_substitute_text(2)
+        if sub2:
+            text = text.replace("%str2%", sub2)
+    return text
+
+
+# ─── Inline formatted encoded-string parser (0x010A/0x010B/...) ──────────
+
+_ARG_TAG_BASE = 0x010A
+_ARG_TAG_MAX = 0x011F
+
+
+def _is_arg_tag(cp: int) -> bool:
+    return _ARG_TAG_BASE <= cp <= _ARG_TAG_MAX
+
+
+def _decode_codepoints_segment(segment: tuple[int, ...]) -> str:
+    """Decode one codepoint segment (no inline arg tags inside)."""
+    if not segment:
+        return ""
+    idx, key = _parse_codepoints(segment)
+    if idx == 0:
+        return ""
+    entry = _string_table.get(idx)
+    if entry is None:
+        return ""
+    text = _decode_entry(entry, key)
+    if not text:
+        return ""
+    return _postprocess_basic(text)
+
+
+def _decode_formatted_codepoints(codepoints: tuple[int, ...], start: int = 0) -> tuple[str, int]:
+    """Decode one possibly-formatted expression and return (text, next_pos)."""
+    n = len(codepoints)
+    i = start
+
+    # Head segment: encoded string ref until arg-tag/terminator.
+    head_start = i
+    while i < n:
+        cp = codepoints[i]
+        if cp == 0 or cp == 1 or _is_arg_tag(cp):
+            break
+        i += 1
+
+    head_text = _decode_codepoints_segment(codepoints[head_start:i]) if i > head_start else ""
+
+    # Parse arg blocks: 0x010A => str1, 0x010B => str2, ...
+    if i < n and _is_arg_tag(codepoints[i]):
+        args: dict[int, str] = {}
+        while i < n and _is_arg_tag(codepoints[i]):
+            slot = codepoints[i] - 0x0109
+            arg_text, i = _decode_formatted_codepoints(codepoints, i + 1)
+            args[slot] = arg_text
+
+        if head_text:
+            for slot, arg_text in args.items():
+                if arg_text:
+                    head_text = head_text.replace(f"%str{slot}%", arg_text)
+
+    # Consume expression terminator (0x0001) if present.
+    if i < n and codepoints[i] == 1:
+        i += 1
+
+    return head_text, i
 
 
 # ─── Loading ─────────────────────────────────────────────────────────────
@@ -379,6 +486,14 @@ def _decode_and_cache(raw: bytes) -> None:
             cp = cp[:cp.index(0)]
         except ValueError:
             pass
+        # Preferred path: decode inline formatted expressions with arg tags
+        # (e.g. 0x010A/0x010B carrying %str1%/%str2% replacements).
+        text, _ = _decode_formatted_codepoints(cp, 0)
+        if text:
+            _decode_cache[raw] = _postprocess(text)
+            return
+
+        # Fallback: legacy single-segment decode path.
         idx, key = _parse_codepoints(cp)
         if idx == 0:
             return
@@ -387,8 +502,7 @@ def _decode_and_cache(raw: bytes) -> None:
             return
         text = _decode_entry(entry, key)
         if text:
-            text = _postprocess(text)
-            _decode_cache[raw] = text
+            _decode_cache[raw] = _postprocess(text)
     finally:
         _pending.discard(raw)
 
