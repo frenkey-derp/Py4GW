@@ -400,6 +400,79 @@ def _apply_plural_tags(text: str, num_value: Optional[int]) -> str:
     return text
 
 
+def _best_arg_text(node: dict) -> str:
+    """Pick the best resolved text from a node, descending through wrappers."""
+    txt = (node.get("rendered") or "").strip()
+    if txt and not re.search(r"%str\d+%", txt):
+        return txt
+    for k in sorted((node.get("args") or {}).keys()):
+        child_txt = _best_arg_text(node["args"][k])
+        if child_txt:
+            return child_txt
+    return ""
+
+
+def _consume_encoded_ref(codepoints: tuple[int, ...], start: int) -> int:
+    """Consume one encoded string reference (index + optional key) and return end pos."""
+    n = len(codepoints)
+    i = start
+    if i >= n:
+        return i
+    if codepoints[i] in (0, 1, 2):
+        return i
+
+    parsed_any = False
+    while i < n:
+        cp = codepoints[i]
+        if cp in (0, 1, 2):
+            break
+        digit = (cp & 0x7FFF) - _BASE
+        if digit < 0:
+            break
+        parsed_any = True
+        i += 1
+        if not (cp & _MORE):
+            break
+
+    if not parsed_any:
+        return start
+
+    # Optional key stream starts only when next codepoint has MORE set.
+    if i < n and codepoints[i] not in (0, 1, 2) and (codepoints[i] & _MORE):
+        while i < n:
+            cp = codepoints[i]
+            if cp in (0, 1, 2):
+                break
+            digit = (cp & 0x7FFF) - _BASE
+            if digit < 0:
+                break
+            i += 1
+            if not (cp & _MORE):
+                break
+
+    return i
+
+
+def _parse_arg_blocks(codepoints: tuple[int, ...], i: int) -> tuple[dict[int, dict], dict[int, int], int]:
+    """Parse 0x0101..0x011F arg blocks starting at i."""
+    n = len(codepoints)
+    args: dict[int, dict] = {}
+    num_args: dict[int, int] = {}
+
+    while i < n and _is_arg_tag(codepoints[i]):
+        tag = codepoints[i]
+        if _is_num_tag(tag):
+            slot = tag - 0x0100
+            value, i = _parse_number_codepoints(codepoints, i + 1)
+            num_args[slot] = value
+        else:
+            slot = tag - 0x0109
+            arg_node, i = _decode_formatted_tree(codepoints, i + 1)
+            args[slot] = arg_node
+
+    return args, num_args, i
+
+
 def _decode_formatted_tree(codepoints: tuple[int, ...], start: int = 0) -> tuple[dict, int]:
     """Decode one formatted expression and return ({template, rendered, args}, next_pos)."""
     n = len(codepoints)
@@ -420,21 +493,38 @@ def _decode_formatted_tree(codepoints: tuple[int, ...], start: int = 0) -> tuple
 
     # Parse arg blocks: 0x0101 => num1, 0x010A => str1, ...
     if i < n and _is_arg_tag(codepoints[i]):
-        while i < n and _is_arg_tag(codepoints[i]):
-            tag = codepoints[i]
-            if _is_num_tag(tag):
-                slot = tag - 0x0100
-                value, i = _parse_number_codepoints(codepoints, i + 1)
-                num_args[slot] = value
-            else:
-                slot = tag - 0x0109
-                arg_node, i = _decode_formatted_tree(codepoints, i + 1)
-                args[slot] = arg_node
+        args, num_args, i = _parse_arg_blocks(codepoints, i)
+
+        # Ambiguous case: first token looked like num-tag but was actually a
+        # string-ref digit (e.g. 0x0108), leaving unresolved tail data.
+        if (
+            not template
+            and not args
+            and bool(num_args)
+            and _is_num_tag(codepoints[start])
+            and i < n
+            and codepoints[i] not in (0, 1, 2)
+            and not _is_arg_tag(codepoints[i])
+        ):
+            alt_end = _consume_encoded_ref(codepoints, start)
+            if alt_end > start:
+                alt_template = _decode_codepoints_segment(codepoints[start:alt_end])
+                if alt_template:
+                    template = alt_template
+                    rendered = template
+                    args, num_args, i = _parse_arg_blocks(codepoints, alt_end)
 
         for slot, arg_node in args.items():
             arg_text = arg_node.get("rendered", "")
             if arg_text and rendered:
                 rendered = rendered.replace(f"%str{slot}%", arg_text)
+        # Second pass: if wrappers left unresolved "%strN%", use deepest resolved child text.
+        for slot, arg_node in args.items():
+            marker = f"%str{slot}%"
+            if marker in rendered:
+                arg_text = _best_arg_text(arg_node)
+                if arg_text:
+                    rendered = rendered.replace(marker, arg_text)
         has_plural_markers = _has_plural_markers(rendered)
         for slot, value in num_args.items():
             if slot == 1 and value == 1 and has_plural_markers:
@@ -495,6 +585,13 @@ def _render_item_node(node: dict, num_override: Optional[int] = None, include_nu
         child_text = child.get("rendered", "")
         if child_text:
             text = text.replace(f"%str{slot}%", child_text)
+    # Wrapper fallback: if placeholder remains, use deepest resolved child text.
+    for slot, child in (node.get("args") or {}).items():
+        marker = f"%str{slot}%"
+        if marker in text:
+            child_text = _best_arg_text(child)
+            if child_text:
+                text = text.replace(marker, child_text)
 
     nums = node.get("num_args") or {}
     num1 = num_override if num_override is not None else nums.get(1)
@@ -514,17 +611,36 @@ def _render_item_node(node: dict, num_override: Optional[int] = None, include_nu
     return re.sub(r'\s{2,}', ' ', text).strip()
 
 
+def _unwrap_placeholder_item_node(node: dict) -> dict:
+    """Descend through single-child placeholder wrappers like '%str1%'."""
+    cur = node
+    for _ in range(6):
+        tpl = (cur.get("template") or "").strip()
+        args = cur.get("args") or {}
+        if len(args) != 1:
+            break
+        if not tpl or re.fullmatch(r"%str\d+%", tpl):
+            only_key = next(iter(args.keys()))
+            child = args.get(only_key)
+            if isinstance(child, dict):
+                cur = child
+                continue
+        break
+    return cur
+
+
 def _select_item_name_node(tree: dict) -> Optional[dict]:
     args = tree.get("args") or {}
     str1 = args.get(1)
     if not str1:
         return None
+    str1 = _unwrap_placeholder_item_node(str1)
     tpl = str1.get("template") or ""
     if "%num" in tpl or _has_plural_markers(tpl):
         return str1
     str1_args = str1.get("args") or {}
     if 1 in str1_args:
-        return str1_args[1]
+        return _unwrap_placeholder_item_node(str1_args[1])
     return str1
 
 
@@ -648,10 +764,15 @@ def _extract_parts_from_tree(tree: dict) -> ItemNameParts:
             before_item: list[tuple[object, int]] = []
             unknown: list[object] = []
             for slot in sorted(k for k in str1_args.keys() if k != 1):
-                raw = str1_args.get(slot, {}).get("rendered") or None
+                node = str1_args.get(slot, {}) or {}
+                raw = node.get("rendered") or None
+                if (not raw) or re.search(r'%str\d+%', raw):
+                    raw = _best_arg_text(node) or raw
                 if not raw:
                     continue
                 text, is_suffix, pos, context, tail = _slot_info(slot, raw)
+                if item_name and text == item_name:
+                    continue
                 if pos >= 0 and item_pos >= 0:
                     if pos > item_pos:
                         after_item.append((text, pos))

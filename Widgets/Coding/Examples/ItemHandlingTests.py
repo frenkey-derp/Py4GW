@@ -11,11 +11,13 @@ from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.native_src.internals import string_table
 
 Utils.ClearSubModules("ItemHandling")
 Utils.ClearSubModules("frenkeyLib.Core")
@@ -25,7 +27,7 @@ from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Mods.ItemMod import ItemMod
 from Sources.frenkeyLib.ItemHandling.BTNodes import STORAGE_BAGS, BTNodes
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
-from Py4GWCoreLib.native_src.internals import string_table
+from Sources.frenkeyLib.ItemHandling.Items.item_collecting import ItemCollector
 
 
 MODULE_NAME = "Item Handling Tests"
@@ -51,6 +53,8 @@ language : ServerLanguage = ServerLanguage.English
 int_lang = language.value
 language_index = languages.index(language)
 
+ITEM_COLLECTOR = ItemCollector()
+ITEM_COLLECTOR.load()
 class encoded_strings(NamedTuple):
     item_id: int
     name_enc: list[int]
@@ -69,6 +73,7 @@ class decoded_strings(NamedTuple):
 decoded : decoded_strings | None = None
 encoded : encoded_strings | None = None
 fully_decoded = False
+collect = True
 
 # method to convert list of int to hex string
 def int_list_to_hex_string(int_list: list[int]) -> str:
@@ -86,8 +91,11 @@ def bytes_to_hex_string(byte: bytes) -> str:
         return ""
 
 def main():
-    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_item_name, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded
+    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_item_name, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect
     ITEM_CACHE.reset()
+    
+    if not Routines.Checks.Map.IsMapReady():
+        return
     
     if not INI_KEY:
         if not os.path.exists(INI_PATH):
@@ -376,6 +384,8 @@ def main():
                 enc_bytes : bytes = b""
                 switching_lang = False
                                 
+                collect = ImGui.checkbox("Collect Item Data", collect)
+                                
                 language_changed = ImGui.combo("Language", language_index, lang_names)
                 if language_changed != language_index:
                     language_index = language_changed
@@ -544,6 +554,9 @@ def main():
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error decoding item strings: {e}", Py4GW.Console.MessageType.Error)
 
+    if collect:
+        ITEM_COLLECTOR.run()
+    
 formats = {
     ServerLanguage.German: "{prefix} {item} {suffix}",
     ServerLanguage.English: "{prefix} {item} {suffix}",
