@@ -41,7 +41,8 @@ INI_FILENAME = f"{MODULE_NAME}.ini"
 hovered_item_id = 0
 tree : BehaviorTree | None = None
 auto_tick = True
-enc_item_name : list[int] = []
+enc_input : str = ""
+decoded_ouput : str = ""
 decoded_name = ""
 
 RED = Color(255, 0, 0, 255)
@@ -91,7 +92,7 @@ def bytes_to_hex_string(byte: bytes) -> str:
         return ""
 
 def main():
-    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_item_name, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect
+    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_input, decoded_ouput, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect
     ITEM_CACHE.reset()
     
     if not Routines.Checks.Map.IsMapReady():
@@ -380,7 +381,7 @@ def main():
                 ImGui.end_tab_item()
             
             if ImGui.begin_tab_item("Item Decoding"):
-                global enc_item_name, decoded_name
+                global enc_input, decoded_name
                 enc_bytes : bytes = b""
                 switching_lang = False
                                 
@@ -432,7 +433,27 @@ def main():
                     )
                     
                     fully_decoded = False
-                    
+                
+                ImGui.text("Manual")
+                PyImGui.table_next_column()
+                
+                PyImGui.push_item_width(-1)   
+                enc_input = ImGui.input_text("##Encoded Input", enc_input)
+                if enc_input:
+                    try:
+                        enc_bytes = bytes(int(x, 16) for x in enc_input.replace(",", " ").split())
+                        decoded_ouput = string_table.decode(enc_bytes)
+                    except Exception as e:
+                        decoded_ouput = ""
+                        error_message = f"Error decoding input: {e}"
+                
+                PyImGui.table_next_column()     
+                PyImGui.push_item_width(-1)              
+                ImGui.input_text("##Decoded Output", decoded_ouput if decoded_ouput else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column()  
+                PyImGui.table_next_column()  
+                
+                
                     
                 for prop in ["name_enc", "singular_name", "complete_name_enc", "info_string"]:
                     ImGui.text(prop)
@@ -521,7 +542,7 @@ def main():
                 # if ImGui.button("Decode from Clipboard", -1):
                 #     try:
                 #         clipboard = PyImGui.get_clipboard_text()
-                #         enc_item_name = clipboard
+                #         enc_input = clipboard
                 #         enc_bytes = hex_string_to_bytes(clipboard)
                 #         decoded_name = string_table.decode(enc_bytes)
                         
