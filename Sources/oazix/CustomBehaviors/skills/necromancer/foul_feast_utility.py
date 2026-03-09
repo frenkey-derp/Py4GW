@@ -21,7 +21,6 @@ class FoulFeastUtility(CustomSkillUtilityBase):
     """
     def __init__(self,
         event_bus: EventBus,
-        skill: CustomSkill,
         current_build: list[CustomSkill],
         score_definition: ScoreStaticDefinition = ScoreStaticDefinition(70),
         mana_required_to_cast: int = 0,
@@ -30,7 +29,7 @@ class FoulFeastUtility(CustomSkillUtilityBase):
 
         super().__init__(
             event_bus=event_bus,
-            skill=skill,
+            skill=CustomSkill("Foul_Feast"),
             in_game_build=current_build,
             score_definition=score_definition,
             mana_required_to_cast=mana_required_to_cast,

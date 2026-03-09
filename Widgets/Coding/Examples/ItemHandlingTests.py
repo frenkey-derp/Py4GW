@@ -131,6 +131,8 @@ def main():
             if ImGui.begin_tab_item("Item Upgrades"):
                 ImGui.text("Item Upgrades", 16)                
                 if PyImGui.begin_table("Item Upgrades", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
+                ImGui.text("Item Upgrades", 16)                
+                if PyImGui.begin_table("Item Upgrades", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
                     PyImGui.table_setup_column("Upgrade Slot", PyImGui.TableColumnFlags.WidthFixed, 150)
                     PyImGui.table_setup_column("Upgrade Type", PyImGui.TableColumnFlags.WidthStretch)
                     PyImGui.table_headers_row()
@@ -146,12 +148,19 @@ def main():
                         if prefix and prefix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
+                        if prefix and prefix.is_inherent:
+                            PyImGui.same_line(0, 5)
+                            PyImGui.text_colored(" (Inherent)", RED.color_tuple)
                         
                         PyImGui.table_next_row()
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Inscription")
                         PyImGui.table_set_column_index(1)
                         PyImGui.text(inscription.name if inscription else "None")
+                        if inscription and inscription.is_inherent:
+                            PyImGui.same_line(0, 5)
+                            PyImGui.text_colored(" (Inherent)", RED.color_tuple)
+                        
                         if inscription and inscription.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -165,10 +174,16 @@ def main():
                         if suffix and suffix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
+                        if suffix and suffix.is_inherent:
+                            PyImGui.same_line(0, 5)
+                            PyImGui.text_colored(" (Inherent)", RED.color_tuple)
                         
                     PyImGui.end_table()
                                     
+                                    
                 ImGui.text("Item Properties", 16)
+                if PyImGui.begin_table("Item Properties", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
+                    PyImGui.table_setup_column("Property Type", PyImGui.TableColumnFlags.WidthFixed, 250)
                 if PyImGui.begin_table("Item Properties", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
                     PyImGui.table_setup_column("Property Type", PyImGui.TableColumnFlags.WidthFixed, 250)
                     PyImGui.table_setup_column("Description", PyImGui.TableColumnFlags.WidthStretch)
@@ -183,6 +198,7 @@ def main():
                             PyImGui.text(prop.describe() if hasattr(prop, "describe") else "None")
                     
                     PyImGui.end_table()
+                ImGui.end_tab_item()
                 ImGui.end_tab_item()
                 
             if ImGui.begin_tab_item("Items"):   

@@ -5,6 +5,10 @@ class UIInteractionCallback:
         """Initialize the callback (empty constructor, defined in bindings)."""
         pass
 
+    callback_address: int
+    uictl_context: int
+    h0008: int
+
     def get_address(self) -> int:
         """Retrieve the function pointer address (stubbed in bindings)."""
         ...
@@ -175,6 +179,20 @@ class UIManager:
     @staticmethod
     def get_parent_frame_id(frame_id: int) -> int: ...
     @staticmethod
+    def get_frame_context(frame_id: int) -> int: ...
+    @staticmethod
+    def get_first_child_frame_id(parent_frame_id: int) -> int: ...
+    @staticmethod
+    def get_last_child_frame_id(parent_frame_id: int) -> int: ...
+    @staticmethod
+    def get_next_child_frame_id(frame_id: int) -> int: ...
+    @staticmethod
+    def get_prev_child_frame_id(frame_id: int) -> int: ...
+    @staticmethod
+    def get_item_frame_id(parent_frame_id: int, index: int) -> int: ...
+    @staticmethod
+    def get_tab_frame_id(parent_frame_id: int, index: int) -> int: ...
+    @staticmethod
     def get_hash_by_label(label: str) -> int: ...
     @staticmethod
     def get_frame_hierarchy() -> List[Tuple[int, int, int, int]]: ...
@@ -204,12 +222,29 @@ class UIManager:
     ) -> bool: ...
 
     @staticmethod
+    def SendFrameUIMessageWString(
+        frame_id: int,
+        message_id: int,
+        text: str
+    ) -> bool: ...
+
+    @staticmethod
     def create_ui_component_by_frame_id(
         parent_frame_id: int,
         component_flags: int,
         child_index: int,
         event_callback: int,
         name_enc: str = ...,
+        component_label: str = ...
+    ) -> int: ...
+
+    @staticmethod
+    def create_ui_component_raw_by_frame_id(
+        parent_frame_id: int,
+        component_flags: int,
+        child_index: int,
+        event_callback: int,
+        wparam: int = ...,
         component_label: str = ...
     ) -> int: ...
 
@@ -222,6 +257,189 @@ class UIManager:
         create_param: int,
         frame_label: str = ...
     ) -> int: ...
+
+    @staticmethod
+    def create_window_by_frame_id(
+        parent_frame_id: int,
+        child_index: int,
+        frame_callback: int,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        frame_flags: int = ...,
+        create_param: int = ...,
+        frame_label: str = ...,
+        anchor_flags: int = ...
+    ) -> int: ...
+
+    @staticmethod
+    def find_available_child_slot(
+        parent_frame_id: int,
+        start_index: int = ...,
+        end_index: int = ...
+    ) -> int: ...
+
+    @staticmethod
+    def resolve_devtext_dialog_proc() -> int: ...
+
+    @staticmethod
+    def ensure_devtext_source() -> Tuple[int, bool]: ...
+
+    @staticmethod
+    def open_devtext_window() -> int: ...
+
+    @staticmethod
+    def get_devtext_frame_id() -> int: ...
+
+    @staticmethod
+    def restore_devtext_source(opened_temporarily: bool) -> None: ...
+
+    @staticmethod
+    def resolve_observed_content_host_by_frame_id(root_frame_id: int) -> int: ...
+
+    @staticmethod
+    def clear_frame_children_recursive_by_frame_id(frame_id: int) -> bool: ...
+
+    @staticmethod
+    def clear_window_contents_by_frame_id(root_frame_id: int) -> bool: ...
+
+    @staticmethod
+    def create_window(
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        frame_label: str = ...,
+        parent_frame_id: int = ...,
+        child_index: int = ...,
+        frame_flags: int = ...,
+        create_param: int = ...,
+        frame_callback: int = ...,
+        anchor_flags: int = ...,
+        ensure_devtext_source: bool = ...
+    ) -> int: ...
+
+    @staticmethod
+    def create_empty_window(
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        frame_label: str = ...,
+        parent_frame_id: int = ...,
+        child_index: int = ...,
+        frame_flags: int = ...,
+        create_param: int = ...,
+        frame_callback: int = ...,
+        anchor_flags: int = ...,
+        ensure_devtext_source: bool = ...
+    ) -> int: ...
+
+    @staticmethod
+    def set_frame_controller_anchor_margins_by_frame_id_ex(
+        frame_id: int,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        flags: int = ...
+    ) -> bool: ...
+
+    @staticmethod
+    def choose_anchor_flags_for_desired_rect(
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        parent_width: float,
+        parent_height: float,
+        disable_center: bool = ...
+    ) -> int: ...
+
+    @staticmethod
+    def collapse_window_by_frame_id(frame_id: int) -> bool: ...
+
+    @staticmethod
+    def set_frame_visible_by_frame_id(frame_id: int, is_visible: bool) -> bool: ...
+
+    @staticmethod
+    def set_frame_disabled_by_frame_id(frame_id: int, is_disabled: bool) -> bool: ...
+
+    @staticmethod
+    def set_frame_title_by_frame_id(frame_id: int, title: str) -> bool: ...
+
+    @staticmethod
+    def get_frame_label_by_frame_id(frame_id: int) -> str: ...
+
+    @staticmethod
+    def get_text_label_encoded_by_frame_id(frame_id: int) -> str: ...
+
+    @staticmethod
+    def get_text_label_encoded_bytes_by_frame_id(frame_id: int) -> bytes: ...
+
+    @staticmethod
+    def get_text_label_decoded_by_frame_id(frame_id: int) -> str: ...
+
+    @staticmethod
+    def set_label_by_frame_id(frame_id: int, label: str) -> bool: ...
+
+    @staticmethod
+    def set_text_label_by_frame_id(frame_id: int, label: str) -> bool: ...
+
+    @staticmethod
+    def set_text_label_bytes_by_frame_id(frame_id: int, label_bytes: bytes) -> bool: ...
+
+    @staticmethod
+    def append_text_label_encoded_suffix_by_frame_id(frame_id: int, encoded_suffix: str) -> bool: ...
+
+    @staticmethod
+    def append_text_label_plain_suffix_by_frame_id(frame_id: int, plain_text: str) -> bool: ...
+
+    @staticmethod
+    def set_multiline_label_by_frame_id(frame_id: int, label: str) -> bool: ...
+
+    @staticmethod
+    def set_text_label_font_by_frame_id(frame_id: int, font_id: int) -> bool: ...
+
+    @staticmethod
+    def set_read_only_by_frame_id(frame_id: int, is_read_only: bool) -> bool: ...
+
+    @staticmethod
+    def is_read_only_by_frame_id(frame_id: int) -> bool: ...
+
+    @staticmethod
+    def restore_window_rect_by_frame_id(
+        frame_id: int,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        flags: int = ...,
+        use_auto_flags: bool = ...,
+        disable_center: bool = ...
+    ) -> bool: ...
+
+    @staticmethod
+    def set_frame_margins_by_frame_id(frame_id: int, flags: int, x: float, y: float, width: float, height: float) -> bool: ...
+
+    @staticmethod
+    def set_next_created_window_title(title: str) -> bool: ...
+
+    @staticmethod
+    def clear_next_created_window_title() -> None: ...
+
+    @staticmethod
+    def has_next_created_window_title() -> bool: ...
+
+    @staticmethod
+    def is_window_title_hook_installed() -> bool: ...
+
+    @staticmethod
+    def get_last_applied_window_title_frame_id() -> int: ...
+
+    @staticmethod
+    def get_last_applied_window_title() -> str: ...
 
     @staticmethod
     def destroy_ui_component_by_frame_id(frame_id: int) -> bool: ...
@@ -283,9 +501,43 @@ class UIManager:
         name_enc: str = ...,
         component_label: str = ...
     ) -> int: ...
-    
+
+    @staticmethod
+    def create_text_label_frame_with_plain_text_by_frame_id(
+        parent_frame_id: int,
+        component_flags: int,
+        child_index: int = ...,
+        plain_text: str = ...,
+        component_label: str = ...
+    ) -> int: ...
+
+    @staticmethod
+    def create_text_label_frame_from_template_by_frame_id(
+        parent_frame_id: int,
+        component_flags: int,
+        child_index: int,
+        template_frame_id: int,
+        plain_text: str = ...,
+        component_label: str = ...
+    ) -> int: ...
+
+    @staticmethod
+    def get_text_label_create_payload_diagnostics_by_template_frame_id(
+        template_frame_id: int,
+        plain_text: str = ...
+    ) -> dict: ...
+
+    # CreateUIComponent callback binding is intentionally disabled for now.
+    # @staticmethod
+    # def register_create_ui_component_callback(callback, altitude: int = ...) -> int: ...
+
+    # @staticmethod
+    # def remove_create_ui_component_callback(handle: int) -> bool: ...
+
     @staticmethod
     def button_click(frame_id: int) -> None: ...
+    @staticmethod
+    def button_double_click(frame_id: int) -> None: ...
     @staticmethod
     def test_mouse_action(frame_id: int, current_state: int, wparam_value:int, lparam:int) -> None: ...
     @staticmethod
@@ -300,6 +552,8 @@ class UIManager:
     def async_decode_str(enc_str: str) -> str: ...
     @staticmethod
     def is_valid_enc_str(enc_str: str) -> bool: ...
+    @staticmethod
+    def is_valid_enc_bytes(enc_bytes: bytes) -> bool: ...
     @staticmethod
     def uint32_to_enc_str(value: int) -> str: ...
     @staticmethod
