@@ -1,26 +1,31 @@
 import os
 import struct
+from typing import NamedTuple
 
 import Py4GW
 import PyImGui
+from PyItem import PyItem
 
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.enums_src.Item_enums import Rarity
+from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Py4GWCoreLib.native_src.internals.string_table import decode as decode_raw
 
 Utils.ClearSubModules("ItemHandling")
+Utils.ClearSubModules("frenkeyLib.Core")
+from Sources.frenkeyLib.Core.encoded_names import ItemName
+from Sources.frenkeyLib.Core import encoded_names
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Mods.ItemMod import ItemMod
 from Sources.frenkeyLib.ItemHandling.BTNodes import STORAGE_BAGS, BTNodes
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
+from Py4GWCoreLib.native_src.internals import string_table
 
 
 MODULE_NAME = "Item Handling Tests"
@@ -34,18 +39,54 @@ INI_FILENAME = f"{MODULE_NAME}.ini"
 hovered_item_id = 0
 tree : BehaviorTree | None = None
 auto_tick = True
-enc_item_name = ""
+enc_item_name : list[int] = []
 decoded_name = ""
 
 RED = Color(255, 0, 0, 255)
 GREEN = Color(0, 255, 0, 255)
 
-def hex_string_to_bytes(hex_string: str) -> bytes:
-    values = [int(x, 16) for x in hex_string.split()]
-    return struct.pack(f"<{len(values)}H", *values)
+lang_names = [lang.name for lang in ServerLanguage]
+languages = [lang for lang in ServerLanguage]
+language : ServerLanguage = ServerLanguage.English
+int_lang = language.value
+language_index = languages.index(language)
+
+class encoded_strings(NamedTuple):
+    item_id: int
+    name_enc: list[int]
+    info_string: list[int]
+    singular_name: list[int]
+    complete_name_enc: list[int]
+    
+class decoded_strings(NamedTuple):
+    item_id: int
+    name_enc: str
+    info_string: str
+    singular_name: str
+    complete_name_enc: str
+    
+
+decoded : decoded_strings | None = None
+encoded : encoded_strings | None = None
+fully_decoded = False
+
+# method to convert list of int to hex string
+def int_list_to_hex_string(int_list: list[int]) -> str:
+    try:
+        return " ".join(f"0x{v:X}" for v in int_list)
+    except Exception as e:
+        Py4GW.Console.Log(MODULE_NAME, f"Error converting int list to hex string: {e}")
+        return ""
+    
+def bytes_to_hex_string(byte: bytes) -> str:
+    try:
+        return " ".join(f"0x{v:X}" for v in byte)
+    except Exception as e:
+        Py4GW.Console.Log(MODULE_NAME, f"Error converting int list to hex string: {e}")
+        return ""
 
 def main():
-    global INI_KEY, hovered_item_id, auto_tick, tree
+    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_item_name, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded
     ITEM_CACHE.reset()
     
     if not INI_KEY:
@@ -96,7 +137,7 @@ def main():
         
         if not item or not item.is_valid:
             hovered_item_id = 0
-        
+                    
         item_name = item.data.names.get(ServerLanguage.English, "Unknown Item") if item and item.data else f"Unknown {(f"{item.item_type.name}-Item" if item else 'Item')}"
         
         ImGui.input_text("Hovered Item Id", str(hovered_item_id), PyImGui.InputTextFlags.ReadOnly)
@@ -129,9 +170,7 @@ def main():
     
         if ImGui.begin_tab_bar("##tab_bar"):
             if ImGui.begin_tab_item("Item Upgrades"):
-                ImGui.text("Item Upgrades", 16)                
-                if PyImGui.begin_table("Item Upgrades", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
-                ImGui.text("Item Upgrades", 16)                
+                ImGui.text("Item Upgrades", 16)                                                 
                 if PyImGui.begin_table("Item Upgrades", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
                     PyImGui.table_setup_column("Upgrade Slot", PyImGui.TableColumnFlags.WidthFixed, 150)
                     PyImGui.table_setup_column("Upgrade Type", PyImGui.TableColumnFlags.WidthStretch)
@@ -184,8 +223,6 @@ def main():
                 ImGui.text("Item Properties", 16)
                 if PyImGui.begin_table("Item Properties", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
                     PyImGui.table_setup_column("Property Type", PyImGui.TableColumnFlags.WidthFixed, 250)
-                if PyImGui.begin_table("Item Properties", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):                    
-                    PyImGui.table_setup_column("Property Type", PyImGui.TableColumnFlags.WidthFixed, 250)
                     PyImGui.table_setup_column("Description", PyImGui.TableColumnFlags.WidthStretch)
                     PyImGui.table_headers_row()
                     
@@ -198,7 +235,6 @@ def main():
                             PyImGui.text(prop.describe() if hasattr(prop, "describe") else "None")
                     
                     PyImGui.end_table()
-                ImGui.end_tab_item()
                 ImGui.end_tab_item()
                 
             if ImGui.begin_tab_item("Items"):   
@@ -335,23 +371,191 @@ def main():
                 
                 ImGui.end_tab_item()
             
-            if ImGui.begin_tab_item("Data Collection"):
+            if ImGui.begin_tab_item("Item Decoding"):
                 global enc_item_name, decoded_name
                 enc_bytes : bytes = b""
+                switching_lang = False
+                                
+                language_changed = ImGui.combo("Language", language_index, lang_names)
+                if language_changed != language_index:
+                    language_index = language_changed
+                    language = languages[language_changed]
+                    int_lang = language.value
+                    switching_lang = True
+                    
+                int_lang_changed = ImGui.input_int("Language (Int)", int_lang)
+                if int_lang_changed != int_lang:
+                    try:
+                        int_lang = int_lang_changed
+                        
+                        switching_lang = True
+                        Py4GW.Console.Log(MODULE_NAME, f"Switching to language: {ServerLanguage(int_lang_changed).name if int_lang_changed in ServerLanguage._value2member_map_ else int_lang_changed}")
+                        
+                        try:
+                            language = ServerLanguage(int_lang_changed)
+                            language_index = languages.index(language)
+                        except ValueError:
+                            language = ServerLanguage.Unknown      
+                                                  
+                    except ValueError:
+                        Py4GW.Console.Log(MODULE_NAME, f"Invalid language value: {int_lang}", Py4GW.Console.MessageType.Error)
+                                    
+                PyImGui.separator()
+                                    
+                ImGui.begin_table("Decoded Data", 4, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable)
+                PyImGui.table_setup_column("Part", PyImGui.TableColumnFlags.WidthFixed, 80)
+                PyImGui.table_setup_column("Encoded", PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_setup_column("Decoded", PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_setup_column("Copy", PyImGui.TableColumnFlags.WidthFixed, 50)
+                PyImGui.table_headers_row()
                 
-                enc = ImGui.input_text("Encoded Name", enc_item_name)
-                if enc != enc_item_name:
-                    enc_item_name = enc
-                    decoded_name = ""
+                PyImGui.table_next_column()
                 
-                if enc_item_name:
-                    enc_bytes = hex_string_to_bytes(enc_item_name)
-                    decoded_name = decode_raw(enc_bytes)
+                error_message = ""
+                if item and (not encoded or encoded.item_id != item.id):
+                    encoded = encoded_strings(
+                        item_id=item.id,
+                        name_enc = PyItem.GetNameEnc(item.id) or [],
+                        info_string = [],
+                        singular_name = PyItem.GetSingleItemName(item.id) or [],
+                        complete_name_enc = PyItem.GetCompleteNameEnc(item.id) or []
+                    )
+                    
+                    fully_decoded = False
+                    
+                    
+                for prop in ["name_enc", "singular_name", "complete_name_enc", "info_string"]:
+                    ImGui.text(prop)
+                    PyImGui.table_next_column()
+                    
+                    PyImGui.push_item_width(-1)           
+                    ImGui.input_text(f"##{prop}", int_list_to_hex_string(getattr(encoded, prop)) if encoded and getattr(encoded, prop) else "", PyImGui.InputTextFlags.ReadOnly)
+                    PyImGui.table_next_column()
+                    
+                    ImGui.text_wrapped(getattr(decoded, prop) if decoded and getattr(decoded, prop) else "")
+                    PyImGui.table_next_column()
+                    
+                    if ImGui.button(f"Copy##{prop}", 50):
+                        try:
+                            copy_text = getattr(decoded, prop) if decoded and getattr(decoded, prop) else ""
+                            PyImGui.set_clipboard_text(copy_text)
+                            Py4GW.Console.Log(MODULE_NAME, f"Copied {prop} to clipboard: {copy_text}")
+                        except Exception as e:
+                            Py4GW.Console.Log(MODULE_NAME, f"Failed to copy {prop} to clipboard: {e}", Py4GW.Console.MessageType.Error)
+                    PyImGui.table_next_column()
+                    
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
                 
-                ImGui.input_text("Bytes", enc_bytes.hex(), PyImGui.InputTextFlags.ReadOnly)
-                ImGui.input_text("Decoded Name", decoded_name, PyImGui.InputTextFlags.ReadOnly)
+                decoded_parts = ItemName.decode_parts(bytes(encoded.complete_name_enc if encoded and encoded.complete_name_enc else []))
+                encoded_parts = ItemName.encoded_parts(bytes(encoded.complete_name_enc if encoded and encoded.complete_name_enc else []))
                 
+                ImGui.text("Prefix")
+                PyImGui.table_next_column()
+                ImGui.input_text("##Prefix Encoded", bytes_to_hex_string(encoded_parts.prefix) if encoded_parts and encoded_parts.prefix else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column() 
+                ImGui.input_text("##Prefix Decoded", decoded_parts.prefix if decoded_parts and decoded_parts.prefix else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                ImGui.text("Suffix")
+                PyImGui.table_next_column()
+                ImGui.input_text("##Suffix Encoded", bytes_to_hex_string(encoded_parts.suffix) if encoded_parts and encoded_parts.suffix else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column() 
+                ImGui.input_text("##Suffix Decoded", decoded_parts.suffix if decoded_parts and decoded_parts.suffix else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                ImGui.text("Markdown")
+                PyImGui.table_next_column()
+                ImGui.input_text("##Markdown Encoded", bytes_to_hex_string(encoded_parts.markdown) if encoded_parts and encoded_parts.markdown else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column()
+                ImGui.input_text("##Markdown Decoded", decoded_parts.markdown if decoded_parts and decoded_parts.markdown else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                ImGui.text("Amount")
+                PyImGui.table_next_column()
+                ImGui.input_text("##Amount Encoded", int_list_to_hex_string([encoded_parts.num]) if encoded_parts and encoded_parts.num else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column()
+                ImGui.input_text("##Amount Decoded", str(decoded_parts.num) if decoded_parts and decoded_parts.num else "" , PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                ImGui.text("Singular")
+                PyImGui.table_next_column()
+                ImGui.input_text("##Singular Encoded", bytes_to_hex_string(encoded_parts.singular) if encoded_parts and encoded_parts.singular else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column()
+                ImGui.input_text("##Singular Decoded", decoded_parts.singular if decoded_parts and decoded_parts.singular else "" , PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                
+                ImGui.text("Plural")
+                PyImGui.table_next_column()
+                ImGui.input_text("##Plural Encoded", bytes_to_hex_string(encoded_parts.plural) if encoded_parts and encoded_parts.plural else "", PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.table_next_column()
+                ImGui.input_text("##Plural Decoded", decoded_parts.plural if decoded_parts and decoded_parts.plural else "" , PyImGui.InputTextFlags.ReadOnly)
+                PyImGui.pop_item_width()
+                PyImGui.pop_item_width()
+                PyImGui.end_table()
+                
+                
+                if error_message:
+                    ImGui.text_colored(error_message, RED.color_tuple, font_size = 16)
+                
+                if switching_lang:
+                    string_table.switch_language(language.value)
+                    encoded_names.switch_language(language)
+                    Py4GW.Console.Log(MODULE_NAME, f"Switching to language: {language.name}")
+                
+                # if ImGui.button("Decode from Clipboard", -1):
+                #     try:
+                #         clipboard = PyImGui.get_clipboard_text()
+                #         enc_item_name = clipboard
+                #         enc_bytes = hex_string_to_bytes(clipboard)
+                #         decoded_name = string_table.decode(enc_bytes)
+                        
+                #         Py4GW.Console.Log(MODULE_NAME, f"Decoded:")
+                #         Py4GW.Console.Log(MODULE_NAME, f"{decoded_name}")
+                                                
+                #         # Write decoded name to file for easy copying
+                #         with open(os.path.join(INI_PATH, "Decoded_Item_Name.txt"), "w", encoding="utf-8") as f:
+                #             f.write(decoded_name) 
+                        
+                #     except Exception as e:
+                #         Py4GW.Console.Log(MODULE_NAME, f"Failed to decode clipboard data: {e}", Py4GW.Console.MessageType.Error
+                #                           )
                 ImGui.end_tab_item()
             ImGui.end_tab_bar()
             
     ImGui.End(INI_KEY)
+    
+    if not fully_decoded and encoded:
+        try:
+            decoded = decoded_strings(
+                item_id=encoded.item_id,
+                name_enc=string_table.decode(bytes(encoded.name_enc)) if encoded.name_enc else "",
+                info_string=string_table.decode(bytes(encoded.info_string)) if encoded.info_string else "",
+                singular_name=string_table.decode(bytes(encoded.singular_name)) if encoded.singular_name else "",
+            complete_name_enc=string_table.decode(bytes(encoded.complete_name_enc)) if encoded.complete_name_enc else ""
+        )
+        
+            fully_decoded = (not encoded.name_enc or decoded.name_enc != "") and (not encoded.info_string or decoded.info_string != "") and (not encoded.singular_name or decoded.singular_name != "") and (not encoded.complete_name_enc or decoded.complete_name_enc != "")
+        except Exception as e:
+            Py4GW.Console.Log(MODULE_NAME, f"Error decoding item strings: {e}", Py4GW.Console.MessageType.Error)
+
+formats = {
+    ServerLanguage.German: "{prefix} {item} {suffix}",
+    ServerLanguage.English: "{prefix} {item} {suffix}",
+    
+    ServerLanguage.Korean: "{prefix} {item} ({suffix})",    
+    ServerLanguage.French: "{item} {prefix} ({suffix})",    
+    ServerLanguage.Italian: "{item} {suffix} {prefix}",
+    ServerLanguage.Spanish: "{item} {prefix} ({suffix})",
+    ServerLanguage.TraditionalChinese: "{suffix} {prefix} {item}",
+    ServerLanguage.Japanese: "{prefix} {item} ({suffix})",
+    ServerLanguage.Polish: "{item} {prefix} ({suffix})",
+    
+    ServerLanguage.Russian: "{prefix} {item} {suffix}",
+    ServerLanguage.BorkBorkBork: "{prefix} {item} {suffix}",
+}

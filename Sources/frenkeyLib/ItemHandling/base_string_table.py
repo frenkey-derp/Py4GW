@@ -30,8 +30,8 @@ import struct
 from typing import Optional
 
 from Py4GWCoreLib.native_src.context.TextContext import TextParser
-from Py4GWCoreLib.native_src.internals.helpers import read_wstr
 from Py4GWCoreLib.native_src.methods.DatFileMethods import read_dat_file_by_hash
+
 
 
 # ─── Codepoint parsing (base-0x7F00 encoding) ────────────────────────────
@@ -201,15 +201,12 @@ def _decode_entry(
 _string_table: dict[int, bytes] = {}
 _string_table_loaded: bool = False
 _load_enqueued: bool = False
-_loaded_language: int = 0
 
 _decode_cache: dict[bytes, str] = {}
 _pending: set[bytes] = set()
 
 from concurrent.futures import ThreadPoolExecutor as _TPE
 _decode_pool = _TPE(max_workers=1)
-
-
 
 
 # ─── Postprocessing ──────────────────────────────────────────────────────
@@ -222,358 +219,14 @@ _BRACKET_SUBS = {
 _GRAMMAR_TAG_RE = re.compile(
     r'^\[(M|F|N|U|P|PM|PF|PN|m|u|null|proper|plur|sing)\]'
 )
-_INLINE_STYLE_TAG_RE = re.compile(r'\[(?:/?[bB])\]')
 
 
-def _postprocess_basic(text: str) -> str:
+def _postprocess(text: str) -> str:
     text = _GRAMMAR_TAG_RE.sub('', text)
-    text = _INLINE_STYLE_TAG_RE.sub('', text)
     for old, new in _BRACKET_SUBS.items():
         if old in text:
             text = text.replace(old, new)
     return text
-
-
-def _postprocess(text: str) -> str:
-    text = _postprocess_basic(text)
-    if "%str" in text:
-        text = _apply_substitutions(text)
-    return text
-
-
-def _get_substitute_text(slot: int) -> str:
-    """Resolve TextParser substitute_1/substitute_2 to display text."""
-    tp = TextParser.get_context()
-    if tp is None:
-        return ""
-
-    sub = tp.substitute_1 if slot == 1 else tp.substitute_2
-    if not sub:
-        return ""
-
-    # Most common path in our custom decoder: substitute is another string-table index.
-    entry = _string_table.get(sub)
-    if entry is not None:
-        text = _decode_entry(entry, 0)
-        if text:
-            return _postprocess_basic(text)
-
-    # Fallback: game may store a direct wchar pointer in substitute fields.
-    if sub >= 0x10000:
-        try:
-            return read_wstr(sub) or ""
-        except Exception:
-            return ""
-    return ""
-
-
-def _apply_substitutions(text: str) -> str:
-    if "%str1%" in text:
-        sub1 = _get_substitute_text(1)
-        if sub1:
-            text = text.replace("%str1%", sub1)
-    if "%str2%" in text:
-        sub2 = _get_substitute_text(2)
-        if sub2:
-            text = text.replace("%str2%", sub2)
-    return text
-
-
-# ─── Inline formatted encoded-string parser (0x0101/0x010A/...) ──────────
-
-_NUM_TAG_BASE = 0x0101
-_NUM_TAG_MAX = 0x0109
-_STR_TAG_BASE = 0x010A
-_STR_TAG_MAX = 0x011F
-
-
-def _is_arg_tag(cp: int) -> bool:
-    return (_NUM_TAG_BASE <= cp <= _NUM_TAG_MAX) or (_STR_TAG_BASE <= cp <= _STR_TAG_MAX)
-
-
-def _is_num_tag(cp: int) -> bool:
-    return _NUM_TAG_BASE <= cp <= _NUM_TAG_MAX
-
-
-def _is_str_tag(cp: int) -> bool:
-    return _STR_TAG_BASE <= cp <= _STR_TAG_MAX
-
-
-def _decode_codepoints_segment(segment: tuple[int, ...]) -> str:
-    """Decode one codepoint segment (no inline arg tags inside)."""
-    if not segment:
-        return ""
-    idx, key = _parse_codepoints(segment)
-    if idx == 0:
-        return ""
-    entry = _string_table.get(idx)
-    if entry is None:
-        return ""
-    text = _decode_entry(entry, key)
-    if not text:
-        return ""
-    return _postprocess_basic(text)
-
-
-def _parse_number_codepoints(codepoints: tuple[int, ...], start: int) -> tuple[int, int]:
-    """Parse one inline numeric argument encoded with base-0x7F00 digits."""
-    n = len(codepoints)
-    i = start
-    value = 0
-    parsed_any = False
-
-    while i < n:
-        cp = codepoints[i]
-        if cp == 0 or cp == 1 or cp == 2:
-            break
-        digit = (cp & 0x7FFF) - _BASE
-        if digit < 0:
-            break
-        parsed_any = True
-        if cp & _MORE:
-            value = (value + digit) * _RANGE
-        else:
-            value = value + digit
-            i += 1
-            break
-        i += 1
-
-    if not parsed_any:
-        return 0, i
-
-    if i < n and codepoints[i] == 1:
-        i += 1
-
-    return value, i
-
-
-_PL_TAG_RE = re.compile(r'([^\s\[\]]+)\[pl:"([^"]*)"\]')
-# Optional suffix plural marker attached to a word, e.g. Cacho[s], Robe[s]
-_PL_SUFFIX_RE = re.compile(r'([A-Za-zÀ-ÖØ-öø-ÿ]+)\[([A-Za-zÀ-ÖØ-öø-ÿ]{1,3})\]')
-
-
-def _has_plural_markers(text: str) -> bool:
-    return ('[pl:"' in text) or bool(_PL_SUFFIX_RE.search(text))
-
-
-def _apply_plural_tags(text: str, num_value: Optional[int]) -> str:
-    if '[' not in text:
-        return text
-    use_plural = (num_value is not None and num_value != 1)
-    text = _PL_TAG_RE.sub(lambda m: m.group(2) if use_plural else m.group(1), text)
-    # Supports localized optional suffix markers like: Cacho[s]
-    text = _PL_SUFFIX_RE.sub(lambda m: (m.group(1) + m.group(2)) if use_plural else m.group(1), text)
-    return text
-
-
-def _best_arg_text(node: dict) -> str:
-    """Pick the best resolved text from a node, descending through wrappers."""
-    txt = (node.get("rendered") or "").strip()
-    if txt and not re.search(r"%str\d+%", txt):
-        return txt
-    for k in sorted((node.get("args") or {}).keys()):
-        child_txt = _best_arg_text(node["args"][k])
-        if child_txt:
-            return child_txt
-    return ""
-
-
-def _consume_encoded_ref(codepoints: tuple[int, ...], start: int) -> int:
-    """Consume one encoded string reference (index + optional key) and return end pos."""
-    n = len(codepoints)
-    i = start
-    if i >= n:
-        return i
-    if codepoints[i] in (0, 1, 2):
-        return i
-
-    parsed_any = False
-    while i < n:
-        cp = codepoints[i]
-        if cp in (0, 1, 2):
-            break
-        digit = (cp & 0x7FFF) - _BASE
-        if digit < 0:
-            break
-        parsed_any = True
-        i += 1
-        if not (cp & _MORE):
-            break
-
-    if not parsed_any:
-        return start
-
-    # Optional key stream starts only when next codepoint has MORE set.
-    if i < n and codepoints[i] not in (0, 1, 2) and (codepoints[i] & _MORE):
-        while i < n:
-            cp = codepoints[i]
-            if cp in (0, 1, 2):
-                break
-            digit = (cp & 0x7FFF) - _BASE
-            if digit < 0:
-                break
-            i += 1
-            if not (cp & _MORE):
-                break
-
-    return i
-
-
-def _parse_arg_blocks(codepoints: tuple[int, ...], i: int) -> tuple[dict[int, dict], dict[int, int], int]:
-    """Parse 0x0101..0x011F arg blocks starting at i."""
-    n = len(codepoints)
-    args: dict[int, dict] = {}
-    num_args: dict[int, int] = {}
-
-    while i < n and _is_arg_tag(codepoints[i]):
-        tag = codepoints[i]
-        if _is_num_tag(tag):
-            slot = tag - 0x0100
-            value, i = _parse_number_codepoints(codepoints, i + 1)
-            num_args[slot] = value
-        else:
-            slot = tag - 0x0109
-            arg_node, i = _decode_formatted_tree(codepoints, i + 1)
-            args[slot] = arg_node
-
-    return args, num_args, i
-
-
-def _decode_formatted_tree(codepoints: tuple[int, ...], start: int = 0) -> tuple[dict, int]:
-    """Decode one formatted expression and return ({template, rendered, args}, next_pos)."""
-    n = len(codepoints)
-    i = start
-
-    # Head segment: encoded string ref until arg-tag/terminator.
-    head_start = i
-    while i < n:
-        cp = codepoints[i]
-        if cp == 0 or cp == 1 or cp == 2 or _is_arg_tag(cp):
-            break
-        i += 1
-
-    template = _decode_codepoints_segment(codepoints[head_start:i]) if i > head_start else ""
-    rendered = template
-    args: dict[int, dict] = {}
-    num_args: dict[int, int] = {}
-
-    # Parse arg blocks: 0x0101 => num1, 0x010A => str1, ...
-    if i < n and _is_arg_tag(codepoints[i]):
-        args, num_args, i = _parse_arg_blocks(codepoints, i)
-
-        # Ambiguous case: first token looked like num-tag but was actually a
-        # string-ref digit (e.g. 0x0108), leaving unresolved tail data.
-        if (
-            not template
-            and not args
-            and bool(num_args)
-            and _is_num_tag(codepoints[start])
-            and i < n
-            and codepoints[i] not in (0, 1, 2)
-            and not _is_arg_tag(codepoints[i])
-        ):
-            alt_end = _consume_encoded_ref(codepoints, start)
-            if alt_end > start:
-                alt_template = _decode_codepoints_segment(codepoints[start:alt_end])
-                if alt_template:
-                    template = alt_template
-                    rendered = template
-                    args, num_args, i = _parse_arg_blocks(codepoints, alt_end)
-
-        for slot, arg_node in args.items():
-            arg_text = arg_node.get("rendered", "")
-            if arg_text and rendered:
-                rendered = rendered.replace(f"%str{slot}%", arg_text)
-        # Second pass: if wrappers left unresolved "%strN%", use deepest resolved child text.
-        for slot, arg_node in args.items():
-            marker = f"%str{slot}%"
-            if marker in rendered:
-                arg_text = _best_arg_text(arg_node)
-                if arg_text:
-                    rendered = rendered.replace(marker, arg_text)
-        has_plural_markers = _has_plural_markers(rendered)
-        for slot, value in num_args.items():
-            if slot == 1 and value == 1 and has_plural_markers:
-                rendered = rendered.replace(f"%num{slot}%", "")
-            else:
-                rendered = rendered.replace(f"%num{slot}%", str(value))
-        rendered = _apply_plural_tags(rendered, num_args.get(1))
-        rendered = re.sub(r'\s{2,}', ' ', rendered).strip()
-
-        # Some payloads are wrapper nodes with only control tags and nested args.
-        # Forward first non-empty child so outer %strN% can still resolve.
-        if not rendered and args:
-            child = args.get(1)
-            if child is None or not child.get("rendered", ""):
-                for k in sorted(args.keys()):
-                    if args[k].get("rendered", ""):
-                        child = args[k]
-                        break
-            if child is not None:
-                rendered = child.get("rendered", "")
-
-    # Consume expression terminator (0x0001) if present.
-    if i < n and codepoints[i] == 1:
-        i += 1
-
-    return {
-        "template": template,
-        "rendered": rendered,
-        "args": args,
-        "num_args": num_args,
-        "expr_cp": codepoints[start:i],
-        "head_cp": codepoints[head_start:i] if i > head_start else (),
-    }, i
-
-
-def _decode_formatted_stream(codepoints: tuple[int, ...]) -> tuple[str, Optional[dict]]:
-    """Decode full formatted stream with 0x0002 segment separators."""
-    out: list[str] = []
-    first_tree: Optional[dict] = None
-    i = 0
-    n = len(codepoints)
-
-    while i < n:
-        cp = codepoints[i]
-        if cp == 0:
-            break
-        if cp == 1:
-            i += 1
-            continue
-        if cp == 2:
-            i += 1
-            continue
-
-        tree, ni = _decode_formatted_tree(codepoints, i)
-        if ni <= i:
-            i += 1
-            continue
-        txt = tree.get("rendered", "").strip()
-        if txt:
-            out.append(txt)
-            if first_tree is None:
-                first_tree = tree
-        i = ni
-
-    # Compact unresolved "%strN%" wrapper lines by consuming the next plain line.
-    compact: list[str] = []
-    i = 0
-    while i < len(out):
-        cur = out[i]
-        if re.search(r'%str\d+%', cur) and (i + 1) < len(out):
-            nxt = out[i + 1]
-            if nxt and not nxt.startswith("<c=@"):
-                cur = re.sub(r'%str\d+%', nxt, cur)
-                i += 1
-        compact.append(cur)
-        i += 1
-
-    return ('\n'.join(compact).strip(), first_tree)
-
-
-def _decode_formatted_codepoints(codepoints: tuple[int, ...], start: int = 0) -> tuple[str, int]:
-    node, i = _decode_formatted_tree(codepoints, start)
-    return node.get("rendered", ""), i
 
 
 # ─── Loading ─────────────────────────────────────────────────────────────
@@ -606,7 +259,7 @@ def _do_load_string_table(language: int) -> None:
     DatFileMethods, and parses all entries into _string_table.
     Caller must ensure TextParser context is fresh (e.g. _update_ptr ran).
     """
-    global _string_table_loaded, _loaded_language
+    global _string_table_loaded
     if _string_table_loaded:
         return
 
@@ -633,7 +286,6 @@ def _do_load_string_table(language: int) -> None:
         _parse_string_file(file_data, slot_idx * epf)
 
     _string_table_loaded = True
-    _loaded_language = language
 
 
 def load_string_table(language: int = 0) -> None:
@@ -643,11 +295,10 @@ def load_string_table(language: int = 0) -> None:
     game frame via Game.enqueue. After completion, _string_table_loaded
     is True and decode functions return results.
     """
-    global _load_enqueued, _loaded_language
+    global _load_enqueued
     if _string_table_loaded or _load_enqueued:
         return
     _load_enqueued = True
-    _loaded_language = language
 
     import Py4GW
     Py4GW.Game.enqueue(lambda: _do_load_string_table(language))
@@ -660,13 +311,6 @@ def _get_client_language() -> int:
         return 0
     return tp.language_id
 
-def switch_language(language: int) -> None:
-    global _string_table, _decode_cache, _string_table_loaded, _load_enqueued, _loaded_language
-    _decode_cache.clear()
-    _string_table_loaded = False
-    _load_enqueued = False
-    _loaded_language = language
-    load_string_table(language)
 
 # ─── RC4 backend (Windows CNG, pure-Python fallback) ─────────────────────
 
@@ -731,50 +375,21 @@ def _decode_and_cache(raw: bytes) -> None:
     """Unpack, parse, decode, postprocess in background thread, cache result."""
     try:
         n = len(raw) & ~1
-        if n < 2:
-            return
         cp = struct.unpack_from(f'<{n >> 1}H', raw)
         try:
             cp = cp[:cp.index(0)]
         except ValueError:
             pass
-        if not cp:
-            return
-
-        # 1) Legacy path first: this keeps skills/agents/general strings stable.
         idx, key = _parse_codepoints(cp)
-        legacy_text = ""
-        if idx != 0:
-            entry = _string_table.get(idx)
-            if entry is not None:
-                t = _decode_entry(entry, key)
-                if t:
-                    legacy_text = _postprocess(t)
-
-        # 2) Formatted handling:
-        #    - names/placeholders: single expression
-        #    - descriptions: 0x0002-separated stream
-        has_arg_tags = any(_is_arg_tag(v) for v in cp)
-        has_term = any(v == 1 for v in cp)
-        has_sep = any(v == 2 for v in cp)
-        looks_formatted = has_arg_tags and (has_term or has_sep)
-        unresolved = bool(re.search(r'%str\d+%|%num\d+%|\[pl:"', legacy_text))
-
-        if looks_formatted or unresolved:
-            if has_sep:
-                text, _ = _decode_formatted_stream(cp)
-                if text:
-                    _decode_cache[raw] = _postprocess(text)
-                    return
-            else:
-                tree, _ = _decode_formatted_tree(cp, 0)
-                text = tree.get("rendered", "")
-                if text:
-                    _decode_cache[raw] = _postprocess(text)
-                    return
-
-        if legacy_text:
-            _decode_cache[raw] = legacy_text
+        if idx == 0:
+            return
+        entry = _string_table.get(idx)
+        if entry is None:
+            return
+        text = _decode_entry(entry, key)
+        if text:
+            text = _postprocess(text)
+            _decode_cache[raw] = text
     finally:
         _pending.discard(raw)
 
@@ -790,7 +405,7 @@ def decode(raw: bytes) -> str:
     Accepts the raw wchar_t bytes from GetAgentEncName (little-endian uint16
     with null terminator). Handles player names, cache, and async decode.
     """
-    if len(raw) < 2:
+    if len(raw) < 4:
         return ""
 
     # Player names: prefix 0xBA9, inline ASCII

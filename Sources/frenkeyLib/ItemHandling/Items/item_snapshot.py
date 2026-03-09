@@ -1,6 +1,7 @@
 
 from typing import Optional
 
+import Py4GW
 from PyItem import DyeInfo, PyItem
 
 from Py4GWCoreLib.Item import Item
@@ -18,6 +19,12 @@ class ItemSnapshot:
         item = item_instance if item_instance and item_id == item_instance.item_id else Item.item_instance(item_id) if item_id > 0 else None
         
         self.id: int = item_id
+                
+        # self.name_enc = PyItem.GetNameEnc(item_id) if item_id > 0 else None
+        # self.info_string = PyItem.GetInfoString(item_id) if item_id > 0 else None
+        # self.singular_name = PyItem.GetSingleItemName(item_id) if item_id > 0 else None
+        # self.complete_name_enc = PyItem.GetCompleteNameEnc(item_id) if item_id > 0 else None
+                
         self.is_valid: bool = item.IsItemValid(item_id) if item else False
         self.model_id: int = item.model_id if item else -1
         self.model_file_id: int = item.model_file_id if item else -1
