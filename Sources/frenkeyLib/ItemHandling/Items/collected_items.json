@@ -24,6 +24,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "15543": {
+            "singular_encoded": "0x1 0x81 0x6F 0x1C 0x1 0x0",
+            "prefix_encoded": "0x6E 0xA 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "Scythe Snathe",
+            "prefix": "Zealous",
+            "suffix": ""
+        },
         "15544": {
             "singular_encoded": "0x1 0x81 0x70 0x1C 0x1 0x0",
             "prefix_encoded": "0x6F 0xA 0x1 0x0",
@@ -104,6 +112,30 @@
             "prefix": "",
             "suffix": ""
         },
+        "19139": {
+            "singular_encoded": "0x1 0x81 0xB8 0x59 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0xFA 0x58 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "Insignia [Necromancer]",
+            "prefix": "Tormentor's",
+            "suffix": ""
+        },
+        "6323": {
+            "singular_encoded": "0xBE 0x55 0x1 0x0",
+            "prefix_encoded": "0x6E 0xA 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "Dagger Tang",
+            "prefix": "Zealous",
+            "suffix": ""
+        },
+        "6331": {
+            "singular_encoded": "0xC1 0x55 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "0x78 0xA 0x1 0x0",
+            "singular": "Dagger Handle",
+            "prefix": "",
+            "suffix": "of Enchanting"
+        },
         "894": {
             "singular_encoded": "0xB1 0x22 0x1 0x0",
             "prefix_encoded": "0x74 0xA 0x1 0x0",
@@ -127,6 +159,14 @@
             "singular": "Sword Hilt",
             "prefix": "Crippling",
             "suffix": ""
+        },
+        "898": {
+            "singular_encoded": "0xB5 0x22 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0xB0 0x64 0x1 0x0 0xB 0x1 0x5A 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Rune",
+            "prefix": "",
+            "suffix": "of Minor Vigor"
         },
         "905": {
             "singular_encoded": "0xBC 0x22 0x1 0x0",
@@ -486,6 +526,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "737": {
+            "singular_encoded": "0x97 0x56 0x40 0x83 0xD1 0x86 0x44 0x27 0x1 0x0",
+            "prefix_encoded": "0x6B 0xA 0x1 0x0",
+            "suffix_encoded": "0x79 0xA 0x1 0x0",
+            "singular": "Broadsword",
+            "prefix": "Cruel",
+            "suffix": "of Fortitude"
+        },
         "742": {
             "singular_encoded": "0x9F 0x56 0xE 0x9A 0x32 0xA5 0xCB 0x8 0x1 0x0",
             "prefix_encoded": "0x74 0xA 0x1 0x0",
@@ -615,6 +663,14 @@
             "singular": "Amethyst Aegis",
             "prefix": "",
             "suffix": "of Valor"
+        },
+        "26973": {
+            "singular_encoded": "0x2 0x81 0x16 0x28 0x45 0xBA 0x11 0xE0 0xB5 0x59 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Shield of the Hierophant",
+            "prefix": "",
+            "suffix": ""
         },
         "2817": {
             "singular_encoded": "0x51 0x26 0x29 0x84 0xA6 0xD6 0x37 0x32 0x1 0x0",
@@ -951,6 +1007,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Fur Square",
+            "prefix": "",
+            "suffix": ""
+        },
+        "942": {
+            "singular_encoded": "0x35 0xA 0x1 0x1 0x9 0x1 0xA 0x1 0xE5 0x22 0x58 0x97 0xDD 0xC5 0x27 0x7 0x1 0x0 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Leather Square",
             "prefix": "",
             "suffix": ""
         },
@@ -1799,6 +1863,14 @@
             "singular": "Snowman Summoner",
             "prefix": "",
             "suffix": ""
+        },
+        "910": {
+            "singular_encoded": "0x35 0xA 0x1 0x1 0x11 0x1 0xA 0x1 0xC2 0x22 0x1 0x0 0x1 0x0",
+            "prefix_encoded": "0xA 0x1 0xC2 0x22 0x1 0x0 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "%str1%",
+            "prefix": "Hunter's Ale[s]",
+            "suffix": ""
         }
     },
     "Trophy": {
@@ -1938,6 +2010,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "24352": {
+            "singular_encoded": "0x1 0x81 0xB 0x78 0x7B 0xC2 0x9F 0xD2 0xA 0x2B 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Exquisite Surmia Carving",
+            "prefix": "",
+            "suffix": ""
+        },
         "24353": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xC 0x78 0xB4 0x8C 0x2D 0xB2 0xDA 0x74 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
@@ -1983,6 +2063,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Berserker Horn",
+            "prefix": "",
+            "suffix": ""
+        },
+        "27047": {
+            "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xE4 0x26 0x90 0x8E 0x93 0xB5 0xF0 0x3E 0x1 0x0 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Glacial Stone",
             "prefix": "",
             "suffix": ""
         },
@@ -2048,6 +2136,14 @@
             "suffix_encoded": "",
             "singular": "%str1%",
             "prefix": "Deldrimor Talisman[s]",
+            "suffix": ""
+        },
+        "35122": {
+            "singular_encoded": "0x35 0xA 0x1 0x1 0x4 0x1 0xA 0x1 0x2 0x81 0xE6 0x66 0x1 0x0 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Medal of Honor",
+            "prefix": "",
             "suffix": ""
         },
         "36985": {
@@ -2198,6 +2294,14 @@
             "prefix": "Zealous",
             "suffix": "of Shelter"
         },
+        "119": {
+            "singular_encoded": "0x3F 0x28 0x1 0x0",
+            "prefix_encoded": "0x6F 0xA 0x1 0x0",
+            "suffix_encoded": "0x65 0xA 0x1 0x0",
+            "singular": "White Reaver",
+            "prefix": "Furious",
+            "suffix": "of Skeletonslaying"
+        },
         "121": {
             "singular_encoded": "0x41 0x28 0x1 0x0",
             "prefix_encoded": "0x75 0xA 0x1 0x0",
@@ -2253,6 +2357,14 @@
             "singular": "PvP Axe",
             "prefix": "",
             "suffix": ""
+        },
+        "2206": {
+            "singular_encoded": "0x3E 0x28 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "0x68 0xA 0x1 0x0",
+            "singular": "Serpent Axe",
+            "prefix": "",
+            "suffix": "of Deathbane"
         },
         "26990": {
             "singular_encoded": "0x2 0x81 0x27 0x28 0xB2 0x94 0x20 0xF6 0xB0 0x1D 0x1 0x0",
@@ -2442,6 +2554,14 @@
             "prefix": "",
             "suffix": "of Devotion"
         },
+        "2030": {
+            "singular_encoded": "0x2 0x81 0xD2 0x38 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "0x79 0xA 0x1 0x0",
+            "singular": "Lion's Pride",
+            "prefix": "",
+            "suffix": "of Fortitude"
+        },
         "2056": {
             "singular_encoded": "0x2 0x81 0xC4 0x38 0x1 0x0",
             "prefix_encoded": "",
@@ -2457,6 +2577,22 @@
             "singular": "Fox's Greed",
             "prefix": "",
             "suffix": "of Fortitude"
+        },
+        "2082": {
+            "singular_encoded": "0x2 0x81 0xC5 0x38 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "0x79 0xA 0x1 0x0",
+            "singular": "Fox's Greed",
+            "prefix": "",
+            "suffix": "of Fortitude"
+        },
+        "2084": {
+            "singular_encoded": "0x2 0x81 0xC5 0x38 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "0x1 0x81 0x97 0x5D 0x1 0x0",
+            "singular": "Fox's Greed",
+            "prefix": "",
+            "suffix": "of Devotion"
         },
         "2085": {
             "singular_encoded": "0x2 0x81 0xC6 0x38 0x1 0x0",
@@ -2487,6 +2623,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Bogroot Focus",
+            "prefix": "",
+            "suffix": ""
+        },
+        "27006": {
+            "singular_encoded": "0x2 0x81 0x37 0x28 0x9F 0xCF 0x5 0xA4 0x95 0x38 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Cyndr's Heart",
             "prefix": "",
             "suffix": ""
         },
@@ -2545,6 +2689,22 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Crystal Core Maul",
+            "prefix": "",
+            "suffix": ""
+        },
+        "26991": {
+            "singular_encoded": "0x2 0x81 0x28 0x28 0x38 0x8B 0x37 0x8E 0x92 0x1D 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Murakai's Maul",
+            "prefix": "",
+            "suffix": ""
+        },
+        "27027": {
+            "singular_encoded": "0x2 0x81 0x4C 0x28 0xFE 0x89 0xA0 0xF3 0x6E 0x17 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Havok's Maul",
             "prefix": "",
             "suffix": ""
         },
@@ -2614,6 +2774,14 @@
             "prefix": "Prodigy's",
             "suffix": "of Minor Vigor"
         },
+        "16292": {
+            "singular_encoded": "0x1 0x81 0x2F 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Storm's Eye",
+            "prefix": "",
+            "suffix": ""
+        },
         "16297": {
             "singular_encoded": "0x1 0x81 0x34 0x5C 0x1 0x0",
             "prefix_encoded": "",
@@ -2653,6 +2821,14 @@
             "singular": "Exalted Elonian Crest",
             "prefix": "Centurion's",
             "suffix": "of Superior Leadership"
+        },
+        "19794": {
+            "singular_encoded": "0x1 0x81 0xDD 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Spear Crest",
+            "prefix": "",
+            "suffix": ""
         },
         "19818": {
             "singular_encoded": "0x1 0x81 0xDF 0x4D 0xDC 0xAA 0x7 0xA7 0xE1 0x22 0x1 0x0",
@@ -2800,6 +2976,14 @@
         }
     },
     "CC_Shards": {
+        "1660": {
+            "singular_encoded": "0x1 0x81 0x35 0x4E 0x3F 0xD6 0xB4 0xCA 0xD1 0xD 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Luminous Stone",
+            "prefix": "",
+            "suffix": ""
+        },
         "1664": {
             "singular_encoded": "0x1 0x81 0x37 0x4E 0x64 0xFD 0x9A 0xDC 0x6F 0x66 0x1 0x0",
             "prefix_encoded": "",
@@ -3002,6 +3186,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "586": {
+            "singular_encoded": "0xA6 0x28 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Smiting Rod",
+            "prefix": "",
+            "suffix": ""
+        },
         "8537": {
             "singular_encoded": "0x83 0x79 0x7 0x82 0xBE 0xDB 0xE 0x7D 0x1 0x0",
             "prefix_encoded": "",
@@ -3060,12 +3252,36 @@
             "prefix": "",
             "suffix": ""
         },
+        "17653": {
+            "singular_encoded": "0x1 0x81 0xA3 0x5E 0x1 0x0",
+            "prefix_encoded": "0x6D 0xA 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "PvP Scrying Glass Staff",
+            "prefix": "Defensive",
+            "suffix": ""
+        },
+        "17750": {
+            "singular_encoded": "0xB0 0x27 0x1 0x0",
+            "prefix_encoded": "0x73 0xA 0x1 0x0",
+            "suffix_encoded": "0x7D 0xA 0x1 0x0",
+            "singular": "PvP Air Staff",
+            "prefix": "Insightful",
+            "suffix": "of Warding"
+        },
         "18065": {
             "singular_encoded": "0xB4 0x27 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "PvP Holy Staff",
             "prefix": "",
+            "suffix": ""
+        },
+        "1911": {
+            "singular_encoded": "0x1 0x81 0xA5 0x43 0x21 0xDA 0x18 0xE8 0xCB 0x37 0x1 0x0",
+            "prefix_encoded": "0x6D 0xA 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "Ensorcelling Staff",
+            "prefix": "Defensive",
             "suffix": ""
         },
         "19115": {
@@ -3075,6 +3291,38 @@
             "singular": "PvP Channeling Staff",
             "prefix": "Adept",
             "suffix": "of Enchanting"
+        },
+        "1914": {
+            "singular_encoded": "0xBE 0x56 0x4A 0xAA 0xB5 0xD1 0xE3 0x54 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
+            "suffix_encoded": "",
+            "singular": "Hypnotic Staff",
+            "prefix": "Adept",
+            "suffix": ""
+        },
+        "1915": {
+            "singular_encoded": "0xBF 0x28 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Jeweled Staff",
+            "prefix": "",
+            "suffix": ""
+        },
+        "1931": {
+            "singular_encoded": "0xC3 0x28 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
+            "suffix_encoded": "0x36 0x9 0x1 0x0",
+            "singular": "Earth Staff",
+            "prefix": "Adept",
+            "suffix": "of Water Magic"
+        },
+        "19413": {
+            "singular_encoded": "0x1 0x81 0xD4 0x5A 0x38 0x9A 0x71 0xC8 0xBF 0x2B 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Alsin's Walking Stick",
+            "prefix": "",
+            "suffix": ""
         },
         "1944": {
             "singular_encoded": "0x32 0x6F 0xD7 0x9C 0xA3 0xC9 0x7D 0x61 0x1 0x0",
@@ -3156,6 +3404,22 @@
             "prefix": "Insightful",
             "suffix": ""
         },
+        "2451": {
+            "singular_encoded": "0x2 0x81 0x7D 0x39 0x1 0x0",
+            "prefix_encoded": "0x70 0xA 0x1 0x0",
+            "suffix_encoded": "0x2 0x81 0xB0 0x38 0x1 0x0",
+            "singular": "Snake's Envy",
+            "prefix": "Hale",
+            "suffix": "of the Warrior"
+        },
+        "2458": {
+            "singular_encoded": "0x2 0x81 0x7E 0x39 0x1 0x0",
+            "prefix_encoded": "0x6D 0xA 0x1 0x0",
+            "suffix_encoded": "0x78 0xA 0x1 0x0",
+            "singular": "Dragon's Envy",
+            "prefix": "Defensive",
+            "suffix": "of Enchanting"
+        },
         "2479": {
             "singular_encoded": "0x2 0x81 0x89 0x39 0x1 0x0",
             "prefix_encoded": "",
@@ -3172,6 +3436,14 @@
             "prefix": "Defensive",
             "suffix": "of Devotion"
         },
+        "2495": {
+            "singular_encoded": "0x2 0x81 0x89 0x39 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0x95 0x5D 0x1 0x0",
+            "suffix_encoded": "0x1 0x81 0x98 0x5D 0x1 0x0",
+            "singular": "Hourglass Staff",
+            "prefix": "Swift",
+            "suffix": "of Endurance"
+        },
         "25097": {
             "singular_encoded": "0x2 0x81 0x18 0x13 0x51 0xAF 0x89 0x85 0x59 0x55 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
@@ -3185,6 +3457,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Kerrsh's Staff",
+            "prefix": "",
+            "suffix": ""
+        },
+        "26998": {
+            "singular_encoded": "0x2 0x81 0x2F 0x28 0xE1 0xE8 0x4B 0xCE 0xE7 0x37 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Zoldark's Staff",
             "prefix": "",
             "suffix": ""
         },
@@ -3243,6 +3523,14 @@
             "singular": "Balthazar's Staff",
             "prefix": "Adept",
             "suffix": "of Deathbane"
+        },
+        "37934": {
+            "singular_encoded": "0x3 0x81 0x95 0xB 0xF1 0xB2 0x5D 0xEE 0xFB 0x1A 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Balthazar's Staff",
+            "prefix": "",
+            "suffix": ""
         },
         "386": {
             "singular_encoded": "0xC9 0x28 0x1 0x0",
@@ -3355,6 +3643,22 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Scroll of Slayer's Insight",
+            "prefix": "",
+            "suffix": ""
+        },
+        "5975": {
+            "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x32 0x26 0x8C 0xEE 0x20 0xED 0x2 0x49 0x1 0x0 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Scroll of Rampager's Insight",
+            "prefix": "",
+            "suffix": ""
+        },
+        "5976": {
+            "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x34 0x26 0x29 0x81 0xBC 0xD0 0x8B 0x1E 0x1 0x0 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Scroll of Hunter's Insight",
             "prefix": "",
             "suffix": ""
         }
@@ -3572,6 +3876,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "19813": {
+            "singular_encoded": "0x1 0x81 0x32 0x1B 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Spear",
+            "prefix": "",
+            "suffix": ""
+        },
         "2071": {
             "singular_encoded": "0x2 0x81 0x28 0x27 0xF3 0xE8 0x6C 0x88 0x92 0x3A 0x1 0x0",
             "prefix_encoded": "0x6C 0xA 0x1 0x0",
@@ -3604,6 +3916,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "37916": {
+            "singular_encoded": "0x3 0x81 0x94 0xB 0x3A 0xC7 0x16 0xFB 0xCF 0x27 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Balthazar's Spear",
+            "prefix": "",
+            "suffix": ""
+        },
         "38028": {
             "singular_encoded": "0x2 0x81 0x76 0x38 0x42 0xBF 0x63 0xB2 0x8E 0x6B 0x1 0x0",
             "prefix_encoded": "0x6F 0xA 0x1 0x0",
@@ -3632,6 +3952,14 @@
         },
         "27976": {
             "singular_encoded": "0x1 0x81 0xDE 0x76 0x27 0xB0 0x9D 0x86 0x96 0x71 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Encrypted Charr Battle Plans",
+            "prefix": "",
+            "suffix": ""
+        },
+        "27978": {
+            "singular_encoded": "0x1 0x81 0x58 0x77 0x8F 0x91 0xE5 0xCA 0x8A 0x75 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "Encrypted Charr Battle Plans",
@@ -3696,6 +4024,22 @@
             "prefix": "Prodigy's",
             "suffix": "of Superior Fast Casting"
         },
+        "16176": {
+            "singular_encoded": "0x1 0x81 0x1 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Rogue Attire",
+            "prefix": "",
+            "suffix": ""
+        },
+        "16192": {
+            "singular_encoded": "0x1 0x81 0x5 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Stormcloud Robes",
+            "prefix": "",
+            "suffix": ""
+        },
         "16223": {
             "singular_encoded": "0x1 0x81 0xE 0x5C 0x1 0x0",
             "prefix_encoded": "",
@@ -3733,6 +4077,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "PvP Krytan Vestments",
+            "prefix": "",
+            "suffix": ""
+        },
+        "19807": {
+            "singular_encoded": "0x1 0x81 0xE9 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Elonian Raiment",
             "prefix": "",
             "suffix": ""
         },
@@ -3842,6 +4194,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "17091": {
+            "singular_encoded": "0x1 0x81 0x47 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Stormcloud Leggings",
+            "prefix": "",
+            "suffix": ""
+        },
         "17100": {
             "singular_encoded": "0x1 0x81 0x50 0x5C 0x1 0x0",
             "prefix_encoded": "",
@@ -3887,6 +4247,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "PvP Krytan Leggings",
+            "prefix": "",
+            "suffix": ""
+        },
+        "19809": {
+            "singular_encoded": "0x1 0x81 0xEB 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Elonian Leggings",
             "prefix": "",
             "suffix": ""
         },
@@ -3980,6 +4348,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "16148": {
+            "singular_encoded": "0x1 0x81 0xF1 0x5B 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Stormcloud Shoes",
+            "prefix": "",
+            "suffix": ""
+        },
         "16166": {
             "singular_encoded": "0x1 0x81 0xFA 0x5B 0x1 0x0",
             "prefix_encoded": "",
@@ -4009,6 +4385,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "PvP Krytan Boots",
+            "prefix": "",
+            "suffix": ""
+        },
+        "19806": {
+            "singular_encoded": "0x1 0x81 0xE8 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Elonian Sandals",
             "prefix": "",
             "suffix": ""
         },
@@ -4134,6 +4518,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "16260": {
+            "singular_encoded": "0x1 0x81 0x19 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Stormcloud Gloves",
+            "prefix": "",
+            "suffix": ""
+        },
         "16270": {
             "singular_encoded": "0x1 0x81 0x22 0x5C 0x1 0x0",
             "prefix_encoded": "",
@@ -4163,6 +4555,14 @@
             "prefix_encoded": "",
             "suffix_encoded": "",
             "singular": "PvP Krytan Gloves",
+            "prefix": "",
+            "suffix": ""
+        },
+        "19808": {
+            "singular_encoded": "0x1 0x81 0xEA 0x5C 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "PvP Elonian Armguards",
             "prefix": "",
             "suffix": ""
         },
@@ -4296,6 +4696,14 @@
             "prefix": "",
             "suffix": ""
         },
+        "1654": {
+            "singular_encoded": "0x1 0x81 0x60 0x4C 0xC8 0xC1 0xFA 0xEB 0xA3 0x6E 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0xE7 0x58 0x1 0x0",
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x32 0x9 0x1 0x0 0xB 0x1 0x5A 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Heket Robe",
+            "prefix": "Blessed",
+            "suffix": "of Minor Energy Storage"
+        },
         "1655": {
             "singular_encoded": "0x1 0x81 0x61 0x4C 0x4C 0xB7 0x8E 0xFB 0x31 0x68 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0xF1 0x58 0x1 0x0",
@@ -4311,6 +4719,14 @@
             "singular": "Heket Armor",
             "prefix": "",
             "suffix": "of Major Scythe Mastery"
+        },
+        "2186": {
+            "singular_encoded": "0x2 0x81 0x1 0x2A 0xEB 0xA6 0x2F 0x8E 0x1B 0x6C 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0xE4 0x58 0x1 0x0",
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x1 0x81 0x39 0x12 0x1 0x0 0xB 0x1 0x5A 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Jotun Rags",
+            "prefix": "Radiant",
+            "suffix": "of Minor Mysticism"
         },
         "3": {
             "singular_encoded": "0xCB 0x27 0x1 0x0",
@@ -4382,6 +4798,14 @@
         }
     },
     "Scythe": {
+        "1480": {
+            "singular_encoded": "0x1 0x81 0x68 0x43 0x2F 0x88 0x8 0x83 0x35 0x12 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Briarwood Scythe",
+            "prefix": "",
+            "suffix": ""
+        },
         "1482": {
             "singular_encoded": "0x1 0x81 0x6A 0x43 0x87 0xE5 0x48 0xE6 0x3C 0x5F 0x1 0x0",
             "prefix_encoded": "0x71 0xA 0x1 0x0",
@@ -4397,6 +4821,14 @@
             "singular": "Draconic Scythe",
             "prefix": "Zealous",
             "suffix": "of Enchanting"
+        },
+        "26955": {
+            "singular_encoded": "0x2 0x81 0x4 0x28 0x1F 0xA9 0x2B 0xBF 0x19 0x57 0x1 0x0",
+            "prefix_encoded": "",
+            "suffix_encoded": "",
+            "singular": "Myish's Scythe",
+            "prefix": "",
+            "suffix": ""
         },
         "37855": {
             "singular_encoded": "0x3 0x81 0x62 0xB 0x9A 0xC3 0xD4 0xBE 0x40 0x79 0x1 0x0",
