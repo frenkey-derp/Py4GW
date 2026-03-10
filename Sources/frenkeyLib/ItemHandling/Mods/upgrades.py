@@ -245,6 +245,7 @@ class BarbedUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Barbed",
 		ServerLanguage.BorkBorkBork: "Baerbed",
 	}
+    encoded_name : bytes = bytes([0x69, 0xA, 0x1, 0x0])
     
 class CripplingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Crippling
@@ -264,6 +265,7 @@ class CripplingUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Crippling",
 		ServerLanguage.BorkBorkBork: "Creeppleeng",
 	}
+    encoded_name : bytes = bytes([0x6A, 0xA, 0x1, 0x0])
         
 class CruelUpgrade(WeaponPrefix):
     id = ItemUpgrade.Cruel
@@ -283,6 +285,7 @@ class CruelUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Cruel",
 		ServerLanguage.BorkBorkBork: "Crooel",
 	}
+    encoded_name : bytes = bytes([0x6B, 0xA, 0x1, 0x0])
 
 class DefensiveUpgrade(WeaponPrefix):
     id = ItemUpgrade.Defensive
@@ -302,6 +305,7 @@ class DefensiveUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Defensive",
 		ServerLanguage.BorkBorkBork: "Deffenseefe-a",
 	}
+    encoded_name : bytes = bytes([0x6D, 0xA, 0x1, 0x0])
     
 class EbonUpgrade(WeaponPrefix):
     id = ItemUpgrade.Ebon
@@ -321,6 +325,7 @@ class EbonUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Ebon",
 		ServerLanguage.BorkBorkBork: "Ibun",
 	}
+    encoded_name : bytes = bytes([0xD5, 0x8, 0x1, 0x0])
     
 class FieryUpgrade(WeaponPrefix):
     id = ItemUpgrade.Fiery
@@ -340,6 +345,7 @@ class FieryUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Fiery",
 		ServerLanguage.BorkBorkBork: "Feeery",
 	}
+    encoded_name : bytes = bytes([0xD7, 0x8, 0x1, 0x0])
     
 class FuriousUpgrade(WeaponPrefix):
     id = ItemUpgrade.Furious
@@ -359,6 +365,7 @@ class FuriousUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Furious",
 		ServerLanguage.BorkBorkBork: "Fooreeuoos",
 	}
+    encoded_name : bytes = bytes([0x6F, 0xA, 0x1, 0x0])
     
 class HaleUpgrade(WeaponPrefix):
     id = ItemUpgrade.Hale
@@ -378,6 +385,7 @@ class HaleUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Hale",
 		ServerLanguage.BorkBorkBork: "Haele-a",
 	}
+    encoded_name : bytes = bytes([0x70, 0xA, 0x1, 0x0])
     
 class HeavyUpgrade(WeaponPrefix):
     id = ItemUpgrade.Heavy
@@ -416,6 +424,7 @@ class IcyUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Icy",
 		ServerLanguage.BorkBorkBork: "Icy",
 	}
+    encoded_name : bytes = bytes([0xD4, 0x8, 0x1, 0x0])
     
 class InsightfulUpgrade(WeaponPrefix):
     id = ItemUpgrade.Insightful
@@ -435,6 +444,7 @@ class InsightfulUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Insightful",
 		ServerLanguage.BorkBorkBork: "Inseeghtffool",
 	}
+    encoded_name : bytes = bytes([0x73, 0xA, 0x1, 0x0])
     
 class PoisonousUpgrade(WeaponPrefix):
     id = ItemUpgrade.Poisonous
@@ -454,6 +464,7 @@ class PoisonousUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Poisonous",
 		ServerLanguage.BorkBorkBork: "Pueesunuoos",
 	}
+    encoded_name : bytes = bytes([0x75, 0xA, 0x1, 0x0])
     
 class ShockingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Shocking
@@ -473,6 +484,7 @@ class ShockingUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Shocking",
 		ServerLanguage.BorkBorkBork: "Shuckeeng",
 	}
+    encoded_name : bytes = bytes([0xD6, 0x8, 0x1, 0x0])
     
 class SilencingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Silencing
@@ -492,6 +504,7 @@ class SilencingUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Silencing",
 		ServerLanguage.BorkBorkBork: "Seelenceeng",
 	}
+    encoded_name : bytes = bytes([0x6C, 0xA, 0x1, 0x0])
     
 class SunderingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Sundering
@@ -511,6 +524,7 @@ class SunderingUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Sundering",
 		ServerLanguage.BorkBorkBork: "Soondereeng",
 	}
+    encoded_name : bytes = bytes([0x74, 0xA, 0x1, 0x0])
     
 class SwiftUpgrade(WeaponPrefix):
     id = ItemUpgrade.Swift
@@ -530,6 +544,7 @@ class SwiftUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Swift",
 		ServerLanguage.BorkBorkBork: "Sveefft",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0])
     
 class VampiricUpgrade(WeaponPrefix):
     id = ItemUpgrade.Vampiric
@@ -550,6 +565,7 @@ class VampiricUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Vampiric",
 		ServerLanguage.BorkBorkBork: "Faempureec",
 	}
+    encoded_name : bytes = bytes([0x71, 0xA, 0x1, 0x0])
     
 class ZealousUpgrade(WeaponPrefix):
     id = ItemUpgrade.Zealous
@@ -570,6 +586,8 @@ class ZealousUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Zealous",
 		ServerLanguage.BorkBorkBork: "Zeaeluoos",
 	}
+    encoded_name : bytes = bytes([0x6E, 0xA, 0x1, 0x0])
+
 #endregion Prefixes
 
 #region Suffixes
@@ -752,6 +770,21 @@ class OfAttributeUpgrade(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff {attribute}",
 	}
     
+    upgrade_names : dict[Attribute, bytes] = {
+        Attribute.AirMagic: bytes([0x2E, 0x9, 0x1, 0x0]),
+        Attribute.AxeMastery: bytes([0x42, 0x9, 0x1, 0x0]),
+        Attribute.BloodMagic: bytes([0x26, 0x9, 0x1, 0x0]),
+        Attribute.ChannelingMagic: bytes([0x66, 0x9, 0x1, 0x0]),
+        Attribute.Communing: bytes([0x60, 0x9, 0x1, 0x0]),
+        Attribute.DaggerMastery: bytes([0x5A, 0x9, 0x1, 0x0]),
+        Attribute.DeathMagic: bytes([0x2A, 0x9, 0x1, 0x0]),
+        Attribute.DivineFavor: bytes([0x38, 0x9, 0x1, 0x0]),
+        Attribute.DominationMagic: bytes([0x22, 0x9, 0x1, 0x0]),
+        Attribute.EarthMagic: bytes([0x30, 0x9, 0x1, 0x0]),
+        Attribute.FireMagic: bytes([0x34, 0x9, 0x1, 0x0]),
+        Attribute.HealingPrayers: bytes([0x3A, 0x9, 0x1, 0x0]),
+    }
+    
     attribute : Attribute = Attribute.None_
         
     @classmethod
@@ -785,6 +818,7 @@ class OfAptitudeUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Aptitude",
 		ServerLanguage.BorkBorkBork: "ooff Aepteetoode-a",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0])
     
 class OfAxeMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfAxeMastery
@@ -804,6 +838,7 @@ class OfAxeMasteryUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Axe Mastery",
 		ServerLanguage.BorkBorkBork: "ooff Aexe-a Maestery",
 	}
+    encoded_name : bytes = bytes([0x42, 0x9, 0x1, 0x0])
     
 class OfDaggerMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfDaggerMastery
@@ -823,6 +858,7 @@ class OfDaggerMasteryUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Dagger Mastery",
 		ServerLanguage.BorkBorkBork: "ooff Daegger Maestery",
 	}
+    encoded_name : bytes = bytes([0x5A, 0x9, 0x1, 0x0])
     
 class OfDefenseUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfDefense
@@ -842,6 +878,7 @@ class OfDefenseUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Defense",
 		ServerLanguage.BorkBorkBork: "ooff Deffense-a",
 	}
+    encoded_name : bytes = bytes([0x77, 0xA, 0x1, 0x0])
     
 class OfDevotionUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfDevotion
@@ -861,6 +898,7 @@ class OfDevotionUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Devotion",
 		ServerLanguage.BorkBorkBork: "ooff Defushun",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0])
     
 class OfEnchantingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfEnchanting
@@ -880,6 +918,7 @@ class OfEnchantingUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Enchanting",
 		ServerLanguage.BorkBorkBork: "ooff Inchunteeng",
 	}
+    encoded_name : bytes = bytes([0x78, 0xA, 0x1, 0x0])
     
 class OfEnduranceUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfEndurance
@@ -899,6 +938,7 @@ class OfEnduranceUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Endurance",
 		ServerLanguage.BorkBorkBork: "ooff Indoorunce-a",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0])
     
 class OfFortitudeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfFortitude
@@ -918,6 +958,7 @@ class OfFortitudeUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Fortitude",
 		ServerLanguage.BorkBorkBork: "ooff Furteetoode-a",
 	}
+    encoded_name : bytes = bytes([0x79, 0xA, 0x1, 0x0])
     
 class OfHammerMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfHammerMastery
@@ -975,6 +1016,7 @@ class OfMasteryUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Mastery",
 		ServerLanguage.BorkBorkBork: "ooff Maestery",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0])
     
 class OfMemoryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfMemory
@@ -994,6 +1036,8 @@ class OfMemoryUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Memory",
 		ServerLanguage.BorkBorkBork: "ooff Memury",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0])
+
 class OfQuickeningUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfQuickening
     property_identifiers = [
@@ -1012,6 +1056,7 @@ class OfQuickeningUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Quickening",
 		ServerLanguage.BorkBorkBork: "ooff Qooeeckeneeng",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0])
     
 class OfScytheMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfScytheMastery
@@ -1050,6 +1095,7 @@ class OfShelterUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Shelter",
 		ServerLanguage.BorkBorkBork: "ooff Shelter",
 	}
+    encoded_name : bytes = bytes([0x7B, 0xA, 0x1, 0x0])
     
 class OfSlayingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSlaying
@@ -1162,6 +1208,7 @@ class OfSpearMasteryUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Spear Mastery",
 		ServerLanguage.BorkBorkBork: "ooff Speaer Maestery",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x20, 0x11, 0x1, 0x0])
     
 class OfSwiftnessUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSwiftness
@@ -1181,6 +1228,7 @@ class OfSwiftnessUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Swiftness",
 		ServerLanguage.BorkBorkBork: "ooff Sveefftness",
 	}
+    encoded_name : bytes = bytes([0x7C, 0xA, 0x1, 0x0])
     
 class OfSwordsmanshipUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSwordsmanship
@@ -1200,6 +1248,7 @@ class OfSwordsmanshipUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Swordsmanship",
 		ServerLanguage.BorkBorkBork: "ooff Svurdsmunsheep",
 	}
+    encoded_name : bytes = bytes([0x46, 0x9, 0x1, 0x0])
     
 class OfTheProfessionUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfTheProfession
@@ -1264,6 +1313,7 @@ class OfValorUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Valor",
 		ServerLanguage.BorkBorkBork: "ooff Faelur",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0])
     
 class OfWardingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfWarding
@@ -1283,6 +1333,8 @@ class OfWardingUpgrade(WeaponSuffix):
 		ServerLanguage.Russian: "of Warding",
 		ServerLanguage.BorkBorkBork: "ooff Vaerdeeng",
 	}
+    encoded_name : bytes = bytes([0x7D, 0xA, 0x1, 0x0])
+
 #endregion Suffixes
 
 #region Inscriptions
@@ -1357,6 +1409,7 @@ class FaithIsMyShield(Inscription):
 		ServerLanguage.Russian: "\"Вера послужит мне щитом\"",
 		ServerLanguage.BorkBorkBork: "\"Faeeet is My Sheeeld\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x8D, 0x5D, 0x1, 0x0])
     
 class ForgetMeNot(Inscription):
     id = ItemUpgrade.ForgetMeNot
@@ -1377,6 +1430,7 @@ class ForgetMeNot(Inscription):
 		ServerLanguage.Russian: "\"Незабудка\"",
 		ServerLanguage.BorkBorkBork: "\"Furget Me-a Nut\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x93, 0x5D, 0x1, 0x0])
     
 class HailToTheKing(Inscription):
     id = ItemUpgrade.HailToTheKing
@@ -1397,6 +1451,7 @@ class HailToTheKing(Inscription):
 		ServerLanguage.Russian: "\"Да здравствует король!\"",
 		ServerLanguage.BorkBorkBork: "\"Haeeel tu zee Keeng\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x8F, 0x5D, 0x1, 0x0])
     
 class IgnoranceIsBliss(Inscription):
     id = ItemUpgrade.IgnoranceIsBliss
@@ -1418,6 +1473,7 @@ class IgnoranceIsBliss(Inscription):
 		ServerLanguage.Russian: "\"Счастлив в неведении\"",
 		ServerLanguage.BorkBorkBork: "\"Ignurunce-a is Bleess\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x87, 0x5D, 0x1, 0x0])
     
 class KnowingIsHalfTheBattle(Inscription):
     id = ItemUpgrade.KnowingIsHalfTheBattle
@@ -1439,6 +1495,7 @@ class LifeIsPain(Inscription):
     names = {
 		ServerLanguage.English: "\"Life is Pain\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x88, 0x5D, 0x1, 0x0])
     
 class LiveForToday(Inscription):
     id = ItemUpgrade.LiveForToday
@@ -1460,6 +1517,7 @@ class LiveForToday(Inscription):
 		ServerLanguage.Russian: "\"Живи сегодняшним днем\"",
 		ServerLanguage.BorkBorkBork: "\"Leefe-a fur Tudaey\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x91, 0x5D, 0x1, 0x0])
     
 class ManForAllSeasons(Inscription):
     id = ItemUpgrade.ManForAllSeasons
@@ -1500,6 +1558,7 @@ class SerenityNow(Inscription):
 		ServerLanguage.Russian: "\"Спокойствие, только спокойствие!\"",
 		ServerLanguage.BorkBorkBork: "\"Sereneety Noo\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x92, 0x5D, 0x1, 0x0])
     
 class SurvivalOfTheFittest(Inscription):
     id = ItemUpgrade.SurvivalOfTheFittest
@@ -1520,6 +1579,8 @@ class SurvivalOfTheFittest(Inscription):
 		ServerLanguage.Russian: "\"Естественный отбор\"",
 		ServerLanguage.BorkBorkBork: "\"Soorfeefael ooff zee Feettest\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x8A, 0x5D, 0x1, 0x0])
+
 #endregion Offhand
 
 #region Weapon
@@ -1544,6 +1605,7 @@ class BrawnOverBrains(Inscription):
 		ServerLanguage.Russian: "\"Сила есть -ума не надо\"",
 		ServerLanguage.BorkBorkBork: "\"Braevn oofer Braeeens\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xAE, 0x5D, 0x1, 0x0])
         
 class DanceWithDeath(Inscription):
     id = ItemUpgrade.DanceWithDeath
@@ -1564,6 +1626,7 @@ class DanceWithDeath(Inscription):
 		ServerLanguage.Russian: "\"Танец со смертью\"",
 		ServerLanguage.BorkBorkBork: "\"Dunce-a veet Deaet\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xAD, 0x5D, 0x1, 0x0])
          
 class DontFearTheReaper(Inscription):
     id = ItemUpgrade.DontFearTheReaper
@@ -1584,6 +1647,7 @@ class DontFearTheReaper(Inscription):
 		ServerLanguage.Russian: "\"Не бойся жнеца\"",
 		ServerLanguage.BorkBorkBork: "\"Dun't Feaer zee Reaeper\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xAC, 0x5D, 0x1, 0x0])
     
 class DontThinkTwice(Inscription):
     id = ItemUpgrade.DontThinkTwice
@@ -1604,6 +1668,7 @@ class DontThinkTwice(Inscription):
 		ServerLanguage.Russian: "\"А что тут думать?\"",
 		ServerLanguage.BorkBorkBork: "\"Dun't Theenk Tveece-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB0, 0x5D, 0x1, 0x0])
     
 class GuidedByFate(Inscription):
     id = ItemUpgrade.GuidedByFate
@@ -1624,6 +1689,7 @@ class GuidedByFate(Inscription):
 		ServerLanguage.Russian: "\"Ведомый роком\"",
 		ServerLanguage.BorkBorkBork: "\"Gooeeded by Faete-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xA9, 0x5D, 0x1, 0x0])
     
 class StrengthAndHonor(Inscription):
     id = ItemUpgrade.StrengthAndHonor
@@ -1644,6 +1710,7 @@ class StrengthAndHonor(Inscription):
 		ServerLanguage.Russian: "\"Сила и честь\"",
 		ServerLanguage.BorkBorkBork: "\"Strengt und Hunur\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xAA, 0x5D, 0x1, 0x0])
     
 class ToThePain(Inscription):
     id = ItemUpgrade.ToThePain
@@ -1665,6 +1732,7 @@ class ToThePain(Inscription):
 		ServerLanguage.Russian: "\"Боль!\"",
 		ServerLanguage.BorkBorkBork: "\"Tu zee Paeeen!\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xAF, 0x5D, 0x1, 0x0])
     
 class TooMuchInformation(Inscription):
     id = ItemUpgrade.TooMuchInformation
@@ -1685,6 +1753,7 @@ class TooMuchInformation(Inscription):
 		ServerLanguage.Russian: "\"Слишком много информации\"",
 		ServerLanguage.BorkBorkBork: "\"Tuu Mooch Inffurmaeshun\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xA8, 0x5D, 0x1, 0x0])
     
 class VengeanceIsMine(Inscription):
     id = ItemUpgrade.VengeanceIsMine
@@ -1705,6 +1774,8 @@ class VengeanceIsMine(Inscription):
 		ServerLanguage.Russian: "\"Аз воздам\"",
 		ServerLanguage.BorkBorkBork: "\"Fengeunce-a is Meene-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xAB, 0x5D, 0x1, 0x0])
+
 #endregion Weapon
 
 #region MartialWeapon
@@ -1727,6 +1798,7 @@ class IHaveThePower(Inscription):
 		ServerLanguage.Russian: "\"Сила в моих руках!\"",
 		ServerLanguage.BorkBorkBork: "\"I haefe-a zee pooer!\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x72, 0x5D, 0x1, 0x0])
     
 class LetTheMemoryLiveAgain(Inscription):
     id = ItemUpgrade.LetTheMemoryLiveAgain
@@ -1747,6 +1819,7 @@ class LetTheMemoryLiveAgain(Inscription):
 		ServerLanguage.Russian: "\"Пусть оживут воспоминания\"",
 		ServerLanguage.BorkBorkBork: "\"Let zee Memury Leefe-a Aegaeeen\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x73, 0x5D, 0x1, 0x0])
     
 #endregion MartialWeapon
 
@@ -1770,6 +1843,7 @@ class CastOutTheUnclean(Inscription):
 		ServerLanguage.Russian: "\"Изгнать нечистых\"",
 		ServerLanguage.BorkBorkBork: "\"Caest Oooot zee Uncleun\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x83, 0x5D, 0x1, 0x0])
     
 class FearCutsDeeper(Inscription):
     id = ItemUpgrade.FearCutsDeeper
@@ -1790,6 +1864,7 @@ class FearCutsDeeper(Inscription):
 		ServerLanguage.Russian: "\"Страх острее бритвы\"",
 		ServerLanguage.BorkBorkBork: "\"Feaer Coots Deeper\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x7F, 0x5D, 0x1, 0x0])
     
 class ICanSeeClearlyNow(Inscription):
     id = ItemUpgrade.ICanSeeClearlyNow
@@ -1810,6 +1885,7 @@ class ICanSeeClearlyNow(Inscription):
 		ServerLanguage.Russian: "\"Теперь я ясно вижу\"",
 		ServerLanguage.BorkBorkBork: "\"I Cun See-a Cleaerly Noo\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x80, 0x5D, 0x1, 0x0])
     
 class LeafOnTheWind(Inscription):
     id = ItemUpgrade.LeafOnTheWind
@@ -1830,6 +1906,7 @@ class LeafOnTheWind(Inscription):
 		ServerLanguage.Russian: "\"Лист на ветру\"",
 		ServerLanguage.BorkBorkBork: "\"Leaeff oon zee Veend\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x75, 0x5D, 0x1, 0x0])
     
 class LikeARollingStone(Inscription):
     id = ItemUpgrade.LikeARollingStone
@@ -1850,6 +1927,7 @@ class LikeARollingStone(Inscription):
 		ServerLanguage.Russian: "\"Как перекати-поле\"",
 		ServerLanguage.BorkBorkBork: "\"Leeke-a a Rulleeng Stune-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x76, 0x5D, 0x1, 0x0])
     
 class LuckOfTheDraw(Inscription):
     id = ItemUpgrade.LuckOfTheDraw
@@ -1870,6 +1948,7 @@ class LuckOfTheDraw(Inscription):
 		ServerLanguage.Russian: "\"Счастливый жребий\"",
 		ServerLanguage.BorkBorkBork: "\"Loock ooff zee Draev\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x7B, 0x5D, 0x1, 0x0])
     
 class MasterOfMyDomain(Inscription):
     id = ItemUpgrade.MasterOfMyDomain
@@ -1890,6 +1969,7 @@ class MasterOfMyDomain(Inscription):
 		ServerLanguage.Russian: "\"Я сам себе хозяин\"",
 		ServerLanguage.BorkBorkBork: "\"Maester ooff My Dumaeeen\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xA7, 0x5D, 0x1, 0x0])
     
 class NotTheFace(Inscription):
     id = ItemUpgrade.NotTheFace
@@ -1910,6 +1990,7 @@ class NotTheFace(Inscription):
 		ServerLanguage.Russian: "\"Только не в лицо!\"",
 		ServerLanguage.BorkBorkBork: "\"Nut zee faece-a!\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x74, 0x5D, 0x1, 0x0])
     
 class NothingToFear(Inscription):
     id = ItemUpgrade.NothingToFear
@@ -1930,6 +2011,7 @@ class NothingToFear(Inscription):
 		ServerLanguage.Russian: "\"Нечего бояться\"",
 		ServerLanguage.BorkBorkBork: "\"Nutheeng tu Feaer\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x7D, 0x5D, 0x1, 0x0])
     
 class OnlyTheStrongSurvive(Inscription):
     id = ItemUpgrade.OnlyTheStrongSurvive
@@ -1950,6 +2032,7 @@ class OnlyTheStrongSurvive(Inscription):
 		ServerLanguage.Russian: "\"Выживает сильнейший\"",
 		ServerLanguage.BorkBorkBork: "\"Oonly zee Strung Soorfeefe-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x86, 0x5D, 0x1, 0x0])
     
 class PureOfHeart(Inscription):
     id = ItemUpgrade.PureOfHeart
@@ -1970,6 +2053,7 @@ class PureOfHeart(Inscription):
 		ServerLanguage.Russian: "\"Чистые сердцем\"",
 		ServerLanguage.BorkBorkBork: "\"Poore-a ooff Heaert\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x84, 0x5D, 0x1, 0x0])
     
 class RidersOnTheStorm(Inscription):
     id = ItemUpgrade.RidersOnTheStorm
@@ -1990,6 +2074,7 @@ class RidersOnTheStorm(Inscription):
 		ServerLanguage.Russian: "\"Всадники бури\"",
 		ServerLanguage.BorkBorkBork: "\"Reeders oon zee Sturm\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x77, 0x5D, 0x1, 0x0])
     
 class RunForYourLife(Inscription):
     id = ItemUpgrade.RunForYourLife
@@ -2010,6 +2095,7 @@ class RunForYourLife(Inscription):
 		ServerLanguage.Russian: "\"Спасайся, кто может!\"",
 		ServerLanguage.BorkBorkBork: "\"Roon Fur Yuoor Leeffe-a!\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x7E, 0x5D, 0x1, 0x0])
     
 class ShelteredByFaith(Inscription):
     id = ItemUpgrade.ShelteredByFaith
@@ -2030,6 +2116,7 @@ class ShelteredByFaith(Inscription):
 		ServerLanguage.Russian: "\"Под защитой веры\"",
 		ServerLanguage.BorkBorkBork: "\"Sheltered by Faeeet\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x7C, 0x5D, 0x1, 0x0])
     
 class SleepNowInTheFire(Inscription):
     id = ItemUpgrade.SleepNowInTheFire
@@ -2050,6 +2137,7 @@ class SleepNowInTheFire(Inscription):
 		ServerLanguage.Russian: "\"Покойся в пламени\"",
 		ServerLanguage.BorkBorkBork: "\"Sleep Noo in zee Fure-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x78, 0x5D, 0x1, 0x0])
     
 class SoundnessOfMind(Inscription):
     id = ItemUpgrade.SoundnessOfMind
@@ -2070,6 +2158,7 @@ class SoundnessOfMind(Inscription):
 		ServerLanguage.Russian: "\"Здравый рассудок\"",
 		ServerLanguage.BorkBorkBork: "\"Suoondness ooff Meend\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x85, 0x5D, 0x1, 0x0])
     
 class StrengthOfBody(Inscription):
     id = ItemUpgrade.StrengthOfBody
@@ -2090,6 +2179,7 @@ class StrengthOfBody(Inscription):
 		ServerLanguage.Russian: "\"Сила тела\"",
 		ServerLanguage.BorkBorkBork: "\"Strengt ooff Budy\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x82, 0x5D, 0x1, 0x0])
     
 class SwiftAsTheWind(Inscription):
     id = ItemUpgrade.SwiftAsTheWind
@@ -2110,6 +2200,7 @@ class SwiftAsTheWind(Inscription):
 		ServerLanguage.Russian: "\"Быстрый как ветер\"",
 		ServerLanguage.BorkBorkBork: "\"Sveefft aes zee Veend\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x81, 0x5D, 0x1, 0x0])
 
 class TheRiddleOfSteel(Inscription):
     id = ItemUpgrade.TheRiddleOfSteel
@@ -2130,6 +2221,7 @@ class TheRiddleOfSteel(Inscription):
 		ServerLanguage.Russian: "\"Стальной щит\"",
 		ServerLanguage.BorkBorkBork: "\"Zee Reeddle-a ooff Steel\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x7A, 0x5D, 0x1, 0x0])
     
 class ThroughThickAndThin(Inscription):
     id = ItemUpgrade.ThroughThickAndThin
@@ -2150,6 +2242,8 @@ class ThroughThickAndThin(Inscription):
 		ServerLanguage.Russian: "\"Сквозь огонь и воду\"",
 		ServerLanguage.BorkBorkBork: "\"Thruoogh Theeck und Theen\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x79, 0x5D, 0x1, 0x0])
+
 #endregion OffhandOrShield
 
 #region EquippableItem
@@ -2172,6 +2266,7 @@ class MeasureForMeasure(Inscription):
 		ServerLanguage.Russian: "\"Око за око\"",
 		ServerLanguage.BorkBorkBork: "\"Meaesoore-a fur Meaesoore-a\"",
 	}
+    encoded_name : bytes = bytes([0x81, 0x7C, 0x1, 0x0])
         
 class ShowMeTheMoney(Inscription):
     id = ItemUpgrade.ShowMeTheMoney
@@ -2192,6 +2287,8 @@ class ShowMeTheMoney(Inscription):
 		ServerLanguage.Russian: "\"Покажи мне деньги!\"",
 		ServerLanguage.BorkBorkBork: "\"Shoo me-a zee muney!\"",
 	}
+    encoded_name : bytes = bytes([0x80, 0x7C, 0x1, 0x0])
+
 #endregion EquippableItem
 
 #region SpellcastingWeapon
@@ -2214,6 +2311,7 @@ class AptitudeNotAttitude(Inscription):
 		ServerLanguage.Russian: "\"Главное -способности, а не отношение к делу\"",
 		ServerLanguage.BorkBorkBork: "\"Aepteetoode-a nut Aetteetoode-a\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB2, 0x5D, 0x1, 0x0])
     
 class DontCallItAComeback(Inscription):
     id = ItemUpgrade.DontCallItAComeback
@@ -2234,6 +2332,7 @@ class DontCallItAComeback(Inscription):
 		ServerLanguage.Russian: "\"Не считай это местью!\"",
 		ServerLanguage.BorkBorkBork: "\"Dun't caell it a cumebaeck!\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB6, 0x5D, 0x1, 0x0])
     
 class HaleAndHearty(Inscription):
     id = ItemUpgrade.HaleAndHearty
@@ -2254,6 +2353,7 @@ class HaleAndHearty(Inscription):
 		ServerLanguage.Russian: "\"Сильный и здоровый\"",
 		ServerLanguage.BorkBorkBork: "\"Haele-a und Heaerty\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB5, 0x5D, 0x1, 0x0])
     
 class HaveFaith(Inscription):
     id = ItemUpgrade.HaveFaith
@@ -2274,6 +2374,7 @@ class HaveFaith(Inscription):
 		ServerLanguage.Russian: "\"Не теряй веру\"",
 		ServerLanguage.BorkBorkBork: "\"Haefe-a Faeeet\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB4, 0x5D, 0x1, 0x0])
     
 class IAmSorrow(Inscription):
     id = ItemUpgrade.IAmSorrow
@@ -2294,6 +2395,7 @@ class IAmSorrow(Inscription):
 		ServerLanguage.Russian: "\"Я -воплощение скорби\"",
 		ServerLanguage.BorkBorkBork: "\"I aem Surroo.\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB7, 0x5D, 0x1, 0x0])
     
 class SeizeTheDay(Inscription):
     id = ItemUpgrade.SeizeTheDay
