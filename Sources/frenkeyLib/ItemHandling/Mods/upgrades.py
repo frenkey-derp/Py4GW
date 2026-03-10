@@ -8,6 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import PROFESSION_ATTRIBUTES, Attribu
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
+from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.Mods.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfession
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
@@ -26,11 +27,13 @@ class Upgrade:
     property_identifiers: list[ModifierIdentifier] = []
     properties: list[ItemProperty] = []
     
+    encoded_name : bytes = bytes()
     names: dict[ServerLanguage, str] = {}
     descriptions: dict[ServerLanguage, str] = {}
     
     def __init__(self):
         self.is_inherent = False
+        self.language = ServerLanguage(string_table._loaded_language) if string_table._loaded_language in ServerLanguage._value2member_map_ else ServerLanguage.English
 
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
@@ -68,6 +71,12 @@ class Upgrade:
     
     @property
     def name(self) -> str:
+        if self.encoded_name:
+            decoded_name = string_table.decode(self.encoded_name)
+            
+            if decoded_name:
+                return decoded_name
+            
         preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
         server_language = ServerLanguage(preference)
         return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__))
@@ -215,6 +224,8 @@ class AdeptStaffUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Adept",
 		ServerLanguage.BorkBorkBork: "Aedept",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x94, 0x5D, 0x1, 0x0])
+    
     
 class BarbedUpgrade(WeaponPrefix):
     id = ItemUpgrade.Barbed
@@ -1196,20 +1207,24 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.OfTheProfession,
     ]
-        
-    names = {
-		ServerLanguage.English: "of the {profession}",
-		ServerLanguage.Spanish: "(el {profession})",
-		ServerLanguage.Italian: "dell'arco il {profession}",
-		ServerLanguage.German: "d. des {profession}",
-		ServerLanguage.Korean: "({profession})",
-		ServerLanguage.French: "(le {profession})",
-		ServerLanguage.TraditionalChinese: "{profession}",
-		ServerLanguage.Japanese: "({profession})",
-		ServerLanguage.Polish: "({profession})",
-		ServerLanguage.Russian: "of {profession}",
-		ServerLanguage.BorkBorkBork: "ooff zee {profession}",
+    
+    def __init__(self):
+        super().__init__()
+                
+    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBF])
+    upgrade_names : dict[Profession, bytes] = {
+        Profession.Assassin: bytes([0x2, 0x81, 0xB2, 0x38, 0x1, 0x0]),
+        Profession.Dervish: bytes([0x2, 0x81, 0xB5, 0x38, 0x1, 0x0]),
+        Profession.Elementalist: bytes([0x2, 0x81, 0xAF, 0x38, 0x1, 0x0]),
+        Profession.Mesmer: bytes([0x2, 0x81, 0xAC, 0x38, 0x1, 0x0]),
+        Profession.Monk: bytes([0x2, 0x81, 0xAE, 0x38, 0x1, 0x0]),
+        Profession.Necromancer: bytes([0x2, 0x81, 0xAD, 0x38, 0x1, 0x0]),
+        Profession.Paragon: bytes([0x2, 0x81, 0xB4, 0x38, 0x1, 0x0]),
+        Profession.Ranger: bytes([0x2, 0x81, 0xB1, 0x38, 0x1, 0x0]),
+        Profession.Ritualist: bytes([0x2, 0x81, 0xB3, 0x38, 0x1, 0x0]),
+        Profession.Warrior: bytes([0x2, 0x81, 0xB0, 0x38, 0x1, 0x0]),
 	}
+    
     
     profession : Profession = Profession._None
     
@@ -1221,10 +1236,13 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
     @property
     def name(self) -> str:
-        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
-        server_language = ServerLanguage(preference)
+        decoded_of = string_table.decode(self.str1_of_str2)
+        decoded_profession = string_table.decode(self.upgrade_names.get(self.profession, bytes()))
         
-        return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__)).format(profession=self.profession.name if self.profession != Profession._None else "Unknown Profession")
+        if decoded_of and decoded_profession:
+            return (decoded_of or f"%str1% of %str2%").replace(f"%str2%", decoded_profession).replace(f"%str1%", "").strip()
+        else:
+            return "of {profession}".format(profession=self.profession.name if self.profession != Profession._None else "Unknown Profession")
     
     
     
