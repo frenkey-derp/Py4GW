@@ -770,6 +770,7 @@ class OfAttributeUpgrade(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff {attribute}",
 	}
     
+    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBF])
     upgrade_names : dict[Attribute, bytes] = {
         Attribute.AirMagic: bytes([0x2E, 0x9, 0x1, 0x0]),
         Attribute.AxeMastery: bytes([0x42, 0x9, 0x1, 0x0]),
@@ -787,6 +788,7 @@ class OfAttributeUpgrade(WeaponSuffix):
     
     attribute : Attribute = Attribute.None_
         
+    
     @classmethod
     def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
         of_attribute_upgrade = cast("OfAttributeUpgrade", upgrade)
@@ -795,6 +797,11 @@ class OfAttributeUpgrade(WeaponSuffix):
     
     @property
     def name(self) -> str:
+        encoded_name = string_table.decode(self.upgrade_names.get(self.attribute, bytes([0x0])))
+        of_decoded = string_table.decode(self.str1_of_str2)
+        if encoded_name and of_decoded:
+            return of_decoded.replace(f"%str2%", encoded_name).replace(f"%str1%", "")
+            
         preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
         server_language = ServerLanguage(preference)
         
