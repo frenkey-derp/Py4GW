@@ -206,7 +206,7 @@ class WeaponPrefix(WeaponUpgrade):
         
         return None
     
-class AdeptStaffUpgrade(WeaponPrefix):
+class AdeptUpgrade(WeaponPrefix):
     id = ItemUpgrade.Adept
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
@@ -512,7 +512,7 @@ class SunderingUpgrade(WeaponPrefix):
 		ServerLanguage.BorkBorkBork: "Soondereeng",
 	}
     
-class SwiftStaffUpgrade(WeaponPrefix):
+class SwiftUpgrade(WeaponPrefix):
     id = ItemUpgrade.Swift
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
@@ -6581,8 +6581,8 @@ _UPGRADES: list[type[Upgrade]] = [
     OfSwordsmanshipUpgrade,
     OfAttributeUpgrade,
     OfMasteryUpgrade,
-    SwiftStaffUpgrade,
-    AdeptStaffUpgrade,
+    SwiftUpgrade,
+    AdeptUpgrade,
     OfMemoryUpgrade,
     OfQuickeningUpgrade,
     OfAptitudeUpgrade,
