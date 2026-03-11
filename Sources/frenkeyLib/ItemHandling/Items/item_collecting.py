@@ -73,11 +73,11 @@ class ItemCollector():
         
         self.run_throttle.Reset()
         
-        # snapshot = ITEM_CACHE.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack, Bag.Equipped_Items])
-        snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Max)
+        snapshot = ITEM_CACHE.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack, Bag.Equipped_Items])
+        # snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Max)
         items = [i for bag in snapshot.values() for i in bag.values() if i is not None]
-        # offered_items = Merchant.Trading.Trader.GetOfferedItems()
-        # items = [ITEM_CACHE.get_item_snapshot(i) for i in offered_items if i is not None]
+        offered_items = Merchant.Trading.Trader.GetOfferedItems()
+        items = [ITEM_CACHE.get_item_snapshot(i) for i in offered_items if i is not None]
         for item in items:
             if item is None:
                 continue
