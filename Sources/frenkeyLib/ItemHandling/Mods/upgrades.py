@@ -295,13 +295,14 @@ class OfAttributeUpgrade(WeaponSuffix):
     
     @property
     def name(self) -> str:
-        encoded_name = bytes([*EncodedStrings.STAFF_WRAPPING_OF_STR2, *EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes())])
-        decoded_name = string_table.decode(encoded_name).replace(string_table.decode(EncodedStrings.WEAPON_SUFFIXES.get(ItemType.Staff, bytes())), "")
+        placeholder_bytes = EncodedStrings.PLACEHOLDER_TO_REMOVE
+        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + bytes([0xB, 0x1]) + EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0])).replace(string_table.decode(placeholder_bytes), "").strip()
         
         if decoded_name:
             return decoded_name
         
-        return f"Unknown Attribute Upgrade ({self.attribute.name})"
+        else:
+            return f"Unknown Attribute Upgrade ({self.attribute.name})"
     
 class OfAptitudeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfAptitude
@@ -310,19 +311,11 @@ class OfAptitudeUpgrade(WeaponSuffix):
     ]
     encoded_name : bytes = bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0])
     
-class OfAxeMasteryUpgrade(WeaponSuffix):
+class OfAxeMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfAxeMastery
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    encoded_name : bytes = bytes([0x42, 0x9, 0x1, 0x0])
     
-class OfDaggerMasteryUpgrade(WeaponSuffix):
+class OfDaggerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfDaggerMastery
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]   
-    encoded_name : bytes = bytes([0x5A, 0x9, 0x1, 0x0])
     
 class OfDefenseUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfDefense
@@ -359,19 +352,11 @@ class OfFortitudeUpgrade(WeaponSuffix):
     ]
     encoded_name : bytes = bytes([0x79, 0xA, 0x1, 0x0])
     
-class OfHammerMasteryUpgrade(WeaponSuffix):
+class OfHammerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfHammerMastery
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    encoded_name : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBE, 0x22, 0x1, 0x0, 0xB, 0x1, 0x44, 0x9, 0x1, 0x0, 0x1, 0x0])
     
-class OfMarksmanshipUpgrade(WeaponSuffix):
+class OfMarksmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfMarksmanship
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    encoded_name : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBD, 0x22, 0x1, 0x0, 0xB, 0x1, 0x56, 0x9, 0x1, 0x0, 0x1, 0x0])
     
 class OfMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfMastery
@@ -394,12 +379,8 @@ class OfQuickeningUpgrade(WeaponSuffix):
     ]
     encoded_name : bytes = bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0])
     
-class OfScytheMasteryUpgrade(WeaponSuffix):
+class OfScytheMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfScytheMastery
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    encoded_name : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x73, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0x22, 0x11, 0x1, 0x0, 0x1, 0x0])
     
 class OfShelterUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfShelter
@@ -420,27 +401,25 @@ class OfSlayingUpgrade(WeaponSuffix):
         super().__init__()
         self.species = ItemBaneSpecies.Unknown
     
-    def post_compose(self, mod: DecodedModifier, modifiers: list[DecodedModifier]) -> None:
-        damage_plus_vs_species_property = next((p for p in self.properties if isinstance(p, DamagePlusVsSpecies)), None)
-        self.species = damage_plus_vs_species_property.species if damage_plus_vs_species_property else ItemBaneSpecies.Unknown
+    @classmethod
+    def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
+        of_slaying_upgrade = cast("OfSlayingUpgrade", upgrade)        
+        damage_plus_vs_species_property = next((p for p in upgrade.properties if isinstance(p, DamagePlusVsSpecies)), None)
+        of_slaying_upgrade.species = damage_plus_vs_species_property.species if damage_plus_vs_species_property else ItemBaneSpecies.Unknown
         
     @property
     def name(self) -> str:
-        species_name_bytes = EncodedStrings.SLAYING_SUFFIXES.get(self.species, bytes())
-        decoded_species_name = string_table.decode(species_name_bytes)
+        placeholder_bytes = EncodedStrings.PLACEHOLDER_TO_REMOVE
+        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + EncodedStrings.SLAYING_SUFFIXES.get(self.species, bytes())).replace(string_table.decode(placeholder_bytes), "").strip()
         
-        if decoded_species_name:
-            return decoded_species_name
+        if decoded_name:
+            return decoded_name
         
         return f"of Slaying ({self.species.name})"
 
-class OfSpearMasteryUpgrade(WeaponSuffix):
+class OfSpearMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSpearMastery
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x20, 0x11, 0x1, 0x0])
-    
+
 class OfSwiftnessUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSwiftness
     property_identifiers = [
@@ -448,12 +427,8 @@ class OfSwiftnessUpgrade(WeaponSuffix):
     ]
     encoded_name : bytes = bytes([0x7C, 0xA, 0x1, 0x0])
     
-class OfSwordsmanshipUpgrade(WeaponSuffix):
+class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSwordsmanship
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    encoded_name : bytes = bytes([0x46, 0x9, 0x1, 0x0])
     
 class OfTheProfessionUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfTheProfession
@@ -475,15 +450,14 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
     @property
     def name(self) -> str:
-        placeholder_bytes = EncodedStrings.WEAPON_SUFFIXES.get(ItemType.Staff, bytes())
-        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + EncodedStrings.THE_PROFESSION.get(self.profession, bytes())).replace(string_table.decode(placeholder_bytes), "")
+        placeholder_bytes = EncodedStrings.PLACEHOLDER_TO_REMOVE
+        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + EncodedStrings.THE_PROFESSION.get(self.profession, bytes())).replace(string_table.decode(placeholder_bytes), "").strip()
         
         if decoded_name:
             return decoded_name
         
         else:
             return "of {profession}".format(profession=self.profession.name if self.profession != Profession._None else "Unknown Profession")
-    
     
     
 class OfValorUpgrade(WeaponSuffix):

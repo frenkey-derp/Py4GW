@@ -7,8 +7,17 @@ ROOT = Path(__file__).resolve().parent
 UPGRADES_PATH = ROOT / "Sources" / "frenkeyLib" / "ItemHandling" / "Mods" / "upgrades.py"
 STRINGS_PATH = ROOT / "Sources" / "frenkeyLib" / "ItemHandling" / "Items" / "collected_strings.json"
 
-TARGET_BASES = {"WeaponUpgrade", "Inscription"}
-ABSTRACT_CLASSES = {"Upgrade", "WeaponUpgrade", "WeaponPrefix", "WeaponSuffix", "Inscription"}
+TARGET_BASES = {"WeaponUpgrade", "Inscription", "Insignia", "Rune"}
+ABSTRACT_CLASSES = {
+    "Upgrade",
+    "WeaponUpgrade",
+    "WeaponPrefix",
+    "WeaponSuffix",
+    "Inscription",
+    "Insignia",
+    "Rune",
+    "AttributeRune",
+}
 NAME_ALIASES = {
     "\"Knowing is Half the Battle\"": "\"Knowing is Half the Battle.\"",
     "\"Master of My Domain!\"": "\"Master of My Domain\"",
