@@ -73,6 +73,17 @@ class ItemNamePartsEncoded(NamedTuple):
         return self.plural_form if self.plural_form is not None else self.item_name
 
 
+class DecodedSubstring(NamedTuple):
+    encoded: bytes
+    decoded: str
+
+
+class DecodedStringInspection(NamedTuple):
+    encoded: bytes
+    decoded: str
+    substrings: tuple[DecodedSubstring, ...]
+
+
 # ─── Codepoint parsing (base-0x7F00 encoding) ────────────────────────────
 
 _BASE = 0x0100
@@ -565,6 +576,113 @@ def _decode_formatted_codepoints(codepoints: tuple[int, ...], start: int = 0) ->
     return node.get("rendered", ""), i
 
 
+def _decode_formatted_stream_nodes(codepoints: tuple[int, ...]) -> tuple[str, list[dict]]:
+    """Decode full formatted stream and return text plus all top-level trees."""
+    out: list[str] = []
+    trees: list[dict] = []
+    i = 0
+    n = len(codepoints)
+
+    while i < n:
+        cp = codepoints[i]
+        if cp == 0:
+            break
+        if cp == 1:
+            i += 1
+            continue
+        if cp == 2:
+            i += 1
+            continue
+
+        tree, ni = _decode_formatted_tree(codepoints, i)
+        if ni <= i:
+            i += 1
+            continue
+        txt = tree.get("rendered", "").strip()
+        if txt:
+            out.append(txt)
+            trees.append(tree)
+        i = ni
+
+    compact: list[str] = []
+    i = 0
+    while i < len(out):
+        cur = out[i]
+        if re.search(r'%str\d+%', cur) and (i + 1) < len(out):
+            nxt = out[i + 1]
+            if nxt and not nxt.startswith("<c=@"):
+                cur = re.sub(r'%str\d+%', nxt, cur)
+                i += 1
+        compact.append(cur)
+        i += 1
+
+    return ('\n'.join(compact).strip(), trees)
+
+
+def _walk_decoded_substrings(node: dict, out: list[DecodedSubstring], seen: set[tuple[bytes, str]]) -> None:
+    encoded = _codepoints_to_raw(node.get("expr_cp") or ())
+    decoded = (node.get("rendered") or "").strip()
+    if encoded and decoded:
+        key = (encoded, decoded)
+        if key not in seen:
+            seen.add(key)
+            out.append(DecodedSubstring(encoded, decoded))
+
+    for child in (node.get("args") or {}).values():
+        _walk_decoded_substrings(child, out, seen)
+
+
+def inspect_decoded(raw: bytes) -> DecodedStringInspection:
+    """Return the full decoded string and every decoded subtree with its raw bytes."""
+    full = decode(raw)
+
+    if len(raw) < 2:
+        return DecodedStringInspection(raw, full, ())
+
+    if raw[0:2] == _PLAYER_PREFIX:
+        text = full or bytes(raw[4::2]).decode('ascii', 'ignore')
+        substrings = [DecodedSubstring(raw, text)] if text else []
+        return DecodedStringInspection(raw, full, tuple(substrings))
+
+    n = len(raw) & ~1
+    if n < 2:
+        return DecodedStringInspection(raw, full, ())
+
+    cp = struct.unpack_from(f'<{n >> 1}H', raw)
+    try:
+        cp = cp[:cp.index(0)]
+    except ValueError:
+        pass
+    if not cp:
+        return DecodedStringInspection(raw, full, ())
+
+    idx, key = _parse_codepoints(cp)
+    has_arg_tags = any(_is_arg_tag(v) for v in cp)
+    has_term = any(v == 1 for v in cp)
+    has_sep = any(v == 2 for v in cp)
+
+    if not has_arg_tags or not has_term:
+        if idx != 0:
+            return DecodedStringInspection(raw, full, (DecodedSubstring(raw, full),) if full else ())
+        return DecodedStringInspection(raw, full, ())
+
+    seen: set[tuple[bytes, str]] = set()
+    substrings: list[DecodedSubstring] = []
+
+    if has_sep:
+        _, trees = _decode_formatted_stream_nodes(cp)
+        for tree in trees:
+            _walk_decoded_substrings(tree, substrings, seen)
+    else:
+        tree, _ = _decode_formatted_tree(cp, 0)
+        _walk_decoded_substrings(tree, substrings, seen)
+
+    if full and (raw, full) not in seen:
+        substrings.insert(0, DecodedSubstring(raw, full))
+
+    return DecodedStringInspection(raw, full, tuple(substrings))
+
+
 def _find_num_arg(tree: dict, slot: int = 1) -> Optional[int]:
     nums = tree.get("num_args") or {}
     if slot in nums:
@@ -948,6 +1066,7 @@ def _get_client_language() -> int:
 
 def switch_language(language: int) -> None:
     global _string_table, _decode_cache, _string_table_loaded, _load_enqueued, _loaded_language
+    _string_table.clear()
     _decode_cache.clear()
     ItemName._parts_cache.clear()
     ItemName._parts_encoded_cache.clear()
@@ -1098,7 +1217,7 @@ def decode(raw: bytes) -> str:
     if not _string_table_loaded and not _load_enqueued:
         load_string_table(_get_client_language())
 
-    if not _string_table or raw in _pending:
+    if not _string_table_loaded or not _string_table or raw in _pending:
         return ""
 
     # Submit decode to background thread — return "" now, cache hit next frame
@@ -1125,6 +1244,7 @@ class ItemName:
     }
 
     decode = staticmethod(decode)
+    inspect_decoded = staticmethod(inspect_decoded)
     
     @staticmethod
     def decode_parts(raw: bytes) -> ItemNameParts:
@@ -1156,7 +1276,7 @@ class ItemName:
         if not _string_table_loaded and not _load_enqueued:
             load_string_table(_get_client_language())
 
-        if not _string_table or raw in _pending:
+        if not _string_table_loaded or not _string_table or raw in _pending:
             return ItemNameParts(None, None, None, None, None)
 
         _pending.add(raw)
@@ -1180,7 +1300,7 @@ class ItemName:
         if not _string_table_loaded and not _load_enqueued:
             load_string_table(_get_client_language())
 
-        if not _string_table or raw in _pending:
+        if not _string_table_loaded or not _string_table or raw in _pending:
             return ItemNamePartsEncoded(None, None, None, None, None)
 
         _pending.add(raw)

@@ -120,7 +120,14 @@ class ItemCollector():
             
             decoded = ItemName.decode_parts(bytes(item.complete_name_enc))
             encoded = ItemName.encoded_parts(bytes(item.complete_name_enc))
-        
+            inspected = ItemName.inspect_decoded(bytes(item.complete_name_enc))
+            
+            for substring in inspected.substrings:
+                 if substring.decoded and substring.encoded:
+                    if substring.encoded not in self.string_table:
+                        self.string_table[substring.encoded] = substring.decoded
+                        self.requires_saving = True
+            
             if not decoded or not decoded.singular:
                 continue
             
@@ -152,7 +159,7 @@ class ItemCollector():
             json.dump(sorted_data, f, indent=4, ensure_ascii=False)
             
         with open(self.STRING_PATH, "w", encoding="utf-8") as f:
-            data = {v: encoded_to_hex_string(k) for k, v in self.string_table.items()}
+            data = {v: encoded_to_hex_string(k).replace(" ", ", ") for k, v in self.string_table.items()}
             sorted_data = dict(sorted(data.items(), key=lambda item: item[0]))  # sort by hex string
             json.dump(sorted_data, f, indent=4, ensure_ascii=False)
             
@@ -164,7 +171,7 @@ class ItemCollector():
                 self.collected_items = {ItemType[k]: {int(ik): EncodedItemNameTuple.from_dict(iv) for ik, iv in v.items()} for k, v in data.items()}
                 
                 for string, hex_string in json.load(open(self.STRING_PATH, "r", encoding="utf-8")).items():
-                    self.string_table[hex_string_to_bytes(hex_string)] = string
+                    self.string_table[hex_string_to_bytes(hex_string.replace(", ", " "))] = string
                 
         except FileNotFoundError:
             self.collected_items = {}

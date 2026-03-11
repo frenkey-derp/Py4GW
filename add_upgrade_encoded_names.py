@@ -10,6 +10,7 @@ STRINGS_PATH = ROOT / "Sources" / "frenkeyLib" / "ItemHandling" / "Items" / "col
 TARGET_BASES = {"WeaponUpgrade", "Inscription"}
 ABSTRACT_CLASSES = {"Upgrade", "WeaponUpgrade", "WeaponPrefix", "WeaponSuffix", "Inscription"}
 NAME_ALIASES = {
+    "\"Knowing is Half the Battle\"": "\"Knowing is Half the Battle.\"",
     "\"Master of My Domain!\"": "\"Master of My Domain\"",
     "\"Not the Face!\"": "\"Not the face!\"",
 }

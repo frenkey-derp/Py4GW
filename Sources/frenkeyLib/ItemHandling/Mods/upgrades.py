@@ -12,6 +12,7 @@ from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.Mods.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfession
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
+from Sources.frenkeyLib.ItemHandling.encoded_strings import EncodedStrings
 
 def _get_property_factory():
     from Sources.frenkeyLib.ItemHandling.Mods.upgrade_parser import _PROPERTY_FACTORY
@@ -77,9 +78,7 @@ class Upgrade:
             if decoded_name:
                 return decoded_name
             
-        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
-        server_language = ServerLanguage(preference)
-        return self.names.get(server_language, self.names.get(ServerLanguage.English, self.__class__.__name__))
+        return f"Unknown Upgrade ({self.__class__.__name__})"
     
     @property
     def description(self) -> str:
@@ -111,98 +110,17 @@ class WeaponUpgrade(Upgrade):
         weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)
 
 #region Prefixes
-WEAPON_PREFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
-    ItemType.Axe: {
-        ServerLanguage.English: "{prefix} Axe Haft",
-    },
-    ItemType.Bow: {
-        ServerLanguage.German: "{prefix} Bogensehne",
-        ServerLanguage.English: "{prefix} Bow String",
-        ServerLanguage.Korean: "{prefix} 활시위",
-        ServerLanguage.French: "Corde {prefix}",
-        ServerLanguage.Italian: "Corda d'arco {prefix}",
-        ServerLanguage.Spanish: "Cuerda de arco {prefix}",
-        ServerLanguage.TraditionalChinese: "{prefix} 弓弦",
-        ServerLanguage.Japanese: "{prefix} ボウの弦",
-        ServerLanguage.Polish: "Cięciwa {prefix}",
-        ServerLanguage.Russian: "{prefix} Bow String",
-        ServerLanguage.BorkBorkBork: "{prefix} Boostreeng"
-    },
-    ItemType.Daggers: {
-        ServerLanguage.German: "{prefix} Dolchangel",
-        ServerLanguage.English: "{prefix} Dagger Tang",
-        ServerLanguage.Korean: "{prefix} 단검자루",
-        ServerLanguage.French: "Soie de dague {prefix}",
-        ServerLanguage.Italian: "Codolo per Pugnale {prefix}",
-        ServerLanguage.Spanish: "Afilador de dagas {prefix}",
-        ServerLanguage.TraditionalChinese: "{prefix} 匕首刃",
-        ServerLanguage.Japanese: "{prefix} ダガーのグリップ",
-        ServerLanguage.Polish: "Uchwyt Sztyletu {prefix}",
-        ServerLanguage.Russian: "{prefix} Dagger Tang",
-        ServerLanguage.BorkBorkBork: "{prefix} Daegger Tung"
-    },
-    # ItemType.Offhand does not have a prefix mod, so no name format is needed
-    ItemType.Hammer: {
-        ServerLanguage.German: "{0} Hammerstiel",
-        ServerLanguage.English: "{0} Hammer Haft",
-        ServerLanguage.Russian: "{0} Hammer Haft"
-    },
-    ItemType.Scythe: {
-        ServerLanguage.English: "{0} Scythe Snathe",
-    },
-    # ItemType.Shield does not have a prefix mod, so no name format is needed
-    ItemType.Spear: {
-        ServerLanguage.German: "{0} Speerspitze",
-        ServerLanguage.English: "{0} Spearhead",
-        ServerLanguage.Korean: "{0} 흡혈의 창촉",
-        ServerLanguage.French: "Tête de javelot {0}",
-        ServerLanguage.Italian: "Punta per Lancia {0}",
-        ServerLanguage.Spanish: "Punta de lanza {0}",
-        ServerLanguage.TraditionalChinese: "{0} 矛頭",
-        ServerLanguage.Japanese: "{0} スピアヘッド",
-        ServerLanguage.Polish: "Grot Włóczni {0}",
-        ServerLanguage.Russian: "{0} Spearhead",
-        ServerLanguage.BorkBorkBork: "{0} Speaerheaed"
-    },
-    ItemType.Staff: {
-        ServerLanguage.German: "{0} Stabkopf",
-        ServerLanguage.English: "{0} Staff Head",
-        ServerLanguage.Korean: "{0} 스태프머리",
-        ServerLanguage.French: "Pommeau de bâton {0}",
-        ServerLanguage.Italian: "Testa del bastone {0}",
-        ServerLanguage.Spanish: "Puño de báculo {0}",
-        ServerLanguage.TraditionalChinese: "{0} 法杖頭",
-        ServerLanguage.Japanese: "{0} スタッフの頭部",
-        ServerLanguage.Polish: "Głowica Kostura {0}",
-        ServerLanguage.Russian: "{0} Staff Head",
-        ServerLanguage.BorkBorkBork: "{0} Staeffff Heaed"
-    },
-    ItemType.Sword: {
-        ServerLanguage.German: "{0} Schwertheft",
-        ServerLanguage.English: "{0} Sword Hilt",
-        ServerLanguage.Korean: "{0} 칼자루",
-        ServerLanguage.French: "Poignée d'épée {0}",
-        ServerLanguage.Italian: "Elsa della spada {0}",
-        ServerLanguage.Spanish: "Empuñadura de espada {0}",
-        ServerLanguage.TraditionalChinese: "{0} 劍柄",
-        ServerLanguage.Japanese: "{0} ソードの柄",
-        ServerLanguage.Polish: "Rękojeść Miecza {0}",
-        ServerLanguage.Russian: "{0} Sword Hilt",
-        ServerLanguage.BorkBorkBork: "{0} Svurd Heelt"
-    }, 
-    # ItemType.Wand does not have a prefix mod, so no name format is needed    
-}
 
 class WeaponPrefix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Prefix
 
     @classmethod
     def get_weapon_upgrade_name(cls, item_type: ItemType, server_language: ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> Optional[str]:
-        if item_type in WEAPON_PREFIX_ITEM_NAME_FORMAT:
-            item_type_name_formats = WEAPON_PREFIX_ITEM_NAME_FORMAT.get(item_type, {})
-            item_type_name_format = item_type_name_formats.get(server_language, item_type_name_formats.get(ServerLanguage.English, "{prefix} " + item_type.name + " Upgrade"))
-            name = cls.names.get(server_language, cls.names.get(ServerLanguage.English, f"Unknown Weapon Prefix {cls.__class__.__name__}"))
-            return item_type_name_format.format(prefix=name)
+        if item_type in EncodedStrings.WEAPON_PREFIXES:
+            prefix_bytes = EncodedStrings.WEAPON_PREFIXES.get(item_type, bytes())
+            decoded_name = string_table.decode(prefix_bytes + cls.encoded_name)
+            if decoded_name:
+                return decoded_name
         
         return None
     
@@ -405,6 +323,7 @@ class HeavyUpgrade(WeaponPrefix):
 		ServerLanguage.Russian: "Heavy",
 		ServerLanguage.BorkBorkBork: "Heaefy",
 	}
+    encoded_name : bytes = bytes([0x72, 0xA, 0x1, 0x0])
     
 class IcyUpgrade(WeaponPrefix):
     id = ItemUpgrade.Icy
@@ -590,163 +509,19 @@ class ZealousUpgrade(WeaponPrefix):
 
 #endregion Prefixes
 
-#region Suffixes
-WEAPON_SUFFIX_ITEM_NAME_FORMAT: dict[ItemType, dict[ServerLanguage, str]] = {
-    ItemType.Axe: {
-        ServerLanguage.German: "Axtgriff {suffix}",
-        ServerLanguage.English: "Axe Grip {suffix}",
-        ServerLanguage.Korean: "도끼손잡이 {suffix}",
-        ServerLanguage.French: "Poignée de hache {suffix}",
-        ServerLanguage.Italian: "Impugnatura dell'ascia {suffix}",
-        ServerLanguage.Spanish: "Empuñadura de hacha {suffix}",
-        ServerLanguage.TraditionalChinese: "{suffix} 斧把手",
-        ServerLanguage.Japanese: "アックスのグリップ {suffix}",
-        ServerLanguage.Polish: "Stylisko Topora {suffix}",
-        ServerLanguage.Russian: "Axe Grip {suffix}",
-        ServerLanguage.BorkBorkBork: "Aexe-a Greep {suffix}",
-    },
-    ItemType.Bow: {
-        ServerLanguage.German: "Bogengriff {suffix}",
-        ServerLanguage.English: "Bow Grip {suffix}",
-        ServerLanguage.Korean: "활손잡이 {suffix}",
-        ServerLanguage.French: "Poignée d'arc {suffix}",
-        ServerLanguage.Italian: "Impugnatura dell'arco {suffix}",
-        ServerLanguage.Spanish: "Empuñadura de arco {suffix}",
-        ServerLanguage.TraditionalChinese: "{suffix} 弓柄",
-        ServerLanguage.Japanese: "ボウのグリップ {suffix}",
-        ServerLanguage.Polish: "Łęczysko {suffix}",
-        ServerLanguage.Russian: "Bow Grip {suffix}",
-        ServerLanguage.BorkBorkBork: "Boo Greep {suffix}"
-    },
-    ItemType.Daggers: {
-        ServerLanguage.German: "Dolchgriff {0}",
-        ServerLanguage.English: "Dagger Handle {0}",
-        ServerLanguage.Korean: "단검손자루 {0}",
-        ServerLanguage.French: "Poignée de dague {0}",
-        ServerLanguage.Italian: "Impugnatura per Pugnale {0}",
-        ServerLanguage.Spanish: "Empuñadura para daga {0}",
-        ServerLanguage.TraditionalChinese: "{0} 匕首握柄",
-        ServerLanguage.Japanese: "ダガーの柄 {0}",
-        ServerLanguage.Polish: "Rękojeść Sztyletu {0}",
-        ServerLanguage.Russian: "Dagger Handle {0}",
-        ServerLanguage.BorkBorkBork: "Daegger Hundle-a {0}"
-    },
-    ItemType.Offhand: {
-        ServerLanguage.German: "Fokus-Kern {0}",
-        ServerLanguage.English: "Focus Core {0}",
-        ServerLanguage.Korean: "포커스장식 {0}",
-        ServerLanguage.French: "Noyau de focus {0}",
-        ServerLanguage.Italian: "Nucleo del Focus {0}",
-        ServerLanguage.Spanish: "Mango de foco {0}",
-        ServerLanguage.TraditionalChinese: "{0} 聚能器核心",
-        ServerLanguage.Japanese: "フォーカスのグリップ {0}",
-        ServerLanguage.Polish: "Rdzeń Fokusu {0}",
-        ServerLanguage.Russian: "Focus Core {0}",
-        ServerLanguage.BorkBorkBork: "Fucoos Cure-a {0}"
-    },
-    ItemType.Hammer: {
-        ServerLanguage.German: "Hammergriff {0}",
-        ServerLanguage.English: "Hammer Grip {0}",
-        ServerLanguage.Korean: "해머손잡이{0}",
-        ServerLanguage.French: "Poignée de marteau {0}",
-        ServerLanguage.Italian: "Impugnatura del martello {0}",
-        ServerLanguage.Spanish: "Empuñadura de martillo {0}",
-        ServerLanguage.TraditionalChinese: "{0} 鎚把手",
-        ServerLanguage.Japanese: "ハンマーのグリップ {0}",
-        ServerLanguage.Polish: "Uchwyt Młota {0}",
-        ServerLanguage.Russian: "Hammer Grip {0}",
-        ServerLanguage.BorkBorkBork: "Haemmer Greep {0}"
-    },
-    ItemType.Scythe: {
-        ServerLanguage.German: "Sensengriff {0}",
-        ServerLanguage.English: "Scythe Grip {0}",
-        ServerLanguage.Korean: "사이드손잡이 {0}",
-        ServerLanguage.French: "Poignée de faux {0}",
-        ServerLanguage.Italian: "Impugnatura {0}",
-        ServerLanguage.Spanish: "Empuñadura de guadaña {0}",
-        ServerLanguage.TraditionalChinese: "{0} 鐮刀把",
-        ServerLanguage.Japanese: "サイズのグリップ {0}",
-        ServerLanguage.Polish: "Drzewce Kosy {0}",
-        ServerLanguage.Russian: "Scythe Grip {0}",
-        ServerLanguage.BorkBorkBork: "Scyzee Greep {0}"
-    },
-    ItemType.Shield: {
-        ServerLanguage.German: "Schildgriff {0}",
-        ServerLanguage.English: "Shield Handle {0}",
-        ServerLanguage.Korean: "방패손잡이 {0}",
-        ServerLanguage.French: "Poignée de bouclier {0}",
-        ServerLanguage.Italian: "Impugnatura dello Scudo {0}",
-        ServerLanguage.Spanish: "Mango de escudo {0}",
-        ServerLanguage.TraditionalChinese: "{0} 盾握柄",
-        ServerLanguage.Japanese: "シールドの柄 {0}",
-        ServerLanguage.Polish: "Uchwyt Tarczy {0}",
-        ServerLanguage.Russian: "Shield Handle {0}",
-        ServerLanguage.BorkBorkBork: "Sheeeld Hundle-a {0}"
-    },
-    ItemType.Spear: {
-        ServerLanguage.German: "Speergriff {0}",
-        ServerLanguage.English: "Spear Grip {0}",
-        ServerLanguage.Korean: "창손잡이(네크로맨서) {0}",
-        ServerLanguage.French: "Poignée de javelot {0}",
-        ServerLanguage.Italian: "Impugnatura della Lancia {0}",
-        ServerLanguage.Spanish: "Empuñadura de lanza {0}",
-        ServerLanguage.TraditionalChinese: "the 矛柄 {0}",
-        ServerLanguage.Japanese: "スピアのグリップ (ネクロマンサー) {0}",
-        ServerLanguage.Polish: "Drzewce Włóczni {0}",
-        ServerLanguage.Russian: "Spear Grip of некромант {0}",
-        ServerLanguage.BorkBorkBork: "Speaer Greep {0}"
-    },
-    ItemType.Staff: {
-        ServerLanguage.German: "Stabhülle {0}",
-        ServerLanguage.English: "Staff Wrapping {0}",
-        ServerLanguage.Korean: "스태프손잡이{0}",
-        ServerLanguage.French: "Gaine de bâton {0}",
-        ServerLanguage.Italian: "Fascia del bastone {0}",
-        ServerLanguage.Spanish: "Envoltura de báculo {0}",
-        ServerLanguage.TraditionalChinese: "{0} 法杖把手",
-        ServerLanguage.Japanese: "スタッフの柄 {0}",
-        ServerLanguage.Polish: "Okład Kostura {0}",
-        ServerLanguage.Russian: "Staff Wrapping {0}",
-        ServerLanguage.BorkBorkBork: "Staeffff Vraeppeeng {0}"
-    },
-    ItemType.Sword: {
-        ServerLanguage.German: "Schwertknauf {0}",
-        ServerLanguage.English: "Sword Pommel {0}",
-        ServerLanguage.Korean: "칼머리 {0}",
-        ServerLanguage.French: "Pommeau d'épée {0}",
-        ServerLanguage.Italian: "Pomolo della spada {0}",
-        ServerLanguage.Spanish: "Pomo de espada {0}",
-        ServerLanguage.TraditionalChinese: "{0} 劍柄首",
-        ServerLanguage.Japanese: "ソードの柄頭 {0}",
-        ServerLanguage.Polish: "Głowica Miecza {0}",
-        ServerLanguage.Russian: "Sword Pommel {0}",
-        ServerLanguage.BorkBorkBork: "Svurd Pummel {0}"
-    }, 
-    ItemType.Wand: {
-        ServerLanguage.German: "Zauberstab-Hülle {0}",
-        ServerLanguage.English: "Wand Wrapping {0}",
-        ServerLanguage.Korean: "지팡이자루 {0}",
-        ServerLanguage.French: "Gaine de baguette {0}",
-        ServerLanguage.Italian: "Fascia della Bacchetta {0}",
-        ServerLanguage.Spanish: "Envoltura de varita {0}",
-        ServerLanguage.TraditionalChinese: "{0} 魔杖把手",
-        ServerLanguage.Japanese: "ワンドの布 {0}",
-        ServerLanguage.Polish: "Okład Różdżki {0}",
-        ServerLanguage.Russian: "Wand Wrapping {0}",
-        ServerLanguage.BorkBorkBork: "Vund Vraeppeeng {0}"
-    },
-}
 
+#region Suffixes
 class WeaponSuffix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Suffix
     
     @classmethod
-    def get_weapon_upgrade_name(cls, item_type: ItemType, server_language: ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> Optional[str]:
-        if item_type in WEAPON_PREFIX_ITEM_NAME_FORMAT:
-            item_type_name_formats = WEAPON_PREFIX_ITEM_NAME_FORMAT.get(item_type, {})
-            item_type_name_format = item_type_name_formats.get(server_language, item_type_name_formats.get(ServerLanguage.English, item_type.name + " Upgrade of {prefix}"))
-            name = cls.names.get(server_language, cls.names.get(ServerLanguage.English, f"Unknown Weapon Suffix {cls.__class__.__name__}"))
-            return item_type_name_format.format(prefix=name)
+    def get_weapon_upgrade_name(cls, item_type: ItemType) -> Optional[str]:
+        if item_type in EncodedStrings.WEAPON_SUFFIXES:
+            suffix_bytes = EncodedStrings.WEAPON_SUFFIXES.get(item_type, bytes())
+            decoded_name = string_table.decode(suffix_bytes + cls.encoded_name)
+            
+            if decoded_name:
+                return decoded_name            
         
         return None
     
@@ -770,7 +545,7 @@ class OfAttributeUpgrade(WeaponSuffix):
 		ServerLanguage.BorkBorkBork: "ooff {attribute}",
 	}
     
-    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBF])
+    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1])
     upgrade_names : dict[Attribute, bytes] = {
         Attribute.AirMagic: bytes([0x2E, 0x9, 0x1, 0x0]),
         Attribute.AxeMastery: bytes([0x42, 0x9, 0x1, 0x0]),
@@ -972,38 +747,14 @@ class OfHammerMasteryUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-    names = {
-		ServerLanguage.English: "of Hammer Mastery",
-		ServerLanguage.Spanish: "(Dominio del martillo)",
-		ServerLanguage.Italian: "Abilità col Martello",
-		ServerLanguage.German: "d. Hammerbeherrschung",
-		ServerLanguage.Korean: "(해머술)",
-		ServerLanguage.French: "(Maîtrise du marteau)",
-		ServerLanguage.TraditionalChinese: "精通鎚術",
-		ServerLanguage.Japanese: "(ハンマー マスタリー)",
-		ServerLanguage.Polish: "(Biegłość w Młotach)",
-		ServerLanguage.Russian: "of Hammer Mastery",
-		ServerLanguage.BorkBorkBork: "ooff Haemmer Maestery",
-	}
+    encoded_name : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBE, 0x22, 0x1, 0x0, 0xB, 0x1, 0x44, 0x9, 0x1, 0x0, 0x1, 0x0])
     
 class OfMarksmanshipUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfMarksmanship
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-    names = {
-		ServerLanguage.English: "of Marksmanship",
-		ServerLanguage.Spanish: "(Puntería)",
-		ServerLanguage.Italian: "Precisione",
-		ServerLanguage.German: "d. Treffsicherheit",
-		ServerLanguage.Korean: "(궁술)",
-		ServerLanguage.French: "(Adresse au tir)",
-		ServerLanguage.TraditionalChinese: "弓術精通",
-		ServerLanguage.Japanese: "(ボウ マスタリー)",
-		ServerLanguage.Polish: "(Umiejętności Strzeleckie)",
-		ServerLanguage.Russian: "of Marksmanship",
-		ServerLanguage.BorkBorkBork: "ooff Maerksmunsheep",
-	}
+    encoded_name : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBD, 0x22, 0x1, 0x0, 0xB, 0x1, 0x56, 0x9, 0x1, 0x0, 0x1, 0x0])
     
 class OfMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfMastery
@@ -1070,19 +821,7 @@ class OfScytheMasteryUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.AttributePlusOne,
     ]
-    names = {
-		ServerLanguage.English: "of Scythe Mastery",
-		ServerLanguage.Spanish: "(Dominio de la guadaña)",
-		ServerLanguage.Italian: "Abilità con la Falce",
-		ServerLanguage.German: "d. Sensenbeherrschung",
-		ServerLanguage.Korean: "(사이드술)",
-		ServerLanguage.French: "(Maîtrise de la faux)",
-		ServerLanguage.TraditionalChinese: "鐮刀精通",
-		ServerLanguage.Japanese: "(サイズ マスタリー)",
-		ServerLanguage.Polish: "(Biegłość w Kosach)",
-		ServerLanguage.Russian: "of Scythe Mastery",
-		ServerLanguage.BorkBorkBork: "ooff Scyzee Maestery",
-	}
+    encoded_name : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x73, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0x22, 0x11, 0x1, 0x0, 0x1, 0x0])
     
 class OfShelterUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfShelter
@@ -1267,18 +1006,18 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     def __init__(self):
         super().__init__()
                 
-    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1, 0xBF])
+    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1])
     upgrade_names : dict[Profession, bytes] = {
-        Profession.Assassin: bytes([0x2, 0x81, 0xB2, 0x38, 0x1, 0x0]),
-        Profession.Dervish: bytes([0x2, 0x81, 0xB5, 0x38, 0x1, 0x0]),
-        Profession.Elementalist: bytes([0x2, 0x81, 0xAF, 0x38, 0x1, 0x0]),
-        Profession.Mesmer: bytes([0x2, 0x81, 0xAC, 0x38, 0x1, 0x0]),
-        Profession.Monk: bytes([0x2, 0x81, 0xAE, 0x38, 0x1, 0x0]),
-        Profession.Necromancer: bytes([0x2, 0x81, 0xAD, 0x38, 0x1, 0x0]),
-        Profession.Paragon: bytes([0x2, 0x81, 0xB4, 0x38, 0x1, 0x0]),
-        Profession.Ranger: bytes([0x2, 0x81, 0xB1, 0x38, 0x1, 0x0]),
-        Profession.Ritualist: bytes([0x2, 0x81, 0xB3, 0x38, 0x1, 0x0]),
-        Profession.Warrior: bytes([0x2, 0x81, 0xB0, 0x38, 0x1, 0x0]),
+        Profession.Assassin: bytes([0xB, 0x1, 0x2, 0x81, 0xB2, 0x38, 0x1, 0x0]),
+        Profession.Dervish: bytes([0xB, 0x1, 0x2, 0x81, 0xB5, 0x38, 0x1, 0x0]),
+        Profession.Elementalist: bytes([0xB, 0x1, 0x2, 0x81, 0xAF, 0x38, 0x1, 0x0]),
+        Profession.Mesmer: bytes([0xB, 0x1, 0x2, 0x81, 0xAC, 0x38, 0x1, 0x0]),
+        Profession.Monk: bytes([0xB, 0x1, 0x2, 0x81, 0xAE, 0x38, 0x1, 0x0]),
+        Profession.Necromancer: bytes([0xB, 0x1, 0x2, 0x81, 0xAD, 0x38, 0x1, 0x0]),
+        Profession.Paragon: bytes([0xB, 0x1, 0x2, 0x81, 0xB4, 0x38, 0x1, 0x0]),
+        Profession.Ranger: bytes([0xB, 0x1, 0x2, 0x81, 0xB1, 0x38, 0x1, 0x0]),
+        Profession.Ritualist: bytes([0xB, 0x1, 0x2, 0x81, 0xB3, 0x38, 0x1, 0x0]),
+        Profession.Warrior: bytes([0xB, 0x1, 0x2, 0x81, 0xB0, 0x38, 0x1, 0x0]),
 	}
     
     
@@ -1292,11 +1031,12 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
     @property
     def name(self) -> str:
-        decoded_of = string_table.decode(self.str1_of_str2)
-        decoded_profession = string_table.decode(self.upgrade_names.get(self.profession, bytes()))
+        placeholder_bytes = bytes([0xBD, 0x22, 0x1, 0x0])
+        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + self.upgrade_names.get(self.profession, bytes())).replace(string_table.decode(placeholder_bytes), "")
         
-        if decoded_of and decoded_profession:
-            return (decoded_of or f"%str1% of %str2%").replace(f"%str2%", decoded_profession).replace(f"%str1%", "").strip()
+        if decoded_name:
+            return decoded_name
+        
         else:
             return "of {profession}".format(profession=self.profession.name if self.profession != Profession._None else "Unknown Profession")
     
@@ -1351,30 +1091,18 @@ class Inscription(Upgrade):
     id : ItemUpgrade
     names : dict[ServerLanguage, str] = {}
     target_item_type : ItemType
-    
-    INSCRIPTION_LOCALIZATION = {
-            ServerLanguage.English: "Inscription: {name}",
-            ServerLanguage.German: "Inschrift: {name}",
-            ServerLanguage.French: "Inscription : {name}",
-            ServerLanguage.Spanish: "Inscripción: {name}",
-            ServerLanguage.Italian: "Iscrizione: {name}",
-            ServerLanguage.TraditionalChinese: "鑄印：{name}",
-            ServerLanguage.Korean: "마력석: {name}",
-            ServerLanguage.Japanese: "刻印：{name}",
-            ServerLanguage.Polish: "Inskrypcja: {name}",
-            ServerLanguage.Russian: "Надпись: {name}",
-            ServerLanguage.BorkBorkBork: "Inscreepshun: {name}"
-        }
-    
+        
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return cls.id.has_id(upgrade_id)
     
     @property
     def name(self) -> str:
-        language = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))
-        inscription_format = self.INSCRIPTION_LOCALIZATION.get(language, self.INSCRIPTION_LOCALIZATION[ServerLanguage.English])
-        return inscription_format.format(name=self.names.get(language, self.names.get(ServerLanguage.English, "")))
+        decoded_name = string_table.decode(EncodedStrings.INSCRIPTION_STR1 + self.encoded_name)
+        if decoded_name:
+            return decoded_name
+        
+        return "Decoding..."   
 
 #region Offhand
 class BeJustAndFearNot(Inscription):
@@ -1386,6 +1114,7 @@ class BeJustAndFearNot(Inscription):
     names = {
 		ServerLanguage.English: "\"Be Just and Fear Not\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0])
     
 class DownButNotOut(Inscription):
     id = ItemUpgrade.DownButNotOut
@@ -1396,6 +1125,7 @@ class DownButNotOut(Inscription):
     names = {
 		ServerLanguage.English: "\"Down But Not Out\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x8E, 0x5D, 0x1, 0x0])
     
 class FaithIsMyShield(Inscription):
     id = ItemUpgrade.FaithIsMyShield
@@ -1491,6 +1221,7 @@ class KnowingIsHalfTheBattle(Inscription):
     names = {
 		ServerLanguage.English: "\"Knowing is Half the Battle\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x8C, 0x5D, 0x1, 0x0])
     
 class LifeIsPain(Inscription):
     id = ItemUpgrade.LifeIsPain
@@ -1535,6 +1266,7 @@ class ManForAllSeasons(Inscription):
     names = {
 		ServerLanguage.English: "\"Man for All Seasons\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x89, 0x5D, 0x1, 0x0])
     
 class MightMakesRight(Inscription):
     id = ItemUpgrade.MightMakesRight
@@ -1542,9 +1274,7 @@ class MightMakesRight(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAttacking,
     ]
-    names = {
-		ServerLanguage.English: "\"Might Makes Right\"",
-	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0x8B, 0x5D, 0x1, 0x0])
     
 class SerenityNow(Inscription):
     id = ItemUpgrade.SerenityNow
@@ -2424,6 +2154,8 @@ class SeizeTheDay(Inscription):
 		ServerLanguage.Russian: "\"Живи сегодняшним днем\"",
 		ServerLanguage.BorkBorkBork: "\"Leefe-a fur Tudaey\"",
 	}
+    encoded_name : bytes = bytes([0x1, 0x81, 0xB3, 0x5D, 0x1, 0x0])
+
 #endregion SpellcastingWeapon
 #endregion Inscriptions
 
