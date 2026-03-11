@@ -416,90 +416,23 @@ class OfSlayingUpgrade(WeaponSuffix):
         # ModifierIdentifier.BaneSpecies,
     ]
     
-    names_by_species = {
-        ItemBaneSpecies.Undead: {
-            ServerLanguage.German: "d. Todesfluches",
-            ServerLanguage.English: "of Deathbane",
-            ServerLanguage.Korean: "(언데드 상대 무기)",
-            ServerLanguage.French: "(anti-mort)",
-            ServerLanguage.Italian: "del Flagello Mortale",
-            ServerLanguage.Spanish: "(matamuertos)",
-            ServerLanguage.TraditionalChinese: "不死族剋星",
-            ServerLanguage.Japanese: "(デスベイン)",
-            ServerLanguage.Polish: "(Zabijania Nieumarłych)",
-            ServerLanguage.Russian: "of Deathbane",
-            ServerLanguage.BorkBorkBork: "ooff Deaethbune-a"
-        },
-        
-        ItemBaneSpecies.Charr: {
-            ServerLanguage.English: "of Charrslaying",
-        },
-        
-        ItemBaneSpecies.Trolls: {
-            ServerLanguage.English: "of Trollslaying",
-        },
-        
-        ItemBaneSpecies.Plants: {            
-            ServerLanguage.German: "d. Pflanzentötung",
-            ServerLanguage.English: "of Pruning",
-            ServerLanguage.Korean: "(식물 상대 무기)",
-            ServerLanguage.French: "(anti-plantes)",
-            ServerLanguage.Italian: "del martello da Sfoltimento",
-            ServerLanguage.Spanish: "(mataplantas)",
-            ServerLanguage.TraditionalChinese: "枝葉修整",
-            ServerLanguage.Japanese: "(プルーニング)",
-            ServerLanguage.Polish: "(Obcinania)",
-            ServerLanguage.Russian: "of Pruning",
-            ServerLanguage.BorkBorkBork: "ooff Prooneeng"
-        },
-        
-        ItemBaneSpecies.Skeletons: {
-            ServerLanguage.English: "of Skeletonslaying",
-        },
-        
-        ItemBaneSpecies.Giants: {
-            ServerLanguage.English: "of Giantslaying",
-        },
-        
-        ItemBaneSpecies.Dwarves: {
-            ServerLanguage.English: "of Dwarfslaying",
-        },
-        
-        ItemBaneSpecies.Tengus: {
-            ServerLanguage.English: "of Tenguslaying",
-        },
-        
-        ItemBaneSpecies.Demons: {
-            ServerLanguage.German: "d. Dämonentötung",
-            ServerLanguage.English: "of Demonslaying",
-            ServerLanguage.Korean: "(데몬 상대 무기)",
-            ServerLanguage.French: "(anti-démons)",
-            ServerLanguage.Italian: "dell'arco Ammazza-demoni",
-            ServerLanguage.Spanish: "(matademonios)",
-            ServerLanguage.TraditionalChinese: "惡魔殺手",
-            ServerLanguage.Japanese: "(デーモン キラー)",
-            ServerLanguage.Polish: "(Zabijania Demonów)",
-            ServerLanguage.Russian: "of Demonslaying",
-            ServerLanguage.BorkBorkBork: "ooff Demunslaeyeeng"
-        },
-        
-        ItemBaneSpecies.Dragons: {
-            ServerLanguage.English: "of Dragonslaying",
-        },
-        
-        ItemBaneSpecies.Ogres: {
-            ServerLanguage.English: "of Ogreslaying",
-        },
-    }
+    def __init__(self):
+        super().__init__()
+        self.species = ItemBaneSpecies.Unknown
     
+    def post_compose(self, mod: DecodedModifier, modifiers: list[DecodedModifier]) -> None:
+        damage_plus_vs_species_property = next((p for p in self.properties if isinstance(p, DamagePlusVsSpecies)), None)
+        self.species = damage_plus_vs_species_property.species if damage_plus_vs_species_property else ItemBaneSpecies.Unknown
+        
     @property
     def name(self) -> str:
-        species_property = next((p for p in self.properties if isinstance(p, DamagePlusVsSpecies)), None)
-        species = species_property.species if species_property else ItemBaneSpecies.Unknown
-        preference = UIManager.GetIntPreference(NumberPreference.TextLanguage)
-        server_language = ServerLanguage(preference)
-        name_by_species = self.names_by_species.get(species, {})
-        return name_by_species.get(server_language, name_by_species.get(ServerLanguage.English, f"Unknown Slaying Suffix for {species.name}"))
+        species_name_bytes = EncodedStrings.SLAYING_SUFFIXES.get(self.species, bytes())
+        decoded_species_name = string_table.decode(species_name_bytes)
+        
+        if decoded_species_name:
+            return decoded_species_name
+        
+        return f"of Slaying ({self.species.name})"
 
 class OfSpearMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSpearMastery
@@ -531,21 +464,6 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
     def __init__(self):
         super().__init__()
-                
-    str1_of_str2 : bytes = bytes([0x33, 0xA, 0xA, 0x1])
-    upgrade_names : dict[Profession, bytes] = {
-        Profession.Assassin: bytes([0xB, 0x1, 0x2, 0x81, 0xB2, 0x38, 0x1, 0x0]),
-        Profession.Dervish: bytes([0xB, 0x1, 0x2, 0x81, 0xB5, 0x38, 0x1, 0x0]),
-        Profession.Elementalist: bytes([0xB, 0x1, 0x2, 0x81, 0xAF, 0x38, 0x1, 0x0]),
-        Profession.Mesmer: bytes([0xB, 0x1, 0x2, 0x81, 0xAC, 0x38, 0x1, 0x0]),
-        Profession.Monk: bytes([0xB, 0x1, 0x2, 0x81, 0xAE, 0x38, 0x1, 0x0]),
-        Profession.Necromancer: bytes([0xB, 0x1, 0x2, 0x81, 0xAD, 0x38, 0x1, 0x0]),
-        Profession.Paragon: bytes([0xB, 0x1, 0x2, 0x81, 0xB4, 0x38, 0x1, 0x0]),
-        Profession.Ranger: bytes([0xB, 0x1, 0x2, 0x81, 0xB1, 0x38, 0x1, 0x0]),
-        Profession.Ritualist: bytes([0xB, 0x1, 0x2, 0x81, 0xB3, 0x38, 0x1, 0x0]),
-        Profession.Warrior: bytes([0xB, 0x1, 0x2, 0x81, 0xB0, 0x38, 0x1, 0x0]),
-	}
-    
     
     profession : Profession = Profession._None
     
@@ -557,8 +475,8 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
     @property
     def name(self) -> str:
-        placeholder_bytes = bytes([0xBD, 0x22, 0x1, 0x0])
-        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + self.upgrade_names.get(self.profession, bytes())).replace(string_table.decode(placeholder_bytes), "")
+        placeholder_bytes = EncodedStrings.WEAPON_SUFFIXES.get(ItemType.Staff, bytes())
+        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + EncodedStrings.THE_PROFESSION.get(self.profession, bytes())).replace(string_table.decode(placeholder_bytes), "")
         
         if decoded_name:
             return decoded_name
@@ -1092,7 +1010,6 @@ class Rune(Upgrade):
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
-    names: dict[ServerLanguage, str] = {}
 
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
