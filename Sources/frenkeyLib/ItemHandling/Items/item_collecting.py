@@ -1,6 +1,7 @@
 from typing import NamedTuple
 
 import Py4GW
+from PyItem import PyItem
 
 from Py4GWCoreLib import Merchant
 from Py4GWCoreLib.Item import Bag
@@ -61,7 +62,7 @@ class ItemCollector():
     def __init__(self):
         self.collected_items: dict[ItemType, dict[int, EncodedItemNameTuple]] = {}
         self.string_table : dict[bytes, str] = {}
-        
+        self.checked_items : dict[ItemType, dict[int, bool]] = {}
         self.requires_saving = False
         
         self.save_throttle = ThrottledTimer(500)
@@ -73,11 +74,33 @@ class ItemCollector():
         
         self.run_throttle.Reset()
         
-        snapshot = ITEM_CACHE.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack, Bag.Equipped_Items])
-        # snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Max)
+        # snapshot = ITEM_CACHE.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack, Bag.Equipped_Items])
+        snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Max)
         items = [i for bag in snapshot.values() for i in bag.values() if i is not None]
-        # offered_items = Merchant.Trading.Trader.GetOfferedItems()
-        # items = [ITEM_CACHE.get_item_snapshot(i) for i in offered_items if i is not None]
+        offered_items = Merchant.Trading.Trader.GetOfferedItems()
+        items = [ITEM_CACHE.get_item_snapshot(i) for i in offered_items if i is not None] + items
+        
+        description_item_types = [
+            ItemType.Axe,
+            ItemType.Bow,
+            ItemType.Daggers,
+            ItemType.Hammer,
+            ItemType.Offhand,
+            ItemType.Scythe,
+            ItemType.Shield,
+            ItemType.Spear,
+            ItemType.Staff,
+            ItemType.Sword,
+            ItemType.Wand, 
+            
+            ItemType.Headpiece,
+            ItemType.Chestpiece,
+            ItemType.Gloves,
+            ItemType.Leggings,
+            ItemType.Boots,
+            
+            ItemType.Rune_Mod]
+        
         for item in items:
             if item is None:
                 continue
@@ -85,14 +108,17 @@ class ItemCollector():
             if item.item_type not in self.collected_items:
                 self.collected_items[item.item_type] = {}
                 
-            if item.model_id not in self.collected_items[item.item_type]:
+            if item.item_type not in self.checked_items:
+                self.checked_items[item.item_type] = {}
                 
+            if item.model_id not in self.collected_items[item.item_type] or not self.checked_items.get(item.item_type, {}).get(item.model_id, False):               
                 if len( item.complete_name_enc or [] ) == 0:
                     continue
                 
                 try:
                     parts = ItemName.decode_parts(bytes(item.complete_name_enc or []))
                     encoded_parts = ItemName.encoded_parts(bytes(item.complete_name_enc or []))
+                    
                 except Exception as e:
                     Py4GW.Console.Log("ItemCollector", f"Error decoding item name for ModelID={item.model_id}, Type={item.item_type}: {e}", Py4GW.Console.MessageType.Error)
                     continue
@@ -121,12 +147,22 @@ class ItemCollector():
             decoded = ItemName.decode_parts(bytes(item.complete_name_enc))
             encoded = ItemName.encoded_parts(bytes(item.complete_name_enc))
             inspected = ItemName.inspect_decoded(bytes(item.complete_name_enc))
+    
+            info_string = bytes(PyItem.GetInfoString(item.id) or []) if item.item_type in description_item_types else None
+            description_inspected = ItemName.inspect_decoded(info_string) if info_string else None
             
             for substring in inspected.substrings:
                  if substring.decoded and substring.encoded:
                     if substring.encoded not in self.string_table:
                         self.string_table[substring.encoded] = substring.decoded
                         self.requires_saving = True
+            
+            if description_inspected:
+                for substring in description_inspected.substrings:
+                    if substring.decoded and substring.encoded:
+                        if substring.encoded not in self.string_table:
+                            self.string_table[substring.encoded] = substring.decoded
+                            self.requires_saving = True
             
             if not decoded or not decoded.singular:
                 continue

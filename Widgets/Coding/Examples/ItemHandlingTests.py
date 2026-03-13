@@ -74,7 +74,7 @@ class decoded_strings(NamedTuple):
 decoded : decoded_strings | None = None
 encoded : encoded_strings | None = None
 fully_decoded = False
-collect = True
+collect = False
 
 # method to convert list of int to hex string
 def int_list_to_hex_string(int_list: list[int]) -> str:
@@ -192,7 +192,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Prefix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(prefix.name if prefix else "None")
+                        PyImGui.text(prefix.full_description if prefix else "None")
                         if prefix and prefix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -204,7 +204,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Inscription")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(inscription.name if inscription else "None")
+                        PyImGui.text(inscription.full_description if inscription else "None")
                         if inscription and inscription.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -218,7 +218,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Suffix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(suffix.name if suffix else "None")
+                        PyImGui.text(suffix.full_description if suffix else "None")
                         if suffix and suffix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)

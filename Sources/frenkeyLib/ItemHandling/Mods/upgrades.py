@@ -87,6 +87,12 @@ class Upgrade:
         return "\n".join(parts)
     
     @property
+    def full_description(self) -> str:
+        name = self.name
+        description = self.description
+        return f"{name}\n{description}" if description else name
+    
+    @property
     def item_type(self) -> Optional[ItemType]:
         if isinstance(self, WeaponUpgrade):
             return self.target_item_type
@@ -1001,8 +1007,13 @@ class AttributeRune(Rune):
 
     @property
     def description(self) -> str:
-        parts = [prop.describe() for prop in self.properties if prop.is_valid()]
-        return f"{AttributeNames.get(self.attribute)} +{self.attribute_level} (Non-stacking)\n" + "\n".join(parts)
+        encoded = EncodedStrings.STR1_PLUS_NUM1 + EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes())
+        decoded = string_table.decode(encoded)
+        if decoded:
+            decoded_properties = "" if not self.properties else "\n" + "\n".join(p.description for p in self.properties)
+            return decoded.replace("%num1%", str(self.attribute_level)) + " " + string_table.decode(EncodedStrings.NON_STACKING) + decoded_properties
+        
+        return f"{self.attribute.name} +{self.attribute_level} (non-stacking) - Decoding..."
 
 #region No Profession
 

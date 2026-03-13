@@ -2,8 +2,10 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies, ItemUpgradeId
+from Sources.frenkeyLib.ItemHandling.encoded_strings import EncodedStrings
 
 if TYPE_CHECKING:
     from Sources.frenkeyLib.ItemHandling.Mods.upgrades import Upgrade
@@ -18,12 +20,26 @@ class ItemProperty:
     def is_valid(self) -> bool:
         return True
     
+    @property
+    def description(self) -> str:
+        return self.describe()
+    
 @dataclass
 class ArmorProperty(ItemProperty):
     armor: int
 
+    @property
+    def description(self) -> str:
+        encoded_bytes = bytes([0x86, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, self.armor, 0x1, 0x1, 0x0])
+        decoded = string_table.decode(encoded_bytes)
+        
+        if decoded:
+            return decoded
+        
+        return f"Armor: {self.armor} - Decoding..."
+    
     def describe(self) -> str:
-        return f"Armor: {self.armor}"
+        return self.description
 
 @dataclass
 class ArmorEnergyRegen(ItemProperty):
@@ -368,6 +384,19 @@ class HealthDegen(ItemProperty):
 @dataclass
 class HealthMinus(ItemProperty):
     health: int
+
+    encoded_string = EncodedStrings.HEALTH_MINUS_75
+    
+    @property
+    def description(self) -> str:
+        
+        encoded = bytes([0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, self.health, 0x1, 0x1, 0x0])
+        decoded = string_table.decode(encoded)
+        
+        if decoded:
+            return decoded
+        
+        return f"Health -{self.health} - Decoding..."
 
     def describe(self) -> str:
         return f"Health -{self.health}"
