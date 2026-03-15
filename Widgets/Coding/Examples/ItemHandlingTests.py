@@ -79,7 +79,7 @@ collect = False
 # method to convert list of int to hex string
 def int_list_to_hex_string(int_list: list[int]) -> str:
     try:
-        return " ".join(f"0x{v:X}" for v in int_list)
+        return ", ".join(f"0x{v:X}" for v in int_list)
     except Exception as e:
         Py4GW.Console.Log(MODULE_NAME, f"Error converting int list to hex string: {e}")
         return ""
@@ -192,7 +192,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Prefix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(prefix.full_description if prefix else "None")
+                        PyImGui.text(prefix.display_summary if prefix else "None")
                         if prefix and prefix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -204,7 +204,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Inscription")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(inscription.full_description if inscription else "None")
+                        PyImGui.text(inscription.display_summary if inscription else "None")
                         if inscription and inscription.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -218,7 +218,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Suffix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(suffix.full_description if suffix else "None")
+                        PyImGui.text(suffix.display_summary if suffix else "None")
                         if suffix and suffix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -421,13 +421,34 @@ def main():
                 PyImGui.table_headers_row()
                 
                 PyImGui.table_next_column()
+                        
+                description_item_types = [
+                    ItemType.Axe,
+                    ItemType.Bow,
+                    ItemType.Daggers,
+                    ItemType.Hammer,
+                    ItemType.Offhand,
+                    ItemType.Scythe,
+                    ItemType.Shield,
+                    ItemType.Spear,
+                    ItemType.Staff,
+                    ItemType.Sword,
+                    ItemType.Wand, 
+                    
+                    ItemType.Headpiece,
+                    ItemType.Chestpiece,
+                    ItemType.Gloves,
+                    ItemType.Leggings,
+                    ItemType.Boots,
+                    
+                    ItemType.Rune_Mod]
                 
                 error_message = ""
                 if item and (not encoded or encoded.item_id != item.id):
                     encoded = encoded_strings(
                         item_id=item.id,
                         name_enc = PyItem.GetNameEnc(item.id) or [],
-                        info_string = [],
+                        info_string = PyItem.GetInfoString(item.id) or [] if item.item_type in description_item_types else [],
                         singular_name = PyItem.GetSingleItemName(item.id) or [],
                         complete_name_enc = PyItem.GetCompleteNameEnc(item.id) or []
                     )
@@ -469,6 +490,14 @@ def main():
                     if ImGui.button(f"Copy##{prop}", 50):
                         try:
                             copy_text = getattr(decoded, prop) if decoded and getattr(decoded, prop) else ""
+                            PyImGui.set_clipboard_text(copy_text)
+                            Py4GW.Console.Log(MODULE_NAME, f"Copied {prop} to clipboard: {copy_text}")
+                        except Exception as e:
+                            Py4GW.Console.Log(MODULE_NAME, f"Failed to copy {prop} to clipboard: {e}", Py4GW.Console.MessageType.Error)
+                            
+                    if ImGui.button(f"Encoded##{prop}", 50):
+                        try:
+                            copy_text = int_list_to_hex_string(getattr(encoded, prop)) if encoded and getattr(encoded, prop) else ""
                             PyImGui.set_clipboard_text(copy_text)
                             Py4GW.Console.Log(MODULE_NAME, f"Copied {prop} to clipboard: {copy_text}")
                         except Exception as e:

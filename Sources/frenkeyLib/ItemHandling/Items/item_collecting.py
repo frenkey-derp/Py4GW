@@ -6,6 +6,7 @@ from PyItem import PyItem
 from Py4GWCoreLib import Merchant
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Sources.frenkeyLib.Core.encoded_names import ItemName
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
@@ -150,6 +151,7 @@ class ItemCollector():
     
             info_string = bytes(PyItem.GetInfoString(item.id) or []) if item.item_type in description_item_types else None
             description_inspected = ItemName.inspect_decoded(info_string) if info_string else None
+            description = string_table.decode(info_string) if info_string else None
             
             for substring in inspected.substrings:
                  if substring.decoded and substring.encoded:
@@ -163,7 +165,12 @@ class ItemCollector():
                         if substring.encoded not in self.string_table:
                             self.string_table[substring.encoded] = substring.decoded
                             self.requires_saving = True
-            
+                
+            if description and info_string:
+                if info_string not in self.string_table:
+                    self.string_table[info_string] = description
+                    self.requires_saving = True
+                    
             if not decoded or not decoded.singular:
                 continue
             
