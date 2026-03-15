@@ -223,11 +223,13 @@ _GRAMMAR_TAG_RE = re.compile(
     r'^\[(M|F|N|U|P|PM|PF|PN|m|u|null|proper|plur|sing)\]'
 )
 _INLINE_STYLE_TAG_RE = re.compile(r'\[(?:/?[bB])\]')
+_INLINE_GENDER_TAG_RE = re.compile(r'\[(?:f|m):"[^"]*"\]')
 
 
 def _postprocess_basic(text: str) -> str:
     text = _GRAMMAR_TAG_RE.sub('', text)
     text = _INLINE_STYLE_TAG_RE.sub('', text)
+    text = _INLINE_GENDER_TAG_RE.sub('', text)
     for old, new in _BRACKET_SUBS.items():
         if old in text:
             text = text.replace(old, new)
@@ -238,6 +240,8 @@ def _postprocess(text: str) -> str:
     text = _postprocess_basic(text)
     if "%str" in text:
         text = _apply_substitutions(text)
+    if "%%" in text:
+        text = text.replace("%%", "%")
     return text
 
 
@@ -560,12 +564,33 @@ def _decode_formatted_stream(codepoints: tuple[int, ...]) -> tuple[str, Optional
     i = 0
     while i < len(out):
         cur = out[i]
+        cur_lstripped = cur.lstrip()
         if re.search(r'%str\d+%', cur) and (i + 1) < len(out):
             nxt = out[i + 1]
             if nxt and not nxt.startswith("<c=@"):
                 cur = re.sub(r'%str\d+%', nxt, cur)
                 i += 1
-        compact.append(cur)
+                cur_lstripped = cur.lstrip()
+        # Parenthetical dull segments belong to the previous stat line.
+        if compact and cur.startswith("<c=@ItemDull>("):
+            compact[-1] = f"{compact[-1]} {cur}"
+        # Plain continuation fragments like ", ..." also belong to the previous line.
+        elif compact and not cur_lstripped.startswith("<c=@") and cur_lstripped[:1] in {",", ";", ":", ")", "]"}:
+            if "<c=@ItemDull>" in compact[-1] and compact[-1].endswith("</c>"):
+                compact[-1] = f"{compact[-1][:-4]}{cur_lstripped}</c>"
+            else:
+                compact[-1] = f"{compact[-1]}{cur_lstripped}"
+        elif compact and not cur_lstripped.startswith("<c=@"):
+            prev = compact[-1]
+            if "<c=@ItemDull>" in prev and prev.endswith(",</c>"):
+                if prev.endswith("),</c>"):
+                    compact[-1] = f"{prev[:-6]}, {cur_lstripped})</c>"
+                else:
+                    compact[-1] = f"{prev[:-4]} {cur_lstripped}</c>"
+            else:
+                compact.append(cur)
+        else:
+            compact.append(cur)
         i += 1
 
     return ('\n'.join(compact).strip(), first_tree)
