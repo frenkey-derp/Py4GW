@@ -92,7 +92,7 @@ def bytes_to_hex_string(byte: bytes) -> str:
         return ""
 
 def main():
-    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_input, decoded_ouput, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect
+    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_input, decoded_ouput, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect, language_listener_id
     ITEM_CACHE.reset()
     
     if not Routines.Checks.Map.IsMapReady():
@@ -192,10 +192,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Prefix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(prefix.display_summary if prefix else "None")
-                        if prefix and prefix.is_inherent:
-                            PyImGui.same_line(0, 5)
-                            PyImGui.text_colored(" (Inherent)", RED.color_tuple)
+                        PyImGui.text(str(prefix.display_summary) if prefix else "None")
                         if prefix and prefix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
@@ -204,28 +201,20 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Inscription")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(inscription.display_summary if inscription else "None")
+                        PyImGui.text(str(inscription.display_summary) if inscription else "None")
                         if inscription and inscription.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-                        
-                        if inscription and inscription.is_inherent:
-                            PyImGui.same_line(0, 5)
-                            PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-                        
-                        
+
                         PyImGui.table_next_row()
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Suffix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(suffix.display_summary if suffix else "None")
+                        PyImGui.text(str(suffix.display_summary) if suffix else "None")
                         if suffix and suffix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-                        if suffix and suffix.is_inherent:
-                            PyImGui.same_line(0, 5)
-                            PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-                        
+               
                     PyImGui.end_table()
                                     
                                     
@@ -241,7 +230,7 @@ def main():
                             PyImGui.table_set_column_index(0)
                             PyImGui.text(prop.__class__.__name__)
                             PyImGui.table_set_column_index(1)
-                            PyImGui.text(prop.describe() if hasattr(prop, "describe") else "None")
+                            PyImGui.text(str(prop.description) if hasattr(prop, "simple_description") else "None")
                     
                     PyImGui.end_table()
                 ImGui.end_tab_item()
@@ -576,27 +565,27 @@ def main():
                     ImGui.text_colored(error_message, RED.color_tuple, font_size = 16)
                 
                 if switching_lang:
-                    string_table.switch_language(language.value)
-                    encoded_names.switch_language(language)
-                    Py4GW.Console.Log(MODULE_NAME, f"Switching to language: {language.name}")
+                    string_table.switch_language(language)
+                    Py4GW.Console.Log(MODULE_NAME, f"Switching UI decode language override to: {language.name}")
                 
-                # if ImGui.button("Decode from Clipboard", -1):
-                #     try:
-                #         clipboard = PyImGui.get_clipboard_text()
-                #         enc_input = clipboard
-                #         enc_bytes = hex_string_to_bytes(clipboard)
-                #         decoded_name = string_table.decode(enc_bytes)
+                if ImGui.button("Decode from Clipboard", -1):
+                    try:
+                        clipboard = PyImGui.get_clipboard_text()
+                        enc_input = clipboard
+                        clipboard_bytes = bytes(int(x, 16) for x in clipboard.replace(",", " ").split())
+                        enc_bytes = clipboard_bytes
+                        decoded_name = string_table.decode(enc_bytes)
                         
-                #         Py4GW.Console.Log(MODULE_NAME, f"Decoded:")
-                #         Py4GW.Console.Log(MODULE_NAME, f"{decoded_name}")
+                        Py4GW.Console.Log(MODULE_NAME, f"Decoded:")
+                        Py4GW.Console.Log(MODULE_NAME, f"{decoded_name}")
                                                 
-                #         # Write decoded name to file for easy copying
-                #         with open(os.path.join(INI_PATH, "Decoded_Item_Name.txt"), "w", encoding="utf-8") as f:
-                #             f.write(decoded_name) 
+                        # Write decoded name to file for easy copying
+                        with open(os.path.join(INI_PATH, "Decoded_Item_Name.txt"), "w", encoding="utf-8") as f:
+                            f.write(decoded_name) 
                         
-                #     except Exception as e:
-                #         Py4GW.Console.Log(MODULE_NAME, f"Failed to decode clipboard data: {e}", Py4GW.Console.MessageType.Error
-                #                           )
+                    except Exception as e:
+                        Py4GW.Console.Log(MODULE_NAME, f"Failed to decode clipboard data: {e}", Py4GW.Console.MessageType.Error
+                                          )
                 ImGui.end_tab_item()
             ImGui.end_tab_bar()
             

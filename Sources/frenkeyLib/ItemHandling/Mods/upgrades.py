@@ -15,8 +15,8 @@ from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies, ItemUpgr
 from Sources.frenkeyLib.ItemHandling.encoded_strings import EncodedStrings
 
 def _get_property_factory():
-    from Sources.frenkeyLib.ItemHandling.Mods.upgrade_parser import _PROPERTY_FACTORY
-    return _PROPERTY_FACTORY
+    from Sources.frenkeyLib.ItemHandling.Mods.upgrade_parser import get_property_factory
+    return get_property_factory()
 
 COLOR_TAG_RE = re.compile(r'<c=@[^>]+>(.*?)</c>')
 STAT_TAGS = (
@@ -157,6 +157,16 @@ class WeaponUpgrade(Upgrade):
         weapon_upgrade = cast("WeaponUpgrade", upgrade)
         weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)
 
+    @property
+    def description_short(self) -> str:
+        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
+        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description (short)"
+    
+    @property
+    def description(self) -> str:
+        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
+        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description"
+    
 #region Prefixes
 
 class WeaponPrefix(WeaponUpgrade):
@@ -542,6 +552,16 @@ class Inscription(Upgrade):
         
         return "Decoding..."   
 
+    @property
+    def description_short(self) -> str:
+        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
+        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description (short)"
+    
+    @property
+    def description(self) -> str:
+        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
+        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description"
+    
 #region Offhand
 class BeJustAndFearNot(Inscription):
     id = ItemUpgrade.BeJustAndFearNot
