@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.Item_enums import Rarity
 from Sources.frenkeyLib.ItemHandling.Mods.item_modifier_parser import ItemModifierParser
 from Sources.frenkeyLib.ItemHandling.Mods.properties import InscriptionProperty, ItemProperty, PrefixProperty, SuffixProperty
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemUpgradeType
-from Sources.frenkeyLib.ItemHandling.Mods.upgrades import Upgrade, Upgrade
+from Sources.frenkeyLib.ItemHandling.Mods.upgrades import Upgrade
 
 
 class ItemMod:

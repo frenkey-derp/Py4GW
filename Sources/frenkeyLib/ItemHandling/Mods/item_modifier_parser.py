@@ -1,6 +1,5 @@
 from PyItem import ItemModifier
 from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
-from Sources.frenkeyLib.ItemHandling.Mods.upgrade_parser import _PROPERTY_FACTORY
 from Sources.frenkeyLib.ItemHandling.Mods.properties import ItemProperty
 from typing import TypeVar
 
@@ -21,8 +20,10 @@ class ItemModifierParser:
                 self.modifiers.append(decoded)
 
     def _build_properties(self):
+        from Sources.frenkeyLib.ItemHandling.Mods.upgrade_parser import get_property_factory
+
         for mod in self.modifiers:
-            factory = _PROPERTY_FACTORY.get(mod.identifier)
+            factory = get_property_factory().get(mod.identifier)
             if factory:
                 prop = factory(mod, self.modifiers)
                     

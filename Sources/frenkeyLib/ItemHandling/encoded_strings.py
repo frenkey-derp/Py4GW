@@ -1,5 +1,5 @@
 from enum import Enum
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DamageType, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies
 
@@ -119,5 +119,24 @@ class EncodedStrings():
         Profession.Ranger: bytes([0xB, 0x1, 0x2, 0x81, 0xB1, 0x38, 0x1, 0x0]),
         Profession.Ritualist: bytes([0xB, 0x1, 0x2, 0x81, 0xB3, 0x38, 0x1, 0x0]),
         Profession.Warrior: bytes([0xB, 0x1, 0x2, 0x81, 0xB0, 0x38, 0x1, 0x0]),
+    }
+            
+    DAMAGE_TYPE_BYTES = {
+        DamageType.Blunt: bytes([0xDE, 0x8]),
+        DamageType.Piercing: bytes([0xDF, 0x8]),
+        DamageType.Slashing: bytes([0xE0, 0x8]),
+        DamageType.Cold: bytes([0xE1, 0x8]),
+        DamageType.Lightning: bytes([0xE3, 0x8]),
+        DamageType.Fire: bytes([0xE4, 0x8]),
+        DamageType.Chaos: bytes([0xE5, 0x8]),
+        DamageType.Dark: bytes([0xE6, 0x8]),
+        DamageType.Holy: bytes([0xE7, 0x8]),
+        DamageType.unknown_9: bytes([]),
+        DamageType.unknown_10: bytes([]),
+        DamageType.Earth: bytes([0xE2, 0x8]),
+        DamageType.unknown_12: bytes([]),
+        DamageType.unknown_13: bytes([]),
+        DamageType.unknown_14: bytes([]),
+        DamageType.unknown_15: bytes([]),
     }
                               
