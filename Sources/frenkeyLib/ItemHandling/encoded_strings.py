@@ -1,7 +1,67 @@
 from enum import Enum
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DamageType, Profession
-from Py4GWCoreLib.enums_src.Item_enums import ItemType
+import re
+from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, DamageType, Profession, Reduced_Ailment
+from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
+from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies
+
+class EncodedString:
+    COLOR_TAG_RE = re.compile(r"<c=@[^>]+>(.*?)</c>")
+    STAT_TAGS = (
+        "<c=@ItemBonus>",
+        "<c=@ItemUncommon>",
+        "<c=@ItemRare>",
+    )
+
+    def __init__(self, encoded: bytes, fallback: str, placeholder_bytes: bytes = bytes()):
+        self.encoded = encoded
+        self.fallback = fallback
+        self.placeholder_bytes = placeholder_bytes
+        self.__plain = ""
+        self.__bonuses_only = ""
+        self.__full = ""
+
+    def decode(self) -> str:
+        decoded = string_table.decode(self.encoded)
+        if self.placeholder_bytes:
+            decoded = decoded.replace(string_table.decode(self.placeholder_bytes), "").strip()
+            
+        return decoded if decoded else self.fallback
+
+    def replace_multiple_whitespace(self, s: str) -> str:
+        s = re.sub(r'\s+', ' ', s).strip()
+        s = re.sub(r'>\s+', '>', s)
+        return s
+
+    def remove_placeholder(self, s: str) -> str:
+        if self.placeholder_bytes:
+            return self.replace_multiple_whitespace(s.replace(string_table.decode(self.placeholder_bytes), "").strip())
+        return s
+
+    @property
+    def plain(self) -> str:
+        if not self.__plain:
+            self.__plain = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", self.decode()))
+                            
+        return self.__plain
+
+    @property
+    def bonuses_only(self) -> str:
+        if not self.__bonuses_only:
+            lines = self.decode().splitlines()
+            bonus_lines = [line for line in lines if line.startswith(self.STAT_TAGS)]
+            self.__bonuses_only = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", "\n".join(bonus_lines)))
+                
+        return self.__bonuses_only
+
+    @property
+    def full(self) -> str:
+        if not self.__full:
+            self.__full = self.remove_placeholder(self.decode())
+                            
+        return self.__full
+
+
 
 class EncodedStrings():
     ATTRIBUTE_NAMES = {
@@ -140,3 +200,155 @@ class EncodedStrings():
         DamageType.unknown_15: bytes([]),
     }
                               
+    ITEM_BASIC = bytes([0x2, 0x0, 0x3B, 0xA, 0xA, 0x1])
+    ITEM_BONUS = bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1])
+    ITEM_COMMON = bytes([0x2, 0x0, 0x3D, 0xA, 0xA, 0x1])
+    ITEM_DULL = bytes([0x2, 0x0, 0x3E, 0xA, 0xA, 0x1])
+    ITEM_ENHANCE = bytes([0x2, 0x0, 0x3F, 0xA, 0xA, 0x1])
+    ITEM_RARE = bytes([0x2, 0x0, 0x40, 0xA, 0xA, 0x1])
+    ITEM_RESTRICT = bytes([0x2, 0x0, 0x41, 0xA, 0xA, 0x1])
+    ITEM_UNCOMMON = bytes([0x2, 0x0, 0x42, 0xA, 0xA, 0x1])
+    ITEM_UNIQUE = bytes([0x2, 0x0, 0x43, 0xA, 0xA, 0x1])
+
+    PLUS_NUM_TEMPLATE = bytes([0x84, 0xA, 0xA, 0x1])
+    PLUS_PERCENT_TEMPLATE = bytes([0x85, 0xA, 0xA, 0x1])
+    COLON_NUM_TEMPLATE = bytes([0x86, 0xA, 0xA, 0x1])
+    MINUS_NUM_TEMPLATE = bytes([0x7E, 0xA, 0xA, 0x1])
+    CHANCE_TEMPLATE = bytes([0x87, 0xA, 0xA, 0x1])
+    REQUIRES_TEMPLATE = bytes([0xA9, 0xA, 0xA, 0x1])
+
+    ARMOR_BYTES = bytes([0x44, 0xA, 0x1, 0x0])
+    DAMAGE_BYTES = bytes([0x4C, 0xA, 0x1, 0x0])
+    ENERGY_BYTES = bytes([0x17, 0x9, 0x1, 0x0])
+    ENERGY_RECOVERY_BYTES = bytes([0x18, 0x9, 0x1, 0x0])
+    ENERGY_REGEN_BYTES = bytes([0x51, 0xA, 0x1, 0x0])
+    ENERGY_GAIN_ON_HIT_BYTES = bytes([0x50, 0xA, 0x1, 0x0])
+    HEALTH_BYTES = bytes([0x52, 0xA, 0x1, 0x0])
+    HEALTH_REGEN_BYTES = bytes([0x53, 0xA, 0x1, 0x0])
+    LIFE_DRAINING_BYTES = bytes([0x54, 0xA, 0x1, 0x0])
+    DOUBLE_ADRENALINE_BYTES = bytes([0x6F, 0xA, 0x1, 0x0])
+    HALVES_CASTING_BYTES = bytes([0x80, 0xA, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0x1, 0x0])
+    HALVES_CASTING_ITEM_ATTRIBUTE_BYTES = bytes([0x1, 0x81, 0xC4, 0x5D, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0x1, 0x0])
+    HALVES_RECHARGE_BYTES = bytes([0x80, 0xA, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0x1, 0x0])
+    HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES = bytes([0x1, 0x81, 0xC4, 0x5D, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0x1, 0x0])
+    ITEM_ATTRIBUTE_PLUS_ONE_BYTES = bytes([0x84, 0xA, 0xA, 0x1, 0x1, 0x81, 0x86, 0x5E, 0x1, 0x0, 0x1, 0x1, 0x1])
+    HIGHLY_SALVAGEABLE_BYTES = bytes([0x95, 0xA, 0x1, 0x0])
+    STACKING_BYTES = bytes([0xB1, 0xA, 0x1, 0x0])
+
+    WHILE_ATTACKING_BYTES = bytes([0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB4, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0])
+    WHILE_CASTING_BYTES = bytes([0xB5, 0xA, 0x1, 0x0])
+    WHILE_ENCHANTED_BYTES = bytes([0xB7, 0xA, 0x1, 0x0])
+    WHILE_HEXED_BYTES = bytes([0xB8, 0xA, 0x1, 0x0])
+    WHILE_IN_A_STANCE_BYTES = bytes([0xBA, 0xA, 0x1, 0x0])
+    WHILE_USING_PREPARATION_BYTES = bytes([0xBF, 0xA, 0x1, 0x0])
+    WHILE_ACTIVATING_SKILLS_BYTES = bytes([0xC0, 0xA, 0x1, 0x0])
+    VS_HEXED_FOES_BYTES = bytes([0xAE, 0xA, 0x1, 0x0])
+    VS_ELEMENTAL_DAMAGE_BYTES = bytes([0xAD, 0xA, 0x1, 0x0])
+    VS_PHYSICAL_DAMAGE_BYTES = bytes([0xB0, 0xA, 0x1, 0x0])
+    ENCHANTMENTS_LAST_BYTES = bytes([0xA5, 0xA, 0x1, 0x0])
+    IMPROVED_SALE_VALUE_BYTES = bytes([0xA6, 0xA, 0x1, 0x0])
+    INFUSED_BYTES = bytes([0xC9, 0xA, 0x1, 0x0])
+    REDUCES_DISEASE_DURATION_BYTES = bytes([0xA7, 0xA, 0xA, 0x1, 0x92, 0x62, 0x1, 0x0, 0x1, 0x0])
+
+    VS_DAMAGE_BYTES = {
+        DamageType.Blunt: bytes([0xAC, 0xA, 0xA, 0x1, 0xDE, 0x8, 0x1, 0x0, 0x1, 0x0]),
+        DamageType.Cold: bytes([0xAC, 0xA, 0xA, 0x1, 0xE1, 0x8, 0x1, 0x0, 0x1, 0x0]),
+        DamageType.Earth: bytes([0xAC, 0xA, 0xA, 0x1, 0xE2, 0x8, 0x1, 0x0, 0x1, 0x0]),
+        DamageType.Fire: bytes([0xAC, 0xA, 0xA, 0x1, 0xE4, 0x8, 0x1, 0x0, 0x1, 0x0]),
+        DamageType.Lightning: bytes([0xAC, 0xA, 0xA, 0x1, 0xE3, 0x8, 0x1, 0x0, 0x1, 0x0]),
+        DamageType.Piercing: bytes([0xAC, 0xA, 0xA, 0x1, 0xDF, 0x8, 0x1, 0x0, 0x1, 0x0]),
+        DamageType.Slashing: bytes([0xAC, 0xA, 0xA, 0x1, 0xE0, 0x8, 0x1, 0x0, 0x1, 0x0]),
+    }
+
+    CONDITION_INCREASE_BYTES = {
+        Ailment.Crippled: bytes([0xA4, 0xA, 0xA, 0x1, 0x8E, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Ailment.Dazed: bytes([0xA4, 0xA, 0xA, 0x1, 0x96, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Ailment.Deep_Wound: bytes([0xA4, 0xA, 0xA, 0x1, 0x90, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Ailment.Weakness: bytes([0xA4, 0xA, 0xA, 0x1, 0x98, 0x62, 0x1, 0x0, 0x1, 0x0]),
+    }
+
+    REDUCED_CONDITION_BYTES = {
+        Reduced_Ailment.Bleeding: bytes([0xA7, 0xA, 0xA, 0x1, 0x88, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Blind: bytes([0xA7, 0xA, 0xA, 0x1, 0x8A, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Crippled: bytes([0xA7, 0xA, 0xA, 0x1, 0x8E, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Dazed: bytes([0xA7, 0xA, 0xA, 0x1, 0x96, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Deep_Wound: bytes([0xA7, 0xA, 0xA, 0x1, 0x90, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Disease: bytes([0xA7, 0xA, 0xA, 0x1, 0x92, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Poison: bytes([0xA7, 0xA, 0xA, 0x1, 0x94, 0x62, 0x1, 0x0, 0x1, 0x0]),
+        Reduced_Ailment.Weakness: bytes([0xA7, 0xA, 0xA, 0x1, 0x98, 0x62, 0x1, 0x0, 0x1, 0x0]),
+    }
+
+
+    @staticmethod
+    def _attribute_bytes(attribute: Attribute) -> bytes | None:
+        return EncodedStrings.ATTRIBUTE_NAMES.get(attribute)
+
+
+    @staticmethod
+    def _attribute_name(attribute: Attribute) -> str:
+        encoded = EncodedStrings._attribute_bytes(attribute)
+        if encoded:
+            decoded = string_table.decode(encoded + bytes([0x1, 0x0]))
+            if decoded:
+                return decoded
+        return attribute.name.replace("_", " ")
+
+    @staticmethod
+    def _encoded(encoded_bytes: bytes, fallback: str) -> EncodedString:
+        return EncodedString(encoded_bytes, fallback)
+
+
+    @staticmethod
+    def _bonus_plus_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
+        return EncodedStrings._encoded(
+            bytes([*bonus_color, *EncodedStrings.PLUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+            f"{fallback_label} +{value}",
+        )
+
+
+    @staticmethod
+    def _bonus_minus_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
+        return EncodedStrings._encoded(
+            bytes([*bonus_color, *EncodedStrings.MINUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+            f"{fallback_label} -{value}",
+        )
+
+
+    @staticmethod
+    def _bonus_plus_percent(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
+        return EncodedStrings._encoded(
+            bytes([*bonus_color, *EncodedStrings.PLUS_PERCENT_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+            f"{fallback_label} +{value}%",
+        )
+
+
+    @staticmethod
+    def _bonus_colon_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
+        return EncodedStrings._encoded(
+            bytes([*bonus_color, *EncodedStrings.COLON_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+            f"{fallback_label}: {value}",
+        )
+
+
+    @staticmethod
+    def _dull_parenthesized(raw: bytes, fallback: str) -> bytes:
+        return bytes([*EncodedStrings.ITEM_DULL, *EncodedStrings.PARENTHESIS_STR1, *raw, 0x1, 0x0])
+
+
+    @staticmethod
+    def _append_line(base: EncodedString, line_bytes: bytes) -> EncodedString:
+        return EncodedStrings._encoded(base.encoded + line_bytes, base.fallback)
+
+
+    @staticmethod
+    def _append_line_with_fallback(base: EncodedString, line_bytes: bytes, fallback_suffix: str) -> EncodedString:
+        separator = "\n" if base.fallback else ""
+        return EncodedStrings._encoded(base.encoded + line_bytes, f"{base.fallback}{separator}{fallback_suffix}")
+
+
+    @staticmethod
+    def combine_encoded_strings(parts: list[EncodedString], fallback: str = "") -> EncodedString:
+        encoded = b"".join(part.encoded for part in parts if part.encoded)
+        fallback_parts = [part.fallback for part in parts if part.fallback]
+        combined_fallback = "\n".join(fallback_parts) if fallback_parts else fallback
+        return EncodedString(encoded, combined_fallback or fallback)

@@ -1,4 +1,3 @@
-import re
 from typing import Optional, cast
 
 import Py4GW
@@ -10,36 +9,18 @@ from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.Mods.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfession
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
-from Sources.frenkeyLib.ItemHandling.encoded_strings import EncodedStrings
+from Sources.frenkeyLib.ItemHandling.encoded_strings import EncodedString, EncodedStrings
 
 def _get_property_factory():
     from Sources.frenkeyLib.ItemHandling.Mods.upgrade_parser import get_property_factory
     return get_property_factory()
-
-COLOR_TAG_RE = re.compile(r'<c=@[^>]+>(.*?)</c>')
-STAT_TAGS = (
-    "<c=@ItemBonus>",
-    "<c=@ItemUncommon>",
-    "<c=@ItemRare>",
-)
-
-def format_description(text: str, remove_colors: bool = False, only_bonuses : bool = False) -> str:
-    lines = text.splitlines()
-
-    if only_bonuses:
-        lines = [line for line in lines if line.startswith(STAT_TAGS)]
-
-    formatted = "\n".join(lines)
-    if remove_colors:
-        return COLOR_TAG_RE.sub(r"\1", formatted)
-
-    return formatted
 
 class Upgrade:
     """
     Abstract base class for item upgrades. Each specific upgrade type (e.g., Prefix, Suffix, Inscription) should inherit from this class and implement the necessary properties and methods.
     """
     mod_type : ItemUpgradeType
+    rarity : Rarity = Rarity.Blue
     id: ItemUpgrade = ItemUpgrade.Unknown
     upgrade_id: ItemUpgradeId = ItemUpgradeId.Unknown
     property_identifiers: list[ModifierIdentifier] = []
@@ -49,10 +30,13 @@ class Upgrade:
     encoded_description : bytes = bytes()    
     descriptions: dict[ServerLanguage, str] = {}
     
+    __encoded_name: EncodedString
+    __encoded_description: EncodedString
+    
     def __init__(self):
         self.is_inherent = False
         self.language = ServerLanguage(string_table._loaded_language) if string_table._loaded_language in ServerLanguage._value2member_map_ else ServerLanguage.English
-
+        
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, modifiers: list[DecodedModifier],) -> None:
         return None
@@ -66,6 +50,7 @@ class Upgrade:
         upgrade = cls()
         upgrade.properties = []
         upgrade.upgrade_id = mod.upgrade_id
+        upgrade.rarity = rarity
 
         cls._pre_compose(upgrade, mod, modifiers)
 
@@ -81,48 +66,54 @@ class Upgrade:
                 return None
 
         cls._post_compose(upgrade, mod, modifiers)
+        upgrade.__encoded_name = upgrade.create_encoded_name()
+        upgrade.__encoded_description = upgrade.create_encoded_description()
         return upgrade
 
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return cls.id.has_id(upgrade_id)
     
-    @property
-    def name(self) -> str:
-        if self.encoded_name:
-            decoded_name = string_table.decode(self.encoded_name)
+    def get_bonus_color(self) -> bytes:
+        match self.rarity:
+            case Rarity.Blue | Rarity.White:
+                return EncodedStrings.ITEM_BONUS
             
-            if decoded_name:
-                return decoded_name
-            else:
-                return "Decoding ..."
+            case Rarity.Purple:
+                return EncodedStrings.ITEM_UNCOMMON
             
-        return f"Unknown Upgrade ({self.__class__.__name__})"
+            case Rarity.Gold:
+                return EncodedStrings.ITEM_RARE
+            
+            case Rarity.Green:
+                return EncodedStrings.ITEM_UNIQUE
+            
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.encoded_name, f"no encoded name ({self.__class__.__name__})")
+    
+    def create_encoded_description(self) -> EncodedString:
+        return EncodedString(self.encoded_description, f"no encoded description ({self.__class__.__name__})")
     
     @property
-    def description_short(self) -> str:
-        if self.encoded_description:
-            decoded_description = string_table.decode(self.encoded_description)
-            
-            if decoded_description:
-                return format_description(decoded_description, remove_colors=True, only_bonuses=True)
-        
-        return "no encoded description (short)"
+    def name(self) -> str:
+        return self.__encoded_name.full
+    
+    @property
+    def name_plain(self) -> str:
+        return self.__encoded_name.plain    
+    
+    @property
+    def description_plain(self) -> str:
+        return self.__encoded_description.bonuses_only or self.__encoded_description.plain or "no encoded description (short)"
     
     @property
     def description(self) -> str:
-        if self.encoded_description:
-            decoded_description = string_table.decode(self.encoded_description)
-            
-            if decoded_description:
-                return format_description(decoded_description)
-        
-        return "no encoded description"
+        return self.__encoded_description.full
         
     @property
     def display_summary(self) -> str:
         name = self.name
-        description = self.description_short or self.description
+        description = self.description
         
         return f"{name}\n{description}" if description else name
     
@@ -150,15 +141,11 @@ class WeaponUpgrade(Upgrade):
         weapon_upgrade = cast("WeaponUpgrade", upgrade)
         weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)
 
-    @property
-    def description_short(self) -> str:
-        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
-        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description (short)"
-    
-    @property
-    def description(self) -> str:
-        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
-        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description"
+    def create_encoded_description(self) -> EncodedString:
+        if not self.properties:
+            return super().create_encoded_description()
+        parts = [prop.encoded_description for prop in self.properties]
+        return EncodedStrings.combine_encoded_strings(parts, "no encoded description")
     
 #region Prefixes
 
@@ -170,7 +157,9 @@ class AdeptUpgrade(WeaponPrefix):
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x94, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x1, 0x81, 0x94, 0x5D, 0x1, 0x0]), f"Adept")
     
     
 class BarbedUpgrade(WeaponPrefix):
@@ -178,112 +167,143 @@ class BarbedUpgrade(WeaponPrefix):
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x69, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+         return EncodedString(self.get_bonus_color() + bytes([0x69, 0xA, 0x1, 0x0]), f"Barbed")
     
 class CripplingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Crippling
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x6A, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x6A, 0xA, 0x1, 0x0]), f"Crippling")
         
 class CruelUpgrade(WeaponPrefix):
     id = ItemUpgrade.Cruel
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x6B, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x6B, 0xA, 0x1, 0x0]), f"Cruel")
 
 class DefensiveUpgrade(WeaponPrefix):
     id = ItemUpgrade.Defensive
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
-    encoded_name : bytes = bytes([0x6D, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x6D, 0xA, 0x1, 0x0]), f"Defensive")
     
 class EbonUpgrade(WeaponPrefix):
     id = ItemUpgrade.Ebon
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
-    encoded_name : bytes = bytes([0xD5, 0x8, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0xD5, 0x8, 0x1, 0x0]), f"Ebon")
     
 class FieryUpgrade(WeaponPrefix):
     id = ItemUpgrade.Fiery
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
-    encoded_name : bytes = bytes([0xD7, 0x8, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0xD7, 0x8, 0x1, 0x0]), f"Fiery")
     
 class FuriousUpgrade(WeaponPrefix):
     id = ItemUpgrade.Furious
     property_identifiers = [
         ModifierIdentifier.Furious,
     ]
-    encoded_name : bytes = bytes([0x6F, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x6F, 0xA, 0x1, 0x0]), f"Furious")
     
 class HaleUpgrade(WeaponPrefix):
     id = ItemUpgrade.Hale
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
-    encoded_name : bytes = bytes([0x70, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x70, 0xA, 0x1, 0x0]), f"Hale")
     
 class HeavyUpgrade(WeaponPrefix):
     id = ItemUpgrade.Heavy
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x72, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x72, 0xA, 0x1, 0x0]), f"Heavy")
     
 class IcyUpgrade(WeaponPrefix):
     id = ItemUpgrade.Icy
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
-    encoded_name : bytes = bytes([0xD4, 0x8, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0xD4, 0x8, 0x1, 0x0]), f"Icy")
     
 class InsightfulUpgrade(WeaponPrefix):
     id = ItemUpgrade.Insightful
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
-    encoded_name : bytes = bytes([0x73, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x73, 0xA, 0x1, 0x0]), f"Insightful")
     
 class PoisonousUpgrade(WeaponPrefix):
     id = ItemUpgrade.Poisonous
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x75, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x75, 0xA, 0x1, 0x0]), f"Poisonous")
     
 class ShockingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Shocking
     property_identifiers = [
         ModifierIdentifier.DamageTypeProperty,
     ]
-    encoded_name : bytes = bytes([0xD6, 0x8, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0xD6, 0x8, 0x1, 0x0]), f"Shocking")
     
 class SilencingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Silencing
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x6C, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x6C, 0xA, 0x1, 0x0]), f"Silencing")
     
 class SunderingUpgrade(WeaponPrefix):
     id = ItemUpgrade.Sundering
     property_identifiers = [
         ModifierIdentifier.ArmorPenetration,
     ]
-    encoded_name : bytes = bytes([0x74, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x74, 0xA, 0x1, 0x0]), f"Sundering")
     
 class SwiftUpgrade(WeaponPrefix):
     id = ItemUpgrade.Swift
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0])
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0]), f"Swift")
     
 class VampiricUpgrade(WeaponPrefix):
     id = ItemUpgrade.Vampiric
@@ -291,7 +311,9 @@ class VampiricUpgrade(WeaponPrefix):
         ModifierIdentifier.HealthDegen,
         ModifierIdentifier.HealthStealOnHit,
     ]
-    encoded_name : bytes = bytes([0x71, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x71, 0xA, 0x1, 0x0]), f"Vampiric")
     
 class ZealousUpgrade(WeaponPrefix):
     id = ItemUpgrade.Zealous
@@ -299,12 +321,14 @@ class ZealousUpgrade(WeaponPrefix):
         ModifierIdentifier.EnergyDegen,
         ModifierIdentifier.EnergyGainOnHit,
     ]
-    encoded_name : bytes = bytes([0x6E, 0xA, 0x1, 0x0])
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + bytes([0x6E, 0xA, 0x1, 0x0]), f"Zealous")
 
 #endregion Prefixes
 
 
 #region Suffixes
+#TODO: implement the "of X" suffixes with dynamic encoded names based on the properties (e.g. of Fortitude has HealthPlus, so the encoded name should include the encoding for HealthPlus and the description should say "of Fortitude (+Health)")
 class WeaponSuffix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Suffix
     
@@ -322,23 +346,17 @@ class OfAttributeUpgrade(WeaponSuffix):
         attribute_property = next((p for p in upgrade.properties if isinstance(p, AttributePlusOne)), None)
         of_attribute_upgrade.attribute = attribute_property.attribute if attribute_property else Attribute.None_
     
-    @property
-    def name(self) -> str:
-        placeholder_bytes = EncodedStrings.PLACEHOLDER_TO_REMOVE
-        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + bytes([0xB, 0x1]) + EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0])).replace(string_table.decode(placeholder_bytes), "").strip()
-        
-        if decoded_name:
-            return decoded_name
-        
-        else:
-            return f"Unknown Attribute Upgrade ({self.attribute.name})"
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", EncodedStrings.PLACEHOLDER_TO_REMOVE  )
     
 class OfAptitudeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfAptitude
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self):
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0]), f"of Aptitude", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfAxeMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfAxeMastery
@@ -351,35 +369,45 @@ class OfDefenseUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
-    encoded_name : bytes = bytes([0x77, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x77, 0xA, 0x1, 0x0]), f"of Defense", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfDevotionUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfDevotion
     property_identifiers = [
         ModifierIdentifier.HealthPlusEnchanted,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0]), f"of Devotion", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfEnchantingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfEnchanting
     property_identifiers = [
         ModifierIdentifier.IncreaseEnchantmentDuration,
     ]
-    encoded_name : bytes = bytes([0x78, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x78, 0xA, 0x1, 0x0]), f"of Enchanting", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfEnduranceUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfEndurance
     property_identifiers = [
         ModifierIdentifier.HealthPlusStance,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0]), f"of Endurance", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfFortitudeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfFortitude
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
-    encoded_name : bytes = bytes([0x79, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x79, 0xA, 0x1, 0x0]), f"of Fortitude", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfHammerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfHammerMastery
@@ -392,22 +420,28 @@ class OfMasteryUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0]), f"of Mastery", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfMemoryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfMemory
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0]), f"of Memory", EncodedStrings.PLACEHOLDER_TO_REMOVE)
 
 class OfQuickeningUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfQuickening
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0])
     
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0]), f"of Quickening", EncodedStrings.PLACEHOLDER_TO_REMOVE)
+
 class OfScytheMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfScytheMastery
     
@@ -416,7 +450,9 @@ class OfShelterUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
-    encoded_name : bytes = bytes([0x7B, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), f"of Shelter", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfSlayingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSlaying
@@ -454,7 +490,9 @@ class OfSwiftnessUpgrade(WeaponSuffix):
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
-    encoded_name : bytes = bytes([0x7C, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x7C, 0xA, 0x1, 0x0]), f"of Swiftness", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSwordsmanship
@@ -477,31 +515,27 @@ class OfTheProfessionUpgrade(WeaponSuffix):
         profession_property = next((p for p in upgrade.properties if isinstance(p, OfTheProfession)), None)
         of_the_profession_upgrade.profession = profession_property.profession if profession_property else Profession._None
     
-    @property
-    def name(self) -> str:
-        placeholder_bytes = EncodedStrings.PLACEHOLDER_TO_REMOVE
-        decoded_name = string_table.decode(EncodedStrings.STR1_OF_STR2 + placeholder_bytes + EncodedStrings.THE_PROFESSION.get(self.profession, bytes())).replace(string_table.decode(placeholder_bytes), "").strip()
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + EncodedStrings.THE_PROFESSION.get(self.profession, bytes()), f"of {self.profession.name if self.profession != Profession._None else 'Unknown Profession'}", EncodedStrings.PLACEHOLDER_TO_REMOVE)
         
-        if decoded_name:
-            return decoded_name
-        
-        else:
-            return "of {profession}".format(profession=self.profession.name if self.profession != Profession._None else "Unknown Profession")
-    
     
 class OfValorUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfValor
     property_identifiers = [
         ModifierIdentifier.HealthPlusHexed,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color()+ EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0]), f"of Valor", EncodedStrings.PLACEHOLDER_TO_REMOVE)
     
 class OfWardingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfWarding
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
     ]
-    encoded_name : bytes = bytes([0x7D, 0xA, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(self.get_bonus_color() + EncodedStrings.STR1_OF_STR2 + EncodedStrings.PLACEHOLDER_TO_REMOVE + bytes([0x7D, 0xA, 0x1, 0x0]), f"of Warding", EncodedStrings.PLACEHOLDER_TO_REMOVE)
 
 #endregion Suffixes
 
@@ -511,24 +545,12 @@ class Inscription(Upgrade):
     inventory_icon : str
     id : ItemUpgrade
     target_item_type : ItemType
-    
-    @property
-    def name(self) -> str:
-        decoded_name = string_table.decode(EncodedStrings.INSCRIPTION_STR1 + self.encoded_name)
-        if decoded_name:
-            return decoded_name
-        
-        return "Decoding..."   
 
-    @property
-    def description_short(self) -> str:
-        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
-        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description (short)"
-    
-    @property
-    def description(self) -> str:
-        prop_descriptions = [str(prop.description) for prop in self.properties if hasattr(prop, "description")]
-        return "\n".join(prop_descriptions) if prop_descriptions else "no encoded description"
+    def create_encoded_description(self) -> EncodedString:
+        if not self.properties:
+            return super().create_encoded_description()
+        parts = [prop.encoded_description for prop in self.properties]
+        return EncodedStrings.combine_encoded_strings(parts, "no encoded description")
     
 #region Offhand
 class BeJustAndFearNot(Inscription):
@@ -537,15 +559,19 @@ class BeJustAndFearNot(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusHexed,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0])
     
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0]), f"Be Just And Fear Not")
+        
 class DownButNotOut(Inscription):
     id = ItemUpgrade.DownButNotOut
     target_item_type = ItemType.Offhand
     property_identifiers = [
         ModifierIdentifier.ArmorPlusWhileDown
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x8E, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x86, 0x5D, 0x1, 0x0]), f"Down But Not Out")    
     
 class FaithIsMyShield(Inscription):
     id = ItemUpgrade.FaithIsMyShield
@@ -553,7 +579,9 @@ class FaithIsMyShield(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusEnchanted,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x8D, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8D, 0x5D, 0x1, 0x0]), f"Faith Is My Shield")
     
 class ForgetMeNot(Inscription):
     id = ItemUpgrade.ForgetMeNot
@@ -561,7 +589,9 @@ class ForgetMeNot(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeItemAttribute,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x93, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x93, 0x5D, 0x1, 0x0]), f"Forget Me Not")
     
 class HailToTheKing(Inscription):
     id = ItemUpgrade.HailToTheKing
@@ -569,7 +599,9 @@ class HailToTheKing(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAbove,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x8F, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8E, 0x5D, 0x1, 0x0]), f"Hail To The King")
     
 class IgnoranceIsBliss(Inscription):
     id = ItemUpgrade.IgnoranceIsBliss
@@ -578,7 +610,9 @@ class IgnoranceIsBliss(Inscription):
         ModifierIdentifier.ArmorPlus,
         ModifierIdentifier.EnergyMinus,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x87, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x87, 0x5D, 0x1, 0x0]), f"Ignorance Is Bliss")
     
 class KnowingIsHalfTheBattle(Inscription):
     id = ItemUpgrade.KnowingIsHalfTheBattle
@@ -586,7 +620,9 @@ class KnowingIsHalfTheBattle(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusCasting,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x8C, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8C, 0x5D, 0x1, 0x0]), f"Knowing Is Half The Battle")
     
 class LifeIsPain(Inscription):
     id = ItemUpgrade.LifeIsPain
@@ -595,7 +631,9 @@ class LifeIsPain(Inscription):
         ModifierIdentifier.ArmorPlus,
         ModifierIdentifier.HealthMinus,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x88, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x88, 0x5D, 0x1, 0x0]), f"Life Is Pain")
     
 class LiveForToday(Inscription):
     id = ItemUpgrade.LiveForToday
@@ -604,7 +642,9 @@ class LiveForToday(Inscription):
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x91, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x91, 0x5D, 0x1, 0x0]), f"Live For Today")
     
 class ManForAllSeasons(Inscription):
     id = ItemUpgrade.ManForAllSeasons
@@ -612,7 +652,9 @@ class ManForAllSeasons(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsElemental,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x89, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x89, 0x5D, 0x1, 0x0]), f"Man For All Seasons")
     
 class MightMakesRight(Inscription):
     id = ItemUpgrade.MightMakesRight
@@ -620,7 +662,9 @@ class MightMakesRight(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusAttacking,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x8B, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8B, 0x5D, 0x1, 0x0]), f"Might Makes Right")
     
 class SerenityNow(Inscription):
     id = ItemUpgrade.SerenityNow
@@ -628,7 +672,9 @@ class SerenityNow(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x92, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x92, 0x5D, 0x1, 0x0]), f"Serenity Now")
     
 class SurvivalOfTheFittest(Inscription):
     id = ItemUpgrade.SurvivalOfTheFittest
@@ -636,7 +682,9 @@ class SurvivalOfTheFittest(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsPhysical,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x8A, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8A, 0x5D, 0x1, 0x0]), f"Survival Of The Fittest")
 
 #endregion Offhand
 
@@ -649,7 +697,9 @@ class BrawnOverBrains(Inscription):
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.EnergyMinus,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xAE, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAE, 0x5D, 0x1, 0x0]), f"Brawn Over Brains")
         
 class DanceWithDeath(Inscription):
     id = ItemUpgrade.DanceWithDeath
@@ -657,15 +707,19 @@ class DanceWithDeath(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusStance,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xAD, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAD, 0x5D, 0x1, 0x0]), f"Dance With Death")
          
 class DontFearTheReaper(Inscription):
     id = ItemUpgrade.DontFearTheReaper
     target_item_type = ItemType.Weapon
     property_identifiers = [
         ModifierIdentifier.DamagePlusHexed,
-    ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xAC, 0x5D, 0x1, 0x0])
+    ]    
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAC, 0x5D, 0x1, 0x0]), f"Dont Fear The Reaper")
     
 class DontThinkTwice(Inscription):
     id = ItemUpgrade.DontThinkTwice
@@ -673,7 +727,9 @@ class DontThinkTwice(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeGeneral,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB0, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB0, 0x5D, 0x1, 0x0]), f"Dont Think Twice")
     
 class GuidedByFate(Inscription):
     id = ItemUpgrade.GuidedByFate
@@ -681,7 +737,9 @@ class GuidedByFate(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusEnchanted,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xA9, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA9, 0x5D, 0x1, 0x0]), f"Guided By Fate")
     
 class StrengthAndHonor(Inscription):
     id = ItemUpgrade.StrengthAndHonor
@@ -689,7 +747,9 @@ class StrengthAndHonor(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileUp,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xAA, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAA, 0x5D, 0x1, 0x0]), f"Strength And Honor")
     
 class ToThePain(Inscription):
     id = ItemUpgrade.ToThePain
@@ -698,7 +758,9 @@ class ToThePain(Inscription):
         ModifierIdentifier.DamagePlusPercent,
         ModifierIdentifier.ArmorMinusAttacking
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xAF, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAF, 0x5D, 0x1, 0x0]), f"To The Pain")
     
 class TooMuchInformation(Inscription):
     id = ItemUpgrade.TooMuchInformation
@@ -706,7 +768,9 @@ class TooMuchInformation(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsHexed,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xA8, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA8, 0x5D, 0x1, 0x0]), f"Too Much Information")
     
 class VengeanceIsMine(Inscription):
     id = ItemUpgrade.VengeanceIsMine
@@ -714,7 +778,9 @@ class VengeanceIsMine(Inscription):
     property_identifiers = [
         ModifierIdentifier.DamagePlusWhileDown,
     ]    
-    encoded_name : bytes = bytes([0x1, 0x81, 0xAB, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAB, 0x5D, 0x1, 0x0]), f"Vengeance Is Mine")
 
 #endregion Weapon
 
@@ -725,7 +791,9 @@ class IHaveThePower(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x72, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x72, 0x5D, 0x1, 0x0]), f"I Have The Power")
     
 class LetTheMemoryLiveAgain(Inscription):
     id = ItemUpgrade.LetTheMemoryLiveAgain
@@ -733,7 +801,9 @@ class LetTheMemoryLiveAgain(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesSkillRechargeGeneral,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x73, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x73, 0x5D, 0x1, 0x0]), f"Let The Memory Live Again")
     
 #endregion MartialWeapon
 
@@ -744,7 +814,9 @@ class CastOutTheUnclean(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x83, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x83, 0x5D, 0x1, 0x0]), f"Cast Out The Unclean")
     
 class FearCutsDeeper(Inscription):
     id = ItemUpgrade.FearCutsDeeper
@@ -752,7 +824,9 @@ class FearCutsDeeper(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x7F, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7F, 0x5D, 0x1, 0x0]), f"Fear Cuts Deeper")
     
 class ICanSeeClearlyNow(Inscription):
     id = ItemUpgrade.ICanSeeClearlyNow
@@ -760,7 +834,9 @@ class ICanSeeClearlyNow(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,   
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x80, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x80, 0x5D, 0x1, 0x0]), f"I Can See Clearly Now")
     
 class LeafOnTheWind(Inscription):
     id = ItemUpgrade.LeafOnTheWind
@@ -768,7 +844,9 @@ class LeafOnTheWind(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x75, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x75, 0x5D, 0x1, 0x0]), f"Leaf On The Wind")
     
 class LikeARollingStone(Inscription):
     id = ItemUpgrade.LikeARollingStone
@@ -776,7 +854,9 @@ class LikeARollingStone(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x76, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x76, 0x5D, 0x1, 0x0]), f"Like A Rolling Stone")
     
 class LuckOfTheDraw(Inscription):
     id = ItemUpgrade.LuckOfTheDraw
@@ -784,7 +864,9 @@ class LuckOfTheDraw(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x7B, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7B, 0x5D, 0x1, 0x0]), f"Luck Of The Draw")
     
 class MasterOfMyDomain(Inscription):
     id = ItemUpgrade.MasterOfMyDomain
@@ -792,7 +874,9 @@ class MasterOfMyDomain(Inscription):
     property_identifiers = [
         ModifierIdentifier.AttributePlusOneItem,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xA7, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA7, 0x5D, 0x1, 0x0]), f"Master Of My Domain")
     
 class NotTheFace(Inscription):
     id = ItemUpgrade.NotTheFace
@@ -800,7 +884,9 @@ class NotTheFace(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x74, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x74, 0x5D, 0x1, 0x0]), f"Not The Face")
     
 class NothingToFear(Inscription):
     id = ItemUpgrade.NothingToFear
@@ -808,7 +894,9 @@ class NothingToFear(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageHexed,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x7D, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7D, 0x5D, 0x1, 0x0]), f"Nothing To Fear")
     
 class OnlyTheStrongSurvive(Inscription):
     id = ItemUpgrade.OnlyTheStrongSurvive
@@ -816,7 +904,9 @@ class OnlyTheStrongSurvive(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x86, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x86, 0x5D, 0x1, 0x0]), f"Only The Strong Survive")
     
 class PureOfHeart(Inscription):
     id = ItemUpgrade.PureOfHeart
@@ -824,7 +914,9 @@ class PureOfHeart(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x84, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x84, 0x5D, 0x1, 0x0]), f"Pure Of Heart")
     
 class RidersOnTheStorm(Inscription):
     id = ItemUpgrade.RidersOnTheStorm
@@ -832,7 +924,9 @@ class RidersOnTheStorm(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x77, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x77, 0x5D, 0x1, 0x0]), f"Riders On The Storm")
     
 class RunForYourLife(Inscription):
     id = ItemUpgrade.RunForYourLife
@@ -840,7 +934,9 @@ class RunForYourLife(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageStance,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x7E, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7E, 0x5D, 0x1, 0x0]), f"Run For Your Life")  
     
 class ShelteredByFaith(Inscription):
     id = ItemUpgrade.ShelteredByFaith
@@ -848,7 +944,9 @@ class ShelteredByFaith(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReceiveLessPhysDamageEnchanted,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x7C, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7C, 0x5D, 0x1, 0x0]), f"Sheltered By Faith")
     
 class SleepNowInTheFire(Inscription):
     id = ItemUpgrade.SleepNowInTheFire
@@ -856,7 +954,9 @@ class SleepNowInTheFire(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x78, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x78, 0x5D, 0x1, 0x0]), f"Sleep Now In The Fire")
     
 class SoundnessOfMind(Inscription):
     id = ItemUpgrade.SoundnessOfMind
@@ -864,7 +964,9 @@ class SoundnessOfMind(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x85, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x85, 0x5D, 0x1, 0x0]), f"Soundness Of Mind")
     
 class StrengthOfBody(Inscription):
     id = ItemUpgrade.StrengthOfBody
@@ -872,7 +974,9 @@ class StrengthOfBody(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x82, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x82, 0x5D, 0x1, 0x0]), f"Strength Of Body")
     
 class SwiftAsTheWind(Inscription):
     id = ItemUpgrade.SwiftAsTheWind
@@ -880,7 +984,9 @@ class SwiftAsTheWind(Inscription):
     property_identifiers = [
         ModifierIdentifier.ReduceConditionDuration,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x81, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x81, 0x5D, 0x1, 0x0]), f"Swift As The Wind")
 
 class TheRiddleOfSteel(Inscription):
     id = ItemUpgrade.TheRiddleOfSteel
@@ -888,7 +994,9 @@ class TheRiddleOfSteel(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x7A, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7A, 0x5D, 0x1, 0x0]), f"The Riddle Of Steel")
     
 class ThroughThickAndThin(Inscription):
     id = ItemUpgrade.ThroughThickAndThin
@@ -896,7 +1004,9 @@ class ThroughThickAndThin(Inscription):
     property_identifiers = [
         ModifierIdentifier.ArmorPlusVsDamage,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0x79, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x79, 0x5D, 0x1, 0x0]), f"Through Thick And Thin")
 
 #endregion OffhandOrShield
 
@@ -907,7 +1017,9 @@ class MeasureForMeasure(Inscription):
     property_identifiers = [
         ModifierIdentifier.HighlySalvageable,
     ]
-    encoded_name : bytes = bytes([0x81, 0x7C, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x81, 0x7C, 0x1, 0x0]), f"Measure For Measure")
         
 class ShowMeTheMoney(Inscription):
     id = ItemUpgrade.ShowMeTheMoney
@@ -915,7 +1027,9 @@ class ShowMeTheMoney(Inscription):
     property_identifiers = [
         ModifierIdentifier.IncreasedSaleValue,
     ]    
-    encoded_name : bytes = bytes([0x80, 0x7C, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x80, 0x7C, 0x1, 0x0]), f"Show Me The Money")
 
 #endregion EquippableItem
 
@@ -926,7 +1040,9 @@ class AptitudeNotAttitude(Inscription):
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB2, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB1, 0x5D, 0x1, 0x0]), f"Aptitude Not Attitude")
     
 class DontCallItAComeback(Inscription):
     id = ItemUpgrade.DontCallItAComeback
@@ -934,7 +1050,9 @@ class DontCallItAComeback(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileBelow,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB6, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB2, 0x5D, 0x1, 0x0]), f"Don't Call It A Comeback")
     
 class HaleAndHearty(Inscription):
     id = ItemUpgrade.HaleAndHearty
@@ -942,7 +1060,9 @@ class HaleAndHearty(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusWhileDown,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB5, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB5, 0x5D, 0x1, 0x0]), f"Hale And Hearty")
     
 class HaveFaith(Inscription):
     id = ItemUpgrade.HaveFaith
@@ -950,7 +1070,9 @@ class HaveFaith(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusEnchanted,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB4, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB4, 0x5D, 0x1, 0x0]), f"Have Faith")
     
 class IAmSorrow(Inscription):
     id = ItemUpgrade.IAmSorrow
@@ -958,7 +1080,9 @@ class IAmSorrow(Inscription):
     property_identifiers = [
         ModifierIdentifier.EnergyPlusHexed,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB7, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB7, 0x5D, 0x1, 0x0]), f"I Am Sorrow")
     
 class SeizeTheDay(Inscription):
     id = ItemUpgrade.SeizeTheDay
@@ -967,7 +1091,9 @@ class SeizeTheDay(Inscription):
         ModifierIdentifier.EnergyPlus,
         ModifierIdentifier.EnergyDegen,
     ]
-    encoded_name : bytes = bytes([0x1, 0x81, 0xB3, 0x5D, 0x1, 0x0])
+    
+    def create_encoded_name(self) -> EncodedString:
+        return EncodedString(EncodedStrings.ITEM_BASIC + EncodedStrings.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB3, 0x5D, 0x1, 0x0]), f"Seize The Day")
 
 #endregion SpellcastingWeapon
 #endregion Inscriptions
@@ -1021,7 +1147,7 @@ class AttributeRune(Rune):
         
         match(attribute_rune.attribute_level):
             case 3:       
-                encoded_description = bytes([0x3B, 0xA, 0xA, 0x1, 0x96, 0xA, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x40, 0xA, 0xA, 0x1, 
+                encoded_description = bytes([*EncodedStrings.ITEM_RARE,0x3B, 0xA, 0xA, 0x1, 0x96, 0xA, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x40, 0xA, 0xA, 0x1, 
                          0x84, 0xA, 0xA, 0x1, *attribute, 0x1, 0x0, 0x1, 0x1, attribute_rune.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 
                          0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x40, 0xA, 0xA, 0x1, 
                          0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x4B, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0x1, 
@@ -1029,7 +1155,7 @@ class AttributeRune(Rune):
                          0x59, 0xA, 0x1, 0x0, 0xB, 0x1, 0xC2, 0xA, 0x1, 0x1, 0x64, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 
                          0x97, 0xA, 0x1, 0x0, 0x0, 0x0])
             case 2:
-                encoded_description = bytes([0x3B, 0xA, 0xA, 0x1, 0x96, 0xA, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x42, 0xA, 0xA, 0x1,
+                encoded_description = bytes([*EncodedStrings.ITEM_UNCOMMON, 0x3B, 0xA, 0xA, 0x1, 0x96, 0xA, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x42, 0xA, 0xA, 0x1,
                                 0x84, 0xA, 0xA, 0x1, *attribute, 0x1, 0x0, 0x1, 0x1, attribute_rune.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1,
                                 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x42, 0xA, 0xA, 0x1,
                                 0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x23, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0x1,
@@ -1037,7 +1163,7 @@ class AttributeRune(Rune):
                                 0x59, 0xA, 0x1, 0x0, 0xB, 0x1, 0xC2, 0xA, 0x1, 0x1, 0x32, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 
                                 0x97, 0xA, 0x1, 0x0, 0x0, 0x0])
             case 1:
-                encoded_description = bytes([0x3B, 0xA, 0xA, 0x1, 0x96, 0xA, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 
+                encoded_description = bytes([*EncodedStrings.ITEM_ENHANCE, 0x3B, 0xA, 0xA, 0x1, 0x96, 0xA, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 
                               0x84, 0xA, 0xA, 0x1, *attribute, 0x1, 0x0, 0x1, 0x1, attribute_rune.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0x1, 0x81, 0x1C, 0x14, 0xA, 0x1, 0x1, 0x81, 0xA4, 0x13, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0x8A, 0xA, 0xA, 0x1, 0x59, 0xA, 0x1, 0x0, 0xB, 0x1, 0xC2, 0xA, 0x1, 0x1, 0x19, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 
                               0x97, 0xA, 0x1, 0x0, 0x0, 0x0])
         
