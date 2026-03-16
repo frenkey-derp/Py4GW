@@ -1,221 +1,265 @@
-from typing import NamedTuple
+from typing import Optional
 
 import Py4GW
-from PyItem import PyItem
 
-from Py4GWCoreLib import Merchant
+from Py4GWCoreLib import Map, Merchant, Player
 from Py4GWCoreLib.Item import Bag
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Sources.frenkeyLib.Core.encoded_names import ItemName
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
+from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData
+from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 
-def encoded_to_hex_string(int_list: list[int] | bytes) -> str:
-    try:
-        return " ".join(f"0x{v:X}" for v in int_list)
-    except Exception as e:
-        return ""
-    
-def hex_string_to_bytes(s: str) -> bytes:
-    return bytes(int(x, 16) for x in s.split())
+INVENTORY_BAGS = [
+    Bag.Backpack,
+    Bag.Belt_Pouch,
+    Bag.Bag_1,
+    Bag.Bag_2,
+    Bag.Equipment_Pack,
+    Bag.Equipped_Items,
+]
 
-class EncodedItemNameTuple(NamedTuple):    
-    singular_encoded : bytes
-    prefix_encoded : bytes
-    suffix_encoded : bytes
-    
-    singular : str = ""
-    prefix : str = ""
-    suffix : str = ""
-    
-    def to_dict(self):
-        return {
-            "singular_encoded": encoded_to_hex_string(self.singular_encoded),
-            "prefix_encoded": encoded_to_hex_string(self.prefix_encoded),
-            "suffix_encoded": encoded_to_hex_string(self.suffix_encoded),
-            "singular": self.singular,
-            "prefix": self.prefix,
-            "suffix": self.suffix
-        }
-        
-    @classmethod
-    def from_dict(cls, data: dict) -> "EncodedItemNameTuple":
-        singular_encoded_str = data.get("singular_encoded", "")
-        singular_encoded = [int(x, 16) for x in singular_encoded_str.split()] if singular_encoded_str else []
-        prefix_encoded_str = data.get("prefix_encoded", "")
-        prefix_encoded = [int(x, 16) for x in prefix_encoded_str.split()] if prefix_encoded_str else []
-        suffix_encoded_str = data.get("suffix_encoded", "")
-        suffix_encoded = [int(x, 16) for x in suffix_encoded_str.split()] if suffix_encoded_str else []
-        return cls(
-            singular_encoded=bytes(singular_encoded),
-            prefix_encoded=bytes(prefix_encoded),
-            suffix_encoded=bytes(suffix_encoded),
-            singular=data.get("singular", ""),
-            prefix=data.get("prefix", ""),
-            suffix=data.get("suffix", "")
+STORAGE_BAGS = [
+    Bag.Material_Storage,
+    Bag.Storage_1,
+    Bag.Storage_2,
+    Bag.Storage_3,
+    Bag.Storage_4,
+    Bag.Storage_5,
+    Bag.Storage_6,
+    Bag.Storage_7,
+    Bag.Storage_8,
+    Bag.Storage_9,
+    Bag.Storage_10,
+    Bag.Storage_11,
+    Bag.Storage_12,
+    Bag.Storage_13,
+    Bag.Storage_14,
+]
+
+
+class ItemCollector:
+    def __init__(self, inventory_interval_ms: int = 5_000, save_interval_ms: int = 1_000):
+        self.checked_item_ids: set[int] = set()
+        self.checked_model_keys: set[tuple[ItemType, int]] = set()
+        self.current_context_key = ""
+        self.storage_checked_for_context = False
+        self.force_inventory_scan = True
+
+        self.run_throttle = ThrottledTimer(250)
+        self.inventory_throttle = ThrottledTimer(inventory_interval_ms)
+        self.trader_throttle = ThrottledTimer(1_000)
+        self.save_throttle = ThrottledTimer(save_interval_ms)
+
+    def run(self):
+        if not self.run_throttle.IsExpired():
+            self.flush_pending_save()
+            return
+
+        self.run_throttle.Reset()
+        self.flush_pending_save()
+
+        if not self._is_ready():
+            return
+
+        self._handle_context_change()
+
+        if not self.storage_checked_for_context:
+            self._scan_bags(STORAGE_BAGS)
+            self.storage_checked_for_context = True
+
+        if self.force_inventory_scan or self.inventory_throttle.IsExpired():
+            self.inventory_throttle.Reset()
+            self.force_inventory_scan = False
+            self._scan_bags(INVENTORY_BAGS)
+
+        if self.trader_throttle.IsExpired():
+            self.trader_throttle.Reset()
+            self._scan_trader_items()
+
+        self.flush_pending_save()
+
+    def flush_pending_save(self):
+        if ITEM_DATA.requires_save and self.save_throttle.IsExpired():
+            ITEM_DATA.save_data_if_queued()
+            self.save_throttle.Reset()
+
+    def _is_ready(self) -> bool:
+        return Map.IsMapReady() and Player.IsPlayerLoaded()
+
+    def _handle_context_change(self):
+        context_key = self._get_context_key()
+        if context_key == self.current_context_key:
+            return
+
+        self.current_context_key = context_key
+        self.storage_checked_for_context = False
+        self.force_inventory_scan = True
+        self.checked_item_ids.clear()
+        self.checked_model_keys.clear()
+        ITEM_CACHE.reset()
+
+    def _get_context_key(self) -> str:
+        account_email = str(Player.GetAccountEmail() or "").strip()
+        player_name = str(Player.GetName() or "").strip()
+        map_id = int(Map.GetMapID() or 0)
+        return f"{account_email}|{player_name}|{map_id}"
+
+    def _scan_bags(self, bags: list[Bag]):
+        ITEM_CACHE.reset()
+        snapshot = ITEM_CACHE.get_bags_snapshot(bags)
+        items = [item for bag in snapshot.values() for item in bag.values() if item is not None]
+
+        for item in items:
+            self._collect_item(item)
+
+    def _scan_trader_items(self):
+        offered_items = Merchant.Trading.Trader.GetOfferedItems()
+        for item_id in offered_items:
+            item = ITEM_CACHE.get_item_snapshot(item_id) if item_id else None
+            if item is None:
+                continue
+            self._collect_item(item)
+
+    def _collect_item(self, item: ItemSnapshot):
+        if not item.is_valid or item.model_id <= 0 or item.item_type == ItemType.Unknown:
+            return
+
+        model_key = (item.item_type, item.model_id)
+        item_data = ITEM_DATA.get_or_create_item_data(item.item_type, item.model_id)
+        if (item.id in self.checked_item_ids or model_key in self.checked_model_keys) and not self._item_needs_more_data(item_data):
+            return
+
+        changed = False
+
+        if item_data.model_file_id <= 0 and item.model_file_id > 0:
+            item_data.model_file_id = item.model_file_id
+            changed = True
+
+        name_encoded = self._get_singular_name_encoded(item)
+        if name_encoded and item_data.name_encoded != name_encoded:
+            item_data.name_encoded = name_encoded
+            changed = True
+
+        singular_name = self._get_singular_name(item, name_encoded)
+        if singular_name and item_data.english_name != singular_name:
+            item_data.english_name = singular_name
+            changed = True
+
+        if item.attribute not in (None, Attribute.None_) and item.attribute not in item_data.attributes:
+            item_data.attributes = sorted(item_data.attributes + [item.attribute], key=lambda attr: attr.name)
+            changed = True
+
+        if item.profession not in (None, Profession._None) and item_data.profession != item.profession:
+            item_data.profession = item.profession
+            changed = True
+
+        if changed:
+            ITEM_DATA.queue_save()
+
+        if not self._item_needs_more_data(item_data):
+            self.checked_item_ids.add(item.id)
+            self.checked_model_keys.add(model_key)
+
+    def _item_needs_more_data(self, item_data: ItemData) -> bool:
+        return (
+            item_data.model_file_id <= 0
+            or not item_data.name_encoded
+            or not item_data.english_name
+            or (
+                item_data.item_type in {
+                    ItemType.Axe,
+                    ItemType.Bow,
+                    ItemType.Daggers,
+                    ItemType.Hammer,
+                    ItemType.Offhand,
+                    ItemType.Scythe,
+                    ItemType.Shield,
+                    ItemType.Spear,
+                    ItemType.Staff,
+                    ItemType.Sword,
+                    ItemType.Wand,
+                    ItemType.Headpiece,
+                    ItemType.Chestpiece,
+                    ItemType.Gloves,
+                    ItemType.Leggings,
+                    ItemType.Boots,
+                }
+                and len(item_data.attributes) == 0
+            )
         )
 
-class ItemCollector():
-    PATH = "Sources\\frenkeyLib\\ItemHandling\\Items\\collected_items.json"
-    STRING_PATH = "Sources\\frenkeyLib\\ItemHandling\\Items\\collected_strings.json"
-    
-    def __init__(self):
-        self.collected_items: dict[ItemType, dict[int, EncodedItemNameTuple]] = {}
-        self.string_table : dict[bytes, str] = {}
-        self.checked_items : dict[ItemType, dict[int, bool]] = {}
-        self.requires_saving = False
-        
-        self.save_throttle = ThrottledTimer(500)
-        self.run_throttle = ThrottledTimer(250)
-    
-    def run(self):  
-        if not self.run_throttle.IsExpired():
-            return
-        
-        self.run_throttle.Reset()
-        
-        # snapshot = ITEM_CACHE.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack, Bag.Equipped_Items])
-        snapshot = ITEM_CACHE.get_inventory_snapshot(Bag.Backpack, Bag.Max)
-        items = [i for bag in snapshot.values() for i in bag.values() if i is not None]
-        offered_items = Merchant.Trading.Trader.GetOfferedItems()
-        items = [ITEM_CACHE.get_item_snapshot(i) for i in offered_items if i is not None] + items
-        
-        description_item_types = [
-            ItemType.Axe,
-            ItemType.Bow,
-            ItemType.Daggers,
-            ItemType.Hammer,
-            ItemType.Offhand,
-            ItemType.Scythe,
-            ItemType.Shield,
-            ItemType.Spear,
-            ItemType.Staff,
-            ItemType.Sword,
-            ItemType.Wand, 
-            
-            ItemType.Headpiece,
-            ItemType.Chestpiece,
-            ItemType.Gloves,
-            ItemType.Leggings,
-            ItemType.Boots,
-            
-            ItemType.Rune_Mod]
-        
-        for item in items:
-            if item is None:
-                continue
-            
-            if item.item_type not in self.collected_items:
-                self.collected_items[item.item_type] = {}
-                
-            if item.item_type not in self.checked_items:
-                self.checked_items[item.item_type] = {}
-                
-            if item.model_id not in self.collected_items[item.item_type] or not self.checked_items.get(item.item_type, {}).get(item.model_id, False):               
-                if len( item.complete_name_enc or [] ) == 0:
-                    continue
-                
-                try:
-                    parts = ItemName.decode_parts(bytes(item.complete_name_enc or []))
-                    encoded_parts = ItemName.encoded_parts(bytes(item.complete_name_enc or []))
-                    
-                except Exception as e:
-                    Py4GW.Console.Log("ItemCollector", f"Error decoding item name for ModelID={item.model_id}, Type={item.item_type}: {e}", Py4GW.Console.MessageType.Error)
-                    continue
-                
-                if parts is None or not parts.singular:
-                    continue
-                
-                self.collected_items[item.item_type][item.model_id] = EncodedItemNameTuple(
-                    singular_encoded=encoded_parts.singular if encoded_parts and encoded_parts.singular else bytes([]),
-                    prefix_encoded=encoded_parts.prefix if encoded_parts and encoded_parts.prefix else bytes([]),
-                    suffix_encoded=encoded_parts.suffix if encoded_parts and encoded_parts.suffix else bytes([]),
-                    
-                    singular=parts.singular,
-                    prefix=parts.prefix or "",
-                    suffix=parts.suffix or ""
-                )
-                self.requires_saving = True
-        
-        for item in items:
-            if item is None:
-                continue
-            
-            if not item.complete_name_enc:
-                continue
-            
-            decoded = ItemName.decode_parts(bytes(item.complete_name_enc))
-            encoded = ItemName.encoded_parts(bytes(item.complete_name_enc))
-            inspected = ItemName.inspect_decoded(bytes(item.complete_name_enc))
-    
-            info_string = bytes(PyItem.GetInfoString(item.id) or []) if item.item_type in description_item_types else None
-            description_inspected = ItemName.inspect_decoded(info_string) if info_string else None
-            description = string_table.decode(info_string) if info_string else None
-            
-            for substring in inspected.substrings:
-                 if substring.decoded and substring.encoded:
-                    if substring.encoded not in self.string_table:
-                        self.string_table[substring.encoded] = substring.decoded
-                        self.requires_saving = True
-            
-            if description_inspected:
-                for substring in description_inspected.substrings:
-                    if substring.decoded and substring.encoded:
-                        if substring.encoded not in self.string_table:
-                            self.string_table[substring.encoded] = substring.decoded
-                            self.requires_saving = True
-                
-            if description and info_string:
-                if info_string not in self.string_table:
-                    self.string_table[info_string] = description
-                    self.requires_saving = True
-                    
-            if not decoded or not decoded.singular:
-                continue
-            
-            if not encoded or not encoded.singular:
-                continue
-            
-            props = ["prefix", "singular", "suffix"]
-            for prop in props:
-                enc_value = getattr(encoded, prop, None)
-                dec_value = getattr(decoded, prop, None)
-                
-                if enc_value and dec_value:
-                    if enc_value not in self.string_table:
-                        self.string_table[enc_value] = dec_value
-                        self.requires_saving = True
-            
-        
-        if self.requires_saving and self.save_throttle.IsExpired():
-            self.save()
-            self.requires_saving = False
-            self.save_throttle.Reset()
-        
-    
-    def save(self):
-        import json
-        with open(self.PATH, "w", encoding="utf-8") as f:
-            data = {str(k.name): {str(ik): iv.to_dict() for ik, iv in v.items()} for k, v in self.collected_items.items()}
-            sorted_data = {item_type: dict(sorted(items.items())) for item_type, items in data.items()}
-            json.dump(sorted_data, f, indent=4, ensure_ascii=False)
-            
-        with open(self.STRING_PATH, "w", encoding="utf-8") as f:
-            data = {v: encoded_to_hex_string(k).replace(" ", ", ") for k, v in self.string_table.items()}
-            sorted_data = dict(sorted(data.items(), key=lambda item: item[0]))  # sort by hex string
-            json.dump(sorted_data, f, indent=4, ensure_ascii=False)
-            
-    def load(self):
-        import json
+    def _get_singular_name_encoded(self, item: ItemSnapshot) -> bytes:
+        singular_name = item.singular_name
         try:
-            with open(self.PATH, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                self.collected_items = {ItemType[k]: {int(ik): EncodedItemNameTuple.from_dict(iv) for ik, iv in v.items()} for k, v in data.items()}
-                
-                for string, hex_string in json.load(open(self.STRING_PATH, "r", encoding="utf-8")).items():
-                    self.string_table[hex_string_to_bytes(hex_string.replace(", ", " "))] = string
-                
-        except FileNotFoundError:
-            self.collected_items = {}
-            self.string_table = {}
+            if isinstance(singular_name, bytes):
+                return singular_name
+            if isinstance(singular_name, bytearray):
+                return bytes(singular_name)
+            if isinstance(singular_name, (list, tuple)):
+                return bytes(singular_name)
+        except Exception:
+            pass
+
+        complete_name = self._coerce_bytes(item.complete_name_enc)
+        if complete_name:
+            try:
+                encoded_parts = ItemName.encoded_parts(complete_name)
+                if encoded_parts and encoded_parts.singular:
+                    return bytes(encoded_parts.singular)
+            except Exception as exc:
+                Py4GW.Console.Log(
+                    "ItemCollector",
+                    f"Failed to decode singular encoded name for item {item.id} ({item.item_type.name}/{item.model_id}): {exc}",
+                    Py4GW.Console.MessageType.Warning,
+                )
+
+        return bytes()
+
+    def _get_singular_name(self, item: ItemSnapshot, name_encoded: Optional[bytes] = None) -> str:
+        candidate = name_encoded or self._coerce_bytes(item.singular_name)
+        if candidate:
+            try:
+                decoded = string_table.decode(candidate)
+                if decoded:
+                    return decoded
+            except Exception:
+                pass
+
+        complete_name = self._coerce_bytes(item.complete_name_enc)
+        if complete_name:
+            try:
+                decoded_parts = ItemName.decode_parts(complete_name)
+                if decoded_parts and decoded_parts.singular:
+                    return decoded_parts.singular
+            except Exception:
+                pass
+
+        if isinstance(item.singular_name, str):
+            return item.singular_name
+
+        return ""
+
+    def _coerce_bytes(self, value) -> bytes:
+        try:
+            if isinstance(value, bytes):
+                return value
+            if isinstance(value, bytearray):
+                return bytes(value)
+            if isinstance(value, (list, tuple)):
+                return bytes(value)
+        except Exception:
+            pass
+
+        return bytes()
+
+
+ITEM_COLLECTOR = ItemCollector()
+
+
+def collect_item_data():
+    ITEM_COLLECTOR.run()

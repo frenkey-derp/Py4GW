@@ -58,7 +58,6 @@ int_lang = language.value
 language_index = languages.index(language)
 
 ITEM_COLLECTOR = ItemCollector()
-ITEM_COLLECTOR.load()
 class encoded_strings(NamedTuple):
     item_id: int
     name_enc: list[int]
@@ -199,7 +198,7 @@ def main():
         if not item or not item.is_valid:
             hovered_item_id = 0
                     
-        item_name = item.data.names.get(ServerLanguage.English, "Unknown Item") if item and item.data else f"Unknown {(f"{item.item_type.name}-Item" if item else 'Item')}"
+        item_name = item.data.english_name if item and item.data else f"Unknown {(f"{item.item_type.name}-Item" if item else 'Item')}"
         
         ImGui.input_text("Hovered Item Id", str(hovered_item_id), PyImGui.InputTextFlags.ReadOnly)
         style = ImGui.get_style()
@@ -217,7 +216,7 @@ def main():
                 PyImGui.table_set_column_index(1)
                 PyImGui.text(value)
             
-            add_row("Item Data", item.data.names.get(ServerLanguage.English, "N/A") if item and item.data else "N/A")
+            add_row("Item Data", item.data.english_name if item and item.data else "N/A")
             add_row("Model ID", str(item.model_id) if item else "N/A")
             add_row("Item Type", str(item.item_type.name) if item else "N/A")
             add_row("Rarity", Rarity(item.rarity).name if item else "N/A")

@@ -119,7 +119,6 @@ class ItemData:
     model_id: int = -1
     item_type: ItemType = ItemType.Unknown
     model_file_id: int = -1
-    names: dict[ServerLanguage, str] = field(default_factory=dict)
     english_name: str = ""
     name_encoded : bytes = bytes()
     attributes: list[Attribute] = field(default_factory=list)
@@ -150,11 +149,11 @@ class ItemData:
     @staticmethod    
     def from_json(data: dict) -> 'ItemData':
         profession_name = data.get("profession")
-        names = {ServerLanguage[lang]: name for lang, name in data.get("names", {}).items()}
+        english_name = data.get("name", "")
         
         item_data = ItemData(
-            names=names,
-            english_name=names.get(ServerLanguage.English, ""),
+            english_name=english_name,
+            name_encoded=bytes.fromhex(data["name_encoded"]) if "name_encoded" in data and data["name_encoded"] else bytes(),
             model_id=data.get("model_id", -1),
             item_type=ItemType[data.get("item_type", "Unknown")],
             model_file_id=data.get("model_file_id", -1),
@@ -180,7 +179,7 @@ class ItemData:
         return ItemData(
             model_id=json.get("ModelID", -1),
             model_file_id=json.get("ModelFileID", -1),
-            names=names,
+            name_encoded=bytes.fromhex(json["NameEncoded"]) if "NameEncoded" in json and json["NameEncoded"] else bytes(),
             english_name=names.get(ServerLanguage.English, ""),
             item_type=ItemType[json.get("ItemType", "Unknown")],
             acquisition=json.get("Acquisition", ""),
@@ -202,6 +201,7 @@ class ItemData:
             "item_type": self.item_type.name,
             "model_file_id": self.model_file_id,
             "name": self.english_name,
+            "name_encoded" : self.name_encoded.hex() if self.name_encoded else "",
             "attributes": [attr.name for attr in self.attributes],
             "common_salvage": self.common_salvage.to_dict() if self.common_salvage else None,
             "rare_salvage": self.rare_salvage.to_dict() if self.rare_salvage else None,
@@ -218,12 +218,16 @@ class ItemData:
         return dict(sorted(data.items(), key=lambda item: item[0]))
 
 project_path = Console.get_projects_path()
+default_item_json_path = os.path.join(project_path, "Sources", "frenkeyLib", "ItemHandling", "Items", "items.json")
 item_json_path = os.path.join(project_path, "Sources", "frenkeyLib", "ItemHandling", "Items", "items copy.json")
+if not os.path.exists(item_json_path):
+    item_json_path = default_item_json_path
 
 class ItemDataContainer():
     def __init__(self):
         self.data : dict[ItemType, dict[int, ItemData]] = {}
         self.ItemsBySkins: dict[str, list[ItemData]] = {}
+        self.requires_save = False
         
         self.load_data()
     
@@ -245,6 +249,18 @@ class ItemDataContainer():
             return None
         
         return self.data.get(item_type, {}).get(model_id, None)
+
+    def get_or_create_item_data(self, item_type: ItemType, model_id: int) -> ItemData:
+        if item_type not in self.data:
+            self.data[item_type] = {}
+
+        if model_id not in self.data[item_type]:
+            self.data[item_type][model_id] = ItemData(model_id=model_id, item_type=item_type)
+
+        return self.data[item_type][model_id]
+
+    def queue_save(self):
+        self.requires_save = True
 
     def load_data(self):
         try:
@@ -287,11 +303,17 @@ class ItemDataContainer():
                 json_data = {item_type.name: {str(item_data.model_id): item_data.to_json() for item_data in items.values()} for item_type, items in self.data.items()}
                 json.dump(json_data, f, indent=4)
                 Console.Log("ItemDataContainer", f"Saved item data for {sum(len(items) for items in self.data.values())} items across {len(self.data)} item types.", Console.MessageType.Success)
+                self.requires_save = False
         except Exception as e:
             Console.Log("ItemDataContainer", f"Error saving item data: {e}", Console.MessageType.Error)
 
+    def save_data_if_queued(self):
+        if not self.requires_save:
+            return
+
+        self.save_data()
+
 ITEM_DATA = ItemDataContainer()
-ITEM_DATA.save_data()  # Save data immediately to ensure the file is created and properly formatted
 
 DAMAGE_RANGES : dict[ItemType, dict[int, tuple[int, int]]] = {
     ItemType.Axe: {
