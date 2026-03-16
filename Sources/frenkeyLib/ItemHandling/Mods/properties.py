@@ -20,7 +20,7 @@ class ItemProperty:
     def create_encoded_description(self) -> EncodedString:
         return EncodedString(bytes(), f"No description available... ({self.__class__.__name__})")
     
-    def get_bonus_color(self) -> bytes:
+    def get_text_color(self) -> bytes:
         match self.rarity:
             case Rarity.Blue | Rarity.White:
                 return EncodedStrings.ITEM_BONUS
@@ -62,7 +62,7 @@ class ArmorEnergyRegen(ItemProperty):
     energy_regen: int
 
     def create_encoded_description(self) -> EncodedString:
-        encoded_bytes = bytes([*self.get_bonus_color(), *EncodedStrings.PLUS_NUM_TEMPLATE, *EncodedStrings.ENERGY_RECOVERY_BYTES, 0x1, 0x1, self.energy_regen, 0x1, 0x1, 0x0])
+        encoded_bytes = bytes([*self.get_text_color(), *EncodedStrings.PLUS_NUM_TEMPLATE, *EncodedStrings.ENERGY_RECOVERY_BYTES, 0x1, 0x1, self.energy_regen, 0x1, 0x1, 0x0])
         return EncodedString(encoded_bytes, f"Energy recovery: +{self.energy_regen}")
 
 @dataclass
@@ -70,7 +70,7 @@ class ArmorMinusAttacking(ItemProperty):
     armor: int
     
     def create_encoded_description(self) -> EncodedString:
-        encoded_bytes = bytes([*self.get_bonus_color(), *EncodedStrings.MINUS_NUM_TEMPLATE, *EncodedStrings.ARMOR_BYTES, 0x1, 0x1, self.armor, 0x1, 0x1, 0x0, *EncodedStrings.WHILE_ATTACKING_BYTES])
+        encoded_bytes = bytes([*self.get_text_color(), *EncodedStrings.MINUS_NUM_TEMPLATE, *EncodedStrings.ARMOR_BYTES, 0x1, 0x1, self.armor, 0x1, 0x1, 0x0, *EncodedStrings.WHILE_ATTACKING_BYTES])
         return EncodedString(encoded_bytes, f"Armor: -{self.armor} (while attacking)")
     
 @dataclass
@@ -80,7 +80,7 @@ class ArmorPenetration(ItemProperty):
 
     def create_encoded_description(self) -> EncodedString:
         encoded = bytes([
-            *self.get_bonus_color(),
+            *self.get_text_color(),
             *EncodedStrings.PLUS_PERCENT_TEMPLATE, 0x45, 0xA, 0x1, 0x0, 0x1, 0x1, self.armor_pen, 0x1, 0x1, 0x0,
             *EncodedStrings.ITEM_DULL,
             *EncodedStrings.PARENTHESIS_STR1,
@@ -94,42 +94,42 @@ class ArmorPlus(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor")
+        return EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor")
 
 @dataclass
 class ArmorPlusAttacking(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0]), "(while attacking)"))
+        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0]), "(while attacking)"))
 
 @dataclass
 class ArmorPlusCasting(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_CASTING_BYTES, "(while casting)"))
+        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_CASTING_BYTES, "(while casting)"))
 
 @dataclass
 class ArmorPlusEnchanted(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"))
+        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"))
 
 @dataclass
 class ArmorPlusHexed(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"))
+        return EncodedStrings._append_line(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"))
 
 @dataclass
 class ArmorPlusAbove(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
 
 @dataclass
 class ArmorPlusVsDamage(ItemProperty):
@@ -137,7 +137,7 @@ class ArmorPlusVsDamage(ItemProperty):
     damage_type: DamageType
 
     def create_encoded_description(self) -> EncodedString:
-        base = EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor")
+        base = EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor")
         clause_bytes = EncodedStrings.VS_DAMAGE_BYTES.get(self.damage_type)
         if clause_bytes:
             return EncodedStrings._append_line_with_fallback(base, EncodedStrings._dull_parenthesized(clause_bytes, f"(vs. {self.damage_type.name} damage)"), f"(vs. {self.damage_type.name} damage)")
@@ -148,14 +148,14 @@ class ArmorPlusVsElemental(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
 
 @dataclass
 class ArmorPlusVsPhysical(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(EncodedStrings.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")
 
 @dataclass
 class ArmorPlusVsSpecies(ItemProperty):
@@ -173,7 +173,7 @@ class ArmorPlusWhileDown(ItemProperty):
 
     def create_encoded_description(self) -> EncodedString:
         clause_raw = bytes([0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, self.health_threshold, 0x1, 0x1, 0x0, 0x1, 0x0])
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ARMOR_BYTES, self.armor, "Armor"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class AttributePlusOne(ItemProperty):
@@ -184,7 +184,7 @@ class AttributePlusOne(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
         attribute_bytes = EncodedStrings._attribute_bytes(self.attribute)
         if attribute_bytes:
-            base = EncodedString(bytes([*self.get_bonus_color(), 0x84, 0xA, 0xA, 0x1, 0x64, 0x9, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{EncodedStrings._attribute_name(self.attribute)} +{self.attribute_level}")
+            base = EncodedString(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, 0x64, 0x9, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{EncodedStrings._attribute_name(self.attribute)} +{self.attribute_level}")
             clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
             
             return EncodedStrings._append_line_with_fallback(base, EncodedStrings._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
@@ -196,7 +196,7 @@ class AttributePlusOneItem(ItemProperty):
     attribute_level: int = 1
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
 @dataclass
 class DamageCustomized(ItemProperty):
@@ -210,35 +210,35 @@ class DamagePlusEnchanted(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
 
 @dataclass
 class DamagePlusHexed(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
 
 @dataclass
 class DamagePlusPercent(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage")
+        return EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage")
 
 @dataclass
 class DamagePlusStance(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
 
 @dataclass
 class DamagePlusVsHexed(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.VS_HEXED_FOES_BYTES, "(vs. Hexed foes)"), "(vs. Hexed foes)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(EncodedStrings.VS_HEXED_FOES_BYTES, "(vs. Hexed foes)"), "(vs. Hexed foes)")
 
 @dataclass
 class DamagePlusVsSpecies(ItemProperty):
@@ -246,9 +246,7 @@ class DamagePlusVsSpecies(ItemProperty):
     species: ItemBaneSpecies
 
     def create_encoded_description(self) -> EncodedString:
-        increase = self.damage_increase
-        species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"ID {self.modifier.arg1}"
-        return EncodedString(bytes(), f"Damage +{increase}% (vs. {species.lower()})")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), bytes([*EncodedStrings.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), EncodedStrings._dull_parenthesized(bytes([*EncodedStrings.VS_STR1, *EncodedStrings.SLAYING_BANE.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
 
 @dataclass
 class DamagePlusWhileDown(ItemProperty):
@@ -257,7 +255,7 @@ class DamagePlusWhileDown(ItemProperty):
 
     def create_encoded_description(self) -> EncodedString:
         clause_raw = bytes([0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, self.health_threshold, 0x1, 0x1, 0x0, 0x1, 0x0])
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class DamagePlusWhileUp(ItemProperty):
@@ -266,7 +264,7 @@ class DamagePlusWhileUp(ItemProperty):
 
     def create_encoded_description(self) -> EncodedString:
         clause_raw = bytes([0xBC, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, self.health_threshold, 0x1, 0x1, 0x0, 0x1, 0x0])
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_bonus_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_percent(self.get_text_color(), EncodedStrings.DAMAGE_BYTES, self.damage_increase, "Damage"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
 
 @dataclass
 class DamageTypeProperty(ItemProperty):
@@ -299,42 +297,42 @@ class EnergyDegen(ItemProperty):
     energy_regen: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_minus_num(self.get_bonus_color(), EncodedStrings.ENERGY_REGEN_BYTES, self.energy_regen, "Energy regeneration")
+        return EncodedStrings._bonus_minus_num(self.get_text_color(), EncodedStrings.ENERGY_REGEN_BYTES, self.energy_regen, "Energy regeneration")
 
 @dataclass
 class EnergyGainOnHit(ItemProperty):
     energy_gain: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_colon_num(self.get_bonus_color(), EncodedStrings.ENERGY_GAIN_ON_HIT_BYTES, self.energy_gain, "Energy gain on hit")
+        return EncodedStrings._bonus_colon_num(self.get_text_color(), EncodedStrings.ENERGY_GAIN_ON_HIT_BYTES, self.energy_gain, "Energy gain on hit")
 
 @dataclass
 class EnergyMinus(ItemProperty):
     energy: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_minus_num(self.get_bonus_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy")
+        return EncodedStrings._bonus_minus_num(self.get_text_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy")
 
 @dataclass
 class EnergyPlus(ItemProperty):
     energy: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy")
+        return EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy")
 
 @dataclass
 class EnergyPlusEnchanted(ItemProperty):
     energy: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
 
 @dataclass
 class EnergyPlusHexed(ItemProperty):
     energy: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
 
 @dataclass
 class EnergyPlusWhileBelow(ItemProperty):
@@ -343,14 +341,14 @@ class EnergyPlusWhileBelow(ItemProperty):
 
     def create_encoded_description(self) -> EncodedString:
         clause_raw = bytes([0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, self.health_threshold, 0x1, 0x1, 0x0, 0x1, 0x0])
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class Furious(ItemProperty):
     chance: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.DOUBLE_ADRENALINE_BYTES]), "Double Adrenaline on hit"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.DOUBLE_ADRENALINE_BYTES]), "Double Adrenaline on hit"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesCastingTimeAttribute(ItemProperty):
@@ -360,7 +358,7 @@ class HalvesCastingTimeAttribute(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
         attribute_bytes = EncodedStrings._attribute_bytes(self.attribute)
         if attribute_bytes:
-            base = EncodedStrings._encoded(bytes([*self.get_bonus_color(), 0x81, 0xA, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves casting time of {EncodedStrings._attribute_name(self.attribute)} spells")
+            base = EncodedStrings._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves casting time of {EncodedStrings._attribute_name(self.attribute)} spells")
             return EncodedStrings._append_line_with_fallback(base, EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
         return EncodedString(bytes(), f"Halves casting time of {EncodedStrings._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
@@ -369,7 +367,7 @@ class HalvesCastingTimeGeneral(ItemProperty):
     chance: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.HALVES_CASTING_BYTES]), "Halves casting time of spells"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.HALVES_CASTING_BYTES]), "Halves casting time of spells"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesCastingTimeItemAttribute(ItemProperty):
@@ -377,7 +375,7 @@ class HalvesCastingTimeItemAttribute(ItemProperty):
     attribute : Attribute = field(default=Attribute.None_)
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesSkillRechargeAttribute(ItemProperty):
@@ -387,7 +385,7 @@ class HalvesSkillRechargeAttribute(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
         attribute_bytes = EncodedStrings._attribute_bytes(self.attribute)
         if attribute_bytes:
-            base = EncodedStrings._encoded(bytes([*self.get_bonus_color(), 0x81, 0xA, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves skill recharge of {EncodedStrings._attribute_name(self.attribute)} spells")
+            base = EncodedStrings._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves skill recharge of {EncodedStrings._attribute_name(self.attribute)} spells")
             return EncodedStrings._append_line_with_fallback(base, EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
         return EncodedStrings._encoded(bytes(), f"Halves skill recharge of {EncodedStrings._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
@@ -396,7 +394,7 @@ class HalvesSkillRechargeGeneral(ItemProperty):
     chance: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesSkillRechargeItemAttribute(ItemProperty):
@@ -404,7 +402,7 @@ class HalvesSkillRechargeItemAttribute(ItemProperty):
     attribute : Attribute = field(default=Attribute.None_)
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), EncodedStrings._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HeadpieceAttribute(ItemProperty):
@@ -414,20 +412,20 @@ class HeadpieceAttribute(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
         attribute_bytes = EncodedStrings._attribute_bytes(self.attribute)
         if attribute_bytes:
-            return EncodedStrings._bonus_plus_num(self.get_bonus_color(), attribute_bytes, self.attribute_level, EncodedStrings._attribute_name(self.attribute))
+            return EncodedStrings._bonus_plus_num(self.get_text_color(), attribute_bytes, self.attribute_level, EncodedStrings._attribute_name(self.attribute))
         return EncodedStrings._encoded(bytes(), f"{EncodedStrings._attribute_name(self.attribute)} +{self.attribute_level}")
 
 @dataclass
 class HeadpieceGenericAttribute(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._encoded(bytes([*self.get_bonus_color(), *EncodedStrings.ITEM_ATTRIBUTE_PLUS_ONE_BYTES]), "Item's attribute +1")
+        return EncodedStrings._encoded(bytes([*self.get_text_color(), *EncodedStrings.ITEM_ATTRIBUTE_PLUS_ONE_BYTES]), "Item's attribute +1")
 
 @dataclass
 class HealthDegen(ItemProperty):
     health_regen: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_minus_num(self.get_bonus_color(), EncodedStrings.HEALTH_REGEN_BYTES, self.health_regen, "Health regeneration")
+        return EncodedStrings._bonus_minus_num(self.get_text_color(), EncodedStrings.HEALTH_REGEN_BYTES, self.health_regen, "Health regeneration")
 
 @dataclass
 class HealthMinus(ItemProperty):
@@ -436,35 +434,35 @@ class HealthMinus(ItemProperty):
     encoded_string = EncodedStrings.HEALTH_MINUS_75
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_minus_num(self.get_bonus_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health")
+        return EncodedStrings._bonus_minus_num(self.get_text_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health")
 
 @dataclass
 class HealthPlus(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health")
+        return EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health")
 
 @dataclass
 class HealthPlusEnchanted(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
 
 @dataclass
 class HealthPlusHexed(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
 
 @dataclass
 class HealthPlusStance(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.HEALTH_BYTES, self.health, "Health"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
 
 @dataclass
 class EnergyPlusWhileDown(ItemProperty):
@@ -473,19 +471,19 @@ class EnergyPlusWhileDown(ItemProperty):
 
     def create_encoded_description(self) -> EncodedString:
         clause_raw = bytes([0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, self.health_threshold, 0x1, 0x1, 0x0, 0x1, 0x0])
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_bonus_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_plus_num(self.get_text_color(), EncodedStrings.ENERGY_BYTES, self.energy, "Energy"), EncodedStrings._dull_parenthesized(clause_raw, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class HealthStealOnHit(ItemProperty):
     health_steal: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._bonus_colon_num(self.get_bonus_color(), EncodedStrings.LIFE_DRAINING_BYTES, self.health_steal, "Life Draining")
+        return EncodedStrings._bonus_colon_num(self.get_text_color(), EncodedStrings.LIFE_DRAINING_BYTES, self.health_steal, "Life Draining")
 
 @dataclass
 class HighlySalvageable(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
-        return EncodedString(bytes([*self.get_bonus_color(), *EncodedStrings.HIGHLY_SALVAGEABLE_BYTES]), "Highly salvageable")
+        return EncodedString(bytes([*self.get_text_color(), *EncodedStrings.HIGHLY_SALVAGEABLE_BYTES]), "Highly salvageable")
 
 @dataclass
 class IncreaseConditionDuration(ItemProperty):
@@ -495,7 +493,7 @@ class IncreaseConditionDuration(ItemProperty):
         encoded = EncodedStrings.CONDITION_INCREASE_BYTES.get(self.condition)
         fallback = f"Lengthens {self.condition.name.replace('_', ' ')} duration on foes by 33%"
         if encoded:
-            return EncodedString(bytes([*self.get_bonus_color(), *encoded]), fallback)
+            return EncodedString(bytes([*self.get_text_color(), *encoded, *EncodedStrings._dull_parenthesized(EncodedStrings.STACKING_BYTES, "(Stacking)")]), fallback)
         return EncodedString(bytes(), fallback)
 
 @dataclass
@@ -503,12 +501,12 @@ class IncreaseEnchantmentDuration(ItemProperty):
     enchantment_duration: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedString(bytes([*self.get_bonus_color(), 0xA, 0x1, 0xA2, 0xA, 0x1, 0x1, self.enchantment_duration, 0x1, 0x1, 0x0]), f"Enchantments last {self.enchantment_duration}% longer")
+        return EncodedString(bytes([*self.get_text_color(), 0xA, 0x1, 0xA2, 0xA, 0x1, 0x1, self.enchantment_duration, 0x1, 0x1, 0x0]), f"Enchantments last {self.enchantment_duration}% longer")
 
 @dataclass
 class IncreasedSaleValue(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
-        return EncodedString(bytes([*self.get_bonus_color(), *EncodedStrings.IMPROVED_SALE_VALUE_BYTES]), "Improved sale value")
+        return EncodedString(bytes([*self.get_text_color(), *EncodedStrings.IMPROVED_SALE_VALUE_BYTES]), "Improved sale value")
 
 @dataclass
 class Infused(ItemProperty):
@@ -522,7 +520,7 @@ class OfTheProfession(ItemProperty):
     profession: Profession
 
     def create_encoded_description(self) -> EncodedString:
-        encoded_bytes = bytes([*self.get_bonus_color(), 0x86, 0xA, 0xA, 0x1, *EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
+        encoded_bytes = bytes([*self.get_text_color(), 0x86, 0xA, 0xA, 0x1, *EncodedStrings.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
         return EncodedString(encoded_bytes, f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)")
 
 @dataclass
@@ -546,21 +544,21 @@ class ReceiveLessPhysDamageEnchanted(ItemProperty):
     damage_reduction: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_minus_num(self.get_bonus_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
 
 @dataclass
 class ReceiveLessPhysDamageHexed(ItemProperty):
     damage_reduction: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_minus_num(self.get_bonus_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
 
 @dataclass
 class ReceiveLessPhysDamageStance(ItemProperty):
     damage_reduction: int
 
     def create_encoded_description(self) -> EncodedString:
-        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_minus_num(self.get_bonus_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return EncodedStrings._append_line_with_fallback(EncodedStrings._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), EncodedStrings._dull_parenthesized(EncodedStrings.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
 
 @dataclass
 class ReduceConditionDuration(ItemProperty):
@@ -569,7 +567,7 @@ class ReduceConditionDuration(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
         encoded = EncodedStrings.REDUCED_CONDITION_BYTES.get(self.condition)
         fallback = f"Reduces {self.condition.name} duration on you by 20%"
-        base = EncodedString(bytes([*self.get_bonus_color(), *encoded]), fallback) if encoded else EncodedString(bytes(), fallback)
+        base = EncodedString(bytes([*self.get_text_color(), *encoded]), fallback) if encoded else EncodedString(bytes(), fallback)
         return EncodedStrings._append_line_with_fallback(base, EncodedStrings._dull_parenthesized(EncodedStrings.STACKING_BYTES, "(Stacking)"), "(Stacking)")
 
 @dataclass
@@ -592,7 +590,7 @@ class ReduceConditionTupleDuration(ItemProperty):
 @dataclass
 class ReducesDiseaseDuration(ItemProperty):
     def create_encoded_description(self) -> EncodedString:
-        return EncodedString(bytes([*self.get_bonus_color(), *EncodedStrings.REDUCES_DISEASE_DURATION_BYTES]), "Reduces disease duration on you by 20%")
+        return EncodedString(bytes([*self.get_text_color(), *EncodedStrings.REDUCES_DISEASE_DURATION_BYTES]), "Reduces disease duration on you by 20%")
 
 @dataclass
 class SuffixProperty(ItemProperty):    

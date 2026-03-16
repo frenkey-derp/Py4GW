@@ -224,6 +224,7 @@ _GRAMMAR_TAG_RE = re.compile(
 )
 _INLINE_STYLE_TAG_RE = re.compile(r'\[(?:/?[bB])\]')
 _INLINE_GENDER_TAG_RE = re.compile(r'\[(?:f|m):"[^"]*"\]')
+_INDEFINITE_ARTICLE_RE = re.compile(r'\[(?:a|an)\](\s+)([A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\'-]*)')
 
 
 def _postprocess_basic(text: str) -> str:
@@ -236,10 +237,30 @@ def _postprocess_basic(text: str) -> str:
     return text
 
 
+def _choose_indefinite_article(word: str) -> str:
+    lower = word.lower()
+    if lower.startswith(("honest", "honor", "hour", "heir")):
+        return "an"
+    if lower.startswith(("uni", "use", "user", "euro", "one", "once")):
+        return "a"
+    return "an" if lower[:1] in {"a", "e", "i", "o", "u"} else "a"
+
+
+def _apply_indefinite_articles(text: str) -> str:
+    def _replace(match: re.Match[str]) -> str:
+        spacing = match.group(1)
+        word = match.group(2)
+        return f"{_choose_indefinite_article(word)}{spacing}{word}"
+
+    return _INDEFINITE_ARTICLE_RE.sub(_replace, text)
+
+
 def _postprocess(text: str) -> str:
     text = _postprocess_basic(text)
     if "%str" in text:
         text = _apply_substitutions(text)
+    if "[an]" in text or "[a]" in text:
+        text = _apply_indefinite_articles(text)
     if "%%" in text:
         text = text.replace("%%", "%")
     return text
