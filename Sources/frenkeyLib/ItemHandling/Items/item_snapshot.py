@@ -69,10 +69,10 @@ class ItemSnapshot:
         self.inscription : Optional[Upgrade] = None
         
         self.modifiers = Item.Customization.Modifiers.GetModifiers(item_id)
-        parser = ItemModifierParser(self.modifiers)
+        parser = ItemModifierParser(self.modifiers, self.rarity)
         self.properties = parser.get_properties()
         
-        self.prefix, self.suffix, self.inscription = ItemMod.get_item_upgrades_from_properties(self.properties)
+        self.prefix, self.suffix, self.inscription = ItemMod.get_item_upgrades_from_properties(self.properties, self.rarity)
         
         requirement = next((p for p in self.properties if isinstance(p, AttributeRequirement)), None)        
         self.attribute = requirement.attribute if requirement else Attribute.None_
@@ -113,9 +113,9 @@ class ItemSnapshot:
         
         self.modifiers = Item.Customization.Modifiers.GetModifiers(self.id)
         
-        parser = ItemModifierParser(self.modifiers)
+        parser = ItemModifierParser(self.modifiers, self.rarity)
         self.properties = parser.get_properties()
-        self.prefix, self.suffix, self.inscription = ItemMod.get_item_upgrades_from_properties(self.properties)
+        self.prefix, self.suffix, self.inscription = ItemMod.get_item_upgrades_from_properties(self.properties, self.rarity)
         
     
     @staticmethod

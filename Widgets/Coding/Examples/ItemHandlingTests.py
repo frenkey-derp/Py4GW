@@ -230,7 +230,7 @@ def main():
                             PyImGui.table_set_column_index(0)
                             PyImGui.text(prop.__class__.__name__)
                             PyImGui.table_set_column_index(1)
-                            PyImGui.text(str(prop.description) if hasattr(prop, "simple_description") else "None")
+                            PyImGui.text(str(prop.plain_description) if hasattr(prop, "plain_description") else "None")
                     
                     PyImGui.end_table()
                 ImGui.end_tab_item()

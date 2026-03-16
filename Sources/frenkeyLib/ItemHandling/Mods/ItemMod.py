@@ -33,20 +33,20 @@ class ItemMod:
         from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
         
         item = ITEM_CACHE.get_item_snapshot(item_id)
-        rarity = item.rarity if item else None        
+        rarity = item.rarity if item else Rarity.Blue
         runtime_modifiers = item.modifiers if item else []
         
         return ItemMod.get_item_upgrades_from_modifiers(runtime_modifiers, rarity)
     
     @staticmethod
-    def get_item_upgrades_from_modifiers(runtime_modifiers : list[ItemModifier], rarity: Optional[Rarity] = None) -> tuple[Upgrade | None, Upgrade | None, Upgrade | None]:
-        parser = ItemModifierParser(runtime_modifiers)
+    def get_item_upgrades_from_modifiers(runtime_modifiers : list[ItemModifier], rarity: Rarity = Rarity.Blue) -> tuple[Upgrade | None, Upgrade | None, Upgrade | None]:
+        parser = ItemModifierParser(runtime_modifiers, rarity)
         properties = parser.get_properties()
         
         return ItemMod.get_item_upgrades_from_properties(properties, rarity)
     
     @staticmethod
-    def get_item_upgrades_from_properties(properties : list[ItemProperty], rarity: Optional[Rarity] = None) -> tuple[Upgrade | None, Upgrade | None, Upgrade | None]:
+    def get_item_upgrades_from_properties(properties : list[ItemProperty], rarity: Rarity = Rarity.Blue) -> tuple[Upgrade | None, Upgrade | None, Upgrade | None]:
         if not properties:
             return None, None, None
         

@@ -3,11 +3,9 @@ from typing import Optional, cast
 
 import Py4GW
 
-from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.GameData_enums import PROFESSION_ATTRIBUTES, Attribute, AttributeNames, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
-from Py4GWCoreLib.enums_src.UI_enums import NumberPreference
 from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
 from Sources.frenkeyLib.ItemHandling.Mods.properties import AttributePlusOne, DamagePlusVsSpecies, ItemProperty, OfTheProfession
@@ -24,11 +22,6 @@ STAT_TAGS = (
     "<c=@ItemUncommon>",
     "<c=@ItemRare>",
 )
-META_PREFIXES = [
-    bytes([0x59, 0xA]), # Value
-    bytes([0x1, 0x81, 0x1C, 0x14]), # Attaches to: %str1%
-    bytes([0x97, 0xA, 0x1, 0x0]), # Use to apply to another item.
-]
 
 def format_description(text: str, remove_colors: bool = False, only_bonuses : bool = False) -> str:
     lines = text.splitlines()
@@ -69,7 +62,7 @@ class Upgrade:
         return None
     
     @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier]) -> Optional["Upgrade"]:        
+    def compose_from_modifiers(cls, mod : DecodedModifier, modifiers: list[DecodedModifier], rarity: Rarity = Rarity.Blue) -> Optional["Upgrade"]:        
         upgrade = cls()
         upgrade.properties = []
         upgrade.upgrade_id = mod.upgrade_id
@@ -81,7 +74,7 @@ class Upgrade:
             prop_mod = next((m for m in modifiers if m.identifier == prop_id), None)
             
             if prop_mod:
-                prop = property_factory.get(prop_id, lambda m, _: ItemProperty(modifier=m))(prop_mod, modifiers)
+                prop = property_factory.get(prop_id, lambda m, _, rarity: ItemProperty(modifier=m, rarity=rarity))(prop_mod, modifiers, rarity)
                 upgrade.properties.append(prop)
             else:
                 Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {prop_id.name} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
@@ -171,16 +164,6 @@ class WeaponUpgrade(Upgrade):
 
 class WeaponPrefix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Prefix
-
-    @classmethod
-    def get_weapon_upgrade_name(cls, item_type: ItemType, server_language: ServerLanguage = ServerLanguage(UIManager.GetIntPreference(NumberPreference.TextLanguage))) -> Optional[str]:
-        if item_type in EncodedStrings.WEAPON_PREFIXES:
-            prefix_bytes = EncodedStrings.WEAPON_PREFIXES.get(item_type, bytes())
-            decoded_name = string_table.decode(prefix_bytes + cls.encoded_name)
-            if decoded_name:
-                return decoded_name
-        
-        return None
     
 class AdeptUpgrade(WeaponPrefix):
     id = ItemUpgrade.Adept
@@ -324,17 +307,6 @@ class ZealousUpgrade(WeaponPrefix):
 #region Suffixes
 class WeaponSuffix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Suffix
-    
-    @classmethod
-    def get_weapon_upgrade_name(cls, item_type: ItemType) -> Optional[str]:
-        if item_type in EncodedStrings.WEAPON_SUFFIXES:
-            suffix_bytes = EncodedStrings.WEAPON_SUFFIXES.get(item_type, bytes())
-            decoded_name = string_table.decode(suffix_bytes + cls.encoded_name)
-            
-            if decoded_name:
-                return decoded_name            
-        
-        return None
     
 class OfAttributeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfAttribute
@@ -539,10 +511,6 @@ class Inscription(Upgrade):
     inventory_icon : str
     id : ItemUpgrade
     target_item_type : ItemType
-        
-    @classmethod
-    def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return cls.id.has_id(upgrade_id)
     
     @property
     def name(self) -> str:
@@ -1014,10 +982,6 @@ class Insignia(Upgrade):
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
-
-    @classmethod
-    def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return cls.id.has_id(upgrade_id)
     
 class Rune(Upgrade):
     RUNE_PATTERNS = {
@@ -1039,10 +1003,6 @@ class Rune(Upgrade):
     inventory_icon : str
     rarity : Rarity = Rarity.Blue
     profession : Profession = Profession._None
-
-    @classmethod
-    def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return cls.id.has_id(upgrade_id)
 
 class AttributeRune(Rune):
     attribute : Attribute

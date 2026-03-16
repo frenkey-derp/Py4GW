@@ -4,7 +4,7 @@
             "singular_encoded": "0x1 0x81 0x73 0x5D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "\"Let the Memory Live Again\"",
+            "singular": "\"Auf die Erinnerung!\"",
             "prefix": "",
             "suffix": ""
         },
@@ -12,7 +12,7 @@
             "singular_encoded": "0x1 0x81 0x7C 0x5D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "\"Sheltered by Faith\"",
+            "singular": "\"Vertrauen ist gut\"",
             "prefix": "",
             "suffix": ""
         },
@@ -20,7 +20,7 @@
             "singular_encoded": "0x1 0x81 0xAB 0x5D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "\"Vengeance is Mine\"",
+            "singular": "\"Die Rache ist mein\"",
             "prefix": "",
             "suffix": ""
         },
@@ -36,8 +36,8 @@
             "singular_encoded": "0x1 0x81 0x70 0x1C 0x1 0x0",
             "prefix_encoded": "0x74 0xA 0x1 0x0",
             "suffix_encoded": "",
-            "singular": "Spearhead",
-            "prefix": "Sundering",
+            "singular": "Speerspitze",
+            "prefix": "Trenn-",
             "suffix": ""
         },
         "15545": {
@@ -100,33 +100,33 @@
             "singular_encoded": "0x1 0x81 0xEC 0x1C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x2 0x81 0xB1 0x38 0x1 0x0",
-            "singular": "Wand Wrapping",
+            "singular": "Zauberstab-Hülle",
             "prefix": "",
-            "suffix": "of the Ranger"
+            "suffix": "d. des Waldläufers"
         },
         "15553": {
             "singular_encoded": "0x1 0x81 0x73 0x1C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x2 0x81 0xAE 0x38 0x1 0x0",
-            "singular": "Scythe Grip",
+            "singular": "Sensengriff",
             "prefix": "",
-            "suffix": "of the Monk"
+            "suffix": "d. des Mönchs"
         },
         "15554": {
             "singular_encoded": "0x1 0x81 0xED 0x1C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x79 0xA 0x1 0x0",
-            "singular": "Shield Handle",
+            "singular": "Schildgriff",
             "prefix": "",
-            "suffix": "of Fortitude"
+            "suffix": "d. Tapferkeit"
         },
         "15555": {
             "singular_encoded": "0x1 0x81 0x74 0x1C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x78 0xA 0x1 0x0",
-            "singular": "Spear Grip",
+            "singular": "Speergriff",
             "prefix": "",
-            "suffix": "of Enchanting"
+            "suffix": "d. Verzauberung"
         },
         "17059": {
             "singular_encoded": "0x80 0x7C 0x1 0x0",
@@ -140,7 +140,7 @@
             "singular_encoded": "0x1 0x81 0xB7 0x5D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "\"I am Sorrow.\"",
+            "singular": "\"Ich bin es Leid\"",
             "prefix": "",
             "suffix": ""
         },
@@ -148,7 +148,7 @@
             "singular_encoded": "0x1 0x81 0x87 0x5D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "\"Ignorance is Bliss\"",
+            "singular": "\"Was ich nicht weiß ...\"",
             "prefix": "",
             "suffix": ""
         },
@@ -716,8 +716,8 @@
             "singular_encoded": "0xB3 0x22 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
             "suffix_encoded": "",
-            "singular": "Staff Head",
-            "prefix": "Adept",
+            "singular": "Stabkopf",
+            "prefix": "Experten-",
             "suffix": ""
         },
         "897": {
@@ -796,33 +796,33 @@
             "singular_encoded": "0xBD 0x22 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x2 0x81 0xB0 0x38 0x1 0x0",
-            "singular": "Bow Grip",
+            "singular": "Bogengriff",
             "prefix": "",
-            "suffix": "of the Warrior"
+            "suffix": "d. des Kriegers"
         },
         "907": {
             "singular_encoded": "0xBE 0x22 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x64 0xA 0x1 0x0",
-            "singular": "Hammer Grip",
+            "singular": "Hammergriff",
             "prefix": "",
-            "suffix": "of Pruning"
+            "suffix": "d. Pflanzentötung"
         },
         "908": {
             "singular_encoded": "0xBF 0x22 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x64 0x9 0x1 0x0",
-            "singular": "Staff Wrapping",
+            "singular": "Stabhülle",
             "prefix": "",
-            "suffix": "of Restoration Magic"
+            "suffix": "d. Wiederherstellungsmagie"
         },
         "909": {
             "singular_encoded": "0xC0 0x22 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x2 0x81 0xAE 0x38 0x1 0x0",
-            "singular": "Sword Pommel",
+            "singular": "Schwertknauf[\"Schwertknäufe\"]",
             "prefix": "",
-            "suffix": "of the Monk"
+            "suffix": "d. des Mönchs"
         }
     },
     "Present": {
@@ -830,7 +830,7 @@
             "singular_encoded": "0x1 0x81 0xDF 0x3 0x18 0x8C 0x3D 0xF3 0x77 0x14 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Birthday Present",
+            "singular": "Geburtstagsgeschenk",
             "prefix": "",
             "suffix": ""
         }
@@ -840,8 +840,8 @@
             "singular_encoded": "0x1 0x81 0x6 0x43 0x63 0xF6 0xCD 0xB7 0xDB 0x5B 0x1 0x0",
             "prefix_encoded": "0xD4 0x8 0x1 0x0",
             "suffix_encoded": "",
-            "singular": "Composite Shortbow",
-            "prefix": "Icy",
+            "singular": "Kplssh-Rlsjo",
+            "prefix": "Eis-",
             "suffix": ""
         },
         "132": {
@@ -864,7 +864,7 @@
             "singular_encoded": "0x54 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Ivory Bow",
+            "singular": "Elfenbeinbogen",
             "prefix": "",
             "suffix": ""
         },
@@ -904,7 +904,7 @@
             "singular_encoded": "0x1 0x81 0x1C 0x5D 0x38 0xDC 0xA4 0xC6 0x3D 0x30 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Br\\dg ja Hdbc",
+            "singular": "BMrstÞrMrSMrn",
             "prefix": "",
             "suffix": ""
         },
@@ -976,7 +976,7 @@
             "singular_encoded": "0x2 0x81 0xFD 0x27 0x9F 0xA5 0xBF 0xE9 0xC7 0x52 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Xalnax's Destiny",
+            "singular": "Xalnax' Schicksal",
             "prefix": "",
             "suffix": ""
         },
@@ -1074,7 +1074,7 @@
             "singular_encoded": "0x1 0x81 0x24 0x5D 0xFD 0x92 0x9E 0x88 0x64 0x15 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Wintergreen Sword",
+            "singular": "Wintergrün-Schwert",
             "prefix": "",
             "suffix": ""
         },
@@ -1090,7 +1090,7 @@
             "singular_encoded": "0x2 0x81 0x4A 0x27 0x61 0x8A 0x91 0x8B 0x36 0x1E 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Gun\\r Ajrtu",
+            "singular": "Bogenklinge",
             "prefix": "",
             "suffix": ""
         },
@@ -1178,7 +1178,7 @@
             "singular_encoded": "0xE6 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Shadow Blade",
+            "singular": "Schattenklinge",
             "prefix": "",
             "suffix": ""
         },
@@ -1186,7 +1186,7 @@
             "singular_encoded": "0x4 0x27 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Icy Dragon Sword",
+            "singular": "Eisdrachenschwert",
             "prefix": "",
             "suffix": ""
         },
@@ -1300,7 +1300,7 @@
             "singular_encoded": "0x1 0x81 0x9 0x3C 0xDE 0x8D 0xA5 0x95 0x6A 0x68 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Aegis of Aaaaarrrrrrggghhh",
+            "singular": "%.x[_hka ~r",
             "prefix": "",
             "suffix": ""
         },
@@ -1388,7 +1388,7 @@
             "singular_encoded": "0x2 0x81 0x75 0x38 0x68 0x9A 0xC7 0xFE 0x2D 0x3E 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Anniversary Shield \"Curtain\"",
+            "singular": "Jubiläums-Schild \"Schleier\"",
             "prefix": "",
             "suffix": ""
         },
@@ -1404,9 +1404,9 @@
             "singular_encoded": "0xB0 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x79 0xA 0x1 0x0",
-            "singular": "Eternal Shield",
+            "singular": "Ewigkeits-Schild",
             "prefix": "",
-            "suffix": "of Fortitude"
+            "suffix": "d. Tapferkeit"
         },
         "871": {
             "singular_encoded": "0xB8 0x28 0x1 0x0",
@@ -1428,7 +1428,7 @@
             "singular_encoded": "0x89 0x56 0x4D 0xF4 0xA4 0x82 0x9C 0x79 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Amber Aegis",
+            "singular": "Bernstein-Aegis",
             "prefix": "",
             "suffix": ""
         },
@@ -1436,15 +1436,15 @@
             "singular_encoded": "0x8C 0x56 0x7 0x82 0xC3 0x98 0x45 0x61 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x79 0xA 0x1 0x0",
-            "singular": "Celestial Shield",
+            "singular": "[I]Hntrsodsmdnujh",
             "prefix": "",
-            "suffix": "of Fortitude"
+            "suffix": "d. Tapferkeit"
         },
         "944": {
             "singular_encoded": "0x2A 0x6F 0xB0 0xC1 0xAD 0xBF 0x6D 0x6D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Echovald Shield",
+            "singular": "Z(RmUmgGrYTe0IxGh",
             "prefix": "",
             "suffix": ""
         },
@@ -1476,7 +1476,7 @@
             "singular_encoded": "0x8E 0x56 0x90 0x9D 0x10 0xD8 0x6C 0x5D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Gothic Defender",
+            "singular": "Gotik-Verteidiger",
             "prefix": "",
             "suffix": ""
         }
@@ -1487,14 +1487,14 @@
             "prefix_encoded": "0xA 0x1 0x2 0x81 0x23 0x52 0xA 0xE6 0x4D 0x93 0x40 0x45 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "<c=#C78017>Copper Zaishen Coin[s]</c>",
+            "prefix": "<c=#C78017>Kupferne Zaishen-Münze[pl:\"Zaishen-Münzen\"]</c>",
             "suffix": ""
         },
         "31203": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x8B 0x1 0xA 0x1 0x2 0x81 0x26 0x52 0x55 0xD7 0x4A 0x9E 0xB7 0x4 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "<c=@ItemRare>Gold Zaishen Coin</c>",
+            "singular": "<c=@ItemRare>Goldene Zaishen-Münze</c>",
             "prefix": "",
             "suffix": ""
         },
@@ -1502,7 +1502,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x8 0x1 0xA 0x1 0x2 0x81 0x29 0x52 0xD1 0x8D 0x17 0xDE 0xAF 0xC 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "<c=#B4C1DF>Silver Zaishen Coin</c>",
+            "singular": "<c=#B4C1DF>Silberne Zaishen-Münze</c>",
             "prefix": "",
             "suffix": ""
         },
@@ -1510,7 +1510,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xC9 0x1 0xA 0x1 0xD0 0x55 0xB7 0xF8 0x8 0xB1 0x18 0x60 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Amber Chunk",
+            "singular": "Bernstein-Klumpen",
             "prefix": "",
             "suffix": ""
         },
@@ -1518,7 +1518,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x53 0x1 0xA 0x1 0xD1 0x55 0x89 0xD1 0x5A 0x84 0x64 0x71 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Jadeite Shard",
+            "singular": "Fr\\atst`dn[`] _`r O\\",
             "prefix": "",
             "suffix": ""
         },
@@ -1526,7 +1526,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFE 0x1 0xA 0x1 0xD0 0x22 0xB5 0xBE 0x62 0xC4 0xB5 0x64 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Bone",
+            "singular": "[[o£Pm\\",
             "prefix": "",
             "suffix": ""
         },
@@ -1534,7 +1534,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x43 0x1 0xA 0x1 0xD1 0x22 0x2A 0xDE 0x3 0xED 0x25 0x26 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Lump of Charcoal",
+            "singular": "Holzkohleklumpen",
             "prefix": "",
             "suffix": ""
         },
@@ -1542,7 +1542,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xAA 0x1 0xA 0x1 0xD2 0x22 0xC6 0xCD 0xC8 0xEF 0x99 0x3C 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Monstrous Claw",
+            "singular": "[jNXV3h(t`jhmF1",
             "prefix": "",
             "suffix": ""
         },
@@ -1550,7 +1550,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xCA 0x9 0xA 0x1 0xD4 0x22 0x8E 0x88 0x89 0x90 0xC8 0x6E 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Bolt of Cloth",
+            "singular": "Tuchballen",
             "prefix": "",
             "suffix": ""
         },
@@ -1559,14 +1559,14 @@
             "prefix_encoded": "0xA 0x1 0xD5 0x22 0x71 0x83 0xD5 0x8E 0xB4 0x56 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Dbnez Bqqmf[s]",
+            "prefix": "Leinentuchballen",
             "suffix": ""
         },
         "927": {
             "singular_encoded": "0xD6 0x22 0x4C 0xF0 0xE5 0xF1 0x99 0x56 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Trick-or-Treat Ba",
+            "singular": "Damastballen",
             "prefix": "",
             "suffix": ""
         },
@@ -1574,7 +1574,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x32 0x1 0xA 0x1 0xD7 0x22 0x2A 0xFD 0x5B 0xC8 0xB3 0x58 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Bolt of Silk",
+            "singular": "Seidentuchballen",
             "prefix": "",
             "suffix": ""
         },
@@ -1582,7 +1582,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x13 0x8 0xA 0x1 0xD8 0x22 0xA4 0xA4 0xD 0xED 0x4 0x43 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Pile of Glittering Dust",
+            "singular": "Glitzerstaubhaufen",
             "prefix": "",
             "suffix": ""
         },
@@ -1590,7 +1590,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0xD9 0x22 0xB8 0xE7 0xDD 0xE9 0x22 0x23 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Glob of Ectoplasm",
+            "singular": "Qual-Edelstein",
             "prefix": "",
             "suffix": ""
         },
@@ -1598,7 +1598,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xCD 0x1 0xA 0x1 0xDA 0x22 0x59 0x90 0x63 0xD1 0x87 0x21 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "OYq^Yr]r's EYrc",
+            "singular": "Monsterauge",
             "prefix": "",
             "suffix": ""
         },
@@ -1606,7 +1606,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x43 0x1 0xA 0x1 0xDB 0x22 0xCE 0x8D 0xFA 0xC3 0x26 0x4A 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Monstrous Fang",
+            "singular": "Monsterfangzahn[\"Monsterfangzähne\"]",
             "prefix": "",
             "suffix": ""
         },
@@ -1614,7 +1614,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x38 0x1 0xA 0x1 0xDC 0x22 0x9 0x82 0x29 0xAD 0xBD 0xB 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Feather",
+            "singular": "Feder",
             "prefix": "",
             "suffix": ""
         },
@@ -1622,7 +1622,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2C 0x6 0xA 0x1 0xDD 0x22 0x69 0xAC 0xA5 0xDE 0xC5 0x73 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Plant Fiber",
+            "singular": "Pergamentrolle[n",
             "prefix": "",
             "suffix": ""
         },
@@ -1630,7 +1630,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x58 0x1 0xA 0x1 0xDE 0x22 0x93 0xBB 0xD4 0xAB 0x39 0x54 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "FnZtj `W D",
+            "singular": "Diamant",
             "prefix": "",
             "suffix": ""
         },
@@ -1638,7 +1638,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x86 0x1 0xA 0x1 0xDF 0x22 0x25 0xD4 0x93 0xC0 0xF4 0x1C 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Onyx Gemstone",
+            "singular": "Onyx",
             "prefix": "",
             "suffix": ""
         },
@@ -1646,7 +1646,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xE9 0x1 0xA 0x1 0xE0 0x22 0xCC 0x93 0x9C 0x93 0x86 0x52 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Ruby",
+            "singular": "[[<3NUM^mu33",
             "prefix": "",
             "suffix": ""
         },
@@ -1654,7 +1654,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xD3 0x1 0xA 0x1 0xE1 0x22 0x85 0xB7 0x6C 0x86 0xF6 0x34 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "_e`-])!",
+            "singular": "Ylnlnivnl",
             "prefix": "",
             "suffix": ""
         },
@@ -1662,7 +1662,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x24 0x1 0xA 0x1 0xE2 0x22 0x9B 0xCE 0x71 0x87 0xC7 0x7D 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Tempered Glass Vial",
+            "singular": "Vergütetes Glasfläschchen",
             "prefix": "",
             "suffix": ""
         },
@@ -1670,7 +1670,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x4 0x1 0xA 0x1 0xE3 0x22 0xA9 0xD3 0x2C 0xC2 0x5A 0x28 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Tanned Hide Square",
+            "singular": "Gerbfellquadrat",
             "prefix": "",
             "suffix": ""
         },
@@ -1678,7 +1678,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x5B 0x1 0xA 0x1 0xE4 0x22 0xF4 0xE5 0xEF 0xBB 0x25 0x5A 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Fur Square",
+            "singular": "Pelzquadrat",
             "prefix": "",
             "suffix": ""
         },
@@ -1694,7 +1694,7 @@
             "singular_encoded": "0xE6 0x22 0xF4 0xE8 0x98 0xA8 0xCB 0x75 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elonian Leather Square",
+            "singular": "Essenz de",
             "prefix": "",
             "suffix": ""
         },
@@ -1702,7 +1702,7 @@
             "singular_encoded": "0xE7 0x22 0xDA 0xC1 0xC1 0xF2 0x2A 0x45 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Jstbnj Ippe",
+            "singular": "Tintenfläschchen",
             "prefix": "",
             "suffix": ""
         },
@@ -1710,7 +1710,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x90 0x1 0xA 0x1 0xEA 0x22 0xA9 0xFD 0x53 0xDE 0x16 0x2D 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Obsidian Shard",
+            "singular": "F%~INh\nb%Jp",
             "prefix": "",
             "suffix": ""
         },
@@ -1718,7 +1718,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xBE 0xA 0xA 0x1 0xE8 0x22 0x6D 0xE4 0xE4 0x8F 0x8B 0x5F 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "R[P[h1P1QPsb5",
+            "singular": "Holzbrett",
             "prefix": "",
             "suffix": ""
         },
@@ -1726,7 +1726,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0xEB 0x22 0xB0 0xC6 0x46 0xBD 0xAD 0x2D 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Iron Ingot",
+            "singular": "Eisenbarren",
             "prefix": "",
             "suffix": ""
         },
@@ -1735,14 +1735,14 @@
             "prefix_encoded": "0xA 0x1 0xEC 0x22 0x2D 0xF1 0xA7 0x87 0x60 0x64 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Steel Ingot[s]",
+            "prefix": "[",
             "suffix": ""
         },
         "950": {
             "singular_encoded": "0xED 0x22 0x73 0xB8 0xA4 0x85 0x4B 0x7 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Deldrimor Steel Ingot",
+            "singular": "Deldrimor-Stahlbarren",
             "prefix": "",
             "suffix": ""
         },
@@ -1750,7 +1750,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x5E 0x1 0xA 0x1 0xEE 0x22 0x5A 0xF6 0xE6 0x86 0x6C 0x1C 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "U/Tn]bmo\\]0324",
+            "singular": "Pergamentrolle",
             "prefix": "",
             "suffix": ""
         },
@@ -1759,14 +1759,14 @@
             "prefix_encoded": "0xA 0x1 0xEF 0x22 0x88 0xC5 0x1D 0x86 0xD3 0x5B 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Roll[s] of Vellum",
+            "prefix": "Vellinrolle[n]",
             "suffix": ""
         },
         "953": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x7D 0x2 0xA 0x1 0xF0 0x22 0x2C 0x83 0xA3 0xD6 0x82 0x13 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Scale",
+            "singular": "Schuppe",
             "prefix": "",
             "suffix": ""
         },
@@ -1774,7 +1774,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x99 0x2 0xA 0x1 0xF1 0x22 0x56 0x91 0x92 0x86 0x7D 0x49 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Chitin Fragment",
+            "singular": "Chitin-Fragment",
             "prefix": "",
             "suffix": ""
         },
@@ -1782,7 +1782,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xA9 0x9 0xA 0x1 0xF2 0x22 0x23 0xA6 0xE8 0xFA 0x5A 0xE 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Granite Slab",
+            "singular": "Granitplatte",
             "prefix": "",
             "suffix": ""
         },
@@ -1790,7 +1790,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xA1 0x1 0xA 0x1 0xF3 0x22 0x1C 0xA1 0x24 0xC9 0x15 0x5E 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Spiritwood Plank",
+            "singular": "Geisterholzbrett",
             "prefix": "",
             "suffix": ""
         }
@@ -1840,7 +1840,7 @@
             "singular_encoded": "0x19 0x27 0xAA 0xB8 0xAF 0xCF 0x98 0x7B 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Superior Identification Kit",
+            "singular": "¹|3čĄZ%tmk6m",
             "prefix": "",
             "suffix": ""
         },
@@ -1848,7 +1848,7 @@
             "singular_encoded": "0x1C 0x27 0xFB 0x8A 0x5D 0xB6 0xD5 0x12 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Kp}pnl Zthmm",
+            "singular": "Überlegenes Wiederverwertungswerkzeug",
             "prefix": "",
             "suffix": ""
         }
@@ -1858,7 +1858,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xE 0x73 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Lockpick",
+            "singular": "Dietrich",
             "prefix": "",
             "suffix": ""
         },
@@ -1885,14 +1885,14 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0x6A 0x5E 0x65 0xA7 0xEE 0x99 0x2A 0x4D 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Transmogrifier Tonic[s]",
+            "prefix": "Transformationstrank[pl:\"Transformationstränke\"]",
             "suffix": ""
         },
         "21488": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x7 0x1 0xA 0x1 0x1 0x81 0xF8 0x60 0x47 0xE4 0x7D 0x8E 0xA2 0x2C 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Wintergreen Candy Cane",
+            "singular": "Wintergrün-Zuckerstange",
             "prefix": "",
             "suffix": ""
         },
@@ -1900,7 +1900,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xF9 0x60 0x2D 0x9F 0xEE 0xA4 0xF4 0x19 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Rainbow Candy Cane",
+            "singular": "Regenbogen-Zuckerstange",
             "prefix": "",
             "suffix": ""
         },
@@ -1908,7 +1908,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x6 0x1 0xA 0x1 0x1 0x81 0x2D 0x62 0x47 0xC7 0x1B 0x9C 0x4E 0x35 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Fgecfg Fciig",
+            "singular": "F«Ôsėk\\cÅøė¨",
             "prefix": "",
             "suffix": ""
         },
@@ -1916,7 +1916,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x43 0x1 0xA 0x1 0x1 0x81 0x1C 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Assassin Tome",
+            "singular": "Elite-Assassinen-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1925,14 +1925,14 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0x1D 0x67 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Elite Mesmer Tome[s]",
+            "prefix": "Elite-Mesmer-Foliant[en]",
             "suffix": ""
         },
         "21788": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x29 0x1 0xA 0x1 0x1 0x81 0x1E 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Necromancer Tome",
+            "singular": "Elite-Nekromanten-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1940,7 +1940,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x30 0x1 0xA 0x1 0x1 0x81 0x1F 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Elementalist Tome",
+            "singular": "Elite-Elementarmagier-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1948,7 +1948,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x37 0x1 0xA 0x1 0x1 0x81 0x20 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Monk Tome",
+            "singular": "Elite-Mönchs-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1956,7 +1956,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2D 0x1 0xA 0x1 0x1 0x81 0x21 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Warrior Tome",
+            "singular": "Elite-Krieger-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1964,7 +1964,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x31 0x1 0xA 0x1 0x1 0x81 0x22 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Ranger Tome",
+            "singular": "Elite-Waldläufer-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1972,7 +1972,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x37 0x1 0xA 0x1 0x1 0x81 0x23 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Dervish Tome",
+            "singular": "Elite-Derwisch-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1980,7 +1980,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x26 0x1 0xA 0x1 0x1 0x81 0x24 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Ritualist Tome",
+            "singular": "Elite-Ritualisten-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1988,7 +1988,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2A 0x1 0xA 0x1 0x1 0x81 0x25 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elite Paragon Tome",
+            "singular": "Elite-Paragon-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -1996,7 +1996,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x67 0x1 0xA 0x1 0x1 0x81 0x26 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Assassin Tome",
+            "singular": "Assassinen-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2004,7 +2004,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xCF 0x1 0xA 0x1 0x1 0x81 0x27 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Mesmer Tome",
+            "singular": "Mesmer-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2012,7 +2012,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x59 0x1 0xA 0x1 0x1 0x81 0x28 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Necromancer Tome",
+            "singular": "Nekromanten-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2020,7 +2020,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x71 0x1 0xA 0x1 0x1 0x81 0x29 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Elementalist Tome",
+            "singular": "Elementarmagier-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2028,7 +2028,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xC7 0x1 0xA 0x1 0x1 0x81 0x2A 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Monk Tome",
+            "singular": "Mönchs-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2036,7 +2036,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xA7 0x1 0xA 0x1 0x1 0x81 0x2B 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Warrior Tome",
+            "singular": "Krieger-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2044,7 +2044,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x35 0x1 0xA 0x1 0x1 0x81 0x2C 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Ranger Tome",
+            "singular": "Waldläufer-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2052,7 +2052,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xEF 0x1 0xA 0x1 0x1 0x81 0x2D 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Dervish Tome",
+            "singular": "Derwisch-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2060,7 +2060,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xC2 0x1 0xA 0x1 0x1 0x81 0x2E 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Ritualist Tome",
+            "singular": "Ritualisten-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2068,7 +2068,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xB9 0x1 0xA 0x1 0x1 0x81 0x2F 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Paragon Tome",
+            "singular": "Paragon-Foliant",
             "prefix": "",
             "suffix": ""
         },
@@ -2084,7 +2084,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x3 0x1 0xA 0x1 0x1 0x81 0xF8 0x66 0x17 0x8F 0xC1 0xFB 0x53 0xC 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Cnnkxgrscr{ Utchh \"",
+            "singular": "Partyknaller",
             "prefix": "",
             "suffix": ""
         },
@@ -2092,7 +2092,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xFA 0x66 0x2E 0xE4 0x33 0x89 0x33 0x17 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Sugary Blue Drink",
+            "singular": "Blaue Limonade",
             "prefix": "",
             "suffix": ""
         },
@@ -2108,7 +2108,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x53 0x1 0xA 0x1 0x1 0x81 0xFE 0x68 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Golden Flame of Balthazar",
+            "singular": "Goldene Flamme des Balthasar",
             "prefix": "",
             "suffix": ""
         },
@@ -2116,7 +2116,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xB4 0x6B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Shamrock Ale",
+            "singular": "Kleeblattbier",
             "prefix": "",
             "suffix": ""
         },
@@ -2124,7 +2124,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xB5 0x6B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Four-Leaf Clover",
+            "singular": "Glücksklee",
             "prefix": "",
             "suffix": ""
         },
@@ -2132,7 +2132,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xB6 0x7E 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Birthday Cupcake",
+            "singular": "Geburtstagskuchen",
             "prefix": "",
             "suffix": ""
         },
@@ -2148,7 +2148,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0xFF 0x72 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Golden Egg",
+            "singular": "Goldei",
             "prefix": "",
             "suffix": ""
         },
@@ -2156,7 +2156,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xC6 0x1B 0xCD 0x9A 0x8B 0x85 0x31 0x1 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Essence of Celerity",
+            "singular": "Essenz der Geschwindigkeit",
             "prefix": "",
             "suffix": ""
         },
@@ -2164,7 +2164,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xC7 0x1B 0xD3 0xB8 0x33 0xB1 0xF9 0x28 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Armor of Salvation",
+            "singular": "Rüstung der Erlösung",
             "prefix": "",
             "suffix": ""
         },
@@ -2172,7 +2172,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x68 0x1 0xA 0x1 0x2 0x81 0xC8 0x1B 0x54 0xF2 0x21 0xD4 0xE9 0x7D 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Grail of Might",
+            "singular": "G]r]mahhlkl_krn",
             "prefix": "",
             "suffix": ""
         },
@@ -2180,7 +2180,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x36 0x1 0xA 0x1 0x2 0x81 0xC9 0x1B 0x56 0xF7 0x75 0xDA 0xDD 0x11 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Powerstone of Courage",
+            "singular": "Kraftstein der Tapferkeit",
             "prefix": "",
             "suffix": ""
         },
@@ -2188,7 +2188,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x1 0x81 0x2D 0x22 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Flask of Firewater",
+            "singular": "Feuerwasser-Flasche",
             "prefix": "",
             "suffix": ""
         },
@@ -2196,7 +2196,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x8D 0x1 0xA 0x1 0x1 0x81 0x2E 0x22 0xF9 0xE6 0xEA 0x8E 0x58 0x65 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Blindfold",
+            "singular": "Flamme des Balthasar",
             "prefix": "",
             "suffix": ""
         },
@@ -2204,7 +2204,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x23 0x1 0xA 0x1 0x2 0x81 0x3B 0x1F 0xCC 0x9F 0xAB 0xD7 0x3 0x46 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Star of Transference",
+            "singular": "awrwm{w|{[:\"aw",
             "prefix": "",
             "suffix": ""
         },
@@ -2212,7 +2212,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x7D 0x1 0xA 0x1 0x2 0x81 0xD0 0x26 0xD8 0xF6 0x35 0x8A 0xB4 0x40 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Scroll of Resurrection",
+            "singular": "Schriftrolle der Wiederbelebung",
             "prefix": "",
             "suffix": ""
         },
@@ -2220,7 +2220,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x2 0x81 0xCE 0x26 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Honeycomb",
+            "singular": "Honigwabe",
             "prefix": "",
             "suffix": ""
         },
@@ -2228,7 +2228,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xEB 0x34 0x72 0x9E 0xA 0xF1 0xD4 0x2 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Candy Apple",
+            "singular": "Karamellapfel",
             "prefix": "",
             "suffix": ""
         },
@@ -2236,7 +2236,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xA 0x1 0xA 0x1 0x2 0x81 0xEC 0x34 0xF8 0xBD 0x51 0xE9 0x74 0x34 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "MenT5I:",
+            "singular": "Karamellpopcorn",
             "prefix": "",
             "suffix": ""
         },
@@ -2244,7 +2244,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xED 0x34 0x18 0xEA 0x24 0x8C 0xD6 0x53 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Pumpkin Cookie",
+            "singular": "KÆíāû4®p]rW",
             "prefix": "",
             "suffix": ""
         },
@@ -2252,7 +2252,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x7B 0x1 0xA 0x1 0x2 0x81 0xEE 0x34 0x2B 0xB8 0xF2 0xD7 0x37 0x31 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Trick-or-Treat Bag",
+            "singular": "Süßes-oder-Saures-Tasche",
             "prefix": "",
             "suffix": ""
         },
@@ -2268,7 +2268,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xF0 0x34 0xB 0xB0 0x2A 0xD3 0x4F 0x63 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Slice of Pumpkin Pie",
+            "singular": "Scheibe Kürbiskuchen",
             "prefix": "",
             "suffix": ""
         },
@@ -2276,7 +2276,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2C 0x1 0xA 0x1 0x2 0x81 0x51 0x3F 0xFD 0xDE 0xDF 0xFE 0x89 0x5B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Plant Fiber",
+            "singular": "Überraschungskeks [Jahr des Schweins]",
             "prefix": "",
             "suffix": ""
         },
@@ -2284,7 +2284,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0x5A 0x3F 0x6B 0xE5 0x49 0x81 0x7F 0x73 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Lunar Fortune [Year of the Monkey]",
+            "singular": "A¼ã÷ñ4¤f]huM",
             "prefix": "",
             "suffix": ""
         },
@@ -2292,7 +2292,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x3E 0x1 0xA 0x1 0x3 0x81 0x46 0x3 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Tengu Support Flare",
+            "singular": "Tengu-Unterstützungsleuchtfeuer",
             "prefix": "",
             "suffix": ""
         },
@@ -2300,7 +2300,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x4 0x1 0xA 0x1 0x2 0x81 0x26 0x45 0xF 0xDE 0x2F 0x86 0xE1 0x55 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Boreal Tonic",
+            "singular": "Unvergänglicher Borealtrank",
             "prefix": "",
             "suffix": ""
         },
@@ -2308,7 +2308,7 @@
             "singular_encoded": "0x2 0x81 0x28 0x45 0xCB 0x9E 0xCB 0xB7 0xC 0x26 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Eur Rpu`rd",
+            "singular": "Unvergänglicher Gallerttrank",
             "prefix": "",
             "suffix": ""
         },
@@ -2324,7 +2324,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0x4 0x49 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Bottle of Grog",
+            "singular": "Grog-Flasche",
             "prefix": "",
             "suffix": ""
         },
@@ -2332,7 +2332,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x3 0x1 0xA 0x1 0x2 0x81 0x83 0x49 0xB8 0xFD 0x64 0xCA 0x48 0x75 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Mystical Summoning Stone",
+            "singular": "H^r^mbiimlm`lrn",
             "prefix": "",
             "suffix": ""
         },
@@ -2340,7 +2340,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x2 0x81 0x89 0x49 0xB5 0x92 0xA6 0xE7 0xDD 0x20 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Demonic Summoning Stone",
+            "singular": "Dämonen-Herbeirufstein",
             "prefix": "",
             "suffix": ""
         },
@@ -2348,7 +2348,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x2 0x81 0x4A 0x4B 0x84 0x87 0xC4 0xB4 0x77 0x44 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Otwj wn Mktwxtism",
+            "singular": "Schabernack-Trank",
             "prefix": "",
             "suffix": ""
         },
@@ -2356,7 +2356,7 @@
             "singular_encoded": "0x2 0x81 0x4B 0x4B 0x98 0xA1 0x2A 0x8D 0xEA 0x68 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Mischievous Tonic",
+            "singular": "Unvergänglicher Schabernack-Trank",
             "prefix": "",
             "suffix": ""
         },
@@ -2364,7 +2364,7 @@
             "singular_encoded": "0x2 0x81 0x71 0x53 0x4B 0x89 0x10 0x91 0xD 0xB 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Monstrous Claw",
+            "singular": "Unvergängliche Feuerwerkkiste",
             "prefix": "",
             "suffix": ""
         },
@@ -2388,7 +2388,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x43 0x1 0xA 0x1 0x2 0x81 0xC2 0x58 0xC1 0xE7 0x68 0xD0 0x24 0x5F 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Unseen Tonic",
+            "singular": "Trank der Unsichtbaren",
             "prefix": "",
             "suffix": ""
         },
@@ -2396,7 +2396,7 @@
             "singular_encoded": "0x2 0x81 0xC3 0x58 0x20 0xE9 0x62 0xAF 0x93 0x2D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Unseen Tonic",
+            "singular": "UnvergänglicherTrank der Unsichtbaren",
             "prefix": "",
             "suffix": ""
         },
@@ -2404,7 +2404,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x3F 0x1 0xA 0x1 0x2 0x81 0xC3 0x5C 0x6E 0xF6 0xE8 0xBA 0x6A 0x11 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "G^V#Ys<1",
+            "singular": "Ekel-Herbeirufstein",
             "prefix": "",
             "suffix": ""
         },
@@ -2412,7 +2412,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x2 0x81 0xE4 0x66 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "War Supplies",
+            "singular": "Kriegsvorräte",
             "prefix": "",
             "suffix": ""
         },
@@ -2420,7 +2420,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x79 0x1 0xA 0x1 0x2 0x81 0xE2 0x66 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Confessor's Orders",
+            "singular": "Befehle des Beichtvaters",
             "prefix": "",
             "suffix": ""
         },
@@ -2429,14 +2429,14 @@
             "prefix_encoded": "0xA 0x1 0x2 0x81 0xEC 0x66 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Krytan Brandy",
+            "prefix": "Krytanischer Weinbrand",
             "suffix": ""
         },
         "36429": {
             "singular_encoded": "0x2 0x81 0x23 0x74 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Acolyte Sousuke Tonic",
+            "singular": "Unvergänglicher Akolyth Sousuke-Trank",
             "prefix": "",
             "suffix": ""
         },
@@ -2444,7 +2444,7 @@
             "singular_encoded": "0x2 0x81 0x28 0x74 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Goren Tonic",
+            "singular": "Unvergänglicher Goren-Trank",
             "prefix": "",
             "suffix": ""
         },
@@ -2452,7 +2452,7 @@
             "singular_encoded": "0x2 0x81 0x29 0x74 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Norgu Tonic",
+            "singular": "Unvergänglicher Norgu-Trank",
             "prefix": "",
             "suffix": ""
         },
@@ -2460,7 +2460,7 @@
             "singular_encoded": "0x2 0x81 0x40 0x74 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Queen Salma Tonic",
+            "singular": "Unvergänglicher Königin Salma-Trank",
             "prefix": "",
             "suffix": ""
         },
@@ -2469,14 +2469,14 @@
             "prefix_encoded": "0xA 0x1 0x2 0x81 0x2B 0x75 0x27 0xDC 0xAD 0xE8 0x70 0x7D 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Hero's Strongbox[pl:\"Strongboxes\"]",
+            "prefix": "Zaishen-Kassette[pl:\"Kassetten\"] des Helden",
             "suffix": ""
         },
         "36681": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0xC0 0x1 0xA 0x1 0x2 0x81 0x49 0x75 0x17 0xBB 0x2F 0xB8 0xFE 0x44 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Delicious Cake",
+            "singular": "Scheibe[pl:\"Scheiben",
             "prefix": "",
             "suffix": ""
         },
@@ -2484,7 +2484,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xA8 0x1 0xA 0x1 0x2 0x81 0x4B 0x75 0xD4 0x98 0xB6 0x8A 0x8A 0x1C 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Battle Isle Iced Tea",
+            "singular": "Kampfarchipel-Eistee",
             "prefix": "",
             "suffix": ""
         },
@@ -2492,7 +2492,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x4B 0x1 0xA 0x1 0x2 0x81 0x2C 0x76 0xD6 0x96 0x25 0xBF 0x37 0x23 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Party Beacon",
+            "singular": "T }m.[r4fM2r,i",
             "prefix": "",
             "suffix": ""
         },
@@ -2500,7 +2500,7 @@
             "singular_encoded": "0x1 0x81 0xDF 0x3 0x18 0x8C 0x3D 0xF3 0x77 0x14 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Birthday Present",
+            "singular": "Geburtstagsgeschenk",
             "prefix": "",
             "suffix": ""
         },
@@ -2508,7 +2508,7 @@
             "singular_encoded": "0x3 0x81 0xFA 0xA 0xB5 0xA1 0x26 0xB8 0x13 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Legionnaire Summoning Crystal",
+            "singular": "Legionär-Herbeirufungskristall",
             "prefix": "",
             "suffix": ""
         },
@@ -2516,7 +2516,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0xCA 0x22 0x83 0x8A 0x39 0xD1 0x8E 0x6D 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Vial of Absinthe",
+            "singular": "Fläschchen Absinth",
             "prefix": "",
             "suffix": ""
         },
@@ -2532,7 +2532,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x36 0x1 0xA 0x1 0xC8 0x22 0x84 0xB6 0x1F 0xA7 0x71 0x54 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Snowman Summoner",
+            "singular": "Schneemann-Macher",
             "prefix": "",
             "suffix": ""
         },
@@ -2566,7 +2566,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x26 0x1 0xA 0x1 0x1 0x81 0xA4 0x4D 0x5B 0xF2 0xDD 0xE7 0x2A 0x62 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Trade Contract",
+            "singular": "Handelsvertrag",
             "prefix": "",
             "suffix": ""
         },
@@ -2574,7 +2574,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x8D 0x1 0xA 0x1 0x1 0x81 0xA9 0x4D 0x4C 0x8C 0x68 0xD7 0xB3 0x67 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Victory Token",
+            "singular": "Siegesmarke",
             "prefix": "",
             "suffix": ""
         },
@@ -2582,7 +2582,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x59 0x1 0xA 0x1 0x1 0x81 0x7C 0x4C 0xC2 0xE7 0xDF 0xCD 0xF3 0x4B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Iboga Petal",
+            "singular": "JZ_\\`Y\\[gc:\"JZ_\\`Y\\n\"] BórY`sbuZ_\\n",
             "prefix": "",
             "suffix": ""
         },
@@ -2590,7 +2590,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x4C 0x1 0xA 0x1 0x1 0x81 0x7D 0x4C 0x41 0xAD 0x45 0xFB 0xA8 0x79 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Skale Fin",
+            "singular": "Skalflosse",
             "prefix": "",
             "suffix": ""
         },
@@ -2599,7 +2599,7 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0x3B 0x58 0xB 0xDE 0x73 0xE3 0x70 0x10 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Kuh]ragr KYdnY_] Cat",
+            "prefix": "Brocken Lindwurmfleisch",
             "suffix": ""
         },
         "19193": {
@@ -2607,14 +2607,14 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0x13 0x5E 0x70 0xAA 0xE5 0xCC 0xDF 0x6 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Primeval Armor Remnants",
+            "prefix": "Altehrwürdige Rüstungsüberreste",
             "suffix": ""
         },
         "19195": {
             "singular_encoded": "0x1 0x81 0xA5 0x4D 0x45 0x8D 0xFE 0xD4 0xBB 0x3C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Kournan Coin",
+            "singular": "Kournische Münze",
             "prefix": "",
             "suffix": ""
         },
@@ -2623,7 +2623,7 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0xFA 0x42 0xE7 0xBC 0x19 0xA6 0x2D 0x56 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Book[pl:\"Books\"] of Secrets",
+            "prefix": "Buch[pl:\"Bücher\"] der Geheimnisse",
             "suffix": ""
         },
         "19199": {
@@ -2638,7 +2638,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xD3 0x1 0xA 0x1 0x83 0x7C 0x3F 0x87 0xE 0xC2 0x26 0x3E 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Armbrace of Truth",
+            "singular": "Armreifen der Wahrheit",
             "prefix": "",
             "suffix": ""
         },
@@ -2647,14 +2647,14 @@
             "prefix_encoded": "0xA 0x1 0x84 0x7C 0xD9 0xBE 0x1B 0xA5 0x7A 0x7D 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "GnckmUn GummcnYr[s]",
+            "prefix": "Jvstfh-Ebr_bfrucstbfn",
             "suffix": ""
         },
         "21129": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x4C 0x1 0xA 0x1 0x85 0x7C 0xFB 0xA8 0x62 0x97 0xB6 0x7B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Stygian Gemstone",
+            "singular": "Stygier-Edelstein",
             "prefix": "",
             "suffix": ""
         },
@@ -2663,7 +2663,7 @@
             "prefix_encoded": "0xA 0x1 0x86 0x7C 0x47 0xFC 0xCF 0xEA 0x67 0x4F 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Titan Gemstone[s]",
+            "prefix": "Titanen-Edelstein[e]",
             "suffix": ""
         },
         "21131": {
@@ -2671,7 +2671,7 @@
             "prefix_encoded": "0xA 0x1 0x87 0x7C 0xA4 0x85 0x30 0x8D 0x43 0x44 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Torment Gemstone[s]",
+            "prefix": "Eisenbarren",
             "suffix": ""
         },
         "21833": {
@@ -2694,7 +2694,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x9C 0x1 0xA 0x1 0x1 0x81 0xC 0x78 0xB4 0x8C 0x2D 0xB2 0xDA 0x74 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Diessa Chalice",
+            "singular": "[L]Djdk-Gdradhru",
             "prefix": "",
             "suffix": ""
         },
@@ -2703,14 +2703,14 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0xD 0x78 0x20 0xB6 0xF5 0x8A 0x20 0x76 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Golden Rin Relic[s]",
+            "prefix": "[O]Mcmrhcrejkrgn-Gkstgg",
             "suffix": ""
         },
         "24363": {
             "singular_encoded": "0x1 0x81 0xC3 0x7E 0xB 0xB7 0x80 0xE7 0xE0 0x30 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Mirage Iboga Polymock Piece",
+            "singular": "Trugbild-Iboga-Polymockfigur",
             "prefix": "",
             "suffix": ""
         },
@@ -2719,14 +2719,14 @@
             "prefix_encoded": "0xA 0x1 0x2 0x81 0xD5 0x26 0xA9 0xB6 0x56 0xB6 0x88 0x52 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Sbjncpx Dbnez Db",
+            "prefix": "Droknars Schlüssel",
             "suffix": ""
         },
         "27033": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x6E 0x1 0xA 0x1 0x2 0x81 0xD6 0x26 0x69 0x81 0xAE 0xEE 0xEE 0x48 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Destroyer Core",
+            "singular": "Zerstörerkern",
             "prefix": "",
             "suffix": ""
         },
@@ -2734,7 +2734,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x7D 0x1 0xA 0x1 0x2 0x81 0xE3 0x26 0x6F 0xB7 0x6C 0xE5 0xA2 0x1 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Berserker Horn",
+            "singular": "Berserkerhorn",
             "prefix": "",
             "suffix": ""
         },
@@ -2750,7 +2750,7 @@
             "singular_encoded": "0x2 0x81 0xE7 0x26 0x30 0xC3 0x11 0xC1 0x58 0x40 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Pile of Elemental Dust",
+            "singular": "[qrpqfr]Erplnbrs Tdi",
             "prefix": "",
             "suffix": ""
         },
@@ -2758,7 +2758,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xEB 0x1 0xA 0x1 0x2 0x81 0xE9 0x26 0xD3 0x96 0x81 0x8E 0xD1 0x64 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Superb Charr Carving",
+            "singular": "Meisterhafte Charr-Schnitzerei",
             "prefix": "",
             "suffix": ""
         },
@@ -2767,14 +2767,14 @@
             "prefix_encoded": "0xA 0x1 0x2 0x81 0xD4 0x22 0xB1 0xA2 0x27 0xB9 0xF4 0x35 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Deldrimor Armor Remnant[s]",
+            "prefix": "Deldrimor-Rüstungsüberrest[e]",
             "suffix": ""
         },
         "27583": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0x98 0x1 0xA 0x1 0x2 0x81 0x5A 0x2C 0x26 0xF9 0xB2 0xFE 0xFE 0x11 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Monumental Tapestry",
+            "singular": "Prächtiger Wandteppich",
             "prefix": "",
             "suffix": ""
         },
@@ -2782,7 +2782,7 @@
             "singular_encoded": "0x2 0x81 0x3B 0x7E 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Imperial Guard Requisition Order",
+            "singular": "Auftragsanforderung der Kaiserlichen Garde",
             "prefix": "",
             "suffix": ""
         },
@@ -2807,7 +2807,7 @@
             "prefix_encoded": "0xA 0x1 0x2 0x81 0xD1 0x44 0xAB 0xDA 0x51 0x98 0x58 0x2A 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Deldrimor Talisman[s]",
+            "prefix": "HYrtq-D]u[`t^]u]r",
             "suffix": ""
         },
         "35122": {
@@ -2822,7 +2822,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x58 0x1 0xA 0x1 0x2 0x81 0x24 0x7B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Ministerial Commendation",
+            "singular": "Ministeriumsauszeichnung",
             "prefix": "",
             "suffix": ""
         },
@@ -2838,7 +2838,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xC6 0x1 0xA 0x1 0x3 0x81 0x1D 0x9 0xFF 0xB6 0x54 0xE1 0xB1 0x33 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Mrkmzkqno Zyzzor",
+            "singular": "[\"40%25ntTs0RUn]V0%25ntT",
             "prefix": "",
             "suffix": ""
         },
@@ -2846,7 +2846,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x8 0x1 0xA 0x1 0x3 0x81 0x4A 0xA 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Birthday Present Voucher",
+            "singular": "Gutschein für Geburtstagsgeschenk",
             "prefix": "",
             "suffix": ""
         },
@@ -2854,7 +2854,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x3 0x81 0x56 0xB 0x47 0xA9 0x92 0xBA 0x51 0x6D 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Nssnnln xo Lnun",
+            "singular": "Beleg der Legende",
             "prefix": "",
             "suffix": ""
         },
@@ -2862,7 +2862,7 @@
             "singular_encoded": "0x3 0x81 0x58 0xB 0x4B 0xEA 0xEB 0x8D 0xF3 0x3D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Proof of Steel",
+            "singular": "Beleg des Stahls",
             "prefix": "",
             "suffix": ""
         },
@@ -2870,7 +2870,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xD8 0x1 0xA 0x1 0x3 0x81 0x97 0xB 0x8B 0xDB 0x72 0xE3 0x73 0xD 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Blessing of War",
+            "singular": "[",
             "prefix": "",
             "suffix": ""
         },
@@ -2878,7 +2878,7 @@
             "singular_encoded": "0x2 0x81 0x79 0x38 0x3E 0x9D 0x58 0xB8 0xCC 0x7C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Proof of Triumph",
+            "singular": "Beleg des Triumphes",
             "prefix": "",
             "suffix": ""
         },
@@ -2902,7 +2902,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xFA 0x1 0xA 0x1 0x69 0x29 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Dark Remains",
+            "singular": "Dunkle Reste",
             "prefix": "",
             "suffix": ""
         },
@@ -2919,7 +2919,7 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0xEC 0x6 0x67 0xFE 0x14 0x9E 0x8A 0x7E 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "DaZrZth``U A]Rn\\[s]",
+            "prefix": "Amulett[pl:\"Amulette\"] der Nebel",
             "suffix": ""
         },
         "835": {
@@ -2927,7 +2927,7 @@
             "prefix_encoded": "0xA 0x1 0xF5 0x56 0xE8 0xEA 0x4F 0xB7 0x29 0x74 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Q6DE~!`Fq]I2",
+            "prefix": "Federkamm[pl:\"Federkämme\"]",
             "suffix": ""
         },
         "852": {
@@ -2945,14 +2945,14 @@
             "prefix_encoded": "0xA 0x1 0x1 0x81 0xA1 0x76 0x38 0xBF 0x4A 0xAF 0xCC 0x14 0x1 0x0 0x1 0x0",
             "suffix_encoded": "",
             "singular": "%str1%",
-            "prefix": "Hammer of Kathandrax",
+            "prefix": "H-3Z3j>M:\\",
             "suffix": ""
         },
         "24629": {
             "singular_encoded": "0x35 0xA 0x1 0x1 0xF3 0x1 0xA 0x1 0x2 0x81 0x48 0x10 0x31 0xC9 0xB0 0xDD 0x23 0xA 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Top Left Map Piece",
+            "singular": "Oberes linkes Kartenteil",
             "prefix": "",
             "suffix": ""
         },
@@ -2960,7 +2960,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xF3 0x1 0xA 0x1 0x2 0x81 0x49 0x10 0x71 0xC6 0x28 0xA7 0x35 0x29 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Top Right Map Piece",
+            "singular": "Oberes rechtes Kartenteil",
             "prefix": "",
             "suffix": ""
         },
@@ -2968,7 +2968,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0xF5 0x1 0xA 0x1 0x2 0x81 0x4A 0x10 0xD6 0xE0 0xD0 0xAB 0xA9 0x5A 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Bottom Left Map Piece",
+            "singular": "Unteres linkes Kartenteil",
             "prefix": "",
             "suffix": ""
         },
@@ -2986,9 +2986,9 @@
             "singular_encoded": "0x37 0x28 0x1 0x0",
             "prefix_encoded": "0x74 0xA 0x1 0x0",
             "suffix_encoded": "0x79 0xA 0x1 0x0",
-            "singular": "Chaos Axe",
-            "prefix": "Sundering",
-            "suffix": "of Fortitude"
+            "singular": "Chaos-Axt",
+            "prefix": "Trenn-",
+            "suffix": "d. Tapferkeit"
         },
         "119": {
             "singular_encoded": "0x3F 0x28 0x1 0x0",
@@ -3042,7 +3042,7 @@
             "singular_encoded": "0x1 0x81 0x1B 0x5D 0xA9 0xDC 0x68 0xC0 0x95 0x4F 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Wintergreen Axe",
+            "singular": "Wintergrün-Axt",
             "prefix": "",
             "suffix": ""
         },
@@ -3092,9 +3092,9 @@
             "singular_encoded": "0x5A 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x8 0x1 0xA 0x1 0x73 0x9 0x1 0x0 0x1 0x0",
-            "singular": "Vial of Dye",
+            "singular": "Farbstofffläschchen",
             "prefix": "",
-            "suffix": "[Brown]"
+            "suffix": "[Braun]"
         }
     },
     "Offhand": {
@@ -3102,17 +3102,17 @@
             "singular_encoded": "0x2 0x81 0xC1 0x3D 0xFA 0xC1 0xA9 0xBF 0xAF 0x3F 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x79 0xA 0x1 0x0",
-            "singular": "Celestial Compass",
+            "singular": "Himmels-Kompass",
             "prefix": "",
-            "suffix": "of Fortitude"
+            "suffix": "d. Tapferkeit"
         },
         "1058": {
             "singular_encoded": "0x2 0x81 0xC1 0x3D 0xFA 0xC1 0xA9 0xBF 0xAF 0x3F 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x1 0x81 0x96 0x5D 0x1 0x0",
-            "singular": "Celestial Compass",
+            "singular": "H-¡KpV5m[p<ow",
             "prefix": "",
-            "suffix": "of Aptitude"
+            "suffix": "d. Begabung"
         },
         "1060": {
             "singular_encoded": "0x2 0x81 0xC1 0x3D 0xFA 0xC1 0xA9 0xBF 0xAF 0x3F 0x1 0x0",
@@ -3126,9 +3126,9 @@
             "singular_encoded": "0x2 0x81 0xC1 0x3D 0xFA 0xC1 0xA9 0xBF 0xAF 0x3F 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x1 0x81 0x96 0x5D 0x1 0x0",
-            "singular": "Celestial Compass",
+            "singular": "H-¡KpV5m[p<ow",
             "prefix": "",
-            "suffix": "of Aptitude"
+            "suffix": "d. Begabung"
         },
         "1066": {
             "singular_encoded": "0x2 0x81 0xC1 0x3D 0xFA 0xC1 0xA9 0xBF 0xAF 0x3F 0x1 0x0",
@@ -3150,7 +3150,7 @@
             "singular_encoded": "0x83 0x23 0xD0 0xBB 0x2D 0xB0 0x9A 0x52 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Flame Artifact",
+            "singular": "J]`r`s gdnf`s F\\rt",
             "prefix": "",
             "suffix": ""
         },
@@ -3182,9 +3182,9 @@
             "singular_encoded": "0x5B 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x1 0x81 0x96 0x5D 0x1 0x0",
-            "singular": "Inscribed Chakram",
+            "singular": "Graviertes Tschakra",
             "prefix": "",
-            "suffix": "of Aptitude"
+            "suffix": "d. Begabung"
         },
         "17115": {
             "singular_encoded": "0xB8 0x27 0x1 0x0",
@@ -3222,9 +3222,9 @@
             "singular_encoded": "0x5B 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x1 0x81 0x96 0x5D 0x1 0x0",
-            "singular": "Inscribed Chakram",
+            "singular": "Graviertes Tschakra",
             "prefix": "",
-            "suffix": "of Aptitude"
+            "suffix": "d. Begabung"
         },
         "1880": {
             "singular_encoded": "0x2 0x81 0xC1 0x3D 0xFA 0xC1 0xA9 0xBF 0xAF 0x3F 0x1 0x0",
@@ -3254,9 +3254,9 @@
             "singular_encoded": "0x2 0x81 0xD1 0x38 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x1 0x81 0x97 0x5D 0x1 0x0",
-            "singular": "Storm Ember",
+            "singular": "Sturmglut",
             "prefix": "",
-            "suffix": "of Devotion"
+            "suffix": "d. Hingabe"
         },
         "2030": {
             "singular_encoded": "0x2 0x81 0xD2 0x38 0x1 0x0",
@@ -3270,7 +3270,7 @@
             "singular_encoded": "0x2 0x81 0xC4 0x38 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Heaven's Arch",
+            "singular": "Himmelsbogen",
             "prefix": "",
             "suffix": ""
         },
@@ -3334,7 +3334,7 @@
             "singular_encoded": "0x2 0x81 0x12 0x28 0x8E 0xEE 0x8 0xDA 0xE7 0x7D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Focus of the Hierophant",
+            "singular": "Fokus des Hierophanten",
             "prefix": "",
             "suffix": ""
         },
@@ -3374,7 +3374,7 @@
             "singular_encoded": "0x3 0x81 0x8F 0xB 0xF4 0xCA 0x11 0xAC 0x52 0x14 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Balthazar's Focus",
+            "singular": "Balthasars Fokus",
             "prefix": "",
             "suffix": ""
         },
@@ -3390,7 +3390,7 @@
             "singular_encoded": "0x5B 0x56 0xCB 0xE8 0x8B 0x8F 0x26 0x68 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Paper Fan",
+            "singular": "Papierfächer",
             "prefix": "",
             "suffix": ""
         },
@@ -3398,7 +3398,7 @@
             "singular_encoded": "0xC9 0x79 0x57 0xAC 0xBE 0x9B 0xC0 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Lian's Lantern",
+            "singular": "Lians Laterne",
             "prefix": "",
             "suffix": ""
         }
@@ -3416,7 +3416,7 @@
             "singular_encoded": "0x2 0x81 0xF7 0x27 0x61 0x9F 0x9F 0xFD 0xF7 0x18 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Candy Corn",
+            "singular": "Kristallkern-Schlägel",
             "prefix": "",
             "suffix": ""
         },
@@ -3464,9 +3464,9 @@
             "singular_encoded": "0x67 0x56 0x68 0xF0 0xDA 0xE6 0x9E 0x60 0x1 0x0",
             "prefix_encoded": "0x6B 0xA 0x1 0x0",
             "suffix_encoded": "0x64 0xA 0x1 0x0",
-            "singular": "Spiked Club",
-            "prefix": "Cruel",
-            "suffix": "of Pruning"
+            "singular": "Stachelkeule",
+            "prefix": "Grausamkeits-",
+            "suffix": "d. Pflanzentötung"
         },
         "727": {
             "singular_encoded": "0x70 0x56 0x44 0xC8 0x1F 0x93 0x9B 0x37 0x1 0x0",
@@ -3586,7 +3586,7 @@
             "singular_encoded": "0x2 0x81 0xB 0xA 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Dragon Scalp Design",
+            "singular": "Drachen-Kopfschmuck",
             "prefix": "",
             "suffix": ""
         },
@@ -3632,11 +3632,11 @@
         },
         "23576": {
             "singular_encoded": "0x2 0x81 0xA 0xB 0x1 0x0",
-            "prefix_encoded": "0x1 0x81 0xE4 0x58 0x1 0x0",
-            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x22 0x9 0x1 0x0 0xB 0x1 0x5C 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
-            "singular": "Shing Jea Mask",
-            "prefix": "Radiant",
-            "suffix": "of Superior Domination Magic"
+            "prefix_encoded": "0x1 0x81 0xE7 0x58 0x1 0x0",
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x22 0x9 0x1 0x0 0xB 0x1 0x5A 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Shing Jea-Maske",
+            "prefix": "Segens",
+            "suffix": "d. kleineren Beherrschungsmagie"
         },
         "23584": {
             "singular_encoded": "0x2 0x81 0x12 0xB 0x1 0x0",
@@ -3756,7 +3756,7 @@
             "singular_encoded": "0x8B 0x28 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Candy Cane Shard",
+            "singular": "Zuckerstangen-Scherbe",
             "prefix": "",
             "suffix": ""
         }
@@ -3798,7 +3798,7 @@
             "singular_encoded": "0x1 0x81 0x1F 0x5D 0xF7 0xFA 0xD7 0xC6 0x3D 0x5C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Wintergreen Wand",
+            "singular": "Wintergrün-Zauberstab",
             "prefix": "",
             "suffix": ""
         },
@@ -3821,18 +3821,18 @@
         "2243": {
             "singular_encoded": "0x2 0x81 0x7F 0x39 0x1 0x0",
             "prefix_encoded": "",
-            "suffix_encoded": "0x1 0x81 0x9A 0x5D 0x1 0x0",
-            "singular": "Quicksilver",
+            "suffix_encoded": "",
+            "singular": "Quecksilber",
             "prefix": "",
-            "suffix": "of Memory"
+            "suffix": ""
         },
         "2309": {
             "singular_encoded": "0x7F 0x56 0xFC 0xE0 0x3A 0xA8 0x1C 0x68 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x1 0x81 0x9A 0x5D 0x1 0x0",
-            "singular": "Platinum Wand",
+            "singular": "Platin-Zauberstab",
             "prefix": "",
-            "suffix": "of Memory"
+            "suffix": "d. Erinnerung"
         },
         "2311": {
             "singular_encoded": "0x7F 0x56 0xFC 0xE0 0x3A 0xA8 0x1C 0x68 0x1 0x0",
@@ -3886,7 +3886,7 @@
             "singular_encoded": "0x2 0x81 0xAC 0x12 0xFD 0xDD 0x44 0x81 0xAB 0x74 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Asuran Domination Scepter",
+            "singular": "m:tr1{k|oY!nG",
             "prefix": "",
             "suffix": ""
         },
@@ -3910,7 +3910,7 @@
             "singular_encoded": "0x2 0x81 0xD2 0x27 0x41 0xD2 0x64 0xCC 0xBE 0x2F 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Wilderm's Wand",
+            "singular": "Wilderms Zauberstab",
             "prefix": "",
             "suffix": ""
         },
@@ -3918,7 +3918,7 @@
             "singular_encoded": "0x2 0x81 0x2D 0x2A 0xA7 0x86 0x44 0xF7 0xB8 0x5E 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Droknar's Domination Scepter",
+            "singular": "Droknars Beherrschungszepter",
             "prefix": "",
             "suffix": ""
         },
@@ -3966,7 +3966,7 @@
             "singular_encoded": "0x3 0x81 0x91 0xB 0x9 0x95 0xA8 0x93 0xBC 0x7C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Balthazar's Rod",
+            "singular": "FY\\r\\s r\\Z_t\\s BXr",
             "prefix": "",
             "suffix": ""
         },
@@ -4144,9 +4144,9 @@
             "singular_encoded": "0x2 0x81 0x42 0x27 0x99 0xF8 0xFC 0xE8 0x4E 0xA 0x1 0x0",
             "prefix_encoded": "0x6D 0xA 0x1 0x0",
             "suffix_encoded": "0x36 0x9 0x1 0x0",
-            "singular": "Jc`Z\\[gc:\"Jc`Z\\s\"",
-            "prefix": "Defensive",
-            "suffix": "of Water Magic"
+            "singular": "Goldstrahl-Stab",
+            "prefix": "Verteidigungs-",
+            "suffix": "d. Wassermagie"
         },
         "2099": {
             "singular_encoded": "0x2 0x81 0x43 0x27 0xAC 0xCF 0x8B 0xE6 0x37 0x1E 0x1 0x0",
@@ -4160,9 +4160,9 @@
             "singular_encoded": "0x2 0x81 0x35 0x27 0x58 0x94 0x4B 0xC7 0xBC 0x4E 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0x95 0x5D 0x1 0x0",
             "suffix_encoded": "0x78 0xA 0x1 0x0",
-            "singular": "Cobalt Staff",
-            "prefix": "Swift",
-            "suffix": "of Enchanting"
+            "singular": "Kobalt-Stab",
+            "prefix": "Schnelligkeits-",
+            "suffix": "d. Verzauberung"
         },
         "2362": {
             "singular_encoded": "0x2 0x81 0x45 0x27 0x51 0xB4 0xF8 0xB3 0xC4 0x55 0x1 0x0",
@@ -4184,9 +4184,9 @@
             "singular_encoded": "0x2 0x81 0x6C 0x39 0x1 0x0",
             "prefix_encoded": "0x73 0xA 0x1 0x0",
             "suffix_encoded": "0x60 0x9 0x1 0x0",
-            "singular": "Death's Head",
-            "prefix": "Insightful",
-            "suffix": "of Communing"
+            "singular": "Kopf des Todes",
+            "prefix": "Einblick-",
+            "suffix": "d. Zwiesprache"
         },
         "2449": {
             "singular_encoded": "0x2 0x81 0x6C 0x39 0x1 0x0",
@@ -4200,8 +4200,8 @@
             "singular_encoded": "0x2 0x81 0x6C 0x39 0x1 0x0",
             "prefix_encoded": "0x73 0xA 0x1 0x0",
             "suffix_encoded": "",
-            "singular": "Death's Head",
-            "prefix": "Insightful",
+            "singular": "Kopf des Todes",
+            "prefix": "Einblick-",
             "suffix": ""
         },
         "2451": {
@@ -4232,9 +4232,9 @@
             "singular_encoded": "0x2 0x81 0x89 0x39 0x1 0x0",
             "prefix_encoded": "0x6D 0xA 0x1 0x0",
             "suffix_encoded": "0x1 0x81 0x97 0x5D 0x1 0x0",
-            "singular": "Hourglass Staff",
-            "prefix": "Defensive",
-            "suffix": "of Devotion"
+            "singular": "Stundenglas-Stab",
+            "prefix": "Verteidigungs-",
+            "suffix": "d. Hingabe"
         },
         "2495": {
             "singular_encoded": "0x2 0x81 0x89 0x39 0x1 0x0",
@@ -4248,9 +4248,9 @@
             "singular_encoded": "0x2 0x81 0x18 0x13 0x51 0xAF 0x89 0x85 0x59 0x55 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
             "suffix_encoded": "0x78 0xA 0x1 0x0",
-            "singular": "Asuran Domination Staff",
-            "prefix": "Adept",
-            "suffix": "of Enchanting"
+            "singular": "Asura-Beherrschungsstab",
+            "prefix": "Experten-",
+            "suffix": "d. Verzauberung"
         },
         "25870": {
             "singular_encoded": "0x2 0x81 0x3F 0x1F 0xE4 0xC0 0x32 0xB3 0xA 0x6D 0x1 0x0",
@@ -4288,7 +4288,7 @@
             "singular_encoded": "0x2 0x81 0x4D 0x2A 0x48 0x85 0x14 0xC6 0xA3 0x1C 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Droknar's Fast Casting Staff",
+            "singular": "Droknars Schnellwirkungsstab",
             "prefix": "",
             "suffix": ""
         },
@@ -4320,17 +4320,17 @@
             "singular_encoded": "0x3 0x81 0x95 0xB 0xF1 0xB2 0x5D 0xEE 0xFB 0x1A 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
             "suffix_encoded": "",
-            "singular": "E^[UW[b^:\"E^[UWs\"",
-            "prefix": "Adept",
+            "singular": "Balthasars Stab",
+            "prefix": "Experten-",
             "suffix": ""
         },
         "37929": {
             "singular_encoded": "0x3 0x81 0x95 0xB 0xF1 0xB2 0x5D 0xEE 0xFB 0x1A 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0x94 0x5D 0x1 0x0",
             "suffix_encoded": "0x68 0xA 0x1 0x0",
-            "singular": "Balthazar's Staff",
-            "prefix": "Adept",
-            "suffix": "of Deathbane"
+            "singular": "Balthasars Stab",
+            "prefix": "Experten-",
+            "suffix": "d. Todesfluches"
         },
         "37934": {
             "singular_encoded": "0x3 0x81 0x95 0xB 0xF1 0xB2 0x5D 0xEE 0xFB 0x1A 0x1 0x0",
@@ -4426,7 +4426,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x3F 0x1 0xA 0x1 0x1 0x81 0xE2 0x7B 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Passage Scroll to the Fissure of Woe",
+            "singular": "Zugangsschriftrolle zum Riss des Kummers",
             "prefix": "",
             "suffix": ""
         },
@@ -4434,7 +4434,7 @@
             "singular_encoded": "0x1 0x81 0xE0 0x7B 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Passage Scroll to the Underworld",
+            "singular": "Zugangsschriftrolle in die Unterwelt",
             "prefix": "",
             "suffix": ""
         },
@@ -4442,7 +4442,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x3 0x1 0xA 0x1 0x2F 0x26 0xC0 0xF4 0x10 0xFE 0xBC 0x26 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Scroll of Hero's Insight",
+            "singular": "Schriftrolle über den Einblick des Helden",
             "prefix": "",
             "suffix": ""
         },
@@ -4450,7 +4450,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x7 0x1 0xA 0x1 0x31 0x26 0xEE 0xF6 0x4B 0xA8 0xED 0x44 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Everlasting Boreal Tonic",
+            "singular": "Schriftrolle über den Einblick des Berserkers",
             "prefix": "",
             "suffix": ""
         },
@@ -4458,7 +4458,7 @@
             "singular_encoded": "0x35 0xA 0x1 0x1 0x2 0x1 0xA 0x1 0x33 0x26 0x1 0xA5 0xD3 0xB5 0x9C 0x44 0x1 0x0 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Scroll of Slayer's Insight",
+            "singular": "Schriftrolle über den Einblick des Würgers",
             "prefix": "",
             "suffix": ""
         },
@@ -4580,9 +4580,9 @@
             "singular_encoded": "0x49 0x56 0xCE 0x86 0xAD 0xAB 0x6A 0x17 0x1 0x0",
             "prefix_encoded": "0x71 0xA 0x1 0x0",
             "suffix_encoded": "0x7B 0xA 0x1 0x0",
-            "singular": "Split Chakrams",
-            "prefix": "Vampiric",
-            "suffix": "of Shelter"
+            "singular": "Gespaltene Tschakren",
+            "prefix": "Vampir-",
+            "suffix": "d. Zuflucht"
         },
         "718": {
             "singular_encoded": "0x53 0x56 0xF3 0xC4 0xF7 0xA1 0xE1 0x53 0x1 0x0",
@@ -4604,9 +4604,9 @@
             "singular_encoded": "0x51 0x56 0x71 0xFE 0x11 0xB8 0x9B 0x11 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "0x79 0xA 0x1 0x0",
-            "singular": "Oni Daggers",
+            "singular": "Oni-Dolche",
             "prefix": "",
-            "suffix": "of Fortitude"
+            "suffix": "d. Tapferkeit"
         },
         "767": {
             "singular_encoded": "0x52 0x56 0x8C 0xC0 0x36 0xF5 0x7 0x2B 0x1 0x0",
@@ -4654,7 +4654,7 @@
             "singular_encoded": "0x2 0x81 0xF 0x65 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Miniature Candysmith Marley",
+            "singular": "Zuckerschmied-Marley-Miniatur",
             "prefix": "",
             "suffix": ""
         },
@@ -4662,7 +4662,7 @@
             "singular_encoded": "0x2 0x81 0x12 0x65 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Miniature M.O.X.",
+            "singular": "Miniatur-M.O.X.",
             "prefix": "",
             "suffix": ""
         }
@@ -4688,7 +4688,7 @@
             "singular_encoded": "0x1 0x81 0x22 0x5D 0x3F 0xF8 0x3A 0xB0 0xA4 0x3B 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "S-Us0) gq`d3V5m3a",
+            "singular": "Wintergrün-Speer",
             "prefix": "",
             "suffix": ""
         },
@@ -4704,9 +4704,9 @@
             "singular_encoded": "0x2 0x81 0x28 0x27 0xF3 0xE8 0x6C 0x88 0x92 0x3A 0x1 0x0",
             "prefix_encoded": "0x6C 0xA 0x1 0x0",
             "suffix_encoded": "0x77 0xA 0x1 0x0",
-            "singular": "Voltaic Spear",
-            "prefix": "Silencing",
-            "suffix": "of Defense"
+            "singular": "Voltaischer Speer",
+            "prefix": "Dämpfungs-",
+            "suffix": "d. Verteidigung"
         },
         "2077": {
             "singular_encoded": "0x2 0x81 0x2E 0x27 0x9E 0xA0 0xCA 0xB3 0x29 0x4E 0x1 0x0",
@@ -4754,7 +4754,7 @@
             "singular_encoded": "0x2 0x81 0x3F 0x29 0x2 0xE7 0x23 0xB2 0xED 0x6E 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Master Dungeon Guide [Hard Mode]",
+            "singular": "Verlies-Kompendium [Schwerer Modus]",
             "prefix": "",
             "suffix": ""
         },
@@ -4762,7 +4762,7 @@
             "singular_encoded": "0x2 0x81 0x5D 0x29 0x8D 0x97 0xDD 0xE0 0xA1 0x5 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Hero's Handbook [Hard Mode]",
+            "singular": "Helden-Handbuch [Schwerer Modus]",
             "prefix": "",
             "suffix": ""
         },
@@ -4794,7 +4794,7 @@
             "singular_encoded": "0x2 0x81 0xCE 0x4A 0xB5 0xC8 0xFD 0xEF 0xB2 0x7D 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Shiro's Return",
+            "singular": "Shiros Rückkehr",
             "prefix": "",
             "suffix": ""
         },
@@ -4802,7 +4802,7 @@
             "singular_encoded": "0x2 0x81 0xCF 0x4A 0x1C 0xAB 0xFE 0xBA 0x93 0x2B 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Shiro's Return [Hard Mode]",
+            "singular": "Shiros Rückkehr [Schwerer Modus]",
             "prefix": "",
             "suffix": ""
         },
@@ -4810,7 +4810,7 @@
             "singular_encoded": "0x2 0x81 0xE6 0x4A 0x63 0xC4 0x56 0x81 0xDE 0x57 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Fwfrmbstjnh",
+            "singular": "Die Finsternis bricht an",
             "prefix": "",
             "suffix": ""
         },
@@ -4818,7 +4818,7 @@
             "singular_encoded": "0x2 0x81 0xE7 0x4A 0xBA 0x9F 0x8B 0xFA 0x21 0x16 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Night Falls [Hard Mode]",
+            "singular": "Die Finsternis bricht an [Schwerer Modus]",
             "prefix": "",
             "suffix": ""
         },
@@ -4826,7 +4826,7 @@
             "singular_encoded": "0x2 0x81 0xB 0x4B 0x9B 0xCF 0x5F 0x9B 0xC1 0x75 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Young Heroes of Tyria [Hard Mode]",
+            "singular": "Die jungen Helden von Tyria [Schwerer Modus]",
             "prefix": "",
             "suffix": ""
         }
@@ -4946,11 +4946,11 @@
         },
         "23046": {
             "singular_encoded": "0x2 0x81 0x71 0x9 0x1 0x0",
-            "prefix_encoded": "0x1 0x81 0xE4 0x58 0x1 0x0",
-            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0xB0 0x64 0x1 0x0 0xB 0x1 0x5C 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
-            "singular": "Elite Enchanter Attire",
-            "prefix": "Radiant",
-            "suffix": "of Superior Vigor"
+            "prefix_encoded": "0x1 0x81 0xE7 0x58 0x1 0x0",
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0xB0 0x64 0x1 0x0 0xB 0x1 0x5B 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Elite-Zauberkundigen-Kleidung",
+            "prefix": "Segens",
+            "suffix": "d. hohen Lebenskraft"
         },
         "23101": {
             "singular_encoded": "0x2 0x81 0xB0 0x9 0x1 0x0",
@@ -5132,11 +5132,11 @@
         },
         "23281": {
             "singular_encoded": "0x2 0x81 0x28 0xA 0x1 0x0",
-            "prefix_encoded": "0x1 0x81 0xE4 0x58 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0xE7 0x58 0x1 0x0",
             "suffix_encoded": "0x1 0x81 0xD 0x59 0x1 0x0",
-            "singular": "Elite Enchanter Hose",
-            "prefix": "Radiant",
-            "suffix": "of Attunement"
+            "singular": "Elite-Zauberkundigen-Beinkleider",
+            "prefix": "Segens",
+            "suffix": "d. Einstimmung"
         },
         "23320": {
             "singular_encoded": "0x2 0x81 0x54 0xA 0x1 0x0",
@@ -5286,11 +5286,11 @@
         },
         "22984": {
             "singular_encoded": "0x2 0x81 0x2B 0x9 0x1 0x0",
-            "prefix_encoded": "0x1 0x81 0xE4 0x58 0x1 0x0",
+            "prefix_encoded": "0x1 0x81 0xE7 0x58 0x1 0x0",
             "suffix_encoded": "0x1 0x81 0xD 0x59 0x1 0x0",
-            "singular": "Elite Enchanter Footwear",
-            "prefix": "Radiant",
-            "suffix": "of Attunement"
+            "singular": "Elite-Zauberkundigen-Schuhwerk",
+            "prefix": "Segens",
+            "suffix": "d. Einstimmung"
         },
         "23039": {
             "singular_encoded": "0x2 0x81 0x6A 0x9 0x1 0x0",
@@ -5464,11 +5464,11 @@
         },
         "23108": {
             "singular_encoded": "0x2 0x81 0xB7 0x9 0x1 0x0",
-            "prefix_encoded": "",
-            "suffix_encoded": "",
-            "singular": "Elite Enchanter Gloves",
-            "prefix": "",
-            "suffix": ""
+            "prefix_encoded": "0x1 0x81 0xE7 0x58 0x1 0x0",
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x1E 0x9 0x1 0x0 0xB 0x1 0x5A 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Elite-Zauberkundigen-Handschuhe",
+            "prefix": "Segens",
+            "suffix": "d. kleineren Schnellwirkung"
         },
         "23378": {
             "singular_encoded": "0x2 0x81 0xCE 0xB 0x1 0x0",
@@ -5505,10 +5505,10 @@
         "25985": {
             "singular_encoded": "0x2 0x81 0x6F 0x21 0x25 0xC7 0xD2 0xAF 0xA9 0x33 0x1 0x0",
             "prefix_encoded": "0x1 0x81 0xE4 0x58 0x1 0x0",
-            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x1E 0x9 0x1 0x0 0xB 0x1 0x5C 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
-            "singular": "Chaos Gloves",
-            "prefix": "Radiant",
-            "suffix": "of Superior Fast Casting"
+            "suffix_encoded": "0x8 0x1 0xA 0x1 0x8B 0xA 0xA 0x1 0x1E 0x9 0x1 0x0 0xB 0x1 0x5A 0xA 0x1 0x0 0x1 0x0 0x1 0x0",
+            "singular": "Chaos-Handschuhe",
+            "prefix": "Radianten-",
+            "suffix": "d. kleineren Schnellwirkung"
         },
         "25987": {
             "singular_encoded": "0x2 0x81 0x6F 0x21 0x25 0xC7 0xD2 0xAF 0xA9 0x33 0x1 0x0",
@@ -5704,7 +5704,7 @@
             "singular_encoded": "0x2 0x81 0x5B 0x6E 0xE4 0x9C 0x33 0xF4 0x37 0x74 0x1 0x0",
             "prefix_encoded": "",
             "suffix_encoded": "",
-            "singular": "Furrocious Ears",
+            "singular": "Auffellige Ohren",
             "prefix": "",
             "suffix": ""
         },
