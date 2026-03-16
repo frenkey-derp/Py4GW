@@ -5,7 +5,7 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Mods.types import ItemBaneSpecies
 
-class EncodedString:
+class GWStringEncoded:
     COLOR_TAG_RE = re.compile(r"<c=@[^>]+>(.*?)</c>")
     STAT_TAGS = (
         "<c=@ItemBonus>",
@@ -63,7 +63,7 @@ class EncodedString:
 
 
 
-class EncodedStrings():
+class GWEncoded():
     ATTRIBUTE_NAMES = {
         Attribute.FastCasting: bytes([0x1E, 0x9]),
         Attribute.IllusionMagic: bytes([0x20, 0x9]),
@@ -121,7 +121,7 @@ class EncodedStrings():
 
     STR1_PLUS_NUM1 = bytes([0x84, 0xA, 0xA, 0x1])
 
-    PLACEHOLDER_TO_REMOVE = bytes([0x1, 0x9])
+    PLACEHOLDER_TO_REMOVE = bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0])
     
     NON_STACKING = bytes([0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0])
     HEALTH_MINUS_75 = bytes([0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x4B, 0x1, 0x1, 0x0]) # 0x4B = 75 in little endian, 0x1 = minus, 0x0 = health
@@ -344,12 +344,12 @@ class EncodedStrings():
     
     @staticmethod
     def _attribute_bytes(attribute: Attribute) -> bytes | None:
-        return EncodedStrings.ATTRIBUTE_NAMES.get(attribute)
+        return GWEncoded.ATTRIBUTE_NAMES.get(attribute)
 
 
     @staticmethod
     def _attribute_name(attribute: Attribute) -> str:
-        encoded = EncodedStrings._attribute_bytes(attribute)
+        encoded = GWEncoded._attribute_bytes(attribute)
         if encoded:
             decoded = string_table.decode(encoded + bytes([0x1, 0x0]))
             if decoded:
@@ -357,61 +357,61 @@ class EncodedStrings():
         return attribute.name.replace("_", " ")
 
     @staticmethod
-    def _encoded(encoded_bytes: bytes, fallback: str) -> EncodedString:
-        return EncodedString(encoded_bytes, fallback)
+    def _encoded(encoded_bytes: bytes, fallback: str) -> GWStringEncoded:
+        return GWStringEncoded(encoded_bytes, fallback)
 
 
     @staticmethod
-    def _bonus_plus_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
-        return EncodedStrings._encoded(
-            bytes([*bonus_color, *EncodedStrings.PLUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+    def _bonus_plus_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> GWStringEncoded:
+        return GWEncoded._encoded(
+            bytes([*bonus_color, *GWEncoded.PLUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
             f"{fallback_label} +{value}",
         )
 
 
     @staticmethod
-    def _bonus_minus_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
-        return EncodedStrings._encoded(
-            bytes([*bonus_color, *EncodedStrings.MINUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+    def _bonus_minus_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> GWStringEncoded:
+        return GWEncoded._encoded(
+            bytes([*bonus_color, *GWEncoded.MINUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
             f"{fallback_label} -{value}",
         )
 
 
     @staticmethod
-    def _bonus_plus_percent(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
-        return EncodedStrings._encoded(
-            bytes([*bonus_color, *EncodedStrings.PLUS_PERCENT_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+    def _bonus_plus_percent(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> GWStringEncoded:
+        return GWEncoded._encoded(
+            bytes([*bonus_color, *GWEncoded.PLUS_PERCENT_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
             f"{fallback_label} +{value}%",
         )
 
 
     @staticmethod
-    def _bonus_colon_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> EncodedString:
-        return EncodedStrings._encoded(
-            bytes([*bonus_color, *EncodedStrings.COLON_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
+    def _bonus_colon_num(bonus_color: bytes, token: bytes, value: int, fallback_label: str) -> GWStringEncoded:
+        return GWEncoded._encoded(
+            bytes([*bonus_color, *GWEncoded.COLON_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0]),
             f"{fallback_label}: {value}",
         )
 
 
     @staticmethod
     def _dull_parenthesized(raw: bytes, fallback: str) -> bytes:
-        return bytes([*EncodedStrings.ITEM_DULL, *EncodedStrings.PARENTHESIS_STR1, *raw, 0x1, 0x0])
+        return bytes([*GWEncoded.ITEM_DULL, *GWEncoded.PARENTHESIS_STR1, *raw, 0x1, 0x0])
 
 
     @staticmethod
-    def _append_line(base: EncodedString, line_bytes: bytes) -> EncodedString:
-        return EncodedStrings._encoded(base.encoded + line_bytes, base.fallback)
+    def _append_line(base: GWStringEncoded, line_bytes: bytes) -> GWStringEncoded:
+        return GWEncoded._encoded(base.encoded + line_bytes, base.fallback)
 
 
     @staticmethod
-    def _append_line_with_fallback(base: EncodedString, line_bytes: bytes, fallback_suffix: str) -> EncodedString:
+    def _append_line_with_fallback(base: GWStringEncoded, line_bytes: bytes, fallback_suffix: str) -> GWStringEncoded:
         separator = "\n" if base.fallback else ""
-        return EncodedStrings._encoded(base.encoded + line_bytes, f"{base.fallback}{separator}{fallback_suffix}")
+        return GWEncoded._encoded(base.encoded + line_bytes, f"{base.fallback}{separator}{fallback_suffix}")
 
 
     @staticmethod
-    def combine_encoded_strings(parts: list[EncodedString], fallback: str = "") -> EncodedString:
+    def combine_encoded_strings(parts: list[GWStringEncoded], fallback: str = "") -> GWStringEncoded:
         encoded = b"".join(part.encoded for part in parts if part.encoded)
         fallback_parts = [part.fallback for part in parts if part.fallback]
         combined_fallback = "\n".join(fallback_parts) if fallback_parts else fallback
-        return EncodedString(encoded, combined_fallback or fallback)
+        return GWStringEncoded(encoded, combined_fallback or fallback)
