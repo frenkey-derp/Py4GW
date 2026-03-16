@@ -627,7 +627,7 @@ class DamageProperty(ItemProperty):
     min_damage: int
     max_damage: int
     damage_type : DamageType
-    
+        
     def create_encoded_description(self) -> EncodedString:
         damage_bytes = EncodedStrings.DAMAGE_TYPE_BYTES.get(self.damage_type, bytes())
         encoded_bytes = bytes([*EncodedStrings.ITEM_BASIC, 0x89, 0xA, 0xA, 0x1, 0x4E, 0xA, 0x1, 0x0, 0xB, 0x1, *damage_bytes, 0x1, 0x0, 0x1, 0x1, self.min_damage, 0x1, 0x2, 0x1, self.max_damage, 0x1, 0x1, 0x0])
