@@ -15,6 +15,8 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.Items.types import MaterialType
 
+PERSISTENT = True
+
 @dataclass
 class SalvageInfo():
     amount: int = -1

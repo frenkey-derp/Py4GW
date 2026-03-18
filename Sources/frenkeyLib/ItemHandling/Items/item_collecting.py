@@ -118,7 +118,12 @@ class ItemCollector:
             self._collect_item(item)
 
     def _scan_trader_items(self):
-        offered_items = Merchant.Trading.Trader.GetOfferedItems()
+        offered_items = Merchant.Trading.Merchant.GetOfferedItems()
+        offered_items = offered_items + Merchant.Trading.Trader.GetOfferedItems()
+        offered_items = offered_items + Merchant.Trading.Trader.GetOfferedItems2()
+        offered_items = offered_items + Merchant.Trading.Crafter.GetOfferedItems()
+        offered_items = offered_items + Merchant.Trading.Collector.GetOfferedItems()
+        
         for item_id in offered_items:
             item = ITEM_CACHE.get_item_snapshot(item_id) if item_id else None
             if item is None:
