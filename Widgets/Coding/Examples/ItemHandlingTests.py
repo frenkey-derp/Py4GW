@@ -78,55 +78,6 @@ encoded : encoded_strings | None = None
 fully_decoded = False
 collect = True
 
-def search_professions():
-    targets = {
-        "paragon": Profession.Paragon,
-        "dervish": Profession.Dervish,
-    }
-    matches: dict[Profession, list[bytes]] = {
-        profession: []
-        for profession in targets.values()
-    }
-
-    if not getattr(string_table, "_string_table_loaded", False):
-        string_table.load_string_table()
-        Py4GW.Console.Log(
-            MODULE_NAME,
-            "String table is not loaded yet. Loading it now; press Ctrl+T again in a moment.",
-            Py4GW.Console.MessageType.Warning,
-        )
-        return
-
-    Py4GW.Console.Log(
-        MODULE_NAME,
-        "Brute forcing all 2-byte combinations for profession strings...",
-        Py4GW.Console.MessageType.Info,
-    )
-
-    for value in range(0x10000):
-        encoded = struct.pack("<H", value)
-        codepoints = (value,)
-        string_index, key = string_table._parse_codepoints(codepoints)
-        if string_index == 0:
-            continue
-
-        entry = string_table._string_table.get(string_index)
-        if entry is None:
-            continue
-
-        decoded = string_table._decode_entry(entry, key)
-        if not decoded:
-            continue
-        
-        Py4GW.Console.Log(
-            MODULE_NAME,
-            f"Found encoded string: {bytes_to_hex_string(encoded)} -> {decoded}",
-            Py4GW.Console.MessageType.Success,
-        )
-
-
-HOTKEY_MANAGER.register_hotkey(key=Key.T, modifiers=ModifierKey.Ctrl, callback=search_professions, identifier="search_professions_hotkey")
-
 # method to convert list of int to hex string
 def int_list_to_hex_string(int_list: list[int]) -> str:
     try:
