@@ -412,13 +412,16 @@ class HeadpieceAttribute(ItemProperty):
     def create_encoded_description(self) -> GWStringEncoded:
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
-            return GWEncoded._bonus_plus_num(self.get_text_color(), attribute_bytes, self.attribute_level, GWEncoded._attribute_name(self.attribute))
+            ##*ITEM_BONUS, 0x84, 0xA, 0xA, 0x1, *attribute, 0x1, 0x0, 0x1, 0x1, 0x1, attribute_level
+            return GWEncoded._encoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{self.attribute.name} +{self.attribute_level}")
         return GWEncoded._encoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
 
 @dataclass
 class HeadpieceGenericAttribute(ItemProperty):
+    attribute_level: int = 1
+
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES]), "Item's attribute +1")
+        return GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1")
 
 @dataclass
 class HealthDegen(ItemProperty):

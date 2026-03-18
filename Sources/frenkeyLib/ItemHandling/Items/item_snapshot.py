@@ -20,10 +20,10 @@ class ItemSnapshot:
         
         self.id: int = item_id
                 
-        self.name_enc = PyItem.GetNameEnc(item_id) if item_id > 0 else None
+        self.name_enc = bytes(PyItem.GetNameEnc(item_id)) if item_id > 0 else None
         self.info_string = "DISABLED"  # PyItem.GetInfoString(item_id) if item_id > 0 else None
-        self.singular_name = PyItem.GetSingleItemName(item_id) if item_id > 0 else None
-        self.complete_name_enc = PyItem.GetCompleteNameEnc(item_id) if item_id > 0 else None
+        self.singular_name = bytes(PyItem.GetSingleItemName(item_id)) if item_id > 0 else None
+        self.complete_name_enc = bytes(PyItem.GetCompleteNameEnc(item_id)) if item_id > 0 else None
                 
         self.is_valid: bool = item.IsItemValid(item_id) if item else False
         self.model_id: int = item.model_id if item else -1

@@ -301,7 +301,7 @@ class ItemDataContainer():
         try:
             with open(item_json_path, "w", encoding="utf-8") as f:
                 json_data = {item_type.name: {str(item_data.model_id): item_data.to_json() for item_data in items.values()} for item_type, items in self.data.items()}
-                json.dump(json_data, f, indent=4)
+                json.dump(json_data, f, indent=4, ensure_ascii=False)
                 Console.Log("ItemDataContainer", f"Saved item data for {sum(len(items) for items in self.data.values())} items across {len(self.data)} item types.", Console.MessageType.Success)
                 self.requires_save = False
         except Exception as e:

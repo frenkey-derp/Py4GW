@@ -140,14 +140,14 @@ class ItemCollector:
             item_data.model_file_id = item.model_file_id
             changed = True
 
-        name_encoded = self._get_singular_name_encoded(item)
+        name_encoded = self._get_name_enc_encoded(item)
         if name_encoded and item_data.name_encoded != name_encoded:
             item_data.name_encoded = name_encoded
             changed = True
 
-        singular_name = self._get_singular_name(item, name_encoded)
-        if singular_name and item_data.english_name != singular_name:
-            item_data.english_name = singular_name
+        name_enc = self._get_name_enc(item)
+        if name_enc and item_data.english_name != name_enc:
+            item_data.english_name = name_enc
             changed = True
 
         if item.attribute not in (None, Attribute.None_) and item.attribute not in item_data.attributes:
@@ -193,54 +193,29 @@ class ItemCollector:
             )
         )
 
-    def _get_singular_name_encoded(self, item: ItemSnapshot) -> bytes:
-        singular_name = item.singular_name
+    def _get_name_enc_encoded(self, item: ItemSnapshot) -> bytes:
+        name_enc = item.name_enc
         try:
-            if isinstance(singular_name, bytes):
-                return singular_name
-            if isinstance(singular_name, bytearray):
-                return bytes(singular_name)
-            if isinstance(singular_name, (list, tuple)):
-                return bytes(singular_name)
+            if isinstance(name_enc, bytes):
+                return name_enc
+            if isinstance(name_enc, bytearray):
+                return bytes(name_enc)
+            if isinstance(name_enc, (list, tuple)):
+                return bytes(name_enc)
         except Exception:
             pass
 
-        complete_name = self._coerce_bytes(item.complete_name_enc)
-        if complete_name:
-            try:
-                encoded_parts = ItemName.encoded_parts(complete_name)
-                if encoded_parts and encoded_parts.singular:
-                    return bytes(encoded_parts.singular)
-            except Exception as exc:
-                Py4GW.Console.Log(
-                    "ItemCollector",
-                    f"Failed to decode singular encoded name for item {item.id} ({item.item_type.name}/{item.model_id}): {exc}",
-                    Py4GW.Console.MessageType.Warning,
-                )
-
         return bytes()
 
-    def _get_singular_name(self, item: ItemSnapshot, name_encoded: Optional[bytes] = None) -> str:
-        candidate = name_encoded or self._coerce_bytes(item.singular_name)
+    def _get_name_enc(self, item: ItemSnapshot) -> str:
+        candidate = self._coerce_bytes(item.name_enc)
         if candidate:
             try:
-                decoded = string_table.decode(candidate)
+                decoded = string_table.decode_plain(candidate, language=ServerLanguage.English)
                 if decoded:
                     return decoded
             except Exception:
                 pass
-
-        complete_name = self._coerce_bytes(item.complete_name_enc)
-        if complete_name:
-            try:
-                decoded_parts = ItemName.decode_parts(complete_name)
-                if decoded_parts and decoded_parts.singular:
-                    return decoded_parts.singular
-            except Exception:
-                pass
-
-        if isinstance(item.singular_name, str):
-            return item.singular_name
 
         return ""
 
