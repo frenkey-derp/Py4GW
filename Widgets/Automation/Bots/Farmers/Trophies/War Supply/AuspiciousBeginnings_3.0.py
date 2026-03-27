@@ -3,13 +3,13 @@ from typing import Literal, Tuple
 import time
 
 from Py4GW_widget_manager import get_widget_handler
-from Py4GWCoreLib.Builds import KeiranThackerayEOTN
+from Py4GWCoreLib.Builds.Any.KeiranThackerayEOTN import KeiranThackerayEOTN
 from Py4GWCoreLib import (GLOBAL_CACHE, Routines, Range, Py4GW, ConsoleLog, ModelID, Botting,
                           Map, ImGui, ActionQueueManager, Agent, Player, AgentArray, Pathing,
                           TitleID, TITLE_TIERS)
 from Py4GWCoreLib import *
 
-MODULE_NAME = "Auspicious Beginnings 3.0 (War Supplies)" 
+MODULE_NAME = "Auspicious Beginnings (War Supplies)" 
 MODULE_ICON = "Textures\\Module_Icons\\Keiran Farm.png"
 
 class BotSettings:
@@ -52,9 +52,7 @@ class BotSettings:
     DEBUG: bool = False
 
 
-_keiran_build = KeiranThackerayEOTN()
-bot = Botting("Auspicious Beginnings", custom_build=_keiran_build)
-_keiran_build.set_fsm(bot.config.FSM)
+bot = Botting("Auspicious Beginnings")
 bot.config.reset_pause_on_danger_fn(aggro_area=Range.Longbow)
 navmesh = None
      
@@ -101,9 +99,24 @@ def on_death(bot: "Botting"):
     fsm.pause()
     fsm.AddManagedCoroutine("OnDeath", _on_death(bot))
 
-def _EnableCombat(bot: Botting) -> None:
-    bot.OverrideBuild(KeiranThackerayEOTN(fsm=bot.config.FSM))
+def _build_keiran(bot: Botting) -> KeiranThackerayEOTN:
+    build = KeiranThackerayEOTN(fsm=bot.config.FSM, bot=bot, debug_fn=lambda: BotSettings.DEBUG)
+    build.set_fsm(bot.config.FSM)
+    build.set_bot(bot)
+    build.set_debug_fn(lambda: BotSettings.DEBUG)
+    return build
+
+def _EnableCombat(bot: Botting):
+    bot.OverrideBuild(_build_keiran(bot))
     bot.Templates.Aggressive(enable_imp=False)
+    bot.Properties.ApplyNow("pause_on_danger", "active", True)
+    bot.Properties.ApplyNow("halt_on_death", "active", False)
+    bot.Properties.ApplyNow("movement_timeout", "value", -1)
+    bot.Properties.ApplyNow("auto_combat", "active", True)
+    bot.Properties.ApplyNow("hero_ai", "active", False)
+    bot.Properties.ApplyNow("auto_loot", "active", True)
+    bot.Properties.ApplyNow("imp", "active", False)
+    yield
  
 def _DisableCombat(bot: Botting) -> None:
     bot.Templates.Pacifist()
@@ -372,7 +385,7 @@ def RunQuest(bot: Botting) -> None:
     bot.States.AddCustomState(exec_fn, "Navmesh Init")
     
     
-    _EnableCombat(bot)
+    bot.States.AddCustomState(lambda: _EnableCombat(bot), "EnableCombat")
     bot.Move.XY(11864.74, -4899.19)
     
     bot.States.AddCustomState(lambda: _handle_bonus_bow(bot), "HandleBonusBow")
@@ -383,20 +396,6 @@ def RunQuest(bot: Botting) -> None:
     bot.States.AddCustomState(lambda: _handle_war_supplies(bot, False), "DisableWarSupplies")
 
     bot.Move.XY(10165.07, -6181.43, step_name="First Spawn")
-
-    #bot.Move.XY(8660.40, -8289.95)
-    #bot.Move.XY(5314.61, -7081.49)
-    #bot.Move.XY(3258.03, -7818.52)
-    #bot.Move.XY(2626.34, -10105.07)
-    #bot.Move.XY(-1015.23, -11944.23)
-    #bot.Move.XY(-2292.38, -9034.12)
-    #bot.Move.XY(-4261.36, -8975.99)
-    #bot.Move.XY(-4000.69, -10906.09)
-    #bot.Move.XY(-5762.23, -10164.04)
-    #bot.Move.XY(-10148.25, -7884.56)
-    #bot.Move.XY(-13609.29, -8113.12)
-    #bot.Move.XY(-15180.71, -8974.05)
-
     bot.Move.XY(8270,-9010)
     bot.Move.XY(4245,-7412)
     bot.Move.XY(2025,-10726)
@@ -569,7 +568,9 @@ def main():
         main_child_dimensions: Tuple[int, int] = (350, 275)
         
         bot.Update()
-        bot.UI.draw_window(icon_path=full_path + "Keiran_art.png")
+        window_ready = bot.UI.draw_window(icon_path=full_path + "Keiran_art.png")
+        if not window_ready:
+            return
 
         if PyImGui.begin(bot.config.bot_name, PyImGui.WindowFlags.AlwaysAutoResize):
             if PyImGui.begin_tab_bar(bot.config.bot_name + "_tabs"):

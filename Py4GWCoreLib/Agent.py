@@ -5,6 +5,7 @@ from .native_src.internals.string_table import decode as decode_raw
 
 
 class Agent:
+    ILLUSIONARY_WEAPONRY_ID = 0
 
     @staticmethod
     def IsValid(agent_id: int) -> bool:
@@ -129,8 +130,32 @@ class Agent:
     @staticmethod
     def IsNameReady(agent_id: int) -> bool:
         return Agent.GetNameByID(agent_id) != ""
- 
     
+    @staticmethod
+    def GetEncNameByID(agent_id: int) -> list[int]:
+        """Get the encoded name of an agent by its ID."""
+        enc_bytes = PyAgent.PyAgent.GetAgentEncName(agent_id)
+        return enc_bytes
+    
+    @staticmethod
+    def GetEncNameStrByID(agent_id: int) -> str:
+        """Get the encoded name of an agent by its ID as a readable debug string."""
+        enc_bytes = PyAgent.PyAgent.GetAgentEncName(agent_id)
+        if not enc_bytes:
+            return ""
+
+        trimmed_bytes: list[int] = []
+        for byte in enc_bytes:
+            if byte == 0:
+                break
+            trimmed_bytes.append(byte)
+
+        if not trimmed_bytes:
+            return ""
+
+        hex_part = " ".join(f"0x{byte:02X}" for byte in trimmed_bytes)
+        text_part = bytes(trimmed_bytes).decode("utf-8", errors="replace")
+        return f"{hex_part} {text_part}".strip()
     
     @staticmethod
     def GetAgentIDByName(name:str) -> int:
@@ -301,7 +326,17 @@ class Agent:
         if living is None:
             return False
         allegiance = Allegiance(living.allegiance)
-        return allegiance == Allegiance.SpiritPet
+        return allegiance == Allegiance.SpiritPet and Agent.IsSpawned(agent_id)
+
+    @staticmethod
+    def IsPet(agent_id: int) -> bool:
+        """Check if the agent is a pet."""
+        from .enums_src.GameData_enums import Allegiance
+        living = Agent.GetLivingAgentByID(agent_id)
+        if living is None:
+            return False
+        allegiance = Allegiance(living.allegiance)
+        return allegiance == Allegiance.SpiritPet and not Agent.IsSpawned(agent_id)
 
     @staticmethod
     def IsMinion(agent_id : int) -> bool:
@@ -927,7 +962,8 @@ class Agent:
             return False
         is_dead = living.is_dead
         dead_by_type_map = living.is_dead_by_type_map
-        return is_dead or dead_by_type_map
+        health = living.hp
+        return is_dead or dead_by_type_map or health < 0.01
 
     @staticmethod
     def IsAlive(agent_id: int) -> bool:
@@ -935,7 +971,7 @@ class Agent:
         if living is None:
             return False
         health = living.hp
-        return not Agent.IsDead(agent_id) and health > 0.0
+        return not Agent.IsDead(agent_id) and health >= 0.01
 
     @staticmethod
     def IsWeaponSpelled(agent_id: int) -> bool:
@@ -1019,6 +1055,19 @@ class Agent:
         return living.weapon_type, name
 
     @staticmethod
+    def IsHoldingItem(agent_id: int) -> bool:
+        """
+        Purpose: Check if the agent is carrying a bundle / held item and cannot use a normal weapon attack.
+        Args: agent_id (int): The ID of the agent.
+        Returns: bool
+        """
+        living = Agent.GetLivingAgentByID(agent_id)
+        if living is None:
+            return False
+
+        return living.weapon_type == 0
+
+    @staticmethod
     def GetWeaponExtraData(agent_id: int) -> tuple[int, int, int, int]:
         """
         Purpose: Retrieve the weapon extra data of the agent.
@@ -1038,8 +1087,21 @@ class Agent:
         Args: agent_id (int): The ID of the agent.
         Returns: bool
         """
+        if Agent.ILLUSIONARY_WEAPONRY_ID == 0:
+            from .Skill import Skill
+            Agent.ILLUSIONARY_WEAPONRY_ID = Skill.GetID("Illusionary_Weaponry")
+            
+        if Agent.ILLUSIONARY_WEAPONRY_ID:
+            from .Effect import Effects
+            if Effects.HasEffect(agent_id, Agent.ILLUSIONARY_WEAPONRY_ID):
+                return False
+            
+        if Agent.IsPet(agent_id):
+            return True
         martial_weapon_types = ["Bow", "Axe", "Hammer", "Daggers", "Scythe", "Spear", "Sword"]
         weapon_type, weapon_name = Agent.GetWeaponType(agent_id)
+        if weapon_type == 0:
+            return False
         return weapon_name in martial_weapon_types
 
     @staticmethod
@@ -1049,7 +1111,15 @@ class Agent:
         Args: agent_id (int): The ID of the agent.
         Returns: bool
         """
-        return not Agent.IsMartial(agent_id)
+        if Agent.IsPet(agent_id):
+            return False
+
+        caster_weapon_types = {"Wand", "Staff", "Staff1", "Staff2", "Staff3", "Scepter", "Scepter2"}
+        weapon_type, weapon_name = Agent.GetWeaponType(agent_id)
+        if weapon_type == 0 or weapon_name == "Unknown":
+            return False
+
+        return weapon_name in caster_weapon_types
 
     @staticmethod
     def IsMelee(agent_id: int) -> bool:
@@ -1058,8 +1128,19 @@ class Agent:
         Args: agent_id (int): The ID of the agent.
         Returns: bool
         """
+        if Agent.ILLUSIONARY_WEAPONRY_ID == 0:
+            from .Skill import Skill
+            Agent.ILLUSIONARY_WEAPONRY_ID = Skill.GetID("Illusionary_Weaponry")
+        if Agent.ILLUSIONARY_WEAPONRY_ID:
+            from .Effect import Effects
+            if Effects.HasEffect(agent_id, Agent.ILLUSIONARY_WEAPONRY_ID):
+                return False
+        if Agent.IsPet(agent_id):
+            return True
         melee_weapon_types = ["Axe", "Hammer", "Daggers", "Scythe", "Sword"]
         weapon_type, weapon_name = Agent.GetWeaponType(agent_id)
+        if weapon_type == 0:
+            return False
         return weapon_name in melee_weapon_types
 
     @staticmethod
@@ -1069,7 +1150,13 @@ class Agent:
         Args: agent_id (int): The ID of the agent.
         Returns: bool
         """
-        return not Agent.IsMelee(agent_id)
+        if Agent.IsPet(agent_id):
+            return False
+        weapon_type, weapon_name = Agent.GetWeaponType(agent_id)
+        if weapon_type == 0:
+            return False
+        ranged_weapon_types = ["Bow", "Spear"]
+        return weapon_name in ranged_weapon_types
 
     @staticmethod
     def GetDaggerStatus(agent_id: int) -> int:

@@ -54,6 +54,7 @@ class _Multibox:
             self.PlayerFacingAngle = account_data.AgentData.RotationAngle
             self.PlayerTargetID = account_data.AgentData.TargetID
             self.PlayerLoginNumber = account_data.AgentData.LoginNumber
+            self.PlayerPrimaryProfession = int(account_data.AgentData.Profession[0]) if account_data.AgentData.Profession else 0
             self.PlayerIsTicked = account_data.AgentPartyData.IsTicked
             self.PartyID = account_data.AgentPartyData.PartyID
             self.PartyPosition = account_data.AgentPartyData.PartyPosition
@@ -192,6 +193,24 @@ class _Multibox:
         
         if not player_data:
             return
+
+        # Invite order priority:
+        # 1) melee-like first (R/W/A/D), 2) Mesmer, 3) Paragon, 4) Necro, 5) Ritualist, 6) others.
+        melee_professions = {1, 2, 7, 10}
+        priority_by_profession = {
+            5: 1,  # Mesmer
+            9: 2,  # Paragon
+            4: 3,  # Necromancer
+            8: 4,  # Ritualist
+        }
+
+        def _invite_priority(account: "_Multibox._AccountData") -> tuple[int, str]:
+            prof = int(getattr(account, "PlayerPrimaryProfession", 0) or 0)
+            if prof in melee_professions:
+                return (0, str(getattr(account, "CharacterName", "") or ""))
+            return (priority_by_profession.get(prof, 5), str(getattr(account, "CharacterName", "") or ""))
+
+        all_accounts.sort(key=_invite_priority)
         
         for account in all_accounts:
             if (player_data.MapID == account.MapID and
@@ -250,6 +269,26 @@ class _Multibox:
             if player_data.PartyID == account.PartyID and player_data.AccountEmail != account.AccountEmail:
                 GLOBAL_CACHE.Party.Players.KickPlayer(account.CharacterName)
                 yield from Routines.Yield.wait(500)
+
+    def _leave_party_on_all_accounts(self):
+        from ...GlobalCache import GLOBAL_CACHE
+        from ...Routines import Routines
+
+        sender_email = Player.GetAccountEmail()
+        accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+
+        for account in accounts:
+            if sender_email == account.AccountEmail:
+                continue
+
+            GLOBAL_CACHE.ShMem.SendMessage(
+                sender_email,
+                account.AccountEmail,
+                SharedCommandType.LeaveParty,
+                (0, 0, 0, 0),
+                ("", "", "", ""),
+            )
+            yield from Routines.Yield.wait(250)
         
     def _resignParty(self):
         from ...GlobalCache import GLOBAL_CACHE
@@ -462,7 +501,11 @@ class _Multibox:
     @_yield_step(label="KickAllAccounts", counter_key="KICK_ALL_ACCOUNTS")
     def kick_all_accounts(self):
         yield from self._kick_all_accounts()
-        
+
+    @_yield_step(label="LeavePartyOnAllAccounts", counter_key="LEAVE_PARTY_ON_ALL_ACCOUNTS")
+    def leave_party_on_all_accounts(self):
+        yield from self._leave_party_on_all_accounts()
+
     @_yield_step(label="KickAccountByEmail", counter_key="KICK_ACCOUNT_BY_EMAIL")
     def kick_account_by_email(self, email: str):
         yield from self._kick_account_by_email(email)
@@ -543,6 +586,33 @@ class _Multibox:
     @_yield_step(label="DisableWidget", counter_key="DISABLE_WIDGET")
     def disable_widget(self, widget_name: str):
         yield from self._disable_widget_message(widget_name)
+
+    def _abandon_quest_message(self, quest_id: int):
+        from ...GlobalCache import GLOBAL_CACHE
+        from ...Routines import Routines
+        from ...Quest import Quest
+        sender_email = Player.GetAccountEmail()
+        accounts = GLOBAL_CACHE.ShMem.GetAllAccountData()
+        # Abandon locally for the leader
+        Quest.AbandonQuest(quest_id)
+        ConsoleLog("Messaging", f"AbandonQuest ({quest_id}) executed locally", log=False)
+        # Broadcast to all other accounts
+        for account in accounts:
+            if account.AccountEmail == sender_email:
+                continue
+            ConsoleLog("Messaging", f"Sending AbandonQuest ({quest_id}) to {account.AccountEmail}", log=False)
+            GLOBAL_CACHE.ShMem.SendMessage(
+                sender_email,
+                account.AccountEmail,
+                SharedCommandType.AbandonQuest,
+                (float(quest_id), 0.0, 0.0, 0.0),
+            )
+            yield from Routines.Yield.wait(300)
+        yield
+
+    @_yield_step(label="AbandonQuest", counter_key="ABANDON_QUEST")
+    def abandon_quest(self, quest_id: int):
+        yield from self._abandon_quest_message(quest_id)
 
     def get_all_account_data(self) -> List[_AccountData]:
         return self._get_all_account_data()

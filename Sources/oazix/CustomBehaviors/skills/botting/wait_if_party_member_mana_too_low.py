@@ -21,7 +21,7 @@ class WaitIfPartyMemberManaTooLowUtility(CustomSkillUtilityBase):
             self,
             event_bus: EventBus,
             current_build: list[CustomSkill],
-            mana_limit: float = 0.5,
+            mana_limit: float = 0.35,
         ) -> None:
 
         super().__init__(
@@ -60,8 +60,7 @@ class WaitIfPartyMemberManaTooLowUtility(CustomSkillUtilityBase):
 
     @override
     def customized_debug_ui(self, current_state: BehaviorState) -> None:
-        PyImGui.bullet_text(f"mana_limit :")
-        self.mana_limit = PyImGui.input_float("##mana_limit", self.mana_limit)
+        self.mana_limit = PyImGui.input_float("mana_limit##mana_limit", self.mana_limit)
 
     @override
     def has_persistence(self) -> bool:

@@ -61,9 +61,11 @@ Special case:
 {"type": "debug_nearby_enemies", "max_dist": 15000, "limit": 10}
 {"type": "debug_nearby_agents"}
 {"type": "debug_nearby_agents", "max_dist": 15000, "limit": 20}
+{"type": "add_enemy_blacklist", "enemy_name": "Infernal Wurm"}
+{"type": "remove_enemy_blacklist", "enemy_name": "Infernal Wurm"}
 {"type": "travel", "target_map_id": 284}
 {"type": "travel_gh", "ms": 4000}
-{"type": "leave_party"}
+{"type": "leave_party", "ms": 2000}
 {"type": "exit_map", "x": 0, "y": 0, "target_map_id": 0}
 {"type": "interact_npc", "name": "Talk NPC", "x": 0, "y": 0}
 {"type": "interact_npc", "target": "Khobay the Betrayer"}
@@ -130,6 +132,11 @@ Special case:
 {"type": "restock_kits", "npc": "MERCHANT", "id_kits": 2, "salvage_kits": 8}
 {"type": "restock_kits", "x": 0, "y": 0, "id_kits": 1, "salvage_kits": 4, "multibox": true}
 {"type": "restock_cons"}
+{"type": "sell_nonsalvageable_golds", "npc": "MERCHANT", "multibox": true}
+{"type": "sell_leftover_materials", "npc": "MERCHANT", "batch_size": 10, "multibox": true}
+{"type": "sell_scrolls", "npc": "MERCHANT", "multibox": true}
+{"type": "deposit_materials", "materials": ["Bone", "Feather"], "exact_quantity": 0, "multibox": true}
+{"type": "inventory_cleanup", "map_id": 485, "multibox": true}
 {"type": "auto_path", "name": "Wait in place", "points": [[0, 0]], "ms": 25000, "repeat": 20}
 ```
 
@@ -141,11 +148,11 @@ Special case:
 - `key_press` supported keys: `F1`, `F2`, `SPACE`, `ENTER`, `ESCAPE`/`ESC`.
 - `force_hero_state` values: `fight`, `guard`, `avoid`.
   Numeric override: `behavior` = `0`/`1`/`2`.
-- `flag_all_accounts` sets the shared CustomBehaviors party flag position for all assigned alt accounts.
-  If no shared flag assignments exist yet, it auto-assigns current same-map party members first.
-- `unflag_all_accounts` clears shared alt-account flag positions while keeping account assignments.
-- `set_auto_combat enabled` toggles CustomBehaviors combat.
-- `set_auto_looting enabled` toggles Botting `auto_loot` and CustomBehaviors party looting.
+- `flag_all_accounts` applies account flagging for the active combat engine:
+  CustomBehaviors uses shared formation flags; HeroAI sets shared HeroAI flag positions.
+- `unflag_all_accounts` clears account-level flags for the active combat engine.
+- `set_auto_combat enabled` toggles combat for the active combat engine.
+- `set_auto_looting enabled` toggles Botting `auto_loot` and looting for the active combat engine.
 - `set_hard_mode enabled` toggles party Hard Mode on/off.
 - `interact_item` supports optional `model_id` (int or `"0x..."`) and `max_dist`.
   It also supports `item` for a named item target from `target_enums.py`.
@@ -168,6 +175,10 @@ Special case:
   Optional: `max_dist` (default `5000`), `limit` (default `25`), `include_dead` (default `false`).
 - `debug_nearby_agents` logs nearby agents to console with `agent_id`, `model_id`, distance, alive, type flags, allegiance, and name.
   Optional: `max_dist` (default `5000`), `limit` (default `25`), `include_dead` (default `true`).
+- `add_enemy_blacklist` adds `enemy_name` (case-insensitive) to `EnemyBlacklist` name entries.
+  Required: `enemy_name` (non-empty string).
+- `remove_enemy_blacklist` removes `enemy_name` (case-insensitive) from `EnemyBlacklist` name entries.
+  Required: `enemy_name` (non-empty string).
 - `restock_kits` requires merchant position `x` + `y`.
   It can also resolve the merchant using `npc`.
   Optional: `id_kits` (default `2`), `salvage_kits` (default `8`), `multibox` (default `false`).
@@ -180,6 +191,24 @@ Special case:
   The recipe step enables each matching property when that property exists, is currently disabled,
   and its `restock_quantity` is greater than `0`.
   The `OpenXunlaiWindow()` attempt uses a fixed `1000ms` wait.
+- `deposit_materials` accepts optional `exact_quantity` (default `250`).
+  Set `exact_quantity` to `0` to deposit any stack size.
+- `sell_nonsalvageable_golds` sells identified, non-salvageable gold items at merchant.
+  Optional: `multibox` (default `false`).
+- `sell_leftover_materials` sells non-rare common material stacks below `batch_size` (default `10`) at merchant.
+  Optional: `multibox` (default `false`).
+- `sell_scrolls` sells configurable scroll model IDs at merchant.
+  Optional: `scroll_models` list (default BDS scroll set), `multibox` (default `false`).
+- `inventory_cleanup` is a composite step that runs:
+  resign -> leave_party -> travel_gh -> deposit crafting mats -> sell trader mats ->
+  sell non-salvageable golds -> sell leftover common mats -> sell scrolls -> restock kits ->
+  (optional) travel to `map_id` -> summon/invite alts.
+  Parameters:
+  `map_id` (optional, default `None`; when omitted/`null`/`"none"` it returns to the map where cleanup was triggered),
+  `multibox` (default `true`),
+  `id_kits` (default `3`),
+  `salvage_kits` (default `10`),
+  `batch_size` (default `10`).
 - `follow_model` follows an NPC/agent model ID at `follow_range`.
   Optional `timeout_ms` exits after that duration.
 - `set_anchor` updates ModularBot runtime recovery anchor.

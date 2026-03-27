@@ -27,6 +27,7 @@ from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Agent import Agent
+from Py4GWCoreLib.EnemyBlacklist import draw_blacklist_ui
 from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Profession, ProfessionShort, Range
 from Py4GWCoreLib.enums_src.IO_enums import Key
@@ -112,6 +113,10 @@ def show_base_configure_consumables_window():
 def is_base_configure_consumables_window_open() -> bool:
     global configure_base_consumables_window_open
     return configure_base_consumables_window_open
+
+def is_party_window_open() -> bool:
+    from Py4GWCoreLib.UIManager import WindowFrames
+    return WindowFrames["PartyWindow"].FrameExists()
     
           
 def get_frame_texture_for_effect(skill_id: int) -> tuple[(GameTexture), TextureState, int]:
@@ -1211,9 +1216,10 @@ def draw_buttons(account_data: AccountStruct, cached_data: CacheData, message_qu
         target_id = Player.GetTargetID() or Player.GetAgentID()
         
         def flag_hero_account():
-            windows.HeroAI_Windows.capture_flag_all = False
-            windows.HeroAI_Windows.capture_hero_flag = True
-            windows.HeroAI_Windows.capture_hero_index = account_data.AgentPartyData.PartyPosition  
+            from HeroAI.ui_base import HeroAI_BaseUI
+            HeroAI_BaseUI.capture_flag_all = False
+            HeroAI_BaseUI.capture_hero_flag = True
+            HeroAI_BaseUI.capture_hero_index = account_data.AgentPartyData.PartyPosition  
             return -1
         
         def clear_hero_flag():
@@ -1227,6 +1233,9 @@ def draw_buttons(account_data: AccountStruct, cached_data: CacheData, message_qu
             options.AllFlag.x = 0.0
             options.AllFlag.y = 0.0
             options.FlagFacingAngle = 0.0
+            party_pos = int(account_data.AgentPartyData.PartyPosition)
+            if 0 < party_pos <= GLOBAL_CACHE.Party.GetHeroCount():
+                GLOBAL_CACHE.Party.Heroes.UnflagHero(party_pos)
             return -1
         
         buttons = [
@@ -1712,10 +1721,10 @@ def draw_command_panel(window: WindowModule, cached_data: CacheData):
         table_width = avail_x
         btn_size = (table_width / 5) - 4
         
-        from HeroAI.windows import HeroAI_Windows
+        from HeroAI.ui_base import HeroAI_BaseUI
         
         if ImGui.begin_child("##GlobalHeroOptionsChild",( table_width, (btn_size  * 2) - 6), False, PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-            HeroAI_Windows.DrawPanelButtons("command_panel", cached_data.global_options, set_global=True)
+            HeroAI_BaseUI.DrawPanelButtons("command_panel", cached_data.global_options, set_global=True)
 
         ImGui.end_child()                
 
@@ -2644,6 +2653,7 @@ def draw_party_search_overlay(cached_data: CacheData):
     
     pass
 
+
 def draw_configure_window(module_name : str, configure_window : WindowModule):
     
     global module_info
@@ -2881,6 +2891,12 @@ def draw_configure_window(module_name : str, configure_window : WindowModule):
                 ImGui.end_child()
                 ImGui.end_tab_item()
             
+            if ImGui.begin_tab_item("Blacklist"):
+                if ImGui.begin_child("##BlacklistSettingsChild", (0, 0)):
+                    draw_blacklist_ui()
+                ImGui.end_child()
+                ImGui.end_tab_item()
+
             if ImGui.begin_tab_item("Debug"):
                 if ImGui.begin_child("##DebugSettingsChild", (0, 0)):
                     show_debug = ImGui.checkbox("Show Debug Window", settings.ShowDebugWindow)

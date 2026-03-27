@@ -49,10 +49,40 @@ def _run_bt_tree(tree, return_bool: bool=False, throttle_ms: int = 100):
 
 class Yield:
     @staticmethod
-    def wait(ms: int):
+    def wait(ms: int, break_on_map_transition: bool = False):
         import time
+        if break_on_map_transition:
+            from .Checks import Checks
+            from ..Map import Map as _Map
+
+            initial_map_id = _Map.GetMapID()
+            initial_district = _Map.GetDistrict()
+            initial_region_id = _Map.GetRegion()[0]
+            initial_language_id = _Map.GetLanguage()[0]
+            initial_instance_uptime = _Map.GetInstanceUptime()
+
+            def _map_transition_detected() -> bool:
+                if not Checks.Map.MapValid() or _Map.IsMapLoading():
+                    return True
+                if _Map.GetMapID() != initial_map_id:
+                    return True
+                if _Map.GetDistrict() != initial_district:
+                    return True
+                if _Map.GetRegion()[0] != initial_region_id:
+                    return True
+                if _Map.GetLanguage()[0] != initial_language_id:
+                    return True
+
+                current_instance_uptime = _Map.GetInstanceUptime()
+                if initial_instance_uptime > 0 and current_instance_uptime + 2000 < initial_instance_uptime:
+                    return True
+
+                return False
+
         start = time.time()
         while (time.time() - start) * 1000 < ms:
+            if break_on_map_transition and _map_transition_detected():
+                break
             yield
 
 #region Player
@@ -123,6 +153,19 @@ class Yield:
             Returns: None
             """
             tree = BT.Player.BuySkill(skill_id, log=log)
+            yield from _run_bt_tree(tree, throttle_ms=300)
+
+        @staticmethod
+        def UnlockBalthazarSkill(skill_id: int, use_pvp_remap: bool = True, log: bool = False):
+            """
+            Purpose: Unlock a skill from the Priest of Balthazar vendor.
+            Args:
+                skill_id (int): The ID of the skill to unlock.
+                use_pvp_remap (bool) Optional: Whether to remap via PvP skill id. Default is True.
+                log (bool) Optional: Whether to log the action. Default is False.
+            Returns: None
+            """
+            tree = BT.Player.UnlockBalthazarSkill(skill_id, use_pvp_remap=use_pvp_remap, log=log)
             yield from _run_bt_tree(tree, throttle_ms=300)
 
         @staticmethod
@@ -413,12 +456,14 @@ class Yield:
             timeout: int = -1,
             progress_callback: Optional[Callable[[float], None]] = None,
             custom_pause_fn: Optional[Callable[[], bool]] = None,
-            stop_on_party_wipe: bool = True
+            stop_on_party_wipe: bool = True,
+            map_transition_exit_success: bool = False,
         ):
             import random
             from .Checks import Checks
             from ..Pathing import AutoPathing
-        
+            from ..Map import Map as _Map
+
             #log = True #force logging
             detailed_log = False #always detailed log for now
 
@@ -428,6 +473,17 @@ class Yield:
             max_retries = 30  # after this, send stuck command
             stuck_count = 0
             max_stuck_commands = 2  # after this, do PixelStack recovery
+
+            # Capture starting map so we can detect fast transitions (new map valid before next tick)
+            _initial_map_id = _Map.GetMapID()
+
+            def _map_still_valid() -> bool:
+                return Checks.Map.MapValid() and _Map.GetMapID() == _initial_map_id
+
+            def _abort_on_map_invalid(msg: str) -> bool:
+                ConsoleLog("FollowPath", msg, Console.MessageType.Warning, log=log)
+                ActionQueueManager().ResetAllQueues()
+                return map_transition_exit_success
 
             if total_points == 0:
                 ConsoleLog("FollowPath", "Empty path provided, treating as success.", Console.MessageType.Warning, log=log)
@@ -497,24 +553,22 @@ class Yield:
                 ConsoleLog("FollowPath", f"Starting point {idx+1}/{total_points} - ({target_x}, {target_y}) distance {Utils.Distance(Player.GetXY(), (target_x, target_y))}", Console.MessageType.Info, log=detailed_log)
 
 
-                if not Checks.Map.MapValid():
-                    ConsoleLog("FollowPath", "Map invalid before starting point, aborting.", Console.MessageType.Error, log=log)
-            
-                    ActionQueueManager().ResetAllQueues()
-                    return False
-                
+                if not _map_still_valid():
+                    return _abort_on_map_invalid("Map invalid before starting point, aborting movement point.")
+
                 if stop_on_party_wipe and (
                         Checks.Party.IsPartyWiped() or GLOBAL_CACHE.Party.IsPartyDefeated()
                     ):
                         ConsoleLog("FollowPath", "Party wiped detected, stopping all movement.", Console.MessageType.Warning, log=True  )
                         ActionQueueManager().ResetAllQueues()
-                        return False 
+                        return False
 
                 Player.Move(target_x, target_y)
                 ConsoleLog("FollowPath", f"Issued move command to ({target_x}, {target_y}).", Console.MessageType.Debug, log=detailed_log)
-        
+
                 yield from Yield.wait(250)
-                if not Checks.Map.MapValid(): ActionQueueManager().ResetAllQueues(); return False
+                if not _map_still_valid():
+                    return _abort_on_map_invalid("Map changed or became invalid right after issuing move.")
 
                 current_x, current_y = Player.GetXY()
                 previous_distance = Utils.Distance((current_x, current_y), (target_x, target_y))
@@ -522,16 +576,13 @@ class Yield:
                 while True:
                     ConsoleLog("FollowPath", "Movement loop iteration...", Console.MessageType.Debug, log=detailed_log)
 
-                    if not Checks.Map.MapValid():
-                        ConsoleLog("FollowPath", "Map became invalid mid-run, aborting movement.", Console.MessageType.Warning, log=log)
-                
-                        ActionQueueManager().ResetAllQueues()
-                        return False
-                    
+                    if not _map_still_valid():
+                        return _abort_on_map_invalid("Map changed or became invalid mid-run, aborting movement.")
+
                     if custom_exit_condition():
                         ConsoleLog("FollowPath", "Custom exit condition met, stopping movement.", Console.MessageType.Info, log=log)
                         return False
-                    
+
                     if stop_on_party_wipe and (
                         Checks.Party.IsPartyWiped() or GLOBAL_CACHE.Party.IsPartyDefeated()
                     ):
@@ -542,14 +593,19 @@ class Yield:
 
                     if Agent.IsValid(Player.GetAgentID()) and Agent.IsCasting(Player.GetAgentID()):
                         ConsoleLog("FollowPath", "Player casting detected, waiting 750ms...", Console.MessageType.Debug, log=detailed_log)
-                
+
                         yield from Yield.wait(750)
                         continue
-                    
+
                     if custom_pause_fn:
                         was_paused = False
                         while custom_pause_fn():
                             was_paused = True
+                            if not _map_still_valid():
+                                return _abort_on_map_invalid("Map changed while movement was paused, aborting.")
+                            if custom_exit_condition():
+                                ConsoleLog("FollowPath", "Custom exit condition met while movement was paused, stopping movement.", Console.MessageType.Info, log=log)
+                                return False
                             if stop_on_party_wipe and (Checks.Map.MapValid() and
                                     (Checks.Party.IsPartyWiped() or GLOBAL_CACHE.Party.IsPartyDefeated())
                                 ):
@@ -590,17 +646,17 @@ class Yield:
                             target_x, target_y = path_points[idx]
                             Player.Move(target_x, target_y)
                             yield from Yield.wait(250)
-                            if not Checks.Map.MapValid():
-                                ActionQueueManager().ResetAllQueues()
-                                return False
+                            if not _map_still_valid():
+                                return _abort_on_map_invalid("Map changed while resuming movement after pause.")
                             current_x, current_y = Player.GetXY()
                             previous_distance = Utils.Distance((current_x, current_y), (target_x, target_y))
                             retries = 0
                             stuck_count = 0
                             continue
-                    
-                    if not Checks.Map.MapValid(): ActionQueueManager().ResetAllQueues(); return False
-                    
+
+                    if not _map_still_valid():
+                        return _abort_on_map_invalid("Map changed while traversing path.")
+
                     current_time = Utils.GetBaseTimestamp()
                     delta = current_time - start_time
                     if delta > timeout and timeout > 0:
@@ -614,36 +670,38 @@ class Yield:
                         offset_x = random.uniform(-5, 5)
                         offset_y = random.uniform(-5, 5)
                         ConsoleLog("FollowPath", f"move to {target_x + offset_x}, {target_y + offset_y}", Console.MessageType.Info, log=log)
-                        if not Checks.Map.MapValid():
-                            ActionQueueManager().ResetAllQueues()
-                            return False
+                        if not _map_still_valid():
+                            return _abort_on_map_invalid("Map changed before retrying move with offset.")
                         Player.Move(target_x + offset_x, target_y + offset_y)
                         retries += 1
                         if retries >= max_retries:
                             Player.SendChatCommand("stuck")
                             ConsoleLog("FollowPath", "No progress made, sending /stuck command.", Console.MessageType.Warning, log=log)
-                    
+
                             retries = 0
                             stuck_count += 1
 
                             # --- PixelStack recovery if too many stucks ---
                             if stuck_count >= max_stuck_commands:
                                 ConsoleLog("FollowPath", "Too many stucks, performing strafe recovery.", Console.MessageType.Warning, log=log)
-                        
+
                                 start_x, start_y = Player.GetXY()
 
                                 # Backwards
                                 yield from Yield.Movement.WalkBackwards(1000)
-                                if not Checks.Map.MapValid(): ActionQueueManager().ResetAllQueues(); return False
+                                if not _map_still_valid():
+                                    return _abort_on_map_invalid("Map changed during backwards recovery.")
                                 # Strafe left
                                 yield from Yield.Movement.StrafeLeft(1000)
-                                if not Checks.Map.MapValid(): ActionQueueManager().ResetAllQueues(); return False
+                                if not _map_still_valid():
+                                    return _abort_on_map_invalid("Map changed during strafe-left recovery.")
 
                                 # Strafe right if no movement
                                 left_x, left_y = Player.GetXY()
                                 if Utils.Distance((start_x, start_y), (left_x, left_y)) < 50:
                                     yield from Yield.Movement.StrafeRight(1000)
-                                    if not Checks.Map.MapValid(): ActionQueueManager().ResetAllQueues(); return False
+                                    if not _map_still_valid():
+                                        return _abort_on_map_invalid("Map changed during strafe-right recovery.")
 
                                 stuck_count = 0  # reset after recovery
                     else:
@@ -651,7 +709,8 @@ class Yield:
                         stuck_count = 0  # reset stuck count if making progress
                         ConsoleLog("FollowPath", "Progress detected, reset retry counters.", Console.MessageType.Debug, log=detailed_log)
 
-                    if not Checks.Map.MapValid(): ActionQueueManager().ResetAllQueues(); return False
+                    if not _map_still_valid():
+                        return _abort_on_map_invalid("Map changed before finishing current waypoint.")
                     #common
                     previous_distance = current_distance
 
@@ -2231,7 +2290,8 @@ class Yield:
         def Upkeep_Morale(target_morale=110):
             from .Checks import Checks
 
-            # Party-wide morale items: affect all members, so check party morale too
+            # Party-wide morale items: affect all members, so check party morale too.
+            # Player-only items must not be spent trying to raise party morale.
             PARTY_MORALE_MODELS = frozenset(
                 m.value if hasattr(m, "value") else int(m)
                 for m in (
@@ -2267,17 +2327,19 @@ class Yield:
 
             while player_morale < target_morale or min_party < target_morale:
                 item_id = 0
+                need_player_morale = player_morale < target_morale
+                need_party_morale = min_party < target_morale
 
-                # If any party member is below target, prefer party-wide items first
-                if min_party < target_morale:
+                # If any party member is below target, only party-wide morale items can help.
+                if need_party_morale:
                     for model_id in morale_models:
                         if model_id in PARTY_MORALE_MODELS:
                             item_id = GLOBAL_CACHE.Inventory.GetFirstModelID(model_id)
                             if item_id:
                                 break
 
-                # Fall back to any item (covers player-only case or no party item available)
-                if not item_id:
+                # Only use player-only morale items when the player still needs morale.
+                if not item_id and need_player_morale:
                     for model_id in morale_models:
                         item_id = GLOBAL_CACHE.Inventory.GetFirstModelID(model_id)
                         if item_id:
