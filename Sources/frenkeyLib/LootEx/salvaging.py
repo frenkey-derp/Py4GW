@@ -239,14 +239,14 @@ class SalvageAction:
                         return
             
             case SalvageOption.LesserCraftingMaterials:
-                model_ids = [ModelID.Salvage_Kit]
+                model_ids = [ModelID.Salvage_Kit, 2993]
                 for kit in salvage_kits:
                     if kit.model_id in model_ids and kit.uses > 0:
                         self.salvage_kit = kit
                         return
             
             case SalvageOption.CraftingMaterials:
-                model_ids = [ModelID.Salvage_Kit, ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit]
+                model_ids = [ModelID.Salvage_Kit, 2993, ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit]
                 for kit in salvage_kits:
                     if kit.model_id in model_ids and kit.uses > 0:
                         self.salvage_kit = kit

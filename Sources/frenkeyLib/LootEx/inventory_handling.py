@@ -2,7 +2,6 @@ from datetime import date, datetime, timedelta
 import re
 import re
 from typing import Any, Callable, Generator, override
-from Py4GWCoreLib.Builds.SF_Ass_vaettir import SF_Ass_vaettir
 from Py4GWCoreLib.GlobalCache.ItemCache import Bag_enum
 from Py4GWCoreLib.botting_src.helpers import BottingHelpers
 from Py4GWCoreLib.botting_src.helpers_src.Merchant import _Merchant
@@ -309,25 +308,6 @@ class LootEx_Merchant_Handler(MerchantHandler):
             if not can_afford:
                 ConsoleLog("LootEx_Merchant_Handler", "Cannot afford any salvage kits to restock.", Console.MessageType.Debug, self.LOG_LOOTEX_MERCHANT_HANDLER)
                 return
-
-
-
-def DefensiveActions(self):
-    player_agent_id = Player.GetAgentID()
-    has_deadly_paradox = Routines.Checks.Effects.HasBuff(player_agent_id, self.deadly_paradox)
-    has_shroud_of_distress = Routines.Checks.Effects.HasBuff(player_agent_id, self.shroud_of_distress)
-    
-    if (yield from Routines.Yield.Skills.IsSkillIDUsable(self.shadow_form)):
-        if (yield from self._CastSkillID(self.deadly_paradox,extra_condition=(not has_deadly_paradox), log=False, aftercast_delay=100)):
-            ConsoleLog(self.build_name, "Casting Deadly Paradox.", Py4GW.Console.MessageType.Info, log=False)
-            
-        if (yield from self._CastSkillID(self.shadow_form, log=False, aftercast_delay=1750)):
-            ConsoleLog(self.build_name, "Casting Shadow Form.", Py4GW.Console.MessageType.Info, log=False)
-            
-        if (yield from self._CastSkillID(self.shroud_of_distress,extra_condition=(not has_shroud_of_distress), log=False, aftercast_delay=1750)):
-            ConsoleLog(self.build_name, "Casting Shroud of Distress.", Py4GW.Console.MessageType.Info, log=False)
-            
-SF_Ass_vaettir.DefensiveActions = DefensiveActions
 
 class InventoryHandler:
     instance = None
@@ -1959,7 +1939,7 @@ class InventoryHandler:
         result.salvage_kits.sort(
             key=lambda x: x.uses) if result.salvage_kits else []
         
-        result.lesser_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id == ModelID.Salvage_Kit]
+        result.lesser_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id == ModelID.Salvage_Kit or kit.model_id == 2993]
         result.expert_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id in (ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit)]
         result.perfect_salvage_kits = [kit for kit in result.salvage_kits if kit.model_id == ModelID.Perfect_Salvage_Kit]
         
