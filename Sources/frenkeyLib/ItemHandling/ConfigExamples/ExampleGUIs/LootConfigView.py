@@ -19,8 +19,10 @@ from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Mods import properties as properties_module
 from Sources.frenkeyLib.ItemHandling.Mods import upgrades as upgrades_module
-from Sources.frenkeyLib.ItemHandling.Mods.properties import ItemProperty
-from Sources.frenkeyLib.ItemHandling.Mods.upgrades import Upgrade
+from Sources.frenkeyLib.ItemHandling.Mods.decoded_modifier import DecodedModifier
+from Sources.frenkeyLib.ItemHandling.Mods.properties import AppliesToRuneProperty, ItemProperty, TooltipProperty, UnknownUpgradeProperty, UpgradeRuneProperty
+from Sources.frenkeyLib.ItemHandling.Mods.types import ItemModifierParam
+from Sources.frenkeyLib.ItemHandling.Mods.upgrades import AppliesToRune, AttributeRune, Inscription, Insignia, Rune, Upgrade, UpgradeRune, WeaponPrefix, WeaponSuffix
 from Sources.frenkeyLib.ItemHandling.Rules.base_rule import (
     BaseRule,
     DyesRule,
@@ -147,8 +149,10 @@ class LootConfigView:
         for _, obj in inspect.getmembers(properties_module, inspect.isclass):
             if obj.__module__ != properties_module.__name__:
                 continue
-            if obj is ItemProperty:
+            
+            if obj in [ItemProperty, AppliesToRuneProperty, UpgradeRuneProperty, UnknownUpgradeProperty, TooltipProperty]: 
                 continue
+            
             mro = getattr(obj, "__mro__", ())
             if any(base.__name__ == "ItemProperty" for base in mro):
                 classes.append(obj)
@@ -405,6 +409,16 @@ class LootConfigView:
 
                     PyImGui.table_next_row()
                     PyImGui.table_next_column()
+                    
+                    x,y = PyImGui.get_cursor_pos()
+                    PyImGui.dummy(32, 32)
+                    
+                    if item and map_ready:
+                        PyImGui.set_cursor_pos(x, y)
+                        ImGui.DrawTexture(item.gw_dat_file_path, 32, 32)
+                        
+                    PyImGui.table_next_column()
+                    
                     PyImGui.text(bag_name)
                     PyImGui.table_next_column()
                     PyImGui.text(str(slot))
@@ -538,7 +552,7 @@ class LootConfigView:
             
             prop = self.property_classes[self.property_index] if self.property_classes else None
             
-            if PyImGui.begin_combo("Rule Type##NewRuleType", Utils.humanize_string(prop.__name__) if prop else "", PyImGui.ImGuiComboFlags.NoFlag):
+            if PyImGui.begin_combo("##property", Utils.humanize_string(prop.__name__) if prop else "", PyImGui.ImGuiComboFlags.NoFlag):
                 for index, p in enumerate(self.property_classes):
                     # PyImGui.text(rule_type_name)
                     
