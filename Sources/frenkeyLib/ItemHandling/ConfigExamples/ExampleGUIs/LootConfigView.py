@@ -5,15 +5,18 @@ from enum import Enum, EnumMeta
 from typing import Optional
 
 import PyImGui
+from PyItem import ItemModifier
 
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.Item import Bag
-from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.enums_src.GameData_enums import DyeColor, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.ConfigExamples.LootConfig import LootConfig
+from Sources.frenkeyLib.ItemHandling.ItemTexture import ItemTexture
 from Sources.frenkeyLib.ItemHandling.Items.ItemCache import ITEM_CACHE
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
@@ -41,6 +44,7 @@ from Sources.frenkeyLib.ItemHandling.Rules.rule_descriptions import RULE_DESCRIP
 from Sources.frenkeyLib.ItemHandling.Rules.types import ItemAction
 from Sources.frenkeyLib.ItemHandling.encoded_strings import GWStringEncoded
 from Sources.frenkeyLib.ItemHandling.utility import IsWeaponType
+from Sources.marks_sources.mods_parser import ModifierIdentifier
 
 
 def _enum_members(enum_cls: EnumMeta) -> list[Enum]:
@@ -106,6 +110,7 @@ class LootConfigView:
         self.model_id_labels = [f"{member.name} ({member.value})" for member in self.model_id_values]
         self.item_action_values = _enum_members(ItemAction)
         self.item_action_labels = _enum_labels(ItemAction)
+        self.upgrades = self._discover_upgrades()
         self.upgrade_classes = self._discover_upgrade_classes()
         self.upgrade_labels = [cls.__name__ for cls in self.upgrade_classes]
         self.property_classes = self._discover_property_classes()
@@ -130,6 +135,54 @@ class LootConfigView:
             key=lambda cls: (-int(getattr(getattr(cls, "priority", 0), "value", 0)), cls.__name__)
         )
         return [rule_cls.__name__ for rule_cls in rule_classes]
+
+    def _discover_upgrades(self) -> list[Upgrade]:
+        upgrades: list[Upgrade] = []
+        for _, obj in inspect.getmembers(upgrades_module, inspect.isclass):
+            if obj.__module__ != upgrades_module.__name__:
+                continue
+            if obj is Upgrade or obj is WeaponPrefix or obj is WeaponSuffix or obj is Inscription or obj is Insignia or obj is Rune or obj is AttributeRune or obj is UpgradeRune:
+                continue
+            mro = getattr(obj, "__mro__", ())
+            if UpgradeRune in mro or AppliesToRune in mro:
+                continue
+            if any(base.__name__ == "Upgrade" for base in mro):
+                try:
+                    instance = obj()
+                    if isinstance(instance, Upgrade):
+                        upgrades.append(instance)
+                except Exception as e:
+                    print(f"Failed to instantiate upgrade class {obj.__name__}: {e}")
+
+
+        weapon_prefixes = sorted([upgrade for upgrade in upgrades if isinstance(upgrade, WeaponPrefix)], key=lambda u: u.get_static_name())
+        weapon_suffixes = sorted([upgrade for upgrade in upgrades if isinstance(upgrade, WeaponSuffix)], key=lambda u: u.get_static_name())
+        inscriptions = sorted([upgrade for upgrade in upgrades if isinstance(upgrade, Inscription)], key=lambda u: u.get_static_name())
+        
+        insignias = sorted([upgrade for upgrade in upgrades if isinstance(upgrade, Insignia)], key=lambda u: u.get_static_name())
+        insignias_grouped_by_profession : dict[Profession, list[Insignia]] = {}
+        for insignia in insignias:
+            if insignia.profession not in insignias_grouped_by_profession:
+                insignias_grouped_by_profession[insignia.profession] = []
+            
+            insignias_grouped_by_profession[insignia.profession].append(insignia)
+            
+        # sort by rarity then by name
+        runes = sorted([upgrade for upgrade in upgrades if isinstance(upgrade, Rune)], key=lambda u: (u.rarity.value if u.rarity else 0, u.get_static_name()))
+        runes_grouped_by_profession : dict[Profession, list[Rune]] = {}
+        for rune in runes:
+            if rune.profession not in runes_grouped_by_profession:
+                runes_grouped_by_profession[rune.profession] = []
+            
+            runes_grouped_by_profession[rune.profession].append(rune)
+        
+        sorted_upgrades : list[Upgrade] = [*weapon_prefixes, *weapon_suffixes, *inscriptions]
+        for profession in Profession:
+            sorted_upgrades.extend(insignias_grouped_by_profession.get(profession, []))
+            sorted_upgrades.extend(runes_grouped_by_profession.get(profession, []))
+        
+        return sorted_upgrades
+        
 
     def _discover_upgrade_classes(self) -> list[type[Upgrade]]:
         classes: list[type[Upgrade]] = []
@@ -371,6 +424,8 @@ class LootConfigView:
         PyImGui.end_child()
 
     def _draw_preview_panel(self) -> None:
+        map_ready = Map.IsMapReady()
+        
         if PyImGui.begin_child("RulePreviewPane", (0, 0), True, PyImGui.WindowFlags.NoFlag):
             PyImGui.text("3. Inventory Preview")
             PyImGui.separator()
@@ -394,7 +449,9 @@ class LootConfigView:
                 | PyImGui.TableFlags.ScrollY
                 | PyImGui.TableFlags.SizingStretchProp
             )
-            if PyImGui.begin_table("LootPreviewTable", 5, table_flags):
+            
+            if PyImGui.begin_table("LootPreviewTable", 6, table_flags):
+                PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 36)
                 PyImGui.table_setup_column("Bag", PyImGui.TableColumnFlags.WidthFixed, 65)
                 PyImGui.table_setup_column("Slot", PyImGui.TableColumnFlags.WidthFixed, 45)
                 PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch, 180)
@@ -413,7 +470,7 @@ class LootConfigView:
                     x,y = PyImGui.get_cursor_pos()
                     PyImGui.dummy(32, 32)
                     
-                    if item and map_ready:
+                    if False and item and map_ready:
                         PyImGui.set_cursor_pos(x, y)
                         ImGui.DrawTexture(item.gw_dat_file_path, 32, 32)
                         
@@ -533,17 +590,22 @@ class LootConfigView:
             PyImGui.text("No upgrade classes found.")
             return
 
-        current_class = type(rule.upgrade) if rule.upgrade is not None else None
-        PyImGui.text(f"Current Upgrade: {current_class.__name__ if current_class else 'None'}")
+        current_class = type(rule.upgrade) if rule.upgrade is not None else None        
+        current_index = 0
+        current_upgrade = None
+        if rule.upgrade is not None:
+            for i, upgrade in enumerate(self.upgrades):
+                if type(upgrade) == current_class:
+                    current_index = i
+                    current_upgrade = upgrade
+                    break
         
-        current_index = self.upgrade_labels.index(current_class.__name__) if current_class and current_class.__name__ in self.upgrade_labels else 0
-        selected_index = _safe_combo("Upgrade", current_index, self.upgrade_labels)
-        selected_class = self.upgrade_classes[selected_index]
-        if current_class and current_class.__name__ != selected_class.__name__:
-            try:
-                rule.upgrade = selected_class()
-            except Exception:
-                pass
+        if PyImGui.begin_combo("Upgrade##UpgradeRule", current_upgrade.get_static_name() if current_upgrade else "None", PyImGui.ImGuiComboFlags.NoFlag):
+            for index, upgrade in enumerate(self.upgrades):
+                if PyImGui.selectable(upgrade.get_static_name(), index == current_index, PyImGui.SelectableFlags.NoFlag, (0.0, 0.0)):
+                    current_index = index
+                    rule.upgrade = upgrade
+            PyImGui.end_combo()
 
     def _draw_property_filters_editor(self, properties: list[PropertyFilter]) -> None:
         PyImGui.text("Property Filters")
@@ -577,6 +639,7 @@ class LootConfigView:
                 property_type_name = str(prop.get("property_type", "")) if isinstance(prop, dict) else type(prop).__name__
                 modifier_arg = int(prop.get("modifier_arg", -1)) if isinstance(prop, dict) else int(prop.modifier.arg)
                 PyImGui.text(f"{Utils.humanize_string(property_type_name)}")
+                property_cls = next((cls for cls in self.property_classes if cls.__name__ == property_type_name), None)
 
                 PyImGui.same_line(0, -1)
                 if PyImGui.button(f"X##PropertyDelete_{index}"):
