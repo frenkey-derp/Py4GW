@@ -16,6 +16,7 @@ Power_Drain_ID = Skill.GetID("Power_Drain")
 Shatter_Hex_ID = Skill.GetID("Shatter_Hex")
 Flesh_of_My_Flesh_ID = Skill.GetID("Flesh_of_My_Flesh")
 Breath_of_the_Great_Dwarf_ID = Skill.GetID("Breath_of_the_Great_Dwarf")
+Ebon_Battle_Standard_of_Wisdom_ID = Skill.GetID("Ebon_Battle_Standard_of_Wisdom")
 
 
 class Energy_Surge(BuildMgr):
@@ -36,9 +37,10 @@ class Energy_Surge(BuildMgr):
                 Unnatural_Signet_ID,
                 Power_Drain_ID,
                 Shatter_Hex_ID,
+                Ebon_Battle_Standard_of_Wisdom_ID,
                 Overload_ID,
                 Flesh_of_My_Flesh_ID,
-                Breath_of_the_Great_Dwarf_ID
+                Breath_of_the_Great_Dwarf_ID,
             ],
         )
         if match_only:
@@ -84,6 +86,9 @@ class Energy_Surge(BuildMgr):
         if not Routines.Checks.Agents.InAggro():
             return False
 
+        if self.IsSkillEquipped(Ebon_Battle_Standard_of_Wisdom_ID) and (yield from self.skills.Any.NoAttribute.Ebon_Battle_Standard_of_Wisdom()):
+            return True
+        
         if (yield from self.skills.Mesmer.DominationMagic.Mistrust()):
             return True
 
