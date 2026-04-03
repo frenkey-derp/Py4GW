@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import auto
 from enum import IntEnum
 
 class SharedCommandType(IntEnum):
@@ -66,5 +66,5 @@ class SharedCommandType(IntEnum):
 
 
 class CombatPrepSkillsType(IntEnum):
-    SpiritsPrep = 1
-    ShoutsPrep = 2
+    SpiritsPrep = auto()
+    ShoutsPrep = auto()
