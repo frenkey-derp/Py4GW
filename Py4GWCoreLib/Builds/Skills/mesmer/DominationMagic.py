@@ -229,6 +229,36 @@ class DominationMagic:
     #endregion
 
     #region P
+    def Panic(self) -> BuildCoroutine:
+        ## Cast at clustered caster enemies
+        from Py4GWCoreLib import Agent, Range, GLOBAL_CACHE
+        panic_id: int = Skill.GetID("Panic")
+        aoe_range = GLOBAL_CACHE.Skill.Data.GetAoERange(panic_id) or Range.Nearby.value
+        
+        def _is_enemy_casting_spell(agent_id: int) -> bool:
+            return bool(
+                agent_id
+                and Agent.IsValid(agent_id)
+                and not Agent.IsDead(agent_id)
+                and Agent.IsCasting(agent_id)
+            )
+        enemy_array = self._get_enemy_array(Range.Spellcast.value)
+        casting_spell_targets = [
+            agent_id for agent_id in enemy_array
+            if _is_enemy_casting_spell(agent_id)
+        ]
+        
+        target_agent_id = self._pick_best_target(casting_spell_targets, aoe_range)
+        if not target_agent_id:
+            return False
+        
+        return (yield from self.build.CastSkillIDAndRestoreTarget(
+            skill_id=panic_id,
+            target_agent_id=target_agent_id,
+            log=False,
+            aftercast_delay=250,
+        ))
+         
     def Power_Drain(self) -> BuildCoroutine:
         from Py4GWCoreLib import Routines, Range
 
