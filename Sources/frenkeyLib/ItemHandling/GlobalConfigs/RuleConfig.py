@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DyesRule, ItemTypesRule, ModelIdsRule, RaritiesRule, Rule, UpgradeRule
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DyesRule, ItemTypesRule, ModelIdsRule, RaritiesRule, Rule, UpgradesRule
 
 
 class RuleConfig(list[Rule]):
@@ -189,14 +189,14 @@ class RuleConfig(list[Rule]):
         '''
         Helper method to add an UpgradeRule to the config.
         '''
-        rule = UpgradeRule([upgrade])
+        rule = UpgradesRule([upgrade])
         self.AddRule(rule)
 
     def AddUpgrades(self, upgrades: list[(tuple[Upgrade, list[ItemType]] | Upgrade)]):
         '''
         Helper method to add an UpgradeRule to the config.
         '''
-        rule = UpgradeRule(upgrades)
+        rule = UpgradesRule(upgrades)
         self.AddRule(rule)
 
     #endregion Adding helper methods for creating and adding rules in one step
@@ -262,14 +262,14 @@ class RuleConfig(list[Rule]):
         '''
         Helper method to remove an UpgradeRule from the config.
         '''
-        rule = UpgradeRule([upgrade])
+        rule = UpgradesRule([upgrade])
         self.RemoveRule(rule)
 
     def RemoveUpgrades(self, upgrades: list[(tuple[Upgrade, list[ItemType]] | Upgrade)]):
         '''
         Helper method to remove an UpgradeRule from the config.
         '''
-        rule = UpgradeRule(upgrades)
+        rule = UpgradesRule(upgrades)
         self.RemoveRule(rule)
     #endregion Deleting helper methods for creating and adding rules in one step
     

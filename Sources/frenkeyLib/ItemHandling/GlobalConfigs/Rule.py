@@ -18,6 +18,7 @@ class Rule:
         Rule._registry[cls.__name__] = cls
 
     def __init__(self):
+        self.name = ""
         pass
 
     def get_item(self, item_id: int) -> Optional[ItemSnapshot]:
@@ -57,6 +58,7 @@ class Rule:
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "rule_type": type(self).__name__,
+            "name": self.name,
         }
         payload.update(self._serialize_data())
         return payload
@@ -69,6 +71,7 @@ class Rule:
             return None
 
         rule = rule_cls()
+        rule.name = payload.get("name", "")
 
         rule._deserialize_data(payload)
         return rule
@@ -199,6 +202,54 @@ class RaritiesRule(Rule):
             if isinstance(name, str) and name in Rarity.__members__
         ]
 
+class RaritiesAndItemTypesRule(Rule):
+    """
+    A rule that checks if an item matches any of the specified rarities and any of the specified item types. Both conditions must be met for the rule to apply.
+    """
+
+    def __init__(self, rarities: Optional[list[Rarity]] = None, item_types: Optional[list[ItemType]] = None):
+        super().__init__()
+        self.rarities: list[Rarity] = rarities if rarities is not None else []
+        self.item_types: list[ItemType] = item_types if item_types is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.rarities) > 0 and len(self.item_types) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+
+        rarity = item_snapshot.rarity
+        item_type = item_snapshot.item_type
+        return (rarity in self.rarities if rarity else False) and (item_type in self.item_types if item_type else False)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "rarities": [rarity.name for rarity in self.rarities],
+            "item_types": [item_type.name for item_type in self.item_types],
+        }
+
+    def _comparison_data(self) -> Any:
+        rarities_data = tuple(sorted(rarity.name for rarity in self.rarities))
+        item_types_data = tuple(sorted(item_type.name for item_type in self.item_types))
+        return (rarities_data, item_types_data)
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.rarities = [
+            Rarity[name]
+            for name in data.get("rarities", [])
+            if isinstance(name, str) and name in Rarity.__members__
+        ]
+        self.item_types = [
+            ItemType[name]
+            for name in data.get("item_types", [])
+            if isinstance(name, str) and name in ItemType.__members__
+        ]
+
 class DyesRule(Rule):
     """
     A rule if an item is a **Vial of Dye** of a specific :class:`DyeColor`. This is determined by the item's dye color.
@@ -239,7 +290,7 @@ class DyesRule(Rule):
             if isinstance(name, str) and name in DyeColor.__members__
         ]
 
-class UpgradeRule(Rule):
+class UpgradesRule(Rule):
     """
     A rule that checks if an item has a one of the specified upgrades.
     """

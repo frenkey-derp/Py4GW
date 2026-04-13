@@ -19,6 +19,7 @@ class ImGui:
     WindowModule: TypeAlias = WindowModule
     ImGuiStyleVar: TypeAlias  = ImGuiStyleVar
     style = PyImGui.StyleConfig()
+    __selectable_stack: list[dict[str, bool]] = []
     
     #region Styles
 
@@ -375,7 +376,109 @@ class ImGui:
 
     @staticmethod
     def selectable(label: str, selected: bool, flags: PyImGui.SelectableFlags = PyImGui.SelectableFlags.NoFlag, size: Tuple[float, float] = (0.0, 0.0)) : return PyImGui.selectable(label, selected, flags, (int(size[0]), int(size[1])))
+    
+    @staticmethod
+    def begin_selectable(
+        id: str,
+        selected: bool = False,
+        size: Tuple[float, float] = (0.0, 0.0),
+        border: bool = True,
+        child_flags: int = PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse,
+        hover_color: tuple[int, int, int, int] | None = None,
+        selected_color: tuple[int, int, int, int] | None = None,
+        border_color: tuple[int, int, int, int]  = (0, 0, 0, 0),
+    ) -> bool:
+        """
+        Begins a selectable child region that can contain arbitrary multi-line content.
+        Call `end_selectable()` afterwards and use its return value to react to clicks.
+        """
+        style = ImGui.get_style()
+        style.WindowPadding.push_style_var_direct(5, 5)
+        width = PyImGui.get_content_region_avail()[0] if size[0] == 0 else size[0]
+        height = size[1] if size[1] > 0 else (PyImGui.get_text_line_height_with_spacing() + (style.FramePadding.value2 or 0) * 2)
+
+        hovered = ImGui.is_mouse_in_rect((*PyImGui.get_cursor_screen_pos(), width, height))
+        pushed_child_bg = False
+        pushed_border = False
+
+        hover_color = hover_color or style.HeaderHovered.rgb_tuple
+        selected_color = selected_color or style.Header.rgb_tuple
+
+        style.Border.push_color_direct(border_color)
+        pushed_border = True
+
+        background = hover_color if hovered else selected_color if selected else None
+        if background is not None:
+            style.ChildBg.push_color_direct(background)
+            pushed_child_bg = True
+
+        ImGui.__selectable_stack.insert(0, {
+            "pushed_child_bg": pushed_child_bg,
+            "pushed_border": pushed_border,
+        })
+        open = PyImGui.begin_child(id, (width, height), border, child_flags)
+        style.WindowPadding.pop_style_var_direct()
+        return open
+
+    @staticmethod
+    def end_selectable() -> bool:
+        """
+        Ends a selectable child region started by `begin_selectable()`.
+        Returns True when the selectable was clicked this frame.
+        """
+        PyImGui.end_child()
+        clicked = PyImGui.is_item_clicked(0)
+
+        if not ImGui.__selectable_stack:
+            return clicked
+
+        state = ImGui.__selectable_stack.pop(0)
+        style = ImGui.get_style()
+
+        if state["pushed_child_bg"]:
+            style.ChildBg.pop_color_direct()
+        if state["pushed_border"]:
+            style.Border.pop_color_direct()
+
+        return clicked
+
+    @staticmethod
+    def custom_selectable(
+        label: str,
+        selected: bool = False,
+        size: Tuple[float, float] = (0.0, 0.0),
+        border: bool = True,
+        child_flags: int = PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse,
+        hover_color: tuple[int, int, int, int] | None = None,
+        selected_color: tuple[int, int, int, int] | None = None,
+        border_color: tuple[int, int, int, int]  = (0, 0, 0, 0),
+        draw: Callable[[], None] | None = None,
+    ) -> bool:
+        """
+        Draws a selectable region with either wrapped label text or custom content.
+        Returns True when clicked.
+        """
+        opened = ImGui.begin_selectable(
+            id=label,
+            selected=selected,
+            size=size,
+            border=border,
+            child_flags=child_flags,
+            hover_color=hover_color,
+            selected_color=selected_color,
+            border_color=border_color,
+        )
+
+        if opened:
+            if draw is not None:
+                draw()
+            else:
+                ImGui.text_wrapped(label.split("##", 1)[0])
+
+        return ImGui.end_selectable()
+    
         
+    
     @staticmethod
     def color_edit3(label: str, color: Tuple[float, float, float]) : return PyImGui.color_edit3(label, color)
     
