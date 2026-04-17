@@ -35,7 +35,7 @@ def filter_weapon_mods_test(item_ids: list[int]):
         if (sundering_upgrade := ItemMod.get_upgrade(item_id, SunderingUpgrade)) is not None:
             chance = sundering_upgrade.chance
             is_maxed = sundering_upgrade.is_maxed
-            armor_pen = sundering_upgrade.armor_penetration
+            armor_penetration = sundering_upgrade.armor_penetration
             
         if (fortitude_upgrade := ItemMod.get_upgrade(item_id, OfFortitudeUpgrade)) is not None:
             health = fortitude_upgrade.health

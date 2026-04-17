@@ -77,7 +77,7 @@ def get_property_factory() -> dict[ModifierIdentifier, Callable[[DecodedModifier
         ModifierIdentifier.Armor2: lambda m, _, rarity: ArmorProperty(modifier=m, armor=m.arg1, rarity=rarity),
         ModifierIdentifier.ArmorEnergyRegen: lambda m, _, rarity: ArmorEnergyRegen(modifier=m, energy_regen=m.arg1, rarity=rarity),
         ModifierIdentifier.ArmorMinusAttacking: lambda m, _, rarity: ArmorMinusAttacking(modifier=m, armor=m.arg2, rarity=rarity),
-        ModifierIdentifier.ArmorPenetration: lambda m, _, rarity: ArmorPenetration(modifier=m, armor_pen=m.arg2, chance=m.arg1, rarity=rarity),
+        ModifierIdentifier.ArmorPenetration: lambda m, _, rarity: ArmorPenetration(modifier=m, armor_penetration=m.arg2, chance=m.arg1, rarity=rarity),
         ModifierIdentifier.ArmorPlus: lambda m, _, rarity: ArmorPlus(modifier=m, armor=m.arg2, rarity=rarity),
         ModifierIdentifier.ArmorPlusAttacking: lambda m, _, rarity: ArmorPlusAttacking(modifier=m, armor=m.arg2, rarity=rarity),
         ModifierIdentifier.ArmorPlusCasting: lambda m, _, rarity: ArmorPlusCasting(modifier=m, armor=m.arg2, rarity=rarity),

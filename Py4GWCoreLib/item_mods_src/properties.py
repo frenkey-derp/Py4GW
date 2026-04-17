@@ -77,19 +77,19 @@ class ArmorMinusAttacking(ItemProperty):
     
 @dataclass
 class ArmorPenetration(ItemProperty):
-    armor_pen: int
+    armor_penetration: int
     chance: int
 
     def create_encoded_description(self) -> GWStringEncoded:
         encoded = bytes([
             *self.get_text_color(),
-            *GWEncoded.PLUS_PERCENT_TEMPLATE, 0x45, 0xA, 0x1, 0x0, 0x1, 0x1, self.armor_pen, 0x1, 0x1, 0x0,
+            *GWEncoded.PLUS_PERCENT_TEMPLATE, 0x45, 0xA, 0x1, 0x0, 0x1, 0x1, self.armor_penetration, 0x1, 0x1, 0x0,
             *GWEncoded.ITEM_DULL,
             *GWEncoded.PARENTHESIS_STR1,
             *GWEncoded.CHANCE_TEMPLATE, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0,
             0x1, 0x0
         ])
-        return GWStringEncoded(encoded, f"Armor penetration +{self.armor_pen}% (Chance: {self.chance}%)")
+        return GWStringEncoded(encoded, f"Armor penetration +{self.armor_penetration}% (Chance: {self.chance}%)")
     
 @dataclass
 class ArmorPlus(ItemProperty):
@@ -521,7 +521,7 @@ class OfTheProfession(ItemProperty):
     profession: Profession
 
     def create_encoded_description(self) -> GWStringEncoded:
-        encoded_bytes = bytes([*self.get_text_color(), 0x86, 0xA, 0xA, 0x1, *GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
+        encoded_bytes = bytes([*self.get_text_color(), 0x86, 0xA, 0xA, 0x1, *GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
         return GWStringEncoded(encoded_bytes, f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)")
 
 @dataclass

@@ -40,11 +40,37 @@ class ModifierType(IntEnum):
     Fixed = 3
     
 class ModifierRange:
-    def __init__(self, modifier_identifier : ModifierIdentifier, modifier_type : ModifierType, min_value: int, max_value: int):
+    def __init__(
+        self,
+        modifier_identifier: ModifierIdentifier,
+        modifier_type: ModifierType,
+        min_value: Optional[int] = None,
+        max_value: Optional[int] = None,
+        allowed_values: Optional[list[int] | tuple[int, ...]] = None,
+    ):
         self.modifierIdentifier = modifier_identifier
         self.min_value = min_value
         self.max_value = max_value
         self.modifier_type = modifier_type
+        self.allowed_values = tuple(allowed_values) if allowed_values is not None else None
+
+    def is_valid(self, value: int) -> bool:
+        if self.allowed_values is not None:
+            return value in self.allowed_values
+
+        if self.min_value is not None and value < self.min_value:
+            return False
+
+        if self.max_value is not None and value > self.max_value:
+            return False
+
+        return True
+
+    def get_preferred_value(self) -> Optional[int]:
+        if self.allowed_values:
+            return max(self.allowed_values)
+
+        return self.max_value if self.max_value is not None else self.min_value
         
 @dataclass(eq=False)
 class Upgrade:
@@ -56,6 +82,7 @@ class Upgrade:
     id: ClassVar[ItemUpgrade] = ItemUpgrade.Unknown
     property_identifiers: ClassVar[list[ModifierIdentifierSpec]] = []
     max_modifier_values: ClassVar[dict[ModifierIdentifier, tuple[int, int]]] = {}
+    modifier_ranges: ClassVar[list[ModifierRange]] = []
     encoded_name: ClassVar[bytes] = bytes()
     descriptions: ClassVar[dict[ServerLanguage, str]] = {}
 
@@ -319,24 +346,44 @@ class Upgrade:
         return cls.id.has_id(upgrade_id)
 
     @classmethod
+    def get_modifier_ranges(cls) -> list[ModifierRange]:
+        ranges = getattr(cls, "modifier_ranges", None)
+        if isinstance(ranges, list) and len(ranges) > 0:
+            return [modifier_range for modifier_range in ranges if isinstance(modifier_range, ModifierRange)]
+
+        modifier_range_prop = getattr(cls, "modifier_range", None)
+        if isinstance(modifier_range_prop, ModifierRange):
+            return [modifier_range_prop]
+
+        return []
+
+    @classmethod
     def _get_max_modifier_args(cls, identifier: ModifierIdentifier) -> Optional[tuple[int, int]]:
         args = cls.max_modifier_values.get(identifier)
         if args is not None:
             return args
 
-        modifier_range_prop = getattr(cls, "modifier_range", None)
-        modifier_range = cast(Optional[ModifierRange], modifier_range_prop) if isinstance(modifier_range_prop, ModifierRange) else None
-        if modifier_range and modifier_range.modifierIdentifier == identifier:
+        matching_ranges = [
+            modifier_range
+            for modifier_range in cls.get_modifier_ranges()
+            if modifier_range.modifierIdentifier == identifier
+        ]
+        if matching_ranges:
             arg1 = 0
             arg2 = 0
 
-            match modifier_range.modifier_type:
-                case ModifierType.Arg1:
-                    arg1 = modifier_range.max_value
-                case ModifierType.Arg2 | ModifierType.Fixed:
-                    arg2 = modifier_range.max_value
-                case ModifierType.None_:
-                    return None
+            for modifier_range in matching_ranges:
+                preferred_value = modifier_range.get_preferred_value()
+                if preferred_value is None:
+                    continue
+
+                match modifier_range.modifier_type:
+                    case ModifierType.Arg1:
+                        arg1 = preferred_value
+                    case ModifierType.Arg2 | ModifierType.Fixed:
+                        arg2 = preferred_value
+                    case ModifierType.None_:
+                        continue
 
             return arg1, arg2
 
@@ -568,17 +615,18 @@ class WeaponUpgrade(Upgrade):
 
     @property
     def is_maxed(self) -> bool:
-        if not self.properties or not self.modifier_range:
+        modifier_ranges = type(self).get_modifier_ranges()
+        if not self.properties or not modifier_ranges:
             return True
-        
-        prop = self._get_upgrade_property(self.modifier_range.modifierIdentifier)
-    
-        if not prop:
-            return False
-        
-        value = prop.modifier.arg1 if self.modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
-        if value < self.modifier_range.min_value or value > self.modifier_range.max_value:
-            return False
+
+        for modifier_range in modifier_ranges:
+            prop = self._get_upgrade_property(modifier_range.modifierIdentifier)
+            if not prop:
+                return False
+
+            value = prop.modifier.arg1 if modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
+            if not modifier_range.is_valid(value):
+                return False
     
         return True
         
@@ -590,7 +638,7 @@ class WeaponPrefix(WeaponUpgrade):
     
 @dataclass(eq=False)
 class AdeptUpgrade(WeaponPrefix):
-    chance: int = 0
+    chance: int = 20
 
     id = ItemUpgrade.Adept
     property_identifiers = [
@@ -604,7 +652,7 @@ class AdeptUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class BarbedUpgrade(WeaponPrefix):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Bleeding
 
     id = ItemUpgrade.Barbed
     property_identifiers = [
@@ -617,7 +665,7 @@ class BarbedUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class CripplingUpgrade(WeaponPrefix):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Crippled
 
     id = ItemUpgrade.Crippling
     property_identifiers = [
@@ -630,26 +678,25 @@ class CripplingUpgrade(WeaponPrefix):
         
 @dataclass(eq=False)
 class CruelUpgrade(WeaponPrefix):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Deep_Wound
 
     id = ItemUpgrade.Cruel
     property_identifiers = [
         ModifierIdentifier.IncreaseConditionDuration,
     ]
-
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6B, 0xA, 0x1, 0x0]), f"Cruel")
 
 @dataclass(eq=False)
 class DefensiveUpgrade(WeaponPrefix):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.Defensive
     property_identifiers = [
         ModifierIdentifier.ArmorPlus,
     ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlus, ModifierType.Arg2, 1, 5)
+    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlus, ModifierType.Arg2, 4, 5)
 
     
     def create_encoded_name(self) -> GWStringEncoded:
@@ -657,7 +704,7 @@ class DefensiveUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class EbonUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = None
+    damage_type: DamageType | None = DamageType.Earth
 
     id = ItemUpgrade.Ebon
     property_identifiers = [
@@ -670,7 +717,7 @@ class EbonUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class FieryUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = None
+    damage_type: DamageType | None = DamageType.Fire
 
     id = ItemUpgrade.Fiery
     property_identifiers = [
@@ -683,7 +730,7 @@ class FieryUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class FuriousUpgrade(WeaponPrefix):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.Furious
     property_identifiers = [
@@ -697,13 +744,13 @@ class FuriousUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class HaleUpgrade(WeaponPrefix):
-    health: int = 0
+    health: int = 30
 
     id = ItemUpgrade.Hale
     property_identifiers = [
         ModifierIdentifier.HealthPlus,
     ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlus, ModifierType.Arg1, 1, 30)
+    modifier_range = ModifierRange(ModifierIdentifier.HealthPlus, ModifierType.Arg1, 10, 30)
 
     
     def create_encoded_name(self) -> GWStringEncoded:
@@ -711,7 +758,7 @@ class HaleUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class HeavyUpgrade(WeaponPrefix):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Weakness
 
     id = ItemUpgrade.Heavy
     property_identifiers = [
@@ -724,7 +771,7 @@ class HeavyUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class IcyUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = None
+    damage_type: DamageType | None = DamageType.Cold
 
     id = ItemUpgrade.Icy
     property_identifiers = [
@@ -737,7 +784,7 @@ class IcyUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class InsightfulUpgrade(WeaponPrefix):
-    energy: int = 0
+    energy: int = 5
 
     id = ItemUpgrade.Insightful
     property_identifiers = [
@@ -751,7 +798,7 @@ class InsightfulUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class PoisonousUpgrade(WeaponPrefix):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Poison
 
     id = ItemUpgrade.Poisonous
     property_identifiers = [
@@ -764,7 +811,7 @@ class PoisonousUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class ShockingUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = None
+    damage_type: DamageType | None = DamageType.Lightning
 
     id = ItemUpgrade.Shocking
     property_identifiers = [
@@ -777,7 +824,7 @@ class ShockingUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class SilencingUpgrade(WeaponPrefix):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Dazed
 
     id = ItemUpgrade.Silencing
     property_identifiers = [
@@ -790,8 +837,8 @@ class SilencingUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class SunderingUpgrade(WeaponPrefix):
-    chance: int = 0
-    armor_penetration: int = 0
+    chance: int = 20
+    armor_penetration: int = 20
 
     id = ItemUpgrade.Sundering
     property_identifiers = [
@@ -801,15 +848,13 @@ class SunderingUpgrade(WeaponPrefix):
     max_modifier_values = {
         ModifierIdentifier.ArmorPenetration: (20, 20),
     }
-
-
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x74, 0xA, 0x1, 0x0]), f"Sundering")
     
 @dataclass(eq=False)
 class SwiftUpgrade(WeaponPrefix):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.Swift
     property_identifiers = [
@@ -823,8 +868,8 @@ class SwiftUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class VampiricUpgrade(WeaponPrefix):
-    health_regeneration: int = 0
-    health_steal: int = 0
+    health_regeneration: int = 1
+    health_steal: int = 5
 
     id = ItemUpgrade.Vampiric
     property_identifiers = [
@@ -840,16 +885,14 @@ class VampiricUpgrade(WeaponPrefix):
     
 @dataclass(eq=False)
 class ZealousUpgrade(WeaponPrefix):
-    energy_regeneration: int = 0
-    energy_gain: int = 0
+    energy_regeneration: int = 1
+    energy_gain: int = 1
 
     id = ItemUpgrade.Zealous
     property_identifiers = [
         ModifierIdentifier.EnergyRegeneration,
         ModifierIdentifier.EnergyGainOnHit,
     ]
-
-
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6E, 0xA, 0x1, 0x0]), f"Zealous")
@@ -863,7 +906,7 @@ class WeaponSuffix(WeaponUpgrade):
     
 @dataclass(eq=False)
 class OfAttributeUpgrade(WeaponSuffix):
-    chance: int = 0
+    chance: int = 20
     attribute: Attribute = Attribute.None_
     attribute_level: int = 1
 
@@ -882,7 +925,7 @@ class OfAttributeUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfAptitudeUpgrade(WeaponSuffix):
-    chance: int = 0
+    chance: int = 20
 
     id = ItemUpgrade.OfAptitude
     property_identifiers = [
@@ -913,7 +956,7 @@ class OfDaggerMasteryUpgrade(OfAttributeUpgrade):
     
 @dataclass(eq=False)
 class OfDefenseUpgrade(WeaponSuffix):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.OfDefense
     property_identifiers = [
@@ -927,7 +970,7 @@ class OfDefenseUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfDevotionUpgrade(WeaponSuffix):
-    health: int = 0
+    health: int = 45
 
     id = ItemUpgrade.OfDevotion
     property_identifiers = [
@@ -941,7 +984,7 @@ class OfDevotionUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfEnchantingUpgrade(WeaponSuffix):
-    enchantment_duration: int = 0
+    enchantment_duration: int = 20
 
     id = ItemUpgrade.OfEnchanting
     property_identifiers = [
@@ -955,7 +998,7 @@ class OfEnchantingUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfEnduranceUpgrade(WeaponSuffix):
-    health: int = 0
+    health: int = 45
 
     id = ItemUpgrade.OfEndurance
     property_identifiers = [
@@ -969,7 +1012,7 @@ class OfEnduranceUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfFortitudeUpgrade(WeaponSuffix):
-    health: int = 0
+    health: int = 30
 
     id = ItemUpgrade.OfFortitude
     property_identifiers = [
@@ -999,8 +1042,8 @@ class OfMarksmanshipUpgrade(OfAttributeUpgrade):
     
 @dataclass(eq=False)
 class OfMasteryUpgrade(WeaponSuffix):
-    chance: int = 0
-    attribute_level: int = 0
+    chance: int = 20
+    attribute_level: int = 1
 
     id = ItemUpgrade.OfMastery
     property_identifiers = [
@@ -1015,7 +1058,7 @@ class OfMasteryUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfMemoryUpgrade(WeaponSuffix):
-    chance: int = 0
+    chance: int = 20
 
     id = ItemUpgrade.OfMemory
     property_identifiers = [
@@ -1029,7 +1072,7 @@ class OfMemoryUpgrade(WeaponSuffix):
 
 @dataclass(eq=False)
 class OfQuickeningUpgrade(WeaponSuffix):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.OfQuickening
     property_identifiers = [
@@ -1051,7 +1094,7 @@ class OfScytheMasteryUpgrade(OfAttributeUpgrade):
     
 @dataclass(eq=False)
 class OfShelterUpgrade(WeaponSuffix):
-    armor: int = 0
+    armor: int = 7
 
     id = ItemUpgrade.OfShelter
     property_identifiers = [
@@ -1066,14 +1109,21 @@ class OfShelterUpgrade(WeaponSuffix):
 @dataclass(eq=False)
 class OfSlayingUpgrade(WeaponSuffix):
     species: ItemBaneSpecies = ItemBaneSpecies.Unknown
-    damage_increase: int = 0
+    damage_increase: int = 20
 
     id = ItemUpgrade.OfSlaying
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusVsSpecies, ModifierType.Arg1, 10, 20)
+    modifier_ranges = [
+        ModifierRange(
+            ModifierIdentifier.BaneSpecies,
+            ModifierType.Arg1,
+            allowed_values=[species.value for species in ItemBaneSpecies if species != ItemBaneSpecies.Unknown],
+        ),
+        ModifierRange(ModifierIdentifier.DamagePlusVsSpecies, ModifierType.Arg1, 10, 20),
+    ]
     
     property_identifiers = [
         ModifierIdentifier.DamagePlusVsSpecies,
-        # ModifierIdentifier.BaneSpecies,
+        ModifierIdentifier.BaneSpecies,
     ]
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -1089,7 +1139,7 @@ class OfSpearMasteryUpgrade(OfAttributeUpgrade):
 
 @dataclass(eq=False)
 class OfSwiftnessUpgrade(WeaponSuffix):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.OfSwiftness
     property_identifiers = [
@@ -1116,7 +1166,18 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     attribute_level: int = 5
 
     id = ItemUpgrade.OfTheProfession
-    modifier_range = ModifierRange(ModifierIdentifier.OfTheProfession, ModifierType.Arg2, 4, 5)
+    modifier_ranges = [
+        ModifierRange(
+            ModifierIdentifier.OfTheProfession,
+            ModifierType.Arg1,
+            allowed_values=[
+                attribute.value
+                for attribute in Attribute
+                if attribute != Attribute.None_ and attribute.is_primary
+            ],
+        ),
+        ModifierRange(ModifierIdentifier.OfTheProfession, ModifierType.Arg2, 4, 5),
+    ]
     
     property_identifiers = [
         ModifierIdentifier.OfTheProfession,
@@ -1133,7 +1194,7 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfValorUpgrade(WeaponSuffix):
-    health: int = 0
+    health: int = 60
 
     id = ItemUpgrade.OfValor
     property_identifiers = [
@@ -1147,7 +1208,7 @@ class OfValorUpgrade(WeaponSuffix):
     
 @dataclass(eq=False)
 class OfWardingUpgrade(WeaponSuffix):
-    armor: int = 0
+    armor: int = 7
 
     id = ItemUpgrade.OfWarding
     property_identifiers = [
@@ -1178,20 +1239,25 @@ class Inscription(Upgrade):
 
     @property
     def is_maxed(self) -> bool:
-        if not self.properties or not self.modifier_range:
+        modifier_ranges = type(self).get_modifier_ranges()
+        if not self.properties or not modifier_ranges:
             return True
 
-        prop = self._get_upgrade_property(self.modifier_range.modifierIdentifier)
-        if not prop:
-            return False
+        for modifier_range in modifier_ranges:
+            prop = self._get_upgrade_property(modifier_range.modifierIdentifier)
+            if not prop:
+                return False
 
-        value = prop.modifier.arg1 if self.modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
-        return self.modifier_range.min_value <= value <= self.modifier_range.max_value
+            value = prop.modifier.arg1 if modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
+            if not modifier_range.is_valid(value):
+                return False
+
+        return True
     
 #region Offhand
 @dataclass(eq=False)
 class BeJustAndFearNot(Inscription):
-    armor: int = 0
+    armor: int = 10
 
     id = ItemUpgrade.BeJustAndFearNot
     target_item_type = ItemType.Offhand
@@ -1206,8 +1272,8 @@ class BeJustAndFearNot(Inscription):
         
 @dataclass(eq=False)
 class DownButNotOut(Inscription):
-    armor: int = 0
-    health_threshold: int = 0
+    armor: int = 10
+    health_threshold: int = 50
 
     id = ItemUpgrade.DownButNotOut
     target_item_type = ItemType.Offhand
@@ -1226,7 +1292,7 @@ class DownButNotOut(Inscription):
     
 @dataclass(eq=False)
 class FaithIsMyShield(Inscription):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.FaithIsMyShield
     target_item_type = ItemType.Offhand
@@ -1241,7 +1307,7 @@ class FaithIsMyShield(Inscription):
     
 @dataclass(eq=False)
 class ForgetMeNot(Inscription):
-    chance: int = 0
+    chance: int = 20
 
     id = ItemUpgrade.ForgetMeNot
     target_item_type = ItemType.Offhand
@@ -1256,8 +1322,8 @@ class ForgetMeNot(Inscription):
     
 @dataclass(eq=False)
 class HailToTheKing(Inscription):
-    armor: int = 0
-    health_threshold: int = 0
+    armor: int = 5
+    health_threshold: int = 50
 
     id = ItemUpgrade.HailToTheKing
     target_item_type = ItemType.Offhand
@@ -1268,16 +1334,14 @@ class HailToTheKing(Inscription):
     max_modifier_values = {
         ModifierIdentifier.ArmorPlusAbove: (50, 5),
     }
-
-
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8F, 0x5D, 0x1, 0x0]), f"Hail To The King")
     
 @dataclass(eq=False)
 class IgnoranceIsBliss(Inscription):
-    armor: int = 0
-    energy: int = 0
+    armor: int = 5
+    energy: int = 5
 
     id = ItemUpgrade.IgnoranceIsBliss
     target_item_type = ItemType.Offhand
@@ -1294,7 +1358,7 @@ class IgnoranceIsBliss(Inscription):
     
 @dataclass(eq=False)
 class KnowingIsHalfTheBattle(Inscription):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.KnowingIsHalfTheBattle
     target_item_type = ItemType.Offhand
@@ -1309,8 +1373,8 @@ class KnowingIsHalfTheBattle(Inscription):
     
 @dataclass(eq=False)
 class LifeIsPain(Inscription):
-    armor: int = 0
-    health: int = 0
+    armor: int = 5
+    health: int = 20
 
     id = ItemUpgrade.LifeIsPain
     target_item_type = ItemType.Offhand
@@ -1327,8 +1391,8 @@ class LifeIsPain(Inscription):
     
 @dataclass(eq=False)
 class LiveForToday(Inscription):
-    energy: int = 0
-    energy_regen: int = 0
+    energy: int = 15
+    energy_regeneration: int = 1
 
     id = ItemUpgrade.LiveForToday
     target_item_type = ItemType.Offhand
@@ -1345,7 +1409,7 @@ class LiveForToday(Inscription):
     
 @dataclass(eq=False)
 class ManForAllSeasons(Inscription):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.ManForAllSeasons
     target_item_type = ItemType.Offhand
@@ -1360,7 +1424,7 @@ class ManForAllSeasons(Inscription):
     
 @dataclass(eq=False)
 class MightMakesRight(Inscription):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.MightMakesRight
     target_item_type = ItemType.Offhand
@@ -1375,7 +1439,7 @@ class MightMakesRight(Inscription):
     
 @dataclass(eq=False)
 class SerenityNow(Inscription):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.SerenityNow
     target_item_type = ItemType.Offhand
@@ -1390,7 +1454,7 @@ class SerenityNow(Inscription):
     
 @dataclass(eq=False)
 class SurvivalOfTheFittest(Inscription):
-    armor: int = 0
+    armor: int = 5
 
     id = ItemUpgrade.SurvivalOfTheFittest
     target_item_type = ItemType.Offhand
@@ -1409,8 +1473,8 @@ class SurvivalOfTheFittest(Inscription):
 
 @dataclass(eq=False)
 class BrawnOverBrains(Inscription):
-    damage_increase: int = 0
-    energy: int = 0
+    damage_increase: int = 15
+    energy: int = 5
 
     id = ItemUpgrade.BrawnOverBrains
     target_item_type = ItemType.Weapon
@@ -1427,7 +1491,7 @@ class BrawnOverBrains(Inscription):
         
 @dataclass(eq=False)
 class DanceWithDeath(Inscription):
-    damage_increase: int = 0
+    damage_increase: int = 15
 
     id = ItemUpgrade.DanceWithDeath
     target_item_type = ItemType.Weapon
@@ -1442,7 +1506,7 @@ class DanceWithDeath(Inscription):
          
 @dataclass(eq=False)
 class DontFearTheReaper(Inscription):
-    damage_increase: int = 0
+    damage_increase: int = 15
 
     id = ItemUpgrade.DontFearTheReaper
     target_item_type = ItemType.Weapon
@@ -1457,7 +1521,7 @@ class DontFearTheReaper(Inscription):
     
 @dataclass(eq=False)
 class DontThinkTwice(Inscription):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.DontThinkTwice
     target_item_type = ItemType.Weapon
@@ -1472,7 +1536,7 @@ class DontThinkTwice(Inscription):
     
 @dataclass(eq=False)
 class GuidedByFate(Inscription):
-    damage_increase: int = 0
+    damage_increase: int = 15
 
     id = ItemUpgrade.GuidedByFate
     target_item_type = ItemType.Weapon
@@ -1487,8 +1551,8 @@ class GuidedByFate(Inscription):
     
 @dataclass(eq=False)
 class StrengthAndHonor(Inscription):
-    damage_increase: int = 0
-    health_threshold: int = 0
+    damage_increase: int = 15
+    health_threshold: int = 50
 
     id = ItemUpgrade.StrengthAndHonor
     target_item_type = ItemType.Weapon
@@ -1507,8 +1571,8 @@ class StrengthAndHonor(Inscription):
     
 @dataclass(eq=False)
 class ToThePain(Inscription):
-    damage_increase: int = 0
-    armor: int = 0
+    damage_increase: int = 15
+    armor: int = 10
 
     id = ItemUpgrade.ToThePain
     target_item_type = ItemType.Weapon
@@ -1525,7 +1589,7 @@ class ToThePain(Inscription):
     
 @dataclass(eq=False)
 class TooMuchInformation(Inscription):
-    damage_increase: int = 0
+    damage_increase: int = 15
 
     id = ItemUpgrade.TooMuchInformation
     target_item_type = ItemType.Weapon
@@ -1540,8 +1604,8 @@ class TooMuchInformation(Inscription):
     
 @dataclass(eq=False)
 class VengeanceIsMine(Inscription):
-    damage_increase: int = 0
-    health_threshold: int = 0
+    damage_increase: int = 20
+    health_threshold: int = 50
 
     id = ItemUpgrade.VengeanceIsMine
     target_item_type = ItemType.Weapon
@@ -1563,7 +1627,7 @@ class VengeanceIsMine(Inscription):
 #region MartialWeapon
 @dataclass(eq=False)
 class IHaveThePower(Inscription):
-    energy: int = 0
+    energy: int = 5
 
     id = ItemUpgrade.IHaveThePower
     target_item_type = ItemType.MartialWeapon
@@ -1578,7 +1642,7 @@ class IHaveThePower(Inscription):
     
 @dataclass(eq=False)
 class LetTheMemoryLiveAgain(Inscription):
-    chance: int = 0
+    chance: int = 10
 
     id = ItemUpgrade.LetTheMemoryLiveAgain
     target_item_type = ItemType.MartialWeapon
@@ -1596,7 +1660,7 @@ class LetTheMemoryLiveAgain(Inscription):
 #region OffhandOrShield
 @dataclass(eq=False)
 class CastOutTheUnclean(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Disease
 
     id = ItemUpgrade.CastOutTheUnclean
     target_item_type = ItemType.OffhandOrShield
@@ -1610,7 +1674,7 @@ class CastOutTheUnclean(Inscription):
     
 @dataclass(eq=False)
 class FearCutsDeeper(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Bleeding
 
     id = ItemUpgrade.FearCutsDeeper
     target_item_type = ItemType.OffhandOrShield
@@ -1624,7 +1688,7 @@ class FearCutsDeeper(Inscription):
     
 @dataclass(eq=False)
 class ICanSeeClearlyNow(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Blind
 
     id = ItemUpgrade.ICanSeeClearlyNow
     target_item_type = ItemType.OffhandOrShield
@@ -1638,8 +1702,8 @@ class ICanSeeClearlyNow(Inscription):
     
 @dataclass(eq=False)
 class LeafOnTheWind(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Cold
 
     id = ItemUpgrade.LeafOnTheWind
     target_item_type = ItemType.OffhandOrShield
@@ -1658,8 +1722,8 @@ class LeafOnTheWind(Inscription):
     
 @dataclass(eq=False)
 class LikeARollingStone(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Earth
 
     id = ItemUpgrade.LikeARollingStone
     target_item_type = ItemType.OffhandOrShield
@@ -1678,8 +1742,8 @@ class LikeARollingStone(Inscription):
     
 @dataclass(eq=False)
 class LuckOfTheDraw(Inscription):
-    damage_reduction: int = 0
-    chance: int = 0
+    damage_reduction: int = 5
+    chance: int = 20
 
     id = ItemUpgrade.LuckOfTheDraw
     target_item_type = ItemType.OffhandOrShield
@@ -1698,8 +1762,8 @@ class LuckOfTheDraw(Inscription):
     
 @dataclass(eq=False)
 class MasterOfMyDomain(Inscription):
-    chance: int = 0
-    attribute_level: int = 0
+    chance: int = 20
+    attribute_level: int = 1
 
     id = ItemUpgrade.MasterOfMyDomain
     target_item_type = ItemType.OffhandOrShield
@@ -1715,8 +1779,8 @@ class MasterOfMyDomain(Inscription):
     
 @dataclass(eq=False)
 class NotTheFace(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Blunt
 
     id = ItemUpgrade.NotTheFace
     target_item_type = ItemType.OffhandOrShield
@@ -1735,7 +1799,7 @@ class NotTheFace(Inscription):
     
 @dataclass(eq=False)
 class NothingToFear(Inscription):
-    damage_reduction: int = 0
+    damage_reduction: int = 3
 
     id = ItemUpgrade.NothingToFear
     target_item_type = ItemType.OffhandOrShield
@@ -1750,7 +1814,7 @@ class NothingToFear(Inscription):
     
 @dataclass(eq=False)
 class OnlyTheStrongSurvive(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Weakness
 
     id = ItemUpgrade.OnlyTheStrongSurvive
     target_item_type = ItemType.OffhandOrShield
@@ -1764,7 +1828,7 @@ class OnlyTheStrongSurvive(Inscription):
     
 @dataclass(eq=False)
 class PureOfHeart(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Poison
 
     id = ItemUpgrade.PureOfHeart
     target_item_type = ItemType.OffhandOrShield
@@ -1778,8 +1842,8 @@ class PureOfHeart(Inscription):
     
 @dataclass(eq=False)
 class RidersOnTheStorm(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Lightning
 
     id = ItemUpgrade.RidersOnTheStorm
     target_item_type = ItemType.OffhandOrShield
@@ -1798,7 +1862,7 @@ class RidersOnTheStorm(Inscription):
     
 @dataclass(eq=False)
 class RunForYourLife(Inscription):
-    damage_reduction: int = 0
+    damage_reduction: int = 2
 
     id = ItemUpgrade.RunForYourLife
     target_item_type = ItemType.OffhandOrShield
@@ -1813,7 +1877,7 @@ class RunForYourLife(Inscription):
     
 @dataclass(eq=False)
 class ShelteredByFaith(Inscription):
-    damage_reduction: int = 0
+    damage_reduction: int = 2
 
     id = ItemUpgrade.ShelteredByFaith
     target_item_type = ItemType.OffhandOrShield
@@ -1828,8 +1892,8 @@ class ShelteredByFaith(Inscription):
     
 @dataclass(eq=False)
 class SleepNowInTheFire(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Fire
 
     id = ItemUpgrade.SleepNowInTheFire
     target_item_type = ItemType.OffhandOrShield
@@ -1848,7 +1912,7 @@ class SleepNowInTheFire(Inscription):
     
 @dataclass(eq=False)
 class SoundnessOfMind(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Dazed
 
     id = ItemUpgrade.SoundnessOfMind
     target_item_type = ItemType.OffhandOrShield
@@ -1862,7 +1926,7 @@ class SoundnessOfMind(Inscription):
     
 @dataclass(eq=False)
 class StrengthOfBody(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Deep_Wound
 
     id = ItemUpgrade.StrengthOfBody
     target_item_type = ItemType.OffhandOrShield
@@ -1876,7 +1940,7 @@ class StrengthOfBody(Inscription):
     
 @dataclass(eq=False)
 class SwiftAsTheWind(Inscription):
-    condition: Ailment | None = None
+    condition: Ailment | None = Ailment.Crippled
 
     id = ItemUpgrade.SwiftAsTheWind
     target_item_type = ItemType.OffhandOrShield
@@ -1890,8 +1954,8 @@ class SwiftAsTheWind(Inscription):
 
 @dataclass(eq=False)
 class TheRiddleOfSteel(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Slashing
 
     id = ItemUpgrade.TheRiddleOfSteel
     target_item_type = ItemType.OffhandOrShield
@@ -1910,8 +1974,8 @@ class TheRiddleOfSteel(Inscription):
     
 @dataclass(eq=False)
 class ThroughThickAndThin(Inscription):
-    armor: int = 0
-    damage_type: DamageType | None = None
+    armor: int = 10
+    damage_type: DamageType | None = DamageType.Piercing
 
     id = ItemUpgrade.ThroughThickAndThin
     target_item_type = ItemType.OffhandOrShield
@@ -1964,7 +2028,7 @@ class ShowMeTheMoney(Inscription):
 #region SpellcastingWeapon
 @dataclass(eq=False)
 class AptitudeNotAttitude(Inscription):
-    chance: int = 0
+    chance: int = 20
 
     id = ItemUpgrade.AptitudeNotAttitude
     target_item_type = ItemType.SpellcastingWeapon
@@ -1979,8 +2043,8 @@ class AptitudeNotAttitude(Inscription):
     
 @dataclass(eq=False)
 class DontCallItAComeback(Inscription):
-    energy: int = 0
-    health_threshold: int = 0
+    energy: int = 7
+    health_threshold: int = 50
 
     id = ItemUpgrade.DontCallItAComeback
     target_item_type = ItemType.SpellcastingWeapon
@@ -1999,8 +2063,8 @@ class DontCallItAComeback(Inscription):
     
 @dataclass(eq=False)
 class HaleAndHearty(Inscription):
-    energy: int = 0
-    health_threshold: int = 0
+    energy: int = 5
+    health_threshold: int = 50
 
     id = ItemUpgrade.HaleAndHearty
     target_item_type = ItemType.SpellcastingWeapon
@@ -2019,7 +2083,7 @@ class HaleAndHearty(Inscription):
     
 @dataclass(eq=False)
 class HaveFaith(Inscription):
-    energy: int = 0
+    energy: int = 5
 
     id = ItemUpgrade.HaveFaith
     target_item_type = ItemType.SpellcastingWeapon
@@ -2034,7 +2098,7 @@ class HaveFaith(Inscription):
     
 @dataclass(eq=False)
 class IAmSorrow(Inscription):
-    energy: int = 0
+    energy: int = 7
 
     id = ItemUpgrade.IAmSorrow
     target_item_type = ItemType.SpellcastingWeapon
@@ -2049,8 +2113,8 @@ class IAmSorrow(Inscription):
     
 @dataclass(eq=False)
 class SeizeTheDay(Inscription):
-    energy: int = 0
-    energy_regen: int = 0
+    energy: int = 15
+    energy_regeneration: int = 1
 
     id = ItemUpgrade.SeizeTheDay
     target_item_type = ItemType.SpellcastingWeapon
@@ -2093,15 +2157,20 @@ class Inherent(Upgrade):
 
     @property
     def is_maxed(self) -> bool:
-        if not self.properties or not self.modifier_range:
+        modifier_ranges = type(self).get_modifier_ranges()
+        if not self.properties or not modifier_ranges:
             return True
 
-        prop = self._get_upgrade_property(self.modifier_range.modifierIdentifier)
-        if not prop:
-            return False
+        for modifier_range in modifier_ranges:
+            prop = self._get_upgrade_property(modifier_range.modifierIdentifier)
+            if not prop:
+                return False
 
-        value = prop.modifier.arg1 if self.modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
-        return self.modifier_range.min_value <= value <= self.modifier_range.max_value
+            value = prop.modifier.arg1 if modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
+            if not modifier_range.is_valid(value):
+                return False
+
+        return True
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(bytes(), f"Inherent: {Utils.humanize_string(self.__class__.__name__)}")
@@ -2153,8 +2222,8 @@ class DamagePlusWhileBelowUpgrade(Inherent, VengeanceIsMine):
 
 @dataclass(eq=False)
 class VampiricStrengthUpgrade(Inherent):
-    damage_increase: int = 0
-    health_regeneration: int = 0
+    damage_increase: int = 15
+    health_regeneration: int = 1
 
     target_item_type = ItemType.Weapon
     property_identifiers = [
@@ -2167,8 +2236,8 @@ class VampiricStrengthUpgrade(Inherent):
 
 @dataclass(eq=False)
 class ZealousStrengthUpgrade(Inherent):
-    damage_increase: int = 0
-    energy_regeneration: int = 0
+    damage_increase: int = 15
+    energy_regeneration: int = 1
 
     target_item_type = ItemType.Weapon
     property_identifiers = [
@@ -2272,9 +2341,9 @@ class HealthPlusEnchantedUpgrade(Inherent, OfDevotionUpgrade):
 
 @dataclass(eq=False)
 class AttributePlusOneUpgrade(Inherent):
-    chance: int = 0
+    chance: int = 20
     attribute: Attribute = Attribute.None_
-    attribute_level: int = 0
+    attribute_level: int = 1
 
     target_item_type = ItemType.OffhandOrShield
     property_identifiers = [
@@ -2352,7 +2421,7 @@ class PiercingArmorPlusVsDamageUpgrade(Inherent, ThroughThickAndThin):
 
 @dataclass(eq=False)
 class ArmorVsSpeciesUpgrade(Inherent):
-    armor: int = 0
+    armor: int = 10
     species: ItemBaneSpecies | None = None
 
     target_item_type = ItemType.Weapon
@@ -2368,7 +2437,7 @@ class ArmorVsSpeciesUpgrade(Inherent):
 #region EquippableItem
 @dataclass(eq=False)
 class HealthPlusUpgrade(Inherent):
-    health: int = 0
+    health: int = 30
 
     target_item_type = ItemType.EquippableItem
     property_identifiers = [
@@ -2378,7 +2447,7 @@ class HealthPlusUpgrade(Inherent):
 
 @dataclass(eq=False)
 class EnergyUpgrade(Inherent):
-    energy: int = 0
+    energy: int = 5
 
     target_item_type = ItemType.EquippableItem
     property_identifiers = [
@@ -2398,7 +2467,7 @@ class IncreasedSaleValueUpgrade(Inherent, ShowMeTheMoney):
 #region SpellcastingWeapon
 @dataclass(eq=False)
 class HalvesCastingTimeAttributeUpgrade(Inherent):
-    chance: int = 0
+    chance: int = 20
     attribute: Attribute | None = None
 
     target_item_type = ItemType.SpellcastingWeapon
@@ -2411,7 +2480,7 @@ class HalvesCastingTimeAttributeUpgrade(Inherent):
     
 @dataclass(eq=False)
 class HalvesRechargeTimeAttributeUpgrade(Inherent):
-    chance: int = 0
+    chance: int = 20
     attribute: Attribute | None = None
 
     target_item_type = ItemType.SpellcastingWeapon
@@ -2450,8 +2519,8 @@ class EnergyPlusHexedUpgrade(Inherent, IAmSorrow):
 
 @dataclass(eq=False)
 class EnergyPlusEnergyRegenerationMinusUpgrade(Inherent):
-    energy: int = 0
-    energy_regen: int = 0
+    energy: int = 15
+    energy_regeneration: int = 1
 
     property_identifiers = [
         ModifierIdentifier.EnergyPlus,
@@ -2512,6 +2581,12 @@ class AttributeRune(Rune):
     attribute: Attribute = Attribute.None_
     attribute_level: int = 0
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+    def __post_init__(self):
+        super().__post_init__()
+
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         attribute_rune = cast("AttributeRune", upgrade)
@@ -2522,13 +2597,12 @@ class AttributeRune(Rune):
         attribute = GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes())
         fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
 
-        match self.attribute_level:
-            case 3:
-                gold_value = 100
+        match self.rarity:
+            case Rarity.Gold:
                 encoded_description = bytes([ 
                                             *self.get_text_color(), *GWEncoded.PLUS_NUM_TEMPLATE, *attribute, 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, *GWEncoded.ITEM_DULL, *GWEncoded.NOT_STACKING_BYTES, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 
                                             *self.get_text_color(), *GWEncoded.HEALTH_MINUS_NUM, 75, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1])
-            case 2:
+            case Rarity.Purple:
                 encoded_description = bytes([
                                             *self.get_text_color(), *GWEncoded.PLUS_NUM_TEMPLATE, *attribute, 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, *GWEncoded.ITEM_DULL, *GWEncoded.NOT_STACKING_BYTES, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 
                                             *self.get_text_color(), *GWEncoded.HEALTH_MINUS_NUM, 35, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1])
@@ -2538,6 +2612,21 @@ class AttributeRune(Rune):
 
         return GWStringEncoded(encoded_description, fallback)
 
+@dataclass(eq=False)
+class MinorAttributeRune(AttributeRune):
+    attribute_level = 1
+    rarity = Rarity.Blue
+    
+@dataclass(eq=False)
+class MajorAttributeRune(AttributeRune):
+    attribute_level = 2
+    rarity = Rarity.Purple
+    
+@dataclass(eq=False)
+class SuperiorAttributeRune(AttributeRune):
+    attribute_level = 3
+    rarity = Rarity.Gold
+    
 @dataclass(eq=False)
 class AppliesToRune(Upgrade):
     pass
@@ -2857,50 +2946,50 @@ class WarriorRuneOfMinorAbsorption(Rune):
     
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorTactics(AttributeRune):
+class WarriorRuneOfMinorTactics(MinorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMinorTactics
     profession = Profession.Warrior
-    rarity = Rarity.Blue
+    attribute = Attribute.Tactics
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x48, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorStrength(AttributeRune):
+class WarriorRuneOfMinorStrength(MinorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMinorStrength
     profession = Profession.Warrior
-    rarity = Rarity.Blue
+    attribute = Attribute.Strength
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x40, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorAxeMastery(AttributeRune):
+class WarriorRuneOfMinorAxeMastery(MinorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMinorAxeMastery
     profession = Profession.Warrior
-    rarity = Rarity.Blue
+    attribute = Attribute.AxeMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x42, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorHammerMastery(AttributeRune):
+class WarriorRuneOfMinorHammerMastery(MinorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMinorHammerMastery
     profession = Profession.Warrior
-    rarity = Rarity.Blue
+    attribute = Attribute.HammerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x44, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorSwordsmanship(AttributeRune):
+class WarriorRuneOfMinorSwordsmanship(MinorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMinorSwordsmanship
     profession = Profession.Warrior
-    rarity = Rarity.Blue
+    attribute = Attribute.Swordsmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x46, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -2921,10 +3010,10 @@ class WarriorRuneOfMajorAbsorption(Rune):
 
     
 @dataclass(eq=False)
-class WarriorRuneOfMajorTactics(AttributeRune):
+class WarriorRuneOfMajorTactics(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorTactics
     profession = Profession.Warrior
-    rarity = Rarity.Purple
+    attribute = Attribute.Tactics
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -2935,10 +3024,10 @@ class WarriorRuneOfMajorTactics(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorStrength(AttributeRune):
+class WarriorRuneOfMajorStrength(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorStrength
     profession = Profession.Warrior
-    rarity = Rarity.Purple
+    attribute = Attribute.Strength
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -2949,10 +3038,10 @@ class WarriorRuneOfMajorStrength(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorAxeMastery(AttributeRune):
+class WarriorRuneOfMajorAxeMastery(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorAxeMastery
     profession = Profession.Warrior
-    rarity = Rarity.Purple
+    attribute = Attribute.AxeMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -2963,10 +3052,10 @@ class WarriorRuneOfMajorAxeMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorHammerMastery(AttributeRune):
+class WarriorRuneOfMajorHammerMastery(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorHammerMastery
     profession = Profession.Warrior
-    rarity = Rarity.Purple
+    attribute = Attribute.HammerMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -2977,10 +3066,10 @@ class WarriorRuneOfMajorHammerMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorSwordsmanship(AttributeRune):
+class WarriorRuneOfMajorSwordsmanship(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorSwordsmanship
     profession = Profession.Warrior
-    rarity = Rarity.Purple
+    attribute = Attribute.Swordsmanship
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3005,10 +3094,10 @@ class WarriorRuneOfSuperiorAbsorption(Rune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorTactics(AttributeRune):
+class WarriorRuneOfSuperiorTactics(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorTactics
     profession = Profession.Warrior
-    rarity = Rarity.Gold
+    attribute = Attribute.Tactics
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3019,10 +3108,10 @@ class WarriorRuneOfSuperiorTactics(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorStrength(AttributeRune):
+class WarriorRuneOfSuperiorStrength(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorStrength
     profession = Profession.Warrior
-    rarity = Rarity.Gold
+    attribute = Attribute.Strength
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3033,10 +3122,10 @@ class WarriorRuneOfSuperiorStrength(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
+class WarriorRuneOfSuperiorAxeMastery(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorAxeMastery
     profession = Profession.Warrior
-    rarity = Rarity.Gold
+    attribute = Attribute.AxeMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3047,10 +3136,10 @@ class WarriorRuneOfSuperiorAxeMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
+class WarriorRuneOfSuperiorHammerMastery(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorHammerMastery
     profession = Profession.Warrior
-    rarity = Rarity.Gold
+    attribute = Attribute.HammerMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3061,10 +3150,10 @@ class WarriorRuneOfSuperiorHammerMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorSwordsmanship(AttributeRune):
+class WarriorRuneOfSuperiorSwordsmanship(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorSwordsmanship
     profession = Profession.Warrior
-    rarity = Rarity.Gold
+    attribute = Attribute.Swordsmanship
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3211,50 +3300,50 @@ class BeastmastersInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class RangerRuneOfMinorWildernessSurvival(AttributeRune):
+class RangerRuneOfMinorWildernessSurvival(MinorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMinorWildernessSurvival
     profession = Profession.Ranger
-    rarity = Rarity.Blue
+    attribute = Attribute.WildernessSurvival
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x54, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RangerRuneOfMinorExpertise(AttributeRune):
+class RangerRuneOfMinorExpertise(MinorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMinorExpertise
     profession = Profession.Ranger
-    rarity = Rarity.Blue
+    attribute = Attribute.Expertise
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x52, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RangerRuneOfMinorBeastMastery(AttributeRune):
+class RangerRuneOfMinorBeastMastery(MinorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMinorBeastMastery
     profession = Profession.Ranger
-    rarity = Rarity.Blue
+    attribute = Attribute.BeastMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x50, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RangerRuneOfMinorMarksmanship(AttributeRune):
+class RangerRuneOfMinorMarksmanship(MinorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMinorMarksmanship
     profession = Profession.Ranger
-    rarity = Rarity.Blue
+    attribute = Attribute.Marksmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x56, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorWildernessSurvival(AttributeRune):
+class RangerRuneOfMajorWildernessSurvival(MajorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMajorWildernessSurvival
     profession = Profession.Ranger
-    rarity = Rarity.Purple
+    attribute = Attribute.WildernessSurvival
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3265,10 +3354,10 @@ class RangerRuneOfMajorWildernessSurvival(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorExpertise(AttributeRune):
+class RangerRuneOfMajorExpertise(MajorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMajorExpertise
     profession = Profession.Ranger
-    rarity = Rarity.Purple
+    attribute = Attribute.Expertise
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3279,10 +3368,10 @@ class RangerRuneOfMajorExpertise(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorBeastMastery(AttributeRune):
+class RangerRuneOfMajorBeastMastery(MajorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMajorBeastMastery
     profession = Profession.Ranger
-    rarity = Rarity.Purple
+    attribute = Attribute.BeastMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3293,10 +3382,10 @@ class RangerRuneOfMajorBeastMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorMarksmanship(AttributeRune):
+class RangerRuneOfMajorMarksmanship(MajorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMajorMarksmanship
     profession = Profession.Ranger
-    rarity = Rarity.Purple
+    attribute = Attribute.Marksmanship
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3307,10 +3396,10 @@ class RangerRuneOfMajorMarksmanship(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
+class RangerRuneOfSuperiorWildernessSurvival(SuperiorAttributeRune):
     id = ItemUpgrade.RangerRuneOfSuperiorWildernessSurvival
     profession = Profession.Ranger
-    rarity = Rarity.Gold
+    attribute = Attribute.WildernessSurvival
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3321,10 +3410,10 @@ class RangerRuneOfSuperiorWildernessSurvival(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorExpertise(AttributeRune):
+class RangerRuneOfSuperiorExpertise(SuperiorAttributeRune):
     id = ItemUpgrade.RangerRuneOfSuperiorExpertise
     profession = Profession.Ranger
-    rarity = Rarity.Gold
+    attribute = Attribute.Expertise
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3335,10 +3424,10 @@ class RangerRuneOfSuperiorExpertise(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorBeastMastery(AttributeRune):
+class RangerRuneOfSuperiorBeastMastery(SuperiorAttributeRune):
     id = ItemUpgrade.RangerRuneOfSuperiorBeastMastery
     profession = Profession.Ranger
-    rarity = Rarity.Gold
+    attribute = Attribute.BeastMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3349,10 +3438,10 @@ class RangerRuneOfSuperiorBeastMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorMarksmanship(AttributeRune):
+class RangerRuneOfSuperiorMarksmanship(SuperiorAttributeRune):
     id = ItemUpgrade.RangerRuneOfSuperiorMarksmanship
     profession = Profession.Ranger
-    rarity = Rarity.Gold
+    attribute = Attribute.Marksmanship
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3452,50 +3541,50 @@ class AnchoritesInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class MonkRuneOfMinorHealingPrayers(AttributeRune):
+class MonkRuneOfMinorHealingPrayers(MinorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMinorHealingPrayers
     profession = Profession.Monk
-    rarity = Rarity.Blue
+    attribute = Attribute.HealingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MonkRuneOfMinorSmitingPrayers(AttributeRune):
+class MonkRuneOfMinorSmitingPrayers(MinorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMinorSmitingPrayers
     profession = Profession.Monk
-    rarity = Rarity.Blue
+    attribute = Attribute.SmitingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MonkRuneOfMinorProtectionPrayers(AttributeRune):
+class MonkRuneOfMinorProtectionPrayers(MinorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMinorProtectionPrayers
     profession = Profession.Monk
-    rarity = Rarity.Blue
+    attribute = Attribute.ProtectionPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MonkRuneOfMinorDivineFavor(AttributeRune):
+class MonkRuneOfMinorDivineFavor(MinorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMinorDivineFavor
     profession = Profession.Monk
-    rarity = Rarity.Blue
+    attribute = Attribute.DivineFavor
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x38, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorHealingPrayers(AttributeRune):
+class MonkRuneOfMajorHealingPrayers(MajorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMajorHealingPrayers
     profession = Profession.Monk
-    rarity = Rarity.Purple
+    attribute = Attribute.HealingPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3506,10 +3595,10 @@ class MonkRuneOfMajorHealingPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorSmitingPrayers(AttributeRune):
+class MonkRuneOfMajorSmitingPrayers(MajorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMajorSmitingPrayers
     profession = Profession.Monk
-    rarity = Rarity.Purple
+    attribute = Attribute.SmitingPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3520,10 +3609,10 @@ class MonkRuneOfMajorSmitingPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorProtectionPrayers(AttributeRune):
+class MonkRuneOfMajorProtectionPrayers(MajorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMajorProtectionPrayers
     profession = Profession.Monk
-    rarity = Rarity.Purple
+    attribute = Attribute.ProtectionPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3534,10 +3623,10 @@ class MonkRuneOfMajorProtectionPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorDivineFavor(AttributeRune):
+class MonkRuneOfMajorDivineFavor(MajorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMajorDivineFavor
     profession = Profession.Monk
-    rarity = Rarity.Purple
+    attribute = Attribute.DivineFavor
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3548,10 +3637,10 @@ class MonkRuneOfMajorDivineFavor(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
+class MonkRuneOfSuperiorHealingPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.MonkRuneOfSuperiorHealingPrayers
     profession = Profession.Monk
-    rarity = Rarity.Gold
+    attribute = Attribute.HealingPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3562,10 +3651,10 @@ class MonkRuneOfSuperiorHealingPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
+class MonkRuneOfSuperiorSmitingPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.MonkRuneOfSuperiorSmitingPrayers
     profession = Profession.Monk
-    rarity = Rarity.Gold
+    attribute = Attribute.SmitingPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3576,10 +3665,10 @@ class MonkRuneOfSuperiorSmitingPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
+class MonkRuneOfSuperiorProtectionPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.MonkRuneOfSuperiorProtectionPrayers
     profession = Profession.Monk
-    rarity = Rarity.Gold
+    attribute = Attribute.ProtectionPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3590,10 +3679,10 @@ class MonkRuneOfSuperiorProtectionPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorDivineFavor(AttributeRune):
+class MonkRuneOfSuperiorDivineFavor(SuperiorAttributeRune):
     id = ItemUpgrade.MonkRuneOfSuperiorDivineFavor
     profession = Profession.Monk
-    rarity = Rarity.Gold
+    attribute = Attribute.DivineFavor
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3743,50 +3832,50 @@ class UndertakersInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorBloodMagic(AttributeRune):
+class NecromancerRuneOfMinorBloodMagic(MinorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMinorBloodMagic
     profession = Profession.Necromancer
-    rarity = Rarity.Blue
+    attribute = Attribute.BloodMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x26, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorDeathMagic(AttributeRune):
+class NecromancerRuneOfMinorDeathMagic(MinorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMinorDeathMagic
     profession = Profession.Necromancer
-    rarity = Rarity.Blue
+    attribute = Attribute.DeathMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorCurses(AttributeRune):
+class NecromancerRuneOfMinorCurses(MinorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMinorCurses
     profession = Profession.Necromancer
-    rarity = Rarity.Blue
+    attribute = Attribute.Curses
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x28, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorSoulReaping(AttributeRune):
+class NecromancerRuneOfMinorSoulReaping(MinorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMinorSoulReaping
     profession = Profession.Necromancer
-    rarity = Rarity.Blue
+    attribute = Attribute.SoulReaping
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorBloodMagic(AttributeRune):
+class NecromancerRuneOfMajorBloodMagic(MajorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMajorBloodMagic
     profession = Profession.Necromancer
-    rarity = Rarity.Purple
+    attribute = Attribute.BloodMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3797,10 +3886,10 @@ class NecromancerRuneOfMajorBloodMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorDeathMagic(AttributeRune):
+class NecromancerRuneOfMajorDeathMagic(MajorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMajorDeathMagic
     profession = Profession.Necromancer
-    rarity = Rarity.Purple
+    attribute = Attribute.DeathMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3811,10 +3900,10 @@ class NecromancerRuneOfMajorDeathMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorCurses(AttributeRune):
+class NecromancerRuneOfMajorCurses(MajorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMajorCurses
     profession = Profession.Necromancer
-    rarity = Rarity.Purple
+    attribute = Attribute.Curses
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3825,10 +3914,10 @@ class NecromancerRuneOfMajorCurses(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorSoulReaping(AttributeRune):
+class NecromancerRuneOfMajorSoulReaping(MajorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMajorSoulReaping
     profession = Profession.Necromancer
-    rarity = Rarity.Purple
+    attribute = Attribute.SoulReaping
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3839,10 +3928,10 @@ class NecromancerRuneOfMajorSoulReaping(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
+class NecromancerRuneOfSuperiorBloodMagic(SuperiorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorBloodMagic
     profession = Profession.Necromancer
-    rarity = Rarity.Gold
+    attribute = Attribute.BloodMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3853,10 +3942,10 @@ class NecromancerRuneOfSuperiorBloodMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
+class NecromancerRuneOfSuperiorDeathMagic(SuperiorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorDeathMagic
     profession = Profession.Necromancer
-    rarity = Rarity.Gold
+    attribute = Attribute.DeathMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3867,10 +3956,10 @@ class NecromancerRuneOfSuperiorDeathMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorCurses(AttributeRune):
+class NecromancerRuneOfSuperiorCurses(SuperiorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorCurses
     profession = Profession.Necromancer
-    rarity = Rarity.Gold
+    attribute = Attribute.Curses
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3881,10 +3970,10 @@ class NecromancerRuneOfSuperiorCurses(AttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorSoulReaping(AttributeRune):
+class NecromancerRuneOfSuperiorSoulReaping(SuperiorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorSoulReaping
     profession = Profession.Necromancer
-    rarity = Rarity.Gold
+    attribute = Attribute.SoulReaping
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -3983,50 +4072,50 @@ class ProdigysInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorFastCasting(AttributeRune):
+class MesmerRuneOfMinorFastCasting(MinorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMinorFastCasting
     profession = Profession.Mesmer
-    rarity = Rarity.Blue
+    attribute = Attribute.FastCasting
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorDominationMagic(AttributeRune):
+class MesmerRuneOfMinorDominationMagic(MinorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMinorDominationMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Blue
+    attribute = Attribute.DominationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x22, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorIllusionMagic(AttributeRune):
+class MesmerRuneOfMinorIllusionMagic(MinorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMinorIllusionMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Blue
+    attribute = Attribute.IllusionMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x20, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorInspirationMagic(AttributeRune):
+class MesmerRuneOfMinorInspirationMagic(MinorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMinorInspirationMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Blue
+    attribute = Attribute.InspirationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x24, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorFastCasting(AttributeRune):
+class MesmerRuneOfMajorFastCasting(MajorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMajorFastCasting
     profession = Profession.Mesmer
-    rarity = Rarity.Purple
+    attribute = Attribute.FastCasting
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4037,10 +4126,10 @@ class MesmerRuneOfMajorFastCasting(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorDominationMagic(AttributeRune):
+class MesmerRuneOfMajorDominationMagic(MajorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMajorDominationMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Purple
+    attribute = Attribute.DominationMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4051,10 +4140,10 @@ class MesmerRuneOfMajorDominationMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorIllusionMagic(AttributeRune):
+class MesmerRuneOfMajorIllusionMagic(MajorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMajorIllusionMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Purple
+    attribute = Attribute.IllusionMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4065,10 +4154,10 @@ class MesmerRuneOfMajorIllusionMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorInspirationMagic(AttributeRune):
+class MesmerRuneOfMajorInspirationMagic(MajorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMajorInspirationMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Purple
+    attribute = Attribute.InspirationMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4079,10 +4168,10 @@ class MesmerRuneOfMajorInspirationMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorFastCasting(AttributeRune):
+class MesmerRuneOfSuperiorFastCasting(SuperiorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorFastCasting
     profession = Profession.Mesmer
-    rarity = Rarity.Gold
+    attribute = Attribute.FastCasting
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4093,10 +4182,10 @@ class MesmerRuneOfSuperiorFastCasting(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
+class MesmerRuneOfSuperiorDominationMagic(SuperiorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorDominationMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Gold
+    attribute = Attribute.DominationMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4107,10 +4196,10 @@ class MesmerRuneOfSuperiorDominationMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
+class MesmerRuneOfSuperiorIllusionMagic(SuperiorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorIllusionMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Gold
+    attribute = Attribute.IllusionMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4121,10 +4210,10 @@ class MesmerRuneOfSuperiorIllusionMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorInspirationMagic(AttributeRune):
+class MesmerRuneOfSuperiorInspirationMagic(SuperiorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorInspirationMagic
     profession = Profession.Mesmer
-    rarity = Rarity.Gold
+    attribute = Attribute.InspirationMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4256,60 +4345,60 @@ class PrismaticInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorEnergyStorage(AttributeRune):
+class ElementalistRuneOfMinorEnergyStorage(MinorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMinorEnergyStorage
     profession = Profession.Elementalist
-    rarity = Rarity.Blue
+    attribute = Attribute.EnergyStorage
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x32, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorFireMagic(AttributeRune):
+class ElementalistRuneOfMinorFireMagic(MinorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMinorFireMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Blue
+    attribute = Attribute.FireMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x34, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorAirMagic(AttributeRune):
+class ElementalistRuneOfMinorAirMagic(MinorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMinorAirMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Blue
+    attribute = Attribute.AirMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorEarthMagic(AttributeRune):
+class ElementalistRuneOfMinorEarthMagic(MinorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMinorEarthMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Blue
+    attribute = Attribute.EarthMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x30, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorWaterMagic(AttributeRune):
+class ElementalistRuneOfMinorWaterMagic(MinorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMinorWaterMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Blue
+    attribute = Attribute.WaterMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x36, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
+class ElementalistRuneOfMajorEnergyStorage(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorEnergyStorage
     profession = Profession.Elementalist
-    rarity = Rarity.Purple
+    attribute = Attribute.EnergyStorage
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4320,10 +4409,10 @@ class ElementalistRuneOfMajorEnergyStorage(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorFireMagic(AttributeRune):
+class ElementalistRuneOfMajorFireMagic(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorFireMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Purple
+    attribute = Attribute.FireMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4334,10 +4423,10 @@ class ElementalistRuneOfMajorFireMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorAirMagic(AttributeRune):
+class ElementalistRuneOfMajorAirMagic(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorAirMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Purple
+    attribute = Attribute.AirMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4348,10 +4437,10 @@ class ElementalistRuneOfMajorAirMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorEarthMagic(AttributeRune):
+class ElementalistRuneOfMajorEarthMagic(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorEarthMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Purple
+    attribute = Attribute.EarthMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4362,10 +4451,10 @@ class ElementalistRuneOfMajorEarthMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorWaterMagic(AttributeRune):
+class ElementalistRuneOfMajorWaterMagic(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorWaterMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Purple
+    attribute = Attribute.WaterMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4376,10 +4465,10 @@ class ElementalistRuneOfMajorWaterMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
+class ElementalistRuneOfSuperiorEnergyStorage(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorEnergyStorage
     profession = Profession.Elementalist
-    rarity = Rarity.Gold
+    attribute = Attribute.EnergyStorage
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4390,10 +4479,9 @@ class ElementalistRuneOfSuperiorEnergyStorage(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
+class ElementalistRuneOfSuperiorFireMagic(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorFireMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Gold
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4404,10 +4492,10 @@ class ElementalistRuneOfSuperiorFireMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
+class ElementalistRuneOfSuperiorAirMagic(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorAirMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Gold
+    attribute = Attribute.AirMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4418,10 +4506,10 @@ class ElementalistRuneOfSuperiorAirMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
+class ElementalistRuneOfSuperiorEarthMagic(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorEarthMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Gold
+    attribute = Attribute.EarthMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4432,10 +4520,10 @@ class ElementalistRuneOfSuperiorEarthMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorWaterMagic(AttributeRune):
+class ElementalistRuneOfSuperiorWaterMagic(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorWaterMagic
     profession = Profession.Elementalist
-    rarity = Rarity.Gold
+    attribute = Attribute.WaterMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4550,50 +4638,50 @@ class NightstalkersInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorCriticalStrikes(AttributeRune):
+class AssassinRuneOfMinorCriticalStrikes(MinorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMinorCriticalStrikes
     profession = Profession.Assassin
-    rarity = Rarity.Blue
+    attribute = Attribute.CriticalStrikes
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x58, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorDaggerMastery(AttributeRune):
+class AssassinRuneOfMinorDaggerMastery(MinorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMinorDaggerMastery
     profession = Profession.Assassin
-    rarity = Rarity.Blue
+    attribute = Attribute.DaggerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorDeadlyArts(AttributeRune):
+class AssassinRuneOfMinorDeadlyArts(MinorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMinorDeadlyArts
     profession = Profession.Assassin
-    rarity = Rarity.Blue
+    attribute = Attribute.DeadlyArts
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorShadowArts(AttributeRune):
+class AssassinRuneOfMinorShadowArts(MinorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMinorShadowArts
     profession = Profession.Assassin
-    rarity = Rarity.Blue
+    attribute = Attribute.ShadowArts
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
+class AssassinRuneOfMajorCriticalStrikes(MajorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMajorCriticalStrikes
     profession = Profession.Assassin
-    rarity = Rarity.Purple
+    attribute = Attribute.CriticalStrikes
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4604,10 +4692,10 @@ class AssassinRuneOfMajorCriticalStrikes(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorDaggerMastery(AttributeRune):
+class AssassinRuneOfMajorDaggerMastery(MajorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMajorDaggerMastery
     profession = Profession.Assassin
-    rarity = Rarity.Purple
+    attribute = Attribute.DaggerMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4618,10 +4706,10 @@ class AssassinRuneOfMajorDaggerMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorDeadlyArts(AttributeRune):
+class AssassinRuneOfMajorDeadlyArts(MajorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMajorDeadlyArts
     profession = Profession.Assassin
-    rarity = Rarity.Purple
+    attribute = Attribute.DeadlyArts
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4632,10 +4720,10 @@ class AssassinRuneOfMajorDeadlyArts(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorShadowArts(AttributeRune):
+class AssassinRuneOfMajorShadowArts(MajorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMajorShadowArts
     profession = Profession.Assassin
-    rarity = Rarity.Purple
+    attribute = Attribute.ShadowArts
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4646,10 +4734,10 @@ class AssassinRuneOfMajorShadowArts(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
+class AssassinRuneOfSuperiorCriticalStrikes(SuperiorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorCriticalStrikes
     profession = Profession.Assassin
-    rarity = Rarity.Gold
+    attribute = Attribute.CriticalStrikes
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4660,10 +4748,10 @@ class AssassinRuneOfSuperiorCriticalStrikes(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
+class AssassinRuneOfSuperiorDaggerMastery(SuperiorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorDaggerMastery
     profession = Profession.Assassin
-    rarity = Rarity.Gold
+    attribute = Attribute.DaggerMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4674,10 +4762,10 @@ class AssassinRuneOfSuperiorDaggerMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
+class AssassinRuneOfSuperiorDeadlyArts(SuperiorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorDeadlyArts
     profession = Profession.Assassin
-    rarity = Rarity.Gold
+    attribute = Attribute.DeadlyArts
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4688,10 +4776,10 @@ class AssassinRuneOfSuperiorDeadlyArts(AttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorShadowArts(AttributeRune):
+class AssassinRuneOfSuperiorShadowArts(SuperiorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorShadowArts
     profession = Profession.Assassin
-    rarity = Rarity.Gold
+    attribute = Attribute.ShadowArts
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4792,50 +4880,50 @@ class MysticsInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorChannelingMagic(AttributeRune):
+class RitualistRuneOfMinorChannelingMagic(MinorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMinorChannelingMagic
     profession = Profession.Ritualist
-    rarity = Rarity.Blue
+    attribute = Attribute.ChannelingMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x66, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorRestorationMagic(AttributeRune):
+class RitualistRuneOfMinorRestorationMagic(MinorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMinorRestorationMagic
     profession = Profession.Ritualist
-    rarity = Rarity.Blue
+    attribute = Attribute.RestorationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x64, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorCommuning(AttributeRune):
+class RitualistRuneOfMinorCommuning(MinorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMinorCommuning
     profession = Profession.Ritualist
-    rarity = Rarity.Blue
+    attribute = Attribute.Communing
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x60, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorSpawningPower(AttributeRune):
+class RitualistRuneOfMinorSpawningPower(MinorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMinorSpawningPower
     profession = Profession.Ritualist
-    rarity = Rarity.Blue
+    attribute = Attribute.SpawningPower
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x62, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorChannelingMagic(AttributeRune):
+class RitualistRuneOfMajorChannelingMagic(MajorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMajorChannelingMagic
     profession = Profession.Ritualist
-    rarity = Rarity.Purple
+    attribute = Attribute.ChannelingMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4846,10 +4934,10 @@ class RitualistRuneOfMajorChannelingMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorRestorationMagic(AttributeRune):
+class RitualistRuneOfMajorRestorationMagic(MajorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMajorRestorationMagic
     profession = Profession.Ritualist
-    rarity = Rarity.Purple
+    attribute = Attribute.RestorationMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4860,10 +4948,10 @@ class RitualistRuneOfMajorRestorationMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorCommuning(AttributeRune):
+class RitualistRuneOfMajorCommuning(MajorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMajorCommuning
     profession = Profession.Ritualist
-    rarity = Rarity.Purple
+    attribute = Attribute.Communing
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4874,10 +4962,10 @@ class RitualistRuneOfMajorCommuning(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorSpawningPower(AttributeRune):
+class RitualistRuneOfMajorSpawningPower(MajorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMajorSpawningPower
     profession = Profession.Ritualist
-    rarity = Rarity.Purple
+    attribute = Attribute.SpawningPower
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4888,10 +4976,10 @@ class RitualistRuneOfMajorSpawningPower(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
+class RitualistRuneOfSuperiorChannelingMagic(SuperiorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorChannelingMagic
     profession = Profession.Ritualist
-    rarity = Rarity.Gold
+    attribute = Attribute.ChannelingMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4902,10 +4990,10 @@ class RitualistRuneOfSuperiorChannelingMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
+class RitualistRuneOfSuperiorRestorationMagic(SuperiorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorRestorationMagic
     profession = Profession.Ritualist
-    rarity = Rarity.Gold
+    attribute = Attribute.RestorationMagic
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4916,10 +5004,10 @@ class RitualistRuneOfSuperiorRestorationMagic(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorCommuning(AttributeRune):
+class RitualistRuneOfSuperiorCommuning(SuperiorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorCommuning
     profession = Profession.Ritualist
-    rarity = Rarity.Gold
+    attribute = Attribute.Communing
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -4930,10 +5018,10 @@ class RitualistRuneOfSuperiorCommuning(AttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorSpawningPower(AttributeRune):
+class RitualistRuneOfSuperiorSpawningPower(SuperiorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorSpawningPower
     profession = Profession.Ritualist
-    rarity = Rarity.Gold
+    attribute = Attribute.SpawningPower
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5017,50 +5105,50 @@ class ForsakenInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class DervishRuneOfMinorMysticism(AttributeRune):
+class DervishRuneOfMinorMysticism(MinorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMinorMysticism
     profession = Profession.Dervish
-    rarity = Rarity.Blue
+    attribute = Attribute.Mysticism
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x39, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class DervishRuneOfMinorEarthPrayers(AttributeRune):
+class DervishRuneOfMinorEarthPrayers(MinorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMinorEarthPrayers
     profession = Profession.Dervish
-    rarity = Rarity.Blue
+    attribute = Attribute.EarthPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x37, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class DervishRuneOfMinorScytheMastery(AttributeRune):
+class DervishRuneOfMinorScytheMastery(MinorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMinorScytheMastery
     profession = Profession.Dervish
-    rarity = Rarity.Blue
+    attribute = Attribute.ScytheMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x22, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class DervishRuneOfMinorWindPrayers(AttributeRune):
+class DervishRuneOfMinorWindPrayers(MinorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMinorWindPrayers
     profession = Profession.Dervish
-    rarity = Rarity.Blue
+    attribute = Attribute.WindPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x35, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorMysticism(AttributeRune):
+class DervishRuneOfMajorMysticism(MajorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMajorMysticism
     profession = Profession.Dervish
-    rarity = Rarity.Purple
+    attribute = Attribute.Mysticism
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5071,10 +5159,10 @@ class DervishRuneOfMajorMysticism(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorEarthPrayers(AttributeRune):
+class DervishRuneOfMajorEarthPrayers(MajorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMajorEarthPrayers
     profession = Profession.Dervish
-    rarity = Rarity.Purple
+    attribute = Attribute.EarthPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5085,10 +5173,10 @@ class DervishRuneOfMajorEarthPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorScytheMastery(AttributeRune):
+class DervishRuneOfMajorScytheMastery(MajorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMajorScytheMastery
     profession = Profession.Dervish
-    rarity = Rarity.Purple
+    attribute = Attribute.ScytheMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5099,10 +5187,10 @@ class DervishRuneOfMajorScytheMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorWindPrayers(AttributeRune):
+class DervishRuneOfMajorWindPrayers(MajorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMajorWindPrayers
     profession = Profession.Dervish
-    rarity = Rarity.Purple
+    attribute = Attribute.WindPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5113,10 +5201,10 @@ class DervishRuneOfMajorWindPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorMysticism(AttributeRune):
+class DervishRuneOfSuperiorMysticism(SuperiorAttributeRune):
     id = ItemUpgrade.DervishRuneOfSuperiorMysticism
     profession = Profession.Dervish
-    rarity = Rarity.Gold
+    attribute = Attribute.Mysticism
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5127,10 +5215,10 @@ class DervishRuneOfSuperiorMysticism(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
+class DervishRuneOfSuperiorEarthPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.DervishRuneOfSuperiorEarthPrayers
     profession = Profession.Dervish
-    rarity = Rarity.Gold
+    attribute = Attribute.EarthPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5141,10 +5229,10 @@ class DervishRuneOfSuperiorEarthPrayers(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorScytheMastery(AttributeRune):
+class DervishRuneOfSuperiorScytheMastery(SuperiorAttributeRune):
     id = ItemUpgrade.DervishRuneOfSuperiorScytheMastery
     profession = Profession.Dervish
-    rarity = Rarity.Gold
+    attribute = Attribute.ScytheMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5155,10 +5243,10 @@ class DervishRuneOfSuperiorScytheMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorWindPrayers(AttributeRune):
+class DervishRuneOfSuperiorWindPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.DervishRuneOfSuperiorWindPrayers
     profession = Profession.Dervish
-    rarity = Rarity.Gold
+    attribute = Attribute.WindPrayers
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5225,50 +5313,50 @@ class CenturionsInsignia(Insignia):
     }
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorLeadership(AttributeRune):
+class ParagonRuneOfMinorLeadership(MinorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMinorLeadership
     profession = Profession.Paragon
-    rarity = Rarity.Blue
+    attribute = Attribute.Leadership
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x33, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorMotivation(AttributeRune):
+class ParagonRuneOfMinorMotivation(MinorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMinorMotivation
     profession = Profession.Paragon
-    rarity = Rarity.Blue
+    attribute = Attribute.Motivation
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x1A, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorCommand(AttributeRune):
+class ParagonRuneOfMinorCommand(MinorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMinorCommand
     profession = Profession.Paragon
-    rarity = Rarity.Blue
+    attribute = Attribute.Command
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0xD5, 0x6, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorSpearMastery(AttributeRune):
+class ParagonRuneOfMinorSpearMastery(MinorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMinorSpearMastery
     profession = Profession.Paragon
-    rarity = Rarity.Blue
+    attribute = Attribute.SpearMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x20, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorLeadership(AttributeRune):
+class ParagonRuneOfMajorLeadership(MajorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMajorLeadership
     profession = Profession.Paragon
-    rarity = Rarity.Purple
+    attribute = Attribute.Leadership
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5279,10 +5367,10 @@ class ParagonRuneOfMajorLeadership(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorMotivation(AttributeRune):
+class ParagonRuneOfMajorMotivation(MajorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMajorMotivation
     profession = Profession.Paragon
-    rarity = Rarity.Purple
+    attribute = Attribute.Motivation
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5293,10 +5381,10 @@ class ParagonRuneOfMajorMotivation(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorCommand(AttributeRune):
+class ParagonRuneOfMajorCommand(MajorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMajorCommand
     profession = Profession.Paragon
-    rarity = Rarity.Purple
+    attribute = Attribute.Command
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5307,10 +5395,10 @@ class ParagonRuneOfMajorCommand(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorSpearMastery(AttributeRune):
+class ParagonRuneOfMajorSpearMastery(MajorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMajorSpearMastery
     profession = Profession.Paragon
-    rarity = Rarity.Purple
+    attribute = Attribute.SpearMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5321,10 +5409,10 @@ class ParagonRuneOfMajorSpearMastery(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorLeadership(AttributeRune):
+class ParagonRuneOfSuperiorLeadership(SuperiorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorLeadership
     profession = Profession.Paragon
-    rarity = Rarity.Gold
+    attribute = Attribute.Leadership
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5335,10 +5423,10 @@ class ParagonRuneOfSuperiorLeadership(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorMotivation(AttributeRune):
+class ParagonRuneOfSuperiorMotivation(SuperiorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorMotivation
     profession = Profession.Paragon
-    rarity = Rarity.Gold
+    attribute = Attribute.Motivation
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5349,10 +5437,10 @@ class ParagonRuneOfSuperiorMotivation(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorCommand(AttributeRune):
+class ParagonRuneOfSuperiorCommand(SuperiorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorCommand
     profession = Profession.Paragon
-    rarity = Rarity.Gold
+    attribute = Attribute.Command
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
@@ -5363,10 +5451,10 @@ class ParagonRuneOfSuperiorCommand(AttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorSpearMastery(AttributeRune):
+class ParagonRuneOfSuperiorSpearMastery(SuperiorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorSpearMastery
     profession = Profession.Paragon
-    rarity = Rarity.Gold
+    attribute = Attribute.SpearMastery
 
     property_identifiers = [
         ModifierIdentifier.HealthMinus
