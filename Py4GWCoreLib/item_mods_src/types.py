@@ -1,7 +1,16 @@
+from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum, IntEnum, auto
+from typing import Any, Generic, Iterable, Literal, Optional, Protocol, SupportsFloat, SupportsInt, TypeAlias, TypeVar, cast, get_args, get_origin, overload
 
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 
+class ModifierType(IntEnum):
+    None_ = 0
+    Arg1 = 1
+    Arg2 = 2
+    Fixed = 3
+    
 class ItemBaneSpecies(IntEnum):
     Undead = 0
     Charr = 1
@@ -108,6 +117,8 @@ class ModifierIdentifier(IntEnum):
     TooltipDescription = 0x253
     AttributeRune = 0x21e
     Upgrade = 0x240
+
+ModifierIdentifierSpec: TypeAlias = ModifierIdentifier | tuple[ModifierIdentifier, ...]
 
 class ItemUpgradeId(IntEnum):
     Unknown = -1
@@ -1175,4 +1186,8 @@ class ItemUpgrade(Enum):
         if isinstance(self.value, dict):
             return upgrade_id in self.value.values()
         
-        return upgrade_id == self.value    
+        return upgrade_id == self.value
+    
+
+
+

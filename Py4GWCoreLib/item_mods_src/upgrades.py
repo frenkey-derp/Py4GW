@@ -12,7 +12,7 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.item_mods_src.decoded_modifier import DecodedModifier
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
-from Py4GWCoreLib.item_mods_src.types import ItemBaneSpecies, ItemModifierParam, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier
+from Py4GWCoreLib.item_mods_src.types import ItemBaneSpecies, ItemModifierParam, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier, ModifierType
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded, GWEncoded
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
@@ -32,12 +32,6 @@ def _humanize_identifier(name: str) -> str:
     return re.sub(r"(?<!^)(?=[A-Z])", " ", name).strip()
 
 PERSISTENT = True
-
-class ModifierType(IntEnum):
-    None_ = 0
-    Arg1 = 1
-    Arg2 = 2
-    Fixed = 3
     
 class ModifierRange:
     def __init__(
@@ -107,14 +101,12 @@ class Upgrade:
         object.__setattr__(self, "upgrade_id", ItemUpgradeId.Unknown)
         object.__setattr__(self, "modifier", None)
         object.__setattr__(self, "properties", {})
-        object.__setattr__(self, "_property_values", {name: getattr(self, name) for name in self._get_serializable_property_names()})
         self._rebuild_properties_from_values()
         self._refresh_encoded_strings()
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name in type(self)._get_serializable_property_names() and "_property_values" in self.__dict__:
             object.__setattr__(self, name, value)
-            self._property_values[name] = value
             self._rebuild_properties_from_values()
             self._refresh_encoded_strings()
             return
@@ -638,9 +630,9 @@ class WeaponPrefix(WeaponUpgrade):
     
 @dataclass(eq=False)
 class AdeptUpgrade(WeaponPrefix):
-    chance: int = 20
-
     id = ItemUpgrade.Adept
+    chance : int = 20
+    
     property_identifiers = [
         ModifierIdentifier.HalvesCastingTimeItemAttribute,
     ]
