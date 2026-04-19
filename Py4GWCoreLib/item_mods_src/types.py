@@ -120,6 +120,11 @@ class ModifierIdentifier(IntEnum):
 
 ModifierIdentifierSpec: TypeAlias = ModifierIdentifier | tuple[ModifierIdentifier, ...]
 
+def any_of(*identifiers: ModifierIdentifier) -> ModifierIdentifierSpec:
+    if not identifiers:
+        raise ValueError("any_of requires at least one ModifierIdentifier")
+    return identifiers
+
 class ItemUpgradeId(IntEnum):
     Unknown = -1
     Inherent = 0x0000 # Not actually an upgrade, but used to identify inherent modifiers
