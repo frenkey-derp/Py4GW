@@ -9,7 +9,7 @@ from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded, G
 PERSISTENT = True
 
 if TYPE_CHECKING:
-    from Py4GWCoreLib.item_mods_src.upgrades_v2 import Upgrade
+    from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 
 @dataclass
 class ItemProperty:

@@ -1,71 +1,210 @@
 from dataclasses import MISSING, dataclass, field, fields, is_dataclass
-from enum import Enum, IntEnum
+from enum import Enum
 import re
-from typing import Any, ClassVar, Optional, TypeAlias, cast
-
-import Py4GW
-from PyItem import ItemModifier
+from typing import Any, Callable, ClassVar, Generic, Optional, Protocol, SupportsFloat, SupportsInt, TypeVar, cast
 
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
-from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.item_mods_src.decoded_modifier import DecodedModifier
-from Py4GWCoreLib.item_mods_src.properties import ItemProperty
-from Py4GWCoreLib.item_mods_src.types import ItemBaneSpecies, ItemModifierParam, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier, ModifierType
-from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded, GWEncoded
-from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.item_mods_src.types import ItemBaneSpecies, ItemUpgrade, ItemUpgradeId, ItemUpgradeType, ModifierIdentifier, ModifierIdentifierSpec, any_of
+from Py4GWCoreLib.native_src.internals import string_table
+from Py4GWCoreLib.native_src.internals.encoded_strings import GWEncoded, GWStringEncoded
 
-ModifierIdentifierSpec: TypeAlias = ModifierIdentifier | tuple[ModifierIdentifier, ...]
+from Py4GWCoreLib.item_mods_src.properties import *
 
-def any_of(*identifiers: ModifierIdentifier) -> ModifierIdentifierSpec:
-    if not identifiers:
-        raise ValueError("any_of requires at least one ModifierIdentifier")
-    return identifiers
+PERSISTENT = True
+
+class NumericValue(SupportsInt, SupportsFloat, Protocol):
+    """Protocol for values that behave like orderable numeric types."""
+
+    def __lt__(self, other: Any, /) -> bool: ...
+    def __le__(self, other: Any, /) -> bool: ...
+    def __gt__(self, other: Any, /) -> bool: ...
+    def __ge__(self, other: Any, /) -> bool: ...
+
+NumberT = TypeVar("NumberT", bound=NumericValue)
+ValueT = TypeVar("ValueT")
+PropertyT = TypeVar("PropertyT", bound=ItemProperty)
+UpgradeT = TypeVar("UpgradeT", bound="Upgrade")
+
+class ItemProperties(dict[ModifierIdentifier, ItemProperty]):
+    def get(self, key: ModifierIdentifier | type[PropertyT], default: Any = None) -> Any:
+        if isinstance(key, type):
+            for prop in self.values():
+                if isinstance(prop, key):
+                    return prop
+            return default
+        
+        return super().get(key, default)
+
+@dataclass(slots=True)
+class InstructionResult:
+    target: str
+    value: Any = None
+    applied: bool = False
+    reason: Optional[str] = None
+
+
+class Instruction(Generic[UpgradeT, ValueT]):
+    """
+    Declarative rule that fills one upgrade field from one or more item properties.
+
+    Each instruction knows:
+    - which upgrade attribute it controls
+    - how to read a candidate value from ItemProperties
+    - how to validate the candidate value
+    """
+
+    def __init__(
+        self,
+        identifier: ModifierIdentifierSpec,
+        target: str,
+        value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
+    ) -> None:
+        self.identifier = identifier
+        self.target = target
+        self.value_getter = value_getter
+
+    def get_value(self, properties: ItemProperties, upgrade: UpgradeT) -> ValueT | None:
+        return self.value_getter(properties, upgrade)
+
+    def evaluate(self, value: ValueT | None) -> bool:
+        return value is not None
+
+    def apply(self, upgrade: UpgradeT, properties: ItemProperties) -> InstructionResult:
+        value = self.get_value(properties, upgrade)
+        if not self.evaluate(value):
+            return InstructionResult(
+                target=self.target,
+                value=value,
+                applied=False,
+                reason="candidate value did not satisfy the instruction",
+            )
+
+        setattr(upgrade, self.target, value)
+        return InstructionResult(target=self.target, value=value, applied=True)
+
+class RangeInstruction(Instruction[UpgradeT, NumberT]):
+    def __init__(
+        self,
+        identifier: ModifierIdentifierSpec,
+        target: str,
+        min_value: NumberT,
+        max_value: NumberT,
+        value_getter: Callable[[ItemProperties, UpgradeT], NumberT | None],
+    ) -> None:
+        super().__init__(identifier, target, value_getter)
+        self.min_value = min_value
+        self.max_value = max_value
+
+    @property
+    def range(self) -> tuple[NumberT, NumberT]:
+        return self.min_value, self.max_value
+
+    def evaluate(self, value: NumberT | None) -> bool:
+        return value is not None and self.min_value <= value <= self.max_value
+
+class EnumInstruction(Instruction[UpgradeT, Enum]):
+    def __init__(
+        self,
+        identifier: ModifierIdentifierSpec,
+        target: str,
+        enum_type: type[Enum],
+        value_getter: Callable[[ItemProperties, UpgradeT], Enum | None],
+    ) -> None:
+        super().__init__(identifier, target, value_getter)
+        self.enum_type = enum_type
+
+    def evaluate(self, value: Enum | None) -> bool:
+        return value is not None and isinstance(value, self.enum_type)
+
+class SelectInstruction(Instruction[UpgradeT, ValueT]):
+    def __init__(
+        self,
+        identifier: ModifierIdentifierSpec,
+        target: str,
+        options: list[ValueT] | tuple[ValueT, ...],
+        value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
+    ) -> None:
+        super().__init__(identifier, target, value_getter)
+        self.options = tuple(options)
+
+    @property
+    def options_list(self) -> tuple[ValueT, ...]:
+        return self.options
+
+    def evaluate(self, value: ValueT | None) -> bool:
+        return value is not None and value in self.options
+
+class FixedValueInstruction(Instruction[UpgradeT, ValueT]):
+    def __init__(
+        self,
+        identifier: ModifierIdentifierSpec,
+        target: str,
+        fixed_value: ValueT,
+        value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
+    ) -> None:
+        super().__init__(identifier, target, value_getter)
+        self.fixed_value = fixed_value
+
+    def evaluate(self, value: ValueT | None) -> bool:
+        return value == self.fixed_value
+
+def property_value(
+    property_type: type[PropertyT],
+    selector: Callable[[PropertyT], ValueT | None],
+) -> Callable[[ItemProperties, UpgradeT], ValueT | None]:
+    """Create a getter that reads a value from the first matching ItemProperty."""
+
+    def getter(properties: ItemProperties, _: UpgradeT) -> ValueT | None:
+        prop = properties.get(property_type)
+        if prop is None:
+            return None
+        return selector(prop)
+
+    return getter
+
+def ranged(
+    identifier: ModifierIdentifierSpec,
+    target: str,
+    min_value: NumberT,
+    max_value: NumberT,
+    value_getter: Callable[[ItemProperties, UpgradeT], NumberT | None],
+) -> RangeInstruction[UpgradeT, NumberT]:
+    return RangeInstruction(identifier, target, min_value, max_value, value_getter)
+
+def enum(
+    identifier: ModifierIdentifierSpec,
+    target: str,
+    enum_type: type[Enum],
+    value_getter: Callable[[ItemProperties, UpgradeT], Enum | None],
+) -> EnumInstruction[UpgradeT]:
+    return EnumInstruction(identifier, target, enum_type, value_getter)
+
+def select(
+    identifier: ModifierIdentifierSpec,
+    target: str,
+    options: list[ValueT] | tuple[ValueT, ...],
+    value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
+) -> SelectInstruction[UpgradeT, ValueT]:
+    return SelectInstruction(identifier, target, options, value_getter)
+
+def fixed(
+    identifier: ModifierIdentifierSpec,
+    target: str,
+    fixed_value: ValueT,
+    value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
+) -> FixedValueInstruction[UpgradeT, ValueT]:
+    return FixedValueInstruction(identifier, target, fixed_value, value_getter)
+
+def _humanize_identifier(name: str) -> str:
+    return re.sub(r"(?<!^)(?=[A-Z])", " ", name).strip()
 
 def _get_property_factory():
     from Py4GWCoreLib.item_mods_src.upgrade_parser import get_property_factory
     return get_property_factory()
 
-
-def _humanize_identifier(name: str) -> str:
-    return re.sub(r"(?<!^)(?=[A-Z])", " ", name).strip()
-
-PERSISTENT = True
-    
-class ModifierRange:
-    def __init__(
-        self,
-        modifier_identifier: ModifierIdentifier,
-        modifier_type: ModifierType,
-        min_value: Optional[int] = None,
-        max_value: Optional[int] = None,
-        allowed_values: Optional[list[int] | tuple[int, ...]] = None,
-    ):
-        self.modifierIdentifier = modifier_identifier
-        self.min_value = min_value
-        self.max_value = max_value
-        self.modifier_type = modifier_type
-        self.allowed_values = tuple(allowed_values) if allowed_values is not None else None
-
-    def is_valid(self, value: int) -> bool:
-        if self.allowed_values is not None:
-            return value in self.allowed_values
-
-        if self.min_value is not None and value < self.min_value:
-            return False
-
-        if self.max_value is not None and value > self.max_value:
-            return False
-
-        return True
-
-    def get_preferred_value(self) -> Optional[int]:
-        if self.allowed_values:
-            return max(self.allowed_values)
-
-        return self.max_value if self.max_value is not None else self.min_value
-        
 @dataclass(eq=False)
 class Upgrade:
     """
@@ -74,19 +213,17 @@ class Upgrade:
     _registry: ClassVar[dict[str, type["Upgrade"]]] = {}
     mod_type: ClassVar[ItemUpgradeType] = ItemUpgradeType.Unknown
     id: ClassVar[ItemUpgrade] = ItemUpgrade.Unknown
-    property_identifiers: ClassVar[list[ModifierIdentifierSpec]] = []
-    max_modifier_values: ClassVar[dict[ModifierIdentifier, tuple[int, int]]] = {}
-    modifier_ranges: ClassVar[list[ModifierRange]] = []
-    encoded_name: ClassVar[bytes] = bytes()
-    descriptions: ClassVar[dict[ServerLanguage, str]] = {}
-
+    
+    properties: ItemProperties = field(default_factory=ItemProperties)
+    
     rarity: Rarity = field(init=False, default=Rarity.Blue, repr=False, compare=False)
     upgrade_id: ItemUpgradeId = field(init=False, default=ItemUpgradeId.Unknown, repr=False, compare=False)
-    properties: dict[ModifierIdentifier, ItemProperty] = field(init=False, default_factory=dict, repr=False, compare=False)
     modifier: Optional[DecodedModifier] = field(init=False, default=None, repr=False, compare=False)
     is_inherent: bool = field(init=False, default=False, repr=False, compare=False)
     language: ServerLanguage = field(init=False, repr=False, compare=False)
-    _property_values: dict[str, Any] = field(init=False, default_factory=dict, repr=False, compare=False)
+    
+    upgrade_info: ClassVar[tuple[Instruction["Upgrade", Any], ...]] 
+
     __encoded_name: GWStringEncoded = field(init=False, repr=False, compare=False)
     __encoded_description: GWStringEncoded = field(init=False, repr=False, compare=False)
 
@@ -100,19 +237,19 @@ class Upgrade:
         object.__setattr__(self, "rarity", getattr(type(self), "rarity", Rarity.Blue))
         object.__setattr__(self, "upgrade_id", ItemUpgradeId.Unknown)
         object.__setattr__(self, "modifier", None)
-        object.__setattr__(self, "properties", {})
-        self._rebuild_properties_from_values()
+        object.__setattr__(self, "properties", ItemProperties())
+        
         self._refresh_encoded_strings()
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name in type(self)._get_serializable_property_names() and "_property_values" in self.__dict__:
             object.__setattr__(self, name, value)
-            self._rebuild_properties_from_values()
             self._refresh_encoded_strings()
             return
 
         object.__setattr__(self, name, value)
-        
+
+    #region Upgrade Composition from Modifiers
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         return None
@@ -120,60 +257,67 @@ class Upgrade:
     @classmethod
     def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         return None
+        
+    @classmethod
+    def compose_from_modifiers(cls, mod : DecodedModifier, remaining_modifiers: list[DecodedModifier], all_modifiers: list[DecodedModifier], rarity: Rarity = Rarity.Blue) -> Optional["Upgrade"]:        
+        upgrade = cls()
+        upgrade.upgrade_id = mod.upgrade_id
+        upgrade.rarity = rarity
+        upgrade.modifier = mod
 
+        cls._pre_compose(upgrade, mod, all_modifiers, remaining_modifiers)
+
+        property_factory = _get_property_factory()
+        matched_modifiers = cls._match_property_modifiers(remaining_modifiers)
+        if matched_modifiers is None:
+            return None
+
+        for prop_key, prop_mod in matched_modifiers:
+            prop = property_factory.get(prop_mod.identifier, lambda m, _, rarity: ItemProperty(modifier=m, rarity=rarity))(prop_mod, remaining_modifiers, rarity)
+            upgrade.properties[prop_key] = prop
+
+        cls._post_compose(upgrade, mod, all_modifiers, remaining_modifiers)
+        upgrade._refresh_encoded_strings()
+        return upgrade
+   
     @staticmethod
     def _normalize_property_identifier_spec(identifier_spec: ModifierIdentifierSpec) -> tuple[ModifierIdentifier, ...]:
         if isinstance(identifier_spec, tuple):
             return identifier_spec
         return (identifier_spec,)
-
+    
     @classmethod
     def _get_property_identifier_key(cls, identifier_spec: ModifierIdentifierSpec) -> ModifierIdentifier:
         return cls._normalize_property_identifier_spec(identifier_spec)[0]
 
     @classmethod
-    def _format_property_identifier_spec(cls, identifier_spec: ModifierIdentifierSpec) -> str:
-        identifiers = cls._normalize_property_identifier_spec(identifier_spec)
-        return " OR ".join(identifier.name for identifier in identifiers)
-
-    @classmethod
     def _match_property_modifiers(cls, modifiers: list[DecodedModifier]) -> Optional[list[tuple[ModifierIdentifier, DecodedModifier]]]:
         matched_modifiers: list[tuple[ModifierIdentifier, DecodedModifier]] = []
         used_modifiers: list[DecodedModifier] = []
+        matched_by_key: dict[ModifierIdentifier, DecodedModifier] = {}
 
-        for identifier_spec in cls.property_identifiers:
-            identifier_options = cls._normalize_property_identifier_spec(identifier_spec)
-            prop_mod = next((m for m in modifiers if m not in used_modifiers and m.identifier in identifier_options), None)
+        for inst in cls.upgrade_info:
+            prop_key = cls._get_property_identifier_key(inst.identifier)
+            prop_mod = matched_by_key.get(prop_key)
+            if prop_mod is None:
+                identifier_options = cls._normalize_property_identifier_spec(inst.identifier)
+                prop_mod = next((m for m in modifiers if m not in used_modifiers and m.identifier in identifier_options), None)
+                if prop_mod is not None:
+                    matched_by_key[prop_key] = prop_mod
+                    used_modifiers.append(prop_mod)
             if prop_mod is None:
                 return None
 
-            matched_modifiers.append((cls._get_property_identifier_key(identifier_spec), prop_mod))
-            used_modifiers.append(prop_mod)
+            matched_modifiers.append((prop_key, prop_mod))
 
         return matched_modifiers
+    #endregion Upgrade Composition from Modifiers
+    
+    @classmethod
+    def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
+        return cls.id.has_id(upgrade_id)
 
-    def _get_property_by_spec(self, identifier_spec: ModifierIdentifierSpec) -> Optional[ItemProperty]:
-        for identifier in self._normalize_property_identifier_spec(identifier_spec):
-            prop = self.properties.get(identifier)
-            if prop is not None:
-                return prop
-        return None
-
-    def _get_upgrade_property(self, identifier_spec: ModifierIdentifierSpec) -> Optional[ItemProperty]:
-        return self._get_property_by_spec(identifier_spec)
-
-    def _get_property_value(self, identifier_spec: ModifierIdentifierSpec, attr_name: str, default):
-        if attr_name in self._property_values:
-            return self._property_values[attr_name]
-
-        prop = self._get_property_by_spec(identifier_spec)
-        if prop is None:
-            return default
-
-        value = getattr(prop, attr_name, default)
-        self._property_values[attr_name] = value
-        return value
-
+    #region Equality and Matching
     @classmethod
     def _get_serializable_property_names(cls) -> list[str]:
         return [field_info.name for field_info in fields(cls) if field_info.init]
@@ -230,267 +374,6 @@ class Upgrade:
 
         return value
 
-    def _update_property_values_from_property(self, prop: ItemProperty) -> None:
-        if not is_dataclass(prop):
-            return
-
-        for field_info in fields(prop):
-            if field_info.name in {"modifier", "rarity", "upgrade", "upgrade_id"}:
-                continue
-
-            value = getattr(prop, field_info.name)
-            self._property_values[field_info.name] = value
-            if field_info.name in type(self)._get_serializable_property_names():
-                object.__setattr__(self, field_info.name, value)
-
-    def _sync_property_values_from_properties(self) -> None:
-        for prop in self.properties.values():
-            self._update_property_values_from_property(prop)
-
-    def _refresh_encoded_strings(self) -> None:
-        self.__encoded_name = self.create_encoded_name()
-        self.__encoded_description = self.create_encoded_description()
-
-    @classmethod
-    def _infer_property_class(cls, identifier_spec: ModifierIdentifierSpec, rarity: Rarity) -> Optional[type[ItemProperty]]:
-        property_factory = _get_property_factory()
-
-        for identifier in cls._normalize_property_identifier_spec(identifier_spec):
-            synthetic_modifier = cls._create_synthetic_modifier(identifier, 0, 0)
-            property_builder = property_factory.get(identifier, lambda m, _, current_rarity: ItemProperty(modifier=m, rarity=current_rarity))
-            try:
-                return type(property_builder(synthetic_modifier, [synthetic_modifier], rarity))
-            except Exception:
-                continue
-
-        return None
-
-    def _rebuild_properties_from_values(self) -> None:
-        rebuilt_properties: dict[ModifierIdentifier, ItemProperty] = {}
-
-        for identifier_spec in self.property_identifiers:
-            prop_cls = self._infer_property_class(identifier_spec, self.rarity)
-            if prop_cls is None or not is_dataclass(prop_cls):
-                continue
-
-            kwargs: dict[str, Any] = {
-                "modifier": self._create_synthetic_modifier(self._get_property_identifier_key(identifier_spec), 0, 0),
-                "rarity": self.rarity,
-            }
-
-            can_create = True
-            for field_info in fields(prop_cls):
-                if field_info.name in kwargs or field_info.name in {"upgrade", "upgrade_id"}:
-                    continue
-
-                if field_info.name in self._property_values:
-                    kwargs[field_info.name] = self._property_values[field_info.name]
-                    continue
-
-                if field_info.default is not MISSING or field_info.default_factory is not MISSING:
-                    continue
-
-                can_create = False
-                break
-
-            if not can_create:
-                continue
-
-            try:
-                rebuilt_properties[self._get_property_identifier_key(identifier_spec)] = prop_cls(**kwargs)
-            except Exception:
-                continue
-
-        self.properties = rebuilt_properties
-    
-    @classmethod
-    def compose_from_modifiers(cls, mod : DecodedModifier, remaining_modifiers: list[DecodedModifier], all_modifiers: list[DecodedModifier], rarity: Rarity = Rarity.Blue) -> Optional["Upgrade"]:        
-        upgrade = cls()
-        upgrade.properties = {}
-        upgrade._property_values = {}
-        upgrade.upgrade_id = mod.upgrade_id
-        upgrade.rarity = rarity
-        upgrade.modifier = mod
-
-        cls._pre_compose(upgrade, mod, all_modifiers, remaining_modifiers)
-
-        property_factory = _get_property_factory()
-        matched_modifiers = cls._match_property_modifiers(remaining_modifiers)
-        if matched_modifiers is None:
-            for identifier_spec in upgrade.property_identifiers:
-                identifier_options = cls._normalize_property_identifier_spec(identifier_spec)
-                if not any(m.identifier in identifier_options for m in remaining_modifiers):
-                    Py4GW.Console.Log("ItemHandling", f"Missing modifier for property {cls._format_property_identifier_spec(identifier_spec)} in upgrade {upgrade.__class__.__name__}. Upgrade composition failed.")
-                    return None
-            return None
-
-        for prop_key, prop_mod in matched_modifiers:
-            prop = property_factory.get(prop_mod.identifier, lambda m, _, rarity: ItemProperty(modifier=m, rarity=rarity))(prop_mod, remaining_modifiers, rarity)
-            upgrade.properties[prop_key] = prop
-
-        cls._post_compose(upgrade, mod, all_modifiers, remaining_modifiers)
-        upgrade._sync_property_values_from_properties()
-        upgrade._refresh_encoded_strings()
-        return upgrade
-
-    @classmethod
-    def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
-        return cls.id.has_id(upgrade_id)
-
-    @classmethod
-    def get_modifier_ranges(cls) -> list[ModifierRange]:
-        ranges = getattr(cls, "modifier_ranges", None)
-        if isinstance(ranges, list) and len(ranges) > 0:
-            return [modifier_range for modifier_range in ranges if isinstance(modifier_range, ModifierRange)]
-
-        modifier_range_prop = getattr(cls, "modifier_range", None)
-        if isinstance(modifier_range_prop, ModifierRange):
-            return [modifier_range_prop]
-
-        return []
-
-    @classmethod
-    def _get_max_modifier_args(cls, identifier: ModifierIdentifier) -> Optional[tuple[int, int]]:
-        args = cls.max_modifier_values.get(identifier)
-        if args is not None:
-            return args
-
-        matching_ranges = [
-            modifier_range
-            for modifier_range in cls.get_modifier_ranges()
-            if modifier_range.modifierIdentifier == identifier
-        ]
-        if matching_ranges:
-            arg1 = 0
-            arg2 = 0
-
-            for modifier_range in matching_ranges:
-                preferred_value = modifier_range.get_preferred_value()
-                if preferred_value is None:
-                    continue
-
-                match modifier_range.modifier_type:
-                    case ModifierType.Arg1:
-                        arg1 = preferred_value
-                    case ModifierType.Arg2 | ModifierType.Fixed:
-                        arg2 = preferred_value
-                    case ModifierType.None_:
-                        continue
-
-            return arg1, arg2
-
-        return None
-
-    @classmethod
-    def _create_synthetic_modifier(cls, identifier: ModifierIdentifier, arg1: int, arg2: int) -> DecodedModifier:
-        return DecodedModifier(
-            modifier=cast(ItemModifier, None),
-            raw_identifier=0,
-            identifier=identifier,
-            param=cast(ItemModifierParam, 0),
-            arg1=arg1,
-            arg2=arg2,
-            arg=(arg1 << 8) | arg2,
-            raw_bits=0,
-            upgrade_id=ItemUpgradeId.Unknown,
-            flags=0,
-        )
-
-    @classmethod
-    def _create_max_properties(cls, rarity: Rarity = Rarity.Blue) -> Optional[dict[ModifierIdentifier, ItemProperty]]:
-        if not cls.property_identifiers:
-            return {}
-        modifiers: list[DecodedModifier] = []
-        created_modifier_ids: set[ModifierIdentifier] = set()
-        property_identifier_options = {
-            identifier
-            for identifier_spec in cls.property_identifiers
-            for identifier in cls._normalize_property_identifier_spec(identifier_spec)
-        }
-
-        for identifier_spec in cls.property_identifiers:
-            resolved_identifier: Optional[ModifierIdentifier] = None
-            resolved_args: Optional[tuple[int, int]] = None
-
-            for identifier in cls._normalize_property_identifier_spec(identifier_spec):
-                args = cls._get_max_modifier_args(identifier)
-                if args is not None:
-                    resolved_identifier = identifier
-                    resolved_args = args
-                    break
-
-            if resolved_identifier is None or resolved_args is None:
-                return None
-
-            if resolved_identifier not in created_modifier_ids:
-                modifiers.append(cls._create_synthetic_modifier(resolved_identifier, resolved_args[0], resolved_args[1]))
-                created_modifier_ids.add(resolved_identifier)
-
-        for identifier, args in cls.max_modifier_values.items():
-            if identifier in created_modifier_ids or identifier in property_identifier_options:
-                continue
-
-            modifiers.append(cls._create_synthetic_modifier(identifier, args[0], args[1]))
-            created_modifier_ids.add(identifier)
-
-        property_factory = _get_property_factory()
-        properties: dict[ModifierIdentifier, ItemProperty] = {}
-
-        for identifier_spec in cls.property_identifiers:
-            prop_key = cls._get_property_identifier_key(identifier_spec)
-            identifier_options = cls._normalize_property_identifier_spec(identifier_spec)
-            prop_mod = next((m for m in modifiers if m.identifier in identifier_options), None)
-            if prop_mod is None:
-                return None
-
-            prop = property_factory.get(prop_mod.identifier, lambda m, _, rarity: ItemProperty(modifier=m, rarity=rarity))(prop_mod, modifiers, rarity)
-            properties[prop_key] = prop
-
-        return properties
-
-    @classmethod
-    def get_max_description_encoded(cls, rarity: Rarity = Rarity.Blue) -> Optional[GWStringEncoded]:
-        properties = cls._create_max_properties(rarity)
-        if properties is None:
-            return None
-
-        if not properties:
-            fallback = cls.descriptions.get(ServerLanguage.English)
-            if fallback:
-                return GWStringEncoded(bytes(), fallback)
-            return None
-
-        parts = [prop.encoded_description for prop in properties.values() if prop.encoded_description]
-        return GWEncoded.combine_encoded_strings(parts, f"no max description ({cls.__name__})")
-
-    @classmethod
-    def get_max_description_plain(cls, rarity: Rarity = Rarity.Blue) -> Optional[str]:
-        encoded = cls.get_max_description_encoded(rarity)
-        if encoded is None:
-            return None
-
-        return encoded.bonuses_only or encoded.plain or encoded.full or None
-    
-    def get_text_color(self, name : bool = False) -> bytes:
-        match self.rarity:
-            case Rarity.Blue | Rarity.White:
-                return GWEncoded.ITEM_ENHANCE if name else GWEncoded.ITEM_BONUS
-            
-            case Rarity.Purple:
-                return GWEncoded.ITEM_UNCOMMON
-            
-            case Rarity.Gold:
-                return GWEncoded.ITEM_RARE
-            
-            case Rarity.Green:
-                return GWEncoded.ITEM_UNIQUE
-            
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.encoded_name, f"no encoded name ({self.__class__.__name__})")
-    
-    def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"no encoded description ({self.__class__.__name__})")
-
     def _comparison_data(self) -> tuple[str, tuple[tuple[str, Any], ...]]:
         comparison_values = {
             property_name: self._normalize_comparison_value(getattr(self, property_name))
@@ -506,7 +389,9 @@ class Upgrade:
 
     def __eq__(self, other: object) -> bool:
         return self.equals(other)
-
+    #endregion Equality and Matching
+    
+    #region Serialization
     def to_dict(self) -> dict[str, Any]:
         values = {
             property_name: self._serialize_value(getattr(self, property_name))
@@ -536,6 +421,34 @@ class Upgrade:
             for key, value in raw_values.items()
         }
         return upgrade_cls(**values)
+    #endregion Serialization
+    
+    #region Encoded String Generation
+    def get_text_color(self, name : bool = False) -> bytes:
+        match self.rarity:
+            case Rarity.Blue | Rarity.White:
+                return GWEncoded.ITEM_ENHANCE if name else GWEncoded.ITEM_BONUS
+            
+            case Rarity.Purple:
+                return GWEncoded.ITEM_UNCOMMON
+            
+            case Rarity.Gold:
+                return GWEncoded.ITEM_RARE
+            
+            case Rarity.Green:
+                return GWEncoded.ITEM_UNIQUE
+            
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.__class__.__name__)} (no encoded name)")
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+    
+    def _refresh_encoded_strings(self) -> None:
+        self.__encoded_name = self.create_encoded_name()
+        self.__encoded_description = self.create_encoded_description()
+
+    #endregion Encoded String Generation
     
     @property
     def name(self) -> str:
@@ -570,58 +483,39 @@ class Upgrade:
         
         return None
     
+    @property
+    def is_maxed(self) -> bool:
+        for instruction in self.upgrade_info:
+            if isinstance(instruction, RangeInstruction):
+                value = getattr(self, instruction.target)
+                if value < instruction.max_value:
+                    return False
+                
+        return True
+    
     @classmethod
     def get_static_name(cls, rarity : Rarity = Rarity.Blue) -> str: 
         temp_instance = cls()
         temp_instance.rarity = rarity
         temp_instance.__encoded_name = temp_instance.create_encoded_name()
         
-        return temp_instance.name_plain           
-    
-    @property
-    def is_maxed(self) -> bool:
-        return True
-    
+        return temp_instance.name_plain
+
 @dataclass(eq=False)
 class UnknownUpgrade(Upgrade):
     mod_type = ItemUpgradeType.Unknown
     id = ItemUpgrade.Unknown
-    property_identifiers = []
     
 #region Weapon Upgrades
 @dataclass(eq=False)
 class WeaponUpgrade(Upgrade):
     target_item_type: ItemType = field(init=False, default=ItemType.Unknown, repr=False, compare=False)
-    modifier_range: ClassVar[Optional[ModifierRange]] = None
 
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
-        weapon_upgrade = cast("WeaponUpgrade", upgrade)
-        weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)
-
-    def create_encoded_description(self) -> GWStringEncoded:
-        if not self.properties:
-            return super().create_encoded_description()
-        parts = [prop.encoded_description for prop in self.properties.values() if prop.encoded_description]
-        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
-
-    @property
-    def is_maxed(self) -> bool:
-        modifier_ranges = type(self).get_modifier_ranges()
-        if not self.properties or not modifier_ranges:
-            return True
-
-        for modifier_range in modifier_ranges:
-            prop = self._get_upgrade_property(modifier_range.modifierIdentifier)
-            if not prop:
-                return False
-
-            value = prop.modifier.arg1 if modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
-            if not modifier_range.is_valid(value):
-                return False
-    
-        return True
-        
+        weapon_upgrade = cast(WeaponUpgrade, upgrade)
+        weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)        
+         
 #region Prefixes
 
 @dataclass(eq=False)
@@ -629,494 +523,1033 @@ class WeaponPrefix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Prefix
     
 @dataclass(eq=False)
+class IncreaseConditionDurationUpgrade(WeaponPrefix):
+    condition: Ailment | None = None
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        if self.condition is None:
+            return super().create_encoded_description()
+        
+        encoded = GWEncoded.CONDITION_INCREASE_BYTES.get(self.condition)
+        fallback = f"Lengthens {self.condition.name.replace('_', ' ')} duration on foes by 33%"
+        
+        if encoded:
+            return GWStringEncoded(bytes([*self.get_text_color(), *encoded, *GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES, "(Stacking)")]), fallback)
+        
+        return GWStringEncoded(bytes(), fallback)
+
+@dataclass(eq=False)
+class DamageTypeUpgrade(WeaponPrefix):
+    damage_type: DamageType | None = None
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        if self.damage_type is None:
+            return super().create_encoded_description()
+        
+        damage_bytes = GWEncoded.DAMAGE_TYPE_BYTES.get(self.damage_type)
+        if damage_bytes:            
+            return GWStringEncoded(bytes([*GWEncoded.ITEM_BASIC, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x4C, 0xA, 0x1, 0x0, 0xB, 0x1, *damage_bytes, 0x1, 0x0]), f"{self.damage_type.name} Dmg")
+        
+        return GWStringEncoded(bytes(), f"{self.damage_type.name} Dmg")
+
+@dataclass
 class AdeptUpgrade(WeaponPrefix):
-    id = ItemUpgrade.Adept
-    chance : int = 20
-    
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeItemAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeItemAttribute, ModifierType.Arg1, 10, 20)
-    
+    id: ClassVar[ItemUpgrade] = ItemUpgrade.Adept
+    chance: int = 20
+
+    upgrade_info = (
+        ranged(
+            identifier= ModifierIdentifier.HalvesCastingTimeItemAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x94, 0x5D, 0x1, 0x0]), f"Adept")
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
+
 @dataclass(eq=False)
-class BarbedUpgrade(WeaponPrefix):
-    condition: Ailment | None = Ailment.Bleeding
-
+class BarbedUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Barbed
-    property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
-    ]
+    condition = Ailment.Bleeding
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreaseConditionDuration,
+            target="condition",
+            fixed_value=Ailment.Bleeding,
+            value_getter=property_value(
+                IncreaseConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+    )
     
     def create_encoded_name(self) -> GWStringEncoded:
          return GWStringEncoded(self.get_text_color(True) + bytes([0x69, 0xA, 0x1, 0x0]), f"Barbed")
-    
+
 @dataclass(eq=False)
-class CripplingUpgrade(WeaponPrefix):
-    condition: Ailment | None = Ailment.Crippled
-
+class CripplingUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Crippling
-    property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
-    ]
+    condition = Ailment.Crippled
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreaseConditionDuration,
+            target="condition",
+            fixed_value=Ailment.Crippled,
+            value_getter=property_value(
+                IncreaseConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6A, 0xA, 0x1, 0x0]), f"Crippling")
         
 @dataclass(eq=False)
-class CruelUpgrade(WeaponPrefix):
-    condition: Ailment | None = Ailment.Deep_Wound
-
+class CruelUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Cruel
-    property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
-    ]
+    condition = Ailment.Deep_Wound
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreaseConditionDuration,
+            target="condition",
+            fixed_value=Ailment.Deep_Wound,
+            value_getter=property_value(
+                IncreaseConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+    )
+
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6B, 0xA, 0x1, 0x0]), f"Cruel")
 
+    
 @dataclass(eq=False)
 class DefensiveUpgrade(WeaponPrefix):
-    armor: int = 5
-
     id = ItemUpgrade.Defensive
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlus, ModifierType.Arg2, 4, 5)
-
+    armor: int = 5
+    
+    upgrade_info = (
+        ranged(
+            identifier= ModifierIdentifier.ArmorPlus,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlus,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6D, 0xA, 0x1, 0x0]), f"Defensive")
     
-@dataclass(eq=False)
-class EbonUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = DamageType.Earth
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
 
+@dataclass(eq=False)
+class EbonUpgrade(DamageTypeUpgrade):
     id = ItemUpgrade.Ebon
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
+    damage_type = DamageType.Earth
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.DamageTypeProperty,
+            target="damage_type",
+            fixed_value=DamageType.Earth,
+            value_getter=property_value(
+                DamageTypeProperty,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0xD5, 0x8, 0x1, 0x0]), f"Ebon")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0xD5, 0x8, 0x1, 0x0]), "Ebon")
+
 @dataclass(eq=False)
-class FieryUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = DamageType.Fire
-
+class FieryUpgrade(DamageTypeUpgrade):
     id = ItemUpgrade.Fiery
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
+    damage_type = DamageType.Fire
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.DamageTypeProperty,
+            target="damage_type",
+            fixed_value=DamageType.Fire,
+            value_getter=property_value(
+                DamageTypeProperty,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0xD7, 0x8, 0x1, 0x0]), f"Fiery")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0xD7, 0x8, 0x1, 0x0]), "Fiery")
+
 @dataclass(eq=False)
 class FuriousUpgrade(WeaponPrefix):
+    id = ItemUpgrade.Furious
     chance: int = 10
 
-    id = ItemUpgrade.Furious
-    property_identifiers = [
-        ModifierIdentifier.Furious,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.Furious, ModifierType.Arg2, 2, 10)
-    
-    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.Furious,
+            target="chance",
+            min_value=2,
+            max_value=10,
+            value_getter=property_value(
+                Furious,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.DOUBLE_ADRENALINE_BYTES]), "Double Adrenaline on hit"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x6F, 0xA, 0x1, 0x0]), f"Furious")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x6F, 0xA, 0x1, 0x0]), "Furious")
+
 @dataclass(eq=False)
 class HaleUpgrade(WeaponPrefix):
+    id = ItemUpgrade.Hale
     health: int = 30
 
-    id = ItemUpgrade.Hale
-    property_identifiers = [
-        ModifierIdentifier.HealthPlus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlus, ModifierType.Arg1, 10, 30)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HealthPlus,
+            target="health",
+            min_value=10,
+            max_value=30,
+            value_getter=property_value(
+                HealthPlus,
+                lambda prop: prop.health,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x70, 0xA, 0x1, 0x0]), f"Hale")
-    
-@dataclass(eq=False)
-class HeavyUpgrade(WeaponPrefix):
-    condition: Ailment | None = Ailment.Weakness
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x70, 0xA, 0x1, 0x0]), "Hale")
 
+@dataclass(eq=False)
+class HeavyUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Heavy
-    property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
-    ]
+    condition = Ailment.Weakness
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreaseConditionDuration,
+            target="condition",
+            fixed_value=Ailment.Weakness,
+            value_getter=property_value(
+                IncreaseConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x72, 0xA, 0x1, 0x0]), f"Heavy")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x72, 0xA, 0x1, 0x0]), "Heavy")
+
 @dataclass(eq=False)
-class IcyUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = DamageType.Cold
-
+class IcyUpgrade(DamageTypeUpgrade):
     id = ItemUpgrade.Icy
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
+    damage_type = DamageType.Cold
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.DamageTypeProperty,
+            target="damage_type",
+            fixed_value=DamageType.Cold,
+            value_getter=property_value(
+                DamageTypeProperty,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0xD4, 0x8, 0x1, 0x0]), f"Icy")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0xD4, 0x8, 0x1, 0x0]), "Icy")
+
 @dataclass(eq=False)
 class InsightfulUpgrade(WeaponPrefix):
+    id = ItemUpgrade.Insightful
     energy: int = 5
 
-    id = ItemUpgrade.Insightful
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlus, ModifierType.Arg2, 1, 5)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlus,
+            target="energy",
+            min_value=1,
+            max_value=5,
+            value_getter=property_value(
+                EnergyPlus,
+                lambda prop: prop.energy,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x73, 0xA, 0x1, 0x0]), f"Insightful")
-    
-@dataclass(eq=False)
-class PoisonousUpgrade(WeaponPrefix):
-    condition: Ailment | None = Ailment.Poison
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x73, 0xA, 0x1, 0x0]), "Insightful")
 
+@dataclass(eq=False)
+class PoisonousUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Poisonous
-    property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
-    ]
+    condition = Ailment.Poison
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreaseConditionDuration,
+            target="condition",
+            fixed_value=Ailment.Poison,
+            value_getter=property_value(
+                IncreaseConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x75, 0xA, 0x1, 0x0]), f"Poisonous")
-    
-@dataclass(eq=False)
-class ShockingUpgrade(WeaponPrefix):
-    damage_type: DamageType | None = DamageType.Lightning
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x75, 0xA, 0x1, 0x0]), "Poisonous")
 
+@dataclass(eq=False)
+class ShockingUpgrade(DamageTypeUpgrade):
     id = ItemUpgrade.Shocking
-    property_identifiers = [
-        ModifierIdentifier.DamageTypeProperty,
-    ]
+    damage_type = DamageType.Lightning
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.DamageTypeProperty,
+            target="damage_type",
+            fixed_value=DamageType.Lightning,
+            value_getter=property_value(
+                DamageTypeProperty,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0xD6, 0x8, 0x1, 0x0]), f"Shocking")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0xD6, 0x8, 0x1, 0x0]), "Shocking")
+
 @dataclass(eq=False)
-class SilencingUpgrade(WeaponPrefix):
-    condition: Ailment | None = Ailment.Dazed
-
+class SilencingUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Silencing
-    property_identifiers = [
-        ModifierIdentifier.IncreaseConditionDuration,
-    ]
+    condition = Ailment.Dazed
 
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreaseConditionDuration,
+            target="condition",
+            fixed_value=Ailment.Dazed,
+            value_getter=property_value(
+                IncreaseConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+    )
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x6C, 0xA, 0x1, 0x0]), f"Silencing")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x6C, 0xA, 0x1, 0x0]), "Silencing")
+
 @dataclass(eq=False)
 class SunderingUpgrade(WeaponPrefix):
+    id = ItemUpgrade.Sundering
     chance: int = 20
     armor_penetration: int = 20
 
-    id = ItemUpgrade.Sundering
-    property_identifiers = [
-        ModifierIdentifier.ArmorPenetration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPenetration, ModifierType.Arg1, 10, 20)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPenetration: (20, 20),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPenetration,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                ArmorPenetration,
+                lambda prop: prop.chance,
+            ),
+        ),
+        select(
+            identifier=ModifierIdentifier.ArmorPenetration,
+            target="armor_penetration",
+            options=[10, 20],
+            value_getter=property_value(
+                ArmorPenetration,
+                lambda prop: prop.armor_penetration,
+            ),
+        ),
+    )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        encoded = bytes([
+            *self.get_text_color(),
+            *GWEncoded.PLUS_PERCENT_TEMPLATE, 0x45, 0xA, 0x1, 0x0, 0x1, 0x1, self.armor_penetration, 0x1, 0x1, 0x0,
+            *GWEncoded.ITEM_DULL,
+            *GWEncoded.PARENTHESIS_STR1,
+            *GWEncoded.CHANCE_TEMPLATE, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0,
+            0x1, 0x0
+        ])
+        return GWStringEncoded(encoded, f"Armor penetration +{self.armor_penetration}% (Chance: {self.chance}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x74, 0xA, 0x1, 0x0]), f"Sundering")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x74, 0xA, 0x1, 0x0]), "Sundering")
+
 @dataclass(eq=False)
 class SwiftUpgrade(WeaponPrefix):
+    id = ItemUpgrade.Swift
     chance: int = 10
 
-    id = ItemUpgrade.Swift
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeGeneral,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeGeneral, ModifierType.Arg1, 5, 10)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeGeneral,
+            target="chance",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                HalvesCastingTimeGeneral,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0]), f"Swift")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0]), "Swift")
+
 @dataclass(eq=False)
 class VampiricUpgrade(WeaponPrefix):
-    health_regeneration: int = 1
+    id = ItemUpgrade.Vampiric
+    health_regeneration: int = -1
     health_steal: int = 5
 
-    id = ItemUpgrade.Vampiric
-    property_identifiers = [
-        ModifierIdentifier.HealthRegeneneration,
-        ModifierIdentifier.HealthStealOnHit,
-    ]
-    # modifier_range = ModifierRange(ModifierIdentifier.HealthStealOnHit, ModifierType.Arg1, 1, 5)
-
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HealthRegeneneration,
+            target="health_regeneration",
+            min_value=-1,
+            max_value=-1,
+            value_getter=property_value(
+                HealthRegeneneration,
+                lambda prop: prop.health_regeneration,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.HealthStealOnHit,
+            target="health_steal",
+            min_value=1,
+            max_value=5,
+            value_getter=property_value(
+                HealthStealOnHit,
+                lambda prop: prop.health_steal,
+            ),
+        ),
+    )
     
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_colon_num(self.get_text_color(), GWEncoded.LIFE_DRAINING_BYTES, self.health_steal, "Life Draining"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.HEALTH_REGEN_BYTES, abs(self.health_regeneration), "Health regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
+    
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x71, 0xA, 0x1, 0x0]), f"Vampiric")
-    
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x71, 0xA, 0x1, 0x0]), "Vampiric")
+
 @dataclass(eq=False)
 class ZealousUpgrade(WeaponPrefix):
-    energy_regeneration: int = 1
+    id = ItemUpgrade.Zealous
+    energy_regeneration: int = -1
     energy_gain: int = 1
 
-    id = ItemUpgrade.Zealous
-    property_identifiers = [
-        ModifierIdentifier.EnergyRegeneration,
-        ModifierIdentifier.EnergyGainOnHit,
-    ]
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyRegeneration,
+            target="energy_regeneration",
+            min_value=-1,
+            max_value=-1,
+            value_getter=property_value(
+                EnergyRegeneration,
+                lambda prop: prop.energy_regeneration,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.EnergyGainOnHit,
+            target="energy_gain",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                EnergyGainOnHit,
+                lambda prop: prop.energy_gain,
+            ),
+        ),
+    )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_colon_num(self.get_text_color(), GWEncoded.ENERGY_GAIN_ON_HIT_BYTES, self.energy_gain, "Energy gain on hit"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
+    
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + bytes([0x6E, 0xA, 0x1, 0x0]), f"Zealous")
-
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x6E, 0xA, 0x1, 0x0]), "Zealous")
+    
 #endregion Prefixes
-  
+
 #region Suffixes
+
 @dataclass(eq=False)
 class WeaponSuffix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Suffix
-    
+
 @dataclass(eq=False)
 class OfAttributeUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfAttribute
     chance: int = 20
     attribute: Attribute = Attribute.None_
     attribute_level: int = 1
 
-    id = ItemUpgrade.OfAttribute
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.AttributePlusOne, ModifierType.Arg2, 10, 20)
-        
-
-
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            enum_type=Attribute,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
+        if attribute_bytes:
+            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
+            clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
+            
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+        return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Attribute"])
-        
-    
+
 @dataclass(eq=False)
 class OfAptitudeUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfAptitude
     chance: int = 20
 
-    id = ItemUpgrade.OfAptitude
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeItemAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeItemAttribute, ModifierType.Arg1, 10, 20)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeItemAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeItemAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
 
-    
-    def create_encoded_name(self):
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0]), f"of Aptitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Aptitude"])
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0]), "of Aptitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Aptitude"])
+
 @dataclass(eq=False)
 class OfAxeMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfAxeMastery
-    attribute: Attribute = Attribute.AxeMastery
+    attribute = Attribute.AxeMastery
     
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Axe Mastery"])
-        
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.AxeMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
 @dataclass(eq=False)
 class OfDaggerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfDaggerMastery
-    attribute: Attribute = Attribute.DaggerMastery
-        
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Dagger Mastery"])
-    
+    attribute = Attribute.DaggerMastery
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DaggerMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
 @dataclass(eq=False)
 class OfDefenseUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfDefense
     armor: int = 5
 
-    id = ItemUpgrade.OfDefense
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlus, ModifierType.Arg2, 4, 5)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlus,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlus,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
 
-    
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x77, 0xA, 0x1, 0x0]), f"of Defense", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Defense"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x77, 0xA, 0x1, 0x0]), "of Defense", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Defense"])
+
 @dataclass(eq=False)
 class OfDevotionUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfDevotion
     health: int = 45
 
-    id = ItemUpgrade.OfDevotion
-    property_identifiers = [
-        ModifierIdentifier.HealthPlusEnchanted,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlusEnchanted, ModifierType.Arg1, 30, 45)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HealthPlusEnchanted,
+            target="health",
+            min_value=30,
+            max_value=45,
+            value_getter=property_value(
+                HealthPlusEnchanted,
+                lambda prop: prop.health,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0]), f"of Devotion", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Devotion"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0]), "of Devotion", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Devotion"])
+
 @dataclass(eq=False)
 class OfEnchantingUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfEnchanting
     enchantment_duration: int = 20
 
-    id = ItemUpgrade.OfEnchanting
-    property_identifiers = [
-        ModifierIdentifier.IncreaseEnchantmentDuration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.IncreaseEnchantmentDuration, ModifierType.Arg2, 10, 20)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.IncreaseEnchantmentDuration,
+            target="enchantment_duration",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                IncreaseEnchantmentDuration,
+                lambda prop: prop.enchantment_duration,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes([*self.get_text_color(), 0xA, 0x1, 0xA2, 0xA, 0x1, 0x1, self.enchantment_duration, 0x1, 0x1, 0x0]), f"Enchantments last {self.enchantment_duration}% longer")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x78, 0xA, 0x1, 0x0]), f"of Enchanting", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Enchanting"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x78, 0xA, 0x1, 0x0]), "of Enchanting", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Enchanting"])
+
 @dataclass(eq=False)
 class OfEnduranceUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfEndurance
     health: int = 45
 
-    id = ItemUpgrade.OfEndurance
-    property_identifiers = [
-        ModifierIdentifier.HealthPlusStance,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlusStance, ModifierType.Arg1, 30, 45)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HealthPlusStance,
+            target="health",
+            min_value=30,
+            max_value=45,
+            value_getter=property_value(
+                HealthPlusStance,
+                lambda prop: prop.health,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
 
-    
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0]), f"of Endurance", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Endurance"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0]), "of Endurance", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Endurance"])
+
 @dataclass(eq=False)
 class OfFortitudeUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfFortitude
     health: int = 30
 
-    id = ItemUpgrade.OfFortitude
-    property_identifiers = [
-        ModifierIdentifier.HealthPlus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlus, ModifierType.Arg1, 10, 30)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HealthPlus,
+            target="health",
+            min_value=10,
+            max_value=30,
+            value_getter=property_value(
+                HealthPlus,
+                lambda prop: prop.health,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x79, 0xA, 0x1, 0x0]), f"of Fortitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Fortitude"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x79, 0xA, 0x1, 0x0]), "of Fortitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Fortitude"])
+
 @dataclass(eq=False)
 class OfHammerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfHammerMastery
-    attribute: Attribute = Attribute.HammerMastery
+    attribute = Attribute.HammerMastery
     
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Hammer Mastery"])
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.HammerMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
 @dataclass(eq=False)
 class OfMarksmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfMarksmanship
-    attribute: Attribute = Attribute.Marksmanship
-    
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Marksmanship"])
-    
+    attribute = Attribute.Marksmanship
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Marksmanship,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 @dataclass(eq=False)
 class OfMasteryUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfMastery
     chance: int = 20
     attribute_level: int = 1
 
-    id = ItemUpgrade.OfMastery
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOneItem,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.AttributePlusOneItem, ModifierType.Arg1, 10, 20)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOneItem,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOneItem,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOneItem,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOneItem,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
-    
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0]), f"of Mastery", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Mastery"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0]), "of Mastery", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Mastery"])
+
 @dataclass(eq=False)
 class OfMemoryUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfMemory
     chance: int = 20
 
-    id = ItemUpgrade.OfMemory
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeItemAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesSkillRechargeItemAttribute, ModifierType.Arg1, 10, 20)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeItemAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeItemAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0]), f"of Memory", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Memory"])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0]), "of Memory", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Memory"])
 
 @dataclass(eq=False)
 class OfQuickeningUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfQuickening
     chance: int = 10
 
-    id = ItemUpgrade.OfQuickening
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeGeneral,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesSkillRechargeGeneral, ModifierType.Arg1, 5, 10)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeGeneral,
+            target="chance",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                HalvesSkillRechargeGeneral,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0]), f"of Quickening", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Quickening"])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0]), "of Quickening", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Quickening"])
 
 @dataclass(eq=False)
 class OfScytheMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfScytheMastery
-    attribute: Attribute = Attribute.ScytheMastery
+    attribute = Attribute.ScytheMastery
     
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Scythe Mastery"])
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.ScytheMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
 @dataclass(eq=False)
 class OfShelterUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfShelter
     armor: int = 7
 
-    id = ItemUpgrade.OfShelter
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsPhysical,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsPhysical, ModifierType.Arg2, 4, 7)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsPhysical,
+            target="armor",
+            min_value=4,
+            max_value=7,
+            value_getter=property_value(
+                ArmorPlusVsPhysical,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")
 
-    
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), f"of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Shelter"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), "of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Shelter"])
+
 @dataclass(eq=False)
 class OfSlayingUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfSlaying
     species: ItemBaneSpecies = ItemBaneSpecies.Unknown
     damage_increase: int = 20
 
-    id = ItemUpgrade.OfSlaying
-    modifier_ranges = [
-        ModifierRange(
-            ModifierIdentifier.BaneSpecies,
-            ModifierType.Arg1,
-            allowed_values=[species.value for species in ItemBaneSpecies if species != ItemBaneSpecies.Unknown],
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.BaneSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                BaneProperty,
+                lambda prop: prop.species,
+            ),
         ),
-        ModifierRange(ModifierIdentifier.DamagePlusVsSpecies, ModifierType.Arg1, 10, 20),
-    ]
-    
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusVsSpecies,
-        ModifierIdentifier.BaneSpecies,
-    ]
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SLAYING_BANE.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()), f"of {self.species.name}-Slaying", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", f"{self.species.name}-Slaying" if self.species != ItemBaneSpecies.Unknown else "Slaying"])
@@ -1124,338 +1557,629 @@ class OfSlayingUpgrade(WeaponSuffix):
 @dataclass(eq=False)
 class OfSpearMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSpearMastery
-    attribute: Attribute = Attribute.SpearMastery
+    attribute = Attribute.SpearMastery
 
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Spear Mastery"])
-
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SpearMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 @dataclass(eq=False)
 class OfSwiftnessUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfSwiftness
     chance: int = 10
 
-    id = ItemUpgrade.OfSwiftness
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeGeneral,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeGeneral, ModifierType.Arg1, 5, 10)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeGeneral,
+            target="chance",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                HalvesCastingTimeGeneral,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7C, 0xA, 0x1, 0x0]), f"of Swiftness", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Swiftness"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7C, 0xA, 0x1, 0x0]), "of Swiftness", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Swiftness"])
+
 @dataclass(eq=False)
 class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSwordsmanship
-    attribute: Attribute = Attribute.Swordsmanship
-    
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Swordsmanship"])
+    attribute = Attribute.Swordsmanship
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Swordsmanship,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
     
 @dataclass(eq=False)
 class OfTheProfessionUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfTheProfession
     profession: Profession = Profession._None
     attribute: Attribute = Attribute.None_
     attribute_level: int = 5
 
-    id = ItemUpgrade.OfTheProfession
-    modifier_ranges = [
-        ModifierRange(
-            ModifierIdentifier.OfTheProfession,
-            ModifierType.Arg1,
-            allowed_values=[
-                attribute.value
-                for attribute in Attribute
-                if attribute != Attribute.None_ and attribute.is_primary
-            ],
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            enum_type=Attribute,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
         ),
-        ModifierRange(ModifierIdentifier.OfTheProfession, ModifierType.Arg2, 4, 5),
-    ]
-    
-    property_identifiers = [
-        ModifierIdentifier.OfTheProfession,
-    ]
-    
-    def __post_init__(self):
-        super().__post_init__()
-        if self.profession == Profession._None:
-            self.profession = self.attribute.get_profession()
-    
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        enum(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            enum_type=Profession,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        encoded_bytes = bytes([*self.get_text_color(), 0x86, 0xA, 0xA, 0x1, *GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
+        return GWStringEncoded(encoded_bytes, f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.THE_PROFESSION.get(self.profession, bytes()), f"of {self.profession.name if self.profession != Profession._None else 'Unknown Profession'}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", self.profession.name if self.profession != Profession._None else "Profession"])
-        
-    
+
 @dataclass(eq=False)
 class OfValorUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfValor
     health: int = 60
 
-    id = ItemUpgrade.OfValor
-    property_identifiers = [
-        ModifierIdentifier.HealthPlusHexed,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlusHexed, ModifierType.Arg1, 45, 60)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HealthPlusHexed,
+            target="health",
+            min_value=45,
+            max_value=60,
+            value_getter=property_value(
+                HealthPlusHexed,
+                lambda prop: prop.health,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True)+ GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0]), f"of Valor", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Valor"])
-    
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0]), "of Valor", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Valor"])
+
 @dataclass(eq=False)
 class OfWardingUpgrade(WeaponSuffix):
+    id = ItemUpgrade.OfWarding
     armor: int = 7
 
-    id = ItemUpgrade.OfWarding
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsElemental,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsElemental, ModifierType.Arg2, 4, 7)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsElemental,
+            target="armor",
+            min_value=4,
+            max_value=7,
+            value_getter=property_value(
+                ArmorPlusVsElemental,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7D, 0xA, 0x1, 0x0]), f"of Warding", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Warding"])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7D, 0xA, 0x1, 0x0]), "of Warding", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Warding"])
 
 #endregion Suffixes
 
-#region Inscriptions
+#region Inscriptions    
 @dataclass(eq=False)
 class Inscription(Upgrade):
     mod_type = ItemUpgradeType.Inscription
-    inventory_icon: ClassVar[str]
-    id: ClassVar[ItemUpgrade]
-    target_item_type: ClassVar[ItemType]
-    modifier_range: ClassVar[Optional[ModifierRange]] = None
+    target_item_type: ItemType = field(init=False, default=ItemType.Unknown, repr=False, compare=False)
+
+    @classmethod
+    def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
+        inscription = cast(Inscription, upgrade)
+        inscription.target_item_type = cls.id.get_item_type(inscription.upgrade_id)   
+
+class OffhandInscription(Inscription):
+    target_item_type = ItemType.Offhand
+    
+class WeaponInscription(Inscription):
+    target_item_type = ItemType.Weapon
+    
+class MartialWeaponInscription(Inscription):
+    target_item_type = ItemType.MartialWeapon
+    
+class OffhandOrShieldInscription(Inscription):
+    target_item_type = ItemType.OffhandOrShield
+    
+class ReduceConditionDurationInscription(OffhandOrShieldInscription):
+    condition: Reduced_Ailment | None = None
 
     def create_encoded_description(self) -> GWStringEncoded:
-        if not self.properties:
+        if self.condition is not None:
+            fallback = f"Reduces {self.condition.name} duration on you by 20% (Stacking)"
+            encoded = GWEncoded.REDUCED_CONDITION_BYTES.get(self.condition)
+            base = GWStringEncoded(bytes([*self.get_text_color(), *encoded]), fallback) if encoded else GWStringEncoded(bytes(), fallback)
+            
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES, "(Stacking)"), fallback)
+        
+        return super().create_encoded_description()
+
+class ArmorVsDamageTypeInscription(OffhandOrShieldInscription):
+    armor: int = 10
+    damage_type: DamageType | None = None
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        if self.damage_type is None:
             return super().create_encoded_description()
-        parts = [prop.encoded_description for prop in self.properties.values() if prop.encoded_description]
-        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
+        
+        base = GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
+        clause_bytes = GWEncoded.VS_DAMAGE_BYTES.get(self.damage_type)
+        if clause_bytes:
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_bytes, f"(vs. {self.damage_type.name} damage)"), f"(vs. {self.damage_type.name} damage)")
+        return GWStringEncoded(base.encoded, f"{base.fallback} (vs. {self.damage_type.name} damage)")
 
-    @property
-    def is_maxed(self) -> bool:
-        modifier_ranges = type(self).get_modifier_ranges()
-        if not self.properties or not modifier_ranges:
-            return True
-
-        for modifier_range in modifier_ranges:
-            prop = self._get_upgrade_property(modifier_range.modifierIdentifier)
-            if not prop:
-                return False
-
-            value = prop.modifier.arg1 if modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
-            if not modifier_range.is_valid(value):
-                return False
-
-        return True
+class EquippableItemInscription(Inscription):
+    target_item_type = ItemType.EquippableItem
+    
+class SpellcastingWeaponInscription(Inscription):
+    target_item_type = ItemType.SpellcastingWeapon
     
 #region Offhand
 @dataclass(eq=False)
-class BeJustAndFearNot(Inscription):
-    armor: int = 10
-
+class BeJustAndFearNot(OffhandInscription):
     id = ItemUpgrade.BeJustAndFearNot
+    armor: int = 10
     target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusHexed,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusHexed, ModifierType.Arg2, 5, 10)
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusHexed,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusHexed,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
     
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"))
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0]), f"Be Just And Fear Not")
-        
+ 
 @dataclass(eq=False)
-class DownButNotOut(Inscription):
+class DownButNotOut(OffhandInscription):
+    id = ItemUpgrade.DownButNotOut
+    
     armor: int = 10
     health_threshold: int = 50
 
-    id = ItemUpgrade.DownButNotOut
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusWhileBelow
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusWhileBelow, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusWhileBelow: (50, 10),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusWhileBelow,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusWhileBelow,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusWhileBelow,
+            target="health_threshold",
+            fixed_value=50,
+            value_getter=property_value(
+                ArmorPlusWhileBelow,
+                lambda prop: prop.health_threshold,
+            ),
+        ),
+    )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
 
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8E, 0x5D, 0x1, 0x0]), f"Down But Not Out")    
     
 @dataclass(eq=False)
-class FaithIsMyShield(Inscription):
+class FaithIsMyShield(OffhandInscription):
+    id = ItemUpgrade.FaithIsMyShield
     armor: int = 5
 
-    id = ItemUpgrade.FaithIsMyShield
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusEnchanted,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusEnchanted, ModifierType.Arg2, 4, 5)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusEnchanted,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlusEnchanted,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
     
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"))
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8D, 0x5D, 0x1, 0x0]), f"Faith Is My Shield")
     
 @dataclass(eq=False)
-class ForgetMeNot(Inscription):
+class ForgetMeNot(OffhandInscription):
+    id = ItemUpgrade.ForgetMeNot
     chance: int = 20
 
-    id = ItemUpgrade.ForgetMeNot
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeItemAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesSkillRechargeItemAttribute, ModifierType.Arg1, 15, 20)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeItemAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeItemAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
     
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x93, 0x5D, 0x1, 0x0]), f"Forget Me Not")
     
 @dataclass(eq=False)
-class HailToTheKing(Inscription):
+class HailToTheKing(OffhandInscription):
+    id = ItemUpgrade.HailToTheKing
     armor: int = 5
     health_threshold: int = 50
 
-    id = ItemUpgrade.HailToTheKing
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusAbove,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusAbove, ModifierType.Arg2, 4, 5)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusAbove: (50, 5),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusAbove,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlusAbove,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusAbove,
+            target="health_threshold",
+            fixed_value=50,
+            value_getter=property_value(
+                ArmorPlusAbove,
+                lambda prop: prop.health_threshold,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, "(while health above 50 %)"), "(while health above 50 %)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8F, 0x5D, 0x1, 0x0]), f"Hail To The King")
     
 @dataclass(eq=False)
-class IgnoranceIsBliss(Inscription):
+class IgnoranceIsBliss(OffhandInscription):
+    id = ItemUpgrade.IgnoranceIsBliss
     armor: int = 5
     energy: int = 5
 
-    id = ItemUpgrade.IgnoranceIsBliss
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlus,
-        ModifierIdentifier.EnergyMinus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlus, ModifierType.Arg2, 4, 5)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlus,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlus,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyMinus,
+            target="energy",
+            fixed_value=5,
+            value_getter=property_value(
+                EnergyMinus,
+                lambda prop: prop.energy,
+            ),
+        ),
+    )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, abs(self.armor), "Armor"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, abs(self.energy), "Energy")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x87, 0x5D, 0x1, 0x0]), f"Ignorance Is Bliss")
     
 @dataclass(eq=False)
-class KnowingIsHalfTheBattle(Inscription):
+class KnowingIsHalfTheBattle(OffhandInscription):
+    id = ItemUpgrade.KnowingIsHalfTheBattle
     armor: int = 5
 
-    id = ItemUpgrade.KnowingIsHalfTheBattle
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusCasting,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusCasting, ModifierType.Arg2, 5, 5)
-    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusCasting,
+            target="armor",
+            fixed_value=5,
+            value_getter=property_value(
+                ArmorPlusCasting,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+        
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_CASTING_BYTES, "(while casting)"))
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8C, 0x5D, 0x1, 0x0]), f"Knowing Is Half The Battle")
     
 @dataclass(eq=False)
-class LifeIsPain(Inscription):
+class LifeIsPain(OffhandInscription):
+    id = ItemUpgrade.LifeIsPain
     armor: int = 5
     health: int = 20
 
-    id = ItemUpgrade.LifeIsPain
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlus,
-        ModifierIdentifier.HealthMinus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlus, ModifierType.Arg2, 4, 5)
-
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlus,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlus,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HealthMinus,
+            target="health",
+            fixed_value=20,
+            value_getter=property_value(
+                HealthMinus,
+                lambda prop: prop.health_reduction,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, abs(self.armor), "Armor"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, abs(self.health), "Health")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+       
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x88, 0x5D, 0x1, 0x0]), f"Life Is Pain")
     
 @dataclass(eq=False)
-class LiveForToday(Inscription):
+class LiveForToday(OffhandInscription):
+    id = ItemUpgrade.LiveForToday
     energy: int = 15
     energy_regeneration: int = 1
+    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlus,
+            target="energy",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                EnergyPlus,
+                lambda prop: prop.energy,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyRegeneration,
+            target="energy_regeneration",
+            fixed_value=1,
+            value_getter=property_value(
+                EnergyRegeneration,
+                lambda prop: prop.energy_regeneration,
+            ),
+        ),
+    )
 
-    id = ItemUpgrade.LiveForToday
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlus,
-        ModifierIdentifier.EnergyRegeneration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlus, ModifierType.Arg2, 10, 15)
-
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x91, 0x5D, 0x1, 0x0]), f"Live For Today")
     
 @dataclass(eq=False)
-class ManForAllSeasons(Inscription):
+class ManForAllSeasons(OffhandInscription):
+    id = ItemUpgrade.ManForAllSeasons
     armor: int = 5
 
-    id = ItemUpgrade.ManForAllSeasons
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsElemental,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsElemental, ModifierType.Arg2, 4, 5)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsElemental,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlusVsElemental,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x89, 0x5D, 0x1, 0x0]), f"Man For All Seasons")
     
 @dataclass(eq=False)
-class MightMakesRight(Inscription):
+class MightMakesRight(OffhandInscription):
+    id = ItemUpgrade.MightMakesRight
     armor: int = 5
 
-    id = ItemUpgrade.MightMakesRight
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusAttacking,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusAttacking, ModifierType.Arg2, 4, 5)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusAttacking,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlusAttacking,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0]), "(while attacking)"))
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8B, 0x5D, 0x1, 0x0]), f"Might Makes Right")
     
 @dataclass(eq=False)
-class SerenityNow(Inscription):
+class SerenityNow(OffhandInscription):
+    id = ItemUpgrade.SerenityNow
     chance: int = 10
 
-    id = ItemUpgrade.SerenityNow
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeGeneral,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesSkillRechargeGeneral, ModifierType.Arg1, 7, 10)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeGeneral,
+            target="chance",
+            min_value=7,
+            max_value=10,
+            value_getter=property_value(
+                HalvesSkillRechargeGeneral,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x92, 0x5D, 0x1, 0x0]), f"Serenity Now")
     
 @dataclass(eq=False)
-class SurvivalOfTheFittest(Inscription):
-    armor: int = 5
-
+class SurvivalOfTheFittest(OffhandInscription):
     id = ItemUpgrade.SurvivalOfTheFittest
-    target_item_type = ItemType.Offhand
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsPhysical,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsPhysical, ModifierType.Arg2, 4, 5)
-
+    armor: int = 5
     
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsPhysical,
+            target="armor",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                ArmorPlusVsPhysical,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")    
+   
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8A, 0x5D, 0x1, 0x0]), f"Survival Of The Fittest")
 
@@ -1464,152 +2188,268 @@ class SurvivalOfTheFittest(Inscription):
 #region Weapon
 
 @dataclass(eq=False)
-class BrawnOverBrains(Inscription):
+class BrawnOverBrains(WeaponInscription):
+    id = ItemUpgrade.BrawnOverBrains
     damage_increase: int = 15
     energy: int = 5
 
-    id = ItemUpgrade.BrawnOverBrains
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusPercent,
-        ModifierIdentifier.EnergyMinus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusPercent, ModifierType.Arg2, 14, 15)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusPercent,
+            target="damage_increase",
+            min_value=14,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusPercent,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyMinus,
+            target="energy",
+            fixed_value=5,
+            value_getter=property_value(
+                EnergyMinus,
+                lambda prop: prop.energy,
+            ),
+        ),
+    )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, abs(self.energy), "Energy")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+    
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAE, 0x5D, 0x1, 0x0]), f"Brawn Over Brains")
         
 @dataclass(eq=False)
-class DanceWithDeath(Inscription):
+class DanceWithDeath(WeaponInscription):
+    id = ItemUpgrade.DanceWithDeath
     damage_increase: int = 15
 
-    id = ItemUpgrade.DanceWithDeath
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusStance,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusStance, ModifierType.Arg2, 10, 15)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusStance,
+            target="damage_increase",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusStance,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAD, 0x5D, 0x1, 0x0]), f"Dance With Death")
          
 @dataclass(eq=False)
-class DontFearTheReaper(Inscription):
+class DontFearTheReaper(WeaponInscription):
+    id = ItemUpgrade.DontFearTheReaper
     damage_increase: int = 15
 
-    id = ItemUpgrade.DontFearTheReaper
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusHexed,
-    ]    
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusHexed, ModifierType.Arg2, 10, 20)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusHexed,
+            target="damage_increase",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusHexed,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAC, 0x5D, 0x1, 0x0]), f"Dont Fear The Reaper")
     
 @dataclass(eq=False)
-class DontThinkTwice(Inscription):
+class DontThinkTwice(WeaponInscription):
+    id = ItemUpgrade.DontThinkTwice
     chance: int = 10
 
-    id = ItemUpgrade.DontThinkTwice
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeGeneral,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeGeneral, ModifierType.Arg1, 5, 10)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeGeneral,
+            target="chance",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                HalvesCastingTimeGeneral,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB0, 0x5D, 0x1, 0x0]), f"Dont Think Twice")
     
 @dataclass(eq=False)
-class GuidedByFate(Inscription):
+class GuidedByFate(WeaponInscription):
+    id = ItemUpgrade.GuidedByFate
     damage_increase: int = 15
 
-    id = ItemUpgrade.GuidedByFate
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusEnchanted,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusEnchanted, ModifierType.Arg2, 10, 15)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusEnchanted,
+            target="damage_increase",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusEnchanted,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA9, 0x5D, 0x1, 0x0]), f"Guided By Fate")
     
 @dataclass(eq=False)
-class StrengthAndHonor(Inscription):
+class StrengthAndHonor(WeaponInscription):
+    id = ItemUpgrade.StrengthAndHonor
     damage_increase: int = 15
     health_threshold: int = 50
 
-    id = ItemUpgrade.StrengthAndHonor
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusWhileAbove,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusWhileAbove, ModifierType.Arg2, 10, 15)
-    max_modifier_values = {
-        ModifierIdentifier.DamagePlusWhileAbove: (50, 15),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusWhileAbove,
+            target="damage_increase",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusWhileAbove,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.DamagePlusWhileAbove,
+            target="health_threshold",
+            fixed_value=50,
+            value_getter=property_value(
+                DamagePlusWhileAbove,
+                lambda prop: prop.health_threshold,
+            ),
+        ),
+    )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAA, 0x5D, 0x1, 0x0]), f"Strength And Honor")
     
 @dataclass(eq=False)
-class ToThePain(Inscription):
+class ToThePain(WeaponInscription):
+    id = ItemUpgrade.ToThePain
     damage_increase: int = 15
     armor: int = 10
 
-    id = ItemUpgrade.ToThePain
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusPercent,
-        ModifierIdentifier.ArmorMinusAttacking
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusPercent, ModifierType.Arg2, 14, 15)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusPercent,
+            target="damage_increase",
+            min_value=14,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusPercent,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorMinusAttacking,
+            target="armor",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorMinusAttacking,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"),
+            bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, *GWEncoded.ARMOR_BYTES, 0x1, 0x1, self.armor, 0x1, 0x1, 0x0, *GWEncoded.WHILE_ATTACKING_BYTES])
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAF, 0x5D, 0x1, 0x0]), f"To The Pain")
     
 @dataclass(eq=False)
-class TooMuchInformation(Inscription):
+class TooMuchInformation(WeaponInscription):
+    id = ItemUpgrade.TooMuchInformation
     damage_increase: int = 15
 
-    id = ItemUpgrade.TooMuchInformation
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusVsHexed,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusVsHexed, ModifierType.Arg2, 10, 15)
+    upgrade_info = (
+         ranged(
+            identifier=ModifierIdentifier.DamagePlusVsHexed,
+            target="damage_increase",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusVsHexed,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
 
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.VS_HEXED_FOES_BYTES, "(vs. Hexed foes)"), "(vs. Hexed foes)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA8, 0x5D, 0x1, 0x0]), f"Too Much Information")
     
 @dataclass(eq=False)
-class VengeanceIsMine(Inscription):
+class VengeanceIsMine(WeaponInscription):
+    id = ItemUpgrade.VengeanceIsMine
     damage_increase: int = 20
     health_threshold: int = 50
 
-    id = ItemUpgrade.VengeanceIsMine
-    target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusWhileBelow,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusWhileBelow, ModifierType.Arg2, 10, 20)
-    max_modifier_values = {
-        ModifierIdentifier.DamagePlusWhileBelow: (50, 20),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusWhileBelow,
+            target="damage_increase",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusWhileBelow,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.DamagePlusWhileBelow,
+            target="health_threshold",
+            fixed_value=50,
+            value_getter=property_value(
+                DamagePlusWhileBelow,
+                lambda prop: prop.health_threshold,
+            ),
+        ),
+    )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAB, 0x5D, 0x1, 0x0]), f"Vengeance Is Mine")
@@ -1618,31 +2458,48 @@ class VengeanceIsMine(Inscription):
 
 #region MartialWeapon
 @dataclass(eq=False)
-class IHaveThePower(Inscription):
+class IHaveThePower(MartialWeaponInscription):
+    id = ItemUpgrade.IHaveThePower
     energy: int = 5
 
-    id = ItemUpgrade.IHaveThePower
-    target_item_type = ItemType.MartialWeapon
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlus,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlus, ModifierType.Arg2, 5, 5)
-
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.EnergyPlus,
+            target="energy",
+            fixed_value=5,
+            value_getter=property_value(
+                EnergyPlus,
+                lambda prop: prop.energy,
+            ),
+        ),
+    )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x72, 0x5D, 0x1, 0x0]), f"I Have The Power")
     
 @dataclass(eq=False)
-class LetTheMemoryLiveAgain(Inscription):
+class LetTheMemoryLiveAgain(MartialWeaponInscription):
+    id = ItemUpgrade.LetTheMemoryLiveAgain
     chance: int = 10
 
-    id = ItemUpgrade.LetTheMemoryLiveAgain
-    target_item_type = ItemType.MartialWeapon
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeGeneral,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesSkillRechargeGeneral, ModifierType.Arg1, 5, 10)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeGeneral,
+            target="chance",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                HalvesSkillRechargeGeneral,
+                lambda prop: prop.chance,
+            ),
+        ),
+    )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x73, 0x5D, 0x1, 0x0]), f"Let The Memory Live Again")
@@ -1651,335 +2508,511 @@ class LetTheMemoryLiveAgain(Inscription):
 
 #region OffhandOrShield
 @dataclass(eq=False)
-class CastOutTheUnclean(Inscription):
-    condition: Ailment | None = Ailment.Disease
-
+class CastOutTheUnclean(ReduceConditionDurationInscription):
     id = ItemUpgrade.CastOutTheUnclean
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
+    condition = Reduced_Ailment.Disease
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Disease,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x83, 0x5D, 0x1, 0x0]), f"Cast Out The Unclean")
     
 @dataclass(eq=False)
-class FearCutsDeeper(Inscription):
-    condition: Ailment | None = Ailment.Bleeding
-
+class FearCutsDeeper(ReduceConditionDurationInscription):
     id = ItemUpgrade.FearCutsDeeper
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
-
+    condition = Reduced_Ailment.Bleeding
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Bleeding,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7F, 0x5D, 0x1, 0x0]), f"Fear Cuts Deeper")
     
 @dataclass(eq=False)
-class ICanSeeClearlyNow(Inscription):
-    condition: Ailment | None = Ailment.Blind
-
+class ICanSeeClearlyNow(ReduceConditionDurationInscription):
     id = ItemUpgrade.ICanSeeClearlyNow
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,   
-    ]
-
+    condition = Reduced_Ailment.Blind
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Blind,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x80, 0x5D, 0x1, 0x0]), f"I Can See Clearly Now")
     
 @dataclass(eq=False)
-class LeafOnTheWind(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Cold
-
+class LeafOnTheWind(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.LeafOnTheWind
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (3, 10),
-    }
-
-
+    damage_type = DamageType.Cold
     
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Cold,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+     )
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x75, 0x5D, 0x1, 0x0]), f"Leaf On The Wind")
     
 @dataclass(eq=False)
-class LikeARollingStone(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Earth
-
+class LikeARollingStone(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.LikeARollingStone
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (11, 10),
-    }
+    damage_type = DamageType.Earth
 
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Earth,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+     )
 
-    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x76, 0x5D, 0x1, 0x0]), f"Like A Rolling Stone")
     
 @dataclass(eq=False)
-class LuckOfTheDraw(Inscription):
+class LuckOfTheDraw(OffhandOrShieldInscription):
+    id = ItemUpgrade.LuckOfTheDraw
     damage_reduction: int = 5
     chance: int = 20
 
-    id = ItemUpgrade.LuckOfTheDraw
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReceiveLessDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ReceiveLessDamage, ModifierType.Arg1, 11, 20)
-    max_modifier_values = {
-        ModifierIdentifier.ReceiveLessDamage: (20, 5),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ReceiveLessDamage,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                ReceiveLessDamage,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ReceiveLessDamage,
+            target="damage_reduction",
+            fixed_value=5,
+            value_getter=property_value(
+                ReceiveLessDamage,
+                lambda prop: prop.damage_reduction,
+            ),
+        ),
+     )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"Received damage -{self.damage_reduction} (Chance: {self.chance}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7B, 0x5D, 0x1, 0x0]), f"Luck Of The Draw")
     
 @dataclass(eq=False)
-class MasterOfMyDomain(Inscription):
+class MasterOfMyDomain(OffhandOrShieldInscription):
+    id = ItemUpgrade.MasterOfMyDomain
     chance: int = 20
     attribute_level: int = 1
 
-    id = ItemUpgrade.MasterOfMyDomain
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOneItem,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.AttributePlusOneItem, ModifierType.Arg1, 11, 20)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOneItem,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOneItem,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOneItem,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOneItem,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+     )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA7, 0x5D, 0x1, 0x0]), f"Master Of My Domain")
     
 @dataclass(eq=False)
-class NotTheFace(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Blunt
-
+class NotTheFace(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.NotTheFace
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (0, 10),
-    }
+    damage_type = DamageType.Blunt
 
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Blunt,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+     )
 
-    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x74, 0x5D, 0x1, 0x0]), f"Not The Face")
     
 @dataclass(eq=False)
-class NothingToFear(Inscription):
+class NothingToFear(OffhandOrShieldInscription):
+    id = ItemUpgrade.NothingToFear
     damage_reduction: int = 3
 
-    id = ItemUpgrade.NothingToFear
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReceiveLessPhysDamageHexed,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ReceiveLessPhysDamageHexed, ModifierType.Arg2, 1, 3)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ReceiveLessPhysDamageHexed,
+            target="damage_reduction",
+            min_value=1,
+            max_value=3,
+            value_getter=property_value(
+                ReceiveLessPhysDamageHexed,
+                lambda prop: prop.damage_reduction,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7D, 0x5D, 0x1, 0x0]), f"Nothing To Fear")
     
 @dataclass(eq=False)
-class OnlyTheStrongSurvive(Inscription):
-    condition: Ailment | None = Ailment.Weakness
-
+class OnlyTheStrongSurvive(ReduceConditionDurationInscription):
     id = ItemUpgrade.OnlyTheStrongSurvive
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
+    condition = Reduced_Ailment.Weakness
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Weakness,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x86, 0x5D, 0x1, 0x0]), f"Only The Strong Survive")
     
 @dataclass(eq=False)
-class PureOfHeart(Inscription):
-    condition: Ailment | None = Ailment.Poison
-
+class PureOfHeart(ReduceConditionDurationInscription):
     id = ItemUpgrade.PureOfHeart
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
+    condition = Reduced_Ailment.Poison
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Poison,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x84, 0x5D, 0x1, 0x0]), f"Pure Of Heart")
     
 @dataclass(eq=False)
-class RidersOnTheStorm(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Lightning
-
+class RidersOnTheStorm(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.RidersOnTheStorm
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (4, 10),
-    }
-
-
+    damage_type = DamageType.Lightning
+    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Lightning,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+             ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x77, 0x5D, 0x1, 0x0]), f"Riders On The Storm")
     
 @dataclass(eq=False)
-class RunForYourLife(Inscription):
+class RunForYourLife(OffhandOrShieldInscription):
+    id = ItemUpgrade.RunForYourLife
     damage_reduction: int = 2
 
-    id = ItemUpgrade.RunForYourLife
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReceiveLessPhysDamageStance,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ReceiveLessPhysDamageStance, ModifierType.Arg2, 1, 2)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ReceiveLessPhysDamageStance,
+            target="damage_reduction",
+            min_value=1,
+            max_value=2,
+            value_getter=property_value(
+                ReceiveLessPhysDamageStance,
+                lambda prop: prop.damage_reduction,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7E, 0x5D, 0x1, 0x0]), f"Run For Your Life")  
     
 @dataclass(eq=False)
-class ShelteredByFaith(Inscription):
+class ShelteredByFaith(OffhandOrShieldInscription):
+    id = ItemUpgrade.ShelteredByFaith
     damage_reduction: int = 2
 
-    id = ItemUpgrade.ShelteredByFaith
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReceiveLessPhysDamageEnchanted,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ReceiveLessPhysDamageEnchanted, ModifierType.Arg2, 1, 2)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ReceiveLessPhysDamageEnchanted,
+            target="damage_reduction",
+            min_value=1,
+            max_value=2,
+            value_getter=property_value(
+                ReceiveLessPhysDamageEnchanted,
+                lambda prop: prop.damage_reduction,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7C, 0x5D, 0x1, 0x0]), f"Sheltered By Faith")
     
 @dataclass(eq=False)
-class SleepNowInTheFire(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Fire
-
+class SleepNowInTheFire(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.SleepNowInTheFire
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (5, 10),
-    }
-
-
+    damage_type = DamageType.Fire
     
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Fire,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+     )
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x78, 0x5D, 0x1, 0x0]), f"Sleep Now In The Fire")
     
 @dataclass(eq=False)
-class SoundnessOfMind(Inscription):
-    condition: Ailment | None = Ailment.Dazed
-
+class SoundnessOfMind(ReduceConditionDurationInscription):
     id = ItemUpgrade.SoundnessOfMind
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
-
+    condition = Reduced_Ailment.Dazed
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Dazed,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x85, 0x5D, 0x1, 0x0]), f"Soundness Of Mind")
     
 @dataclass(eq=False)
-class StrengthOfBody(Inscription):
-    condition: Ailment | None = Ailment.Deep_Wound
-
+class StrengthOfBody(ReduceConditionDurationInscription):
     id = ItemUpgrade.StrengthOfBody
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
-
+    condition = Reduced_Ailment.Deep_Wound
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Deep_Wound,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x82, 0x5D, 0x1, 0x0]), f"Strength Of Body")
     
 @dataclass(eq=False)
-class SwiftAsTheWind(Inscription):
-    condition: Ailment | None = Ailment.Crippled
-
+class SwiftAsTheWind(ReduceConditionDurationInscription):
     id = ItemUpgrade.SwiftAsTheWind
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionDuration,
-    ]
+    condition = Reduced_Ailment.Crippled
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionDuration,
+            target="condition",
+            fixed_value=Reduced_Ailment.Crippled,
+            value_getter=property_value(
+                ReduceConditionDuration,
+                lambda prop: prop.condition,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x81, 0x5D, 0x1, 0x0]), f"Swift As The Wind")
 
 @dataclass(eq=False)
-class TheRiddleOfSteel(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Slashing
-
+class TheRiddleOfSteel(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.TheRiddleOfSteel
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (2, 10),
-    }
-
-
+    damage_type = DamageType.Slashing
+    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Slashing,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7A, 0x5D, 0x1, 0x0]), f"The Riddle Of Steel")
     
 @dataclass(eq=False)
-class ThroughThickAndThin(Inscription):
-    armor: int = 10
-    damage_type: DamageType | None = DamageType.Piercing
-
+class ThroughThickAndThin(ArmorVsDamageTypeInscription):
     id = ItemUpgrade.ThroughThickAndThin
-    target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsDamage,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsDamage, ModifierType.Arg2, 5, 10)
-    max_modifier_values = {
-        ModifierIdentifier.ArmorPlusVsDamage: (1, 10),
-    }
-
-
+    damage_type = DamageType.Piercing
+    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Piercing,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        ),
+     )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x79, 0x5D, 0x1, 0x0]), f"Through Thick And Thin")
@@ -1988,30 +3021,48 @@ class ThroughThickAndThin(Inscription):
 
 #region EquippableItem
 @dataclass(eq=False)
-class MeasureForMeasure(Inscription):
-    highly_salvageable: bool = False
-
+class MeasureForMeasure(EquippableItemInscription):
     id = ItemUpgrade.MeasureForMeasure
-    target_item_type = ItemType.EquippableItem
-    property_identifiers = [
-        ModifierIdentifier.HighlySalvageable,
-    ]
+    highly_salvageable: bool = True
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.HighlySalvageable,
+            target="highly_salvageable",
+            fixed_value=True,
+            value_getter=property_value(
+                HighlySalvageable,
+                lambda _: True,
+            ),
+        ),
+     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes([*self.get_text_color(), *GWEncoded.HIGHLY_SALVAGEABLE_BYTES]), "Highly salvageable")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x81, 0x7C, 0x1, 0x0]), f"Measure For Measure")
         
 @dataclass(eq=False)
-class ShowMeTheMoney(Inscription):
-    improved_sale_value: bool = False
-
+class ShowMeTheMoney(EquippableItemInscription):
     id = ItemUpgrade.ShowMeTheMoney
-    target_item_type = ItemType.EquippableItem
-    property_identifiers = [
-        ModifierIdentifier.IncreasedSaleValue,
-    ]    
+    improved_sale_value: bool = True
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.IncreasedSaleValue,
+            target="improved_sale_value",
+            fixed_value=True,
+            value_getter=property_value(
+                IncreasedSaleValue,
+                lambda _: True,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes([*self.get_text_color(), *GWEncoded.IMPROVED_SALE_VALUE_BYTES]), "Improved sale value")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x80, 0x7C, 0x1, 0x0]), f"Show Me The Money")
 
@@ -2019,154 +3070,205 @@ class ShowMeTheMoney(Inscription):
 
 #region SpellcastingWeapon
 @dataclass(eq=False)
-class AptitudeNotAttitude(Inscription):
-    chance: int = 20
-
+class AptitudeNotAttitude(SpellcastingWeaponInscription):
     id = ItemUpgrade.AptitudeNotAttitude
-    target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeItemAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeItemAttribute, ModifierType.Arg1, 10, 20)
-
+    chance: int = 20
     
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeItemAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeItemAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB2, 0x5D, 0x1, 0x0]), f"Aptitude Not Attitude")
     
 @dataclass(eq=False)
-class DontCallItAComeback(Inscription):
+class DontCallItAComeback(SpellcastingWeaponInscription):
+    id = ItemUpgrade.DontCallItAComeback
     energy: int = 7
     health_threshold: int = 50
 
-    id = ItemUpgrade.DontCallItAComeback
-    target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlusWhileBelow,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlusWhileBelow, ModifierType.Arg2, 5, 7)
-    max_modifier_values = {
-        ModifierIdentifier.EnergyPlusWhileBelow: (50, 7),
-    }
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlusWhileBelow,
+            target="energy",
+            min_value=5,
+            max_value=7,
+            value_getter=property_value(
+                EnergyPlusWhileBelow,
+                lambda prop: prop.energy,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyPlusWhileBelow,
+            target="health_threshold",
+            fixed_value=50,
+            value_getter=property_value(
+                EnergyPlusWhileBelow,
+                lambda prop: prop.health_threshold,
+            ),
+        ),
+     )
 
-
-    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB6, 0x5D, 0x1, 0x0]), f"Don't Call It A Comeback")
     
 @dataclass(eq=False)
-class HaleAndHearty(Inscription):
+class HaleAndHearty(SpellcastingWeaponInscription):
+    id = ItemUpgrade.HaleAndHearty
     energy: int = 5
     health_threshold: int = 50
+    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlusWhileAbove,
+            target="energy",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                EnergyPlusWhileAbove,
+                lambda prop: prop.energy,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyPlusWhileAbove,
+            target="health_threshold",
+            fixed_value=50,
+            value_getter=property_value(
+                EnergyPlusWhileAbove,
+                lambda prop: prop.health_threshold,
+            ),
+        ),
+     )
 
-    id = ItemUpgrade.HaleAndHearty
-    target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlusWhileAbove,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlusWhileAbove, ModifierType.Arg2, 4, 5)
-    max_modifier_values = {
-        ModifierIdentifier.EnergyPlusWhileAbove: (50, 5),
-    }
-
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB5, 0x5D, 0x1, 0x0]), f"Hale And Hearty")
     
 @dataclass(eq=False)
-class HaveFaith(Inscription):
+class HaveFaith(SpellcastingWeaponInscription):
+    id = ItemUpgrade.HaveFaith
     energy: int = 5
 
-    id = ItemUpgrade.HaveFaith
-    target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlusEnchanted,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlusEnchanted, ModifierType.Arg2, 4, 5)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlusEnchanted,
+            target="energy",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                EnergyPlusEnchanted,
+                lambda prop: prop.energy,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB4, 0x5D, 0x1, 0x0]), f"Have Faith")
     
 @dataclass(eq=False)
-class IAmSorrow(Inscription):
+class IAmSorrow(SpellcastingWeaponInscription):
+    id = ItemUpgrade.IAmSorrow
     energy: int = 7
 
-    id = ItemUpgrade.IAmSorrow
-    target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlusHexed,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlusHexed, ModifierType.Arg2, 5, 7)
-
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlusHexed,
+            target="energy",
+            min_value=5,
+            max_value=7,
+            value_getter=property_value(
+                EnergyPlusHexed,
+                lambda prop: prop.energy,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB7, 0x5D, 0x1, 0x0]), f"I Am Sorrow")
     
 @dataclass(eq=False)
-class SeizeTheDay(Inscription):
+class SeizeTheDay(SpellcastingWeaponInscription):
+    id = ItemUpgrade.SeizeTheDay
     energy: int = 15
     energy_regeneration: int = 1
 
-    id = ItemUpgrade.SeizeTheDay
-    target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlus,
-        ModifierIdentifier.EnergyRegeneration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlus, ModifierType.Arg2, 10, 15)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlus,
+            target="energy",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                EnergyPlus,
+                lambda prop: prop.energy,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyRegeneration,
+            target="energy_regeneration",
+            fixed_value=1,
+            value_getter=property_value(
+                EnergyRegeneration,
+                lambda prop: prop.energy_regeneration,
+            ),
+        ),
+     )
 
-
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB3, 0x5D, 0x1, 0x0]), f"Seize The Day")
 
 #endregion SpellcastingWeapon
+
 #endregion Inscriptions
 
 #region Inherent (Old School)
 @dataclass(eq=False)
 class Inherent(Upgrade):
     mod_type = ItemUpgradeType.Inherent
-    id: ClassVar[ItemUpgrade] = ItemUpgrade.Inherent
-    target_item_type: ClassVar[ItemType]
-    modifier_range: ClassVar[Optional[ModifierRange]] = None
+    target_item_type: ItemType = ItemType.EquippableItem
 
     def __post_init__(self):
         super().__post_init__()
         object.__setattr__(self, "is_inherent", True)
     
-    def create_encoded_description(self) -> GWStringEncoded:
-        if not self.properties:
-            return GWStringEncoded(bytes(), f"[Inherent] No properties present. Thus no encoded description ({self.__class__.__name__})")
-        
-        parts = [prop.encoded_description for prop in self.properties.values() if prop.encoded_description]
-        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
-
     @classmethod
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return False
-
-    @property
-    def is_maxed(self) -> bool:
-        modifier_ranges = type(self).get_modifier_ranges()
-        if not self.properties or not modifier_ranges:
-            return True
-
-        for modifier_range in modifier_ranges:
-            prop = self._get_upgrade_property(modifier_range.modifierIdentifier)
-            if not prop:
-                return False
-
-            value = prop.modifier.arg1 if modifier_range.modifier_type == ModifierType.Arg1 else prop.modifier.arg2
-            if not modifier_range.is_valid(value):
-                return False
-
-        return True
     
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"Inherent: {Utils.humanize_string(self.__class__.__name__)}")
-    
+        return GWStringEncoded(bytes(), f"Inherent: {_humanize_identifier(self.__class__.__name__)}")
+
 #region Weapon
 @dataclass(eq=False)
 class DamagePlusWhileAboveUpgrade(Inherent, StrengthAndHonor):
@@ -2216,29 +3318,74 @@ class DamagePlusWhileBelowUpgrade(Inherent, VengeanceIsMine):
 class VampiricStrengthUpgrade(Inherent):
     damage_increase: int = 15
     health_regeneration: int = 1
-
     target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusPercent,
-        ModifierIdentifier.HealthRegeneneration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusPercent, ModifierType.Arg2, 10, 15)
+        
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusPercent,
+            target="damage_increase",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusPercent,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HealthRegeneneration,
+            target="health_regeneration",
+            fixed_value=1,
+            value_getter=property_value(
+                HealthRegeneneration,
+                lambda prop: prop.health_regeneration,
+            ),
+        ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.HEALTH_REGEN_BYTES, abs(self.health_regeneration), "Health regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
     
 
 @dataclass(eq=False)
 class ZealousStrengthUpgrade(Inherent):
     damage_increase: int = 15
     energy_regeneration: int = 1
-
     target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.DamagePlusPercent,
-        ModifierIdentifier.EnergyRegeneration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.DamagePlusPercent, ModifierType.Arg2, 10, 15)
     
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusPercent,
+            target="damage_increase",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                DamagePlusPercent,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyRegeneration,
+            target="energy_regeneration",
+             fixed_value=1,
+            value_getter=property_value(
+                EnergyRegeneration,
+                lambda prop: prop.energy_regeneration,
+            ),
+         ),
+     )
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
     
 #endregion Weapon
 
@@ -2336,14 +3483,47 @@ class AttributePlusOneUpgrade(Inherent):
     chance: int = 20
     attribute: Attribute = Attribute.None_
     attribute_level: int = 1
-
     target_item_type = ItemType.OffhandOrShield
-    property_identifiers = [
-        ModifierIdentifier.AttributePlusOne,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.AttributePlusOne, ModifierType.Arg1, 11, 20)
 
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        enum(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            enum_type=Attribute,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+     )
     
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
+        if attribute_bytes:
+            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
+            clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
+            
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+        return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
 
         
 
@@ -2415,36 +3595,83 @@ class PiercingArmorPlusVsDamageUpgrade(Inherent, ThroughThickAndThin):
 class ArmorVsSpeciesUpgrade(Inherent):
     armor: int = 10
     species: ItemBaneSpecies | None = None
-
     target_item_type = ItemType.Weapon
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsSpecies,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.ArmorPlusVsSpecies, ModifierType.Arg2, 5, 10)
-    
-    
 
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+        enum(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+     )
+    
+    #TODO: implement proper encoded description once we have the correct bytes for the species
+    def create_encoded_description(self) -> GWStringEncoded:
+        if self.species is None:
+            return GWStringEncoded(bytes(), f"Armor +{self.armor} ({_humanize_identifier(self.__class__.__name__)})")
+        
+        species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"Unknown species ({self.species.value})"
+        return GWStringEncoded(bytes(), f"Armor +{self.armor}\n(vs. {species})")
+        
 #endregion OffhandOrShield
 
 #region EquippableItem
 @dataclass(eq=False)
 class HealthPlusUpgrade(Inherent):
     health: int = 30
-
     target_item_type = ItemType.EquippableItem
-    property_identifiers = [
-        any_of(ModifierIdentifier.HealthPlus2, ModifierIdentifier.HealthPlus),
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HealthPlus2, ModifierType.Arg1, 10, 30)
+
+    upgrade_info = (
+        ranged(
+            identifier=any_of(ModifierIdentifier.HealthPlus, ModifierIdentifier.HealthPlus2),
+            target="health",
+            min_value=10,
+            max_value=30,
+            value_getter=property_value(
+                HealthPlus,
+                lambda prop: prop.health,
+            ),
+        ),
+     )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
 
 @dataclass(eq=False)
 class EnergyUpgrade(Inherent):
-    energy: int = 5
-
     target_item_type = ItemType.EquippableItem
-    property_identifiers = [
-        any_of(ModifierIdentifier.Energy, ModifierIdentifier.Energy2),
-    ]
+    energy: int = 5
+    
+    upgrade_info = (
+        ranged(
+            identifier=any_of(ModifierIdentifier.Energy, ModifierIdentifier.Energy2),
+            target="energy",
+            min_value=0,
+            max_value=12,
+            value_getter=property_value(
+                EnergyProperty,
+                lambda prop: prop.energy,
+            ),
+        ),
+     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(GWEncoded.ITEM_BASIC, GWEncoded.ENERGY_BYTES, self.energy, "Energy")
+
     
 @dataclass(eq=False)
 class HighlySalvageableUpgrade(Inherent, MeasureForMeasure):
@@ -2461,12 +3688,39 @@ class IncreasedSaleValueUpgrade(Inherent, ShowMeTheMoney):
 class HalvesCastingTimeAttributeUpgrade(Inherent):
     chance: int = 20
     attribute: Attribute | None = None
-
     target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.HalvesCastingTimeAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesCastingTimeAttribute, ModifierType.Arg1, 10, 20)
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        enum(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            enum_type=Attribute,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+     )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        if self.attribute is None:
+            return GWStringEncoded(bytes(), f"Halves casting time of spells of item's attribute (Chance: {self.chance}%)")
+        
+        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
+        if attribute_bytes:
+            base = GWEncoded._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells")
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWStringEncoded(bytes(), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
     
     
@@ -2474,14 +3728,40 @@ class HalvesCastingTimeAttributeUpgrade(Inherent):
 class HalvesRechargeTimeAttributeUpgrade(Inherent):
     chance: int = 20
     attribute: Attribute | None = None
-
     target_item_type = ItemType.SpellcastingWeapon
-    property_identifiers = [
-        ModifierIdentifier.HalvesSkillRechargeAttribute,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.HalvesSkillRechargeAttribute, ModifierType.Arg1, 10, 20)
 
-    
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        enum(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            enum_type=Attribute,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+     )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        if self.attribute is None:
+            return GWStringEncoded(bytes(), f"Halves skill recharge of spells of item's attribute (Chance: {self.chance}%)")
+        
+        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
+        if attribute_bytes:
+            base = GWEncoded._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells")
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(bytes(), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
+
     
     
 @dataclass(eq=False)
@@ -2514,70 +3794,60 @@ class EnergyPlusEnergyRegenerationMinusUpgrade(Inherent):
     energy: int = 15
     energy_regeneration: int = 1
 
-    property_identifiers = [
-        ModifierIdentifier.EnergyPlus,
-        ModifierIdentifier.EnergyRegeneration,
-    ]
-    modifier_range = ModifierRange(ModifierIdentifier.EnergyPlus, ModifierType.Arg2, 10, 15)
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.EnergyPlus,
+            target="energy",
+            min_value=10,
+            max_value=15,
+            value_getter=property_value(
+                EnergyPlus,
+                lambda prop: prop.energy,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyRegeneration,
+            target="energy_regeneration",
+            fixed_value=1,
+            value_getter=property_value(
+                EnergyRegeneration,
+                lambda prop: prop.energy_regeneration,
+            ),
+        ),
+     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+    
 
     
 #endregion SpellcastingWeapon
 
 #endregion Inherent
-
 #endregion Weapon Upgrades
 
 #region Armor Upgrades
 @dataclass(eq=False)
 class Insignia(Upgrade):
     mod_type = ItemUpgradeType.Prefix
-
-    id: ClassVar[ItemUpgrade]
-    inventory_icon: ClassVar[str]
-    profession: ClassVar[Profession] = Profession._None
-    
+    profession: Profession = Profession._None
     rarity = Rarity.Blue
-
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), _humanize_identifier(self.__class__.__name__))
     
 @dataclass(eq=False)
-class Rune(Upgrade):
-    RUNE_PATTERNS = {
-        ServerLanguage.English: r"^.*?\bRune\b\s*",
-        ServerLanguage.German: r"^.*?Rune\b\s*",
-        ServerLanguage.French: r"^Rune(?:\s+de\s+\S+)?\s*",
-        ServerLanguage.Italian: r"^Runa(?:\s+del\s+\S+)?\s*",
-        ServerLanguage.Spanish: r"^Runa(?:\s+de\s+\S+)?\s*",
-        ServerLanguage.Korean: r"^.*?룬",
-        ServerLanguage.Japanese: r"^.*?ルーン",
-        ServerLanguage.TraditionalChinese: r"^.*?符文",
-        ServerLanguage.Polish: r"^Runa(?:\s+\S+)?\s*",
-        ServerLanguage.Russian: r"^.*?\bRune\b\s*",
-    }
-    
+class Rune(Upgrade):    
     mod_type = ItemUpgradeType.Suffix
-
-    id: ClassVar[ItemUpgrade]
-    inventory_icon: ClassVar[str]
-    profession: ClassVar[Profession] = Profession._None
-    
-    rarity = Rarity.Blue
-
-    def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), _humanize_identifier(self.__class__.__name__))
+    profession: Profession = Profession._None  
+    rarity = Rarity.Blue  
 
 @dataclass(eq=False)
 class AttributeRune(Rune):
     attribute: Attribute = Attribute.None_
     attribute_level: int = 0
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-    def __post_init__(self):
-        super().__post_init__()
 
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
@@ -2587,7 +3857,7 @@ class AttributeRune(Rune):
 
     def create_encoded_description(self) -> GWStringEncoded:
         attribute = GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes())
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{AttributeNames.get(self.attribute)}: {self.attribute_level}" if attribute else ""
 
         match self.rarity:
             case Rarity.Gold:
@@ -2614,10 +3884,36 @@ class MajorAttributeRune(AttributeRune):
     attribute_level = 2
     rarity = Rarity.Purple
     
+    health_reduction: int = 35
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.HealthMinus,
+            target="health_reduction",
+            fixed_value=35,
+            value_getter=property_value(
+                HealthMinus,
+                lambda prop: prop.health_reduction,
+            ),
+        ),
+     )
+    
 @dataclass(eq=False)
 class SuperiorAttributeRune(AttributeRune):
     attribute_level = 3
     rarity = Rarity.Gold
+    
+    health_reduction: int = 75
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.HealthMinus,
+            target="health_reduction",
+            fixed_value=75,
+            value_getter=property_value(
+                HealthMinus,
+                lambda prop: prop.health_reduction,
+            ),
+        ),
+     )
     
 @dataclass(eq=False)
 class AppliesToRune(Upgrade):
@@ -2636,7 +3932,7 @@ class SurvivorInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE3, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x67, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x68, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x69, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2646,22 +3942,31 @@ class RadiantInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE4, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x4F, 0xA, 0x1, 0x0, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x67, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x4F, 0xA, 0x1, 0x0, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x68, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x4F, 0xA, 0x1, 0x0, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x69, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
 class StalwartInsignia(Insignia):
     id = ItemUpgrade.StalwartInsignia
-    property_identifiers = [
-        ModifierIdentifier.ArmorPlusVsPhysical,
-    ]
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsPhysical,
+            target="None",
+            fixed_value=None,
+            value_getter=property_value(
+                ArmorPlusVsPhysical,
+                lambda prop: prop.armor,
+            ),
+        ),
+     )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE6, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2671,7 +3976,7 @@ class BrawlersInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE9, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB4, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2681,7 +3986,7 @@ class BlessedInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE7, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9C, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
     
 @dataclass(eq=False)
@@ -2691,7 +3996,7 @@ class HeraldsInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE8, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB9, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
     
 @dataclass(eq=False)
@@ -2701,7 +4006,7 @@ class SentrysInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3D, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE5, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBA, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
     
 @dataclass(eq=False)
@@ -2713,7 +4018,7 @@ class RuneOfMinorVigor(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xB0, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB1, 0x64, 0x1, 0x1, 0x1E, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2725,7 +4030,7 @@ class RuneOfMinorVigor2(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xB0, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB1, 0x64, 0x1, 0x1, 0x1E, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2737,7 +4042,7 @@ class RuneOfVitae(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2749,7 +4054,7 @@ class RuneOfAttunement(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xD, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x4F, 0xA, 0x1, 0x0, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2761,39 +4066,79 @@ class RuneOfMajorVigor(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xB0, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0x8, 0x1, 0xA, 0x1, 0xB1, 0x64, 0x1, 0x1, 0x29, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
     
 @dataclass(eq=False)
 class RuneOfRecovery(Rune):
     id = ItemUpgrade.RuneOfRecovery
     rarity = Rarity.Purple
+    
+    condition_1: Reduced_Ailment = Reduced_Ailment.Dazed
+    condition_2: Reduced_Ailment = Reduced_Ailment.Deep_Wound
 
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionTupleDuration,
-    ]
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_1",
+            fixed_value=Reduced_Ailment.Dazed,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_1,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_2",
+            fixed_value=Reduced_Ailment.Deep_Wound,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_2,
+            ),
+        ),
+     )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xF, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x96, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, *self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x90, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
 class RuneOfRestoration(Rune):
     id = ItemUpgrade.RuneOfRestoration
     rarity = Rarity.Purple
+    
+    condition_1: Reduced_Ailment = Reduced_Ailment.Bleeding
+    condition_2: Reduced_Ailment = Reduced_Ailment.Crippled
 
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionTupleDuration,
-    ]
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_1",
+            fixed_value=Reduced_Ailment.Bleeding,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_1,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_2",
+            fixed_value=Reduced_Ailment.Crippled,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_2,
+            ),
+        ),
+     )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0x10, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x88, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, *self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x8E, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2801,15 +4146,35 @@ class RuneOfClarity(Rune):
     id = ItemUpgrade.RuneOfClarity
     rarity = Rarity.Purple
 
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionTupleDuration,
-    ]
+    condition_1: Reduced_Ailment = Reduced_Ailment.Blind
+    condition_2: Reduced_Ailment = Reduced_Ailment.Weakness
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_1",
+            fixed_value=Reduced_Ailment.Blind,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_1,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_2",
+            fixed_value=Reduced_Ailment.Weakness,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_2,
+            ),
+        ),
+     )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0x11, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x8A, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, *self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x98, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2817,15 +4182,35 @@ class RuneOfPurity(Rune):
     id = ItemUpgrade.RuneOfPurity
     rarity = Rarity.Purple
 
-    property_identifiers = [
-        ModifierIdentifier.ReduceConditionTupleDuration,
-    ]
+    condition_1: Reduced_Ailment = Reduced_Ailment.Disease
+    condition_2: Reduced_Ailment = Reduced_Ailment.Poison
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_1",
+            fixed_value=Reduced_Ailment.Disease,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_1,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ReduceConditionTupleDuration,
+            target="condition_2",
+            fixed_value=Reduced_Ailment.Poison,
+            value_getter=property_value(
+                ReduceConditionTupleDuration,
+                lambda prop: prop.condition_2,
+            ),
+        ),
+     )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0x12, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x92, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, *self.get_text_color(), 0xA7, 0xA, 0xA, 0x1, 0x94, 0x62, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
@@ -2837,7 +4222,7 @@ class RuneOfSuperiorVigor(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xB0, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0x8, 0x1, 0xA, 0x1, 0xB1, 0x64, 0x1, 0x1, 0x32, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 
@@ -2854,7 +4239,7 @@ class KnightsInsignia(Insignia):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x41, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0x4, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x7E, 0xA, 0xA, 0x1, 0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -2870,7 +4255,7 @@ class LieutenantsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0x97, 0x64, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x7E, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -2886,7 +4271,7 @@ class StonefistInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0x99, 0x64, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -2902,7 +4287,7 @@ class DreadnoughtInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -2918,7 +4303,7 @@ class SentinelsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x40, 0x9, 0x1, 0x0, 0x1, 0x1, 0xD, 0x1, 0x2, 0x0, 0xAB, 0xA, 0x2, 0x0, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -2997,7 +4382,7 @@ class WarriorRuneOfMajorAbsorption(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xFA, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0x8, 0x1, 0xA, 0x1, 0xFB, 0x64, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     
@@ -3006,10 +4391,6 @@ class WarriorRuneOfMajorTactics(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorTactics
     profession = Profession.Warrior
     attribute = Attribute.Tactics
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x48, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3021,10 +4402,6 @@ class WarriorRuneOfMajorStrength(MajorAttributeRune):
     profession = Profession.Warrior
     attribute = Attribute.Strength
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x40, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3034,10 +4411,6 @@ class WarriorRuneOfMajorAxeMastery(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorAxeMastery
     profession = Profession.Warrior
     attribute = Attribute.AxeMastery
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x42, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3049,10 +4422,6 @@ class WarriorRuneOfMajorHammerMastery(MajorAttributeRune):
     profession = Profession.Warrior
     attribute = Attribute.HammerMastery
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x44, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3062,10 +4431,6 @@ class WarriorRuneOfMajorSwordsmanship(MajorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfMajorSwordsmanship
     profession = Profession.Warrior
     attribute = Attribute.Swordsmanship
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x46, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3081,7 +4446,7 @@ class WarriorRuneOfSuperiorAbsorption(Rune):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xFA, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([*self.get_text_color(), 0x8, 0x1, 0xA, 0x1, 0xFB, 0x64, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 
@@ -3090,10 +4455,6 @@ class WarriorRuneOfSuperiorTactics(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorTactics
     profession = Profession.Warrior
     attribute = Attribute.Tactics
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x48, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3105,10 +4466,6 @@ class WarriorRuneOfSuperiorStrength(SuperiorAttributeRune):
     profession = Profession.Warrior
     attribute = Attribute.Strength
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x40, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3118,10 +4475,6 @@ class WarriorRuneOfSuperiorAxeMastery(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorAxeMastery
     profession = Profession.Warrior
     attribute = Attribute.AxeMastery
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x42, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3133,10 +4486,6 @@ class WarriorRuneOfSuperiorHammerMastery(SuperiorAttributeRune):
     profession = Profession.Warrior
     attribute = Attribute.HammerMastery
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x44, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3146,10 +4495,6 @@ class WarriorRuneOfSuperiorSwordsmanship(SuperiorAttributeRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorSwordsmanship
     profession = Profession.Warrior
     attribute = Attribute.Swordsmanship
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x46, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3204,7 +4549,7 @@ class FrostboundInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE1, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3220,7 +4565,7 @@ class PyreboundInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE4, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3236,7 +4581,7 @@ class StormboundInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE3, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3252,7 +4597,7 @@ class ScoutsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBF, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3268,7 +4613,7 @@ class EarthboundInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE2, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3284,7 +4629,7 @@ class BeastmastersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5E, 0x4D, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3337,10 +4682,6 @@ class RangerRuneOfMajorWildernessSurvival(MajorAttributeRune):
     profession = Profession.Ranger
     attribute = Attribute.WildernessSurvival
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x54, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3350,10 +4691,6 @@ class RangerRuneOfMajorExpertise(MajorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMajorExpertise
     profession = Profession.Ranger
     attribute = Attribute.Expertise
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x52, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3365,10 +4702,6 @@ class RangerRuneOfMajorBeastMastery(MajorAttributeRune):
     profession = Profession.Ranger
     attribute = Attribute.BeastMastery
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x50, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3378,10 +4711,6 @@ class RangerRuneOfMajorMarksmanship(MajorAttributeRune):
     id = ItemUpgrade.RangerRuneOfMajorMarksmanship
     profession = Profession.Ranger
     attribute = Attribute.Marksmanship
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x56, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3393,10 +4722,6 @@ class RangerRuneOfSuperiorWildernessSurvival(SuperiorAttributeRune):
     profession = Profession.Ranger
     attribute = Attribute.WildernessSurvival
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x54, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3406,10 +4731,6 @@ class RangerRuneOfSuperiorExpertise(SuperiorAttributeRune):
     id = ItemUpgrade.RangerRuneOfSuperiorExpertise
     profession = Profession.Ranger
     attribute = Attribute.Expertise
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x52, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3421,10 +4742,6 @@ class RangerRuneOfSuperiorBeastMastery(SuperiorAttributeRune):
     profession = Profession.Ranger
     attribute = Attribute.BeastMastery
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x50, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3434,10 +4751,6 @@ class RangerRuneOfSuperiorMarksmanship(SuperiorAttributeRune):
     id = ItemUpgrade.RangerRuneOfSuperiorMarksmanship
     profession = Profession.Ranger
     attribute = Attribute.Marksmanship
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x56, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3492,7 +4805,7 @@ class WanderersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3508,7 +4821,7 @@ class DisciplesInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9C, 0x4D, 0xA, 0x1, 0xAC, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3524,7 +4837,7 @@ class AnchoritesInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3578,10 +4891,6 @@ class MonkRuneOfMajorHealingPrayers(MajorAttributeRune):
     profession = Profession.Monk
     attribute = Attribute.HealingPrayers
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3591,10 +4900,6 @@ class MonkRuneOfMajorSmitingPrayers(MajorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMajorSmitingPrayers
     profession = Profession.Monk
     attribute = Attribute.SmitingPrayers
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3606,10 +4911,6 @@ class MonkRuneOfMajorProtectionPrayers(MajorAttributeRune):
     profession = Profession.Monk
     attribute = Attribute.ProtectionPrayers
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3619,10 +4920,6 @@ class MonkRuneOfMajorDivineFavor(MajorAttributeRune):
     id = ItemUpgrade.MonkRuneOfMajorDivineFavor
     profession = Profession.Monk
     attribute = Attribute.DivineFavor
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x38, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3634,10 +4931,6 @@ class MonkRuneOfSuperiorHealingPrayers(SuperiorAttributeRune):
     profession = Profession.Monk
     attribute = Attribute.HealingPrayers
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3647,10 +4940,6 @@ class MonkRuneOfSuperiorSmitingPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.MonkRuneOfSuperiorSmitingPrayers
     profession = Profession.Monk
     attribute = Attribute.SmitingPrayers
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3662,10 +4951,6 @@ class MonkRuneOfSuperiorProtectionPrayers(SuperiorAttributeRune):
     profession = Profession.Monk
     attribute = Attribute.ProtectionPrayers
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x3C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3675,10 +4960,6 @@ class MonkRuneOfSuperiorDivineFavor(SuperiorAttributeRune):
     id = ItemUpgrade.MonkRuneOfSuperiorDivineFavor
     profession = Profession.Monk
     attribute = Attribute.DivineFavor
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x38, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3733,7 +5014,7 @@ class BloodstainedInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0x7F, 0x64, 0x1, 0x1, 0x0, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3749,7 +5030,7 @@ class TormentorsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x1, 0x81, 0xE1, 0x53, 0xA, 0x1, 0xE7, 0x8, 0x1, 0x0, 0x1, 0x1, 0x6, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x67, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x1, 0x81, 0xE1, 0x53, 0xA, 0x1, 0xE7, 0x8, 0x1, 0x0, 0x1, 0x1, 0x4, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x68, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x1, 0x81, 0xE1, 0x53, 0xA, 0x1, 0xE7, 0x8, 0x1, 0x0, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x69, 0x4C, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3766,7 +5047,7 @@ class BonelaceInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xDF, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3782,7 +5063,7 @@ class MinionMastersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x4E, 0x6D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x4E, 0x6D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x4E, 0x6D, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3799,7 +5080,7 @@ class BlightersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9C, 0x4D, 0xA, 0x1, 0xB4, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3815,7 +5096,7 @@ class UndertakersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x50, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x3C, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x28, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -3869,10 +5150,6 @@ class NecromancerRuneOfMajorBloodMagic(MajorAttributeRune):
     profession = Profession.Necromancer
     attribute = Attribute.BloodMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x26, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3882,10 +5159,6 @@ class NecromancerRuneOfMajorDeathMagic(MajorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMajorDeathMagic
     profession = Profession.Necromancer
     attribute = Attribute.DeathMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3897,10 +5170,6 @@ class NecromancerRuneOfMajorCurses(MajorAttributeRune):
     profession = Profession.Necromancer
     attribute = Attribute.Curses
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x28, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3910,10 +5179,6 @@ class NecromancerRuneOfMajorSoulReaping(MajorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfMajorSoulReaping
     profession = Profession.Necromancer
     attribute = Attribute.SoulReaping
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3925,10 +5190,6 @@ class NecromancerRuneOfSuperiorBloodMagic(SuperiorAttributeRune):
     profession = Profession.Necromancer
     attribute = Attribute.BloodMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x26, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3938,10 +5199,6 @@ class NecromancerRuneOfSuperiorDeathMagic(SuperiorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorDeathMagic
     profession = Profession.Necromancer
     attribute = Attribute.DeathMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -3953,10 +5210,6 @@ class NecromancerRuneOfSuperiorCurses(SuperiorAttributeRune):
     profession = Profession.Necromancer
     attribute = Attribute.Curses
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x28, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -3966,10 +5219,6 @@ class NecromancerRuneOfSuperiorSoulReaping(SuperiorAttributeRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorSoulReaping
     profession = Profession.Necromancer
     attribute = Attribute.SoulReaping
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4024,7 +5273,7 @@ class VirtuososInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xC0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4040,7 +5289,7 @@ class ArtificersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0xE2, 0x53, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4056,7 +5305,7 @@ class ProdigysInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4109,10 +5358,6 @@ class MesmerRuneOfMajorFastCasting(MajorAttributeRune):
     profession = Profession.Mesmer
     attribute = Attribute.FastCasting
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4122,10 +5367,6 @@ class MesmerRuneOfMajorDominationMagic(MajorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMajorDominationMagic
     profession = Profession.Mesmer
     attribute = Attribute.DominationMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x22, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4137,10 +5378,6 @@ class MesmerRuneOfMajorIllusionMagic(MajorAttributeRune):
     profession = Profession.Mesmer
     attribute = Attribute.IllusionMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x20, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4150,10 +5387,6 @@ class MesmerRuneOfMajorInspirationMagic(MajorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfMajorInspirationMagic
     profession = Profession.Mesmer
     attribute = Attribute.InspirationMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x24, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4165,10 +5398,6 @@ class MesmerRuneOfSuperiorFastCasting(SuperiorAttributeRune):
     profession = Profession.Mesmer
     attribute = Attribute.FastCasting
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4178,10 +5407,6 @@ class MesmerRuneOfSuperiorDominationMagic(SuperiorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorDominationMagic
     profession = Profession.Mesmer
     attribute = Attribute.DominationMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x22, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4193,10 +5418,6 @@ class MesmerRuneOfSuperiorIllusionMagic(SuperiorAttributeRune):
     profession = Profession.Mesmer
     attribute = Attribute.IllusionMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x20, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4206,10 +5427,6 @@ class MesmerRuneOfSuperiorInspirationMagic(SuperiorAttributeRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorInspirationMagic
     profession = Profession.Mesmer
     attribute = Attribute.InspirationMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x24, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4264,7 +5481,7 @@ class HydromancerInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE1, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4280,7 +5497,7 @@ class GeomancerInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE2, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4296,7 +5513,7 @@ class PyromancerInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE4, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4312,7 +5529,7 @@ class AeromancerInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE3, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4328,7 +5545,7 @@ class PrismaticInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x2E, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x30, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x34, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x36, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4392,10 +5609,6 @@ class ElementalistRuneOfMajorEnergyStorage(MajorAttributeRune):
     profession = Profession.Elementalist
     attribute = Attribute.EnergyStorage
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x32, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4405,10 +5618,6 @@ class ElementalistRuneOfMajorFireMagic(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorFireMagic
     profession = Profession.Elementalist
     attribute = Attribute.FireMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x34, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4420,10 +5629,6 @@ class ElementalistRuneOfMajorAirMagic(MajorAttributeRune):
     profession = Profession.Elementalist
     attribute = Attribute.AirMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4433,10 +5638,6 @@ class ElementalistRuneOfMajorEarthMagic(MajorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfMajorEarthMagic
     profession = Profession.Elementalist
     attribute = Attribute.EarthMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x30, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4448,10 +5649,6 @@ class ElementalistRuneOfMajorWaterMagic(MajorAttributeRune):
     profession = Profession.Elementalist
     attribute = Attribute.WaterMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x36, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4462,10 +5659,6 @@ class ElementalistRuneOfSuperiorEnergyStorage(SuperiorAttributeRune):
     profession = Profession.Elementalist
     attribute = Attribute.EnergyStorage
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x32, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4474,10 +5667,6 @@ class ElementalistRuneOfSuperiorEnergyStorage(SuperiorAttributeRune):
 class ElementalistRuneOfSuperiorFireMagic(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorFireMagic
     profession = Profession.Elementalist
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x34, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4489,10 +5678,6 @@ class ElementalistRuneOfSuperiorAirMagic(SuperiorAttributeRune):
     profession = Profession.Elementalist
     attribute = Attribute.AirMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4503,10 +5688,6 @@ class ElementalistRuneOfSuperiorEarthMagic(SuperiorAttributeRune):
     profession = Profession.Elementalist
     attribute = Attribute.EarthMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x30, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4516,10 +5697,6 @@ class ElementalistRuneOfSuperiorWaterMagic(SuperiorAttributeRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorWaterMagic
     profession = Profession.Elementalist
     attribute = Attribute.WaterMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x36, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4574,7 +5751,7 @@ class VanguardsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xDE, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4590,7 +5767,7 @@ class InfiltratorsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xDF, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4606,7 +5783,7 @@ class SaboteursInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE0, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4622,7 +5799,7 @@ class NightstalkersInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB4, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4675,10 +5852,6 @@ class AssassinRuneOfMajorCriticalStrikes(MajorAttributeRune):
     profession = Profession.Assassin
     attribute = Attribute.CriticalStrikes
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x58, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4688,10 +5861,6 @@ class AssassinRuneOfMajorDaggerMastery(MajorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMajorDaggerMastery
     profession = Profession.Assassin
     attribute = Attribute.DaggerMastery
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4703,10 +5872,6 @@ class AssassinRuneOfMajorDeadlyArts(MajorAttributeRune):
     profession = Profession.Assassin
     attribute = Attribute.DeadlyArts
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4716,10 +5881,6 @@ class AssassinRuneOfMajorShadowArts(MajorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfMajorShadowArts
     profession = Profession.Assassin
     attribute = Attribute.ShadowArts
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4731,10 +5892,6 @@ class AssassinRuneOfSuperiorCriticalStrikes(SuperiorAttributeRune):
     profession = Profession.Assassin
     attribute = Attribute.CriticalStrikes
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x58, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4744,10 +5901,6 @@ class AssassinRuneOfSuperiorDaggerMastery(SuperiorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorDaggerMastery
     profession = Profession.Assassin
     attribute = Attribute.DaggerMastery
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5A, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4759,10 +5912,6 @@ class AssassinRuneOfSuperiorDeadlyArts(SuperiorAttributeRune):
     profession = Profession.Assassin
     attribute = Attribute.DeadlyArts
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4772,10 +5921,6 @@ class AssassinRuneOfSuperiorShadowArts(SuperiorAttributeRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorShadowArts
     profession = Profession.Assassin
     attribute = Attribute.ShadowArts
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4830,7 +5975,7 @@ class ShamansInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x82, 0x7D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x82, 0x7D, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x82, 0x7D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4847,7 +5992,7 @@ class GhostForgeInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9C, 0x4D, 0xA, 0x1, 0xBA, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4864,7 +6009,7 @@ class MysticsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xC0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -4917,10 +6062,6 @@ class RitualistRuneOfMajorChannelingMagic(MajorAttributeRune):
     profession = Profession.Ritualist
     attribute = Attribute.ChannelingMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x66, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4930,10 +6071,6 @@ class RitualistRuneOfMajorRestorationMagic(MajorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMajorRestorationMagic
     profession = Profession.Ritualist
     attribute = Attribute.RestorationMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x64, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4945,10 +6082,6 @@ class RitualistRuneOfMajorCommuning(MajorAttributeRune):
     profession = Profession.Ritualist
     attribute = Attribute.Communing
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x60, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4958,10 +6091,6 @@ class RitualistRuneOfMajorSpawningPower(MajorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfMajorSpawningPower
     profession = Profession.Ritualist
     attribute = Attribute.SpawningPower
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x62, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4973,10 +6102,6 @@ class RitualistRuneOfSuperiorChannelingMagic(SuperiorAttributeRune):
     profession = Profession.Ritualist
     attribute = Attribute.ChannelingMagic
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x66, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4986,10 +6111,6 @@ class RitualistRuneOfSuperiorRestorationMagic(SuperiorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorRestorationMagic
     profession = Profession.Ritualist
     attribute = Attribute.RestorationMagic
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x64, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5001,10 +6122,6 @@ class RitualistRuneOfSuperiorCommuning(SuperiorAttributeRune):
     profession = Profession.Ritualist
     attribute = Attribute.Communing
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x60, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5014,10 +6131,6 @@ class RitualistRuneOfSuperiorSpawningPower(SuperiorAttributeRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorSpawningPower
     profession = Profession.Ritualist
     attribute = Attribute.SpawningPower
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x62, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5072,7 +6185,7 @@ class WindwalkerInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9E, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9E, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9E, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9E, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x1, 0x4, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -5089,7 +6202,7 @@ class ForsakenInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9D, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -5142,10 +6255,6 @@ class DervishRuneOfMajorMysticism(MajorAttributeRune):
     profession = Profession.Dervish
     attribute = Attribute.Mysticism
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x39, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5155,10 +6264,6 @@ class DervishRuneOfMajorEarthPrayers(MajorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMajorEarthPrayers
     profession = Profession.Dervish
     attribute = Attribute.EarthPrayers
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x37, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5170,10 +6275,6 @@ class DervishRuneOfMajorScytheMastery(MajorAttributeRune):
     profession = Profession.Dervish
     attribute = Attribute.ScytheMastery
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x22, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5183,10 +6284,6 @@ class DervishRuneOfMajorWindPrayers(MajorAttributeRune):
     id = ItemUpgrade.DervishRuneOfMajorWindPrayers
     profession = Profession.Dervish
     attribute = Attribute.WindPrayers
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x35, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5198,10 +6295,6 @@ class DervishRuneOfSuperiorMysticism(SuperiorAttributeRune):
     profession = Profession.Dervish
     attribute = Attribute.Mysticism
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x39, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5211,10 +6304,6 @@ class DervishRuneOfSuperiorEarthPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.DervishRuneOfSuperiorEarthPrayers
     profession = Profession.Dervish
     attribute = Attribute.EarthPrayers
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x37, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5226,10 +6315,6 @@ class DervishRuneOfSuperiorScytheMastery(SuperiorAttributeRune):
     profession = Profession.Dervish
     attribute = Attribute.ScytheMastery
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x22, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5239,10 +6324,6 @@ class DervishRuneOfSuperiorWindPrayers(SuperiorAttributeRune):
     id = ItemUpgrade.DervishRuneOfSuperiorWindPrayers
     profession = Profession.Dervish
     attribute = Attribute.WindPrayers
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x35, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5297,7 +6378,7 @@ class CenturionsInsignia(Insignia):
 
     
     def create_encoded_description(self) -> GWStringEncoded:
-        fallback = self.descriptions.get(ServerLanguage.English, f"no encoded description ({self.__class__.__name__})")
+        fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x60, 0x4D, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
     descriptions = {
@@ -5350,10 +6431,6 @@ class ParagonRuneOfMajorLeadership(MajorAttributeRune):
     profession = Profession.Paragon
     attribute = Attribute.Leadership
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x33, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5363,10 +6440,6 @@ class ParagonRuneOfMajorMotivation(MajorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMajorMotivation
     profession = Profession.Paragon
     attribute = Attribute.Motivation
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x1A, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5378,10 +6451,6 @@ class ParagonRuneOfMajorCommand(MajorAttributeRune):
     profession = Profession.Paragon
     attribute = Attribute.Command
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0xD5, 0x6, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5391,10 +6460,6 @@ class ParagonRuneOfMajorSpearMastery(MajorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfMajorSpearMastery
     profession = Profession.Paragon
     attribute = Attribute.SpearMastery
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x20, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5B, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5406,10 +6471,6 @@ class ParagonRuneOfSuperiorLeadership(SuperiorAttributeRune):
     profession = Profession.Paragon
     attribute = Attribute.Leadership
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x33, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5419,10 +6480,6 @@ class ParagonRuneOfSuperiorMotivation(SuperiorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorMotivation
     profession = Profession.Paragon
     attribute = Attribute.Motivation
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x1A, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -5434,10 +6491,6 @@ class ParagonRuneOfSuperiorCommand(SuperiorAttributeRune):
     profession = Profession.Paragon
     attribute = Attribute.Command
 
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
-
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0xD5, 0x6, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -5447,10 +6500,6 @@ class ParagonRuneOfSuperiorSpearMastery(SuperiorAttributeRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorSpearMastery
     profession = Profession.Paragon
     attribute = Attribute.SpearMastery
-
-    property_identifiers = [
-        ModifierIdentifier.HealthMinus
-    ]
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x20, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
