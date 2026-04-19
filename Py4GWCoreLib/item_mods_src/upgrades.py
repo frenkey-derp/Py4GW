@@ -279,16 +279,13 @@ class Upgrade:
             prop = property_factory.get(prop_mod.identifier, lambda m, _, rarity: ItemProperty(modifier=m, rarity=rarity))(prop_mod, remaining_modifiers, rarity)
             upgrade.properties[prop_key] = prop
 
+            matched_instructions = [instruction for instruction in cls.upgrade_info if cls._get_property_identifier_key(instruction.identifier) == prop_key]
             modifier_applied = False
-            for instruction in cls.upgrade_info:
-                if instruction.identifier == prop_key:
-                    if isinstance(instruction, FixedValueInstruction) and not instruction.evaluate(instruction.get_value(upgrade.properties, upgrade)):
-                        modifier_applied = False
-                        break
-                    
-                    result = instruction.apply(upgrade, upgrade.properties)
-                    if result.applied:
-                        modifier_applied = True
+            for instruction in matched_instructions:
+                result = instruction.apply(upgrade, upgrade.properties)
+                if not result.applied:
+                    return None
+                modifier_applied = True
 
             if modifier_applied and prop_mod in remaining_modifiers:
                 remaining_modifiers.remove(prop_mod)
