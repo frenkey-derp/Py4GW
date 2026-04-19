@@ -3930,11 +3930,11 @@ class SuperiorAttributeRune(AttributeRune):
     
 @dataclass(eq=False)
 class AppliesToRune(Upgrade):
-    pass
+    mod_type = ItemUpgradeType.AppliesToRune
 
 @dataclass(eq=False)
 class UpgradeRune(Upgrade):
-    pass
+    mod_type = ItemUpgradeType.UpgradeRune
 
 #region No Profession
 
@@ -3961,12 +3961,13 @@ class RadiantInsignia(Insignia):
 @dataclass(eq=False)
 class StalwartInsignia(Insignia):
     id = ItemUpgrade.StalwartInsignia
+    armor : int = 10
 
     upgrade_info = (
         fixed(
             identifier=ModifierIdentifier.ArmorPlusVsPhysical,
-            target="None",
-            fixed_value=None,
+            target="armor",
+            fixed_value=10,
             value_getter=property_value(
                 ArmorPlusVsPhysical,
                 lambda prop: prop.armor,
@@ -4051,6 +4052,20 @@ class RuneOfVitae(Rune):
     id = ItemUpgrade.RuneOfVitae
     rarity = Rarity.Blue
 
+    health : int = 10
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.HealthPlus,
+            target="health",
+            fixed_value=10,
+            value_getter=property_value(
+                HealthPlus,
+                lambda prop: prop.health,
+            ),
+        ),
+    )
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB5, 0x22, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xE, 0x59, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
@@ -4309,6 +4324,19 @@ class WarriorRuneOfMinorAbsorption(Rune):
     id = ItemUpgrade.WarriorRuneOfMinorAbsorption
     profession = Profession.Warrior
     rarity = Rarity.Blue
+    
+    # upgrade_info = (
+    #     fixed(
+    #         identifier=ModifierIdentifier.,
+    #         target="armor_vs_elemental",
+    #         fixed_value=10,
+    #         value_getter=property_value(
+    #             ArmorPlusVsElemental,
+    #             lambda prop: prop.armor,
+    #         ),
+    #     ),
+    # )
+    
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0xFA, 0x64, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
@@ -4499,37 +4527,31 @@ class WarriorRuneOfSuperiorSwordsmanship(SuperiorAttributeRune):
 class UpgradeMinorRuneWarrior(UpgradeRune):
     id = ItemUpgrade.UpgradeMinorRuneWarrior
     profession = Profession.Warrior
-    mod_type = ItemUpgradeType.UpgradeRune
 
 @dataclass(eq=False)
 class UpgradeMajorRuneWarrior(UpgradeRune):
     id = ItemUpgrade.UpgradeMajorRuneWarrior
     profession = Profession.Warrior
-    mod_type = ItemUpgradeType.UpgradeRune
 
 @dataclass(eq=False)
 class UpgradeSuperiorRuneWarrior(UpgradeRune):
     id = ItemUpgrade.UpgradeSuperiorRuneWarrior
     profession = Profession.Warrior
-    mod_type = ItemUpgradeType.UpgradeRune
 
 @dataclass(eq=False)
 class AppliesToMinorRuneWarrior(AppliesToRune):
     id = ItemUpgrade.AppliesToMinorRuneWarrior
     profession = Profession.Warrior
-    mod_type = ItemUpgradeType.AppliesToRune
 
 @dataclass(eq=False)
 class AppliesToMajorRuneWarrior(AppliesToRune):
     id = ItemUpgrade.AppliesToMajorRuneWarrior
     profession = Profession.Warrior
-    mod_type = ItemUpgradeType.AppliesToRune
 
 @dataclass(eq=False)
 class AppliesToSuperiorRuneWarrior(AppliesToRune):
     id = ItemUpgrade.AppliesToSuperiorRuneWarrior
     profession = Profession.Warrior
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Warrior
 
@@ -5399,9 +5421,43 @@ class AppliesToSuperiorRuneMesmer(AppliesToRune):
 class HydromancerInsignia(Insignia):
     id = ItemUpgrade.HydromancerInsignia
     profession = Profession.Elementalist
+    
+    damage_type : DamageType = DamageType.Cold
+    armor_vs_elemental : int = 10
+    armor_vs_damage : int = 10
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsElemental,
+            target="armor_vs_elemental",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsElemental,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor_vs_damage",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Cold,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        )
+    )
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3F, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xF1, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
     
     def create_encoded_description(self) -> GWStringEncoded:
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
@@ -5410,10 +5466,44 @@ class HydromancerInsignia(Insignia):
 @dataclass(eq=False)
 class GeomancerInsignia(Insignia):
     id = ItemUpgrade.GeomancerInsignia
-    profession = Profession.Elementalist
+    profession = Profession.Elementalist    
+    
+    damage_type : DamageType = DamageType.Earth
+    armor_vs_elemental : int = 10
+    armor_vs_damage : int = 10
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsElemental,
+            target="armor_vs_elemental",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsElemental,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor_vs_damage",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Earth,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        )
+    )
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3F, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xEF, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
     
     def create_encoded_description(self) -> GWStringEncoded:
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
@@ -5423,9 +5513,43 @@ class GeomancerInsignia(Insignia):
 class PyromancerInsignia(Insignia):
     id = ItemUpgrade.PyromancerInsignia
     profession = Profession.Elementalist
+    
+    damage_type : DamageType = DamageType.Fire
+    armor_vs_elemental : int = 10
+    armor_vs_damage : int = 10
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsElemental,
+            target="armor_vs_elemental",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsElemental,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor_vs_damage",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Fire,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        )
+    )
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3F, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xF0, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
     
     def create_encoded_description(self) -> GWStringEncoded:
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
@@ -5435,10 +5559,44 @@ class PyromancerInsignia(Insignia):
 class AeromancerInsignia(Insignia):
     id = ItemUpgrade.AeromancerInsignia
     profession = Profession.Elementalist
+        
+    damage_type : DamageType = DamageType.Lightning
+    armor_vs_elemental : int = 10
+    armor_vs_damage : int = 10
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsElemental,
+            target="armor_vs_elemental",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsElemental,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="armor_vs_damage",
+            fixed_value=10,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.armor,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsDamage,
+            target="damage_type",
+            fixed_value=DamageType.Lightning,
+            value_getter=property_value(
+                ArmorPlusVsDamage,
+                lambda prop: prop.damage_type,
+            ),
+        )
+    )
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x30, 0xA, 0xA, 0x1, 0x1, 0x81, 0x3F, 0x59, 0x1, 0x0, 0xB, 0x1, 0x1, 0x81, 0xEE, 0x58, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
-    
     def create_encoded_description(self) -> GWStringEncoded:
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE3, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
