@@ -431,12 +431,12 @@ class HealthRegeneneration(ItemProperty):
 
 @dataclass
 class HealthMinus(ItemProperty):
-    health: int
+    health_reduction: int
 
     encoded_string = GWEncoded.HEALTH_MINUS_75
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
+        return GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health_reduction, "Health")
 
 @dataclass
 class HealthPlus(ItemProperty):
