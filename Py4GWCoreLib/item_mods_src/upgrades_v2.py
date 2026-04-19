@@ -1067,6 +1067,15 @@ class OfAttributeUpgrade(WeaponSuffix):
             ),
         ),
     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
+        if attribute_bytes:
+            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
+            clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
+            
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+        return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Attribute"])
@@ -1089,6 +1098,9 @@ class OfAptitudeUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0]), "of Aptitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Aptitude"])
 
@@ -1096,11 +1108,75 @@ class OfAptitudeUpgrade(WeaponSuffix):
 class OfAxeMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfAxeMastery
     attribute = Attribute.AxeMastery
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.AxeMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 
 @dataclass(eq=False)
 class OfDaggerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfDaggerMastery
     attribute = Attribute.DaggerMastery
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DaggerMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 
 @dataclass(eq=False)
 class OfDefenseUpgrade(WeaponSuffix):
@@ -1119,6 +1195,9 @@ class OfDefenseUpgrade(WeaponSuffix):
             ),
         ),
     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x77, 0xA, 0x1, 0x0]), "of Defense", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Defense"])
@@ -1141,6 +1220,9 @@ class OfDevotionUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0]), "of Devotion", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Devotion"])
 
@@ -1162,6 +1244,9 @@ class OfEnchantingUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes([*self.get_text_color(), 0xA, 0x1, 0xA2, 0xA, 0x1, 0x1, self.enchantment_duration, 0x1, 0x1, 0x0]), f"Enchantments last {self.enchantment_duration}% longer")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x78, 0xA, 0x1, 0x0]), "of Enchanting", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Enchanting"])
 
@@ -1182,6 +1267,9 @@ class OfEnduranceUpgrade(WeaponSuffix):
             ),
         ),
     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0]), "of Endurance", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Endurance"])
@@ -1204,6 +1292,9 @@ class OfFortitudeUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x79, 0xA, 0x1, 0x0]), "of Fortitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Fortitude"])
 
@@ -1211,12 +1302,75 @@ class OfFortitudeUpgrade(WeaponSuffix):
 class OfHammerMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfHammerMastery
     attribute = Attribute.HammerMastery
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.HammerMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 
 @dataclass(eq=False)
 class OfMarksmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfMarksmanship
     attribute = Attribute.Marksmanship
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Marksmanship,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 @dataclass(eq=False)
 class OfMasteryUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfMastery
@@ -1246,6 +1400,9 @@ class OfMasteryUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0]), "of Mastery", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Mastery"])
 
@@ -1266,6 +1423,9 @@ class OfMemoryUpgrade(WeaponSuffix):
             ),
         ),
     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0]), "of Memory", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Memory"])
@@ -1288,6 +1448,9 @@ class OfQuickeningUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0]), "of Quickening", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Quickening"])
 
@@ -1295,6 +1458,38 @@ class OfQuickeningUpgrade(WeaponSuffix):
 class OfScytheMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfScytheMastery
     attribute = Attribute.ScytheMastery
+    
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.ScytheMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 
 @dataclass(eq=False)
 class OfShelterUpgrade(WeaponSuffix):
@@ -1313,6 +1508,9 @@ class OfShelterUpgrade(WeaponSuffix):
             ),
         ),
     )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), "of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Shelter"])
@@ -1324,10 +1522,10 @@ class OfSlayingUpgrade(WeaponSuffix):
     damage_increase: int = 20
 
     upgrade_info = (
-        select(
+        enum(
             identifier=ModifierIdentifier.BaneSpecies,
             target="species",
-            options=tuple(species for species in ItemBaneSpecies if species != ItemBaneSpecies.Unknown),
+            enum_type=ItemBaneSpecies,
             value_getter=property_value(
                 BaneProperty,
                 lambda prop: prop.species,
@@ -1345,6 +1543,9 @@ class OfSlayingUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SLAYING_BANE.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()), f"of {self.species.name}-Slaying", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", f"{self.species.name}-Slaying" if self.species != ItemBaneSpecies.Unknown else "Slaying"])
 
@@ -1353,6 +1554,37 @@ class OfSpearMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSpearMastery
     attribute = Attribute.SpearMastery
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SpearMastery,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
 @dataclass(eq=False)
 class OfSwiftnessUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSwiftness
@@ -1371,6 +1603,9 @@ class OfSwiftnessUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7C, 0xA, 0x1, 0x0]), "of Swiftness", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Swiftness"])
 
@@ -1379,6 +1614,38 @@ class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSwordsmanship
     attribute = Attribute.Swordsmanship
 
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Swordsmanship,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            min_value=1,
+            max_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+    
 @dataclass(eq=False)
 class OfTheProfessionUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfTheProfession
@@ -1417,6 +1684,10 @@ class OfTheProfessionUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        encoded_bytes = bytes([*self.get_text_color(), 0x86, 0xA, 0xA, 0x1, *GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
+        return GWStringEncoded(encoded_bytes, f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.THE_PROFESSION.get(self.profession, bytes()), f"of {self.profession.name if self.profession != Profession._None else 'Unknown Profession'}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", self.profession.name if self.profession != Profession._None else "Profession"])
 
@@ -1437,6 +1708,9 @@ class OfValorUpgrade(WeaponSuffix):
             ),
         ),
     )
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0]), "of Valor", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Valor"])
@@ -1459,6 +1733,9 @@ class OfWardingUpgrade(WeaponSuffix):
         ),
     )
 
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7D, 0xA, 0x1, 0x0]), "of Warding", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Warding"])
 
@@ -1475,6 +1752,30 @@ class Inscription(Upgrade):
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         inscription = cast(Inscription, upgrade)
         inscription.target_item_type = cls.id.get_item_type(inscription.upgrade_id)   
+
+@dataclass(eq=False)
+class BeJustAndFearNot(Inscription):
+    id = ItemUpgrade.BeJustAndFearNot
+    armor: int = 10
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusHexed,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusHexed,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"))
+
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0]), f"Be Just And Fear Not")
         
 #endregion Inscriptions
 
