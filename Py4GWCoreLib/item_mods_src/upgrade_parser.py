@@ -126,7 +126,7 @@ def get_property_factory() -> dict[ModifierIdentifier, Callable[[DecodedModifier
         ModifierIdentifier.HeadpieceAttribute: lambda m, _, rarity: HeadpieceAttribute(modifier=m, attribute=Attribute(m.arg1), attribute_level=m.arg2, rarity=rarity),
         ModifierIdentifier.HeadpieceGenericAttribute: lambda m, _, rarity: HeadpieceGenericAttribute(modifier=m, rarity=rarity),
         ModifierIdentifier.HealthRegeneneration: lambda m, _, rarity: HealthRegeneneration(modifier=m, health_regeneration=-m.arg2, rarity=rarity),
-        ModifierIdentifier.HealthMinus: lambda m, _, rarity: HealthMinus(modifier=m, health=m.arg2, rarity=rarity),
+        ModifierIdentifier.HealthMinus: lambda m, _, rarity: HealthMinus(modifier=m, health_reduction=m.arg2, rarity=rarity),
         ModifierIdentifier.HealthPlus: lambda m, _, rarity: HealthPlus(modifier=m, health=m.arg1, rarity=rarity),
         ModifierIdentifier.HealthPlus2 : lambda m, _, rarity: HealthPlus(modifier=m, health=m.arg2, rarity=rarity),
         ModifierIdentifier.HealthPlusEnchanted: lambda m, _, rarity: HealthPlusEnchanted(modifier=m, health=m.arg1, rarity=rarity),
