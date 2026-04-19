@@ -1,5 +1,6 @@
 from dataclasses import MISSING, dataclass, field, fields, is_dataclass
 from enum import Enum
+import re
 from typing import Any, Callable, ClassVar, Generic, Optional, Protocol, SupportsFloat, SupportsInt, TypeVar, cast
 
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, Reduced_Ailment
@@ -195,6 +196,9 @@ def fixed(
     value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
 ) -> FixedValueInstruction[UpgradeT, ValueT]:
     return FixedValueInstruction(identifier, target, fixed_value, value_getter)
+
+def _humanize_identifier(name: str) -> str:
+    return re.sub(r"(?<!^)(?=[A-Z])", " ", name).strip()
 
 @dataclass(eq=False)
 class Upgrade:
@@ -430,14 +434,10 @@ class Upgrade:
                 return GWEncoded.ITEM_UNIQUE
             
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"no encoded name ({self.__class__.__name__})")
-    
-    def create_encoded_description(self) -> GWStringEncoded:
-        if not self.properties:
-            return GWStringEncoded(bytes(), f"no encoded description ({self.__class__.__name__})")
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.__class__.__name__)} (no encoded name)")
 
-        parts = [prop.encoded_description for prop in self.properties.values() if prop.encoded_description]
-        return GWEncoded.combine_encoded_strings(parts, f"no encoded description ({self.__class__.__name__})")
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
     
     def _refresh_encoded_strings(self) -> None:
         self.__encoded_name = self.create_encoded_name()
@@ -1778,6 +1778,74 @@ class BeJustAndFearNot(Inscription):
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0]), f"Be Just And Fear Not")
         
 #endregion Inscriptions
+
+#region Armor Upgrades
+@dataclass(eq=False)
+class Insignia(Upgrade):
+    mod_type = ItemUpgradeType.Prefix
+    profession: Profession = Profession._None
+    rarity = Rarity.Blue
+    
+@dataclass(eq=False)
+class Rune(Upgrade):    
+    mod_type = ItemUpgradeType.Suffix
+    profession: Profession = Profession._None  
+    rarity = Rarity.Blue  
+
+@dataclass(eq=False)
+class AttributeRune(Rune):
+    attribute: Attribute = Attribute.None_
+    attribute_level: int = 0
+
+    @classmethod
+    def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
+        attribute_rune = cast("AttributeRune", upgrade)
+        attribute_rune.attribute = Attribute(mod.arg1)
+        attribute_rune.attribute_level = mod.arg2
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        attribute = GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes())
+        fallback = f"{AttributeNames.get(self.attribute)}: {self.attribute_level}" if attribute else ""
+
+        match self.rarity:
+            case Rarity.Gold:
+                encoded_description = bytes([ 
+                                            *self.get_text_color(), *GWEncoded.PLUS_NUM_TEMPLATE, *attribute, 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, *GWEncoded.ITEM_DULL, *GWEncoded.NOT_STACKING_BYTES, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 
+                                            *self.get_text_color(), *GWEncoded.HEALTH_MINUS_NUM, 75, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1])
+            case Rarity.Purple:
+                encoded_description = bytes([
+                                            *self.get_text_color(), *GWEncoded.PLUS_NUM_TEMPLATE, *attribute, 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, *GWEncoded.ITEM_DULL, *GWEncoded.NOT_STACKING_BYTES, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 
+                                            *self.get_text_color(), *GWEncoded.HEALTH_MINUS_NUM, 35, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1])
+            case _:
+                encoded_description = bytes([
+                                            *self.get_text_color(), *GWEncoded.PLUS_NUM_TEMPLATE, *attribute, 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, *GWEncoded.ITEM_DULL, *GWEncoded.NOT_STACKING_BYTES, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1])
+
+        return GWStringEncoded(encoded_description, fallback)
+
+@dataclass(eq=False)
+class MinorAttributeRune(AttributeRune):
+    attribute_level = 1
+    rarity = Rarity.Blue
+    
+@dataclass(eq=False)
+class MajorAttributeRune(AttributeRune):
+    attribute_level = 2
+    rarity = Rarity.Purple
+    
+@dataclass(eq=False)
+class SuperiorAttributeRune(AttributeRune):
+    attribute_level = 3
+    rarity = Rarity.Gold
+    
+@dataclass(eq=False)
+class AppliesToRune(Upgrade):
+    pass
+
+@dataclass(eq=False)
+class UpgradeRune(Upgrade):
+    pass
+
+#endregion Armor Upgrades
 
 _UPGRADES: list[type[Upgrade]] = [
     IcyUpgrade,
