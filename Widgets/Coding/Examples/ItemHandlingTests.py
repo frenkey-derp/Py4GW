@@ -289,6 +289,7 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Suffix")
                         PyImGui.table_set_column_index(1)
+                        PyImGui.text(str(suffix.__class__.__name__) if suffix else "None")
                         PyImGui.text(str(suffix.display_summary) if suffix else "None")
                         if suffix and suffix.is_inherent:
                             PyImGui.same_line(0, 5)

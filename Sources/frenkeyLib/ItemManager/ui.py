@@ -19,6 +19,7 @@ from Py4GWCoreLib.item_mods_src.upgrades import (
     FixedValueInstruction,
     Inscription,
     Insignia,
+    OfTheProfessionUpgrade,
     RangeInstruction,
     Rune,
     SelectInstruction,
@@ -706,67 +707,104 @@ class UI:
             ImGui.end_child()
             
             PyImGui.table_next_column()
+            style = ImGui.get_style()
+            style.ToggleButtonEnabled.push_color(self.GetRarityColor(Rarity.Gold).opacity(0.85).rgb_tuple)
+            style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
             
             if ImGui.begin_child("##armor_upgrade_rule_upgrades", (0, 0), border=False):
                 #get all subclasses of ArmorUpgrade which has the selected profession
                 upgrades = [
                     upgrade_type for upgrade_type in self.available_upgrade_types
                     if (issubclass(upgrade_type, WeaponUpgrade) or issubclass(upgrade_type, Inscription)) and getattr(upgrade_type, "mod_type", None) == self.mod_type
-                ]
+                ]                
                                 
                 for upgrade_type in sorted(upgrades, key=lambda ut: self._format_upgrade_type_label(ut)):
-                    upgrade : WeaponUpgrade | Inscription = upgrade_type()
-                    upgrade_label = self._format_upgrade_label(upgrade)
+                    variants = [upgrade_type]
+                    # if upgrade_type is OfTheProfessionUpgrade:
+                    #     variants = [
+                    #         lambda ut=upgrade_type, profession=profession: ut(profession=profession)
+                    #         for profession in Profession
+                    #     ]
                     
-                    is_upgrade_selected = any(isinstance(existing_upgrade, upgrade_type) for existing_upgrade in rule.weapon_upgrades)
-                    item_types : list[ItemType] = []
+                    # if upgrade_type is OfAttributeUpgrade:
+                    #     variants = [
+                    #         lambda ut=upgrade_type, attribute=attribute: ut(attribute=attribute)
+                    #         for attribute in Attribute
+                    #     ]
                     
-                    if isinstance(upgrade, WeaponUpgrade):
-                        item_types = self._get_allowed_item_types(upgrade)
-                        rarity_color = UI.GetRarityColor(upgrade.rarity)
-                        hovered = False
-                        if ImGui.begin_child(f"##upgrade_item_types_{upgrade_type.__name__}", (0, 65), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    for variant in variants:
+                        upgrade = variant()
+                        upgrade_label = self._format_upgrade_label(upgrade)
+                        item_types : list[ItemType] = []
                         
-                            ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
-                            
-                            ImGui.separator()
-                            
-                            if item_types:
-                                for item_type in item_types:
-                                    texture = self.weapon_upgrade_textures.get(item_type)
-                                    if texture:
-                                        ImGui.image(texture.prefix if self.mod_type == ItemUpgradeType.Prefix else texture.suffix, (24, 24))
-                                        encoded = upgrade.create_upgrade_name(item_type)
-                                        
-                                        # ImGui.show_tooltip(string_table.decode(encoded).replace("%str2%", upgrade_label) if encoded else self._humanize_name(item_type.name))
-                                        ImGui.show_tooltip(encoded.plain if encoded else self._humanize_name(item_type.name))
-                                        # ImGui.show_tooltip(string_table.decode(upgrade.__encoded_name.encoded + encoded) if encoded else self._humanize_name(item_type.name))
-                                        
-                                        hovered = hovered or PyImGui.is_item_hovered()
-                                        
-                                        PyImGui.same_line(0, 5)
-                                            
-                        
-                        ImGui.end_child()
-                        
-                        if not hovered:
-                            ImGui.show_tooltip(upgrade.description_plain)
-                        
-                    else:             
-                        if ImGui.begin_selectable(f"##armor_upgrade_{upgrade_type.__name__}", is_upgrade_selected, (0, 50 if item_types else 25)):
+                        if isinstance(upgrade, WeaponUpgrade):
+                            item_types = self._get_allowed_item_types(upgrade)
                             rarity_color = UI.GetRarityColor(upgrade.rarity)
-                            ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                            hovered = False
+                            if PyImGui.is_rect_visible(10, 70):  
+                                if ImGui.begin_child(f"##upgrade_item_types_{variant}", (0, 70), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):                          
+                                        ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                                        
+                                        ImGui.separator()
+                                        
+                                        if item_types:
+                                            for item_type in item_types:
+                                                is_upgrade_selected = any(isinstance(existing_upgrade.upgrade, upgrade_type) and item_type in existing_upgrade.item_types for existing_upgrade in rule.weapon_upgrades)
+                                                
+                                                texture = self.weapon_upgrade_textures.get(item_type)
+                                                if texture:
+                                                    ImGui.image_toggle_button(f"##{variant}_{item_type.name}", texture.prefix if self.mod_type == ItemUpgradeType.Prefix else texture.suffix, is_upgrade_selected, 24, 24)
+                                                    encoded = upgrade.create_upgrade_name(item_type)
+                                                    if PyImGui.is_item_clicked(0):
+                                                        if is_upgrade_selected:
+                                                            rule.weapon_upgrades = [existing_upgrade for existing_upgrade in rule.weapon_upgrades if not (isinstance(existing_upgrade.upgrade, upgrade_type) and item_type in existing_upgrade.item_types)]
+                                                        else:
+                                                            existing_entry = next((existing_upgrade for existing_upgrade in rule.weapon_upgrades if isinstance(existing_upgrade.upgrade, upgrade_type)), None)
+                                                            if existing_entry:
+                                                                existing_entry.item_types.append(item_type)
+                                                            else:
+                                                                rule.weapon_upgrades.append(UpgradeAndItemType(upgrade=upgrade, item_types=[item_type]))
+                                                        changed = True
+                                                    
+                                                    # ImGui.show_tooltip(string_table.decode(encoded).replace("%str2%", upgrade_label) if encoded else self._humanize_name(item_type.name))
+                                                    ImGui.show_tooltip(encoded.plain if encoded else self._humanize_name(item_type.name))
+                                                    # ImGui.show_tooltip(string_table.decode(upgrade.__encoded_name.encoded + encoded) if encoded else self._humanize_name(item_type.name))
+                                                    
+                                                    hovered = hovered or PyImGui.is_item_hovered()
+                                                    
+                                                    PyImGui.same_line(0, 5)
+                                    
+                                ImGui.end_child()
                             
-                        if ImGui.end_selectable():
-                            if is_upgrade_selected:
-                                rule.weapon_upgrades = [existing_upgrade for existing_upgrade in rule.weapon_upgrades if not isinstance(existing_upgrade, upgrade_type)]
+                                if not hovered:
+                                    ImGui.show_tooltip(upgrade.description_plain)
                             else:
-                                rule.weapon_upgrades.append(upgrade_type())
-                            changed = True
-                    
-                        ImGui.show_tooltip(upgrade.description_plain)
-                    
+                                ImGui.dummy(0, 70)
+                            
+                        else:             
+                            is_upgrade_selected = any(isinstance(existing_upgrade.upgrade, upgrade_type) for existing_upgrade in rule.weapon_upgrades)
+                            
+                            if PyImGui.is_rect_visible(10, 25):     
+                                if ImGui.begin_selectable(f"##armor_upgrade_{upgrade_type.__name__}", is_upgrade_selected, (0, 25)):
+                                    rarity_color = UI.GetRarityColor(upgrade.rarity)
+                                    ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                                    
+                                if ImGui.end_selectable():
+                                    if is_upgrade_selected:
+                                        rule.weapon_upgrades = [existing_upgrade for existing_upgrade in rule.weapon_upgrades if not isinstance(existing_upgrade.upgrade, upgrade_type)]
+                                    else:
+                                        rule.weapon_upgrades.append(UpgradeAndItemType(upgrade=upgrade, item_types=[]))
+                                    changed = True
+                            
+                                ImGui.show_tooltip(upgrade.description_plain)
+                            else:
+                                ImGui.dummy(0, 25)
+                        
             ImGui.end_child()
+            
+            style.ToggleButtonDisabled.pop_color()
+            style.ToggleButtonEnabled.pop_color()
+            
             ImGui.end_table()
 
         return changed

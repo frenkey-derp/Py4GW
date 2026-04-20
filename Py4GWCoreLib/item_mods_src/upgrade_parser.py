@@ -46,12 +46,20 @@ def get_upgrade_property(modifier: DecodedModifier, all_modifiers: list[DecodedM
 
 def get_upgrade(modifier : DecodedModifier, remaining_modifiers: list[DecodedModifier], all_modifiers: list[DecodedModifier], upgrade_type: ItemUpgradeType | None = None, rarity: Rarity = Rarity.Blue) -> tuple["Upgrade", ItemUpgradeType]:
     creator_types = [t for t in _UPGRADES if t.has_id(modifier.upgrade_id) and (upgrade_type is None or t.mod_type == upgrade_type)]
+    matches: list[tuple[type[Upgrade], Upgrade]] = []
 
     for creator_type in creator_types:
-        if creator_type is not None:        
-            upgrade = creator_type.compose_from_modifiers(modifier, remaining_modifiers, all_modifiers, rarity)
+        if creator_type is not None:
+            upgrade = creator_type.compose_from_modifiers(modifier, remaining_modifiers.copy(), all_modifiers, rarity)
             if upgrade is not None:
-                return upgrade, creator_type.mod_type
+                matches.append((creator_type, upgrade))
+
+    if matches:
+        best_creator_type, best_upgrade = max(
+            matches,
+            key=lambda entry: entry[0].get_specificity_score(),
+        )
+        return best_upgrade, best_creator_type.mod_type
         
     return UnknownUpgrade(), ItemUpgradeType.Unknown
 

@@ -3,7 +3,7 @@ from enum import Enum
 import re
 from typing import Any, Callable, ClassVar, Generic, Optional, Protocol, SupportsFloat, SupportsInt, TypeVar, cast
 
-from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, Reduced_Ailment
+from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, PROFESSION_ATTRIBUTES, Profession, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.item_mods_src.decoded_modifier import DecodedModifier
@@ -346,6 +346,16 @@ class Upgrade:
     def has_id(cls, upgrade_id: ItemUpgradeId) -> bool:
         return cls.id.has_id(upgrade_id)
 
+    @classmethod
+    def get_specificity_score(cls) -> tuple[int, int]:
+        fixed_instruction_count = sum(
+            1
+            for instruction in cls.upgrade_info
+            if isinstance(instruction, FixedValueInstruction)
+        )
+        inheritance_depth = len(cls.mro())
+        return fixed_instruction_count, inheritance_depth
+
     #region Equality and Matching
     @classmethod
     def _get_serializable_property_names(cls) -> list[str]:
@@ -562,6 +572,21 @@ class WeaponUpgrade(Upgrade):
 @dataclass(eq=False)
 class WeaponPrefix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Prefix
+
+    def create_upgrade_name(self, item_type: ItemType) -> GWStringEncoded:
+        encoded_upgrade_component = GWEncoded.WEAPON_PREFIXES.get(item_type) or bytes()
+        if not encoded_upgrade_component:
+            return self.create_encoded_name()
+
+        encoded_name = self.create_encoded_name()
+        color_bytes = self.get_text_color(True)
+        suffix = encoded_name.encoded[len(color_bytes):] if encoded_name.encoded.startswith(color_bytes) else encoded_name.encoded
+        return GWStringEncoded(
+            bytes([*color_bytes, *encoded_upgrade_component, *suffix]),
+            encoded_name.fallback,
+            encoded_name.placeholder_bytes,
+            encoded_name.placeholder_replacement,
+        )
     
 @dataclass(eq=False)
 class IncreaseConditionDurationUpgrade(WeaponPrefix):
@@ -1089,6 +1114,22 @@ class ZealousUpgrade(WeaponPrefix):
 class WeaponSuffix(WeaponUpgrade):
     mod_type = ItemUpgradeType.Suffix
 
+    def create_upgrade_name(self, item_type: ItemType) -> GWStringEncoded:
+        encoded_upgrade_component = GWEncoded.WEAPON_SUFFIXES.get(item_type) or bytes()
+        if not encoded_upgrade_component:
+            return self.create_encoded_name()
+
+        encoded_name = self.create_encoded_name()
+        color_bytes = self.get_text_color(True)
+        suffix_prefix = bytes([*color_bytes, *GWEncoded.STR1_OF_STR2, *GWEncoded.PLACEHOLDER_TO_REMOVE])
+        suffix = encoded_name.encoded[len(suffix_prefix):] if encoded_name.encoded.startswith(suffix_prefix) else encoded_name.encoded
+        return GWStringEncoded(
+            bytes([*color_bytes, *encoded_upgrade_component, *suffix]),
+            encoded_name.fallback,
+            encoded_name.placeholder_bytes,
+            encoded_name.placeholder_replacement,
+        )
+
 @dataclass(eq=False)
 class OfAttributeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfAttribute
@@ -1138,6 +1179,17 @@ class OfAttributeUpgrade(WeaponSuffix):
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Attribute"])
+
+    def equals(self, other: object) -> bool:
+        return (
+            isinstance(other, OfAttributeUpgrade)
+            and self.attribute == other.attribute
+            and self.attribute_level == other.attribute_level
+            and self.chance == other.chance
+        )
+
+    def matches(self, other: object) -> bool:
+        return self.equals(other)
 
 @dataclass(eq=False)
 class OfAptitudeUpgrade(WeaponSuffix):
@@ -1750,6 +1802,201 @@ class OfTheProfessionUpgrade(WeaponSuffix):
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.THE_PROFESSION.get(self.profession, bytes()), f"of {self.profession.name if self.profession != Profession._None else 'Unknown Profession'}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", self.profession.name if self.profession != Profession._None else "Profession"])
+
+    def equals(self, other: object) -> bool:
+        return (
+            isinstance(other, OfTheProfessionUpgrade)
+            and self.profession == other.profession
+            and self.attribute == other.attribute
+            and self.attribute_level == other.attribute_level
+        )
+
+    def matches(self, other: object) -> bool:
+        return self.equals(other)
+
+
+def _camelize_attribute_name(attribute: Attribute) -> str:
+    return "".join(part for part in attribute.name.replace("_", " ").split())
+
+
+def _create_of_attribute_upgrade_specializations() -> list[type[OfAttributeUpgrade]]:
+    existing_attributes = {
+        getattr(upgrade_type, "attribute", Attribute.None_)
+        for upgrade_type in OfAttributeUpgrade.__subclasses__()
+    }
+
+    generated_types: list[type[OfAttributeUpgrade]] = []
+    generated_attributes: set[Attribute] = set()
+
+    for profession, attributes in PROFESSION_ATTRIBUTES.items():
+        for attribute in attributes:
+            if attribute in existing_attributes or attribute in generated_attributes:
+                continue
+            
+            if profession not in [Profession.Monk, Profession.Necromancer, Profession.Mesmer, Profession.Elementalist, Profession.Ritualist]:
+                continue
+            
+            if attribute in [Attribute.SoulReaping, Attribute.FastCasting, Attribute.EnergyStorage]:
+                continue
+
+            class_name = f"Of{_camelize_attribute_name(attribute)}Upgrade"
+            upgrade_type = cast(
+                type[OfAttributeUpgrade],
+                type(
+                    class_name,
+                    (OfAttributeUpgrade,),
+                    {
+                        "__module__": __name__,
+                        "id": ItemUpgrade.OfAttribute,
+                        "attribute": attribute,
+                        "upgrade_info": (
+                            fixed(
+                                identifier=ModifierIdentifier.AttributePlusOne,
+                                target="attribute",
+                                fixed_value=attribute,
+                                value_getter=property_value(
+                                    AttributePlusOne,
+                                    lambda prop: prop.attribute,
+                                ),
+                            ),
+                            ranged(
+                                identifier=ModifierIdentifier.AttributePlusOne,
+                                target="chance",
+                                min_value=10,
+                                max_value=20,
+                                value_getter=property_value(
+                                    AttributePlusOne,
+                                    lambda prop: prop.chance,
+                                ),
+                            ),
+                            fixed(
+                                identifier=ModifierIdentifier.AttributePlusOne,
+                                target="attribute_level",
+                                fixed_value=1,
+                                value_getter=property_value(
+                                    AttributePlusOne,
+                                    lambda prop: prop.attribute_level,
+                                ),
+                            ),
+                        ),
+                    },
+                ),
+            )
+            globals()[class_name] = upgrade_type
+            generated_types.append(upgrade_type)
+            generated_attributes.add(attribute)
+
+    return generated_types
+
+
+def _create_of_the_profession_upgrade_specializations() -> list[type[OfTheProfessionUpgrade]]:
+    generated_types: list[type[OfTheProfessionUpgrade]] = []
+
+    for profession, attributes in PROFESSION_ATTRIBUTES.items():
+        if profession == Profession._None or len(attributes) == 0:
+            continue
+
+        primary_attribute = next((attribute for attribute in attributes if attribute.is_primary), attributes[0])
+        class_name = f"OfThe{profession.name}Upgrade"
+        upgrade_type = cast(
+            type[OfTheProfessionUpgrade],
+            type(
+                class_name,
+                (OfTheProfessionUpgrade,),
+                {
+                    "__module__": __name__,
+                    "id": ItemUpgrade.OfTheProfession,
+                    "profession": profession,
+                    "attribute": primary_attribute,
+                    "upgrade_info": (
+                        fixed(
+                            identifier=ModifierIdentifier.OfTheProfession,
+                            target="attribute",
+                            fixed_value=primary_attribute,
+                            value_getter=property_value(
+                                OfTheProfession,
+                                lambda prop: prop.attribute,
+                            ),
+                        ),
+                        ranged(
+                            identifier=ModifierIdentifier.OfTheProfession,
+                            target="attribute_level",
+                            min_value=4,
+                            max_value=5,
+                            value_getter=property_value(
+                                OfTheProfession,
+                                lambda prop: prop.attribute_level,
+                            ),
+                        ),
+                        fixed(
+                            identifier=ModifierIdentifier.OfTheProfession,
+                            target="profession",
+                            fixed_value=profession,
+                            value_getter=property_value(
+                                OfTheProfession,
+                                lambda prop: prop.profession,
+                            ),
+                        ),
+                    ),
+                },
+            ),
+        )
+        globals()[class_name] = upgrade_type
+        generated_types.append(upgrade_type)
+
+    return generated_types
+
+
+def _create_of_slaying_upgrade_specializations() -> list[type[OfSlayingUpgrade]]:
+    generated_types: list[type[OfSlayingUpgrade]] = []
+
+    for species in ItemBaneSpecies:
+        if species == ItemBaneSpecies.Unknown:
+            continue
+
+        class_name = f"Of{species.name}SlayingUpgrade"
+        upgrade_type = cast(
+            type[OfSlayingUpgrade],
+            type(
+                class_name,
+                (OfSlayingUpgrade,),
+                {
+                    "__module__": __name__,
+                    "id": ItemUpgrade.OfSlaying,
+                    "species": species,
+                    "damage_increase": 20,
+                    "upgrade_info": (
+                        enum(
+                            identifier=ModifierIdentifier.BaneSpecies,
+                            target="species",
+                            enum_type=ItemBaneSpecies,
+                            value_getter=property_value(
+                                BaneProperty,
+                                lambda prop: prop.species,
+                            ),
+                        ),
+                        ranged(
+                            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+                            target="damage_increase",
+                            min_value=10,
+                            max_value=20,
+                            value_getter=property_value(
+                                DamagePlusVsSpecies,
+                                lambda prop: prop.damage_increase,
+                            ),
+                        ),
+                    ),
+                },
+            ),
+        )
+        globals()[class_name] = upgrade_type
+        generated_types.append(upgrade_type)
+
+    return generated_types
+
+_GENERATED_OF_ATTRIBUTE_UPGRADES = _create_of_attribute_upgrade_specializations()
+_GENERATED_OF_THE_PROFESSION_UPGRADES = _create_of_the_profession_upgrade_specializations()
+_GENERATED_OF_SLAYER_UPGRADES = _create_of_slaying_upgrade_specializations()
 
 @dataclass(eq=False)
 class OfValorUpgrade(WeaponSuffix):
@@ -6652,6 +6899,10 @@ _UPGRADES: list[type[Upgrade]] = [
     AppliesToRune,
     UpgradeRune,
 ]
+
+_UPGRADES.extend(_GENERATED_OF_THE_PROFESSION_UPGRADES)
+_UPGRADES.extend(_GENERATED_OF_ATTRIBUTE_UPGRADES)
+_UPGRADES.extend(_GENERATED_OF_SLAYER_UPGRADES)
 
 _INHERENT_UPGRADES: list[type[Inherent]] = [
     cls
