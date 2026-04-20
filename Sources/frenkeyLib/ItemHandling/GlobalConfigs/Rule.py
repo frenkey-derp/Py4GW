@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Optional
+from dataclasses import dataclass
+from typing import Any, ClassVar, NamedTuple, Optional
 
-from Py4GWCoreLib.Item import Item
+from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
@@ -12,6 +13,7 @@ from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 
 class Rule:
     _registry: ClassVar[dict[str, type["Rule"]]] = {}
+    ui_selectable: ClassVar[bool] = True
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -290,7 +292,142 @@ class DyesRule(Rule):
             if isinstance(name, str) and name in DyeColor.__members__
         ]
 
-class UpgradesRule(Rule):
+@dataclass
+class StockInstruction:
+    model_id: ModelID
+    item_type: ItemType
+    quantity: int
+    include_storage: bool = True
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "model_id": int(self.model_id.value),
+            "item_type": self.item_type.name,
+            "quantity": self.quantity,
+            "include_storage": self.include_storage,
+        }
+
+    def comparison_data(self) -> tuple[int, str, int, bool]:
+        return (
+            int(self.model_id.value),
+            self.item_type.name,
+            self.quantity,
+            self.include_storage,
+        )
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> StockInstruction | None:
+        try:
+            model_id = ModelID(int(data["model_id"]))
+            item_type = ItemType[str(data["item_type"])]
+            quantity = int(data["quantity"])
+            include_storage = bool(data.get("include_storage", True))
+        except (KeyError, ValueError, TypeError):
+            return None
+
+        return cls(
+            model_id=model_id,
+            item_type=item_type,
+            quantity=quantity,
+            include_storage=include_storage,
+        )
+
+
+class StockRule(Rule):
+    ui_selectable: ClassVar[bool] = False
+    
+class MaintainStockRule(StockRule):
+    ui_selectable: ClassVar[bool] = True
+
+    def __init__(self, stock_instructions: Optional[list[StockInstruction]] = None):
+        super().__init__()
+        self.stock_instructions = stock_instructions if stock_instructions is not None else []        
+    
+    def is_valid(self) -> bool:
+        return len(self.stock_instructions) > 0
+    
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+        
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+        
+        for instruction in self.stock_instructions:
+            if item_snapshot.model_id == instruction.model_id and item_snapshot.item_type == instruction.item_type:
+                bags : list[Bags] = [*INVENTORY_BAGS]
+                
+                if instruction.include_storage:
+                    bags.extend(STORAGE_BAGS)
+                
+                bags_snapshot : dict[Bag, dict[int, Optional['ItemSnapshot']]] = ItemSnapshot.get_bags_snapshot(bags)
+                bag_items = [item for bag in bags_snapshot.values() for item in bag.values() if item is not None]
+                
+                count = sum(bag_item.quantity for bag_item in bag_items if bag_item.model_id == instruction.model_id and bag_item.item_type == instruction.item_type)
+                if count < instruction.quantity:
+                    return True
+        
+        return False
+    
+    @property
+    def restock_instructions(self) -> list[StockInstruction]:
+        instructions: list[StockInstruction] = []
+        
+        for instruction in self.stock_instructions:        
+            bags : list[Bags] = [*INVENTORY_BAGS]
+            
+            if instruction.include_storage:
+                bags.extend(STORAGE_BAGS)
+            
+            bags_snapshot : dict[Bag, dict[int, Optional['ItemSnapshot']]] = ItemSnapshot.get_bags_snapshot(bags)
+            bag_items = [item for bag in bags_snapshot.values() for item in bag.values() if item is not None]
+            
+            count = sum(bag_item.quantity for bag_item in bag_items if bag_item.model_id == instruction.model_id and bag_item.item_type == instruction.item_type)
+            if count < instruction.quantity:
+                instructions.append(
+                    StockInstruction(
+                        model_id=instruction.model_id, 
+                        item_type=instruction.item_type, 
+                        quantity=instruction.quantity - count, 
+                        include_storage=instruction.include_storage))
+            
+        return instructions
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "stock_instructions": [
+                instruction.to_dict()
+                for instruction in self.stock_instructions
+            ]
+        }
+
+    def _comparison_data(self) -> Any:
+        normalized_instructions = [
+            instruction.comparison_data()
+            for instruction in self.stock_instructions
+        ]
+        return tuple(sorted(normalized_instructions))
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.stock_instructions = []
+        for entry in data.get("stock_instructions", []):
+            if not isinstance(entry, dict):
+                continue
+
+            instruction = StockInstruction.from_dict(entry)
+            if instruction is not None:
+                self.stock_instructions.append(instruction)
+
+class ExtractModRule(Rule):
+    ui_selectable: ClassVar[bool] = False
+    
+    def __init__(self):
+        super().__init__()
+
+class UpgradesRule(ExtractModRule):
+    ui_selectable: ClassVar[bool] = True
+    
     """
     A rule that checks if an item has a one of the specified upgrades.
     """

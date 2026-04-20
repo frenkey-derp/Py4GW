@@ -1,16 +1,14 @@
+from typing import ClassVar
+
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.ItemArray import ItemArray
 from Py4GWCoreLib.Routines import Routines
 
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import ExtractModRule, Rule
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 
-class SalvageConfig(RuleConfig):    
-    def EvaluateItem(self, item_id):
-        item : ItemSnapshot = ItemSnapshot.from_item_id(item_id)
-        return item.is_salvageable and super().EvaluateItem(item_id)
-    
-    def GetItemsToSalvage(self, bags : list[Bag]) -> list[int]:                        
+class ProtectedItemsConfig(RuleConfig):        
+    def GetProtectedItems(self, bags : list[Bag]) -> list[int]:                        
         if not Routines.Checks.Map.MapValid():
             return []
             

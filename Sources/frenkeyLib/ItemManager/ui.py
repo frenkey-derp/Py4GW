@@ -12,7 +12,7 @@ from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames
 from Py4GWCoreLib.enums_src.Item_enums import ITEM_TYPE_META_TYPES, ItemType
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
-from Py4GWCoreLib.item_mods_src.types import ModifierIdentifier
+from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType, ModifierIdentifier
 from Py4GWCoreLib.item_mods_src.upgrades import (
     EnumInstruction,
     FixedValueInstruction,
@@ -26,10 +26,15 @@ from Py4GWCoreLib.item_mods_src.upgrades import (
     UpgradeRune,
 )
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.DepositConfig import DepositConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig 
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProtectedItemsConfig import ProtectedItemsConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SalvageConfig import SalvageConfig 
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SellConfig import SellConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.UpgradesConfig import UpgradesConfig
 from Sources.frenkeyLib.ItemManager.config import Config
 
 
@@ -71,15 +76,22 @@ class UI:
         folder_path = os.path.join(Py4GW.Console.get_projects_path(), "Settings", "Global", "Item & Inventory", "Configs")
         
         self.configs : list[ConfigInfo] = [
+            ConfigInfo(BuyConfig(), "Buying", "Configure which items to buy", folder_path),
+            ConfigInfo(DepositConfig(), "Depositing", "Configure which items to deposit", folder_path),
             ConfigInfo(LootConfig(), "Looting", "Configure which items to pick up and which to ignore", folder_path),
+            ConfigInfo(ProtectedItemsConfig(), "Protected Items", "Configure which items to protect from all other configurations", folder_path),
             ConfigInfo(SalvageConfig(), "Salvaging", "Configure which items to salvage", folder_path),
+            ConfigInfo(SellConfig(), "Selling", "Configure which items to sell", folder_path),
+            ConfigInfo(UpgradesConfig(), "Upgrades", "Configure upgrades to extract", folder_path),
         ]
         
         for config_info in self.configs:
             config_info.load()
         
-        self.config = self.configs[0]
-        self.rule = self.config.config[0] if len(self.config.config) > 0 else None
+        self.config : Optional[ConfigInfo] = None
+        self.rule : Optional[Rule] = None
+        
+        self.switch_to_config(self.configs[0] if len(self.configs) > 0 else None)
         available_upgrade_types: list[type[Upgrade]] = list(_UPGRADES)
         
         #Remove all subclasses and class of UpgradeRune, AppliesToRune
@@ -101,6 +113,23 @@ class UI:
             item_type
             for item_type in ItemType
             if item_type not in ITEM_TYPE_META_TYPES and item_type != ItemType.Unknown
+        ]
+
+    @staticmethod
+    def _get_rule_types() -> list[type[Rule]]:
+        discovered_rule_types: list[type[Rule]] = []
+
+        def visit(rule_type: type[Rule]) -> None:
+            for child_rule_type in rule_type.__subclasses__():
+                if child_rule_type not in discovered_rule_types:
+                    discovered_rule_types.append(child_rule_type)
+                visit(child_rule_type)
+
+        visit(Rule)
+        return [
+            rule_type
+            for rule_type in discovered_rule_types
+            if getattr(rule_type, "ui_selectable", True)
         ]
 
     @staticmethod
@@ -182,26 +211,14 @@ class UI:
 
     def _get_allowed_item_types(self, upgrade: Upgrade) -> list[ItemType]:
         allowed_item_types: list[ItemType] = []
-
+        
         for item_type in type(upgrade).id.item_type_id_map.keys():
             for concrete_item_type in self._expand_item_type(item_type):
                 if concrete_item_type not in allowed_item_types:
                     allowed_item_types.append(concrete_item_type)
 
-        target_item_type = getattr(type(upgrade), "target_item_type", ItemType.Unknown)
-        if isinstance(target_item_type, ItemType):
-            for concrete_item_type in self._expand_item_type(target_item_type):
-                if concrete_item_type not in allowed_item_types:
-                    allowed_item_types.append(concrete_item_type)
-
-        instance_item_type = upgrade.item_type
-        if instance_item_type is not None:
-            for concrete_item_type in self._expand_item_type(instance_item_type):
-                if concrete_item_type not in allowed_item_types:
-                    allowed_item_types.append(concrete_item_type)
-
         if len(allowed_item_types) == 0:
-            return self._get_concrete_item_types()
+            return []
 
         return allowed_item_types
 
@@ -236,10 +253,18 @@ class UI:
     def _draw_upgrade_item_type_filters(self, upgrade: Upgrade, item_types: list[ItemType], unique_id: str) -> bool:
         changed = False
         allowed_item_types = self._get_allowed_item_types(upgrade)
+        
+        if not allowed_item_types:
+            return False
+        
         normalized_item_types = self._normalize_item_type_filters(item_types, allowed_item_types)
         if normalized_item_types != item_types:
             item_types[:] = normalized_item_types
             changed = True
+            
+        if len(allowed_item_types) <= 1:
+            item_types[:] = allowed_item_types
+            return changed
 
         summary = "Any allowed item type" if len(item_types) == 0 else ", ".join(self._humanize_name(item_type.name) for item_type in item_types)
 
@@ -467,6 +492,7 @@ class UI:
         else:
             ImGui.text_colored("This upgrade has no editable upgrade instructions. Its values are fixed by the selected upgrade type.", UI.GRAY_COLOR, font_size=12)
 
+        
         if self._draw_upgrade_item_type_filters(upgrade, item_types, unique_id):
             changed = True
 
@@ -527,6 +553,10 @@ class UI:
     def draw(self):
         self.floating_button.draw(self.module_config.floating_ini_key)
         
+    def switch_to_config(self, rule_config: ConfigInfo | None):
+        self.config = rule_config or (self.configs[0] if len(self.configs) > 0 else None)
+        self.rule = self.config.config[0] if self.config and len(self.config.config) > 0 else None
+        
     def draw_explorer(self):
         style = ImGui.get_style()
         # style.TableBorderLight.push_color_direct((255,255,255,255))
@@ -548,8 +578,7 @@ class UI:
                         ImGui.text_colored(config.config.__class__.__name__, UI.GRAY_COLOR, font_size=12)
                         
                     if ImGui.end_selectable():
-                        self.config = config
-                        self.rule = config.config[0]
+                        self.switch_to_config(config)
                     
                     ImGui.show_tooltip(config.description)
                         
@@ -616,10 +645,13 @@ class UI:
             
             PyImGui.set_next_item_width(-1)
             if ImGui.begin_combo("##add_rule", "Add Rule", PyImGui.ImGuiComboFlags.NoFlag):
-                for rule_type in Rule.__subclasses__():
+                allowed_rule_types = config_info.config.GetAllowedRuleTypes()
+                for rule_type in self._get_rule_types():
+                    if allowed_rule_types is not None and not issubclass(rule_type, allowed_rule_types):
+                        continue
                     if ImGui.selectable(rule_type.__name__, False):
                         new_rule = rule_type()
-                        config_info.config.append(new_rule)
+                        config_info.config.AddRule(new_rule)
                         config_info.save()
                         self.rule = new_rule
                 ImGui.end_combo()
@@ -675,7 +707,8 @@ class UI:
         
         if name != rule.name:
             rule.name = name
-            self.config.save()
+            if self.config:
+                self.config.save()
             
         ImGui.separator()
         PyImGui.spacing()
@@ -697,7 +730,9 @@ class UI:
                                 rule.item_types.remove(item_type)
                             else:
                                 rule.item_types.append(item_type)
-                            self.config.save()
+    
+                            if self.config:
+                                self.config.save()
                 ImGui.end_child()
                 
             case RaritiesRule():
@@ -713,7 +748,9 @@ class UI:
                                 rule.rarities.remove(rarity)
                             else:
                                 rule.rarities.append(rarity)
-                            self.config.save()
+
+                            if self.config:
+                                self.config.save()
                 ImGui.end_child()
             
             case RaritiesAndItemTypesRule():
@@ -731,7 +768,9 @@ class UI:
                                 rule.rarities.remove(rarity)
                             else:
                                 rule.rarities.append(rarity)
-                            self.config.save()
+    
+                            if self.config:
+                                self.config.save()
                 ImGui.end_child()
                 
                 PyImGui.next_column()
@@ -746,7 +785,8 @@ class UI:
                                 rule.item_types.remove(item_type)
                             else:
                                 rule.item_types.append(item_type)
-                            self.config.save()
+                            if self.config:
+                                self.config.save()
                 ImGui.end_child()
                 
                 PyImGui.end_columns()
@@ -768,13 +808,15 @@ class UI:
                                 rule.dye_colors.remove(dye_color)
                             else:
                                 rule.dye_colors.append(dye_color)
-                            self.config.save()
+                            if self.config:
+                                self.config.save()
                 ImGui.end_child()
                 
             case UpgradesRule():
                 ImGui.text_wrapped("This rule matches items based on their upgrades. You can specify one or more upgrades to match against the item.")
                 if self._draw_upgrades_rule(rule):
-                    self.config.save()
+                    if self.config:
+                        self.config.save()
             
             case _:
                 ImGui.text("No editor available for this rule type.")

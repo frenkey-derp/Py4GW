@@ -58,13 +58,12 @@ from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.UIManager import UIManager
-from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, ItemType, Rarity
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, MAX_STACK_SIZE, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.Items.types import INVENTORY_BAGS, STORAGE_BAGS
 from Sources.frenkeyLib.ItemHandling.Rules.types import MATERIAL_SLOTS, SalvageMode
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemHandling.utility import GetDestinationSlots, GetItemsLocations, HasSpaceForItem
@@ -857,7 +856,7 @@ class BTNodes:
               UserDescription: Internal support helper class.
               Notes: Used by storage and inventory transfer planning helpers before actual move actions are issued.
             """
-            def __init__(self, bag: Bag, slot: int, stack_item: Optional[ItemSnapshot], available_space: int = MAX_STACK_SIZE):                
+            def __init__(self, bag: Bags, slot: int, stack_item: Optional[ItemSnapshot], available_space: int = MAX_STACK_SIZE):                
                 """
                 Initialize a transfer instruction for one destination slot.
 
@@ -879,10 +878,10 @@ class BTNodes:
         @staticmethod
         def GetTransferInstructions(
             item_ids: list[int],
-            target : list[Bag],
+            target : list[Bags],
             quantities: Optional[list[int]] = None,
             fill_materials_first: bool = False,
-        ) -> dict[Bag, dict[int, BTNodes.Items.ItemTransferInstructions]]:
+        ) -> dict[Bags, dict[int, BTNodes.Items.ItemTransferInstructions]]:
             """
             Build a destination-slot transfer plan for moving items into target bags.
 
@@ -906,7 +905,7 @@ class BTNodes:
            
             material_storage_snapshot = ItemSnapshot.get_bag_snapshot(Bag.Material_Storage) if (from_storage or to_storage) else {}
             target_snapshot = ItemSnapshot.get_bags_snapshot(target)
-            moving_instructions : dict[Bag, dict[int, BTNodes.Items.ItemTransferInstructions]] = {}
+            moving_instructions : dict[Bags, dict[int, BTNodes.Items.ItemTransferInstructions]] = {}
             
             #get max quantity from material_storage_snapshot.get(Bag.Material_Storage, {}).values() and ceil to the next MAX_STACK_SIZE to determine the max capacity
             material_storage_capacity = (
@@ -930,8 +929,8 @@ class BTNodes:
                     if fill_materials_first and from_inventory and (item.is_material or item.is_rare_material):
                         for slot, stack_item in material_storage_snapshot.items():
                             if stack_item and stack_item.is_valid and stack_item.is_stackable and stack_item.same_kind_as(item) and stack_item.quantity < material_storage_capacity:
-                                moving_instructions.setdefault(Bag.Material_Storage, {})
-                                dest = moving_instructions[Bag.Material_Storage].setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bag.Material_Storage, slot, stack_item, available_space=material_storage_capacity))
+                                moving_instructions.setdefault(Bags.MaterialStorage, {})
+                                dest = moving_instructions[Bags.MaterialStorage].setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bags.MaterialStorage, slot, stack_item, available_space=material_storage_capacity))
                                 
                                 if dest.available_space > 0:
                                     qty_to_move = min(dest.available_space, qty)
@@ -942,7 +941,7 @@ class BTNodes:
                                     stack_item.quantity += qty_to_move  # simulate the move in the cache to get correct available space for subsequent stacks of the same item
                                     
                                     if qty <= 0:
-                                        Py4GW.Console.Log("GetTransferInstructions", f"Planned to move {qty_to_move} of '{item.names.plain}' (ID: {item.id}) to Material Storage bag {Bag.Material_Storage.name} slot {slot}")
+                                        Py4GW.Console.Log("GetTransferInstructions", f"Planned to move {qty_to_move} of '{item.names.plain}' (ID: {item.id}) to Material Storage bag {Bags.MaterialStorage.name} slot {slot}")
                                         break
                         
                         if qty <= 0:
@@ -999,7 +998,7 @@ class BTNodes:
         @staticmethod
         def DepositItems(
             item_ids: list[int],
-            target : list[Bag] = STORAGE_BAGS,
+            target : list[Bags] = STORAGE_BAGS,
             anniversary_panel: bool = False,
             fill_materials_first: bool = True,
             fail_if_no_space: bool = True,
@@ -1040,7 +1039,7 @@ class BTNodes:
         @staticmethod
         def WithdrawItems(
             item_ids: list[int],
-            target : list[Bag] = INVENTORY_BAGS,
+            target : list[Bags] = INVENTORY_BAGS,
             fill_materials_first: bool = True,
             fail_if_no_space: bool = True,
             aftercast_ms: int = 25,
@@ -1155,7 +1154,7 @@ class BTNodes:
         
         @staticmethod
         def FillMaterialStorage(
-            source : list[Bag] = STORAGE_BAGS,
+            source : list[Bags] = STORAGE_BAGS,
             aftercast_ms: int = 150,
             succeed_if_already_filled: bool = True,
         ):
@@ -1201,7 +1200,7 @@ class BTNodes:
                             continue
                         
                         material = material_snapshot.get(slot, None)
-                        transfer_instructions.setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bag.Material_Storage, slot, material, available_space=material_storage_capacity))
+                        transfer_instructions.setdefault(slot, BTNodes.Items.ItemTransferInstructions(Bags.MaterialStorage, slot, material, available_space=material_storage_capacity))
                         inst = transfer_instructions.get(slot)
                         
                         if inst is None:
@@ -1228,7 +1227,7 @@ class BTNodes:
         
         @staticmethod
         def CompactBags(
-            bags : list[Bag] = INVENTORY_BAGS,         
+            bags : list[Bags] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
         ):
             """
@@ -1244,7 +1243,7 @@ class BTNodes:
             """
             def _compact(node: BehaviorTree.Node):
                 snapshot = ItemSnapshot.get_bags_snapshot(bags)
-                grouped_items : dict[tuple[ItemType, int, int], list[tuple[Bag, int, ItemSnapshot]]] = {}
+                grouped_items : dict[tuple[ItemType, int, int], list[tuple[Bags, int, ItemSnapshot]]] = {}
                 moved_any = False
                 
                 for bag in bags:
@@ -1280,7 +1279,7 @@ class BTNodes:
 
         @staticmethod
         def SortBags(
-            bags : list[Bag] = INVENTORY_BAGS,         
+            bags : list[Bags] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
         ):
             """
@@ -1311,7 +1310,7 @@ class BTNodes:
                 item_typeOrder += [int(item)
                                 for item in ItemType if int(item) not in item_typeOrder]
                 
-                index_to_bag_map : dict[int, tuple[Bag, int]] = {}
+                index_to_bag_map : dict[int, tuple[Bags, int]] = {}
                 index = 0
                 
                 for bag in bags:

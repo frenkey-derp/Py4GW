@@ -58,7 +58,12 @@ class Bags(IntEnum):
     Storage14 = 21
     EquippedItems = 22
 
-
+INVENTORY_BAGS = [Bags.Backpack, Bags.Bag1, Bags.Bag2, Bags.EquipmentPack]
+STORAGE_BAGS = [
+    Bags.Storage1, Bags.Storage2, Bags.Storage3, Bags.Storage4, Bags.Storage5, Bags.Storage6,
+    Bags.Storage7, Bags.Storage8, Bags.Storage9, Bags.Storage10, Bags.Storage11, Bags.Storage12,
+    Bags.Storage13, Bags.Storage14
+]
 # endregion
 # region ItemType
 class ItemType(IntEnum):
@@ -104,6 +109,9 @@ class ItemType(IntEnum):
     Costume_Headpiece = 45
     Unknown = 255
     
+    @property
+    def item_types(self) -> list["ItemType"]:
+        return ITEM_TYPE_META_TYPES.get(self, [self])
     
     @staticmethod
     def is_matching_item_type(item_type: "ItemType", target: "ItemType") -> bool:
