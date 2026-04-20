@@ -237,6 +237,13 @@ class Upgrade:
         object.__setattr__(self, "rarity", getattr(type(self), "rarity", Rarity.Blue))
         object.__setattr__(self, "upgrade_id", ItemUpgradeId.Unknown)
         object.__setattr__(self, "modifier", None)
+
+        cls = type(self)
+        for field_info in fields(self):
+            if not field_info.init:
+                continue
+            if field_info.name in cls.__dict__:
+                object.__setattr__(self, field_info.name, cls.__dict__[field_info.name])
         
         self._refresh_encoded_strings()
 
@@ -1568,7 +1575,10 @@ class OfSlayingUpgrade(WeaponSuffix):
         return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SLAYING_BANE.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()), f"of {self.species.name}-Slaying", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", f"{self.species.name}-Slaying" if self.species != ItemBaneSpecies.Unknown else "Slaying"])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()) + bytes([0x1, 0x0, 0x1, 0x0, 0x0, 0x0]), 
+                               f"of {self.species.name}-Slaying", 
+                               GWEncoded.PLACEHOLDER_TO_REMOVE, 
+                               ["", f"{self.species.name}-Slaying" if self.species != ItemBaneSpecies.Unknown else "Slaying"])
 
 @dataclass(eq=False)
 class OfSpearMasteryUpgrade(OfAttributeUpgrade):
@@ -1673,10 +1683,10 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     attribute_level: int = 5
 
     upgrade_info = (
-        enum(
+        select(
             identifier=ModifierIdentifier.OfTheProfession,
             target="attribute",
-            enum_type=Attribute,
+            options=[att for att in Attribute if att.is_primary],
             value_getter=property_value(
                 OfTheProfession,
                 lambda prop: prop.attribute,

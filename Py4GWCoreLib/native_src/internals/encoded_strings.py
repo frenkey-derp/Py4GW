@@ -28,6 +28,13 @@ class GWStringEncoded:
         if self.placeholder_bytes:
             decoded = decoded.replace(string_table.decode(self.placeholder_bytes), "").strip()
             
+        return decoded if decoded else ""
+    
+    def get_decoded(self) -> str:
+        decoded = string_table.decode(self.encoded)
+        if self.placeholder_bytes:
+            decoded = decoded.replace(string_table.decode(self.placeholder_bytes), "").strip()
+            
         return decoded if decoded else self.fallback
 
     def replace_multiple_whitespace(self, s: str) -> str:
@@ -49,24 +56,39 @@ class GWStringEncoded:
     @property
     def plain(self) -> str:
         if not self.__plain:
-            self.__plain = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", self.decode()))
-                            
+            decoded = self.decode()
+            if not decoded:
+                return self.fallback
+            
+            plain = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", decoded))
+            self.__plain = plain
+        
         return self.__plain
 
     @property
     def bonuses_only(self) -> str:
         if not self.__bonuses_only:
-            lines = self.decode().splitlines()
-            bonus_lines = [line for line in lines if line.startswith(self.STAT_TAGS)]
-            self.__bonuses_only = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", "\n".join(bonus_lines)))
-                
+            decoded = self.decode()
+            if not decoded:
+                return self.fallback
+            
+            lines = decoded.splitlines()
+            bonus_lines = [line for line in lines if line.startswith(self.STAT_TAGS)]            
+            bonuses_only = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", "\n".join(bonus_lines)))
+            self.__bonuses_only = bonuses_only
+
         return self.__bonuses_only
 
     @property
     def full(self) -> str:
         if not self.__full:
-            self.__full = self.remove_placeholder(self.decode())
-                            
+            decoded = self.decode()
+            if not decoded:
+                return self.fallback
+            
+            full = self.remove_placeholder(decoded)
+            self.__full = full
+
         return self.__full
 
 
@@ -130,7 +152,7 @@ class GWEncoded():
 
     STR1_PLUS_NUM1 = bytes([0x84, 0xA, 0xA, 0x1])
 
-    PLACEHOLDER_TO_REMOVE = bytes([0x9, 0x1, 0x0, 0x0])
+    PLACEHOLDER_TO_REMOVE = bytes([0xA5, 0x1, 0x1, 0x0])
     
     NON_STACKING = bytes([0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0])
     HEALTH_MINUS_75 = bytes([0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x4B, 0x1, 0x1, 0x0]) # 0x4B = 75 in little endian, 0x1 = minus, 0x0 = health
@@ -165,18 +187,18 @@ class GWEncoded():
     }
     
     SLAYING_SUFFIXES: dict[ItemBaneSpecies, bytes] = {
-        ItemBaneSpecies.Undead : bytes([0xB, 0x1, 0x68, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Charr : bytes([0xB, 0x1, 0x5D, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Trolls : bytes([0xB, 0x1, 0x67, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Plants : bytes([0xB, 0x1, 0x64, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Skeletons : bytes([0xB, 0x1, 0x65, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Giants : bytes([0xB, 0x1, 0x62, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Dwarves : bytes([0xB, 0x1, 0x60, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Tengus : bytes([0xB, 0x1, 0x66, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Demons : bytes([0xB, 0x1, 0x5E, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Dragons : bytes([0xB, 0x1, 0x5F, 0xA, 0x1, 0x0]),
-        ItemBaneSpecies.Ogres : bytes([0xB, 0x1, 0x61, 0xA, 0x1, 0x0]),
-        # ItemBaneSpecies.Snakes : bytes([0xB, 0x1, 0x63, 0xA, 0x1, 0x0]),
+        ItemBaneSpecies.Undead : bytes([0x68, 0xA]),
+        ItemBaneSpecies.Charr : bytes([0x5D, 0xA]),
+        ItemBaneSpecies.Trolls : bytes([0x67, 0xA]),
+        ItemBaneSpecies.Plants : bytes([0x64, 0xA]),
+        ItemBaneSpecies.Skeletons : bytes([0x65, 0xA]),
+        ItemBaneSpecies.Giants : bytes([0x62, 0xA]),
+        ItemBaneSpecies.Dwarves : bytes([0x60, 0xA]),
+        ItemBaneSpecies.Tengus : bytes([0x66, 0xA]),
+        ItemBaneSpecies.Demons : bytes([0x5E, 0xA]),
+        ItemBaneSpecies.Dragons : bytes([0x5F, 0xA]),
+        ItemBaneSpecies.Ogres : bytes([0x61, 0xA]),
+        # ItemBaneSpecies.Snakes : bytes([0x63, 0xA]),
     }
     
     SLAYING_BANE: dict[ItemBaneSpecies, bytes] = {
