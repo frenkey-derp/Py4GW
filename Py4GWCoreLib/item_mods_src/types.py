@@ -43,7 +43,7 @@ class ModifierIdentifier(IntEnum):
     Empty = 0x0000
     Armor1 = 0x27b
     Armor2 = 0x23c
-    ArmorEnergyRegen = 0x22e
+    EnergyRecovery = 0x22e
     ArmorMinusAttacking = 0x201
     ArmorPenetration = 0x23f
     ArmorPlus = 0x210

@@ -65,7 +65,7 @@ class ArmorProperty(ItemProperty):
         return GWStringEncoded(encoded_bytes, f"Armor: {self.armor}")
     
 @dataclass
-class ArmorEnergyRegen(ItemProperty):
+class EnergyRecovery(ItemProperty):
     energy_regen: int
 
     def create_encoded_description(self) -> GWStringEncoded:

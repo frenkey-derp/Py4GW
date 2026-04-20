@@ -41,7 +41,7 @@ __all__ = [
     "AppliesToSuperiorRuneRitualist",
     "AppliesToSuperiorRuneWarrior",
     "AptitudeNotAttitude",
-    "ArmorEnergyRegen",
+    "EnergyRecovery",
     "ArmorMinusAttacking",
     "ArmorPenetration",
     "ArmorPlus",

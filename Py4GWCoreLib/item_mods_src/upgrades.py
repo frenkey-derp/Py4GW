@@ -1022,24 +1022,22 @@ class ZealousUpgrade(WeaponPrefix):
     energy_gain: int = 1
 
     upgrade_info = (
-        ranged(
-            identifier=ModifierIdentifier.EnergyRegeneration,
-            target="energy_regeneration",
-            min_value=-1,
-            max_value=-1,
-            value_getter=property_value(
-                EnergyRegeneration,
-                lambda prop: prop.energy_regeneration,
-            ),
-        ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.EnergyGainOnHit,
             target="energy_gain",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 EnergyGainOnHit,
                 lambda prop: prop.energy_gain,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.EnergyRegeneration,
+            target="energy_regeneration",
+            fixed_value=-1,
+            value_getter=property_value(
+                EnergyRegeneration,
+                lambda prop: prop.energy_regeneration,
             ),
         ),
     )
