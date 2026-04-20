@@ -1130,6 +1130,7 @@ class WeaponSuffix(WeaponUpgrade):
             encoded_name.placeholder_replacement,
         )
 
+#region OfAttributeUpgrade
 @dataclass(eq=False)
 class OfAttributeUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfAttribute
@@ -1190,6 +1191,637 @@ class OfAttributeUpgrade(WeaponSuffix):
 
     def matches(self, other: object) -> bool:
         return self.equals(other)
+
+@dataclass(eq=False)
+class OfDivineFavorUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.DivineFavor
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DivineFavor,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfHealingPrayersUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.HealingPrayers
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.HealingPrayers,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfSmitingPrayersUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.SmitingPrayers
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SmitingPrayers,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfProtectionPrayersUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.ProtectionPrayers
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.ProtectionPrayers,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfBloodMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.BloodMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.BloodMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfDeathMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.DeathMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DeathMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfCursesUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.Curses
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Curses,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfIllusionMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.IllusionMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.IllusionMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfDominationMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.DominationMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DominationMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfInspirationMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.InspirationMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.InspirationMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfAirMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.AirMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.AirMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfEarthMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.EarthMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.EarthMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfFireMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.FireMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.FireMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfWaterMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.WaterMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.WaterMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfSpawningPowerUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.SpawningPower
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SpawningPower,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfCommuningUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.Communing
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Communing,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfRestorationMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.RestorationMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.RestorationMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfChannelingMagicUpgrade(OfAttributeUpgrade):
+    attribute = Attribute.ChannelingMagic
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.ChannelingMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+    )
+#endregion OfAttributeUpgrade
 
 @dataclass(eq=False)
 class OfAptitudeUpgrade(WeaponSuffix):
@@ -1626,6 +2258,8 @@ class OfShelterUpgrade(WeaponSuffix):
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), "of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Shelter"])
 
+#region OfSlayingUpgrade
+
 @dataclass(eq=False)
 class OfSlayingUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSlaying
@@ -1664,6 +2298,293 @@ class OfSlayingUpgrade(WeaponSuffix):
                                ["", f"{self.species.name}-Slaying" if self.species != ItemBaneSpecies.Unknown else "Slaying"])
 
 @dataclass(eq=False)
+class OfUndeadSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Undead
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfCharrSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Charr
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTrollsSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Trolls
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfPlantsSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Plants
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfSkeletonsSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Skeletons
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfGiantsSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Giants
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfDwarvesSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Dwarves
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTengusSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Tengus
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfDemonsSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Demons
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfDragonsSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Dragons
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfOgresSlayingUpgrade(OfSlayingUpgrade):
+    species = ItemBaneSpecies.Ogres
+
+    upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.DamagePlusVsSpecies,
+            target="damage_increase",
+            min_value=15,
+            max_value=20,
+            value_getter=property_value(
+                DamagePlusVsSpecies,
+                lambda prop: prop.damage_increase,
+            ),
+        ),
+    )
+#endregion OfSlayingUpgrade
+
+@dataclass(eq=False)
 class OfSpearMasteryUpgrade(OfAttributeUpgrade):
     id = ItemUpgrade.OfSpearMastery
     attribute = Attribute.SpearMastery
@@ -1698,6 +2619,7 @@ class OfSpearMasteryUpgrade(OfAttributeUpgrade):
             ),
         ),
     )
+
 @dataclass(eq=False)
 class OfSwiftnessUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfSwiftness
@@ -1758,6 +2680,7 @@ class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
         ),
     )
     
+#region OfTheProfessionUpgrade
 @dataclass(eq=False)
 class OfTheProfessionUpgrade(WeaponSuffix):
     id = ItemUpgrade.OfTheProfession
@@ -1814,6 +2737,366 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     def matches(self, other: object) -> bool:
         return self.equals(other)
 
+@dataclass(eq=False)
+class OfTheWarriorUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Warrior
+    attribute = Attribute.Strength
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.Strength,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Warrior,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheRangerUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Ranger
+    attribute = Attribute.Expertise
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.Expertise,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Ranger,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheMonkUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Monk
+    attribute = Attribute.DivineFavor
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.DivineFavor,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Monk,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheNecromancerUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Necromancer
+    attribute = Attribute.SoulReaping
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.SoulReaping,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Necromancer,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheMesmerUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Mesmer
+    attribute = Attribute.FastCasting
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.FastCasting,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Mesmer,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheElementalistUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Elementalist
+    attribute = Attribute.EnergyStorage
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.EnergyStorage,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Elementalist,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheAssassinUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Assassin
+    attribute = Attribute.CriticalStrikes
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.CriticalStrikes,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Assassin,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheRitualistUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Ritualist
+    attribute = Attribute.SpawningPower
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.SpawningPower,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Ritualist,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheParagonUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Paragon
+    attribute = Attribute.Leadership
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.Leadership,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Paragon,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class OfTheDervishUpgrade(OfTheProfessionUpgrade):
+    profession = Profession.Dervish
+    attribute = Attribute.Mysticism
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute",
+            fixed_value=Attribute.Mysticism,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="attribute_level",
+            min_value=4,
+            max_value=5,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.OfTheProfession,
+            target="profession",
+            fixed_value=Profession.Dervish,
+            value_getter=property_value(
+                OfTheProfession,
+                lambda prop: prop.profession,
+            ),
+        ),
+    )
+#endregion OfTheProfessionUpgrade
 
 def _camelize_attribute_name(attribute: Attribute) -> str:
     return "".join(part for part in attribute.name.replace("_", " ").split())
@@ -1993,10 +3276,6 @@ def _create_of_slaying_upgrade_specializations() -> list[type[OfSlayingUpgrade]]
         generated_types.append(upgrade_type)
 
     return generated_types
-
-_GENERATED_OF_ATTRIBUTE_UPGRADES = _create_of_attribute_upgrade_specializations()
-_GENERATED_OF_THE_PROFESSION_UPGRADES = _create_of_the_profession_upgrade_specializations()
-_GENERATED_OF_SLAYER_UPGRADES = _create_of_slaying_upgrade_specializations()
 
 @dataclass(eq=False)
 class OfValorUpgrade(WeaponSuffix):
@@ -6592,10 +7871,33 @@ _UPGRADES: list[type[Upgrade]] = [
     OfDefenseUpgrade,
     OfWardingUpgrade,
     OfShelterUpgrade,
-    OfSlayingUpgrade,
+    # OfSlayingUpgrade,
+    OfUndeadSlayingUpgrade,
+    OfCharrSlayingUpgrade,
+    OfTrollsSlayingUpgrade,
+    OfPlantsSlayingUpgrade,
+    OfSkeletonsSlayingUpgrade,
+    OfGiantsSlayingUpgrade,
+    OfDwarvesSlayingUpgrade,
+    OfTengusSlayingUpgrade,
+    OfDemonsSlayingUpgrade,
+    OfDragonsSlayingUpgrade,
+    OfOgresSlayingUpgrade,
+    
     OfFortitudeUpgrade,
     OfEnchantingUpgrade,
-    OfTheProfessionUpgrade,
+    # OfTheProfessionUpgrade,
+    OfTheWarriorUpgrade,
+    OfTheRangerUpgrade,
+    OfTheMonkUpgrade,
+    OfTheNecromancerUpgrade,
+    OfTheMesmerUpgrade,
+    OfTheElementalistUpgrade,
+    OfTheAssassinUpgrade,
+    OfTheRitualistUpgrade,
+    OfTheParagonUpgrade,
+    OfTheDervishUpgrade,
+    
     OfAxeMasteryUpgrade,
     OfMarksmanshipUpgrade,
     OfDaggerMasteryUpgrade,
@@ -6603,7 +7905,27 @@ _UPGRADES: list[type[Upgrade]] = [
     OfScytheMasteryUpgrade,
     OfSpearMasteryUpgrade,
     OfSwordsmanshipUpgrade,
-    OfAttributeUpgrade,
+    
+    # OfAttributeUpgrade,
+    OfDivineFavorUpgrade,
+    OfHealingPrayersUpgrade,
+    OfSmitingPrayersUpgrade,
+    OfProtectionPrayersUpgrade,
+    OfBloodMagicUpgrade,
+    OfDeathMagicUpgrade,
+    OfCursesUpgrade,
+    OfIllusionMagicUpgrade,
+    OfDominationMagicUpgrade,
+    OfInspirationMagicUpgrade,
+    OfAirMagicUpgrade,
+    OfEarthMagicUpgrade,
+    OfFireMagicUpgrade,
+    OfWaterMagicUpgrade,
+    OfSpawningPowerUpgrade,
+    OfCommuningUpgrade,
+    OfRestorationMagicUpgrade,
+    OfChannelingMagicUpgrade,
+    
     OfMasteryUpgrade,
     SwiftUpgrade,
     AdeptUpgrade,
@@ -6899,10 +8221,6 @@ _UPGRADES: list[type[Upgrade]] = [
     AppliesToRune,
     UpgradeRune,
 ]
-
-_UPGRADES.extend(_GENERATED_OF_THE_PROFESSION_UPGRADES)
-_UPGRADES.extend(_GENERATED_OF_ATTRIBUTE_UPGRADES)
-_UPGRADES.extend(_GENERATED_OF_SLAYER_UPGRADES)
 
 _INHERENT_UPGRADES: list[type[Inherent]] = [
     cls
