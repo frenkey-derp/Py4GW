@@ -58,6 +58,8 @@ class ItemModifierParser:
                         self.properties.append(prop)
                     else:
                         self.properties.append(ItemProperty(mod, rarity=self.rarity))
+                else:
+                    self.properties.append(ItemProperty(mod, rarity=self.rarity))
             
             unhandled_modifiers = [mod for mod in self.modifiers if mod not in handled_modifiers]
             inherent_types = sorted(_INHERENT_UPGRADES, key=lambda u: len(u.upgrade_info), reverse=True)

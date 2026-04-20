@@ -20,7 +20,7 @@ class ItemProperty:
         self.__encoded_description = self.create_encoded_description()
         
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"No description available... ({self.__class__.__name__})")
+        return GWStringEncoded(bytes(), f"Unspecified Item Property.\nIdentifier: {self.modifier.identifier.name} (Id: {self.modifier.identifier}) | Arg1: {self.modifier.arg1} | Arg2: {self.modifier.arg2} | Arg: {self.modifier.arg} | Upgrade Id: {self.modifier.upgrade_id}")
     
     def get_text_color(self) -> bytes:
         match self.rarity:
@@ -50,7 +50,12 @@ class ItemProperty:
     @property
     def plain_description(self) -> str:        
         return self.__encoded_description.plain
-    
+
+@dataclass
+class EmptyProperty(ItemProperty):    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"Empty Property.\nIdentifier: {self.modifier.identifier.name} (Id: {self.modifier.identifier}) | Arg1: {self.modifier.arg1} | Arg2: {self.modifier.arg2} | Arg: {self.modifier.arg} | Upgrade Id: {self.modifier.upgrade_id}")
+
 @dataclass
 class ArmorProperty(ItemProperty):
     armor: int
@@ -661,7 +666,7 @@ class UpgradeRuneProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"RUNE\n{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}\n")
+        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}\n")
     
 @dataclass
 class AppliesToRuneProperty(ItemProperty):    
@@ -672,8 +677,9 @@ class AppliesToRuneProperty(ItemProperty):
         return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}")
 
 @dataclass
-class TooltipProperty(ItemProperty):
-    pass
+class TooltipProperty(ItemProperty):    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"Tooltip related property. We don't know yet exactly what this does.\nIdentifier: {self.modifier.identifier.name} (Id: {self.modifier.identifier}) | Arg1: {self.modifier.arg1} | Arg2: {self.modifier.arg2} | Arg: {self.modifier.arg} | Upgrade Id: {self.modifier.upgrade_id}")
 
 @dataclass
 class TargetItemTypeProperty(ItemProperty):

@@ -39,7 +39,8 @@ class ItemUpgradeType(IntEnum):
     AppliesToRune = auto()
     
 class ModifierIdentifier(IntEnum):
-    None_ = 0x0
+    None_ = 0xFFFF
+    Empty = 0x0000
     Armor1 = 0x27b
     Armor2 = 0x23c
     ArmorEnergyRegen = 0x22e
@@ -540,66 +541,66 @@ class ItemUpgradeId(IntEnum):
     OfSuperiorCommand = 0x2603
     OfSuperiorSpearMastery = 0x2503
     
-    UpgradeMinorRune_Warrior = 0x00B3
-    AppliesToMinorRune_Warrior = 0x0167
-    UpgradeMajorRune_Warrior = 0x00B9
-    AppliesToMajorRune_Warrior = 0x0173
-    UpgradeSuperiorRune_Warrior = 0x00BF
-    AppliesToSuperiorRune_Warrior = 0x017F
-    UpgradeMinorRune_Ranger = 0x00B4
-    AppliesToMinorRune_Ranger = 0x0169
-    UpgradeMajorRune_Ranger = 0x00BA
-    AppliesToMajorRune_Ranger = 0x0175
-    UpgradeSuperiorRune_Ranger = 0x00C0
-    AppliesToSuperiorRune_Ranger = 0x0181
-    UpgradeMinorRune_Monk = 0x00B2
-    AppliesToMinorRune_Monk = 0x0165
-    UpgradeMajorRune_Monk = 0x00B8
-    AppliesToMajorRune_Monk = 0x0171
-    UpgradeSuperiorRune_Monk = 0x00BE
-    AppliesToSuperiorRune_Monk = 0x017D
-    UpgradeMinorRune_Necromancer = 0x00B0
-    AppliesToMinorRune_Necromancer = 0x0161
-    UpgradeMajorRune_Necromancer = 0x00B6
-    AppliesToMajorRune_Necromancer = 0x016D
-    UpgradeSuperiorRune_Necromancer = 0x00BC
-    AppliesToSuperiorRune_Necromancer = 0x0179
-    UpgradeMinorRune_Mesmer = 0x00AF
-    AppliesToMinorRune_Mesmer = 0x015F
-    UpgradeMajorRune_Mesmer = 0x00B5
-    AppliesToMajorRune_Mesmer = 0x016B
-    UpgradeSuperiorRune_Mesmer = 0x00BB
-    AppliesToSuperiorRune_Mesmer = 0x0177
-    UpgradeMinorRune_Elementalist = 0x00B1
-    AppliesToMinorRune_Elementalist = 0x0163
-    UpgradeMajorRune_Elementalist = 0x00B7
-    AppliesToMajorRune_Elementalist = 0x016F
-    UpgradeSuperiorRune_Elementalist = 0x00BD
-    AppliesToSuperiorRune_Elementalist = 0x017B
-    UpgradeMinorRune_Assassin = 0x013B
-    AppliesToMinorRune_Assassin = 0x0277
-    UpgradeMajorRune_Assassin = 0x014C
-    AppliesToMajorRune_Assassin = 0x0279
-    UpgradeSuperiorRune_Assassin = 0x013D
-    AppliesToSuperiorRune_Assassin = 0x027B
-    UpgradeMinorRune_Ritualist = 0x013E
-    AppliesToMinorRune_Ritualist = 0x027D
-    UpgradeMajorRune_Ritualist = 0x013F
-    AppliesToMajorRune_Ritualist = 0x027F
-    UpgradeSuperiorRune_Ritualist = 0x0140
-    AppliesToSuperiorRune_Ritualist = 0x0281
-    UpgradeMinorRune_Dervish = 0x0182
-    AppliesToMinorRune_Dervish = 0x0305
-    UpgradeMajorRune_Dervish = 0x0183
-    AppliesToMajorRune_Dervish = 0x0307
-    UpgradeSuperiorRune_Dervish = 0x0184
-    AppliesToSuperiorRune_Dervish = 0x0309
-    UpgradeMinorRune_Paragon = 0x0185
-    AppliesToMinorRune_Paragon = 0x030B
-    UpgradeMajorRune_Paragon = 0x0186
-    AppliesToMajorRune_Paragon = 0x030D
-    UpgradeSuperiorRune_Paragon = 0x0187
-    AppliesToSuperiorRune_Paragon = 0x030F
+    MinorWarriorRune = 0x00B3
+    AppliesToMinorWarriorRune = 0x0167
+    MajorWarriorRune = 0x00B9
+    AppliesToMajorWarriorRune = 0x0173
+    SuperiorWarriorRune = 0x00BF
+    AppliesToSuperiorWarriorRune = 0x017F
+    MinorRangerRune = 0x00B4
+    AppliesToMinorRangerRune = 0x0169
+    MajorRangerRune = 0x00BA
+    AppliesToMajorRangerRune = 0x0175
+    SuperiorRangerRune = 0x00C0
+    AppliesToSuperiorRangerRune = 0x0181
+    MinorMonkRune = 0x00B2
+    AppliesToMinorMonkRune = 0x0165
+    MajorMonkRune = 0x00B8
+    AppliesToMajorMonkRune = 0x0171
+    SuperiorMonkRune = 0x00BE
+    AppliesToSuperiorMonkRune = 0x017D
+    MinorNecromancerRune = 0x00B0
+    AppliesToMinorNecromancerRune = 0x0161
+    MajorNecromancerRune = 0x00B6
+    AppliesToMajorNecromancerRune = 0x016D
+    SuperiorNecromancerRune = 0x00BC
+    AppliesToSuperiorNecromancerRune = 0x0179
+    MinorMesmerRune = 0x00AF
+    AppliesToMinorMesmerRune = 0x015F
+    MajorMesmerRune = 0x00B5
+    AppliesToMajorMesmerRune = 0x016B
+    SuperiorMesmerRune = 0x00BB
+    AppliesToSuperiorMesmerRune = 0x0177
+    MinorElementalistRune = 0x00B1
+    AppliesToMinorElementalistRune = 0x0163
+    MajorElementalistRune = 0x00B7
+    AppliesToMajorElementalistRune = 0x016F
+    SuperiorElementalistRune = 0x00BD
+    AppliesToSuperiorElementalistRune = 0x017B
+    MinorAssassinRune = 0x013B
+    AppliesToMinorAssassinRune = 0x0277
+    MajorAssassinRune = 0x014C
+    AppliesToMajorAssassinRune = 0x0279
+    SuperiorAssassinRune = 0x013D
+    AppliesToSuperiorAssassinRune = 0x027B
+    MinorRitualistRune = 0x013E
+    AppliesToMinorRitualistRune = 0x027D
+    MajorRitualistRune = 0x013F
+    AppliesToMajorRitualistRune = 0x027F
+    SuperiorRitualistRune = 0x0140
+    AppliesToSuperiorRitualistRune = 0x0281
+    MinorDervishRune = 0x0182
+    AppliesToMinorDervishRune = 0x0305
+    MajorDervishRune = 0x0183
+    AppliesToMajorDervishRune = 0x0307
+    SuperiorDervishRune = 0x0184
+    AppliesToSuperiorDervishRune = 0x0309
+    MinorParagonRune = 0x0185
+    AppliesToMinorParagonRune = 0x030B
+    MajorParagonRune = 0x0186
+    AppliesToMajorParagonRune = 0x030D
+    SuperiorParagonRune = 0x0187
+    AppliesToSuperiorParagonRune = 0x030F
 
 class ItemUpgrade(Enum):
     Unknown = ItemUpgradeId.Unknown
@@ -987,12 +988,6 @@ class ItemUpgrade(Enum):
     WarriorRuneOfSuperiorAxeMastery = ItemUpgradeId.OfSuperiorAxeMastery
     WarriorRuneOfSuperiorHammerMastery = ItemUpgradeId.OfSuperiorHammerMastery
     WarriorRuneOfSuperiorSwordsmanship = ItemUpgradeId.OfSuperiorSwordsmanship
-    UpgradeMinorRuneWarrior = ItemUpgradeId.UpgradeMinorRune_Warrior
-    UpgradeMajorRuneWarrior = ItemUpgradeId.UpgradeMajorRune_Warrior
-    UpgradeSuperiorRuneWarrior = ItemUpgradeId.UpgradeSuperiorRune_Warrior
-    AppliesToMinorRuneWarrior = ItemUpgradeId.AppliesToMinorRune_Warrior
-    AppliesToMajorRuneWarrior = ItemUpgradeId.AppliesToMajorRune_Warrior
-    AppliesToSuperiorRuneWarrior = ItemUpgradeId.AppliesToSuperiorRune_Warrior
     
     RangerRuneOfMinorWildernessSurvival = ItemUpgradeId.OfMinorWildernessSurvival
     RangerRuneOfMinorExpertise = ItemUpgradeId.OfMinorExpertise
@@ -1006,12 +1001,6 @@ class ItemUpgrade(Enum):
     RangerRuneOfSuperiorExpertise = ItemUpgradeId.OfSuperiorExpertise
     RangerRuneOfSuperiorBeastMastery = ItemUpgradeId.OfSuperiorBeastMastery
     RangerRuneOfSuperiorMarksmanship = ItemUpgradeId.OfSuperiorMarksmanship
-    UpgradeMinorRuneRanger = ItemUpgradeId.UpgradeMinorRune_Ranger
-    UpgradeMajorRuneRanger = ItemUpgradeId.UpgradeMajorRune_Ranger
-    UpgradeSuperiorRuneRanger = ItemUpgradeId.UpgradeSuperiorRune_Ranger
-    AppliesToMinorRuneRanger = ItemUpgradeId.AppliesToMinorRune_Ranger
-    AppliesToMajorRuneRanger = ItemUpgradeId.AppliesToMajorRune_Ranger
-    AppliesToSuperiorRuneRanger = ItemUpgradeId.AppliesToSuperiorRune_Ranger
     
     MonkRuneOfMinorHealingPrayers = ItemUpgradeId.OfMinorHealingPrayers
     MonkRuneOfMinorSmitingPrayers = ItemUpgradeId.OfMinorSmitingPrayers
@@ -1025,12 +1014,6 @@ class ItemUpgrade(Enum):
     MonkRuneOfSuperiorSmitingPrayers = ItemUpgradeId.OfSuperiorSmitingPrayers
     MonkRuneOfSuperiorProtectionPrayers = ItemUpgradeId.OfSuperiorProtectionPrayers
     MonkRuneOfSuperiorDivineFavor = ItemUpgradeId.OfSuperiorDivineFavor
-    UpgradeMinorRuneMonk = ItemUpgradeId.UpgradeMinorRune_Monk
-    UpgradeMajorRuneMonk = ItemUpgradeId.UpgradeMajorRune_Monk
-    UpgradeSuperiorRuneMonk = ItemUpgradeId.UpgradeSuperiorRune_Monk
-    AppliesToMinorRuneMonk = ItemUpgradeId.AppliesToMinorRune_Monk
-    AppliesToMajorRuneMonk = ItemUpgradeId.AppliesToMajorRune_Monk
-    AppliesToSuperiorRuneMonk = ItemUpgradeId.AppliesToSuperiorRune_Monk
     
     NecromancerRuneOfMinorBloodMagic = ItemUpgradeId.OfMinorBloodMagic
     NecromancerRuneOfMinorDeathMagic = ItemUpgradeId.OfMinorDeathMagic
@@ -1044,12 +1027,6 @@ class ItemUpgrade(Enum):
     NecromancerRuneOfSuperiorDeathMagic = ItemUpgradeId.OfSuperiorDeathMagic
     NecromancerRuneOfSuperiorCurses = ItemUpgradeId.OfSuperiorCurses
     NecromancerRuneOfSuperiorSoulReaping = ItemUpgradeId.OfSuperiorSoulReaping
-    UpgradeMinorRuneNecromancer = ItemUpgradeId.UpgradeMinorRune_Necromancer
-    UpgradeMajorRuneNecromancer = ItemUpgradeId.UpgradeMajorRune_Necromancer
-    UpgradeSuperiorRuneNecromancer = ItemUpgradeId.UpgradeSuperiorRune_Necromancer
-    AppliesToMinorRuneNecromancer = ItemUpgradeId.AppliesToMinorRune_Necromancer
-    AppliesToMajorRuneNecromancer = ItemUpgradeId.AppliesToMajorRune_Necromancer
-    AppliesToSuperiorRuneNecromancer = ItemUpgradeId.AppliesToSuperiorRune_Necromancer
     
     MesmerRuneOfMinorFastCasting = ItemUpgradeId.OfMinorFastCasting
     MesmerRuneOfMinorDominationMagic = ItemUpgradeId.OfMinorDominationMagic
@@ -1063,12 +1040,6 @@ class ItemUpgrade(Enum):
     MesmerRuneOfSuperiorDominationMagic = ItemUpgradeId.OfSuperiorDominationMagic
     MesmerRuneOfSuperiorIllusionMagic = ItemUpgradeId.OfSuperiorIllusionMagic
     MesmerRuneOfSuperiorInspirationMagic = ItemUpgradeId.OfSuperiorInspirationMagic
-    UpgradeMinorRuneMesmer = ItemUpgradeId.UpgradeMinorRune_Mesmer
-    UpgradeMajorRuneMesmer = ItemUpgradeId.UpgradeMajorRune_Mesmer
-    UpgradeSuperiorRuneMesmer = ItemUpgradeId.UpgradeSuperiorRune_Mesmer
-    AppliesToMinorRuneMesmer = ItemUpgradeId.AppliesToMinorRune_Mesmer
-    AppliesToMajorRuneMesmer = ItemUpgradeId.AppliesToMajorRune_Mesmer
-    AppliesToSuperiorRuneMesmer = ItemUpgradeId.AppliesToSuperiorRune_Mesmer
     
     ElementalistRuneOfMinorEnergyStorage = ItemUpgradeId.OfMinorEnergyStorage
     ElementalistRuneOfMinorFireMagic = ItemUpgradeId.OfMinorFireMagic
@@ -1085,12 +1056,6 @@ class ItemUpgrade(Enum):
     ElementalistRuneOfSuperiorAirMagic = ItemUpgradeId.OfSuperiorAirMagic
     ElementalistRuneOfSuperiorEarthMagic = ItemUpgradeId.OfSuperiorEarthMagic
     ElementalistRuneOfSuperiorWaterMagic = ItemUpgradeId.OfSuperiorWaterMagic
-    UpgradeMinorRuneElementalist = ItemUpgradeId.UpgradeMinorRune_Elementalist
-    UpgradeMajorRuneElementalist = ItemUpgradeId.UpgradeMajorRune_Elementalist
-    UpgradeSuperiorRuneElementalist = ItemUpgradeId.UpgradeSuperiorRune_Elementalist
-    AppliesToMinorRuneElementalist = ItemUpgradeId.AppliesToMinorRune_Elementalist
-    AppliesToMajorRuneElementalist = ItemUpgradeId.AppliesToMajorRune_Elementalist
-    AppliesToSuperiorRuneElementalist = ItemUpgradeId.AppliesToSuperiorRune_Elementalist
     
     AssassinRuneOfMinorCriticalStrikes = ItemUpgradeId.OfMinorCriticalStrikes
     AssassinRuneOfMinorDaggerMastery = ItemUpgradeId.OfMinorDaggerMastery
@@ -1104,12 +1069,6 @@ class ItemUpgrade(Enum):
     AssassinRuneOfSuperiorDaggerMastery = ItemUpgradeId.OfSuperiorDaggerMastery
     AssassinRuneOfSuperiorDeadlyArts = ItemUpgradeId.OfSuperiorDeadlyArts
     AssassinRuneOfSuperiorShadowArts = ItemUpgradeId.OfSuperiorShadowArts
-    UpgradeMinorRuneAssassin = ItemUpgradeId.UpgradeMinorRune_Assassin
-    UpgradeMajorRuneAssassin = ItemUpgradeId.UpgradeMajorRune_Assassin
-    UpgradeSuperiorRuneAssassin = ItemUpgradeId.UpgradeSuperiorRune_Assassin
-    AppliesToMinorRuneAssassin = ItemUpgradeId.AppliesToMinorRune_Assassin
-    AppliesToMajorRuneAssassin = ItemUpgradeId.AppliesToMajorRune_Assassin
-    AppliesToSuperiorRuneAssassin = ItemUpgradeId.AppliesToSuperiorRune_Assassin
     
     RitualistRuneOfMinorChannelingMagic = ItemUpgradeId.OfMinorChannelingMagic
     RitualistRuneOfMinorRestorationMagic = ItemUpgradeId.OfMinorRestorationMagic
@@ -1123,12 +1082,6 @@ class ItemUpgrade(Enum):
     RitualistRuneOfSuperiorRestorationMagic = ItemUpgradeId.OfSuperiorRestorationMagic
     RitualistRuneOfSuperiorCommuning = ItemUpgradeId.OfSuperiorCommuning
     RitualistRuneOfSuperiorSpawningPower = ItemUpgradeId.OfSuperiorSpawningPower
-    UpgradeMinorRuneRitualist = ItemUpgradeId.UpgradeMinorRune_Ritualist
-    UpgradeMajorRuneRitualist = ItemUpgradeId.UpgradeMajorRune_Ritualist
-    UpgradeSuperiorRuneRitualist = ItemUpgradeId.UpgradeSuperiorRune_Ritualist
-    AppliesToMinorRuneRitualist = ItemUpgradeId.AppliesToMinorRune_Ritualist
-    AppliesToMajorRuneRitualist = ItemUpgradeId.AppliesToMajorRune_Ritualist
-    AppliesToSuperiorRuneRitualist = ItemUpgradeId.AppliesToSuperiorRune_Ritualist
     
     DervishRuneOfMinorMysticism = ItemUpgradeId.OfMinorMysticism
     DervishRuneOfMinorEarthPrayers = ItemUpgradeId.OfMinorEarthPrayers
@@ -1142,12 +1095,6 @@ class ItemUpgrade(Enum):
     DervishRuneOfSuperiorEarthPrayers = ItemUpgradeId.OfSuperiorEarthPrayers
     DervishRuneOfSuperiorScytheMastery = ItemUpgradeId.OfSuperiorScytheMastery
     DervishRuneOfSuperiorWindPrayers = ItemUpgradeId.OfSuperiorWindPrayers
-    UpgradeMinorRuneDervish = ItemUpgradeId.UpgradeMinorRune_Dervish
-    UpgradeMajorRuneDervish = ItemUpgradeId.UpgradeMajorRune_Dervish
-    UpgradeSuperiorRuneDervish = ItemUpgradeId.UpgradeSuperiorRune_Dervish
-    AppliesToMinorRuneDervish = ItemUpgradeId.AppliesToMinorRune_Dervish
-    AppliesToMajorRuneDervish = ItemUpgradeId.AppliesToMajorRune_Dervish
-    AppliesToSuperiorRuneDervish = ItemUpgradeId.AppliesToSuperiorRune_Dervish
     
     ParagonRuneOfMinorLeadership = ItemUpgradeId.OfMinorLeadership
     ParagonRuneOfMinorMotivation = ItemUpgradeId.OfMinorMotivation
@@ -1161,12 +1108,90 @@ class ItemUpgrade(Enum):
     ParagonRuneOfSuperiorMotivation = ItemUpgradeId.OfSuperiorMotivation
     ParagonRuneOfSuperiorCommand = ItemUpgradeId.OfSuperiorCommand
     ParagonRuneOfSuperiorSpearMastery = ItemUpgradeId.OfSuperiorSpearMastery
-    UpgradeMinorRuneParagon = ItemUpgradeId.UpgradeMinorRune_Paragon
-    UpgradeMajorRuneParagon = ItemUpgradeId.UpgradeMajorRune_Paragon
-    UpgradeSuperiorRuneParagon = ItemUpgradeId.UpgradeSuperiorRune_Paragon
-    AppliesToMinorRuneParagon = ItemUpgradeId.AppliesToMinorRune_Paragon
-    AppliesToMajorRuneParagon = ItemUpgradeId.AppliesToMajorRune_Paragon
-    AppliesToSuperiorRuneParagon = ItemUpgradeId.AppliesToSuperiorRune_Paragon
+    
+    UpgradeRune = [
+        ItemUpgradeId.MinorWarriorRune,
+        ItemUpgradeId.MajorWarriorRune,
+        ItemUpgradeId.SuperiorWarriorRune,
+        
+        ItemUpgradeId.MinorRangerRune,
+        ItemUpgradeId.MajorRangerRune,
+        ItemUpgradeId.SuperiorRangerRune,
+        
+        ItemUpgradeId.MinorMonkRune,
+        ItemUpgradeId.MajorMonkRune,
+        ItemUpgradeId.SuperiorMonkRune,
+        
+        ItemUpgradeId.MinorNecromancerRune,
+        ItemUpgradeId.MajorNecromancerRune,
+        ItemUpgradeId.SuperiorNecromancerRune,
+        
+        ItemUpgradeId.MinorMesmerRune,
+        ItemUpgradeId.MajorMesmerRune,
+        ItemUpgradeId.SuperiorMesmerRune,
+        
+        ItemUpgradeId.MinorElementalistRune,
+        ItemUpgradeId.MajorElementalistRune,
+        ItemUpgradeId.SuperiorElementalistRune,
+        
+        ItemUpgradeId.MinorAssassinRune,
+        ItemUpgradeId.MajorAssassinRune,
+        ItemUpgradeId.SuperiorAssassinRune,
+        
+        ItemUpgradeId.MinorRitualistRune,
+        ItemUpgradeId.MajorRitualistRune,
+        ItemUpgradeId.SuperiorRitualistRune,
+        
+        ItemUpgradeId.MinorDervishRune,
+        ItemUpgradeId.MajorDervishRune,
+        ItemUpgradeId.SuperiorDervishRune,
+
+        ItemUpgradeId.MinorParagonRune,
+        ItemUpgradeId.MajorParagonRune,
+        ItemUpgradeId.SuperiorParagonRune,
+    ]
+    
+    AppliesToRune = [
+        ItemUpgradeId.AppliesToMinorWarriorRune,
+        ItemUpgradeId.AppliesToMajorWarriorRune,
+        ItemUpgradeId.AppliesToSuperiorWarriorRune,
+        
+        ItemUpgradeId.AppliesToMinorRangerRune,
+        ItemUpgradeId.AppliesToMajorRangerRune,
+        ItemUpgradeId.AppliesToSuperiorRangerRune,
+        
+        ItemUpgradeId.AppliesToMinorMonkRune,
+        ItemUpgradeId.AppliesToMajorMonkRune,
+        ItemUpgradeId.AppliesToSuperiorMonkRune,
+        
+        ItemUpgradeId.AppliesToMinorNecromancerRune,
+        ItemUpgradeId.AppliesToMajorNecromancerRune,
+        ItemUpgradeId.AppliesToSuperiorNecromancerRune,
+        
+        ItemUpgradeId.AppliesToMinorMesmerRune,
+        ItemUpgradeId.AppliesToMajorMesmerRune,
+        ItemUpgradeId.AppliesToSuperiorMesmerRune,
+        
+        ItemUpgradeId.AppliesToMinorElementalistRune,
+        ItemUpgradeId.AppliesToMajorElementalistRune,
+        ItemUpgradeId.AppliesToSuperiorElementalistRune,
+        
+        ItemUpgradeId.AppliesToMinorAssassinRune,
+        ItemUpgradeId.AppliesToMajorAssassinRune,
+        ItemUpgradeId.AppliesToSuperiorAssassinRune,
+        
+        ItemUpgradeId.AppliesToMinorRitualistRune,
+        ItemUpgradeId.AppliesToMajorRitualistRune,
+        ItemUpgradeId.AppliesToSuperiorRitualistRune,
+        
+        ItemUpgradeId.AppliesToMinorDervishRune,
+        ItemUpgradeId.AppliesToMajorDervishRune,
+        ItemUpgradeId.AppliesToSuperiorDervishRune,
+
+        ItemUpgradeId.AppliesToMinorParagonRune,
+        ItemUpgradeId.AppliesToMajorParagonRune,
+        ItemUpgradeId.AppliesToSuperiorParagonRune,
+    ]
         
     @property
     def item_type_id_map(self) -> dict[ItemType, "ItemUpgradeId"]:
@@ -1176,6 +1201,9 @@ class ItemUpgrade(Enum):
     def upgrade_ids(self) -> tuple["ItemUpgradeId", ...]:
         if isinstance(self.value, dict):
             return tuple(self.value.values())
+        
+        if isinstance(self.value, list):
+            return tuple(self.value)
         
         return (self.value,)
 
@@ -1190,6 +1218,9 @@ class ItemUpgrade(Enum):
     def has_id(self, upgrade_id: "ItemUpgradeId") -> bool:
         if isinstance(self.value, dict):
             return upgrade_id in self.value.values()
+
+        if isinstance(self.value, list):
+            return upgrade_id in self.value
         
         return upgrade_id == self.value
     

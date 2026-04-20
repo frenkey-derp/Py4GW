@@ -256,9 +256,16 @@ class Upgrade:
     @classmethod
     def _post_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         return None
+
+    @classmethod
+    def _can_compose(cls, mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> bool:
+        return True
         
     @classmethod
     def compose_from_modifiers(cls, mod : DecodedModifier, remaining_modifiers: list[DecodedModifier], all_modifiers: list[DecodedModifier], rarity: Rarity = Rarity.Blue) -> Optional["Upgrade"]:        
+        if not cls._can_compose(mod, all_modifiers, remaining_modifiers):
+            return None
+
         upgrade = cls()
         upgrade.upgrade_id = mod.upgrade_id
         upgrade.rarity = rarity
@@ -3861,9 +3868,19 @@ class Rune(Upgrade):
 class AttributeRune(Rune):
     attribute: Attribute = Attribute.None_
     attribute_level: int = 0
-    upgrade_rune_id : ItemUpgrade = ItemUpgrade.Unknown
-    applies_to_rune_id : ItemUpgrade = ItemUpgrade.Unknown
+    upgrade_rune_id : ItemUpgradeId = ItemUpgradeId.Unknown
+    applies_to_rune_id : ItemUpgradeId = ItemUpgradeId.Unknown
 
+    @classmethod
+    def _can_compose(cls, mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> bool:
+        modifier_index = all_modifiers.index(mod)
+        if modifier_index <= 0:
+            return False
+
+        previous_mod = all_modifiers[modifier_index - 2] if modifier_index >= 2 else None
+        
+        return previous_mod is not None and previous_mod.upgrade_id in (cls.applies_to_rune_id, cls.upgrade_rune_id) 
+    
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         attribute_rune = cast("AttributeRune", upgrade)
@@ -3932,11 +3949,25 @@ class SuperiorAttributeRune(AttributeRune):
     
 @dataclass(eq=False)
 class AppliesToRune(Upgrade):
+    id = ItemUpgrade.AppliesToRune
     mod_type = ItemUpgradeType.AppliesToRune
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"Indicates the very next property specifies a {_humanize_identifier(self.modifier.upgrade_id.name) if self.modifier else 'rune'}.")
+    
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"Applies To Rune ({_humanize_identifier(self.modifier.upgrade_id.name) if self.modifier else 'No upgrade present'})")
 
 @dataclass(eq=False)
 class UpgradeRune(Upgrade):
+    id = ItemUpgrade.UpgradeRune
     mod_type = ItemUpgradeType.UpgradeRune
+    
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"Indicates the very next property specifies a {_humanize_identifier(self.modifier.upgrade_id.name) if self.modifier else 'rune'}.")
+    
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.modifier.upgrade_id.name) if self.modifier else 'Upgrade Rune'}")
 
 #region No Profession
 
@@ -4323,25 +4354,25 @@ class SentinelsInsignia(Insignia):
 @dataclass(eq=False)
 class MinorWarriorRune(MinorAttributeRune):
     profession = Profession.Warrior
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneWarrior
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneWarrior
+    upgrade_rune_id = ItemUpgradeId.MinorWarriorRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorWarriorRune
 
 @dataclass(eq=False)
 class MajorWarriorRune(MajorAttributeRune):
     profession = Profession.Warrior
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneWarrior
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneWarrior
+    upgrade_rune_id = ItemUpgradeId.MajorWarriorRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorWarriorRune
 
 @dataclass(eq=False)
 class SuperiorWarriorRune(SuperiorAttributeRune):
     profession = Profession.Warrior
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneWarrior
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneWarrior
+    upgrade_rune_id = ItemUpgradeId.SuperiorWarriorRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorWarriorRune
 
 @dataclass(eq=False)
 class WarriorRuneOfMinorAbsorption(Rune):
     id = ItemUpgrade.WarriorRuneOfMinorAbsorption
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneWarrior
+    upgrade_rune_id = ItemUpgradeId.MinorWarriorRune
     profession = Profession.Warrior
     rarity = Rarity.Blue    
     
@@ -4472,7 +4503,7 @@ class WarriorRuneOfMajorSwordsmanship(MajorWarriorRune):
 @dataclass(eq=False)
 class WarriorRuneOfSuperiorAbsorption(Rune):
     id = ItemUpgrade.WarriorRuneOfSuperiorAbsorption
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneWarrior
+    upgrade_rune_id = ItemUpgradeId.SuperiorWarriorRune
     profession = Profession.Warrior
     rarity = Rarity.Gold
 
@@ -4608,20 +4639,20 @@ class BeastmastersInsignia(Insignia):
 @dataclass(eq=False)
 class MinorRangerRune(MinorAttributeRune):
     profession = Profession.Ranger
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneRanger
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneRanger
+    upgrade_rune_id = ItemUpgradeId.MinorRangerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorRangerRune
 
 @dataclass(eq=False)
 class MajorRangerRune(MajorAttributeRune):
     profession = Profession.Ranger
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneRanger
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneRanger
+    upgrade_rune_id = ItemUpgradeId.MajorRangerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorRangerRune
 
 @dataclass(eq=False)
 class SuperiorRangerRune(SuperiorAttributeRune):
     profession = Profession.Ranger
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneRanger
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneRanger
+    upgrade_rune_id = ItemUpgradeId.SuperiorRangerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorRangerRune
 
 @dataclass(eq=False)
 class RangerRuneOfMinorWildernessSurvival(MinorRangerRune):
@@ -4773,20 +4804,20 @@ class AnchoritesInsignia(Insignia):
 @dataclass(eq=False)
 class MinorMonkRune(MinorAttributeRune):
     profession = Profession.Monk
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneMonk
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneMonk
+    upgrade_rune_id = ItemUpgradeId.MinorMonkRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorMonkRune
 
 @dataclass(eq=False)
 class MajorMonkRune(MajorAttributeRune):
     profession = Profession.Monk
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneMonk
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneMonk
+    upgrade_rune_id = ItemUpgradeId.MajorMonkRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorMonkRune
 
 @dataclass(eq=False)
 class SuperiorMonkRune(SuperiorAttributeRune):
     profession = Profession.Monk
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneMonk
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneMonk
+    upgrade_rune_id = ItemUpgradeId.SuperiorMonkRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorMonkRune
 
 
 @dataclass(eq=False)
@@ -4977,20 +5008,20 @@ class UndertakersInsignia(Insignia):
 @dataclass(eq=False)
 class MinorNecromancerRune(MinorAttributeRune):
     profession = Profession.Necromancer
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneNecromancer
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneNecromancer
+    upgrade_rune_id = ItemUpgradeId.MinorNecromancerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorNecromancerRune
 
 @dataclass(eq=False)
 class MajorNecromancerRune(MajorAttributeRune):
     profession = Profession.Necromancer
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneNecromancer
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneNecromancer
+    upgrade_rune_id = ItemUpgradeId.MajorNecromancerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorNecromancerRune
 
 @dataclass(eq=False)
 class SuperiorNecromancerRune(SuperiorAttributeRune):
     profession = Profession.Necromancer
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneNecromancer
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneNecromancer
+    upgrade_rune_id = ItemUpgradeId.SuperiorNecromancerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorNecromancerRune
     
 @dataclass(eq=False)
 class NecromancerRuneOfMinorBloodMagic(MinorNecromancerRune):
@@ -5142,20 +5173,20 @@ class ProdigysInsignia(Insignia):
 @dataclass(eq=False)
 class MinorMesmerRune(MinorAttributeRune):
     profession = Profession.Mesmer
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneMesmer
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneMesmer
+    upgrade_rune_id = ItemUpgradeId.MinorMesmerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorMesmerRune
 
 @dataclass(eq=False)
 class MajorMesmerRune(MajorAttributeRune):
     profession = Profession.Mesmer
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneMesmer
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneMesmer
+    upgrade_rune_id = ItemUpgradeId.MajorMesmerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorMesmerRune
 
 @dataclass(eq=False)
 class SuperiorMesmerRune(SuperiorAttributeRune):
     profession = Profession.Mesmer
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneMesmer
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneMesmer
+    upgrade_rune_id = ItemUpgradeId.SuperiorMesmerRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorMesmerRune
 
 @dataclass(eq=False)
 class MesmerRuneOfMinorFastCasting(MinorMesmerRune):
@@ -5467,20 +5498,20 @@ class PrismaticInsignia(Insignia):
 @dataclass(eq=False)
 class MinorElementalistRune(MinorAttributeRune):
     profession = Profession.Elementalist
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneElementalist
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneElementalist
+    upgrade_rune_id = ItemUpgradeId.MinorElementalistRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorElementalistRune
 
 @dataclass(eq=False)
 class MajorElementalistRune(MajorAttributeRune):
     profession = Profession.Elementalist
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneElementalist
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneElementalist
+    upgrade_rune_id = ItemUpgradeId.MajorElementalistRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorElementalistRune
 
 @dataclass(eq=False)
 class SuperiorElementalistRune(SuperiorAttributeRune):
     profession = Profession.Elementalist
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneElementalist
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneElementalist
+    upgrade_rune_id = ItemUpgradeId.SuperiorElementalistRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorElementalistRune
 
 @dataclass(eq=False)
 class ElementalistRuneOfMinorEnergyStorage(MinorElementalistRune):
@@ -5670,20 +5701,20 @@ class NightstalkersInsignia(Insignia):
 @dataclass(eq=False)
 class MinorAssassinRune(MinorAttributeRune):
     profession = Profession.Assassin
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneAssassin
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneAssassin
+    upgrade_rune_id = ItemUpgradeId.MinorAssassinRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorAssassinRune
 
 @dataclass(eq=False)
 class MajorAssassinRune(MajorAttributeRune):
     profession = Profession.Assassin
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneAssassin
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneAssassin
+    upgrade_rune_id = ItemUpgradeId.MajorAssassinRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorAssassinRune
 
 @dataclass(eq=False)
 class SuperiorAssassinRune(SuperiorAttributeRune):
     profession = Profession.Assassin
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneAssassin
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneAssassin
+    upgrade_rune_id = ItemUpgradeId.SuperiorAssassinRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorAssassinRune
 
 
 @dataclass(eq=False)
@@ -5835,20 +5866,20 @@ class MysticsInsignia(Insignia):
 @dataclass(eq=False)
 class MinorRitualistRune(MinorAttributeRune):
     profession = Profession.Ritualist
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneRitualist
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneRitualist
+    upgrade_rune_id = ItemUpgradeId.MinorRitualistRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorRitualistRune
 
 @dataclass(eq=False)
 class MajorRitualistRune(MajorAttributeRune):
     profession = Profession.Ritualist
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneRitualist
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneRitualist
+    upgrade_rune_id = ItemUpgradeId.MajorRitualistRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorRitualistRune
 
 @dataclass(eq=False)
 class SuperiorRitualistRune(SuperiorAttributeRune):
     profession = Profession.Ritualist
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneRitualist
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneRitualist
+    upgrade_rune_id = ItemUpgradeId.SuperiorRitualistRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorRitualistRune
     
 @dataclass(eq=False)
 class RitualistRuneOfMinorChannelingMagic(MinorRitualistRune):
@@ -5986,20 +6017,20 @@ class ForsakenInsignia(Insignia):
 @dataclass(eq=False)
 class MinorDervishRune(MinorAttributeRune):
     profession = Profession.Dervish
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneDervish
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneDervish
+    upgrade_rune_id = ItemUpgradeId.MinorDervishRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorDervishRune
 
 @dataclass(eq=False)
 class MajorDervishRune(MajorAttributeRune):
     profession = Profession.Dervish
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneDervish
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneDervish
+    upgrade_rune_id = ItemUpgradeId.MajorDervishRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorDervishRune
 
 @dataclass(eq=False)
 class SuperiorDervishRune(SuperiorAttributeRune):
     profession = Profession.Dervish
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneDervish
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneDervish
+    upgrade_rune_id = ItemUpgradeId.SuperiorDervishRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorDervishRune
     
 @dataclass(eq=False)
 class DervishRuneOfMinorMysticism(MinorDervishRune):
@@ -6127,20 +6158,20 @@ class CenturionsInsignia(Insignia):
 @dataclass(eq=False)
 class MinorParagonRune(MinorAttributeRune):
     profession = Profession.Paragon
-    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneParagon
-    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneParagon
+    upgrade_rune_id = ItemUpgradeId.MinorParagonRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMinorParagonRune
 
 @dataclass(eq=False)
 class MajorParagonRune(MajorAttributeRune):
     profession = Profession.Paragon
-    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneParagon
-    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneParagon
+    upgrade_rune_id = ItemUpgradeId.MajorParagonRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToMajorParagonRune
 
 @dataclass(eq=False)
 class SuperiorParagonRune(SuperiorAttributeRune):
     profession = Profession.Paragon
-    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneParagon
-    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneParagon
+    upgrade_rune_id = ItemUpgradeId.SuperiorParagonRune
+    applies_to_rune_id = ItemUpgradeId.AppliesToSuperiorParagonRune
     
 @dataclass(eq=False)
 class ParagonRuneOfMinorLeadership(MinorParagonRune):
@@ -6577,6 +6608,9 @@ _UPGRADES: list[type[Upgrade]] = [
     RuneOfClarity,
     RuneOfPurity,
     RuneOfSuperiorVigor,
+    
+    AppliesToRune,
+    UpgradeRune,
 ]
 
 _INHERENT_UPGRADES: list[type[Inherent]] = [
