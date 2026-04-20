@@ -242,8 +242,9 @@ class Upgrade:
         for field_info in fields(self):
             if not field_info.init:
                 continue
-            if field_info.name in cls.__dict__:
-                object.__setattr__(self, field_info.name, cls.__dict__[field_info.name])
+            field_value = getattr(cls, field_info.name, MISSING)
+            if field_value is not MISSING:
+                object.__setattr__(self, field_info.name, field_value)
         
         self._refresh_encoded_strings()
 
@@ -474,13 +475,17 @@ class Upgrade:
             case Rarity.Green:
                 return GWEncoded.ITEM_UNIQUE
             
+    def create_upgrade_name(self, item_type: ItemType) -> GWStringEncoded:
+        encoded_name = self.create_encoded_name()
+        return encoded_name
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(bytes(), f"{_humanize_identifier(self.__class__.__name__)} (no encoded name)")
 
     def create_encoded_description(self) -> GWStringEncoded:
         return GWStringEncoded(bytes(), f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
     
-    def _refresh_encoded_strings(self) -> None:
+    def _refresh_encoded_strings(self) -> None:        
         self.__encoded_name = self.create_encoded_name()
         self.__encoded_description = self.create_encoded_description()
 
@@ -550,8 +555,8 @@ class WeaponUpgrade(Upgrade):
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         weapon_upgrade = cast(WeaponUpgrade, upgrade)
-        weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)        
-         
+        weapon_upgrade.target_item_type = cls.id.get_item_type(weapon_upgrade.upgrade_id)      
+             
 #region Prefixes
 
 @dataclass(eq=False)
@@ -606,6 +611,10 @@ class AdeptUpgrade(WeaponPrefix):
         ),
     )
     
+    def create_upgrade_name(self, item_type):        
+        encoded_upgrade_component = (GWEncoded.WEAPON_PREFIXES.get(item_type) if self.mod_type == ItemUpgradeType.Prefix else GWEncoded.WEAPON_SUFFIXES.get(item_type)) or bytes()
+        return GWStringEncoded(bytes([*self.get_text_color(True), *encoded_upgrade_component, 0x1, 0x81, 0x94, 0x5D, 0x1, 0x0]), f"Adept") if encoded_upgrade_component else self.create_encoded_name()
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x94, 0x5D, 0x1, 0x0]), f"Adept")
     
@@ -633,6 +642,10 @@ class BarbedUpgrade(IncreaseConditionDurationUpgrade):
         ),
     )
     
+    def create_upgrade_name(self, item_type):
+        encoded_upgrade_component = (GWEncoded.WEAPON_PREFIXES.get(item_type) if self.mod_type == ItemUpgradeType.Prefix else GWEncoded.WEAPON_SUFFIXES.get(item_type)) or bytes()
+        return GWStringEncoded(bytes([*self.get_text_color(True), *encoded_upgrade_component, 0x69, 0xA, 0x1, 0x0]), f"Barbed") if encoded_upgrade_component else self.create_encoded_name()
+    
     def create_encoded_name(self) -> GWStringEncoded:
          return GWStringEncoded(self.get_text_color(True) + bytes([0x69, 0xA, 0x1, 0x0]), f"Barbed")
 
@@ -653,6 +666,10 @@ class CripplingUpgrade(IncreaseConditionDurationUpgrade):
         ),
     )
 
+    def create_upgrade_name(self, item_type):
+        encoded_upgrade_component = (GWEncoded.WEAPON_PREFIXES.get(item_type) if self.mod_type == ItemUpgradeType.Prefix else GWEncoded.WEAPON_SUFFIXES.get(item_type)) or bytes()
+        return GWStringEncoded(bytes([*self.get_text_color(True), *encoded_upgrade_component, 0x6A, 0xA, 0x1, 0x0]), f"Crippling") if encoded_upgrade_component else self.create_encoded_name()
+    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6A, 0xA, 0x1, 0x0]), f"Crippling")
         
@@ -673,6 +690,10 @@ class CruelUpgrade(IncreaseConditionDurationUpgrade):
         ),
     )
 
+    
+    def create_upgrade_name(self, item_type):
+        encoded_upgrade_component = (GWEncoded.WEAPON_PREFIXES.get(item_type) if self.mod_type == ItemUpgradeType.Prefix else GWEncoded.WEAPON_SUFFIXES.get(item_type)) or bytes()
+        return GWStringEncoded(bytes([*self.get_text_color(True), *encoded_upgrade_component, 0x6B, 0xA, 0x1, 0x0]), f"Cruel") if encoded_upgrade_component else self.create_encoded_name()
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6B, 0xA, 0x1, 0x0]), f"Cruel")
@@ -1328,6 +1349,11 @@ class OfFortitudeUpgrade(WeaponSuffix):
         ),
     )
 
+    
+    def create_upgrade_name(self, item_type):
+        encoded_upgrade_component = (GWEncoded.WEAPON_PREFIXES.get(item_type) if self.mod_type == ItemUpgradeType.Prefix else GWEncoded.WEAPON_SUFFIXES.get(item_type)) or bytes()
+        return GWStringEncoded(bytes([*self.get_text_color(True), *encoded_upgrade_component, 0x79, 0xA, 0x1, 0x0]), f"of Fortitude") if encoded_upgrade_component else self.create_encoded_name()
+    
     def create_encoded_description(self) -> GWStringEncoded:
         return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
 
@@ -1823,7 +1849,7 @@ class ArmorVsDamageTypeInscription(OffhandOrShieldInscription):
         clause_bytes = GWEncoded.VS_DAMAGE_BYTES.get(self.damage_type)
         if clause_bytes:
             return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_bytes, f"(vs. {self.damage_type.name} damage)"), f"(vs. {self.damage_type.name} damage)")
-        return GWStringEncoded(base.encoded, f"{base.fallback} (vs. {self.damage_type.name} damage)")
+        return GWStringEncoded(bytes(), f"{base.fallback} (vs. {self.damage_type.name} damage)")
 
 class EquippableItemInscription(Inscription):
     target_item_type = ItemType.EquippableItem
@@ -2417,7 +2443,10 @@ class ToThePain(WeaponInscription):
     def create_encoded_description(self) -> GWStringEncoded:
         parts = [
             GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"),
-            bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, *GWEncoded.ARMOR_BYTES, 0x1, 0x1, self.armor, 0x1, 0x1, 0x0, *GWEncoded.WHILE_ATTACKING_BYTES])
+            GWEncoded._encoded(
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, *GWEncoded.ARMOR_BYTES, 0x1, 0x1, self.armor, 0x1, 0x1, 0x0, *GWEncoded.WHILE_ATTACKING_BYTES]),
+                f"Armor -{self.armor} (while attacking)",
+            ),
         ]
         
         return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
@@ -3862,16 +3891,18 @@ class EnergyPlusEnergyRegenerationMinusUpgrade(Inherent):
 
 #region Armor Upgrades
 @dataclass(eq=False)
-class Insignia(Upgrade):
-    mod_type = ItemUpgradeType.Prefix
+class ArmorUpgrade(Upgrade):
     profession: Profession = Profession._None
     rarity = Rarity.Blue
+    pass
     
 @dataclass(eq=False)
-class Rune(Upgrade):    
+class Insignia(ArmorUpgrade):
+    mod_type = ItemUpgradeType.Prefix
+    
+@dataclass(eq=False)
+class Rune(ArmorUpgrade):    
     mod_type = ItemUpgradeType.Suffix
-    profession: Profession = Profession._None  
-    rarity = Rarity.Blue  
 
 @dataclass(eq=False)
 class AttributeRune(Rune):

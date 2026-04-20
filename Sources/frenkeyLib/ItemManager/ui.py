@@ -9,14 +9,18 @@ import PyImGui
 
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ITEM_TYPE_META_TYPES, ItemType
+from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType, ModifierIdentifier
 from Py4GWCoreLib.item_mods_src.upgrades import (
     EnumInstruction,
     FixedValueInstruction,
+    Inscription,
+    Insignia,
     RangeInstruction,
+    Rune,
     SelectInstruction,
     _INHERENT_UPGRADES,
     AppliesToRune,
@@ -25,6 +29,9 @@ from Py4GWCoreLib.item_mods_src.upgrades import (
     _UPGRADES,
     UpgradeRune,
 )
+from Py4GWCoreLib.native_src.internals import string_table
+from Py4GWCoreLib.native_src.internals.encoded_strings import GWEncoded
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.DepositConfig import DepositConfig
@@ -58,6 +65,7 @@ class UI:
     ITEM_TYPE_TEXTURES = {
         
     }
+    UpgradeTexture = NamedTuple("UpgradeTextures", [("prefix", str), ("suffix", str)])
     
     def __init__(self, module_config: Config):
         self.module_config = module_config        
@@ -106,6 +114,57 @@ class UI:
         self.context_menu_id : str | None = None
         self.context_menu_rule : Rule | None = None
         self.context_menu_config : ConfigInfo | None = None
+        
+        self.profession : Profession = Profession._None
+        self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
+        self.texture_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures")
+        
+        self.weapon_upgrade_textures : dict[ItemType, UI.UpgradeTexture] = {
+                ItemType.Axe : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "00893-Axe_Haft.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "00905-Axe_Grip.png"),
+                ),
+                ItemType.Bow : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "00894-Bow_String.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "00906-Bow_Grip.png"),
+                ),
+                ItemType.Daggers : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "06323-Dagger_Tang.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "06331-Dagger_Handle.png"),
+                ),
+                ItemType.Hammer : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "00895-Hammer_Haft.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "00907-Hammer_Grip.png"),
+                ),
+                ItemType.Offhand : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "missing_texture.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "15551-Focus_Core.png"),
+                ),
+                ItemType.Scythe : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "15543-Scythe_Snathe.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "15553-Scythe_Grip.png"),
+                ),
+                ItemType.Shield : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "missing_texture.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "15554-Shield_Handle.png"),
+                ),
+                ItemType.Spear : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "15544-Spearhead.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "15555-Spear_Grip.png"),
+                ),
+                ItemType.Staff : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "00896-Staff_Head.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "00908-Staff_Wrapping.png"),
+                ),
+                ItemType.Sword : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "Item Models", "00897-Sword_Hilt.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "00909-Sword_Pommel.png"),
+                ),
+                ItemType.Wand : UI.UpgradeTexture(
+                    prefix=os.path.join(self.texture_path, "missing_texture.png"),
+                    suffix=os.path.join(self.texture_path, "Item Models", "15552-Wand_Wrapping.png"),
+                ),
+            }
 
     @staticmethod
     def _get_concrete_item_types() -> list[ItemType]:
@@ -153,6 +212,21 @@ class UI:
 
         return self._humanize_name(value.name)
 
+    @staticmethod
+    def GetRarityColor(rarity) -> Color:
+        rarity_colors = {
+            Rarity.White: Color(255, 255, 255, 255),
+            Rarity.Blue: Color(153, 238, 255, 255),
+            Rarity.Green: Color(0, 255, 0, 255),
+            Rarity.Purple: Color(187, 136, 238, 255),
+            Rarity.Gold: Color(255, 204, 85, 255),
+        }
+
+        if (rarity in rarity_colors):
+            return rarity_colors[rarity]
+        else:
+            return ColorPalette.GetColor("white")
+        
     @staticmethod
     def _get_enum_type(annotation: Any, current_value: Any) -> tuple[type[Enum] | None, bool]:
         if isinstance(current_value, Enum):
@@ -536,6 +610,167 @@ class UI:
 
         return changed
 
+    def _draw_armor_upgrades_rule(self, rule: ArmorUpgradeRule) -> bool:
+        changed = False
+        
+        if ImGui.begin_table("##armor_upgrade_rule_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
+            PyImGui.table_setup_column("Profession", PyImGui.TableColumnFlags.WidthFixed, 150)
+            PyImGui.table_setup_column("Upgrades", PyImGui.TableColumnFlags.WidthStretch)
+            
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+            
+            if ImGui.begin_child("##armor_upgrade_rule_profession", (0, 0), border=False):
+                for profession in Profession:
+                    is_selected = profession == self.profession
+                    decoded_profession_name = string_table.decode(GWEncoded.PROFESSION.get(profession, bytes())) or self._humanize_name(profession.name)   
+                     
+                    if ImGui.begin_selectable(f"##profession_{profession.value}", is_selected):
+                        ImGui.image(os.path.join(self.texture_path, "Profession_Icons", ProfessionTextureMap.get(profession.value, "")), (24, 24))
+                        PyImGui.same_line(0, 5)
+                        ImGui.text_aligned(decoded_profession_name, height=24, alignment=Alignment.MidLeft)
+                        
+                    if ImGui.end_selectable():
+                        self.profession = profession
+                    
+            ImGui.end_child()
+            
+            PyImGui.table_next_column()
+            
+            if ImGui.begin_child("##armor_upgrade_rule_upgrades", (0, 0), border=False):
+                try:
+                    #get all subclasses of ArmorUpgrade which has the selected profession
+                    upgrades = [
+                        upgrade_type for upgrade_type in self.available_upgrade_types
+                        if issubclass(upgrade_type, ArmorUpgrade) and getattr(upgrade_type, "profession", None) == self.profession
+                    ]               
+                    
+                    #sort by rarity, then by name
+                    sorted_upgrades = sorted(upgrades, key=lambda ut: (getattr(ut, "rarity", 0), self._format_upgrade_type_label(ut)))
+                    
+                    insignias = [
+                        upgrade_type for upgrade_type in sorted_upgrades if issubclass(upgrade_type, Insignia)
+                    ]
+                    
+                    runes = [
+                        upgrade_type for upgrade_type in sorted_upgrades if issubclass(upgrade_type, Rune)
+                    ]
+                    
+                    for upgrade_type in [*insignias, *runes]:
+                        upgrade : ArmorUpgrade = upgrade_type()
+                        upgrade_label = self._format_upgrade_label(upgrade)
+                        is_upgrade_selected = any(isinstance(existing_upgrade, upgrade_type) for existing_upgrade in rule.armor_upgrades)
+                        
+                        if ImGui.begin_selectable(f"##armor_upgrade_{upgrade_type.__name__}", is_upgrade_selected, (0 , 20)):
+                            rarity_color = UI.GetRarityColor(upgrade.rarity)
+                            ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                        
+                        if ImGui.end_selectable():
+                            if is_upgrade_selected:
+                                rule.armor_upgrades = [existing_upgrade for existing_upgrade in rule.armor_upgrades if not isinstance(existing_upgrade, upgrade_type)]
+                            else:
+                                rule.armor_upgrades.append(upgrade_type())
+                            changed = True
+                        
+                        ImGui.show_tooltip(upgrade.description_plain)
+                        
+                except Exception as e:
+                    ImGui.text_colored(f"Error loading upgrades: {str(e)}", (255, 0, 0, 255), font_size=12)
+                        
+            ImGui.end_child()
+            ImGui.end_table()
+
+        return changed
+
+    def _draw_max_weapon_upgrades_rule(self, rule: MaxWeaponUpgradeRule) -> bool:
+        changed = False
+        
+        if ImGui.begin_table("##weapon_upgrade_rule_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
+            PyImGui.table_setup_column("Mod Type", PyImGui.TableColumnFlags.WidthFixed, 150)
+            PyImGui.table_setup_column("Upgrades", PyImGui.TableColumnFlags.WidthStretch)
+            
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+            
+            if ImGui.begin_child("##mod_type_selection", (0, 0), border=False):
+                for mod_type in [ItemUpgradeType.Prefix, ItemUpgradeType.Suffix, ItemUpgradeType.Inscription]:
+                    is_selected = mod_type == self.mod_type
+                    mod_type_name = self._humanize_name(mod_type.name)   
+                     
+                    if ImGui.begin_selectable(f"##mod_type_{mod_type.value}", is_selected):
+                        ImGui.text_aligned(mod_type_name, height=24, alignment=Alignment.MidLeft)
+                        
+                    if ImGui.end_selectable():
+                        self.mod_type = mod_type
+                    
+            ImGui.end_child()
+            
+            PyImGui.table_next_column()
+            
+            if ImGui.begin_child("##armor_upgrade_rule_upgrades", (0, 0), border=False):
+                #get all subclasses of ArmorUpgrade which has the selected profession
+                upgrades = [
+                    upgrade_type for upgrade_type in self.available_upgrade_types
+                    if (issubclass(upgrade_type, WeaponUpgrade) or issubclass(upgrade_type, Inscription)) and getattr(upgrade_type, "mod_type", None) == self.mod_type
+                ]
+                                
+                for upgrade_type in sorted(upgrades, key=lambda ut: self._format_upgrade_type_label(ut)):
+                    upgrade : WeaponUpgrade | Inscription = upgrade_type()
+                    upgrade_label = self._format_upgrade_label(upgrade)
+                    
+                    is_upgrade_selected = any(isinstance(existing_upgrade, upgrade_type) for existing_upgrade in rule.weapon_upgrades)
+                    item_types : list[ItemType] = []
+                    
+                    if isinstance(upgrade, WeaponUpgrade):
+                        item_types = self._get_allowed_item_types(upgrade)
+                        rarity_color = UI.GetRarityColor(upgrade.rarity)
+                        hovered = False
+                        if ImGui.begin_child(f"##upgrade_item_types_{upgrade_type.__name__}", (0, 65), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        
+                            ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                            
+                            ImGui.separator()
+                            
+                            if item_types:
+                                for item_type in item_types:
+                                    texture = self.weapon_upgrade_textures.get(item_type)
+                                    if texture:
+                                        ImGui.image(texture.prefix if self.mod_type == ItemUpgradeType.Prefix else texture.suffix, (24, 24))
+                                        encoded = upgrade.create_upgrade_name(item_type)
+                                        
+                                        # ImGui.show_tooltip(string_table.decode(encoded).replace("%str2%", upgrade_label) if encoded else self._humanize_name(item_type.name))
+                                        ImGui.show_tooltip(encoded.plain if encoded else self._humanize_name(item_type.name))
+                                        # ImGui.show_tooltip(string_table.decode(upgrade.__encoded_name.encoded + encoded) if encoded else self._humanize_name(item_type.name))
+                                        
+                                        hovered = hovered or PyImGui.is_item_hovered()
+                                        
+                                        PyImGui.same_line(0, 5)
+                                            
+                        
+                        ImGui.end_child()
+                        
+                        if not hovered:
+                            ImGui.show_tooltip(upgrade.description_plain)
+                        
+                    else:             
+                        if ImGui.begin_selectable(f"##armor_upgrade_{upgrade_type.__name__}", is_upgrade_selected, (0, 50 if item_types else 25)):
+                            rarity_color = UI.GetRarityColor(upgrade.rarity)
+                            ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                            
+                        if ImGui.end_selectable():
+                            if is_upgrade_selected:
+                                rule.weapon_upgrades = [existing_upgrade for existing_upgrade in rule.weapon_upgrades if not isinstance(existing_upgrade, upgrade_type)]
+                            else:
+                                rule.weapon_upgrades.append(upgrade_type())
+                            changed = True
+                    
+                        ImGui.show_tooltip(upgrade.description_plain)
+                    
+            ImGui.end_child()
+            ImGui.end_table()
+
+        return changed
+
     def draw_main_window(self) -> None:
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
@@ -815,6 +1050,18 @@ class UI:
             case UpgradesRule():
                 ImGui.text_wrapped("This rule matches items based on their upgrades. You can specify one or more upgrades to match against the item.")
                 if self._draw_upgrades_rule(rule):
+                    if self.config:
+                        self.config.save()
+            
+            case ArmorUpgradeRule():
+                ImGui.text_wrapped("This rule matches items based on their armor upgrades. You can specify one or more armor upgrades to match against the item.")
+                if self._draw_armor_upgrades_rule(rule):
+                    if self.config:
+                        self.config.save()
+            
+            case MaxWeaponUpgradeRule():
+                ImGui.text_wrapped("This rule matches items based on their weapon upgrades. You can specify one or more weapon upgrades to match against the item.")
+                if self._draw_max_weapon_upgrades_rule(rule):
                     if self.config:
                         self.config.save()
             

@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
-from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
+from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, Upgrade, WeaponUpgrade, Inscription
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 
 class Rule:
@@ -425,6 +425,118 @@ class ExtractModRule(Rule):
     def __init__(self):
         super().__init__()
 
+class MaxWeaponUpgradeRule(ExtractModRule):
+    ui_selectable: ClassVar[bool] = True
+    
+    def __init__(self, upgrades: Optional[list[WeaponUpgrade | Inscription]] = None):
+        super().__init__()
+        self.weapon_upgrades: list[WeaponUpgrade | Inscription] = upgrades if upgrades is not None else []
+        
+    def is_valid(self) -> bool:
+        return len(self.weapon_upgrades) > 0
+    
+    def applies(self, item_id) -> bool:
+        if not self.is_valid():
+            return False
+        
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+        
+        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(item_id)
+        weapon_upgrades = [upgrade for upgrade in [prefix, suffix, inscription, *(inherent or [])] if (isinstance(upgrade, (WeaponUpgrade, Inscription)))]
+        
+        for upgrade in self.weapon_upgrades:
+            for item_upgrade in weapon_upgrades:
+                if upgrade.matches(item_upgrade):
+                    return True
+        
+        return False
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "weapon_upgrades": [upgrade.__class__.__name__ for upgrade in self.weapon_upgrades]
+        }
+        
+    def _comparison_data(self) -> Any:
+        normalized_upgrades = [upgrade._comparison_data() for upgrade in self.weapon_upgrades]
+        return tuple(sorted(normalized_upgrades))
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.weapon_upgrades = []
+        for name in data.get("weapon_upgrades", []):
+            if not isinstance(name, str):
+                continue
+
+            upgrade_cls = next(
+                (
+                    upgrade_type
+                    for upgrade_type in _UPGRADES
+                    if upgrade_type.__name__ == name and issubclass(upgrade_type, WeaponUpgrade)
+                ),
+                None,
+            )
+            if upgrade_cls is not None:
+                self.weapon_upgrades.append(upgrade_cls())
+
+class ArmorUpgradeRule(ExtractModRule):
+    ui_selectable: ClassVar[bool] = True
+    
+    def __init__(self, runes: Optional[list[ArmorUpgrade]] = None):
+        super().__init__()
+        self.armor_upgrades: list[ArmorUpgrade] = runes if runes is not None else []
+        
+    def is_valid(self) -> bool:
+        return len(self.armor_upgrades) > 0
+    
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+        
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+        
+        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(item_id)
+        armor_upgrades = [upgrade for upgrade in [prefix, suffix, inscription, *(inherent or [])] if isinstance(upgrade, ArmorUpgrade)]
+        
+        for rune in self.armor_upgrades:
+            for item_rune in armor_upgrades:
+                if rune.matches(item_rune):
+                    return True
+        
+        return False
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "runes": [upgrade.__class__.__name__ for upgrade in self.armor_upgrades]
+        }
+    
+    def _comparison_data(self) -> Any:
+        normalized_data = []
+        for upgrade in self.armor_upgrades:
+            normalized_data.append(upgrade._comparison_data())
+        
+        return tuple(sorted(normalized_data))
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.armor_upgrades = []
+        for name in data.get("runes", []):
+            if not isinstance(name, str):
+                continue
+
+            upgrade_cls = next(
+                (
+                    upgrade_type
+                    for upgrade_type in _UPGRADES
+                    if upgrade_type.__name__ == name and issubclass(upgrade_type, ArmorUpgrade)
+                ),
+                None,
+            )
+            if upgrade_cls is not None:
+                self.armor_upgrades.append(upgrade_cls())
+                    
+    
 class UpgradesRule(ExtractModRule):
     ui_selectable: ClassVar[bool] = True
     
