@@ -449,7 +449,14 @@ class Upgrade:
             str(key): cls._deserialize_value(value)
             for key, value in raw_values.items()
         }
-        return upgrade_cls(**values)
+
+        upgrade = upgrade_cls()
+        valid_property_names = set(upgrade_cls._get_serializable_property_names())
+        for key, value in values.items():
+            if key in valid_property_names:
+                setattr(upgrade, key, value)
+
+        return upgrade
     #endregion Serialization
     
     #region Encoded String Generation
