@@ -7,8 +7,9 @@ import inspect
 import math
 from pathlib import Path
 import random
-import sys
 from typing import TYPE_CHECKING, Any, Callable, cast
+
+import Py4GW
 
 if TYPE_CHECKING:
     from HeroAI.custom_skill import CustomSkillClass
@@ -223,6 +224,41 @@ class BuildMgr:
         if not self.IsSkillEquipped(skill_id):
             return None
         return self.GetCustomSkill(skill_id)
+
+    def _get_shared_skill_toggle(self, slot: int) -> bool:
+        if not (1 <= int(slot) <= 8):
+            return False
+
+        options = getattr(self._cached_data, "account_options", None)
+        if options is None:
+            try:
+                from Py4GWCoreLib import GLOBAL_CACHE, Player
+
+                account_email = Player.GetAccountEmail()
+                if account_email:
+                    options = GLOBAL_CACHE.ShMem.GetHeroAIOptionsFromEmail(account_email)
+            except Exception:
+                options = None
+
+        if options is None:
+            return True
+
+        skills = getattr(options, "Skills", None)
+        if skills is None:
+            return True
+
+        try:
+            return bool(skills[int(slot) - 1])
+        except (IndexError, TypeError, ValueError):
+            return True
+
+    def IsSharedSkillToggleEnabled(self, slot: int) -> bool:
+        return self._get_shared_skill_toggle(slot)
+
+    def IsCloseToAggro(self) -> bool:
+        """Returns True when combat is imminent but the player is not yet engaged."""
+        from Py4GWCoreLib import Routines
+        return Routines.Checks.Agents.IsCloseToAggro()
 
     def ResolveAllyTarget(self, skill_id: int, custom_skill: CustomSkill | None = None) -> int:
         from HeroAI.targeting import (
@@ -1045,6 +1081,18 @@ class BuildMgr:
         if not self._is_spirit_skill(skill_id):
             return False
 
+        # Allow the skill's metadata to request HP-aware recast: when the spirit's
+        # current HP fraction drops below `MinSpiritHpFractionForRecast`, treat it
+        # as absent so the caller can refresh before the spirit naturally dies.
+        # 0.0 (default) keeps the pre-change binary alive/dead gate.
+        min_hp_fraction = 0.0
+        try:
+            custom_skill = self.GetCustomSkill(skill_id)
+            if custom_skill is not None:
+                min_hp_fraction = float(custom_skill.Conditions.MinSpiritHpFractionForRecast or 0.0)
+        except Exception:
+            min_hp_fraction = 0.0
+
         spirit_array = AgentArray.GetSpiritPetArray()
         spirit_array = AgentArray.Filter.ByDistance(spirit_array, Player.GetXY(), Range.Earshot.value)
         spirit_array = AgentArray.Filter.ByCondition(spirit_array, lambda agent_id: Agent.IsAlive(agent_id))
@@ -1056,6 +1104,8 @@ class BuildMgr:
 
             spirit_model_id = SpiritModelID(model_value)
             if SPIRIT_BUFF_MAP.get(spirit_model_id) == skill_id:
+                if min_hp_fraction > 0.0 and Agent.GetHealth(spirit_id) < min_hp_fraction:
+                    continue
                 return True
 
         return False
@@ -1168,6 +1218,19 @@ class BuildMgr:
 
     def _process_phase(self, handler: BuildHandler | None, is_in_combat: bool) -> BuildCoroutine:
         if not self.CanProcess():
+            reasons: list[str] = []
+            from Py4GWCoreLib import Agent, Player, Routines
+
+            if not Routines.Checks.Map.MapValid():
+                reasons.append("map invalid")
+            if not Routines.Checks.Map.IsExplorable():
+                reasons.append("not explorable")
+            if not Routines.Checks.Player.CanAct():
+                reasons.append("player cannot act")
+            if Agent.IsDead(Player.GetAgentID()):
+                reasons.append("player dead")
+            if not reasons:
+                reasons.append("unknown")
             yield
             return
 
@@ -1319,6 +1382,8 @@ class BuildMgr:
         slot = SkillBar.GetSlotBySkillID(skill_id)
         if not (1 <= slot <= 8):
             return False
+        if not self.IsSharedSkillToggleEnabled(slot):
+            return False
         if not Routines.Checks.Skills.HasEnoughAdrenalineBySlot(slot):
             return False
         if self.SpiritBuffExists(skill_id):
@@ -1345,6 +1410,8 @@ class BuildMgr:
         skill_id = SkillBar.GetSkillIDBySlot(slot)
         if not skill_id:
             return False
+        if not self.IsSharedSkillToggleEnabled(slot):
+            return False
         if not Routines.Checks.Skills.HasEnoughEnergy(Player.GetAgentID(), skill_id):
             return False
         if not Routines.Checks.Skills.IsSkillSlotReady(slot):
@@ -1364,7 +1431,7 @@ class BuildMgr:
         aftercast_delay: int = 1000,
         target_agent_id: int = 0,
     ):
-        from Py4GWCoreLib import GLOBAL_CACHE, Player, Routines, ConsoleLog, Console, SkillBar, Skill
+        from Py4GWCoreLib import GLOBAL_CACHE, Player, Routines, ConsoleLog, Console, SkillBar
         if False:
             yield
 
@@ -1381,7 +1448,7 @@ class BuildMgr:
             yield from Routines.Yield.wait(self._get_spirit_cast_wait_ms(skill_id, aftercast_delay))
             yield from self._wait_for_spirit_spawn_and_step_away(skill_id)
         if log:
-            ConsoleLog("CastSkillID", f"Cast {Skill.GetName(skill_id)}, slot: {slot}", Console.MessageType.Info, log=log)
+            ConsoleLog("CastSkillID", f"Cast {GLOBAL_CACHE.Skill.GetName(skill_id)}, slot: {slot}", Console.MessageType.Info, log=log)
         self.SetTickSuccess()
 
         return True
@@ -1538,12 +1605,12 @@ class BuildRegistry:
         self._cached_runtime_fallback_builds: list[BuildMgr] | None = None
         self._cached_match_only_fallback_builds: list[BuildMgr] | None = None
 
-    @staticmethod
-    def _get_build_module_names() -> list[str]:
+    @classmethod
+    def _scan_build_types(cls) -> list[type[BuildMgr]]:
         builds_pkg = importlib.import_module("Py4GWCoreLib.Builds")
-        module_names: list[str] = [builds_pkg.__name__]
+        build_types: list[type[BuildMgr]] = []
 
-        seen_module_names: set[str] = set(module_names)
+        seen_module_names: set[str] = set()
         for module_path in Path(builds_pkg.__path__[0]).rglob("*.py"):
             if module_path.name == "__init__.py":
                 continue
@@ -1553,14 +1620,7 @@ class BuildRegistry:
             if module_name in seen_module_names:
                 continue
             seen_module_names.add(module_name)
-            module_names.append(module_name)
 
-        return module_names
-
-    @classmethod
-    def _scan_build_types(cls) -> list[type[BuildMgr]]:
-        build_types: list[type[BuildMgr]] = []
-        for module_name in cls._get_build_module_names()[1:]:
             module = importlib.import_module(module_name)
             for _, value in inspect.getmembers(module, inspect.isclass):
                 if value is BuildMgr:
@@ -1582,43 +1642,6 @@ class BuildRegistry:
     @classmethod
     def ClearCache(cls) -> None:
         cls._cached_build_types = None
-
-    @classmethod
-    def ReloadBuildModules(cls) -> None:
-        importlib.invalidate_caches()
-        build_package_prefix = "Py4GWCoreLib.Builds"
-        loaded_module_names = [
-            module_name
-            for module_name in sys.modules
-            if module_name == build_package_prefix or module_name.startswith(f"{build_package_prefix}.")
-        ]
-
-        # Drop child modules before parents so package re-exports are rebuilt
-        # from a clean import state on the next scan.
-        loaded_module_names.sort(key=lambda module_name: module_name.count("."), reverse=True)
-        for module_name in loaded_module_names:
-            sys.modules.pop(module_name, None)
-
-        importlib.import_module(build_package_prefix)
-
-    def _clear_instance_caches(self) -> None:
-        self._runtime_build_instances.clear()
-        self._match_only_build_instances.clear()
-        self._cached_runtime_builds = None
-        self._cached_match_only_builds = None
-        self._cached_runtime_matchable_builds = None
-        self._cached_match_only_matchable_builds = None
-        self._cached_runtime_fallback_builds = None
-        self._cached_match_only_fallback_builds = None
-
-    def RefreshBuilds(self) -> list[BuildMgr]:
-        self._clear_instance_caches()
-        self.ClearCache()
-        self.ReloadBuildModules()
-        self.ClearCache()
-        self._iter_builds(match_only=False)
-        self._iter_builds(match_only=True)
-        return self._iter_builds(match_only=False)
 
     def _call_build_ctor(self, build_type: type[BuildMgr], *args: Any, **kwargs: Any) -> BuildMgr | None:
         try:

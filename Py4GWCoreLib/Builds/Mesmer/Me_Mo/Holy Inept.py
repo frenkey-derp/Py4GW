@@ -24,14 +24,14 @@ class HolyInept(BuildMgr):
             template_code="OQNDAcsuRvAIg5ZkA4i7iwlLEA",
             required_skills=[
                 Ineptitude_ID,
-                Judges_Insight_ID,
                 Wandering_Eye_ID,
                 Arcane_Conundrum_ID,
+                Ebon_Vanguard_Assassin_Support_ID,
             ],
             optional_skills=[
                 Air_of_Superiority_ID,
-                Ebon_Vanguard_Assassin_Support_ID,
                 Ebon_Battle_Standard_of_Wisdom_ID,
+                Judges_Insight_ID,
                 Signet_of_Clumsiness_ID,
                 Power_Drain_ID
             ],
@@ -48,16 +48,23 @@ class HolyInept(BuildMgr):
             yield from Routines.Yield.wait(100)
             return False
 
-        if self.IsSkillEquipped(Air_of_Superiority_ID) and (yield from self.skills.Any.PvE.Air_of_Superiority()):
+        if (
+            self.IsSkillEquipped(Air_of_Superiority_ID)
+            and (Routines.Checks.Agents.InAggro() or self.IsCloseToAggro())
+            and (yield from self.skills.Any.PvE.Air_of_Superiority())
+        ):
             return True
 
         if not Routines.Checks.Agents.InAggro():
             return False
 
+        if (yield from self.skills.Mesmer.InspirationMagic.Power_Drain(energy_threshold_pct=0.30)):
+            return True
+
         if self.IsSkillEquipped(Ebon_Vanguard_Assassin_Support_ID) and (yield from self.skills.Any.PvE.Ebon_Vanguard_Assassin_Support()):
             return True
 
-        if (yield from self.skills.Mesmer.DominationMagic.Power_Drain()):
+        if (yield from self.skills.Mesmer.InspirationMagic.Power_Drain()):
             return True
 
         if (yield from self.skills.Mesmer.IllusionMagic.Ineptitude()):

@@ -5,8 +5,8 @@ from Py4GWCoreLib import Player, GLOBAL_CACHE, SpiritModelID, Timer, Agent, Rout
 from Py4GWCoreLib import Weapon, Effects
 from Py4GWCoreLib.enums import SPIRIT_BUFF_MAP, ModelID
 from .custom_skill import CustomSkillClass
-from .targeting import TargetLowestAlly, TargetLowestAllyEnergy, TargetClusteredEnemy, TargetLowestAllyCaster, TargetLowestAllyMartial, TargetLowestAllyMelee, TargetLowestAllyRanged, GetAllAlliesArray
-from .targeting import GetEnemyAttacking, GetEnemyCasting, GetEnemyCastingSpell, GetEnemyInjured, GetEnemyConditioned, GetEnemyHealthy
+from .targeting import TargetLowestAlly, TargetLowestAllyEnergy, TargetClusteredEnemy, TargetLowestAllyCaster, TargetLowestAllyMartial, TargetLowestAllyMelee, TargetLowestAllyRanged, GetAllAlliesArray, TargetAllyWeaponSpell
+from .targeting import GetEnemyAttacking, GetEnemyCasting, GetEnemyCastingSpell, GetEnemyCastingSpellOrChant, GetEnemyInjured, GetEnemyConditioned, GetEnemyHealthy
 from .targeting import GetEnemyHexed, GetEnemyDegenHexed, GetEnemyEnchanted, GetEnemyMoving, GetEnemyKnockedDown
 from .targeting import GetEnemyBleeding, GetEnemyPoisoned, GetEnemyCrippled
 from .types import SkillNature, Skilltarget, SkillType
@@ -100,11 +100,12 @@ class CombatClass:
         self.aftercast_timer.Start()
         self.ping_handler = Py4GW.PingHandler()
         self.oldCalledTarget: int = 0
-        
+
         self.in_aggro: bool = False
         self.is_targeting_enabled: bool = False
         self.is_combat_enabled: bool = False
         self.is_skill_enabled: list[bool] = []
+        self.blocked_skill_ids: set[int] = set()
         self.fast_casting_exists: bool = False
         self.fast_casting_level: int = 0
         self.expertise_exists: bool = False
@@ -231,17 +232,19 @@ class CombatClass:
         options = cached_data.account_options
         self.is_targeting_enabled = options.Targeting if options is not None else False
         self.is_combat_enabled = options.Combat if options is not None else False
-        self.is_skill_enabled = options.Skills if options is not None else [False]*MAX_SKILLS
+        if options is not None:
+            self.is_skill_enabled = [bool(options.Skills[i]) for i in range(MAX_SKILLS)]
+        else:
+            self.is_skill_enabled = [False] * MAX_SKILLS
+        self.blocked_skill_ids = set()
         self.active_spirit_buff_skill_ids = None
 
     def ApplyBlockedSkillIDs(self, blocked_skill_ids: list[int] | None = None) -> None:
-        blocked_ids = {int(skill_id) for skill_id in (blocked_skill_ids or []) if int(skill_id) != 0}
         if len(self.is_skill_enabled) != MAX_SKILLS:
             self.is_skill_enabled = [True] * MAX_SKILLS
-
-        for slot in range(MAX_SKILLS):
-            skill_id = int(GLOBAL_CACHE.SkillBar.GetSkillIDBySlot(slot + 1) or 0)
-            self.is_skill_enabled[slot] = self.is_skill_enabled[slot] and skill_id not in blocked_ids
+        self.blocked_skill_ids = {
+            int(skill_id) for skill_id in (blocked_skill_ids or []) if int(skill_id) != 0
+        }
             
     def _get_active_spirit_buff_skill_ids(self) -> set[int]:
         spirit_array = AgentArray.GetSpiritPetArray()
@@ -429,8 +432,11 @@ class CombatClass:
 
         if self.skills[slot].skillbar_data.recharge != 0:
             return False
-        
-        return self.is_skill_enabled[original_index]
+
+        if not self.is_skill_enabled[original_index]:
+            return False
+
+        return self.skills[slot].skill_id not in self.blocked_skill_ids
         
     def InCastingRoutine(self) -> bool:
         if self.aftercast_timer.HasElapsed(self.aftercast):
@@ -540,6 +546,14 @@ class CombatClass:
             v_target = GetEnemyCastingSpell(self.get_combat_distance())
             if v_target == 0 and not targeting_strict:
                 v_target = get_nearest_enemy()
+        elif target_allegiance == Skilltarget.EnemyCastingSpellOrChant:
+            v_target = GetEnemyCastingSpellOrChant(self.get_combat_distance())
+            if v_target == 0 and not targeting_strict:
+                v_target = get_nearest_enemy()
+        elif target_allegiance == Skilltarget.AllyWeaponSpell:
+            v_target = TargetAllyWeaponSpell(self.skills[slot].skill_id, self.get_combat_distance())
+            if v_target == 0 and not targeting_strict:
+                v_target = get_lowest_ally()
         elif target_allegiance == Skilltarget.EnemyInjured:
             v_target = GetEnemyInjured(self.get_combat_distance())
             if v_target == 0 and not targeting_strict:
@@ -883,6 +897,7 @@ class CombatClass:
         feature_count += (1 if Conditions.LessLife > 0 else 0)
         feature_count += (1 if Conditions.MoreLife > 0 else 0)
         feature_count += (1 if Conditions.LessEnergy > 0 else 0)
+        feature_count += (1 if Conditions.LessSelfEnergyPercentage > 0 else 0)
         feature_count += (1 if Conditions.Overcast > 0 else 0)
         feature_count += (1 if Conditions.IsPartyWide else 0)
         feature_count += (1 if Conditions.RequiresSpiritInEarshot else 0)
@@ -1064,6 +1079,11 @@ class CombatClass:
                     number_of_features += 1
             else:
                 number_of_features += 1 #henchmen, allies, pets or something else thats not reporting energy
+
+        if Conditions.LessSelfEnergyPercentage > 0:
+            # Agent.GetEnergy returns a 0.0-1.0 fraction of max energy; threshold uses the same scale.
+            if Agent.GetEnergy(Player.GetAgentID()) <= Conditions.LessSelfEnergyPercentage:
+                number_of_features += 1
 
         if Conditions.Overcast != 0:
             if Player.GetAgentID() == vTarget:
@@ -1255,6 +1275,24 @@ class CombatClass:
         if (current_hp < target_hp) and health_cost > 0:
             self.in_casting_routine = False
             return False, 0
+
+        # Opt-in post-sacrifice safety floors. Only applied when the skill sets at least one floor
+        # above 0. Sacrifice amount is derived from SacrificePercent (fraction of max HP).
+        # Refuses to cast unless the caster's HP after sacrifice is strictly greater than BOTH
+        # the percent-of-max floor AND the absolute-HP floor.
+        min_after_pct = getattr(conditions, "MinHealthAfterSacrificePercent", 0.0)
+        min_after_abs = getattr(conditions, "MinHealthAfterSacrificeAbsolute", 0)
+        sacrifice_pct = getattr(conditions, "SacrificePercent", 0.0)
+        if sacrifice_pct > 0 and (min_after_pct > 0 or min_after_abs > 0):
+            max_hp = Agent.GetMaxHealth(Player.GetAgentID())
+            sacrifice_amount = max_hp * sacrifice_pct
+            hp_after_sacrifice = (current_hp * max_hp) - sacrifice_amount
+            if min_after_abs > 0 and hp_after_sacrifice <= min_after_abs:
+                self.in_casting_routine = False
+                return False, 0
+            if min_after_pct > 0 and max_hp > 0 and (hp_after_sacrifice / max_hp) <= min_after_pct:
+                self.in_casting_routine = False
+                return False, 0
 
         # --- Expensive target resolution (only if all cheap checks passed) ---
         v_target = self.GetAppropiateTarget(slot)
