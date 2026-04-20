@@ -1,7 +1,7 @@
 
 import Py4GW
 
-from Py4GWCoreLib.IniManager import IniManager
+from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 Utils.ClearSubModules("ItemHandling")
@@ -29,6 +29,9 @@ def main():
     global MODULE_UI
     
     try:
+        if not Routines.Checks.Map.MapValid():
+            return
+        
         if not MODULE_CONFIG._ensure_ini():
             return
         

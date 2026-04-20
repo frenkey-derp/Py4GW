@@ -241,7 +241,8 @@ class Upgrade:
         self._refresh_encoded_strings()
 
     def __setattr__(self, name: str, value: Any) -> None:
-        if name in type(self)._get_serializable_property_names():
+        upgrade_info_targets = {instruction.target for instruction in self.upgrade_info}
+        if name in type(self)._get_serializable_property_names() or name in upgrade_info_targets:
             object.__setattr__(self, name, value)
             self._refresh_encoded_strings()
             return
@@ -340,7 +341,8 @@ class Upgrade:
     #region Equality and Matching
     @classmethod
     def _get_serializable_property_names(cls) -> list[str]:
-        return [field_info.name for field_info in fields(cls) if field_info.init]
+        blacklisted_fields = {"properties", "modifier", "language"}        
+        return [field_info.name for field_info in fields(cls) if field_info.init and field_info.name not in blacklisted_fields]
 
     @staticmethod
     def _serialize_value(value: Any) -> Any:
@@ -1081,11 +1083,10 @@ class OfAttributeUpgrade(WeaponSuffix):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1154,11 +1155,10 @@ class OfAxeMasteryUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1191,11 +1191,10 @@ class OfDaggerMasteryUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1348,11 +1347,10 @@ class OfHammerMasteryUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1385,11 +1383,10 @@ class OfMarksmanshipUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1504,11 +1501,10 @@ class OfScytheMasteryUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1599,11 +1595,10 @@ class OfSpearMasteryUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
@@ -1659,11 +1654,10 @@ class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,

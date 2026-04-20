@@ -1,5 +1,5 @@
 import os
-from dataclasses import fields, is_dataclass
+from dataclasses import fields
 from enum import Enum
 from types import UnionType
 from typing import Any, Optional, cast, get_args, get_origin
@@ -13,7 +13,18 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames
 from Py4GWCoreLib.enums_src.Item_enums import ITEM_TYPE_META_TYPES, ItemType
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.types import ModifierIdentifier
-from Py4GWCoreLib.item_mods_src.upgrades import _INHERENT_UPGRADES, AppliesToRune, ModifierRange, ModifierType, Upgrade, _UPGRADES, UpgradeRune
+from Py4GWCoreLib.item_mods_src.upgrades import (
+    EnumInstruction,
+    FixedValueInstruction,
+    RangeInstruction,
+    SelectInstruction,
+    _INHERENT_UPGRADES,
+    AppliesToRune,
+    Instruction,
+    Upgrade,
+    _UPGRADES,
+    UpgradeRune,
+)
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig 
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
@@ -156,108 +167,6 @@ class UI:
         }
         return all(value in enum_values for value in allowed_values)
 
-    def _resolve_modifier_range_field_name(self, upgrade: Upgrade, modifier_range: ModifierRange) -> str | None:
-        prop = self._find_upgrade_property(upgrade, modifier_range.modifierIdentifier)
-        if prop is not None and is_dataclass(prop):
-            property_fields = [
-                field_info
-                for field_info in fields(prop)
-                if field_info.name not in {"modifier", "rarity", "upgrade", "upgrade_id"}
-            ]
-            upgrade_field_names = {field_info.name for field_info in fields(upgrade) if field_info.init}
-
-            for field_info in property_fields:
-                enum_type, _ = self._get_enum_type(field_info.type, getattr(prop, field_info.name))
-                if enum_type is not None and self._allowed_values_match_enum(enum_type, modifier_range.allowed_values):
-                    if field_info.name in upgrade_field_names:
-                        return field_info.name
-
-            int_property_fields = [
-                field_info.name
-                for field_info in property_fields
-                if isinstance(getattr(prop, field_info.name), int) and not isinstance(getattr(prop, field_info.name), Enum)
-            ]
-            if len(int_property_fields) == 1 and int_property_fields[0] in upgrade_field_names:
-                return int_property_fields[0]
-
-        fallback_mapping = {
-            ("ArmorPenetration", ModifierType.Arg1): "chance",
-            ("ArmorPenetration", ModifierType.Arg2): "armor_penetration",
-            ("ArmorPlus", ModifierType.Arg2): "armor",
-            ("ArmorPlusAbove", ModifierType.Arg1): "health_threshold",
-            ("ArmorPlusAbove", ModifierType.Arg2): "armor",
-            ("ArmorPlusAttacking", ModifierType.Arg2): "armor",
-            ("ArmorPlusCasting", ModifierType.Arg2): "armor",
-            ("ArmorPlusEnchanted", ModifierType.Arg2): "armor",
-            ("ArmorPlusHexed", ModifierType.Arg2): "armor",
-            ("ArmorPlusVsDamage", ModifierType.Arg1): "damage_type",
-            ("ArmorPlusVsDamage", ModifierType.Arg2): "armor",
-            ("ArmorPlusVsElemental", ModifierType.Arg2): "armor",
-            ("ArmorPlusVsPhysical", ModifierType.Arg2): "armor",
-            ("ArmorPlusVsSpecies", ModifierType.Arg1): "species",
-            ("ArmorPlusVsSpecies", ModifierType.Arg2): "armor",
-            ("ArmorPlusWhileBelow", ModifierType.Arg1): "health_threshold",
-            ("ArmorPlusWhileBelow", ModifierType.Arg2): "armor",
-            ("AttributePlusOne", ModifierType.Arg1): "attribute",
-            ("AttributePlusOne", ModifierType.Arg2): "chance",
-            ("AttributePlusOneItem", ModifierType.Arg1): "chance",
-            ("BaneSpecies", ModifierType.Arg1): "species",
-            ("DamagePlusEnchanted", ModifierType.Arg2): "damage_increase",
-            ("DamagePlusHexed", ModifierType.Arg2): "damage_increase",
-            ("DamagePlusPercent", ModifierType.Arg2): "damage_increase",
-            ("DamagePlusStance", ModifierType.Arg2): "damage_increase",
-            ("DamagePlusVsHexed", ModifierType.Arg2): "damage_increase",
-            ("DamagePlusVsSpecies", ModifierType.Arg1): "damage_increase",
-            ("DamagePlusWhileAbove", ModifierType.Arg1): "health_threshold",
-            ("DamagePlusWhileAbove", ModifierType.Arg2): "damage_increase",
-            ("DamagePlusWhileBelow", ModifierType.Arg1): "health_threshold",
-            ("DamagePlusWhileBelow", ModifierType.Arg2): "damage_increase",
-            ("DamageTypeProperty", ModifierType.Arg1): "damage_type",
-            ("EnergyPlus", ModifierType.Arg2): "energy",
-            ("EnergyPlusEnchanted", ModifierType.Arg2): "energy",
-            ("EnergyPlusHexed", ModifierType.Arg2): "energy",
-            ("EnergyPlusWhileAbove", ModifierType.Arg1): "health_threshold",
-            ("EnergyPlusWhileAbove", ModifierType.Arg2): "energy",
-            ("EnergyPlusWhileBelow", ModifierType.Arg1): "health_threshold",
-            ("EnergyPlusWhileBelow", ModifierType.Arg2): "energy",
-            ("Furious", ModifierType.Arg2): "chance",
-            ("HalvesCastingTimeAttribute", ModifierType.Arg1): "chance",
-            ("HalvesCastingTimeAttribute", ModifierType.Arg2): "attribute",
-            ("HalvesCastingTimeGeneral", ModifierType.Arg1): "chance",
-            ("HalvesCastingTimeItemAttribute", ModifierType.Arg1): "chance",
-            ("HalvesSkillRechargeAttribute", ModifierType.Arg1): "chance",
-            ("HalvesSkillRechargeAttribute", ModifierType.Arg2): "attribute",
-            ("HalvesSkillRechargeGeneral", ModifierType.Arg1): "chance",
-            ("HalvesSkillRechargeItemAttribute", ModifierType.Arg1): "chance",
-            ("HealthPlus", ModifierType.Arg1): "health",
-            ("HealthPlus2", ModifierType.Arg2): "health",
-            ("HealthPlusEnchanted", ModifierType.Arg1): "health",
-            ("HealthPlusHexed", ModifierType.Arg1): "health",
-            ("HealthPlusStance", ModifierType.Arg1): "health",
-            ("HealthStealOnHit", ModifierType.Arg1): "health_steal",
-            ("IncreaseConditionDuration", ModifierType.Arg2): "condition",
-            ("IncreaseEnchantmentDuration", ModifierType.Arg2): "enchantment_duration",
-            ("OfTheProfession", ModifierType.Arg1): "attribute",
-            ("OfTheProfession", ModifierType.Arg2): "attribute_level",
-            ("ReceiveLessDamage", ModifierType.Arg1): "chance",
-            ("ReceiveLessDamage", ModifierType.Arg2): "damage_reduction",
-            ("ReceiveLessPhysDamageEnchanted", ModifierType.Arg2): "damage_reduction",
-            ("ReceiveLessPhysDamageHexed", ModifierType.Arg2): "damage_reduction",
-            ("ReceiveLessPhysDamageStance", ModifierType.Arg2): "damage_reduction",
-        }
-
-        return fallback_mapping.get((modifier_range.modifierIdentifier.name, modifier_range.modifier_type))
-
-    def _get_modifier_ranges_for_upgrade(self, upgrade: Upgrade) -> list[ModifierRange]:
-        getter = getattr(type(upgrade), "get_modifier_ranges", None)
-        if getter is not None and callable(getter):
-            items = getter()
-            if isinstance(items, list) and all(isinstance(item, ModifierRange) for item in items):
-                return items
-
-        modifier_range = getattr(type(upgrade), "modifier_range", None)
-        return [modifier_range] if isinstance(modifier_range, ModifierRange) else []
-
     def _expand_item_type(self, item_type: ItemType) -> list[ItemType]:
         expanded = ITEM_TYPE_META_TYPES.get(item_type)
         if expanded is None:
@@ -357,7 +266,113 @@ class UI:
             if profession is not None:
                 setattr(upgrade, "profession", profession)
 
-    def _draw_upgrade_field_editor(self, upgrade: Upgrade, field_info: Any, unique_id: str, range_info: ModifierRange | None = None) -> bool:
+    def _get_upgrade_field_info(self, upgrade: Upgrade, field_name: str) -> Any | None:
+        return next((field_info for field_info in fields(upgrade) if field_info.init and field_info.name == field_name), None)
+
+    def _get_upgrade_instruction_groups(self, upgrade: Upgrade) -> list[tuple[str, list[Instruction[Upgrade, Any]]]]:
+        grouped: dict[str, list[Instruction[Upgrade, Any]]] = {}
+        for instruction in type(upgrade).upgrade_info:
+            if instruction.target == "None":
+                continue
+            grouped.setdefault(instruction.target, []).append(instruction)
+
+        return [(target, instructions) for target, instructions in grouped.items() if self._get_upgrade_field_info(upgrade, target) is not None]
+
+    def _format_instruction_constraint(self, upgrade: Upgrade, instruction: Instruction[Upgrade, Any]) -> str:
+        if isinstance(instruction, RangeInstruction):
+            return f"{instruction.min_value}-{instruction.max_value}"
+
+        if isinstance(instruction, SelectInstruction):
+            return ", ".join(str(option) for option in instruction.options_list)
+
+        if isinstance(instruction, EnumInstruction):
+            enum_options = ", ".join(self._format_enum_member(member) for member in instruction.enum_type)
+            return enum_options
+
+        if isinstance(instruction, FixedValueInstruction):
+            fixed_value = instruction.fixed_value
+            if isinstance(fixed_value, Enum):
+                return self._format_enum_member(fixed_value)
+            return str(fixed_value)
+
+        current_value = getattr(upgrade, instruction.target, None)
+        if isinstance(current_value, Enum):
+            return self._format_enum_member(current_value)
+        return str(current_value)
+
+    def _draw_upgrade_instruction_editor(self, upgrade: Upgrade, field_info: Any, instructions: list[Instruction[Upgrade, Any]], unique_id: str) -> bool:
+        field_name = field_info.name
+        label = self._humanize_name(field_name)
+        current_value = getattr(upgrade, field_name)
+
+        editable_instruction = next(
+            (
+                instruction
+                for instruction in instructions
+                if not isinstance(instruction, FixedValueInstruction)
+            ),
+            None,
+        )
+        
+        if editable_instruction is None:
+            # display_value = self._format_enum_member(current_value) if isinstance(current_value, Enum) else str(current_value)
+            # ImGui.text(f"{label}: {display_value}")
+            return False
+
+        constraint_text = "; ".join(
+            f"{type(instruction).__name__.replace('Instruction', '')}: {self._format_instruction_constraint(upgrade, instruction)}"
+            for instruction in instructions
+        )
+        ImGui.text_colored(f"Constraint: {label} ({constraint_text})", UI.GRAY_COLOR, font_size=12)
+
+
+        if isinstance(editable_instruction, EnumInstruction):
+            options = list(editable_instruction.enum_type)
+            preview_value = self._format_enum_member(current_value if isinstance(current_value, Enum) else None)
+            changed = False
+            if ImGui.begin_combo(f"{label}##{unique_id}_{field_name}", preview_value, PyImGui.ImGuiComboFlags.NoFlag):
+                for index, option in enumerate(options):
+                    option_label = self._format_enum_member(option)
+                    is_selected = option == current_value
+                    if ImGui.selectable(f"{option_label}##{unique_id}_{field_name}_{index}", is_selected):
+                        self._set_upgrade_field_value(upgrade, field_name, option)
+                        changed = True
+                ImGui.end_combo()
+            return changed
+
+        if isinstance(editable_instruction, SelectInstruction):
+            options = list(editable_instruction.options_list)
+            preview_value = self._format_enum_member(current_value) if isinstance(current_value, Enum) else str(current_value)
+            changed = False
+            if ImGui.begin_combo(f"{label}##{unique_id}_{field_name}", preview_value, PyImGui.ImGuiComboFlags.NoFlag):
+                for index, option in enumerate(options):
+                    option_label = self._format_enum_member(option) if isinstance(option, Enum) else str(option)
+                    is_selected = option == current_value
+                    if ImGui.selectable(f"{option_label}##{unique_id}_{field_name}_{index}", is_selected):
+                        self._set_upgrade_field_value(upgrade, field_name, option)
+                        changed = True
+                ImGui.end_combo()
+            return changed
+
+        if isinstance(editable_instruction, RangeInstruction) and isinstance(current_value, int):
+            new_value = ImGui.input_int(f"{label}##{unique_id}_{field_name}", v=current_value, min_value=1, step_fast=1)
+            new_value = max(editable_instruction.min_value, min(editable_instruction.max_value, new_value))
+            if new_value != current_value:
+                self._set_upgrade_field_value(upgrade, field_name, new_value)
+                return True
+            return False
+
+        if isinstance(editable_instruction, RangeInstruction) and isinstance(current_value, float):
+            new_value = ImGui.input_float(f"{label}##{unique_id}_{field_name}", current_value)
+            new_value = max(editable_instruction.min_value, min(editable_instruction.max_value, new_value))
+            if new_value != current_value:
+                self._set_upgrade_field_value(upgrade, field_name, new_value)
+                return True
+            return False
+
+        return self._draw_upgrade_field_editor(upgrade, field_info, unique_id)
+
+    def _draw_upgrade_field_editor(self, upgrade: Upgrade, field_info: Any, unique_id: str) -> bool:
         field_name = field_info.name
         label = self._humanize_name(field_name)
         current_value = getattr(upgrade, field_name)
@@ -372,18 +387,7 @@ class UI:
         enum_type, allow_none = self._get_enum_type(field_info.type, current_value)
         if enum_type is not None:
             options: list[Enum | None] = [None] if allow_none else []
-            if range_info is not None and range_info.allowed_values is not None:
-                enum_options = []
-                for member in enum_type:
-                    try:
-                        member_value = int(member.value)
-                    except (TypeError, ValueError):
-                        continue
-                    if member_value in range_info.allowed_values:
-                        enum_options.append(member)
-                options.extend(enum_options)
-            else:
-                options.extend(list(enum_type))
+            options.extend(list(enum_type))
 
             preview_value = self._format_enum_member(current_value if isinstance(current_value, Enum) else None)
             changed = False
@@ -399,41 +403,10 @@ class UI:
             return changed
 
         if isinstance(current_value, int):
-            min_value = range_info.min_value if range_info is not None and range_info.min_value is not None else 0
-            max_value: int | None = range_info.max_value if range_info is not None else None
-
-            if range_info is not None and range_info.allowed_values is not None:
-                allowed_values = list(range_info.allowed_values)
-                preview_value = str(current_value)
-                changed = False
-                if ImGui.begin_combo(f"{label}##{unique_id}_{field_name}", preview_value, PyImGui.ImGuiComboFlags.NoFlag):
-                    for index, option in enumerate(allowed_values):
-                        is_selected = option == current_value
-                        if ImGui.selectable(f"{option}##{unique_id}_{field_name}_{index}", is_selected):
-                            self._set_upgrade_field_value(upgrade, field_name, option)
-                            changed = True
-                    ImGui.end_combo()
-                return changed
-
             new_value = ImGui.input_int(f"{label}##{unique_id}_{field_name}", v=current_value, min_value=1, step_fast=1)
-            if max_value is not None and new_value > max_value:
-                new_value = max_value
-
-            if new_value < min_value:
-                new_value = min_value
-
             if new_value != current_value:
                 self._set_upgrade_field_value(upgrade, field_name, new_value)
                 return True
-
-            if range_info is not None:
-                tooltip = f"Modifier: {range_info.modifierIdentifier.name}"
-                if range_info.allowed_values is not None:
-                    tooltip = f"{tooltip}\nAllowed values: {', '.join(str(value) for value in range_info.allowed_values)}"
-                else:
-                    tooltip = f"{tooltip}\nAllowed range: {range_info.min_value} - {range_info.max_value}"
-                ImGui.show_tooltip(tooltip)
-
             return False
 
         if isinstance(current_value, float):
@@ -448,8 +421,10 @@ class UI:
             if new_value != current_value:
                 self._set_upgrade_field_value(upgrade, field_name, new_value)
                 return True
+            return False
 
-        ImGui.text(f"{label}: {current_value}")
+        display_value = self._format_enum_member(current_value) if isinstance(current_value, Enum) else str(current_value)
+        ImGui.text(f"{label}: {display_value}")
         return False
 
     def _draw_upgrade_entry(self, rule: UpgradesRule, index: int, upgrade: Upgrade, item_types: list[ItemType]) -> tuple[bool, bool]:
@@ -480,48 +455,17 @@ class UI:
         if description:
             ImGui.text_wrapped(description)
 
-        modifier_ranges = self._get_modifier_ranges_for_upgrade(upgrade)
-        if len(modifier_ranges) > 0:
-            rendered_fields: set[str] = set()
-            for modifier_range in modifier_ranges:
-                field_name = self._resolve_modifier_range_field_name(upgrade, modifier_range)
-                field_label = self._humanize_name(field_name) if field_name else "Unknown field"
-
-                if modifier_range.allowed_values is not None:
-                    constraint_text = ", ".join(str(value) for value in modifier_range.allowed_values)
-                else:
-                    constraint_text = f"{modifier_range.min_value}-{modifier_range.max_value}"
-
-                ImGui.text_colored(
-                    f"Constraint: {field_label} ({constraint_text})",
-                    UI.GRAY_COLOR,
-                    font_size=12,
-                )
-
-                if field_name is None or field_name in rendered_fields:
-                    continue
-
-                field_info = next((entry for entry in fields(upgrade) if entry.init and entry.name == field_name), None)
+        instruction_groups = self._get_upgrade_instruction_groups(upgrade)
+        if len(instruction_groups) > 0:
+            for field_name, instructions in instruction_groups:
+                field_info = self._get_upgrade_field_info(upgrade, field_name)
                 if field_info is None:
                     continue
 
-                rendered_fields.add(field_name)
-                if self._draw_upgrade_field_editor(upgrade, field_info, unique_id, modifier_range):
+                if self._draw_upgrade_instruction_editor(upgrade, field_info, instructions, unique_id):
                     changed = True
-
-            unresolved_count = sum(
-                1
-                for modifier_range in modifier_ranges
-                if self._resolve_modifier_range_field_name(upgrade, modifier_range) is None
-            )
-            if unresolved_count > 0:
-                ImGui.text_colored(
-                    f"{unresolved_count} modifier constraint(s) could not be mapped to UI fields.",
-                    UI.GRAY_COLOR,
-                    font_size=12,
-                )
         else:
-            ImGui.text_colored("This upgrade has no editable modifier range. Its values are fixed by the selected upgrade type.", UI.GRAY_COLOR, font_size=12)
+            ImGui.text_colored("This upgrade has no editable upgrade instructions. Its values are fixed by the selected upgrade type.", UI.GRAY_COLOR, font_size=12)
 
         if self._draw_upgrade_item_type_filters(upgrade, item_types, unique_id):
             changed = True
