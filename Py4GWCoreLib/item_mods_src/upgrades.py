@@ -3861,13 +3861,15 @@ class Rune(Upgrade):
 class AttributeRune(Rune):
     attribute: Attribute = Attribute.None_
     attribute_level: int = 0
+    upgrade_rune_id : ItemUpgrade = ItemUpgrade.Unknown
+    applies_to_rune_id : ItemUpgrade = ItemUpgrade.Unknown
 
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
         attribute_rune = cast("AttributeRune", upgrade)
         attribute_rune.attribute = Attribute(mod.arg1)
         attribute_rune.attribute_level = mod.arg2
-
+                
     def create_encoded_description(self) -> GWStringEncoded:
         attribute = GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes())
         fallback = f"{AttributeNames.get(self.attribute)}: {self.attribute_level}" if attribute else ""
@@ -4282,7 +4284,6 @@ class LieutenantsInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0x97, 0x64, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x8, 0x1, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x7E, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
-
 @dataclass(eq=False)
 class StonefistInsignia(Insignia):
     id = ItemUpgrade.StonefistInsignia
@@ -4318,12 +4319,31 @@ class SentinelsInsignia(Insignia):
     def create_encoded_description(self) -> GWStringEncoded:
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x40, 0x9, 0x1, 0x0, 0x1, 0x1, 0xD, 0x1, 0x2, 0x0, 0xAB, 0xA, 0x2, 0x0, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
+    
+@dataclass(eq=False)
+class MinorWarriorRune(MinorAttributeRune):
+    profession = Profession.Warrior
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneWarrior
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneWarrior
+
+@dataclass(eq=False)
+class MajorWarriorRune(MajorAttributeRune):
+    profession = Profession.Warrior
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneWarrior
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneWarrior
+
+@dataclass(eq=False)
+class SuperiorWarriorRune(SuperiorAttributeRune):
+    profession = Profession.Warrior
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneWarrior
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneWarrior
 
 @dataclass(eq=False)
 class WarriorRuneOfMinorAbsorption(Rune):
     id = ItemUpgrade.WarriorRuneOfMinorAbsorption
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneWarrior
     profession = Profession.Warrior
-    rarity = Rarity.Blue
+    rarity = Rarity.Blue    
     
     # upgrade_info = (
     #     fixed(
@@ -4346,9 +4366,8 @@ class WarriorRuneOfMinorAbsorption(Rune):
         return GWStringEncoded(self.get_text_color() + encoded_description, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorTactics(MinorAttributeRune):
+class WarriorRuneOfMinorTactics(MinorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMinorTactics
-    profession = Profession.Warrior
     attribute = Attribute.Tactics
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4356,9 +4375,8 @@ class WarriorRuneOfMinorTactics(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorStrength(MinorAttributeRune):
+class WarriorRuneOfMinorStrength(MinorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMinorStrength
-    profession = Profession.Warrior
     attribute = Attribute.Strength
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4366,9 +4384,8 @@ class WarriorRuneOfMinorStrength(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorAxeMastery(MinorAttributeRune):
+class WarriorRuneOfMinorAxeMastery(MinorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMinorAxeMastery
-    profession = Profession.Warrior
     attribute = Attribute.AxeMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4376,9 +4393,8 @@ class WarriorRuneOfMinorAxeMastery(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorHammerMastery(MinorAttributeRune):
+class WarriorRuneOfMinorHammerMastery(MinorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMinorHammerMastery
-    profession = Profession.Warrior
     attribute = Attribute.HammerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4386,9 +4402,8 @@ class WarriorRuneOfMinorHammerMastery(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMinorSwordsmanship(MinorAttributeRune):
+class WarriorRuneOfMinorSwordsmanship(MinorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMinorSwordsmanship
-    profession = Profession.Warrior
     attribute = Attribute.Swordsmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4410,9 +4425,8 @@ class WarriorRuneOfMajorAbsorption(Rune):
 
     
 @dataclass(eq=False)
-class WarriorRuneOfMajorTactics(MajorAttributeRune):
+class WarriorRuneOfMajorTactics(MajorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMajorTactics
-    profession = Profession.Warrior
     attribute = Attribute.Tactics
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4420,9 +4434,8 @@ class WarriorRuneOfMajorTactics(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorStrength(MajorAttributeRune):
+class WarriorRuneOfMajorStrength(MajorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMajorStrength
-    profession = Profession.Warrior
     attribute = Attribute.Strength
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4430,9 +4443,8 @@ class WarriorRuneOfMajorStrength(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorAxeMastery(MajorAttributeRune):
+class WarriorRuneOfMajorAxeMastery(MajorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMajorAxeMastery
-    profession = Profession.Warrior
     attribute = Attribute.AxeMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4440,9 +4452,8 @@ class WarriorRuneOfMajorAxeMastery(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorHammerMastery(MajorAttributeRune):
+class WarriorRuneOfMajorHammerMastery(MajorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMajorHammerMastery
-    profession = Profession.Warrior
     attribute = Attribute.HammerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4450,9 +4461,8 @@ class WarriorRuneOfMajorHammerMastery(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfMajorSwordsmanship(MajorAttributeRune):
+class WarriorRuneOfMajorSwordsmanship(MajorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfMajorSwordsmanship
-    profession = Profession.Warrior
     attribute = Attribute.Swordsmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4462,6 +4472,7 @@ class WarriorRuneOfMajorSwordsmanship(MajorAttributeRune):
 @dataclass(eq=False)
 class WarriorRuneOfSuperiorAbsorption(Rune):
     id = ItemUpgrade.WarriorRuneOfSuperiorAbsorption
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneWarrior
     profession = Profession.Warrior
     rarity = Rarity.Gold
 
@@ -4474,9 +4485,8 @@ class WarriorRuneOfSuperiorAbsorption(Rune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorTactics(SuperiorAttributeRune):
+class WarriorRuneOfSuperiorTactics(SuperiorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorTactics
-    profession = Profession.Warrior
     attribute = Attribute.Tactics
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4484,9 +4494,8 @@ class WarriorRuneOfSuperiorTactics(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorStrength(SuperiorAttributeRune):
+class WarriorRuneOfSuperiorStrength(SuperiorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorStrength
-    profession = Profession.Warrior
     attribute = Attribute.Strength
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4494,9 +4503,8 @@ class WarriorRuneOfSuperiorStrength(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorAxeMastery(SuperiorAttributeRune):
+class WarriorRuneOfSuperiorAxeMastery(SuperiorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorAxeMastery
-    profession = Profession.Warrior
     attribute = Attribute.AxeMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4504,9 +4512,9 @@ class WarriorRuneOfSuperiorAxeMastery(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorHammerMastery(SuperiorAttributeRune):
+class WarriorRuneOfSuperiorHammerMastery(SuperiorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorHammerMastery
-    profession = Profession.Warrior
+    attribute = Attribute.HammerMastery
     attribute = Attribute.HammerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4514,44 +4522,12 @@ class WarriorRuneOfSuperiorHammerMastery(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class WarriorRuneOfSuperiorSwordsmanship(SuperiorAttributeRune):
+class WarriorRuneOfSuperiorSwordsmanship(SuperiorWarriorRune):
     id = ItemUpgrade.WarriorRuneOfSuperiorSwordsmanship
-    profession = Profession.Warrior
     attribute = Attribute.Swordsmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBA, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x46, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneWarrior(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneWarrior
-    profession = Profession.Warrior
-
-@dataclass(eq=False)
-class UpgradeMajorRuneWarrior(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneWarrior
-    profession = Profession.Warrior
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneWarrior(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneWarrior
-    profession = Profession.Warrior
-
-@dataclass(eq=False)
-class AppliesToMinorRuneWarrior(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneWarrior
-    profession = Profession.Warrior
-
-@dataclass(eq=False)
-class AppliesToMajorRuneWarrior(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneWarrior
-    profession = Profession.Warrior
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneWarrior(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneWarrior
-    profession = Profession.Warrior
 
 #endregion Warrior
 
@@ -4630,9 +4606,26 @@ class BeastmastersInsignia(Insignia):
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5E, 0x4D, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
-class RangerRuneOfMinorWildernessSurvival(MinorAttributeRune):
-    id = ItemUpgrade.RangerRuneOfMinorWildernessSurvival
+class MinorRangerRune(MinorAttributeRune):
     profession = Profession.Ranger
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneRanger
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneRanger
+
+@dataclass(eq=False)
+class MajorRangerRune(MajorAttributeRune):
+    profession = Profession.Ranger
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneRanger
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneRanger
+
+@dataclass(eq=False)
+class SuperiorRangerRune(SuperiorAttributeRune):
+    profession = Profession.Ranger
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneRanger
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneRanger
+
+@dataclass(eq=False)
+class RangerRuneOfMinorWildernessSurvival(MinorRangerRune):
+    id = ItemUpgrade.RangerRuneOfMinorWildernessSurvival
     attribute = Attribute.WildernessSurvival
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4640,9 +4633,8 @@ class RangerRuneOfMinorWildernessSurvival(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMinorExpertise(MinorAttributeRune):
+class RangerRuneOfMinorExpertise(MinorRangerRune):
     id = ItemUpgrade.RangerRuneOfMinorExpertise
-    profession = Profession.Ranger
     attribute = Attribute.Expertise
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4650,9 +4642,8 @@ class RangerRuneOfMinorExpertise(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMinorBeastMastery(MinorAttributeRune):
+class RangerRuneOfMinorBeastMastery(MinorRangerRune):
     id = ItemUpgrade.RangerRuneOfMinorBeastMastery
-    profession = Profession.Ranger
     attribute = Attribute.BeastMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4660,9 +4651,8 @@ class RangerRuneOfMinorBeastMastery(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMinorMarksmanship(MinorAttributeRune):
+class RangerRuneOfMinorMarksmanship(MinorRangerRune):
     id = ItemUpgrade.RangerRuneOfMinorMarksmanship
-    profession = Profession.Ranger
     attribute = Attribute.Marksmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4670,9 +4660,8 @@ class RangerRuneOfMinorMarksmanship(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorWildernessSurvival(MajorAttributeRune):
+class RangerRuneOfMajorWildernessSurvival(MajorRangerRune):
     id = ItemUpgrade.RangerRuneOfMajorWildernessSurvival
-    profession = Profession.Ranger
     attribute = Attribute.WildernessSurvival
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4680,9 +4669,8 @@ class RangerRuneOfMajorWildernessSurvival(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorExpertise(MajorAttributeRune):
+class RangerRuneOfMajorExpertise(MajorRangerRune):
     id = ItemUpgrade.RangerRuneOfMajorExpertise
-    profession = Profession.Ranger
     attribute = Attribute.Expertise
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4690,9 +4678,8 @@ class RangerRuneOfMajorExpertise(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorBeastMastery(MajorAttributeRune):
+class RangerRuneOfMajorBeastMastery(MajorRangerRune):
     id = ItemUpgrade.RangerRuneOfMajorBeastMastery
-    profession = Profession.Ranger
     attribute = Attribute.BeastMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4700,9 +4687,8 @@ class RangerRuneOfMajorBeastMastery(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfMajorMarksmanship(MajorAttributeRune):
+class RangerRuneOfMajorMarksmanship(MajorRangerRune):
     id = ItemUpgrade.RangerRuneOfMajorMarksmanship
-    profession = Profession.Ranger
     attribute = Attribute.Marksmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4710,9 +4696,8 @@ class RangerRuneOfMajorMarksmanship(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorWildernessSurvival(SuperiorAttributeRune):
+class RangerRuneOfSuperiorWildernessSurvival(SuperiorRangerRune):
     id = ItemUpgrade.RangerRuneOfSuperiorWildernessSurvival
-    profession = Profession.Ranger
     attribute = Attribute.WildernessSurvival
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4720,9 +4705,8 @@ class RangerRuneOfSuperiorWildernessSurvival(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorExpertise(SuperiorAttributeRune):
+class RangerRuneOfSuperiorExpertise(SuperiorRangerRune):
     id = ItemUpgrade.RangerRuneOfSuperiorExpertise
-    profession = Profession.Ranger
     attribute = Attribute.Expertise
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4730,9 +4714,8 @@ class RangerRuneOfSuperiorExpertise(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorBeastMastery(SuperiorAttributeRune):
+class RangerRuneOfSuperiorBeastMastery(SuperiorRangerRune):
     id = ItemUpgrade.RangerRuneOfSuperiorBeastMastery
-    profession = Profession.Ranger
     attribute = Attribute.BeastMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4740,50 +4723,12 @@ class RangerRuneOfSuperiorBeastMastery(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class RangerRuneOfSuperiorMarksmanship(SuperiorAttributeRune):
+class RangerRuneOfSuperiorMarksmanship(SuperiorRangerRune):
     id = ItemUpgrade.RangerRuneOfSuperiorMarksmanship
-    profession = Profession.Ranger
     attribute = Attribute.Marksmanship
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBB, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x56, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneRanger(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneRanger
-    profession = Profession.Ranger
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneRanger(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneRanger
-    profession = Profession.Ranger
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneRanger(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneRanger
-    profession = Profession.Ranger
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneRanger(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneRanger
-    profession = Profession.Ranger
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneRanger(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneRanger
-    profession = Profession.Ranger
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneRanger(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneRanger
-    profession = Profession.Ranger
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Ranger
 
@@ -4825,11 +4770,28 @@ class AnchoritesInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
+@dataclass(eq=False)
+class MinorMonkRune(MinorAttributeRune):
+    profession = Profession.Monk
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneMonk
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneMonk
 
 @dataclass(eq=False)
-class MonkRuneOfMinorHealingPrayers(MinorAttributeRune):
-    id = ItemUpgrade.MonkRuneOfMinorHealingPrayers
+class MajorMonkRune(MajorAttributeRune):
     profession = Profession.Monk
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneMonk
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneMonk
+
+@dataclass(eq=False)
+class SuperiorMonkRune(SuperiorAttributeRune):
+    profession = Profession.Monk
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneMonk
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneMonk
+
+
+@dataclass(eq=False)
+class MonkRuneOfMinorHealingPrayers(MinorMonkRune):
+    id = ItemUpgrade.MonkRuneOfMinorHealingPrayers
     attribute = Attribute.HealingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4837,9 +4799,8 @@ class MonkRuneOfMinorHealingPrayers(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMinorSmitingPrayers(MinorAttributeRune):
+class MonkRuneOfMinorSmitingPrayers(MinorMonkRune):
     id = ItemUpgrade.MonkRuneOfMinorSmitingPrayers
-    profession = Profession.Monk
     attribute = Attribute.SmitingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4847,9 +4808,8 @@ class MonkRuneOfMinorSmitingPrayers(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMinorProtectionPrayers(MinorAttributeRune):
+class MonkRuneOfMinorProtectionPrayers(MinorMonkRune):
     id = ItemUpgrade.MonkRuneOfMinorProtectionPrayers
-    profession = Profession.Monk
     attribute = Attribute.ProtectionPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4857,9 +4817,8 @@ class MonkRuneOfMinorProtectionPrayers(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMinorDivineFavor(MinorAttributeRune):
+class MonkRuneOfMinorDivineFavor(MinorMonkRune):
     id = ItemUpgrade.MonkRuneOfMinorDivineFavor
-    profession = Profession.Monk
     attribute = Attribute.DivineFavor
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4867,9 +4826,8 @@ class MonkRuneOfMinorDivineFavor(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorHealingPrayers(MajorAttributeRune):
+class MonkRuneOfMajorHealingPrayers(MajorMonkRune):
     id = ItemUpgrade.MonkRuneOfMajorHealingPrayers
-    profession = Profession.Monk
     attribute = Attribute.HealingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4877,9 +4835,8 @@ class MonkRuneOfMajorHealingPrayers(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorSmitingPrayers(MajorAttributeRune):
+class MonkRuneOfMajorSmitingPrayers(MajorMonkRune):
     id = ItemUpgrade.MonkRuneOfMajorSmitingPrayers
-    profession = Profession.Monk
     attribute = Attribute.SmitingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4887,9 +4844,8 @@ class MonkRuneOfMajorSmitingPrayers(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorProtectionPrayers(MajorAttributeRune):
+class MonkRuneOfMajorProtectionPrayers(MajorMonkRune):
     id = ItemUpgrade.MonkRuneOfMajorProtectionPrayers
-    profession = Profession.Monk
     attribute = Attribute.ProtectionPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4897,9 +4853,8 @@ class MonkRuneOfMajorProtectionPrayers(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfMajorDivineFavor(MajorAttributeRune):
+class MonkRuneOfMajorDivineFavor(MajorMonkRune):
     id = ItemUpgrade.MonkRuneOfMajorDivineFavor
-    profession = Profession.Monk
     attribute = Attribute.DivineFavor
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4907,9 +4862,8 @@ class MonkRuneOfMajorDivineFavor(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorHealingPrayers(SuperiorAttributeRune):
+class MonkRuneOfSuperiorHealingPrayers(SuperiorMonkRune):
     id = ItemUpgrade.MonkRuneOfSuperiorHealingPrayers
-    profession = Profession.Monk
     attribute = Attribute.HealingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4917,9 +4871,8 @@ class MonkRuneOfSuperiorHealingPrayers(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorSmitingPrayers(SuperiorAttributeRune):
+class MonkRuneOfSuperiorSmitingPrayers(SuperiorMonkRune):
     id = ItemUpgrade.MonkRuneOfSuperiorSmitingPrayers
-    profession = Profession.Monk
     attribute = Attribute.SmitingPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4927,9 +4880,8 @@ class MonkRuneOfSuperiorSmitingPrayers(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorProtectionPrayers(SuperiorAttributeRune):
+class MonkRuneOfSuperiorProtectionPrayers(SuperiorMonkRune):
     id = ItemUpgrade.MonkRuneOfSuperiorProtectionPrayers
-    profession = Profession.Monk
     attribute = Attribute.ProtectionPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -4937,50 +4889,12 @@ class MonkRuneOfSuperiorProtectionPrayers(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class MonkRuneOfSuperiorDivineFavor(SuperiorAttributeRune):
+class MonkRuneOfSuperiorDivineFavor(SuperiorMonkRune):
     id = ItemUpgrade.MonkRuneOfSuperiorDivineFavor
-    profession = Profession.Monk
     attribute = Attribute.DivineFavor
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB9, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x38, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneMonk(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneMonk
-    profession = Profession.Monk
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneMonk(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneMonk
-    profession = Profession.Monk
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneMonk(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneMonk
-    profession = Profession.Monk
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneMonk(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneMonk
-    profession = Profession.Monk
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneMonk(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneMonk
-    profession = Profession.Monk
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneMonk(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneMonk
-    profession = Profession.Monk
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Monk
 
@@ -5060,11 +4974,27 @@ class UndertakersInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x50, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x3C, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x28, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xBB, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x14, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
+@dataclass(eq=False)
+class MinorNecromancerRune(MinorAttributeRune):
+    profession = Profession.Necromancer
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneNecromancer
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneNecromancer
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorBloodMagic(MinorAttributeRune):
-    id = ItemUpgrade.NecromancerRuneOfMinorBloodMagic
+class MajorNecromancerRune(MajorAttributeRune):
     profession = Profession.Necromancer
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneNecromancer
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneNecromancer
+
+@dataclass(eq=False)
+class SuperiorNecromancerRune(SuperiorAttributeRune):
+    profession = Profession.Necromancer
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneNecromancer
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneNecromancer
+    
+@dataclass(eq=False)
+class NecromancerRuneOfMinorBloodMagic(MinorNecromancerRune):
+    id = ItemUpgrade.NecromancerRuneOfMinorBloodMagic
     attribute = Attribute.BloodMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5072,9 +5002,8 @@ class NecromancerRuneOfMinorBloodMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorDeathMagic(MinorAttributeRune):
+class NecromancerRuneOfMinorDeathMagic(MinorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMinorDeathMagic
-    profession = Profession.Necromancer
     attribute = Attribute.DeathMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5082,9 +5011,8 @@ class NecromancerRuneOfMinorDeathMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorCurses(MinorAttributeRune):
+class NecromancerRuneOfMinorCurses(MinorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMinorCurses
-    profession = Profession.Necromancer
     attribute = Attribute.Curses
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5092,9 +5020,8 @@ class NecromancerRuneOfMinorCurses(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMinorSoulReaping(MinorAttributeRune):
+class NecromancerRuneOfMinorSoulReaping(MinorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMinorSoulReaping
-    profession = Profession.Necromancer
     attribute = Attribute.SoulReaping
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5102,9 +5029,8 @@ class NecromancerRuneOfMinorSoulReaping(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorBloodMagic(MajorAttributeRune):
+class NecromancerRuneOfMajorBloodMagic(MajorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMajorBloodMagic
-    profession = Profession.Necromancer
     attribute = Attribute.BloodMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5112,9 +5038,8 @@ class NecromancerRuneOfMajorBloodMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorDeathMagic(MajorAttributeRune):
+class NecromancerRuneOfMajorDeathMagic(MajorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMajorDeathMagic
-    profession = Profession.Necromancer
     attribute = Attribute.DeathMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5122,9 +5047,8 @@ class NecromancerRuneOfMajorDeathMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorCurses(MajorAttributeRune):
+class NecromancerRuneOfMajorCurses(MajorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMajorCurses
-    profession = Profession.Necromancer
     attribute = Attribute.Curses
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5132,9 +5056,8 @@ class NecromancerRuneOfMajorCurses(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfMajorSoulReaping(MajorAttributeRune):
+class NecromancerRuneOfMajorSoulReaping(MajorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfMajorSoulReaping
-    profession = Profession.Necromancer
     attribute = Attribute.SoulReaping
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5142,9 +5065,8 @@ class NecromancerRuneOfMajorSoulReaping(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorBloodMagic(SuperiorAttributeRune):
+class NecromancerRuneOfSuperiorBloodMagic(SuperiorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorBloodMagic
-    profession = Profession.Necromancer
     attribute = Attribute.BloodMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5152,9 +5074,8 @@ class NecromancerRuneOfSuperiorBloodMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorDeathMagic(SuperiorAttributeRune):
+class NecromancerRuneOfSuperiorDeathMagic(SuperiorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorDeathMagic
-    profession = Profession.Necromancer
     attribute = Attribute.DeathMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5162,9 +5083,8 @@ class NecromancerRuneOfSuperiorDeathMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorCurses(SuperiorAttributeRune):
+class NecromancerRuneOfSuperiorCurses(SuperiorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorCurses
-    profession = Profession.Necromancer
     attribute = Attribute.Curses
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5172,50 +5092,12 @@ class NecromancerRuneOfSuperiorCurses(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class NecromancerRuneOfSuperiorSoulReaping(SuperiorAttributeRune):
+class NecromancerRuneOfSuperiorSoulReaping(SuperiorNecromancerRune):
     id = ItemUpgrade.NecromancerRuneOfSuperiorSoulReaping
-    profession = Profession.Necromancer
     attribute = Attribute.SoulReaping
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB7, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x2C, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneNecromancer(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneNecromancer
-    profession = Profession.Necromancer
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneNecromancer(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneNecromancer
-    profession = Profession.Necromancer
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneNecromancer(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneNecromancer
-    profession = Profession.Necromancer
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneNecromancer(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneNecromancer
-    profession = Profession.Necromancer
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneNecromancer(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneNecromancer
-    profession = Profession.Necromancer
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneNecromancer(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneNecromancer
-    profession = Profession.Necromancer
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Necromancer
 
@@ -5258,9 +5140,26 @@ class ProdigysInsignia(Insignia):
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x5F, 0x4D, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorFastCasting(MinorAttributeRune):
-    id = ItemUpgrade.MesmerRuneOfMinorFastCasting
+class MinorMesmerRune(MinorAttributeRune):
     profession = Profession.Mesmer
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneMesmer
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneMesmer
+
+@dataclass(eq=False)
+class MajorMesmerRune(MajorAttributeRune):
+    profession = Profession.Mesmer
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneMesmer
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneMesmer
+
+@dataclass(eq=False)
+class SuperiorMesmerRune(SuperiorAttributeRune):
+    profession = Profession.Mesmer
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneMesmer
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneMesmer
+
+@dataclass(eq=False)
+class MesmerRuneOfMinorFastCasting(MinorMesmerRune):
+    id = ItemUpgrade.MesmerRuneOfMinorFastCasting
     attribute = Attribute.FastCasting
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5268,9 +5167,8 @@ class MesmerRuneOfMinorFastCasting(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorDominationMagic(MinorAttributeRune):
+class MesmerRuneOfMinorDominationMagic(MinorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfMinorDominationMagic
-    profession = Profession.Mesmer
     attribute = Attribute.DominationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5278,9 +5176,8 @@ class MesmerRuneOfMinorDominationMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorIllusionMagic(MinorAttributeRune):
-    id = ItemUpgrade.MesmerRuneOfMinorIllusionMagic
-    profession = Profession.Mesmer
+class MesmerRuneOfMinorIllusionMagic(MinorMesmerRune):
+    id = ItemUpgrade.MesmerRuneOfMinorIllusionMagic    
     attribute = Attribute.IllusionMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5288,9 +5185,8 @@ class MesmerRuneOfMinorIllusionMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMinorInspirationMagic(MinorAttributeRune):
+class MesmerRuneOfMinorInspirationMagic(MinorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfMinorInspirationMagic
-    profession = Profession.Mesmer
     attribute = Attribute.InspirationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5298,9 +5194,8 @@ class MesmerRuneOfMinorInspirationMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorFastCasting(MajorAttributeRune):
+class MesmerRuneOfMajorFastCasting(MajorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfMajorFastCasting
-    profession = Profession.Mesmer
     attribute = Attribute.FastCasting
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5308,9 +5203,8 @@ class MesmerRuneOfMajorFastCasting(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorDominationMagic(MajorAttributeRune):
+class MesmerRuneOfMajorDominationMagic(MajorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfMajorDominationMagic
-    profession = Profession.Mesmer
     attribute = Attribute.DominationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5318,9 +5212,8 @@ class MesmerRuneOfMajorDominationMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorIllusionMagic(MajorAttributeRune):
+class MesmerRuneOfMajorIllusionMagic(MajorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfMajorIllusionMagic
-    profession = Profession.Mesmer
     attribute = Attribute.IllusionMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5328,9 +5221,8 @@ class MesmerRuneOfMajorIllusionMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfMajorInspirationMagic(MajorAttributeRune):
+class MesmerRuneOfMajorInspirationMagic(MajorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfMajorInspirationMagic
-    profession = Profession.Mesmer
     attribute = Attribute.InspirationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5338,9 +5230,8 @@ class MesmerRuneOfMajorInspirationMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorFastCasting(SuperiorAttributeRune):
+class MesmerRuneOfSuperiorFastCasting(SuperiorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorFastCasting
-    profession = Profession.Mesmer
     attribute = Attribute.FastCasting
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5348,9 +5239,8 @@ class MesmerRuneOfSuperiorFastCasting(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorDominationMagic(SuperiorAttributeRune):
+class MesmerRuneOfSuperiorDominationMagic(SuperiorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorDominationMagic
-    profession = Profession.Mesmer
     attribute = Attribute.DominationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5358,9 +5248,8 @@ class MesmerRuneOfSuperiorDominationMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorIllusionMagic(SuperiorAttributeRune):
+class MesmerRuneOfSuperiorIllusionMagic(SuperiorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorIllusionMagic
-    profession = Profession.Mesmer
     attribute = Attribute.IllusionMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5368,50 +5257,12 @@ class MesmerRuneOfSuperiorIllusionMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class MesmerRuneOfSuperiorInspirationMagic(SuperiorAttributeRune):
+class MesmerRuneOfSuperiorInspirationMagic(SuperiorMesmerRune):
     id = ItemUpgrade.MesmerRuneOfSuperiorInspirationMagic
-    profession = Profession.Mesmer
     attribute = Attribute.InspirationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB6, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x24, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneMesmer(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneMesmer
-    profession = Profession.Mesmer
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneMesmer(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneMesmer
-    profession = Profession.Mesmer
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneMesmer(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneMesmer
-    profession = Profession.Mesmer
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneMesmer(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneMesmer
-    profession = Profession.Mesmer
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneMesmer(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneMesmer
-    profession = Profession.Mesmer
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneMesmer(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneMesmer
-    profession = Profession.Mesmer
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Mesmer
 
@@ -5601,7 +5452,6 @@ class AeromancerInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAD, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE3, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
-
 @dataclass(eq=False)
 class PrismaticInsignia(Insignia):
     id = ItemUpgrade.PrismaticInsignia
@@ -5614,21 +5464,35 @@ class PrismaticInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x2E, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x30, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x34, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xA9, 0xA, 0xA, 0x1, 0x36, 0x9, 0x1, 0x0, 0x1, 0x1, 0x9, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
+@dataclass(eq=False)
+class MinorElementalistRune(MinorAttributeRune):
+    profession = Profession.Elementalist
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneElementalist
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneElementalist
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorEnergyStorage(MinorAttributeRune):
-    id = ItemUpgrade.ElementalistRuneOfMinorEnergyStorage
+class MajorElementalistRune(MajorAttributeRune):
     profession = Profession.Elementalist
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneElementalist
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneElementalist
+
+@dataclass(eq=False)
+class SuperiorElementalistRune(SuperiorAttributeRune):
+    profession = Profession.Elementalist
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneElementalist
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneElementalist
+
+@dataclass(eq=False)
+class ElementalistRuneOfMinorEnergyStorage(MinorElementalistRune):
+    id = ItemUpgrade.ElementalistRuneOfMinorEnergyStorage
     attribute = Attribute.EnergyStorage
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x32, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5A, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
-
 @dataclass(eq=False)
-class ElementalistRuneOfMinorFireMagic(MinorAttributeRune):
+class ElementalistRuneOfMinorFireMagic(MinorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMinorFireMagic
-    profession = Profession.Elementalist
     attribute = Attribute.FireMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5636,9 +5500,8 @@ class ElementalistRuneOfMinorFireMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorAirMagic(MinorAttributeRune):
+class ElementalistRuneOfMinorAirMagic(MinorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMinorAirMagic
-    profession = Profession.Elementalist
     attribute = Attribute.AirMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5646,9 +5509,8 @@ class ElementalistRuneOfMinorAirMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorEarthMagic(MinorAttributeRune):
+class ElementalistRuneOfMinorEarthMagic(MinorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMinorEarthMagic
-    profession = Profession.Elementalist
     attribute = Attribute.EarthMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5656,9 +5518,8 @@ class ElementalistRuneOfMinorEarthMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMinorWaterMagic(MinorAttributeRune):
+class ElementalistRuneOfMinorWaterMagic(MinorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMinorWaterMagic
-    profession = Profession.Elementalist
     attribute = Attribute.WaterMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5666,9 +5527,8 @@ class ElementalistRuneOfMinorWaterMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorEnergyStorage(MajorAttributeRune):
+class ElementalistRuneOfMajorEnergyStorage(MajorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMajorEnergyStorage
-    profession = Profession.Elementalist
     attribute = Attribute.EnergyStorage
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5676,9 +5536,8 @@ class ElementalistRuneOfMajorEnergyStorage(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorFireMagic(MajorAttributeRune):
+class ElementalistRuneOfMajorFireMagic(MajorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMajorFireMagic
-    profession = Profession.Elementalist
     attribute = Attribute.FireMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5686,9 +5545,8 @@ class ElementalistRuneOfMajorFireMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorAirMagic(MajorAttributeRune):
+class ElementalistRuneOfMajorAirMagic(MajorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMajorAirMagic
-    profession = Profession.Elementalist
     attribute = Attribute.AirMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5696,9 +5554,8 @@ class ElementalistRuneOfMajorAirMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorEarthMagic(MajorAttributeRune):
+class ElementalistRuneOfMajorEarthMagic(MajorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMajorEarthMagic
-    profession = Profession.Elementalist
     attribute = Attribute.EarthMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5706,9 +5563,8 @@ class ElementalistRuneOfMajorEarthMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfMajorWaterMagic(MajorAttributeRune):
+class ElementalistRuneOfMajorWaterMagic(MajorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfMajorWaterMagic
-    profession = Profession.Elementalist
     attribute = Attribute.WaterMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5716,9 +5572,8 @@ class ElementalistRuneOfMajorWaterMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorEnergyStorage(SuperiorAttributeRune):
+class ElementalistRuneOfSuperiorEnergyStorage(SuperiorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorEnergyStorage
-    profession = Profession.Elementalist
     attribute = Attribute.EnergyStorage
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5726,18 +5581,17 @@ class ElementalistRuneOfSuperiorEnergyStorage(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorFireMagic(SuperiorAttributeRune):
+class ElementalistRuneOfSuperiorFireMagic(SuperiorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorFireMagic
-    profession = Profession.Elementalist
+    attribute = Attribute.FireMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x34, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorAirMagic(SuperiorAttributeRune):
+class ElementalistRuneOfSuperiorAirMagic(SuperiorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorAirMagic
-    profession = Profession.Elementalist
     attribute = Attribute.AirMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5745,9 +5599,8 @@ class ElementalistRuneOfSuperiorAirMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorEarthMagic(SuperiorAttributeRune):
+class ElementalistRuneOfSuperiorEarthMagic(SuperiorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorEarthMagic
-    profession = Profession.Elementalist
     attribute = Attribute.EarthMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5755,50 +5608,12 @@ class ElementalistRuneOfSuperiorEarthMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class ElementalistRuneOfSuperiorWaterMagic(SuperiorAttributeRune):
+class ElementalistRuneOfSuperiorWaterMagic(SuperiorElementalistRune):
     id = ItemUpgrade.ElementalistRuneOfSuperiorWaterMagic
-    profession = Profession.Elementalist
     attribute = Attribute.WaterMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xB8, 0x22, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x36, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneElementalist(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneElementalist
-    profession = Profession.Elementalist
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneElementalist(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneElementalist
-    profession = Profession.Elementalist
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneElementalist(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneElementalist
-    profession = Profession.Elementalist
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneElementalist(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneElementalist
-    profession = Profession.Elementalist
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneElementalist(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneElementalist
-    profession = Profession.Elementalist
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneElementalist(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneElementalist
-    profession = Profession.Elementalist
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Elementalist
 
@@ -5840,7 +5655,6 @@ class SaboteursInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xAC, 0xA, 0xA, 0x1, 0xE0, 0x8, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
-
 @dataclass(eq=False)
 class NightstalkersInsignia(Insignia):
     id = ItemUpgrade.NightstalkersInsignia
@@ -5853,11 +5667,28 @@ class NightstalkersInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xB4, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
+@dataclass(eq=False)
+class MinorAssassinRune(MinorAttributeRune):
+    profession = Profession.Assassin
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneAssassin
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneAssassin
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorCriticalStrikes(MinorAttributeRune):
-    id = ItemUpgrade.AssassinRuneOfMinorCriticalStrikes
+class MajorAssassinRune(MajorAttributeRune):
     profession = Profession.Assassin
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneAssassin
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneAssassin
+
+@dataclass(eq=False)
+class SuperiorAssassinRune(SuperiorAttributeRune):
+    profession = Profession.Assassin
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneAssassin
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneAssassin
+
+
+@dataclass(eq=False)
+class AssassinRuneOfMinorCriticalStrikes(MinorAssassinRune):
+    id = ItemUpgrade.AssassinRuneOfMinorCriticalStrikes
     attribute = Attribute.CriticalStrikes
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5865,9 +5696,8 @@ class AssassinRuneOfMinorCriticalStrikes(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorDaggerMastery(MinorAttributeRune):
+class AssassinRuneOfMinorDaggerMastery(MinorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMinorDaggerMastery
-    profession = Profession.Assassin
     attribute = Attribute.DaggerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5875,9 +5705,8 @@ class AssassinRuneOfMinorDaggerMastery(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorDeadlyArts(MinorAttributeRune):
+class AssassinRuneOfMinorDeadlyArts(MinorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMinorDeadlyArts
-    profession = Profession.Assassin
     attribute = Attribute.DeadlyArts
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5885,9 +5714,8 @@ class AssassinRuneOfMinorDeadlyArts(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMinorShadowArts(MinorAttributeRune):
+class AssassinRuneOfMinorShadowArts(MinorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMinorShadowArts
-    profession = Profession.Assassin
     attribute = Attribute.ShadowArts
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5895,9 +5723,8 @@ class AssassinRuneOfMinorShadowArts(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorCriticalStrikes(MajorAttributeRune):
+class AssassinRuneOfMajorCriticalStrikes(MajorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMajorCriticalStrikes
-    profession = Profession.Assassin
     attribute = Attribute.CriticalStrikes
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5905,9 +5732,8 @@ class AssassinRuneOfMajorCriticalStrikes(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorDaggerMastery(MajorAttributeRune):
+class AssassinRuneOfMajorDaggerMastery(MajorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMajorDaggerMastery
-    profession = Profession.Assassin
     attribute = Attribute.DaggerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5915,9 +5741,8 @@ class AssassinRuneOfMajorDaggerMastery(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorDeadlyArts(MajorAttributeRune):
+class AssassinRuneOfMajorDeadlyArts(MajorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMajorDeadlyArts
-    profession = Profession.Assassin
     attribute = Attribute.DeadlyArts
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5925,9 +5750,8 @@ class AssassinRuneOfMajorDeadlyArts(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfMajorShadowArts(MajorAttributeRune):
+class AssassinRuneOfMajorShadowArts(MajorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfMajorShadowArts
-    profession = Profession.Assassin
     attribute = Attribute.ShadowArts
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5935,9 +5759,8 @@ class AssassinRuneOfMajorShadowArts(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorCriticalStrikes(SuperiorAttributeRune):
+class AssassinRuneOfSuperiorCriticalStrikes(SuperiorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorCriticalStrikes
-    profession = Profession.Assassin
     attribute = Attribute.CriticalStrikes
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5945,9 +5768,8 @@ class AssassinRuneOfSuperiorCriticalStrikes(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorDaggerMastery(SuperiorAttributeRune):
+class AssassinRuneOfSuperiorDaggerMastery(SuperiorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorDaggerMastery
-    profession = Profession.Assassin
     attribute = Attribute.DaggerMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5955,9 +5777,8 @@ class AssassinRuneOfSuperiorDaggerMastery(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorDeadlyArts(SuperiorAttributeRune):
+class AssassinRuneOfSuperiorDeadlyArts(SuperiorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorDeadlyArts
-    profession = Profession.Assassin
     attribute = Attribute.DeadlyArts
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -5965,50 +5786,12 @@ class AssassinRuneOfSuperiorDeadlyArts(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class AssassinRuneOfSuperiorShadowArts(SuperiorAttributeRune):
+class AssassinRuneOfSuperiorShadowArts(SuperiorAssassinRune):
     id = ItemUpgrade.AssassinRuneOfSuperiorShadowArts
-    profession = Profession.Assassin
     attribute = Attribute.ShadowArts
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x5E, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneAssassin(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneAssassin
-    profession = Profession.Assassin
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneAssassin(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneAssassin
-    profession = Profession.Assassin
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneAssassin(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneAssassin
-    profession = Profession.Assassin
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneAssassin(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneAssassin
-    profession = Profession.Assassin
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneAssassin(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneAssassin
-    profession = Profession.Assassin
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneAssassin(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneAssassin
-    profession = Profession.Assassin
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Assassin
 
@@ -6026,7 +5809,6 @@ class ShamansInsignia(Insignia):
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x82, 0x7D, 0x1, 0x1, 0x1, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x82, 0x7D, 0x1, 0x1, 0x2, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0x5, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x82, 0x7D, 0x1, 0x1, 0x3, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
-
 @dataclass(eq=False)
 class GhostForgeInsignia(Insignia):
     id = ItemUpgrade.GhostForgeInsignia
@@ -6038,7 +5820,6 @@ class GhostForgeInsignia(Insignia):
     def create_encoded_description(self) -> GWStringEncoded:
         fallback = f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)"
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9C, 0x4D, 0xA, 0x1, 0xBA, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
-
 
 @dataclass(eq=False)
 class MysticsInsignia(Insignia):
@@ -6052,9 +5833,26 @@ class MysticsInsignia(Insignia):
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xF, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0xC0, 0xA, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorChannelingMagic(MinorAttributeRune):
-    id = ItemUpgrade.RitualistRuneOfMinorChannelingMagic
+class MinorRitualistRune(MinorAttributeRune):
     profession = Profession.Ritualist
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneRitualist
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneRitualist
+
+@dataclass(eq=False)
+class MajorRitualistRune(MajorAttributeRune):
+    profession = Profession.Ritualist
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneRitualist
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneRitualist
+
+@dataclass(eq=False)
+class SuperiorRitualistRune(SuperiorAttributeRune):
+    profession = Profession.Ritualist
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneRitualist
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneRitualist
+    
+@dataclass(eq=False)
+class RitualistRuneOfMinorChannelingMagic(MinorRitualistRune):
+    id = ItemUpgrade.RitualistRuneOfMinorChannelingMagic
     attribute = Attribute.ChannelingMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6062,9 +5860,8 @@ class RitualistRuneOfMinorChannelingMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorRestorationMagic(MinorAttributeRune):
+class RitualistRuneOfMinorRestorationMagic(MinorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMinorRestorationMagic
-    profession = Profession.Ritualist
     attribute = Attribute.RestorationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6072,9 +5869,8 @@ class RitualistRuneOfMinorRestorationMagic(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorCommuning(MinorAttributeRune):
+class RitualistRuneOfMinorCommuning(MinorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMinorCommuning
-    profession = Profession.Ritualist
     attribute = Attribute.Communing
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6082,9 +5878,8 @@ class RitualistRuneOfMinorCommuning(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMinorSpawningPower(MinorAttributeRune):
+class RitualistRuneOfMinorSpawningPower(MinorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMinorSpawningPower
-    profession = Profession.Ritualist
     attribute = Attribute.SpawningPower
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6092,9 +5887,8 @@ class RitualistRuneOfMinorSpawningPower(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorChannelingMagic(MajorAttributeRune):
+class RitualistRuneOfMajorChannelingMagic(MajorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMajorChannelingMagic
-    profession = Profession.Ritualist
     attribute = Attribute.ChannelingMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6102,9 +5896,8 @@ class RitualistRuneOfMajorChannelingMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorRestorationMagic(MajorAttributeRune):
+class RitualistRuneOfMajorRestorationMagic(MajorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMajorRestorationMagic
-    profession = Profession.Ritualist
     attribute = Attribute.RestorationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6112,9 +5905,8 @@ class RitualistRuneOfMajorRestorationMagic(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorCommuning(MajorAttributeRune):
+class RitualistRuneOfMajorCommuning(MajorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMajorCommuning
-    profession = Profession.Ritualist
     attribute = Attribute.Communing
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6122,9 +5914,8 @@ class RitualistRuneOfMajorCommuning(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfMajorSpawningPower(MajorAttributeRune):
+class RitualistRuneOfMajorSpawningPower(MajorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfMajorSpawningPower
-    profession = Profession.Ritualist
     attribute = Attribute.SpawningPower
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6132,9 +5923,8 @@ class RitualistRuneOfMajorSpawningPower(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorChannelingMagic(SuperiorAttributeRune):
+class RitualistRuneOfSuperiorChannelingMagic(SuperiorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorChannelingMagic
-    profession = Profession.Ritualist
     attribute = Attribute.ChannelingMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6142,9 +5932,8 @@ class RitualistRuneOfSuperiorChannelingMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorRestorationMagic(SuperiorAttributeRune):
+class RitualistRuneOfSuperiorRestorationMagic(SuperiorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorRestorationMagic
-    profession = Profession.Ritualist
     attribute = Attribute.RestorationMagic
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6152,9 +5941,8 @@ class RitualistRuneOfSuperiorRestorationMagic(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorCommuning(SuperiorAttributeRune):
+class RitualistRuneOfSuperiorCommuning(SuperiorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorCommuning
-    profession = Profession.Ritualist
     attribute = Attribute.Communing
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6162,50 +5950,12 @@ class RitualistRuneOfSuperiorCommuning(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class RitualistRuneOfSuperiorSpawningPower(SuperiorAttributeRune):
+class RitualistRuneOfSuperiorSpawningPower(SuperiorRitualistRune):
     id = ItemUpgrade.RitualistRuneOfSuperiorSpawningPower
-    profession = Profession.Ritualist
     attribute = Attribute.SpawningPower
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0xC0, 0x55, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x62, 0x9, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneRitualist(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneRitualist
-    profession = Profession.Ritualist
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneRitualist(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneRitualist
-    profession = Profession.Ritualist
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneRitualist(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneRitualist
-    profession = Profession.Ritualist
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneRitualist(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneRitualist
-    profession = Profession.Ritualist
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneRitualist(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneRitualist
-    profession = Profession.Ritualist
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneRitualist(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneRitualist
-    profession = Profession.Ritualist
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Ritualist
 
@@ -6234,9 +5984,26 @@ class ForsakenInsignia(Insignia):
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x9D, 0x4D, 0xA, 0x1, 0xB6, 0x4, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
-class DervishRuneOfMinorMysticism(MinorAttributeRune):
-    id = ItemUpgrade.DervishRuneOfMinorMysticism
+class MinorDervishRune(MinorAttributeRune):
     profession = Profession.Dervish
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneDervish
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneDervish
+
+@dataclass(eq=False)
+class MajorDervishRune(MajorAttributeRune):
+    profession = Profession.Dervish
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneDervish
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneDervish
+
+@dataclass(eq=False)
+class SuperiorDervishRune(SuperiorAttributeRune):
+    profession = Profession.Dervish
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneDervish
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneDervish
+    
+@dataclass(eq=False)
+class DervishRuneOfMinorMysticism(MinorDervishRune):
+    id = ItemUpgrade.DervishRuneOfMinorMysticism
     attribute = Attribute.Mysticism
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6244,9 +6011,8 @@ class DervishRuneOfMinorMysticism(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMinorEarthPrayers(MinorAttributeRune):
+class DervishRuneOfMinorEarthPrayers(MinorDervishRune):
     id = ItemUpgrade.DervishRuneOfMinorEarthPrayers
-    profession = Profession.Dervish
     attribute = Attribute.EarthPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6254,9 +6020,8 @@ class DervishRuneOfMinorEarthPrayers(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMinorScytheMastery(MinorAttributeRune):
+class DervishRuneOfMinorScytheMastery(MinorDervishRune):
     id = ItemUpgrade.DervishRuneOfMinorScytheMastery
-    profession = Profession.Dervish
     attribute = Attribute.ScytheMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6264,9 +6029,8 @@ class DervishRuneOfMinorScytheMastery(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMinorWindPrayers(MinorAttributeRune):
+class DervishRuneOfMinorWindPrayers(MinorDervishRune):
     id = ItemUpgrade.DervishRuneOfMinorWindPrayers
-    profession = Profession.Dervish
     attribute = Attribute.WindPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6274,9 +6038,8 @@ class DervishRuneOfMinorWindPrayers(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorMysticism(MajorAttributeRune):
+class DervishRuneOfMajorMysticism(MajorDervishRune):
     id = ItemUpgrade.DervishRuneOfMajorMysticism
-    profession = Profession.Dervish
     attribute = Attribute.Mysticism
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6284,9 +6047,8 @@ class DervishRuneOfMajorMysticism(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorEarthPrayers(MajorAttributeRune):
+class DervishRuneOfMajorEarthPrayers(MajorDervishRune):
     id = ItemUpgrade.DervishRuneOfMajorEarthPrayers
-    profession = Profession.Dervish
     attribute = Attribute.EarthPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6294,9 +6056,8 @@ class DervishRuneOfMajorEarthPrayers(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorScytheMastery(MajorAttributeRune):
+class DervishRuneOfMajorScytheMastery(MajorDervishRune):
     id = ItemUpgrade.DervishRuneOfMajorScytheMastery
-    profession = Profession.Dervish
     attribute = Attribute.ScytheMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6304,9 +6065,8 @@ class DervishRuneOfMajorScytheMastery(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfMajorWindPrayers(MajorAttributeRune):
+class DervishRuneOfMajorWindPrayers(MajorDervishRune):
     id = ItemUpgrade.DervishRuneOfMajorWindPrayers
-    profession = Profession.Dervish
     attribute = Attribute.WindPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6314,9 +6074,8 @@ class DervishRuneOfMajorWindPrayers(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorMysticism(SuperiorAttributeRune):
+class DervishRuneOfSuperiorMysticism(SuperiorDervishRune):
     id = ItemUpgrade.DervishRuneOfSuperiorMysticism
-    profession = Profession.Dervish
     attribute = Attribute.Mysticism
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6324,9 +6083,8 @@ class DervishRuneOfSuperiorMysticism(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorEarthPrayers(SuperiorAttributeRune):
+class DervishRuneOfSuperiorEarthPrayers(SuperiorDervishRune):
     id = ItemUpgrade.DervishRuneOfSuperiorEarthPrayers
-    profession = Profession.Dervish
     attribute = Attribute.EarthPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6334,9 +6092,8 @@ class DervishRuneOfSuperiorEarthPrayers(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorScytheMastery(SuperiorAttributeRune):
+class DervishRuneOfSuperiorScytheMastery(SuperiorDervishRune):
     id = ItemUpgrade.DervishRuneOfSuperiorScytheMastery
-    profession = Profession.Dervish
     attribute = Attribute.ScytheMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6344,50 +6101,12 @@ class DervishRuneOfSuperiorScytheMastery(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class DervishRuneOfSuperiorWindPrayers(SuperiorAttributeRune):
+class DervishRuneOfSuperiorWindPrayers(SuperiorDervishRune):
     id = ItemUpgrade.DervishRuneOfSuperiorWindPrayers
-    profession = Profession.Dervish
     attribute = Attribute.WindPrayers
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x71, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x35, 0x12, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneDervish(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneDervish
-    profession = Profession.Dervish
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneDervish(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneDervish
-    profession = Profession.Dervish
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneDervish(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneDervish
-    profession = Profession.Dervish
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneDervish(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneDervish
-    profession = Profession.Dervish
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneDervish(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneDervish
-    profession = Profession.Dervish
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneDervish(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneDervish
-    profession = Profession.Dervish
-    mod_type = ItemUpgradeType.AppliesToRune
 
 #endregion Dervish
 
@@ -6406,9 +6125,26 @@ class CenturionsInsignia(Insignia):
         return GWStringEncoded(bytes([0x2, 0x0, 0x3C, 0xA, 0xA, 0x1, 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, 0xA, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x1, 0x81, 0x60, 0x4D, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1]), fallback)
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorLeadership(MinorAttributeRune):
-    id = ItemUpgrade.ParagonRuneOfMinorLeadership
+class MinorParagonRune(MinorAttributeRune):
     profession = Profession.Paragon
+    upgrade_rune_id = ItemUpgrade.UpgradeMinorRuneParagon
+    applies_to_rune_id = ItemUpgrade.AppliesToMinorRuneParagon
+
+@dataclass(eq=False)
+class MajorParagonRune(MajorAttributeRune):
+    profession = Profession.Paragon
+    upgrade_rune_id = ItemUpgrade.UpgradeMajorRuneParagon
+    applies_to_rune_id = ItemUpgrade.AppliesToMajorRuneParagon
+
+@dataclass(eq=False)
+class SuperiorParagonRune(SuperiorAttributeRune):
+    profession = Profession.Paragon
+    upgrade_rune_id = ItemUpgrade.UpgradeSuperiorRuneParagon
+    applies_to_rune_id = ItemUpgrade.AppliesToSuperiorRuneParagon
+    
+@dataclass(eq=False)
+class ParagonRuneOfMinorLeadership(MinorParagonRune):
+    id = ItemUpgrade.ParagonRuneOfMinorLeadership
     attribute = Attribute.Leadership
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6416,9 +6152,8 @@ class ParagonRuneOfMinorLeadership(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorMotivation(MinorAttributeRune):
+class ParagonRuneOfMinorMotivation(MinorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMinorMotivation
-    profession = Profession.Paragon
     attribute = Attribute.Motivation
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6426,9 +6161,8 @@ class ParagonRuneOfMinorMotivation(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorCommand(MinorAttributeRune):
+class ParagonRuneOfMinorCommand(MinorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMinorCommand
-    profession = Profession.Paragon
     attribute = Attribute.Command
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6436,9 +6170,8 @@ class ParagonRuneOfMinorCommand(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMinorSpearMastery(MinorAttributeRune):
+class ParagonRuneOfMinorSpearMastery(MinorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMinorSpearMastery
-    profession = Profession.Paragon
     attribute = Attribute.SpearMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6446,9 +6179,8 @@ class ParagonRuneOfMinorSpearMastery(MinorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorLeadership(MajorAttributeRune):
+class ParagonRuneOfMajorLeadership(MajorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMajorLeadership
-    profession = Profession.Paragon
     attribute = Attribute.Leadership
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6456,9 +6188,8 @@ class ParagonRuneOfMajorLeadership(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorMotivation(MajorAttributeRune):
+class ParagonRuneOfMajorMotivation(MajorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMajorMotivation
-    profession = Profession.Paragon
     attribute = Attribute.Motivation
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6466,9 +6197,8 @@ class ParagonRuneOfMajorMotivation(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorCommand(MajorAttributeRune):
+class ParagonRuneOfMajorCommand(MajorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMajorCommand
-    profession = Profession.Paragon
     attribute = Attribute.Command
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6476,9 +6206,8 @@ class ParagonRuneOfMajorCommand(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfMajorSpearMastery(MajorAttributeRune):
+class ParagonRuneOfMajorSpearMastery(MajorParagonRune):
     id = ItemUpgrade.ParagonRuneOfMajorSpearMastery
-    profession = Profession.Paragon
     attribute = Attribute.SpearMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6486,9 +6215,8 @@ class ParagonRuneOfMajorSpearMastery(MajorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorLeadership(SuperiorAttributeRune):
+class ParagonRuneOfSuperiorLeadership(SuperiorParagonRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorLeadership
-    profession = Profession.Paragon
     attribute = Attribute.Leadership
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6496,9 +6224,8 @@ class ParagonRuneOfSuperiorLeadership(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorMotivation(SuperiorAttributeRune):
+class ParagonRuneOfSuperiorMotivation(SuperiorParagonRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorMotivation
-    profession = Profession.Paragon
     attribute = Attribute.Motivation
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6506,9 +6233,8 @@ class ParagonRuneOfSuperiorMotivation(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorCommand(SuperiorAttributeRune):
+class ParagonRuneOfSuperiorCommand(SuperiorParagonRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorCommand
-    profession = Profession.Paragon
     attribute = Attribute.Command
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -6516,51 +6242,13 @@ class ParagonRuneOfSuperiorCommand(SuperiorAttributeRune):
 
 
 @dataclass(eq=False)
-class ParagonRuneOfSuperiorSpearMastery(SuperiorAttributeRune):
+class ParagonRuneOfSuperiorSpearMastery(SuperiorParagonRune):
     id = ItemUpgrade.ParagonRuneOfSuperiorSpearMastery
-    profession = Profession.Paragon
     attribute = Attribute.SpearMastery
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x33, 0xA, 0xA, 0x1, 0x1, 0x81, 0x72, 0x1C, 0x1, 0x0, 0xB, 0x1, 0x8, 0x1, 0xA, 0x1, 0x8B, 0xA, 0xA, 0x1, 0x1, 0x81, 0x20, 0x11, 0x1, 0x0, 0xB, 0x1, 0x5C, 0xA, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0]), _humanize_identifier(self.__class__.__name__))
-
-
-@dataclass(eq=False)
-class UpgradeMinorRuneParagon(UpgradeRune):
-    id = ItemUpgrade.UpgradeMinorRuneParagon
-    profession = Profession.Paragon
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeMajorRuneParagon(UpgradeRune):
-    id = ItemUpgrade.UpgradeMajorRuneParagon
-    profession = Profession.Paragon
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class UpgradeSuperiorRuneParagon(UpgradeRune):
-    id = ItemUpgrade.UpgradeSuperiorRuneParagon
-    profession = Profession.Paragon
-    mod_type = ItemUpgradeType.UpgradeRune
-
-@dataclass(eq=False)
-class AppliesToMinorRuneParagon(AppliesToRune):
-    id = ItemUpgrade.AppliesToMinorRuneParagon
-    profession = Profession.Paragon
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToMajorRuneParagon(AppliesToRune):
-    id = ItemUpgrade.AppliesToMajorRuneParagon
-    profession = Profession.Paragon
-    mod_type = ItemUpgradeType.AppliesToRune
-
-@dataclass(eq=False)
-class AppliesToSuperiorRuneParagon(AppliesToRune):
-    id = ItemUpgrade.AppliesToSuperiorRuneParagon
-    profession = Profession.Paragon
-    mod_type = ItemUpgradeType.AppliesToRune
-
+    
 #endregion Paragon
 
 #endregion Armor Upgrades
@@ -6728,19 +6416,7 @@ _UPGRADES: list[type[Upgrade]] = [
     
     # Paragon
     CenturionsInsignia,    
-    
-    #No Profession
-    RuneOfMinorVigor,
-    RuneOfMinorVigor2,
-    RuneOfVitae,
-    RuneOfAttunement,
-    RuneOfMajorVigor,
-    RuneOfRecovery,
-    RuneOfRestoration,
-    RuneOfClarity,
-    RuneOfPurity,
-    RuneOfSuperiorVigor,
-    
+        
     # Warrior    
     WarriorRuneOfMinorAbsorption,
     WarriorRuneOfMinorTactics,
@@ -6760,14 +6436,7 @@ _UPGRADES: list[type[Upgrade]] = [
     WarriorRuneOfSuperiorAxeMastery,
     WarriorRuneOfSuperiorHammerMastery,
     WarriorRuneOfSuperiorSwordsmanship,
-    
-    UpgradeMinorRuneWarrior,
-    UpgradeMajorRuneWarrior,
-    UpgradeSuperiorRuneWarrior,
-    AppliesToMinorRuneWarrior,
-    AppliesToMajorRuneWarrior,
-    AppliesToSuperiorRuneWarrior,
-    
+        
     # Ranger        
     RangerRuneOfMinorWildernessSurvival,
     RangerRuneOfMinorExpertise,
@@ -6781,13 +6450,6 @@ _UPGRADES: list[type[Upgrade]] = [
     RangerRuneOfSuperiorExpertise,
     RangerRuneOfSuperiorBeastMastery,
     RangerRuneOfSuperiorMarksmanship,
-    
-    UpgradeMinorRuneRanger,
-    UpgradeMajorRuneRanger,
-    UpgradeSuperiorRuneRanger,
-    AppliesToMinorRuneRanger,
-    AppliesToMajorRuneRanger,
-    AppliesToSuperiorRuneRanger,
     
     # Monk    
     MonkRuneOfMinorHealingPrayers,
@@ -6803,13 +6465,6 @@ _UPGRADES: list[type[Upgrade]] = [
     MonkRuneOfSuperiorProtectionPrayers,
     MonkRuneOfSuperiorDivineFavor,
     
-    UpgradeMinorRuneMonk,
-    UpgradeMajorRuneMonk,
-    UpgradeSuperiorRuneMonk,
-    AppliesToMinorRuneMonk,
-    AppliesToMajorRuneMonk,
-    AppliesToSuperiorRuneMonk,
-    
     # Necromancer
     NecromancerRuneOfMinorBloodMagic,
     NecromancerRuneOfMinorDeathMagic,
@@ -6824,13 +6479,6 @@ _UPGRADES: list[type[Upgrade]] = [
     NecromancerRuneOfSuperiorCurses,
     NecromancerRuneOfSuperiorSoulReaping,
     
-    UpgradeMinorRuneNecromancer,
-    UpgradeMajorRuneNecromancer,
-    UpgradeSuperiorRuneNecromancer,
-    AppliesToMinorRuneNecromancer,
-    AppliesToMajorRuneNecromancer,
-    AppliesToSuperiorRuneNecromancer,
-    
     # Mesmer 
     MesmerRuneOfMinorFastCasting,
     MesmerRuneOfMinorDominationMagic,
@@ -6844,13 +6492,6 @@ _UPGRADES: list[type[Upgrade]] = [
     MesmerRuneOfSuperiorDominationMagic,
     MesmerRuneOfSuperiorIllusionMagic,
     MesmerRuneOfSuperiorInspirationMagic,
-    
-    UpgradeMinorRuneMesmer,
-    UpgradeMajorRuneMesmer,
-    UpgradeSuperiorRuneMesmer,
-    AppliesToMinorRuneMesmer,
-    AppliesToMajorRuneMesmer,
-    AppliesToSuperiorRuneMesmer,
     
     # Elementalist
     ElementalistRuneOfMinorEnergyStorage,
@@ -6869,13 +6510,6 @@ _UPGRADES: list[type[Upgrade]] = [
     ElementalistRuneOfSuperiorEarthMagic,
     ElementalistRuneOfSuperiorWaterMagic,
     
-    UpgradeMinorRuneElementalist,
-    UpgradeMajorRuneElementalist,
-    UpgradeSuperiorRuneElementalist,
-    AppliesToMinorRuneElementalist,
-    AppliesToMajorRuneElementalist,
-    AppliesToSuperiorRuneElementalist,
-    
     # Assassin
     AssassinRuneOfMinorCriticalStrikes,
     AssassinRuneOfMinorDaggerMastery,
@@ -6889,13 +6523,6 @@ _UPGRADES: list[type[Upgrade]] = [
     AssassinRuneOfSuperiorDaggerMastery,
     AssassinRuneOfSuperiorDeadlyArts,
     AssassinRuneOfSuperiorShadowArts,
-    
-    UpgradeMinorRuneAssassin,
-    UpgradeMajorRuneAssassin,
-    UpgradeSuperiorRuneAssassin,
-    AppliesToMinorRuneAssassin,
-    AppliesToMajorRuneAssassin,
-    AppliesToSuperiorRuneAssassin,
     
     # Ritualist
     RitualistRuneOfMinorChannelingMagic,
@@ -6911,13 +6538,6 @@ _UPGRADES: list[type[Upgrade]] = [
     RitualistRuneOfSuperiorCommuning,
     RitualistRuneOfSuperiorSpawningPower,
     
-    UpgradeMinorRuneRitualist,
-    UpgradeMajorRuneRitualist,
-    UpgradeSuperiorRuneRitualist,
-    AppliesToMinorRuneRitualist,
-    AppliesToMajorRuneRitualist,
-    AppliesToSuperiorRuneRitualist,
-    
     # Dervish
     DervishRuneOfMinorMysticism,
     DervishRuneOfMinorEarthPrayers,
@@ -6931,14 +6551,7 @@ _UPGRADES: list[type[Upgrade]] = [
     DervishRuneOfSuperiorEarthPrayers,
     DervishRuneOfSuperiorScytheMastery,
     DervishRuneOfSuperiorWindPrayers,
-    
-    UpgradeMinorRuneDervish,
-    UpgradeMajorRuneDervish,
-    UpgradeSuperiorRuneDervish,
-    AppliesToMinorRuneDervish,
-    AppliesToMajorRuneDervish,
-    AppliesToSuperiorRuneDervish,
-    
+        
     # Paragon    
     ParagonRuneOfMinorLeadership,
     ParagonRuneOfMinorMotivation,
@@ -6951,14 +6564,19 @@ _UPGRADES: list[type[Upgrade]] = [
     ParagonRuneOfSuperiorLeadership,
     ParagonRuneOfSuperiorMotivation,
     ParagonRuneOfSuperiorCommand,
-    ParagonRuneOfSuperiorSpearMastery,   
+    ParagonRuneOfSuperiorSpearMastery,
     
-    UpgradeMinorRuneParagon,
-    UpgradeMajorRuneParagon,
-    UpgradeSuperiorRuneParagon,
-    AppliesToMinorRuneParagon,
-    AppliesToMajorRuneParagon,
-    AppliesToSuperiorRuneParagon, 
+    #No Profession
+    RuneOfMinorVigor,
+    RuneOfMinorVigor2,
+    RuneOfVitae,
+    RuneOfAttunement,
+    RuneOfMajorVigor,
+    RuneOfRecovery,
+    RuneOfRestoration,
+    RuneOfClarity,
+    RuneOfPurity,
+    RuneOfSuperiorVigor,
 ]
 
 _INHERENT_UPGRADES: list[type[Inherent]] = [

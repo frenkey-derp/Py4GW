@@ -148,12 +148,16 @@ def get_property_factory() -> dict[ModifierIdentifier, Callable[[DecodedModifier
         ModifierIdentifier.ReceiveLessDamage: lambda m, _, rarity: ReceiveLessDamage(modifier=m, damage_reduction=m.arg2, chance=m.arg1, rarity=rarity),
         ModifierIdentifier.TargetItemType: lambda m, _, rarity: TargetItemTypeProperty(modifier=m, item_type=ItemType(m.arg1), rarity=rarity),
         
-        ModifierIdentifier.AttributeRune: lambda m, mods, rarity:   get_upgrade_property(m, mods, ItemUpgradeType.Suffix, rarity) or
+        ModifierIdentifier.AttributeRune: lambda m, mods, rarity:   get_upgrade_property(m, mods, ItemUpgradeType.UpgradeRune, rarity) or
+                                                            get_upgrade_property(m, mods, ItemUpgradeType.AppliesToRune, rarity) or
+                                                            get_upgrade_property(m, mods, ItemUpgradeType.Suffix, rarity) or
                                                             UnknownUpgradeProperty(modifier=m, upgrade_id=m.upgrade_id, rarity=rarity),
                                                             
         ModifierIdentifier.Upgrade: lambda m, mods, rarity: 
                                                                         get_upgrade_property(m, mods, ItemUpgradeType.Prefix, rarity) or
                                                                         get_upgrade_property(m, mods, ItemUpgradeType.Inscription, rarity) or
+                                                                        get_upgrade_property(m, mods, ItemUpgradeType.UpgradeRune, rarity) or
+                                                                        get_upgrade_property(m, mods, ItemUpgradeType.AppliesToRune, rarity) or
                                                                         get_upgrade_property(m, mods, ItemUpgradeType.Suffix, rarity) or
                                                                         UnknownUpgradeProperty(modifier=m, upgrade_id=m.upgrade_id, rarity=rarity),
     }
