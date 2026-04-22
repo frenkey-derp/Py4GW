@@ -2302,10 +2302,10 @@ class OfUndeadSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Undead
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Undead,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2328,10 +2328,10 @@ class OfCharrSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Charr
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Charr,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2354,10 +2354,10 @@ class OfTrollsSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Trolls
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Trolls,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2380,10 +2380,10 @@ class OfPlantsSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Plants
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Plants,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2406,10 +2406,10 @@ class OfSkeletonsSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Skeletons
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Skeletons,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2432,10 +2432,10 @@ class OfGiantsSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Giants
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Giants,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2458,10 +2458,10 @@ class OfDwarvesSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Dwarves
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Dwarves,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2484,10 +2484,10 @@ class OfTengusSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Tengus
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Tengus,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2510,10 +2510,10 @@ class OfDemonsSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Demons
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Demons,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2536,10 +2536,10 @@ class OfDragonsSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Dragons
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Dragons,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -2562,10 +2562,10 @@ class OfOgresSlayingUpgrade(OfSlayingUpgrade):
     species = ItemBaneSpecies.Ogres
 
     upgrade_info = (
-        enum(
+        fixed(
             identifier=ModifierIdentifier.DamagePlusVsSpecies,
             target="species",
-            enum_type=ItemBaneSpecies,
+            fixed_value=ItemBaneSpecies.Ogres,
             value_getter=property_value(
                 DamagePlusVsSpecies,
                 lambda prop: prop.species,
@@ -3097,185 +3097,6 @@ class OfTheDervishUpgrade(OfTheProfessionUpgrade):
         ),
     )
 #endregion OfTheProfessionUpgrade
-
-def _camelize_attribute_name(attribute: Attribute) -> str:
-    return "".join(part for part in attribute.name.replace("_", " ").split())
-
-
-def _create_of_attribute_upgrade_specializations() -> list[type[OfAttributeUpgrade]]:
-    existing_attributes = {
-        getattr(upgrade_type, "attribute", Attribute.None_)
-        for upgrade_type in OfAttributeUpgrade.__subclasses__()
-    }
-
-    generated_types: list[type[OfAttributeUpgrade]] = []
-    generated_attributes: set[Attribute] = set()
-
-    for profession, attributes in PROFESSION_ATTRIBUTES.items():
-        for attribute in attributes:
-            if attribute in existing_attributes or attribute in generated_attributes:
-                continue
-            
-            if profession not in [Profession.Monk, Profession.Necromancer, Profession.Mesmer, Profession.Elementalist, Profession.Ritualist]:
-                continue
-            
-            if attribute in [Attribute.SoulReaping, Attribute.FastCasting, Attribute.EnergyStorage]:
-                continue
-
-            class_name = f"Of{_camelize_attribute_name(attribute)}Upgrade"
-            upgrade_type = cast(
-                type[OfAttributeUpgrade],
-                type(
-                    class_name,
-                    (OfAttributeUpgrade,),
-                    {
-                        "__module__": __name__,
-                        "id": ItemUpgrade.OfAttribute,
-                        "attribute": attribute,
-                        "upgrade_info": (
-                            fixed(
-                                identifier=ModifierIdentifier.AttributePlusOne,
-                                target="attribute",
-                                fixed_value=attribute,
-                                value_getter=property_value(
-                                    AttributePlusOne,
-                                    lambda prop: prop.attribute,
-                                ),
-                            ),
-                            ranged(
-                                identifier=ModifierIdentifier.AttributePlusOne,
-                                target="chance",
-                                min_value=10,
-                                max_value=20,
-                                value_getter=property_value(
-                                    AttributePlusOne,
-                                    lambda prop: prop.chance,
-                                ),
-                            ),
-                            fixed(
-                                identifier=ModifierIdentifier.AttributePlusOne,
-                                target="attribute_level",
-                                fixed_value=1,
-                                value_getter=property_value(
-                                    AttributePlusOne,
-                                    lambda prop: prop.attribute_level,
-                                ),
-                            ),
-                        ),
-                    },
-                ),
-            )
-            globals()[class_name] = upgrade_type
-            generated_types.append(upgrade_type)
-            generated_attributes.add(attribute)
-
-    return generated_types
-
-
-def _create_of_the_profession_upgrade_specializations() -> list[type[OfTheProfessionUpgrade]]:
-    generated_types: list[type[OfTheProfessionUpgrade]] = []
-
-    for profession, attributes in PROFESSION_ATTRIBUTES.items():
-        if profession == Profession._None or len(attributes) == 0:
-            continue
-
-        primary_attribute = next((attribute for attribute in attributes if attribute.is_primary), attributes[0])
-        class_name = f"OfThe{profession.name}Upgrade"
-        upgrade_type = cast(
-            type[OfTheProfessionUpgrade],
-            type(
-                class_name,
-                (OfTheProfessionUpgrade,),
-                {
-                    "__module__": __name__,
-                    "id": ItemUpgrade.OfTheProfession,
-                    "profession": profession,
-                    "attribute": primary_attribute,
-                    "upgrade_info": (
-                        fixed(
-                            identifier=ModifierIdentifier.OfTheProfession,
-                            target="attribute",
-                            fixed_value=primary_attribute,
-                            value_getter=property_value(
-                                OfTheProfession,
-                                lambda prop: prop.attribute,
-                            ),
-                        ),
-                        ranged(
-                            identifier=ModifierIdentifier.OfTheProfession,
-                            target="attribute_level",
-                            min_value=4,
-                            max_value=5,
-                            value_getter=property_value(
-                                OfTheProfession,
-                                lambda prop: prop.attribute_level,
-                            ),
-                        ),
-                        fixed(
-                            identifier=ModifierIdentifier.OfTheProfession,
-                            target="profession",
-                            fixed_value=profession,
-                            value_getter=property_value(
-                                OfTheProfession,
-                                lambda prop: prop.profession,
-                            ),
-                        ),
-                    ),
-                },
-            ),
-        )
-        globals()[class_name] = upgrade_type
-        generated_types.append(upgrade_type)
-
-    return generated_types
-
-
-def _create_of_slaying_upgrade_specializations() -> list[type[OfSlayingUpgrade]]:
-    generated_types: list[type[OfSlayingUpgrade]] = []
-
-    for species in ItemBaneSpecies:
-        if species == ItemBaneSpecies.Unknown:
-            continue
-
-        class_name = f"Of{species.name}SlayingUpgrade"
-        upgrade_type = cast(
-            type[OfSlayingUpgrade],
-            type(
-                class_name,
-                (OfSlayingUpgrade,),
-                {
-                    "__module__": __name__,
-                    "id": ItemUpgrade.OfSlaying,
-                    "species": species,
-                    "damage_increase": 20,
-                    "upgrade_info": (
-                        enum(
-                            identifier=ModifierIdentifier.BaneSpecies,
-                            target="species",
-                            enum_type=ItemBaneSpecies,
-                            value_getter=property_value(
-                                BaneProperty,
-                                lambda prop: prop.species,
-                            ),
-                        ),
-                        ranged(
-                            identifier=ModifierIdentifier.DamagePlusVsSpecies,
-                            target="damage_increase",
-                            min_value=10,
-                            max_value=20,
-                            value_getter=property_value(
-                                DamagePlusVsSpecies,
-                                lambda prop: prop.damage_increase,
-                            ),
-                        ),
-                    ),
-                },
-            ),
-        )
-        globals()[class_name] = upgrade_type
-        generated_types.append(upgrade_type)
-
-    return generated_types
 
 @dataclass(eq=False)
 class OfValorUpgrade(WeaponSuffix):
@@ -4993,7 +4814,6 @@ class ArmorPlusEnchantedUpgrade(Inherent, FaithIsMyShield):
 class HalvesSkillRechargeItemAttributeUpgrade(Inherent, ForgetMeNot):
     pass
 
-
 @dataclass(eq=False)
 class ArmorPlusAboveUpgrade(Inherent, HailToTheKing):
     pass
@@ -5182,6 +5002,15 @@ class ArmorVsSpeciesUpgrade(Inherent):
     target_item_type = ItemType.Weapon
 
     upgrade_info = (
+        enum(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            enum_type=ItemBaneSpecies,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
         ranged(
             identifier=ModifierIdentifier.ArmorPlusVsSpecies,
             target="armor",
@@ -5190,15 +5019,6 @@ class ArmorVsSpeciesUpgrade(Inherent):
             value_getter=property_value(
                 ArmorPlusVsSpecies,
                 lambda prop: prop.armor,
-            ),
-        ),
-        enum(
-            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
-            target="species",
-            enum_type=ItemBaneSpecies,
-            value_getter=property_value(
-                ArmorPlusVsSpecies,
-                lambda prop: prop.species,
             ),
         ),
      )
@@ -5210,6 +5030,292 @@ class ArmorVsSpeciesUpgrade(Inherent):
         
         species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"Unknown species ({self.species.value})"
         return GWStringEncoded(bytes(), f"Armor +{self.armor}\n(vs. {species})")
+
+@dataclass(eq=False)
+class ArmorVsUndeadUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Undead
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Undead,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsCharrUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Charr
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Charr,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsTrollsUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Trolls
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Trolls,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsPlantsUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Plants
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Plants,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsSkeletonsUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Skeletons
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Skeletons,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsGiantsUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Giants
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Giants,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsDwarvesUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Dwarves
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Dwarves,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsTengusUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Tengus
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Tengus,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsDemonsUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Demons
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Demons,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsDragonsUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Dragons
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Dragons,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ArmorVsOgresUpgrade(ArmorVsSpeciesUpgrade):
+    species = ItemBaneSpecies.Ogres
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="species",
+            fixed_value=ItemBaneSpecies.Ogres,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.species,
+            ),
+        ),
+        ranged(
+            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
+            target="armor",
+            min_value=5,
+            max_value=10,
+            value_getter=property_value(
+                ArmorPlusVsSpecies,
+                lambda prop: prop.armor,
+            ),
+        ),
+    )
         
 #endregion OffhandOrShield
 
@@ -5306,6 +5412,551 @@ class HalvesCastingTimeAttributeUpgrade(Inherent):
             return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
         return GWStringEncoded(bytes(), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
+@dataclass(eq=False)
+class HalvesCastingTimeOfDivineFavorUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.DivineFavor
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.DivineFavor,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfHealingPrayersUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.HealingPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.HealingPrayers,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfSmitingPrayersUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.SmitingPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.SmitingPrayers,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfProtectionPrayersUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.ProtectionPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.ProtectionPrayers,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfSoulReapingUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.SoulReaping
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.SoulReaping,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfBloodMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.BloodMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.BloodMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfDeathMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.DeathMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.DeathMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfCursesUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.Curses
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.Curses,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfFastCastingUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.FastCasting
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.FastCasting,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfIllusionMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.IllusionMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.IllusionMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfDominationMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.DominationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.DominationMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfInspirationMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.InspirationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.InspirationMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfEnergyStorageUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.EnergyStorage
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.EnergyStorage,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfAirMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.AirMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.AirMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfEarthMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.EarthMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.EarthMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfFireMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.FireMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.FireMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfWaterMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.WaterMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.WaterMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfSpawningPowerUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.SpawningPower
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.SpawningPower,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfCommuningUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.Communing
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.Communing,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfRestorationMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.RestorationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.RestorationMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesCastingTimeOfChannelingMagicUpgrade(HalvesCastingTimeAttributeUpgrade):
+    attribute = Attribute.ChannelingMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
+            target="attribute",
+            fixed_value=Attribute.ChannelingMagic,
+            value_getter=property_value(
+                HalvesCastingTimeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
     
     
 @dataclass(eq=False)
@@ -5346,6 +5997,552 @@ class HalvesRechargeTimeAttributeUpgrade(Inherent):
             return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
         return GWEncoded._encoded(bytes(), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfDivineFavorUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.DivineFavor
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.DivineFavor,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfHealingPrayersUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.HealingPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.HealingPrayers,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfSmitingPrayersUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.SmitingPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.SmitingPrayers,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfProtectionPrayersUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.ProtectionPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.ProtectionPrayers,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfSoulReapingUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.SoulReaping
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.SoulReaping,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfBloodMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.BloodMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.BloodMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfDeathMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.DeathMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.DeathMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfCursesUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.Curses
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.Curses,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfFastCastingUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.FastCasting
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.FastCasting,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfIllusionMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.IllusionMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.IllusionMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfDominationMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.DominationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.DominationMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfInspirationMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.InspirationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.InspirationMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfEnergyStorageUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.EnergyStorage
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.EnergyStorage,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfAirMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.AirMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.AirMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfEarthMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.EarthMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.EarthMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfFireMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.FireMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.FireMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfWaterMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.WaterMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.WaterMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfSpawningPowerUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.SpawningPower
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.SpawningPower,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfCommuningUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.Communing
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.Communing,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfRestorationMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.RestorationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.RestorationMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class HalvesRechargeTimeOfChannelingMagicUpgrade(HalvesRechargeTimeAttributeUpgrade):
+    attribute = Attribute.ChannelingMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="chance",
+            min_value=10,
+            max_value=20,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
+            target="attribute",
+            fixed_value=Attribute.ChannelingMagic,
+            value_getter=property_value(
+                HalvesSkillRechargeAttribute,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
     
     
 @dataclass(eq=False)
@@ -7850,378 +9047,6 @@ class ParagonRuneOfSuperiorSpearMastery(SuperiorParagonRune):
 
 #endregion Armor Upgrades
 
-_UPGRADES: list[type[Upgrade]] = [
-    IcyUpgrade,
-    EbonUpgrade,
-    ShockingUpgrade,
-    FieryUpgrade,
-    BarbedUpgrade,
-    CripplingUpgrade,
-    CruelUpgrade,
-    PoisonousUpgrade,
-    SilencingUpgrade,
-    FuriousUpgrade,
-    HeavyUpgrade,
-    ZealousUpgrade,
-    VampiricUpgrade,
-    SunderingUpgrade,
-    DefensiveUpgrade,
-    InsightfulUpgrade,
-    HaleUpgrade,
-    OfDefenseUpgrade,
-    OfWardingUpgrade,
-    OfShelterUpgrade,
-    # OfSlayingUpgrade,
-    OfUndeadSlayingUpgrade,
-    OfCharrSlayingUpgrade,
-    OfTrollsSlayingUpgrade,
-    OfPlantsSlayingUpgrade,
-    OfSkeletonsSlayingUpgrade,
-    OfGiantsSlayingUpgrade,
-    OfDwarvesSlayingUpgrade,
-    OfTengusSlayingUpgrade,
-    OfDemonsSlayingUpgrade,
-    OfDragonsSlayingUpgrade,
-    OfOgresSlayingUpgrade,
-    
-    OfFortitudeUpgrade,
-    OfEnchantingUpgrade,
-    # OfTheProfessionUpgrade,
-    OfTheWarriorUpgrade,
-    OfTheRangerUpgrade,
-    OfTheMonkUpgrade,
-    OfTheNecromancerUpgrade,
-    OfTheMesmerUpgrade,
-    OfTheElementalistUpgrade,
-    OfTheAssassinUpgrade,
-    OfTheRitualistUpgrade,
-    OfTheParagonUpgrade,
-    OfTheDervishUpgrade,
-    
-    OfAxeMasteryUpgrade,
-    OfMarksmanshipUpgrade,
-    OfDaggerMasteryUpgrade,
-    OfHammerMasteryUpgrade,
-    OfScytheMasteryUpgrade,
-    OfSpearMasteryUpgrade,
-    OfSwordsmanshipUpgrade,
-    
-    # OfAttributeUpgrade,
-    OfDivineFavorUpgrade,
-    OfHealingPrayersUpgrade,
-    OfSmitingPrayersUpgrade,
-    OfProtectionPrayersUpgrade,
-    OfBloodMagicUpgrade,
-    OfDeathMagicUpgrade,
-    OfCursesUpgrade,
-    OfIllusionMagicUpgrade,
-    OfDominationMagicUpgrade,
-    OfInspirationMagicUpgrade,
-    OfAirMagicUpgrade,
-    OfEarthMagicUpgrade,
-    OfFireMagicUpgrade,
-    OfWaterMagicUpgrade,
-    OfSpawningPowerUpgrade,
-    OfCommuningUpgrade,
-    OfRestorationMagicUpgrade,
-    OfChannelingMagicUpgrade,
-    
-    OfMasteryUpgrade,
-    SwiftUpgrade,
-    AdeptUpgrade,
-    OfMemoryUpgrade,
-    OfQuickeningUpgrade,
-    OfAptitudeUpgrade,
-    OfDevotionUpgrade,
-    OfValorUpgrade,
-    OfEnduranceUpgrade,
-    OfSwiftnessUpgrade,
-    
-    BeJustAndFearNot,
-    DownButNotOut,
-    FaithIsMyShield,
-    ForgetMeNot,
-    HailToTheKing,
-    IgnoranceIsBliss,
-    KnowingIsHalfTheBattle,
-    LifeIsPain,
-    LiveForToday,
-    ManForAllSeasons,
-    MightMakesRight,
-    SerenityNow,
-    SurvivalOfTheFittest,
-    BrawnOverBrains,
-    DanceWithDeath,
-    DontFearTheReaper,
-    DontThinkTwice,
-    GuidedByFate,
-    StrengthAndHonor,
-    ToThePain,
-    TooMuchInformation,
-    VengeanceIsMine,
-    IHaveThePower,
-    LetTheMemoryLiveAgain,
-    CastOutTheUnclean,
-    FearCutsDeeper,
-    ICanSeeClearlyNow,
-    LeafOnTheWind,
-    LikeARollingStone,
-    LuckOfTheDraw,
-    MasterOfMyDomain,
-    NotTheFace,
-    NothingToFear,
-    OnlyTheStrongSurvive,
-    PureOfHeart,
-    RidersOnTheStorm,
-    RunForYourLife,
-    ShelteredByFaith,
-    SleepNowInTheFire,
-    SoundnessOfMind,
-    StrengthOfBody,
-    SwiftAsTheWind,
-    TheRiddleOfSteel,
-    ThroughThickAndThin,
-    MeasureForMeasure,
-    ShowMeTheMoney,
-    AptitudeNotAttitude,
-    DontCallItAComeback,
-    HaleAndHearty,
-    HaveFaith,
-    IAmSorrow,
-    SeizeTheDay,
-        
-    # No Profession
-    SurvivorInsignia,
-    RadiantInsignia,
-    StalwartInsignia,
-    BrawlersInsignia,
-    BlessedInsignia,
-    HeraldsInsignia,
-    SentrysInsignia,
-    
-    # Warrior
-    KnightsInsignia,
-    LieutenantsInsignia,
-    StonefistInsignia,
-    DreadnoughtInsignia,
-    SentinelsInsignia,
-    
-    # Ranger
-    FrostboundInsignia,
-    PyreboundInsignia,
-    StormboundInsignia,
-    ScoutsInsignia,
-    EarthboundInsignia,
-    BeastmastersInsignia,
-    
-    # Monk
-    WanderersInsignia,
-    DisciplesInsignia,
-    AnchoritesInsignia,
-    
-    # Necromancer
-    BloodstainedInsignia,
-    TormentorsInsignia,
-    BonelaceInsignia,
-    MinionMastersInsignia,
-    BlightersInsignia,
-    UndertakersInsignia,
-    
-    # Mesmer 
-    VirtuososInsignia,
-    ArtificersInsignia,
-    ProdigysInsignia,
-    
-    # Elementalist
-    HydromancerInsignia,
-    GeomancerInsignia,
-    PyromancerInsignia,
-    AeromancerInsignia,
-    PrismaticInsignia,
-    
-    # Assassin
-    VanguardsInsignia,
-    InfiltratorsInsignia,
-    SaboteursInsignia,
-    NightstalkersInsignia,
-    
-    # Ritualist
-    ShamansInsignia,
-    GhostForgeInsignia,
-    MysticsInsignia,
-    
-    # Dervish
-    WindwalkerInsignia,
-    ForsakenInsignia,
-    
-    # Paragon
-    CenturionsInsignia,    
-        
-    # Warrior    
-    WarriorRuneOfMinorAbsorption,
-    WarriorRuneOfMinorTactics,
-    WarriorRuneOfMinorStrength,
-    WarriorRuneOfMinorAxeMastery,
-    WarriorRuneOfMinorHammerMastery,
-    WarriorRuneOfMinorSwordsmanship,
-    WarriorRuneOfMajorAbsorption,
-    WarriorRuneOfMajorTactics,
-    WarriorRuneOfMajorStrength,
-    WarriorRuneOfMajorAxeMastery,
-    WarriorRuneOfMajorHammerMastery,
-    WarriorRuneOfMajorSwordsmanship,
-    WarriorRuneOfSuperiorAbsorption,
-    WarriorRuneOfSuperiorTactics,
-    WarriorRuneOfSuperiorStrength,
-    WarriorRuneOfSuperiorAxeMastery,
-    WarriorRuneOfSuperiorHammerMastery,
-    WarriorRuneOfSuperiorSwordsmanship,
-        
-    # Ranger        
-    RangerRuneOfMinorWildernessSurvival,
-    RangerRuneOfMinorExpertise,
-    RangerRuneOfMinorBeastMastery,
-    RangerRuneOfMinorMarksmanship,
-    RangerRuneOfMajorWildernessSurvival,
-    RangerRuneOfMajorExpertise,
-    RangerRuneOfMajorBeastMastery,
-    RangerRuneOfMajorMarksmanship,
-    RangerRuneOfSuperiorWildernessSurvival,
-    RangerRuneOfSuperiorExpertise,
-    RangerRuneOfSuperiorBeastMastery,
-    RangerRuneOfSuperiorMarksmanship,
-    
-    # Monk    
-    MonkRuneOfMinorHealingPrayers,
-    MonkRuneOfMinorSmitingPrayers,
-    MonkRuneOfMinorProtectionPrayers,
-    MonkRuneOfMinorDivineFavor,
-    MonkRuneOfMajorHealingPrayers,
-    MonkRuneOfMajorSmitingPrayers,
-    MonkRuneOfMajorProtectionPrayers,
-    MonkRuneOfMajorDivineFavor,
-    MonkRuneOfSuperiorHealingPrayers,
-    MonkRuneOfSuperiorSmitingPrayers,
-    MonkRuneOfSuperiorProtectionPrayers,
-    MonkRuneOfSuperiorDivineFavor,
-    
-    # Necromancer
-    NecromancerRuneOfMinorBloodMagic,
-    NecromancerRuneOfMinorDeathMagic,
-    NecromancerRuneOfMinorCurses,
-    NecromancerRuneOfMinorSoulReaping,
-    NecromancerRuneOfMajorBloodMagic,
-    NecromancerRuneOfMajorDeathMagic,
-    NecromancerRuneOfMajorCurses,
-    NecromancerRuneOfMajorSoulReaping,
-    NecromancerRuneOfSuperiorBloodMagic,
-    NecromancerRuneOfSuperiorDeathMagic,
-    NecromancerRuneOfSuperiorCurses,
-    NecromancerRuneOfSuperiorSoulReaping,
-    
-    # Mesmer 
-    MesmerRuneOfMinorFastCasting,
-    MesmerRuneOfMinorDominationMagic,
-    MesmerRuneOfMinorIllusionMagic,
-    MesmerRuneOfMinorInspirationMagic,
-    MesmerRuneOfMajorFastCasting,
-    MesmerRuneOfMajorDominationMagic,
-    MesmerRuneOfMajorIllusionMagic,
-    MesmerRuneOfMajorInspirationMagic,
-    MesmerRuneOfSuperiorFastCasting,
-    MesmerRuneOfSuperiorDominationMagic,
-    MesmerRuneOfSuperiorIllusionMagic,
-    MesmerRuneOfSuperiorInspirationMagic,
-    
-    # Elementalist
-    ElementalistRuneOfMinorEnergyStorage,
-    ElementalistRuneOfMinorFireMagic,
-    ElementalistRuneOfMinorAirMagic,
-    ElementalistRuneOfMinorEarthMagic,
-    ElementalistRuneOfMinorWaterMagic,
-    ElementalistRuneOfMajorEnergyStorage,
-    ElementalistRuneOfMajorFireMagic,
-    ElementalistRuneOfMajorAirMagic,
-    ElementalistRuneOfMajorEarthMagic,
-    ElementalistRuneOfMajorWaterMagic,
-    ElementalistRuneOfSuperiorEnergyStorage,
-    ElementalistRuneOfSuperiorFireMagic,
-    ElementalistRuneOfSuperiorAirMagic,
-    ElementalistRuneOfSuperiorEarthMagic,
-    ElementalistRuneOfSuperiorWaterMagic,
-    
-    # Assassin
-    AssassinRuneOfMinorCriticalStrikes,
-    AssassinRuneOfMinorDaggerMastery,
-    AssassinRuneOfMinorDeadlyArts,
-    AssassinRuneOfMinorShadowArts,
-    AssassinRuneOfMajorCriticalStrikes,
-    AssassinRuneOfMajorDaggerMastery,
-    AssassinRuneOfMajorDeadlyArts,
-    AssassinRuneOfMajorShadowArts,
-    AssassinRuneOfSuperiorCriticalStrikes,
-    AssassinRuneOfSuperiorDaggerMastery,
-    AssassinRuneOfSuperiorDeadlyArts,
-    AssassinRuneOfSuperiorShadowArts,
-    
-    # Ritualist
-    RitualistRuneOfMinorChannelingMagic,
-    RitualistRuneOfMinorRestorationMagic,
-    RitualistRuneOfMinorCommuning,
-    RitualistRuneOfMinorSpawningPower,
-    RitualistRuneOfMajorChannelingMagic,
-    RitualistRuneOfMajorRestorationMagic,
-    RitualistRuneOfMajorCommuning,
-    RitualistRuneOfMajorSpawningPower,
-    RitualistRuneOfSuperiorChannelingMagic,
-    RitualistRuneOfSuperiorRestorationMagic,
-    RitualistRuneOfSuperiorCommuning,
-    RitualistRuneOfSuperiorSpawningPower,
-    
-    # Dervish
-    DervishRuneOfMinorMysticism,
-    DervishRuneOfMinorEarthPrayers,
-    DervishRuneOfMinorScytheMastery,
-    DervishRuneOfMinorWindPrayers,
-    DervishRuneOfMajorMysticism,
-    DervishRuneOfMajorEarthPrayers,
-    DervishRuneOfMajorScytheMastery,
-    DervishRuneOfMajorWindPrayers,
-    DervishRuneOfSuperiorMysticism,
-    DervishRuneOfSuperiorEarthPrayers,
-    DervishRuneOfSuperiorScytheMastery,
-    DervishRuneOfSuperiorWindPrayers,
-        
-    # Paragon    
-    ParagonRuneOfMinorLeadership,
-    ParagonRuneOfMinorMotivation,
-    ParagonRuneOfMinorCommand,
-    ParagonRuneOfMinorSpearMastery,
-    ParagonRuneOfMajorLeadership,
-    ParagonRuneOfMajorMotivation,
-    ParagonRuneOfMajorCommand,
-    ParagonRuneOfMajorSpearMastery,
-    ParagonRuneOfSuperiorLeadership,
-    ParagonRuneOfSuperiorMotivation,
-    ParagonRuneOfSuperiorCommand,
-    ParagonRuneOfSuperiorSpearMastery,
-    
-    #No Profession
-    RuneOfMinorVigor,
-    RuneOfMinorVigor2,
-    RuneOfVitae,
-    RuneOfAttunement,
-    RuneOfMajorVigor,
-    RuneOfRecovery,
-    RuneOfRestoration,
-    RuneOfClarity,
-    RuneOfPurity,
-    RuneOfSuperiorVigor,
-    
-    AppliesToRune,
-    UpgradeRune,
-]
-
 _INHERENT_UPGRADES: list[type[Inherent]] = [
     cls
     for cls in globals().values()
@@ -8230,3 +9055,26 @@ _INHERENT_UPGRADES: list[type[Inherent]] = [
     and cls is not Inherent
     and cls.__module__ == __name__
 ]
+
+_UPGRADES: list[type[Upgrade]] = (lambda classes: [
+    cls
+    for cls in classes
+    if cls not in {
+        base
+        for candidate in classes
+        for base in candidate.__bases__
+        if isinstance(base, type)
+        and issubclass(base, Upgrade)
+        and base.__module__ == __name__
+    }
+    and not issubclass(cls, Inherent)
+])(
+    tuple(
+        cls
+        for cls in globals().values()
+        if isinstance(cls, type)
+        and issubclass(cls, Upgrade)
+        and cls not in (Upgrade, Inherent)
+        and cls.__module__ == __name__
+    )
+)
