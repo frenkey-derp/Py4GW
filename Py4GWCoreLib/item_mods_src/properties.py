@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from dataclasses import dataclass, field
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, AttributeNames, DamageType, Profession, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
@@ -650,7 +650,8 @@ class UnknownUpgradeProperty(ItemProperty):
     upgrade_id: ItemUpgradeId
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"Unknown Upgrade (ID {self.upgrade_id})")
+        return GWStringEncoded(bytes(), f"Unknown (ID {self.upgrade_id})'\nIdentifier: {self.modifier.identifier.name} (Id: {self.modifier.identifier}) | Arg1: {self.modifier.arg1} | Arg2: {self.modifier.arg2} | Arg: {self.modifier.arg} | Upgrade Id: {self.modifier.upgrade_id.name} ({self.modifier.upgrade_id})")
+
 
 @dataclass
 class InscriptionProperty(ItemProperty):    

@@ -557,6 +557,13 @@ class UnknownUpgrade(Upgrade):
     mod_type = ItemUpgradeType.Unknown
     id = ItemUpgrade.Unknown
     
+    def create_encoded_description(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.modifier.upgrade_id.name) if self.modifier else 'Unknown Upgrade'} (ID: {self.modifier.upgrade_id.value if self.modifier else 'N/A'})")
+    
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(bytes(), f"{_humanize_identifier(self.modifier.upgrade_id.name) if self.modifier else 'Unknown Upgrade'}")
+
+    
 #region Weapon Upgrades
 @dataclass(eq=False)
 class WeaponUpgrade(Upgrade):
@@ -1027,27 +1034,65 @@ class SwiftUpgrade(WeaponPrefix):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0]), "Swift")
 
 @dataclass(eq=False)
-class VampiricUpgrade(WeaponPrefix):
-    id = ItemUpgrade.Vampiric
+class VampiricMinorUpgrade(WeaponPrefix):
+    id = ItemUpgrade.VampiricMinor
     health_regeneration: int = -1
-    health_steal: int = 5
+    health_steal: int = 3
 
     upgrade_info = (
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.HealthRegeneneration,
             target="health_regeneration",
-            min_value=-1,
-            max_value=-1,
+            fixed_value=-1,
             value_getter=property_value(
                 HealthRegeneneration,
                 lambda prop: prop.health_regeneration,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.HealthStealOnHit,
             target="health_steal",
-            min_value=1,
-            max_value=5,
+            fixed_value=3,
+            value_getter=property_value(
+                HealthStealOnHit,
+                lambda prop: prop.health_steal,
+            ),
+        ),
+    )
+    
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        parts = [
+            GWEncoded._bonus_colon_num(self.get_text_color(), GWEncoded.LIFE_DRAINING_BYTES, self.health_steal, "Life Draining"),
+            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.HEALTH_REGEN_BYTES, abs(self.health_regeneration), "Health regeneration")
+        ]
+        
+        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
+    
+
+    def create_encoded_name(self) -> GWStringEncoded:
+        return GWStringEncoded(self.get_text_color(True) + bytes([0x71, 0xA, 0x1, 0x0]), "Vampiric")
+
+@dataclass(eq=False)
+class VampiricMajorUpgrade(WeaponPrefix):
+    id = ItemUpgrade.VampiricMajor
+    health_regeneration: int = -1
+    health_steal: int = 5
+
+    upgrade_info = (
+        fixed(
+            identifier=ModifierIdentifier.HealthRegeneneration,
+            target="health_regeneration",
+            fixed_value=-1,
+            value_getter=property_value(
+                HealthRegeneneration,
+                lambda prop: prop.health_regeneration,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.HealthStealOnHit,
+            target="health_steal",
+            fixed_value=5,
             value_getter=property_value(
                 HealthStealOnHit,
                 lambda prop: prop.health_steal,
@@ -3454,7 +3499,7 @@ class LifeIsPain(OffhandInscription):
 class LiveForToday(OffhandInscription):
     id = ItemUpgrade.LiveForToday
     energy: int = 15
-    energy_regeneration: int = 1
+    energy_regeneration: int = -1
     
     upgrade_info = (
         ranged(
@@ -3470,7 +3515,7 @@ class LiveForToday(OffhandInscription):
         fixed(
             identifier=ModifierIdentifier.EnergyRegeneration,
             target="energy_regeneration",
-            fixed_value=1,
+            fixed_value=-1,
             value_getter=property_value(
                 EnergyRegeneration,
                 lambda prop: prop.energy_regeneration,
@@ -4618,7 +4663,7 @@ class IAmSorrow(SpellcastingWeaponInscription):
 class SeizeTheDay(SpellcastingWeaponInscription):
     id = ItemUpgrade.SeizeTheDay
     energy: int = 15
-    energy_regeneration: int = 1
+    energy_regeneration: int = -1
 
     upgrade_info = (
         ranged(
@@ -4634,7 +4679,7 @@ class SeizeTheDay(SpellcastingWeaponInscription):
         fixed(
             identifier=ModifierIdentifier.EnergyRegeneration,
             target="energy_regeneration",
-            fixed_value=1,
+            fixed_value=-1,
             value_getter=property_value(
                 EnergyRegeneration,
                 lambda prop: prop.energy_regeneration,
@@ -4722,7 +4767,7 @@ class DamagePlusWhileBelowUpgrade(Inherent, VengeanceIsMine):
 @dataclass(eq=False)
 class VampiricStrengthUpgrade(Inherent):
     damage_increase: int = 15
-    health_regeneration: int = 1
+    health_regeneration: int = -1
     target_item_type = ItemType.Weapon
         
     upgrade_info = (
@@ -4739,7 +4784,7 @@ class VampiricStrengthUpgrade(Inherent):
         fixed(
             identifier=ModifierIdentifier.HealthRegeneneration,
             target="health_regeneration",
-            fixed_value=1,
+            fixed_value=-1,
             value_getter=property_value(
                 HealthRegeneneration,
                 lambda prop: prop.health_regeneration,
@@ -4759,7 +4804,7 @@ class VampiricStrengthUpgrade(Inherent):
 @dataclass(eq=False)
 class ZealousStrengthUpgrade(Inherent):
     damage_increase: int = 15
-    energy_regeneration: int = 1
+    energy_regeneration: int = -1
     target_item_type = ItemType.Weapon
     
     upgrade_info = (
@@ -4776,7 +4821,7 @@ class ZealousStrengthUpgrade(Inherent):
         fixed(
             identifier=ModifierIdentifier.EnergyRegeneration,
             target="energy_regeneration",
-             fixed_value=1,
+             fixed_value=-1,
             value_getter=property_value(
                 EnergyRegeneration,
                 lambda prop: prop.energy_regeneration,
@@ -5029,7 +5074,7 @@ class ArmorVsSpeciesUpgrade(Inherent):
             return GWStringEncoded(bytes(), f"Armor +{self.armor} ({_humanize_identifier(self.__class__.__name__)})")
         
         species = self.species.name if self.species != ItemBaneSpecies.Unknown else f"Unknown species ({self.species.value})"
-        return GWStringEncoded(bytes(), f"Armor +{self.armor}\n(vs. {species})")
+        return GWStringEncoded(bytes(), f"Armor +{self.armor} (vs. {species}) [{_humanize_identifier(self.__class__.__name__)}]")
 
 @dataclass(eq=False)
 class ArmorVsUndeadUpgrade(ArmorVsSpeciesUpgrade):
@@ -6573,7 +6618,7 @@ class EnergyPlusHexedUpgrade(Inherent, IAmSorrow):
 @dataclass(eq=False)
 class EnergyPlusEnergyRegenerationMinusUpgrade(Inherent):
     energy: int = 15
-    energy_regeneration: int = 1
+    energy_regeneration: int = -1
 
     upgrade_info = (
         ranged(
@@ -6589,7 +6634,7 @@ class EnergyPlusEnergyRegenerationMinusUpgrade(Inherent):
         fixed(
             identifier=ModifierIdentifier.EnergyRegeneration,
             target="energy_regeneration",
-            fixed_value=1,
+            fixed_value=-1,
             value_getter=property_value(
                 EnergyRegeneration,
                 lambda prop: prop.energy_regeneration,
@@ -6622,10 +6667,18 @@ class ArmorUpgrade(Upgrade):
 @dataclass(eq=False)
 class Insignia(ArmorUpgrade):
     mod_type = ItemUpgradeType.Prefix
+
+    @classmethod
+    def _can_compose(cls, mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> bool:
+        return mod.identifier == ModifierIdentifier.Upgrade
     
 @dataclass(eq=False)
 class Rune(ArmorUpgrade):    
     mod_type = ItemUpgradeType.Suffix
+
+    @classmethod
+    def _can_compose(cls, mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> bool:
+        return mod.identifier == ModifierIdentifier.Upgrade
 
 @dataclass(eq=False)
 class AttributeRune(Rune):
@@ -6636,13 +6689,20 @@ class AttributeRune(Rune):
 
     @classmethod
     def _can_compose(cls, mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> bool:
+        if mod.identifier != ModifierIdentifier.AttributeRune:
+            return False
+
         modifier_index = all_modifiers.index(mod)
         if modifier_index <= 0:
             return False
 
-        previous_mod = all_modifiers[modifier_index - 2] if modifier_index >= 2 else None
-        
-        return previous_mod is not None and previous_mod.upgrade_id in (cls.applies_to_rune_id, cls.upgrade_rune_id) 
+        for previous_mod in reversed(all_modifiers[:modifier_index]):
+            if previous_mod.identifier == ModifierIdentifier.TooltipDescription:
+                continue
+
+            return previous_mod.upgrade_id in (cls.applies_to_rune_id, cls.upgrade_rune_id)
+
+        return False
     
     @classmethod
     def _pre_compose(cls, upgrade: "Upgrade", mod: DecodedModifier, all_modifiers: list[DecodedModifier], remaining_modifiers: list[DecodedModifier]) -> None:
@@ -9047,34 +9107,59 @@ class ParagonRuneOfSuperiorSpearMastery(SuperiorParagonRune):
 
 #endregion Armor Upgrades
 
-_INHERENT_UPGRADES: list[type[Inherent]] = [
-    cls
-    for cls in globals().values()
-    if isinstance(cls, type)
-    and issubclass(cls, Inherent)
-    and cls is not Inherent
-    and cls.__module__ == __name__
-]
-
-_UPGRADES: list[type[Upgrade]] = (lambda classes: [
-    cls
-    for cls in classes
-    if cls not in {
-        base
-        for candidate in classes
-        for base in candidate.__bases__
-        if isinstance(base, type)
-        and issubclass(base, Upgrade)
-        and base.__module__ == __name__
-    }
-    and not issubclass(cls, Inherent)
-])(
-    tuple(
+def _get_concrete_upgrade_types(
+    base_type: type[Upgrade],
+    excluded_types: tuple[type[Upgrade], ...] = (),
+    class_filter: Callable[[type[Upgrade]], bool] | None = None,
+) -> list[type[Upgrade]]:
+    classes = tuple(
         cls
         for cls in globals().values()
         if isinstance(cls, type)
-        and issubclass(cls, Upgrade)
-        and cls not in (Upgrade, Inherent)
+        and issubclass(cls, base_type)
+        and cls not in (Upgrade, Inherent, *excluded_types)
         and cls.__module__ == __name__
+        and (class_filter is None or class_filter(cls))
     )
+    base_classes = set(classes)
+
+    return [
+        cls
+        for cls in classes
+        if not any(
+            subclass is not cls
+            and subclass in base_classes
+            and issubclass(subclass, cls)
+            for subclass in classes
+        )
+    ]
+
+
+_UPGRADES: list[type[Upgrade]] = [
+    cls
+    for cls in _get_concrete_upgrade_types(
+        Upgrade,
+        excluded_types=(
+            Inherent,
+            Inscription,
+            OffhandInscription,
+            WeaponInscription,
+            MartialWeaponInscription,
+            OffhandOrShieldInscription,
+            ReduceConditionDurationInscription,
+            ArmorVsDamageTypeInscription,
+            EquippableItemInscription,
+            SpellcastingWeaponInscription,
+        ),
+        class_filter=lambda cls: not issubclass(cls, Inherent),
+    )
+]
+
+_INHERENT_UPGRADES: list[type[Upgrade]] = _get_concrete_upgrade_types(
+    Inherent,
+    excluded_types=(
+        ArmorVsSpeciesUpgrade,
+        HalvesCastingTimeAttributeUpgrade,
+        HalvesRechargeTimeAttributeUpgrade,
+    ),
 )

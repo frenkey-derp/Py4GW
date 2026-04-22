@@ -270,41 +270,51 @@ def main():
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Prefix")
                         PyImGui.table_set_column_index(1)
+                        PyImGui.begin_group()
                         PyImGui.text(str(prefix.display_summary) if prefix else "None")
                         if prefix and prefix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-                        
+                        PyImGui.end_group()
+                        ImGui.show_tooltip(str(prefix.__class__.__name__) if prefix else "None")
                         
                         PyImGui.table_next_row()
                         PyImGui.table_set_column_index(0)
                         PyImGui.text("Inscription")
                         PyImGui.table_set_column_index(1)
+                        PyImGui.begin_group()
                         PyImGui.text(str(inscription.display_summary) if inscription else "None")
                         if inscription and inscription.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-
+                        PyImGui.end_group()
+                        ImGui.show_tooltip(str(inscription.__class__.__name__) if inscription else "None")
+                        
                         PyImGui.table_next_row()
                         PyImGui.table_set_column_index(0)
+                        PyImGui.begin_group()
                         PyImGui.text("Suffix")
                         PyImGui.table_set_column_index(1)
-                        PyImGui.text(str(suffix.__class__.__name__) if suffix else "None")
                         PyImGui.text(str(suffix.display_summary) if suffix else "None")
                         if suffix and suffix.is_inherent:
                             PyImGui.same_line(0, 5)
                             PyImGui.text_colored(" (Inherent)", RED.color_tuple)
-            
+                        PyImGui.end_group()
+                        ImGui.show_tooltip(str(suffix.__class__.__name__) if suffix else "None")
+                        
                         for inherent_upgrade in inherent or []:
                             PyImGui.table_next_row()
                             PyImGui.table_set_column_index(0)
                             PyImGui.text("Inherent")
                             PyImGui.table_set_column_index(1)
+                            PyImGui.begin_group()
                             PyImGui.text(str(inherent_upgrade.display_summary) if inherent_upgrade else "None")
                             
                             if inherent_upgrade and inherent_upgrade.is_inherent:                                
                                 PyImGui.same_line(0, 5)
                                 PyImGui.text_colored(" (Inherent)", RED.color_tuple)
+                            PyImGui.end_group()
+                            ImGui.show_tooltip(str(inherent_upgrade.__class__.__name__) if inherent_upgrade else "None")
                 
                     PyImGui.end_table()
                                     

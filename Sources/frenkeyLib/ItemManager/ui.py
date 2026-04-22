@@ -1,4 +1,6 @@
 import os
+import struct
+import time
 from dataclasses import fields
 from enum import Enum
 from types import UnionType
@@ -12,6 +14,7 @@ from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ITEM_TYPE_META_TYPES, ItemType
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
+from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType, ModifierIdentifier
 from Py4GWCoreLib.item_mods_src.upgrades import (
@@ -43,10 +46,51 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SalvageConfig import SalvageC
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SellConfig import SellConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.UpgradesConfig import UpgradesConfig
+from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
+from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config
 
 
-class ConfigInfo:
+_STRING_TABLE_BASE = 0x7F00
+_STRING_TABLE_DIGIT_BASE = 0x0100
+_STRING_TABLE_MORE = 0x8000
+
+
+def _encode_string_table_number(value: int) -> bytes:
+    if value < 0:
+        raise ValueError("String-table numeric arguments must be non-negative.")
+
+    if value == 0:
+        return b""
+
+    digits: list[int] = []
+    current = value
+    while current > 0:
+        current, remainder = divmod(current, _STRING_TABLE_BASE)
+        digits.append(remainder + _STRING_TABLE_DIGIT_BASE)
+
+    digits.reverse()
+    for i in range(len(digits) - 1):
+        digits[i] |= _STRING_TABLE_MORE
+
+    return struct.pack(f"<{len(digits)}H", *digits)
+
+
+def _gold_amount_bytes(amount: int) -> bytes:
+    return bytes([*GWEncoded.NUM1_GOLD, 0x1, 0x1]) + _encode_string_table_number(amount) + bytes([0x1, 0x0])
+
+
+def _platinum_amount_bytes(amount: int) -> bytes:
+    return bytes([*GWEncoded.NUM1_PLATINUM, 0x1, 0x1]) + _encode_string_table_number(amount) + bytes([0x1, 0x0])
+
+
+def _formatted_currency_amount_bytes(amount: int) -> tuple[bytes, bytes]:
+    platinum_amount = amount // 1000
+    gold_amount = amount % 1000
+
+    return _platinum_amount_bytes(platinum_amount) if platinum_amount > 0 else b"", _gold_amount_bytes(gold_amount) if gold_amount > 0 else b""
+
+class ConfigInfo:    
     def __init__(self, config: RuleConfig, name: str, description: str, folder_path: str):
         self.config = config
         self.name = name
@@ -118,6 +162,11 @@ class UI:
         
         self.profession : Profession = Profession._None
         self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
+        self.armor_upgrade_price_threshold: int = 250
+        self._armor_upgrade_quote_cache_generation: int | None = None
+        self._armor_upgrade_quote_cache_profession: Profession | None = None
+        self._armor_upgrade_quote_cache_processed_item_ids: set[int] = set()
+        self._armor_upgrade_quote_cache: dict[Any, TraderQuote] = {}
         self.texture_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures")
         
         self.weapon_upgrade_textures : dict[ItemType, UI.UpgradeTexture] = {
@@ -166,7 +215,37 @@ class UI:
                     suffix=os.path.join(self.texture_path, "Item Models", "15552-Wand_Wrapping.png"),
                 ),
             }
+        
+    @staticmethod
+    def format_currency(value: int) -> str:
+        plat, gold = _formatted_currency_amount_bytes(value)
+        
+        return (string_table.decode(plat) + " " if plat else "") + string_table.decode(gold)
 
+    @staticmethod
+    def format_time_ago(timestamp: float) -> str:
+        elapsed = max(0, int(time.time() - timestamp))
+        units = [
+            ("year", 365 * 24 * 60 * 60),
+            ("month", 30 * 24 * 60 * 60),
+            ("day", 24 * 60 * 60),
+            ("hour", 60 * 60),
+            ("minute", 60),
+            ("second", 1),
+        ]
+
+        parts: list[str] = []
+        remaining = elapsed
+
+        for label, unit_seconds in units:
+            value, remaining = divmod(remaining, unit_seconds)
+            if value <= 0:
+                continue
+
+            parts.append(f"{value} {label}{'' if value == 1 else 's'}")
+
+        return f"{' '.join(parts) if parts else '0 seconds'} ago"
+    
     @staticmethod
     def _get_concrete_item_types() -> list[ItemType]:
         return [
@@ -611,8 +690,225 @@ class UI:
 
         return changed
 
+    @staticmethod
+    def _normalize_upgrade_lookup_name(value: str) -> str:
+        normalized = value.lower().strip()
+        if "[" in normalized:
+            normalized = normalized.split("[", 1)[0].strip()
+
+        for profession in Profession:
+            profession_name = profession.name.lower().strip("_")
+            if profession_name:
+                normalized = normalized.replace(profession_name, "")
+
+        normalized = normalized.replace("'", "").replace("-", "").replace(" ", "")
+        return "".join(ch for ch in normalized if ch.isalnum())
+
+    def _get_upgrade_lookup_candidates(self, upgrade: ArmorUpgrade) -> set[str]:
+        candidates = {
+            self._normalize_upgrade_lookup_name(upgrade.name_plain),
+            self._normalize_upgrade_lookup_name(self._format_upgrade_label(upgrade)),
+            self._normalize_upgrade_lookup_name(type(upgrade).__name__),
+        }
+
+        return {candidate for candidate in candidates if candidate}
+
+    def _get_trader_armor_upgrade_quotes(self) -> list[TraderQuote]:
+        trader_output = TraderPriceCheckManager.get_output()
+        quotes = [quote for quote in trader_output.quotes.values() if quote.is_rune_mod]
+
+        if self.profession != Profession._None:
+            quotes = [quote for quote in quotes if quote.profession in (self.profession, Profession._None)]
+
+        return quotes
+
+    @staticmethod
+    def _upgrade_equals(left: ArmorUpgrade, right: ArmorUpgrade) -> bool:
+        return left._comparison_data() == right._comparison_data()
+
+    def _extract_armor_upgrades_from_trader_quote(self, quote: TraderQuote) -> list[ArmorUpgrade]:
+        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(quote.item_id)
+        upgrades = [upgrade for upgrade in [prefix, suffix, inscription, *(inherent or [])] if isinstance(upgrade, ArmorUpgrade)]
+
+        # Py4GW.Console.Log(
+        #     "Item Manager",
+        #     f"Parsed {len(upgrades)} armor upgrades from trader item {quote.item_id} ('{quote.name}') model={quote.model_id}.",
+        #     Py4GW.Console.MessageType.Info,
+        # )
+
+        # for upgrade in upgrades:
+        #     Py4GW.Console.Log(
+        #         "Item Manager",
+        #         f"Parsed trader upgrade '{upgrade.name_plain}' ({type(upgrade).__name__}) from item {quote.item_id}.",
+        #         Py4GW.Console.MessageType.Info,
+        #     )
+
+        return upgrades
+
+    def _get_armor_upgrade_quote_lookup(self) -> dict[Any, TraderQuote]:
+        quotes = self._get_trader_armor_upgrade_quotes()
+        generation = TraderPriceCheckManager.get_generation()
+
+        if (
+            self._armor_upgrade_quote_cache_generation != generation
+            or self._armor_upgrade_quote_cache_profession != self.profession
+        ):
+            self._armor_upgrade_quote_cache_generation = generation
+            self._armor_upgrade_quote_cache_profession = self.profession
+            self._armor_upgrade_quote_cache_processed_item_ids.clear()
+            self._armor_upgrade_quote_cache = {}
+
+        current_quote_ids = {quote.item_id for quote in quotes}
+        if not current_quote_ids.issuperset(self._armor_upgrade_quote_cache_processed_item_ids):
+            self._armor_upgrade_quote_cache_processed_item_ids.clear()
+            self._armor_upgrade_quote_cache = {}
+
+        for quote in quotes:
+            if quote.item_id in self._armor_upgrade_quote_cache_processed_item_ids:
+                continue
+
+            for parsed_upgrade in self._extract_armor_upgrades_from_trader_quote(quote):
+                comparison_key = parsed_upgrade._comparison_data()
+                current_quote = self._armor_upgrade_quote_cache.get(comparison_key)
+                if current_quote is None or quote.quoted_value > current_quote.quoted_value:
+                    self._armor_upgrade_quote_cache[comparison_key] = quote
+            self._armor_upgrade_quote_cache_processed_item_ids.add(quote.item_id)
+
+        return self._armor_upgrade_quote_cache
+
+    def _get_trader_quote_for_armor_upgrade(self, upgrade: ArmorUpgrade) -> TraderQuote | None:
+        return self._get_armor_upgrade_quote_lookup().get(upgrade._comparison_data())
+
+    def _select_armor_upgrades_from_trader_prices(self, rule: ArmorUpgradeRule, minimum_value: int) -> bool:
+        Py4GW.Console.Log("Item Manager", f"Selecting armor upgrades from trader prices with threshold {minimum_value} for profession {self.profession.name}.", Py4GW.Console.MessageType.Info)
+
+        quotes = self._get_trader_armor_upgrade_quotes()
+        if not quotes:
+            Py4GW.Console.Log("Item Manager", "No trader rune / insignia quotes available for the selected profession.", Py4GW.Console.MessageType.Warning)
+            return False
+
+        eligible_quotes: list[TraderQuote] = []
+        for quote in quotes:
+            normalized_quote_name = self._normalize_upgrade_lookup_name(quote.name)
+            Py4GW.Console.Log(
+                "Item Manager",
+                f"Trader quote: '{quote.name}' -> '{normalized_quote_name}', value={quote.quoted_value}, profession={quote.profession.name}",
+                Py4GW.Console.MessageType.Info,
+            )
+
+            if quote.quoted_value < minimum_value:
+                continue
+
+            eligible_quotes.append(quote)
+
+        if not eligible_quotes:
+            Py4GW.Console.Log("Item Manager", f"No trader quotes met the threshold {minimum_value}.", Py4GW.Console.MessageType.Warning)
+            return False
+
+        selected_upgrades: list[ArmorUpgrade] = []
+        for quote in eligible_quotes:
+            parsed_upgrades = self._extract_armor_upgrades_from_trader_quote(quote)
+            if not parsed_upgrades:
+                Py4GW.Console.Log(
+                    "Item Manager",
+                    f"No armor upgrades could be parsed from trader item {quote.item_id} ('{quote.name}').",
+                    Py4GW.Console.MessageType.Warning,
+                )
+                continue
+
+            for parsed_upgrade in parsed_upgrades:
+                if self.profession != Profession._None and parsed_upgrade.profession not in (self.profession, Profession._None):
+                    Py4GW.Console.Log(
+                        "Item Manager",
+                        f"Skipping parsed upgrade '{parsed_upgrade.name_plain}' because its profession is {parsed_upgrade.profession.name}, expected {self.profession.name}.",
+                        Py4GW.Console.MessageType.Info,
+                    )
+                    continue
+
+                selected_upgrades.append(parsed_upgrade)
+                Py4GW.Console.Log(
+                    "Item Manager",
+                    f"Selected parsed trader upgrade '{parsed_upgrade.name_plain}' ({type(parsed_upgrade).__name__}) from item {quote.item_id} with value {quote.quoted_value}.",
+                    Py4GW.Console.MessageType.Success,
+                )
+
+        if not selected_upgrades:
+            Py4GW.Console.Log("Item Manager", "No armor upgrades could be extracted from the trader quotes that met the threshold.", Py4GW.Console.MessageType.Warning)
+            return False
+
+        changed = False
+        added_count = 0
+
+        for selected_upgrade in selected_upgrades:
+            if any(self._upgrade_equals(existing_upgrade, selected_upgrade) for existing_upgrade in rule.armor_upgrades):
+                Py4GW.Console.Log(
+                    "Item Manager",
+                    f"Upgrade '{selected_upgrade.name_plain}' ({type(selected_upgrade).__name__}) is already present in the rule.",
+                    Py4GW.Console.MessageType.Info,
+                )
+                continue
+
+            rule.armor_upgrades.append(selected_upgrade)
+            changed = True
+            added_count += 1
+            Py4GW.Console.Log(
+                "Item Manager",
+                f"Added upgrade '{selected_upgrade.name_plain}' ({type(selected_upgrade).__name__}) to the armor upgrade rule.",
+                Py4GW.Console.MessageType.Success,
+            )
+
+        if not changed:
+            Py4GW.Console.Log("Item Manager", "Trader-based selection found matches, but all of them were already selected.", Py4GW.Console.MessageType.Warning)
+        else:
+            Py4GW.Console.Log("Item Manager", f"Trader-based selection added {added_count} upgrades to the rule.", Py4GW.Console.MessageType.Success)
+
+        return changed
+
+    def _draw_armor_upgrade_price_popup(self, rule: ArmorUpgradeRule) -> bool:
+        changed = False
+        popup_id = "##armor_upgrade_price_popup"
+        trader_open = UIManagerExtensions.IsMerchantWindowOpen()
+        kind = TraderPriceCheckManager.get_kind()
+        PyImGui.begin_disabled(not trader_open or kind != "runes")
+        if ImGui.button("Select From Trader Prices", -1):
+            PyImGui.open_popup(popup_id)
+        PyImGui.end_disabled()
+
+        if PyImGui.is_item_hovered():
+            if not trader_open or kind != "runes":
+                ImGui.show_tooltip("Open the rune trader window to enable this option.")
+            else:
+                ImGui.show_tooltip("Open a popup to select runes and insignias priced at or above a threshold.")
+
+        if PyImGui.begin_popup(popup_id):
+            ImGui.text("Select Upgrades By Price")
+            ImGui.separator()
+
+            new_threshold = ImGui.input_int("Minimum trader value", self.armor_upgrade_price_threshold, min_value=0, step_fast=1)
+            if new_threshold != self.armor_upgrade_price_threshold:
+                self.armor_upgrade_price_threshold = max(0, new_threshold)
+
+            quote_count = len(self._get_trader_armor_upgrade_quotes())
+            ImGui.text_colored(f"Available trader quotes: {quote_count}", UI.GRAY_COLOR, font_size=12)
+
+            if ImGui.button("Apply Threshold", -1):
+                changed = self._select_armor_upgrades_from_trader_prices(rule, self.armor_upgrade_price_threshold)
+                PyImGui.close_current_popup()
+
+            if ImGui.button("Cancel", -1):
+                PyImGui.close_current_popup()
+
+            PyImGui.end_popup()
+
+        return changed
+
     def _draw_armor_upgrades_rule(self, rule: ArmorUpgradeRule) -> bool:
         changed = False
+
+        if self._draw_armor_upgrade_price_popup(rule):
+            changed = True
+        
+        ImGui.separator()
         
         if ImGui.begin_table("##armor_upgrade_rule_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Profession", PyImGui.TableColumnFlags.WidthFixed, 150)
@@ -673,7 +969,17 @@ class UI:
                                 rule.armor_upgrades.append(upgrade_type())
                             changed = True
                         
-                        ImGui.show_tooltip(upgrade.description_plain)
+                        if PyImGui.is_item_hovered():
+                            quote = self._get_trader_quote_for_armor_upgrade(upgrade)
+                            tooltip_text = upgrade.description_plain
+                            if quote is not None:
+                                tooltip_text = (
+                                    f"{tooltip_text}\n"
+                                    f"Trader Quote: {UI.format_currency(quote.quoted_value)}\n"
+                                    f"Last updated: {UI.format_time_ago(quote.checked_at)}"
+                                )
+
+                            ImGui.show_tooltip(tooltip_text)
                         
                 except Exception as e:
                     ImGui.text_colored(f"Error loading upgrades: {str(e)}", (255, 0, 0, 255), font_size=12)
@@ -936,7 +1242,7 @@ class UI:
                 width = PyImGui.get_content_region_avail()[0]
                 
                 for i, rule in enumerate(config_info.config):                    
-                    if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule == rule, size=(0, 35)):
+                    if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, 35)):
                         ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 5)
@@ -976,7 +1282,8 @@ class UI:
         ImGui.text_aligned("Name", alignment=Alignment.MidLeft, height=25)
         PyImGui.same_line(0, 5)
         PyImGui.set_next_item_width(-1)
-        name = ImGui.input_text("##rule_name", rule.name or "")
+        rule_name_input_id = f"##rule_name_{id(rule)}"
+        name = ImGui.input_text(rule_name_input_id, rule.name or "")
         
         if name != rule.name:
             rule.name = name

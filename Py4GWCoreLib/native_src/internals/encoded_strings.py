@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+import struct
 from typing import Optional
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, DamageType, Profession, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
@@ -157,7 +158,9 @@ class GWEncoded():
     NON_STACKING = bytes([0xA8, 0xA, 0xA, 0x1, 0xB2, 0xA, 0x1, 0x0, 0x1, 0x0])
     HEALTH_MINUS_75 = bytes([0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1, 0x4B, 0x1, 0x1, 0x0]) # 0x4B = 75 in little endian, 0x1 = minus, 0x0 = health
     HEALTH_MINUS_NUM = bytes([0x7E, 0xA, 0xA, 0x1, 0x52, 0xA, 0x1, 0x0, 0x1, 0x1]) # 0x4B = 75 in little endian, 0x1 = minus, 0x0 = health
-
+    NUM1_GOLD = bytes([0xC2, 0xA])
+    NUM1_PLATINUM = bytes([0xC3, 0xA])
+    
     WEAPON_PREFIXES: dict[ItemType, bytes] = {
         ItemType.Axe :      bytes([*STR1_STR2, 0xB0, 0x22, 0x1, 0x0, 0xB, 0x1]), #Axe Haft
         ItemType.Bow :      bytes([*STR1_STR2, 0xB1, 0x22, 0x1, 0x0, 0xB, 0x1]), #Bow String
@@ -367,7 +370,7 @@ class GWEncoded():
     DAMAGE_PLUS_PERCENT = bytes([*ITEM_BONUS, *PLUS_PERCENT_TEMPLATE, *DAMAGE_TEXT, 0x1, 0x0, 0x1, 0x1, ]) # Damage +X%
 
     ARMOR_TEXT = bytes([0x1, 0x81, 0xA4, 0x13])
-    GOLD_VALUE = bytes([0x8A, 0xA, 0xA, 0x1, 0x59, 0xA, 0x1, 0x0, 0xB, 0x1, 0xC2, 0xA, 0x1, 0x1])
+    GOLD_VALUE = bytes([0x8A, 0xA, 0xA, 0x1, 0x59, 0xA, 0x1, 0x0, 0xB, 0x1, *NUM1_GOLD, 0x1, 0x1])
     USE_TO_APPLY_TO_ITEM = bytes([0x97, 0xA, 0x1])
     UPGRADE_COMPONENT = bytes([0x96, 0xA,])
     ATTACHES_TO = bytes([0x1, 0x81, 0x1C, 0x14, 0xA, 0x1])
@@ -381,6 +384,41 @@ class GWEncoded():
                                             *ITEM_DULL, *ATTACHES_TO, *ARMOR_TEXT, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1,
                                             *ITEM_DULL, *GOLD_VALUE, gold_amount, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 
                                             *ITEM_DULL, *USE_TO_APPLY_TO_ITEM, 0x0, 0x0, 0x0])
+    
+    @staticmethod
+    def _encode_string_table_number(value: int) -> bytes:
+        if value < 0:
+            raise ValueError("String-table numeric arguments must be non-negative.")
+
+        if value == 0:
+            return b""
+
+        digits: list[int] = []
+        current = value
+        while current > 0:
+            current, remainder = divmod(current, string_table._RANGE)
+            digits.append(remainder + string_table._BASE)
+
+        digits.reverse()
+        for i in range(len(digits) - 1):
+            digits[i] |= string_table._MORE
+
+        return struct.pack(f"<{len(digits)}H", *digits)
+
+    @staticmethod
+    def _gold_amount_bytes(amount: int) -> bytes:
+        return bytes([*GWEncoded.NUM1_GOLD, 0x1, 0x1]) + GWEncoded._encode_string_table_number(amount) + bytes([0x1, 0x0])
+
+    @staticmethod
+    def _platinum_amount_bytes(amount: int) -> bytes:
+        return bytes([*GWEncoded.NUM1_PLATINUM, 0x1, 0x1]) + GWEncoded._encode_string_table_number(amount) + bytes([0x1, 0x0])
+    
+    @staticmethod
+    def _formatted_currency_amount_bytes(amount: int) -> tuple[bytes, bytes]:
+        platinum_amount = amount // 1000
+        gold_amount = amount % 1000
+    
+        return GWEncoded._platinum_amount_bytes(platinum_amount) if platinum_amount > 0 else b"", GWEncoded._gold_amount_bytes(gold_amount) if gold_amount > 0 else b""
     
     @staticmethod
     def _attribute_bytes(attribute: Attribute) -> bytes | None:

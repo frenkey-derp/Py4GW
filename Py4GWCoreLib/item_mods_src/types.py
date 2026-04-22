@@ -579,7 +579,7 @@ class ItemUpgradeId(IntEnum):
     AppliesToSuperiorElementalistRune = 0x017B
     MinorAssassinRune = 0x013B
     AppliesToMinorAssassinRune = 0x0277
-    MajorAssassinRune = 0x014C
+    MajorAssassinRune = 0x013C
     AppliesToMajorAssassinRune = 0x0279
     SuperiorAssassinRune = 0x013D
     AppliesToSuperiorAssassinRune = 0x027B
@@ -705,14 +705,16 @@ class ItemUpgrade(Enum):
         ItemType.Spear: ItemUpgradeId.Zealous_Spear,
         ItemType.Sword: ItemUpgradeId.Zealous_Sword,
     }
-    Vampiric = {
+    VampiricMinor = {
         ItemType.Axe: ItemUpgradeId.Vampiric_Axe,
-        ItemType.Bow: ItemUpgradeId.Vampiric_Bow,
+        ItemType.Sword: ItemUpgradeId.Vampiric_Sword,
         ItemType.Daggers: ItemUpgradeId.Vampiric_Daggers,
+        ItemType.Spear: ItemUpgradeId.Vampiric_Spear,
+    }
+    VampiricMajor = {
+        ItemType.Bow: ItemUpgradeId.Vampiric_Bow,
         ItemType.Hammer: ItemUpgradeId.Vampiric_Hammer,
         ItemType.Scythe: ItemUpgradeId.Vampiric_Scythe,
-        ItemType.Spear: ItemUpgradeId.Vampiric_Spear,
-        ItemType.Sword: ItemUpgradeId.Vampiric_Sword,
     }
     Swift = {
         ItemType.Staff: ItemUpgradeId.Swift_Staff,
