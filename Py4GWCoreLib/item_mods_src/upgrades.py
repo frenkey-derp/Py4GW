@@ -105,38 +105,6 @@ class RangeInstruction(Instruction[UpgradeT, NumberT]):
     def evaluate(self, value: NumberT | None) -> bool:
         return value is not None and self.min_value <= value <= self.max_value
 
-class EnumInstruction(Instruction[UpgradeT, Enum]):
-    def __init__(
-        self,
-        identifier: ModifierIdentifierSpec,
-        target: str,
-        enum_type: type[Enum],
-        value_getter: Callable[[ItemProperties, UpgradeT], Enum | None],
-    ) -> None:
-        super().__init__(identifier, target, value_getter)
-        self.enum_type = enum_type
-
-    def evaluate(self, value: Enum | None) -> bool:
-        return value is not None and isinstance(value, self.enum_type)
-
-class SelectInstruction(Instruction[UpgradeT, ValueT]):
-    def __init__(
-        self,
-        identifier: ModifierIdentifierSpec,
-        target: str,
-        options: list[ValueT] | tuple[ValueT, ...],
-        value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
-    ) -> None:
-        super().__init__(identifier, target, value_getter)
-        self.options = tuple(options)
-
-    @property
-    def options_list(self) -> tuple[ValueT, ...]:
-        return self.options
-
-    def evaluate(self, value: ValueT | None) -> bool:
-        return value is not None and value in self.options
-
 class FixedValueInstruction(Instruction[UpgradeT, ValueT]):
     def __init__(
         self,
@@ -173,22 +141,6 @@ def ranged(
     value_getter: Callable[[ItemProperties, UpgradeT], NumberT | None],
 ) -> RangeInstruction[UpgradeT, NumberT]:
     return RangeInstruction(identifier, target, min_value, max_value, value_getter)
-
-def enum(
-    identifier: ModifierIdentifierSpec,
-    target: str,
-    enum_type: type[Enum],
-    value_getter: Callable[[ItemProperties, UpgradeT], Enum | None],
-) -> EnumInstruction[UpgradeT]:
-    return EnumInstruction(identifier, target, enum_type, value_getter)
-
-def select(
-    identifier: ModifierIdentifierSpec,
-    target: str,
-    options: list[ValueT] | tuple[ValueT, ...],
-    value_getter: Callable[[ItemProperties, UpgradeT], ValueT | None],
-) -> SelectInstruction[UpgradeT, ValueT]:
-    return SelectInstruction(identifier, target, options, value_getter)
 
 def fixed(
     identifier: ModifierIdentifierSpec,
@@ -984,10 +936,10 @@ class SunderingUpgrade(WeaponPrefix):
                 lambda prop: prop.chance,
             ),
         ),
-        select(
+        fixed(
             identifier=ModifierIdentifier.ArmorPenetration,
             target="armor_penetration",
-            options=[10, 20],
+            fixed_value=20,
             value_getter=property_value(
                 ArmorPenetration,
                 lambda prop: prop.armor_penetration,
@@ -1182,37 +1134,6 @@ class OfAttributeUpgrade(WeaponSuffix):
     chance: int = 20
     attribute: Attribute = Attribute.None_
     attribute_level: int = 1
-
-    upgrade_info = (
-        enum(
-            identifier=ModifierIdentifier.AttributePlusOne,
-            target="attribute",
-            enum_type=Attribute,
-            value_getter=property_value(
-                AttributePlusOne,
-                lambda prop: prop.attribute,
-            ),
-        ),
-        ranged(
-            identifier=ModifierIdentifier.AttributePlusOne,
-            target="chance",
-            min_value=10,
-            max_value=20,
-            value_getter=property_value(
-                AttributePlusOne,
-                lambda prop: prop.chance,
-            ),
-        ),
-        fixed(
-            identifier=ModifierIdentifier.AttributePlusOne,
-            target="attribute_level",
-            fixed_value=1,
-            value_getter=property_value(
-                AttributePlusOne,
-                lambda prop: prop.attribute_level,
-            ),
-        ),
-    )
     
     def create_encoded_description(self) -> GWStringEncoded:
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
@@ -2311,28 +2232,6 @@ class OfSlayingUpgrade(WeaponSuffix):
     species: ItemBaneSpecies = ItemBaneSpecies.Unknown
     damage_increase: int = 20
 
-    upgrade_info = (
-        enum(
-            identifier=ModifierIdentifier.BaneSpecies,
-            target="species",
-            enum_type=ItemBaneSpecies,
-            value_getter=property_value(
-                BaneProperty,
-                lambda prop: prop.species,
-            ),
-        ),
-        ranged(
-            identifier=ModifierIdentifier.DamagePlusVsSpecies,
-            target="damage_increase",
-            min_value=10,
-            max_value=20,
-            value_getter=property_value(
-                DamagePlusVsSpecies,
-                lambda prop: prop.damage_increase,
-            ),
-        ),
-    )
-
     def create_encoded_description(self) -> GWStringEncoded:
         return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SLAYING_BANE.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
 
@@ -2732,37 +2631,6 @@ class OfTheProfessionUpgrade(WeaponSuffix):
     profession: Profession = Profession._None
     attribute: Attribute = Attribute.None_
     attribute_level: int = 5
-
-    upgrade_info = (
-        select(
-            identifier=ModifierIdentifier.OfTheProfession,
-            target="attribute",
-            options=[att for att in Attribute if att.is_primary],
-            value_getter=property_value(
-                OfTheProfession,
-                lambda prop: prop.attribute,
-            ),
-        ),
-        ranged(
-            identifier=ModifierIdentifier.OfTheProfession,
-            target="attribute_level",
-            min_value=4,
-            max_value=5,
-            value_getter=property_value(
-                OfTheProfession,
-                lambda prop: prop.attribute_level,
-            ),
-        ),
-        enum(
-            identifier=ModifierIdentifier.OfTheProfession,
-            target="profession",
-            enum_type=Profession,
-            value_getter=property_value(
-                OfTheProfession,
-                lambda prop: prop.profession,
-            ),
-        ),
-    )
 
     def create_encoded_description(self) -> GWStringEncoded:
         encoded_bytes = bytes([*self.get_text_color(), 0x86, 0xA, 0xA, 0x1, *GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()), 0x1, 0x0, 0x1, 0x1, self.attribute_level, 0x1, 0x1, 0x0, 0x2, 0x0, 0x3E, 0xA, 0xA, 0x1, 0xA8, 0xA, 0xA, 0x1, 0x2, 0x81, 0xA8, 0x38, 0x1, 0x0])
@@ -4932,7 +4800,21 @@ class AttributePlusOneUpgrade(Inherent):
     chance: int = 20
     attribute: Attribute = Attribute.None_
     attribute_level: int = 1
-    target_item_type = ItemType.OffhandOrShield
+    target_item_type = ItemType.OffhandOrShield    
+
+    def create_encoded_description(self) -> GWStringEncoded:
+        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
+        if attribute_bytes:
+            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
+            clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
+            
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+        return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
+
+
+@dataclass(eq=False)
+class DivineFavorPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.DivineFavor
 
     upgrade_info = (
         ranged(
@@ -4946,35 +4828,724 @@ class AttributePlusOneUpgrade(Inherent):
             ),
         ),
         fixed(
-            identifier=ModifierIdentifier.AttributePlusOne, target="attribute_level",
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
             fixed_value=1,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute_level,
             ),
         ),
-        enum(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOne,
             target="attribute",
-            enum_type=Attribute,
+            fixed_value=Attribute.DivineFavor,
             value_getter=property_value(
                 AttributePlusOne,
                 lambda prop: prop.attribute,
             ),
         ),
-     )
-    
+    )
 
-    def create_encoded_description(self) -> GWStringEncoded:
-        attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
-        if attribute_bytes:
-            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
-            clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
-            
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
-        return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
+@dataclass(eq=False)
+class HealingPrayersPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.HealingPrayers
 
-        
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.HealingPrayers,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class SmitingPrayersPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.SmitingPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SmitingPrayers,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ProtectionPrayersPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.ProtectionPrayers
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.ProtectionPrayers,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class SoulReapingPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.SoulReaping
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SoulReaping,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class BloodMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.BloodMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.BloodMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class DeathMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.DeathMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DeathMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class CursesPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.Curses
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Curses,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class FastCastingPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.FastCasting
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.FastCasting,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class IllusionMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.IllusionMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.IllusionMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class DominationMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.DominationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.DominationMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class InspirationMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.InspirationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.InspirationMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class EnergyStoragePlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.EnergyStorage
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.EnergyStorage,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class AirMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.AirMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.AirMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class EarthMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.EarthMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.EarthMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class FireMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.FireMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.FireMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class WaterMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.WaterMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.WaterMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class SpawningPowerPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.SpawningPower
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.SpawningPower,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class CommuningPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.Communing
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.Communing,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class RestorationMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.RestorationMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.RestorationMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )
+
+@dataclass(eq=False)
+class ChannelingMagicPlusOneUpgrade(AttributePlusOneUpgrade):
+    attribute = Attribute.ChannelingMagic
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.ChannelingMagic,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )        
 
 @dataclass(eq=False)
 class ReduceConditionDurationUpgrade(Inherent, CastOutTheUnclean):
@@ -5046,28 +5617,6 @@ class ArmorVsSpeciesUpgrade(Inherent):
     species: ItemBaneSpecies | None = None
     target_item_type = ItemType.Weapon
 
-    upgrade_info = (
-        enum(
-            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
-            target="species",
-            enum_type=ItemBaneSpecies,
-            value_getter=property_value(
-                ArmorPlusVsSpecies,
-                lambda prop: prop.species,
-            ),
-        ),
-        ranged(
-            identifier=ModifierIdentifier.ArmorPlusVsSpecies,
-            target="armor",
-            min_value=5,
-            max_value=10,
-            value_getter=property_value(
-                ArmorPlusVsSpecies,
-                lambda prop: prop.armor,
-            ),
-        ),
-     )
-    
     #TODO: implement proper encoded description once we have the correct bytes for the species
     def create_encoded_description(self) -> GWStringEncoded:
         if self.species is None:
@@ -5424,28 +5973,6 @@ class HalvesCastingTimeAttributeUpgrade(Inherent):
     chance: int = 20
     attribute: Attribute | None = None
     target_item_type = ItemType.SpellcastingWeapon
-
-    upgrade_info = (
-        ranged(
-            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
-            target="chance",
-            min_value=10,
-            max_value=20,
-            value_getter=property_value(
-                HalvesCastingTimeAttribute,
-                lambda prop: prop.chance,
-            ),
-        ),
-        enum(
-            identifier=ModifierIdentifier.HalvesCastingTimeAttribute,
-            target="attribute",
-            enum_type=Attribute,
-            value_getter=property_value(
-                HalvesCastingTimeAttribute,
-                lambda prop: prop.attribute,
-            ),
-        ),
-     )
 
     def create_encoded_description(self) -> GWStringEncoded:
         if self.attribute is None:
@@ -6009,28 +6536,6 @@ class HalvesRechargeTimeAttributeUpgrade(Inherent):
     chance: int = 20
     attribute: Attribute | None = None
     target_item_type = ItemType.SpellcastingWeapon
-
-    upgrade_info = (
-        ranged(
-            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
-            target="chance",
-            min_value=10,
-            max_value=20,
-            value_getter=property_value(
-                HalvesSkillRechargeAttribute,
-                lambda prop: prop.chance,
-            ),
-        ),
-        enum(
-            identifier=ModifierIdentifier.HalvesSkillRechargeAttribute,
-            target="attribute",
-            enum_type=Attribute,
-            value_getter=property_value(
-                HalvesSkillRechargeAttribute,
-                lambda prop: prop.attribute,
-            ),
-        ),
-     )
 
     def create_encoded_description(self) -> GWStringEncoded:
         if self.attribute is None:
@@ -9159,6 +9664,7 @@ _INHERENT_UPGRADES: list[type[Upgrade]] = _get_concrete_upgrade_types(
     Inherent,
     excluded_types=(
         ArmorVsSpeciesUpgrade,
+        AttributePlusOneUpgrade,
         HalvesCastingTimeAttributeUpgrade,
         HalvesRechargeTimeAttributeUpgrade,
     ),
