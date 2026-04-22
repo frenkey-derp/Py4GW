@@ -2098,11 +2098,10 @@ class OfMasteryUpgrade(WeaponSuffix):
                 lambda prop: prop.chance,
             ),
         ),
-        ranged(
+        fixed(
             identifier=ModifierIdentifier.AttributePlusOneItem,
             target="attribute_level",
-            min_value=1,
-            max_value=1,
+            fixed_value=1,
             value_getter=property_value(
                 AttributePlusOneItem,
                 lambda prop: prop.attribute_level,
