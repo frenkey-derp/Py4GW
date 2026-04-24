@@ -296,6 +296,57 @@ class {class_name}(HalvesCastingTimeAttributeUpgrade):
             
 
     return "\n\n".join(blocks), generated_names
+
+def render_AttributePlusOneUpgrade() -> tuple[str, list[str]]:
+    generated_names: list[str] = []
+    blocks: list[str] = []
+    
+    for profession in Profession:
+        if profession not in [Profession.Monk, Profession.Necromancer, Profession.Mesmer, Profession.Elementalist, Profession.Ritualist]:
+            continue
+
+        for attribute in PROFESSION_ATTRIBUTES.get(profession, []):
+            class_name = f"{camelize_enum_name(attribute.name)}PlusOneUpgrade"
+            generated_names.append(class_name)
+            blocks.append(
+                f"""@dataclass(eq=False)
+class {class_name}(AttributePlusOneUpgrade):
+    attribute = Attribute.{attribute.name}
+
+    upgrade_info = (
+        ranged(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="chance",
+            min_value=11,
+            max_value=20,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.chance,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne, 
+            target="attribute_level",
+            fixed_value=1,
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute_level,
+            ),
+        ),
+        fixed(
+            identifier=ModifierIdentifier.AttributePlusOne,
+            target="attribute",
+            fixed_value=Attribute.{attribute.name},
+            value_getter=property_value(
+                AttributePlusOne,
+                lambda prop: prop.attribute,
+            ),
+        ),
+    )"""
+            )
+            
+
+    return "\n\n".join(blocks), generated_names
             
 
 def build_output() -> str:
@@ -303,9 +354,10 @@ def build_output() -> str:
         # render_of_attribute_specializations,
         # render_of_the_profession_specializations,
         # render_slaying_specializations,
-        render_vs_species_specializations,
-        render_HalvesRechargeTimeAttributeUpgrade,
-        render_HalvesCastingTimeAttributeUpgrade,
+        # render_vs_species_specializations,
+        # render_HalvesRechargeTimeAttributeUpgrade,
+        # render_HalvesCastingTimeAttributeUpgrade,
+        render_AttributePlusOneUpgrade,
     ]
     
     sections : list[str] = []

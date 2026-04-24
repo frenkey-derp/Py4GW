@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
-from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, Upgrade, WeaponUpgrade, Inscription, OfTheProfession, OfAttributeUpgrade
+from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, RangeInstruction, Upgrade, WeaponUpgrade, Inscription, OfTheProfession, OfAttributeUpgrade
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 
 class Rule:
@@ -78,7 +78,6 @@ class Rule:
         rule._deserialize_data(payload)
         return rule
 
-#region Multi value rules
 class ModelIdsRule(Rule):
     """
     A rule that checks if an item has a ModelID contained in a specified list of model IDs.
@@ -167,6 +166,79 @@ class ItemTypesRule(Rule):
             for name in data.get("item_types", [])
             if isinstance(name, str) and name in ItemType.__members__
         ]
+
+ModelIdAndItemType = NamedTuple("ModelIdAndItemType", [("model_id", ModelID|int), ("item_type", ItemType)])
+class ModelIdsAndItemTypesRule(Rule):
+    """
+    A rule that checks if an item has a ModelID contained in a specified list of model IDs and an ItemType contained in a specified list of item types. Both conditions must be met for the rule to apply.
+    **CAUTION**: This rule is very basic and can result in unwanted matches as model IDs can be shared between different items and item types!
+    """
+
+    def __init__(self, model_ids: Optional[list[ModelIdAndItemType]] = None):
+        super().__init__()
+        self.items: list[ModelIdAndItemType] = model_ids if model_ids is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.items) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+        
+        model_id = item_snapshot.model_id
+        item_type = item_snapshot.item_type
+        for mid, it in self.items:
+            if ((model_id == mid.value if isinstance(mid, ModelID) else model_id == mid) and item_type == it):
+                return True
+
+        return False
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "model_ids": [
+                {
+                    "model_id": int(mid.value) if isinstance(mid, ModelID) else mid,
+                    "item_type": item_type.name,
+                }
+                for mid, item_type in self.items
+            ]
+        }
+        
+    def _comparison_data(self) -> Any:
+        normalized_model_ids = [
+            (
+                int(mid.value) if isinstance(mid, ModelID) else mid,
+                item_type.name
+            )
+            for mid, item_type in self.items
+        ]
+        return tuple(sorted(normalized_model_ids))
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.items = []
+        for entry in data.get("model_ids", []):
+            if not isinstance(entry, dict):
+                continue
+            
+            mid = entry.get("model_id", None)
+            item_type_name = entry.get("item_type", None)
+            if mid is None or item_type_name is None or not isinstance(item_type_name, str) or item_type_name not in ItemType.__members__:
+                continue
+            
+            item_type = ItemType[item_type_name]
+            if isinstance(mid, int):
+                try:
+                    model_id = ModelID(mid)
+                    self.items.append(ModelIdAndItemType(model_id, item_type))
+                except ValueError:
+                    self.items.append(ModelIdAndItemType(mid, item_type))
+
+
+
 
 class RaritiesRule(Rule):
     """
@@ -331,7 +403,6 @@ class StockInstruction:
             quantity=quantity,
             include_storage=include_storage,
         )
-
 
 class StockRule(Rule):
     ui_selectable: ClassVar[bool] = False
@@ -583,7 +654,119 @@ class ArmorUpgradeRule(ExtractModRule):
             )
             if upgrade_cls is not None:
                 self.armor_upgrades.append(upgrade_cls())
-                    
+
+RangedUpgrade = NamedTuple("RangedUpgrade", [("upgrade", WeaponUpgrade | Inscription), ("target", str), ("min_value", float), ("max_value", float), ("item_types", list[ItemType])])
+class UpgradeRangeRule(ExtractModRule):
+    ui_selectable: ClassVar[bool] = True
+    
+    """
+    A rule that checks if an item has an upgrade within a specified range of values. The range is defined by a minimum and maximum value for the upgrade, and the rule applies if the item has an upgrade with a value that falls within that range.
+    """
+    def __init__(self, upgrade_ranges: Optional[list[RangedUpgrade]] = None):
+        super().__init__()
+        self.upgrade_ranges: list[RangedUpgrade] = upgrade_ranges if upgrade_ranges is not None else []
+    
+    def is_valid(self) -> bool:
+        return len(self.upgrade_ranges) > 0
+    
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+        
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+        
+        prefix, suffix, inscription, _ = ItemMod.get_item_upgrades(item_id)
+        item_upgrades : list[Upgrade] = [upgrade for upgrade in [prefix, suffix, inscription] if upgrade is not None]
+        
+        for upgrade_range in self.upgrade_ranges:
+            item_upgrade = next(
+                (
+                    upgrade
+                    for upgrade in item_upgrades
+                    if isinstance(upgrade, (WeaponUpgrade, Inscription)) and upgrade_range.upgrade.matches(upgrade)
+                ),
+                None,
+            )
+            if item_upgrade is None:
+                continue
+
+            upgrade_value = getattr(item_upgrade, upgrade_range.target, None)
+            if isinstance(upgrade_value, (int, float)) and upgrade_range.min_value <= upgrade_value <= upgrade_range.max_value:
+                return True
+
+        return False
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "upgrade_ranges": [
+                {
+                    "upgrade": upgrade_range.upgrade.__class__.__name__,
+                    "target": upgrade_range.target,
+                    "min_value": upgrade_range.min_value,
+                    "max_value": upgrade_range.max_value,
+                    "item_types": [item_type.name for item_type in upgrade_range.item_types],
+                }
+                for upgrade_range in self.upgrade_ranges
+            ]
+        }
+        
+    def _comparison_data(self) -> Any:
+        normalized_data = []
+        for upgrade_range in self.upgrade_ranges:
+            normalized_data.append((
+                upgrade_range.upgrade._comparison_data(),
+                upgrade_range.target,
+                upgrade_range.min_value,
+                upgrade_range.max_value,
+            ))
+        
+        return tuple(sorted(normalized_data))
+        
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.upgrade_ranges = []
+        for entry in data.get("upgrade_ranges", []):
+            if not isinstance(entry, dict):
+                continue
+            
+            name = entry.get("upgrade", None)
+            if not isinstance(name, str):
+                continue
+            
+            upgrade_cls = next(
+                (
+                    upgrade_type
+                    for upgrade_type in _UPGRADES
+                    if upgrade_type.__name__ == name and issubclass(upgrade_type, (WeaponUpgrade, Inscription))
+                ),
+                None,
+            )
+            if upgrade_cls is not None:
+                target = entry.get("target", None)
+                min_value = entry.get("min_value", None)
+                max_value = entry.get("max_value", None)
+                
+                valid_targets = {
+                    instruction.target
+                    for instruction in upgrade_cls.upgrade_info
+                    if isinstance(instruction, RangeInstruction)
+                }
+
+                if not isinstance(target, str) and len(valid_targets) == 1:
+                    target = next(iter(valid_targets))
+
+                if isinstance(target, str) and target in valid_targets and isinstance(min_value, (int, float)) and isinstance(max_value, (int, float)):
+                    self.upgrade_ranges.append(
+                        RangedUpgrade(
+                            upgrade=upgrade_cls(),
+                            target=target,
+                            min_value=float(min_value),
+                            max_value=float(max_value),
+                            item_types=[ItemType[item_type_name] for item_type_name in entry.get("item_types", []) if isinstance(item_type_name, str)]
+                        )
+                    )
+    
     
 class UpgradesRule(ExtractModRule):
     ui_selectable: ClassVar[bool] = True
@@ -674,5 +857,3 @@ class UpgradesRule(ExtractModRule):
                         item_types.append(ItemType[name])
             
             self.upgrades.append((upgrade, item_types if item_types is not None else []))
-
-#endregion Multi value rules

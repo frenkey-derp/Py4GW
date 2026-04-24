@@ -9,23 +9,23 @@ from typing import Any, Optional, cast, get_args, get_origin
 import Py4GW
 import PyImGui
 
+from Py4GWCoreLib import Agent, Player
+from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames, Profession
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, AttributeNames, Gender, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ITEM_TYPE_META_TYPES, ItemType
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType, ModifierIdentifier
 from Py4GWCoreLib.item_mods_src.upgrades import (
-    EnumInstruction,
     FixedValueInstruction,
     Inscription,
     Insignia,
     OfTheProfessionUpgrade,
     RangeInstruction,
     Rune,
-    SelectInstruction,
     _INHERENT_UPGRADES,
     AppliesToRune,
     Instruction,
@@ -46,6 +46,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SalvageConfig import SalvageC
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SellConfig import SellConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.UpgradesConfig import UpgradesConfig
+from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config
@@ -122,7 +123,7 @@ class UI:
                 tooltip_hidden="Show Item Manager",
                 toggle_ini_key=self.module_config.floating_ini_key,
                 toggle_var_name="show_main_window",
-                toggle_default=True,
+                toggle_default=False,
                 draw_callback=self.draw_main_window,
             )
         
@@ -162,6 +163,9 @@ class UI:
         
         self.profession : Profession = Profession._None
         self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
+        self.max_weapon_upgrade_search: str = ""
+        self.upgrade_range_search: str = ""
+        self.model_id_search: str = ""
         self.armor_upgrade_price_threshold: int = 250
         self._armor_upgrade_quote_cache_generation: int | None = None
         self._armor_upgrade_quote_cache_profession: Profession | None = None
@@ -215,7 +219,43 @@ class UI:
                     suffix=os.path.join(self.texture_path, "Item Models", "15552-Wand_Wrapping.png"),
                 ),
             }
+    
+        self.dye_textures: dict[int, str] = {
+            DyeColor.NoColor: os.path.join(self.texture_path, "Dyes", "Gray.png"),
+            DyeColor.Blue: os.path.join(self.texture_path, "Dyes", "Blue.png"),
+            DyeColor.Green: os.path.join(self.texture_path, "Dyes", "Green.png"),
+            DyeColor.Purple: os.path.join(self.texture_path, "Dyes", "Purple.png"),
+            DyeColor.Red: os.path.join(self.texture_path, "Dyes", "Red.png"),
+            DyeColor.Yellow: os.path.join(self.texture_path, "Dyes", "Yellow.png"),
+            DyeColor.Brown: os.path.join(self.texture_path, "Dyes", "Brown.png"),
+            DyeColor.Orange: os.path.join(self.texture_path, "Dyes", "Orange.png"),
+            DyeColor.Silver: os.path.join(self.texture_path, "Dyes", "Silver.png"),
+            DyeColor.Black: os.path.join(self.texture_path, "Dyes", "Black.png"),
+            DyeColor.Gray: os.path.join(self.texture_path, "Dyes", "Gray.png"),
+            DyeColor.White: os.path.join(self.texture_path, "Dyes", "White.png"),
+            DyeColor.Pink: os.path.join(self.texture_path, "Dyes", "Pink.png"),
+        }
+    
+
+    @staticmethod
+    def GetTrueModelFileID(model_file_id, gender : Gender = Gender.Unknown):
+        """Purpose: Retrieve the "true" model file ID of an item by its ID."""
+
+        true_id = 0
+        female = Agent.IsFemale(Player.GetAgentID()) if gender == Gender.Unknown else gender == Gender.Female
+        file_ids = Item.GetCompositeModelIDs(model_file_id)
         
+        if file_ids:
+            true_id = file_ids[10]
+            if not true_id:
+                true_id = file_ids[5] if female else file_ids[0]
+            if not true_id:
+                true_id = model_file_id
+        else:
+            true_id = model_file_id
+
+        return true_id
+    
     @staticmethod
     def format_currency(value: int) -> str:
         plat, gold = _formatted_currency_amount_bytes(value)
@@ -461,13 +501,6 @@ class UI:
         if isinstance(instruction, RangeInstruction):
             return f"{instruction.min_value}-{instruction.max_value}"
 
-        if isinstance(instruction, SelectInstruction):
-            return ", ".join(str(option) for option in instruction.options_list)
-
-        if isinstance(instruction, EnumInstruction):
-            enum_options = ", ".join(self._format_enum_member(member) for member in instruction.enum_type)
-            return enum_options
-
         if isinstance(instruction, FixedValueInstruction):
             fixed_value = instruction.fixed_value
             if isinstance(fixed_value, Enum):
@@ -503,35 +536,6 @@ class UI:
             for instruction in instructions
         )
         ImGui.text_colored(f"Constraint: {label} ({constraint_text})", UI.GRAY_COLOR, font_size=12)
-
-
-        if isinstance(editable_instruction, EnumInstruction):
-            options = list(editable_instruction.enum_type)
-            preview_value = self._format_enum_member(current_value if isinstance(current_value, Enum) else None)
-            changed = False
-            if ImGui.begin_combo(f"{label}##{unique_id}_{field_name}", preview_value, PyImGui.ImGuiComboFlags.NoFlag):
-                for index, option in enumerate(options):
-                    option_label = self._format_enum_member(option)
-                    is_selected = option == current_value
-                    if ImGui.selectable(f"{option_label}##{unique_id}_{field_name}_{index}", is_selected):
-                        self._set_upgrade_field_value(upgrade, field_name, option)
-                        changed = True
-                ImGui.end_combo()
-            return changed
-
-        if isinstance(editable_instruction, SelectInstruction):
-            options = list(editable_instruction.options_list)
-            preview_value = self._format_enum_member(current_value) if isinstance(current_value, Enum) else str(current_value)
-            changed = False
-            if ImGui.begin_combo(f"{label}##{unique_id}_{field_name}", preview_value, PyImGui.ImGuiComboFlags.NoFlag):
-                for index, option in enumerate(options):
-                    option_label = self._format_enum_member(option) if isinstance(option, Enum) else str(option)
-                    is_selected = option == current_value
-                    if ImGui.selectable(f"{option_label}##{unique_id}_{field_name}_{index}", is_selected):
-                        self._set_upgrade_field_value(upgrade, field_name, option)
-                        changed = True
-                ImGui.end_combo()
-            return changed
 
         if isinstance(editable_instruction, RangeInstruction) and isinstance(current_value, int):
             new_value = ImGui.input_int(f"{label}##{unique_id}_{field_name}", v=current_value, min_value=1, step_fast=1)
@@ -611,7 +615,7 @@ class UI:
         removed = False
         unique_id = f"upgrade_rule_{id(rule)}_{index}"
 
-        if ImGui.button(f"Remove##{unique_id}", 70):
+        if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 50, 50):
             removed = True
 
         PyImGui.same_line(0, 8)
@@ -970,17 +974,21 @@ class UI:
                             changed = True
                         
                         if PyImGui.is_item_hovered():
+                            PyImGui.set_next_window_size((300, 50), cond=PyImGui.ImGuiCond.Appearing)
+                            PyImGui.begin_tooltip()
                             quote = self._get_trader_quote_for_armor_upgrade(upgrade)
-                            tooltip_text = upgrade.description_plain
+                            PyImGui.text_wrapped(upgrade.description_plain)
+                            
                             if quote is not None:
-                                tooltip_text = (
-                                    f"{tooltip_text}\n"
-                                    f"Trader Quote: {UI.format_currency(quote.quoted_value)}\n"
-                                    f"Last updated: {UI.format_time_ago(quote.checked_at)}"
-                                )
+                                ImGui.text_colored(f"Trader Value: {UI.format_currency(quote.quoted_value)}\n", UI.GetRarityColor(Rarity.Gold).color_tuple, font_size=13)
+                                PyImGui.separator()
+                                ImGui.text_colored(f"Updated: {UI.format_time_ago(quote.checked_at)}\n", UI.GRAY_COLOR, font_size=12)
+                            else:
+                                PyImGui.separator()
+                                ImGui.text_colored("No matching trader quote found for this upgrade.", UI.GRAY_COLOR, font_size=12)
 
-                            ImGui.show_tooltip(tooltip_text)
-                        
+                            PyImGui.end_tooltip()
+                            
                 except Exception as e:
                     ImGui.text_colored(f"Error loading upgrades: {str(e)}", (255, 0, 0, 255), font_size=12)
                         
@@ -1008,6 +1016,8 @@ class UI:
                         ImGui.text_aligned(mod_type_name, height=24, alignment=Alignment.MidLeft)
                         
                     if ImGui.end_selectable():
+                        if self.mod_type != mod_type:
+                            self.max_weapon_upgrade_search = ""
                         self.mod_type = mod_type
                     
             ImGui.end_child()
@@ -1016,8 +1026,15 @@ class UI:
             style = ImGui.get_style()
             style.ToggleButtonEnabled.push_color(self.GetRarityColor(Rarity.Gold).opacity(0.85).rgb_tuple)
             style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
+        
+            PyImGui.push_item_width(-1)
+            _, self.max_weapon_upgrade_search = ImGui.search_field("##upgrade_search", self.max_weapon_upgrade_search, "Search Upgrades...")
+            PyImGui.pop_item_width()
+            search_query = self.max_weapon_upgrade_search.strip().lower()
+            ImGui.separator()
             
             if ImGui.begin_child("##armor_upgrade_rule_upgrades", (0, 0), border=False):
+
                 #get all subclasses of ArmorUpgrade which has the selected profession
                 upgrades = [
                     upgrade_type for upgrade_type in self.available_upgrade_types
@@ -1041,6 +1058,11 @@ class UI:
                     for variant in variants:
                         upgrade = variant()
                         upgrade_label = self._format_upgrade_label(upgrade)
+                        if search_query:
+                            searchable_text = f"{upgrade_label}".lower()
+                            if search_query not in searchable_text:
+                                continue
+
                         item_types : list[ItemType] = []
                         
                         if isinstance(upgrade, WeaponUpgrade):
@@ -1062,14 +1084,29 @@ class UI:
                                                     ImGui.image_toggle_button(f"##{variant}_{item_type.name}", texture.prefix if self.mod_type == ItemUpgradeType.Prefix else texture.suffix, is_upgrade_selected, 24, 24)
                                                     encoded = upgrade.create_upgrade_name(item_type)
                                                     if PyImGui.is_item_clicked(0):
-                                                        if is_upgrade_selected:
-                                                            rule.weapon_upgrades = [existing_upgrade for existing_upgrade in rule.weapon_upgrades if not (isinstance(existing_upgrade.upgrade, upgrade_type) and item_type in existing_upgrade.item_types)]
+                                                        io = PyImGui.get_io()
+                                                        existing_entry = next((existing_upgrade for existing_upgrade in rule.weapon_upgrades if isinstance(existing_upgrade.upgrade, upgrade_type)), None)
+                                                        
+                                                        if io.key_ctrl:
+                                                            should_select_all = not is_upgrade_selected
+                                                            if should_select_all:
+                                                                if existing_entry:
+                                                                    existing_entry.item_types.clear()
+                                                                    existing_entry.item_types.extend(item_types)
+                                                                else:
+                                                                    rule.weapon_upgrades.append(UpgradeAndItemType(upgrade=upgrade, item_types=list(item_types)))
+                                                            elif existing_entry:
+                                                                rule.weapon_upgrades.remove(existing_entry)
                                                         else:
-                                                            existing_entry = next((existing_upgrade for existing_upgrade in rule.weapon_upgrades if isinstance(existing_upgrade.upgrade, upgrade_type)), None)
-                                                            if existing_entry:
+                                                            if existing_entry and item_type in existing_entry.item_types:
+                                                                existing_entry.item_types.remove(item_type)
+                                                                if not existing_entry.item_types:
+                                                                    rule.weapon_upgrades.remove(existing_entry)
+                                                            elif existing_entry:
                                                                 existing_entry.item_types.append(item_type)
                                                             else:
                                                                 rule.weapon_upgrades.append(UpgradeAndItemType(upgrade=upgrade, item_types=[item_type]))
+                                                                    
                                                         changed = True
                                                     
                                                     # ImGui.show_tooltip(string_table.decode(encoded).replace("%str2%", upgrade_label) if encoded else self._humanize_name(item_type.name))
@@ -1115,6 +1152,488 @@ class UI:
 
         return changed
 
+    def _get_range_instructions(self, upgrade: Upgrade) -> list[RangeInstruction]:
+        return [instruction for instruction in type(upgrade).upgrade_info if isinstance(instruction, RangeInstruction)]
+
+    def _get_range_instruction(self, upgrade: Upgrade, target: str) -> RangeInstruction | None:
+        return next((instruction for instruction in self._get_range_instructions(upgrade) if instruction.target == target), None)
+
+    def _get_range_upgrade_options(self) -> list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]]:
+        options: list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]] = []
+        for upgrade_type in self.available_upgrade_types:
+            if not issubclass(upgrade_type, (WeaponUpgrade, Inscription)):
+                continue
+
+            range_instructions = [instruction for instruction in upgrade_type.upgrade_info if isinstance(instruction, RangeInstruction)]
+            for instruction in range_instructions:
+                options.append((upgrade_type, instruction))
+
+        return sorted(
+            options,
+            key=lambda option: (
+                self._format_upgrade_type_label(option[0]),
+                self._humanize_name(option[1].target),
+            ),
+        )
+
+    def _draw_upgrade_range_add_popup(self, rule: UpgradeRangeRule) -> bool:
+        changed = False
+        popup_id = "##upgrade_range_add_popup"
+
+        if ImGui.button("Add Range Upgrade", -1):
+            self.upgrade_range_search = ""
+            PyImGui.open_popup(popup_id)
+
+        PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
+        if PyImGui.begin_popup(popup_id):
+            ImGui.text("Add Upgrade Range Rule")
+            ImGui.separator()
+
+            _, self.upgrade_range_search = ImGui.search_field("##upgrade_range_search", self.upgrade_range_search, "Search Upgrades...")
+            search_query = self.upgrade_range_search.strip().lower()
+
+            if ImGui.begin_child("##upgrade_range_candidates", (0, 300), border=True):
+                for upgrade_type, instruction in self._get_range_upgrade_options():
+                    upgrade = upgrade_type()
+                    option_label = self._format_upgrade_label(upgrade)
+                    searchable_text = f"{option_label}\n{upgrade.description_plain}".lower()
+                    if search_query and search_query not in searchable_text:
+                        continue
+
+                    already_selected = any(
+                        isinstance(existing.upgrade, upgrade_type) and existing.target == instruction.target
+                        for existing in rule.upgrade_ranges
+                    )
+
+                    if ImGui.begin_selectable(f"##upgrade_range_option_{upgrade_type.__name__}_{instruction.target}", False, (0, 36)):
+                        rarity_color = UI.GetRarityColor(upgrade.rarity)
+                        ImGui.text_colored(option_label, rarity_color.color_tuple, font_size=14)
+                        x, y = PyImGui.get_cursor_pos()
+                        PyImGui.set_cursor_pos(x, y - 4)
+                        ImGui.text_colored(
+                            f"{instruction.target}: {instruction.min_value} - {instruction.max_value}" + ("%" if instruction.target == "chance" else ""),
+                            UI.GRAY_COLOR,
+                            font_size=12,
+                        )
+
+                    if ImGui.end_selectable() and not already_selected:
+                        rule.upgrade_ranges.append(
+                            RangedUpgrade(
+                                upgrade=upgrade,
+                                target=instruction.target,
+                                min_value=float(instruction.min_value),
+                                max_value=float(instruction.max_value),
+                                item_types=[]
+                            )
+                        )
+                        changed = True
+                        PyImGui.close_current_popup()
+
+                    if PyImGui.is_item_hovered():
+                        tooltip = upgrade.description_plain
+                        if already_selected:
+                            tooltip = f"{tooltip}\nAlready selected."
+                        ImGui.show_tooltip(tooltip)
+
+            ImGui.end_child()
+
+            if ImGui.button("Cancel", -1):
+                PyImGui.close_current_popup()
+
+            PyImGui.end_popup()
+
+        return changed
+
+    def _draw_upgrade_range_rule(self, rule: UpgradeRangeRule) -> bool:
+        changed = False
+
+        if self._draw_upgrade_range_add_popup(rule):
+            changed = True
+
+        ImGui.separator()
+
+        style = ImGui.get_style()
+        style.ToggleButtonEnabled.push_color(self.GetRarityColor(Rarity.Gold).opacity(0.85).rgb_tuple)
+        style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
+        for index, upgrade_range in enumerate(rule.upgrade_ranges):
+            unique_id = f"upgrade_range_rule_{id(rule)}_{index}"
+            instruction = self._get_range_instruction(upgrade_range.upgrade, upgrade_range.target)
+            if instruction is None:
+                continue
+
+            if ImGui.begin_child(f"##{unique_id}", (0, 100), border=True):
+                style.CellPadding.push_style_var_direct(4, 4)
+                if ImGui.begin_table(f"##{unique_id}_table", 3, PyImGui.TableFlags.NoBordersInBody):
+                    PyImGui.table_setup_column("Name", PyImGui.TableColumnFlags.WidthFixed, 200)
+                    PyImGui.table_setup_column("ItemTypes", PyImGui.TableColumnFlags.WidthStretch)
+                    PyImGui.table_setup_column("Delete", PyImGui.TableColumnFlags.WidthFixed, 50)
+
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    
+                    rarity_color = UI.GetRarityColor(upgrade_range.upgrade.rarity)
+                    ImGui.text_colored(
+                        self._format_upgrade_label(upgrade_range.upgrade),
+                        rarity_color.color_tuple,
+                        font_size=14,
+                    )
+                    
+                    PyImGui.table_next_column()
+                    item_types = self._get_allowed_item_types(upgrade_range.upgrade)
+                    
+                    if item_types:
+                        style.ChildBg.push_color_direct((0, 0, 0, 80))
+                        style.WindowPadding.push_style_var_direct(4, 4)
+                        if ImGui.begin_child(f"##{unique_id}_item_types", (0, 32), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if item_types:
+                                for item_type in item_types:
+                                    is_upgrade_selected = any(isinstance(existing_upgrade.upgrade, type(upgrade_range.upgrade)) and item_type in existing_upgrade.item_types for existing_upgrade in rule.upgrade_ranges)
+                                    
+                                    texture = self.weapon_upgrade_textures.get(item_type)
+                                    if texture:
+                                        ImGui.image_toggle_button(f"##{index}_{item_type.name}", texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix, is_upgrade_selected, 24, 24)
+                                        encoded = upgrade_range.upgrade.create_upgrade_name(item_type)
+                                        if PyImGui.is_item_clicked(0):
+                                            io = PyImGui.get_io()
+                                            existing_entry = next((existing_upgrade for existing_upgrade in rule.upgrade_ranges if isinstance(existing_upgrade.upgrade, type(upgrade_range.upgrade))), None)
+                                            
+                                            if io.key_ctrl:
+                                                should_select_all = not is_upgrade_selected
+                                                if should_select_all:
+                                                    if existing_entry:
+                                                        existing_entry.item_types.clear()
+                                                        existing_entry.item_types.extend(item_types)
+                                                    else:
+                                                        rule.upgrade_ranges.append(RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=upgrade_range.min_value, max_value=upgrade_range.max_value, item_types=list(item_types)))
+                                            else:
+                                                if existing_entry and item_type in existing_entry.item_types:
+                                                    existing_entry.item_types.remove(item_type)
+                                                elif existing_entry:
+                                                    existing_entry.item_types.append(item_type)
+                                                else:
+                                                    rule.upgrade_ranges.append(RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=upgrade_range.min_value, max_value=upgrade_range.max_value, item_types=[item_type]))
+                                                        
+                                            changed = True
+                                        
+                                        # ImGui.show_tooltip(string_table.decode(encoded).replace("%str2%", upgrade_label) if encoded else self._humanize_name(item_type.name))
+                                        ImGui.show_tooltip(encoded.plain if encoded else self._humanize_name(item_type.name))
+                                        # ImGui.show_tooltip(string_table.decode(upgrade.__encoded_name.encoded + encoded) if encoded else self._humanize_name(item_type.name))
+                                                                    
+                                        PyImGui.same_line(0, 5)
+                        
+                        ImGui.end_child()
+                        style.WindowPadding.pop_style_var()
+                        style.ChildBg.pop_color_direct()
+                    PyImGui.table_next_column()
+                    
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 40):
+                        rule.upgrade_ranges.pop(index)
+                        changed = True
+                        
+                    ImGui.end_table()
+                style.CellPadding.pop_style_var()
+                
+                ImGui.separator()
+                value_is_int = isinstance(instruction.min_value, int) and isinstance(instruction.max_value, int)
+                current_min = int(upgrade_range.min_value) if value_is_int else upgrade_range.min_value
+                current_max = int(upgrade_range.max_value) if value_is_int else upgrade_range.max_value
+                width = PyImGui.get_content_region_avail()[0]
+                PyImGui.push_item_width(width / 2 - 10)
+                
+                if value_is_int:
+                    new_min = ImGui.slider_int(
+                        f"##Minimum##{unique_id}",
+                        int(current_min),
+                        int(instruction.min_value),
+                        int(instruction.max_value),
+                    )
+                    if PyImGui.is_item_hovered():
+                        upgrade_range.upgrade.__setattr__(upgrade_range.target, new_min)
+                        ImGui.show_tooltip(upgrade_range.upgrade.description_plain)
+                        
+                    PyImGui.same_line(0, 8)
+                    new_max = ImGui.slider_int(
+                        f"###Maximum##{unique_id}",
+                        int(current_max),
+                        int(instruction.min_value),
+                        int(instruction.max_value),
+                    )
+                        
+                    if PyImGui.is_item_hovered():
+                        upgrade_range.upgrade.__setattr__(upgrade_range.target, new_max)
+                        ImGui.show_tooltip(upgrade_range.upgrade.description_plain)
+                else:
+                    new_min = ImGui.slider_float(
+                        f"###Minimum##{unique_id}",
+                        current_min,
+                        float(instruction.min_value),
+                        float(instruction.max_value),
+                    )
+                    PyImGui.same_line(0, 8)
+                    new_max = ImGui.slider_float(
+                        f"##Maximum##{unique_id}",
+                        current_max,
+                        float(instruction.min_value),
+                        float(instruction.max_value),
+                    )
+                PyImGui.pop_item_width()
+
+                new_min_value = min(new_min, new_max)
+                new_max_value = max(new_min, new_max)
+                if new_min_value != upgrade_range.min_value or new_max_value != upgrade_range.max_value:
+                    rule.upgrade_ranges[index] = RangedUpgrade(
+                        upgrade=upgrade_range.upgrade,
+                        target=upgrade_range.target,
+                        min_value=float(new_min_value),
+                        max_value=float(new_max_value),
+                        item_types=upgrade_range.item_types,
+                    )
+                    changed = True
+
+            ImGui.end_child()
+        style.ToggleButtonDisabled.pop_color()
+        style.ToggleButtonEnabled.pop_color()
+        
+        return changed
+
+    def draw_models_and_itemtype_rule(self, rule : ModelIdsAndItemTypesRule) -> bool:
+        changed = False
+        items = [item for sublist in ITEM_DATA.data.values() for item in sublist.values()]
+        sorted_items = sorted(items, key=lambda item: item.name)
+
+        popup_id = "##model_id_rule_add_popup"
+        selected_models = [(model_id, item_type) for model_id, item_type in rule.items]
+        
+        if ImGui.button("Add Model ID", -1):
+            PyImGui.open_popup(popup_id)
+
+        PyImGui.set_next_window_size((400, 0), cond=PyImGui.ImGuiCond.Appearing)
+        if PyImGui.begin_popup(popup_id):
+            ImGui.text("Add Item By Model ID")
+            ImGui.separator()
+
+            PyImGui.set_next_item_width(-1)
+            search_changed, self.model_id_search = ImGui.search_field("##model_id_search", self.model_id_search, "Search by name or model id...")
+            search_query = self.model_id_search.strip().lower()
+
+            if ImGui.begin_child("##model_id_candidates", (0, 320), border=True):
+                if search_changed:
+                    PyImGui.set_scroll_y(0)
+                    
+                for item in sorted_items:
+                    modelid_item_type = int(item.model_id)
+                    already_selected = any(modelid_item_type == (int(mid.value) if isinstance(mid, ModelID) else mid) for mid, _ in selected_models)
+                
+                    item_name = item.name or item.english_name or f"Model {item.model_id}"
+                    searchable_text = f"{item_name}\n{item.model_id}".lower()
+                    if search_query and search_query not in searchable_text:
+                        continue
+                    
+                    if already_selected:
+                        continue
+                    
+                    if PyImGui.is_rect_visible(10, 42):
+
+                        texture_path = UI._make_texture_key(item.model_file_id)
+
+                        if ImGui.begin_selectable(f"##model_id_candidate_{item.item_type.name}_{modelid_item_type}", False, (0, 36)):
+                            if texture_path:
+                                ImGui.text(texture_path)
+                            else:
+                                ImGui.dummy(32, 32)
+
+                            PyImGui.same_line(0, 8)
+                            
+                            PyImGui.begin_group()
+                            x, _ = PyImGui.get_cursor_pos()
+                            ImGui.text(item_name)
+                            if len(item.attributes) == 1:
+                                PyImGui.same_line(0, 8)
+                                ImGui.text_colored(f"[{self._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR, font_size=12)
+                                
+                            _, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR, font_size=12)
+                            PyImGui.end_group()
+
+                        if ImGui.end_selectable() and not already_selected:
+                            try:
+                                rule.items.append(ModelIdAndItemType(ModelID(modelid_item_type), item.item_type))
+                            except ValueError:
+                                rule.items.append(ModelIdAndItemType(modelid_item_type, item.item_type))
+                            changed = True
+                            PyImGui.close_current_popup()
+
+                        if PyImGui.is_item_hovered():
+                            if PyImGui.begin_tooltip():
+                                ImGui.text(item_name)
+                                if len(item.attributes) == 1:
+                                    PyImGui.same_line(0, 8)
+                                    ImGui.text_colored(f"[{self._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR, font_size=12)
+                                    
+                                ImGui.separator()
+                                ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR, font_size=12)
+                                ImGui.text_colored(f"Item Type: {self._humanize_name(item.item_type.name)}", UI.GRAY_COLOR, font_size=12)
+                            PyImGui.end_tooltip()
+                                
+                    else:
+                        ImGui.dummy(0, 36)
+
+            ImGui.end_child()
+
+            if ImGui.button("Cancel", -1):
+                PyImGui.close_current_popup()
+
+            PyImGui.end_popup()
+
+        ImGui.separator()
+        
+        if ImGui.begin_child("##model_id_rule_list", (0, 0), border=False):
+            selected_items: list[tuple[ModelIdAndItemType, Any]] = []
+            for model_id, item_type in rule.items:
+                modelid_item_type = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                item_data = next((item for item in sorted_items if item.model_id == modelid_item_type), None)
+                selected_items.append((ModelIdAndItemType(model_id, item_type), item_data))
+
+            for index, (modelid_item_type, item_data) in enumerate(selected_items):
+                unique_id = f"model_id_rule_{id(rule)}_{modelid_item_type}_{index}"
+                item_name = item_data.name if item_data is not None else f"Unknown Item ({modelid_item_type})"
+                texture_path = UI._make_texture_key(item_data.model_file_id) if item_data is not None else ""
+
+                if ImGui.begin_child(f"##{unique_id}", (0, 50), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
+                        original_entry = next(
+                            (
+                                existing_model_id
+                                for existing_model_id in rule.items
+                                if (int(existing_model_id.model_id.value) if isinstance(existing_model_id.model_id, ModelID) else int(existing_model_id.model_id)) == modelid_item_type and existing_model_id.item_type == item_data.item_type
+                            ),
+                            None,
+                        )
+                        if original_entry is not None:
+                            rule.items.remove(original_entry)
+                            changed = True
+                        ImGui.end_child()
+                        break
+
+                    PyImGui.same_line(0, 8)
+                    if texture_path:
+                        ImGui.text(texture_path)
+                    else:
+                        ImGui.dummy(32, 32)
+
+                    PyImGui.same_line(0, 8)
+                    PyImGui.begin_group()
+                    ImGui.text(item_name)
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    item_type_name = self._humanize_name(modelid_item_type.item_type.name)
+                    ImGui.text_colored(f"{item_type_name} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""), UI.GRAY_COLOR, font_size=12)
+                    PyImGui.end_group()
+                ImGui.end_child()
+        ImGui.end_child()
+
+        return changed
+
+    def draw_model_ids_rule(self, rule: ModelIdsRule) -> bool:
+        changed = False
+        model_ids = [m for m in ModelID]
+        popup_id = "##model_ids_rule_add_popup"
+        selected_model_ids = {
+            int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+            for model_id in rule.model_ids
+        }
+
+        if ImGui.button("Add Model ID", -1):
+            self.model_id_search = ""
+            PyImGui.open_popup(popup_id)
+
+        PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
+        if PyImGui.begin_popup(popup_id):
+            ImGui.text("Add Model ID")
+            ImGui.separator()
+
+            _, self.model_id_search = ImGui.search_field("##model_id_enum_search", self.model_id_search, "Search model ids or enter an integer...")
+            search_query = self.model_id_search.strip().lower()
+            matching_model_ids = [
+                model_id
+                for model_id in sorted(model_ids, key=lambda model_id: model_id.name)
+                if not search_query or search_query in f"{model_id.name} {int(model_id.value)}".lower()
+            ]
+
+            manual_value: int | None = None
+            if search_query:
+                try:
+                    manual_value = int(search_query)
+                except ValueError:
+                    manual_value = None
+
+            exact_enum_match = any(int(model_id.value) == manual_value for model_id in model_ids) if manual_value is not None else False
+
+            if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
+                if ImGui.begin_selectable(f"##manual_model_id_{manual_value}", False, (0, 34)):
+                    ImGui.text(f"Manual Model ID: {manual_value}")
+
+                if ImGui.end_selectable():
+                    rule.model_ids.append(manual_value)
+                    changed = True
+                    PyImGui.close_current_popup()
+
+                if PyImGui.is_item_hovered():
+                    ImGui.show_tooltip("Add this raw integer model id even if it is not part of the ModelID enum yet.")
+
+            if ImGui.begin_child("##model_id_enum_candidates", (0, 320), border=True):
+                for model_id in matching_model_ids:
+                    model_id_value = int(model_id.value)
+                    already_selected = model_id_value in selected_model_ids
+                    if ImGui.begin_selectable(f"##model_id_enum_{model_id.name}", False, (0, 34)):
+                        ImGui.text(self._humanize_name(model_id.name))
+                        x, y = PyImGui.get_cursor_pos()
+                        PyImGui.set_cursor_pos(x, y - 4)
+                        ImGui.text_colored(f"{model_id_value}", UI.GRAY_COLOR, font_size=12)
+
+                    if ImGui.end_selectable() and not already_selected:
+                        rule.model_ids.append(model_id)
+                        changed = True
+                        PyImGui.close_current_popup()
+
+                    if PyImGui.is_item_hovered():
+                        tooltip = f"{self._humanize_name(model_id.name)}\nModel ID: {model_id_value}"
+                        if already_selected:
+                            tooltip = f"{tooltip}\nAlready selected."
+                        ImGui.show_tooltip(tooltip)
+            ImGui.end_child()
+
+            if ImGui.button("Cancel", -1):
+                PyImGui.close_current_popup()
+
+            PyImGui.end_popup()
+
+        ImGui.separator()
+
+        for index, model_id in enumerate(rule.model_ids):
+            model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+            label = self._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
+            unique_id = f"model_ids_rule_{id(rule)}_{model_id_value}_{index}"
+
+            if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
+                    rule.model_ids.pop(index)
+                    changed = True
+                    ImGui.end_child()
+                    break
+
+                PyImGui.same_line(0, 8)
+                PyImGui.begin_group()
+                ImGui.text(label)
+                x, y = PyImGui.get_cursor_pos()
+                PyImGui.set_cursor_pos(x, y - 4)
+                ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR, font_size=12)
+                PyImGui.end_group()
+            ImGui.end_child()
+
+        return changed
+
     def draw_main_window(self) -> None:
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
@@ -1125,6 +1644,11 @@ class UI:
         self.floating_button.sync_begin_with_close(open_)
 
         if expanded:
+            # width = PyImGui.get_content_region_avail()[0]
+            # columns = max(1, int(width // 70))
+            # self.draw_item_catalogue_textures(columns)
+            # PyImGui.end_columns()
+            
             self.draw_explorer()
 
         ImGui.End(self.module_config.main_ini_key)
@@ -1195,13 +1719,80 @@ class UI:
         style.CellPadding.pop_style_var_direct()
         # style.TableBorderLight.pop_color_direct()
         # style.TableBorderStrong.pop_color_direct()
+    
+    @staticmethod
+    def _make_texture_key(model_file_id: int) -> str:
+        return f"gwdat://{int(model_file_id)}" if int(model_file_id or 0) > 0 else ""
+
+    def draw_item_catalogue_textures(self, columns: int):
+        PyImGui.columns(columns, "item_textures", False)
+        for itemtype, items in ITEM_DATA.data.items():
+            for model_id, item in items.items():
+                if PyImGui.is_rect_visible(10, 70):
+                    ImGui.dummy(0, 64)
+                    PyImGui.same_line(0, 0)
+                    if item.model_file_id:
+                        model_file_id_texture = UI._make_texture_key(Item.GetTrueModelFileID(item.model_file_id, Gender.Male))
+                        model_file_id_texture = UI._make_texture_key(item.model_file_id)
+                        ImGui.DrawTexture(model_file_id_texture, 64, 64)
+                    else:
+                        ImGui.dummy(64, 64)
+                        
+                    ImGui.text(item.name)
+                else:
+                    ImGui.dummy(0, 70)
+                    
+                PyImGui.next_column()
+    
+    def draw_textures(self, columns: int):
+        org_model_file_id = 9383
+        composite_texture_ids = Item.GetCompositeModelIDs(org_model_file_id) or [*range(org_model_file_id, org_model_file_id + 5)]
+        ImGui.DrawTexture(UI._make_texture_key(Item.GetTrueModelFileID(org_model_file_id, Gender.Male)), 64, 64)
+        ImGui.text(f"{len(composite_texture_ids)} Composite Textures:", font_size=14)
         
+        ImGui.separator()
+        
+        PyImGui.columns(columns, "item_textures", False)
+        for model_file_id in composite_texture_ids:
+            model_file_id_texture = UI._make_texture_key(Item.GetTrueModelFileID(model_file_id, Gender.Male))
+            ImGui.DrawTexture(model_file_id_texture, 64, 64)
+            PyImGui.next_column()
+        pass
+    
+    def draw_item_textures(self, columns: int):
+        snapshot : dict[Bag, dict[int, Optional['ItemSnapshot']]] = ItemSnapshot.get_bags_snapshot(INVENTORY_BAGS + STORAGE_BAGS)
+        
+        items = [item for bag_snapshot in snapshot.values() for item in bag_snapshot.values() if item is not None]
+        
+        PyImGui.columns(columns, "item_textures", False)
+        for item in items:
+            model_file_id_texture = UI._make_texture_key(Item.GetTrueModelFileID(item.model_file_id, Gender.Male))
+            ImGui.DrawTexture(model_file_id_texture, 64, 64)
+            PyImGui.next_column()
     
     def draw_context_menu(self, popup_id: str, config_info: ConfigInfo, rule: Rule) -> bool:
         if PyImGui.begin_popup(popup_id):
             ImGui.text(rule.name or popup_id)
             ImGui.separator()
             
+            if ImGui.menu_item("Move Up"):
+                index = config_info.config.index(rule)
+                if index > 0:
+                    config_info.config.remove(rule)
+                    config_info.config.insert(index - 1, rule)
+                config_info.save()
+                self.rule = None
+            
+            if ImGui.menu_item("Move Down"):
+                index = config_info.config.index(rule)
+                if index < len(config_info.config) - 1:
+                    config_info.config.remove(rule)
+                    config_info.config.insert(index + 1, rule)
+                config_info.save()
+                self.rule = None
+                
+            ImGui.separator()
+                
             if ImGui.menu_item("Delete Rule"):
                 config_info.config.remove(rule)
                 config_info.save()
@@ -1264,7 +1855,7 @@ class UI:
                     self.context_menu_id = None
                     self.context_menu_rule = None
                     self.context_menu_config = None
-                
+
             ImGui.end_child()
             
             PyImGui.table_next_column()
@@ -1284,7 +1875,7 @@ class UI:
         PyImGui.set_next_item_width(-1)
         rule_name_input_id = f"##rule_name_{id(rule)}"
         name = ImGui.input_text(rule_name_input_id, rule.name or "")
-        
+        style = ImGui.get_style()
         if name != rule.name:
             rule.name = name
             if self.config:
@@ -1296,14 +1887,27 @@ class UI:
         match rule:
             case ModelIdsRule():
                 ImGui.text_wrapped("This rule matches items based on their model IDs. You can specify one or more model IDs to match against the item.")
+                if self.draw_model_ids_rule(rule):
+                    if self.config:
+                        self.config.save()
+                        
+            case ModelIdsAndItemTypesRule():
+                ImGui.text_wrapped("This rule matches items based on their model id and item type. You can specify one or more model id and item type pairs to match against the item.")
+                if self.draw_models_and_itemtype_rule(rule):
+                    if self.config:
+                        self.config.save()
                 
             case ItemTypesRule():
                 ImGui.text_wrapped("This rule matches items based on their item types. You can specify one or more item types to match against the item.")
                 
                 if ImGui.begin_child("##item_types", (0, 0), border=False):
-                    for item_type in ItemType:
+                    width = PyImGui.get_content_region_avail()[0]
+                    columns = max(1, int(width // 200))
+                    PyImGui.columns(columns, "item_type_columns", False)
+                    sorted_item_types = sorted(ItemType, key=lambda it: it.name)
+                    for item_type in sorted_item_types:
                         is_selected = item_type in rule.item_types
-                        selected = ImGui.checkbox(f"{item_type.name}", is_selected)
+                        selected = ImGui.checkbox(f"{Utils.humanize_string(item_type.name)}", is_selected)
                         
                         if selected != is_selected:
                             if item_type in rule.item_types:
@@ -1313,6 +1917,10 @@ class UI:
     
                             if self.config:
                                 self.config.save()
+                        PyImGui.next_column()
+                        
+                    PyImGui.end_columns()
+                    
                 ImGui.end_child()
                 
             case RaritiesRule():
@@ -1321,7 +1929,9 @@ class UI:
                 if ImGui.begin_child("##rarities", (0, 0), border=False):
                     for rarity in Rarity:
                         is_selected = rarity in rule.rarities
+                        style.Text.push_color_direct(self.GetRarityColor(rarity).rgb_tuple)
                         selected = ImGui.checkbox(f"{rarity.name}", is_selected)
+                        style.Text.pop_color_direct()
                         
                         if selected != is_selected:
                             if rarity in rule.rarities:
@@ -1335,41 +1945,53 @@ class UI:
             
             case RaritiesAndItemTypesRule():
                 ImGui.text_wrapped("This rule matches items based on a combination of rarity and item type. You can specify pairs of rarities and item types to match against the item.")
-            
-                PyImGui.columns(2, "content_split", False)
-                                                    
-                if ImGui.begin_child("##rarities", (0, 0), border=False):
-                    for rarity in Rarity:
-                        is_selected = rarity in rule.rarities
-                        selected = ImGui.checkbox(f"{rarity.name}", is_selected)
-                        
-                        if selected != is_selected:
-                            if rarity in rule.rarities:
-                                rule.rarities.remove(rarity)
-                            else:
-                                rule.rarities.append(rarity)
-    
-                            if self.config:
-                                self.config.save()
-                ImGui.end_child()
+                if ImGui.begin_table("##rarity_item_type_table", 2, PyImGui.TableFlags.NoBordersInBody):
+                    PyImGui.table_setup_column("Rarities", PyImGui.TableColumnFlags.WidthFixed, 200)
+                    PyImGui.table_setup_column("Item Types", PyImGui.TableColumnFlags.WidthStretch)
+                    
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                                            
+                    if ImGui.begin_child("##rarities", (0, 0), border=False):
+                        for rarity in Rarity:
+                            style.Text.push_color_direct(self.GetRarityColor(rarity).rgb_tuple)
+                            is_selected = rarity in rule.rarities
+                            selected = ImGui.checkbox(f"{rarity.name}", is_selected)
+                            style.Text.pop_color_direct()
+                            
+                            if selected != is_selected:
+                                if rarity in rule.rarities:
+                                    rule.rarities.remove(rarity)
+                                else:
+                                    rule.rarities.append(rarity)
+        
+                                if self.config:
+                                    self.config.save()
+                    ImGui.end_child()
+                    
+                    PyImGui.table_next_column()
                 
-                PyImGui.next_column()
-            
-                if ImGui.begin_child("##item_types", (0, 0), border=False):
-                    for item_type in ItemType:
-                        is_selected = item_type in rule.item_types
-                        selected = ImGui.checkbox(f"{item_type.name}", is_selected)
+                    if ImGui.begin_child("##item_types", (0, 0), border=False):
+                        width = PyImGui.get_content_region_avail()[0]
+                        columns = max(1, int(width // 200))
+                        PyImGui.columns(columns, "item_type_columns", False)
+                        sorted_item_types = sorted(ItemType, key=lambda it: it.name)
                         
-                        if selected != is_selected:
-                            if item_type in rule.item_types:
-                                rule.item_types.remove(item_type)
-                            else:
-                                rule.item_types.append(item_type)
-                            if self.config:
-                                self.config.save()
-                ImGui.end_child()
-                
-                PyImGui.end_columns()
+                        for item_type in sorted_item_types:
+                            is_selected = item_type in rule.item_types
+                            selected = ImGui.checkbox(f"{item_type.name}", is_selected)
+                            
+                            if selected != is_selected:
+                                if item_type in rule.item_types:
+                                    rule.item_types.remove(item_type)
+                                else:
+                                    rule.item_types.append(item_type)
+                                if self.config:
+                                    self.config.save()
+                            PyImGui.next_column()
+                        PyImGui.end_columns()
+                    ImGui.end_child()
+                    ImGui.end_table()
                                                 
             case DyesRule():
                 ImGui.text_wrapped("This rule matches items based on their dye color. You can specify one or more dye colors to match against the item.")
@@ -1381,7 +2003,17 @@ class UI:
                             continue
                         
                         is_selected = dye_color in rule.dye_colors
-                        selected = ImGui.checkbox(f"{dye_color.name}", is_selected)
+                        PyImGui.begin_group()
+                        selected = ImGui.checkbox(f"##{dye_color.name}", is_selected)
+                        hovered = PyImGui.is_item_hovered()
+                        PyImGui.same_line(0, 5)
+                        ImGui.image(self.dye_textures.get(dye_color, ""), (24, 24))
+                        PyImGui.same_line(0, 5)
+                        ImGui.text_aligned(dye_color.name, height=24, alignment=Alignment.MidLeft)
+                        PyImGui.end_group()
+                        
+                        if not hovered and PyImGui.is_item_clicked(0):
+                            selected = not is_selected
                         
                         if selected != is_selected:
                             if dye_color in rule.dye_colors:
@@ -1390,14 +2022,9 @@ class UI:
                                 rule.dye_colors.append(dye_color)
                             if self.config:
                                 self.config.save()
+                
                 ImGui.end_child()
                 
-            case UpgradesRule():
-                ImGui.text_wrapped("This rule matches items based on their upgrades. You can specify one or more upgrades to match against the item.")
-                if self._draw_upgrades_rule(rule):
-                    if self.config:
-                        self.config.save()
-            
             case ArmorUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their armor upgrades. You can specify one or more armor upgrades to match against the item.")
                 if self._draw_armor_upgrades_rule(rule):
@@ -1407,6 +2034,12 @@ class UI:
             case MaxWeaponUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their weapon upgrades. You can specify one or more weapon upgrades to match against the item.")
                 if self._draw_max_weapon_upgrades_rule(rule):
+                    if self.config:
+                        self.config.save()
+            
+            case UpgradeRangeRule():
+                ImGui.text_wrapped("This rule matches items based on their upgrades that have a numeric value within a specified range.")
+                if self._draw_upgrade_range_rule(rule):
                     if self.config:
                         self.config.save()
             
