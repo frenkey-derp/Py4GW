@@ -48,6 +48,14 @@ class DyeColor(IntEnum):
 
 
 # endregion
+
+#region Gender
+class Gender(IntEnum):
+    Unknown = 0
+    Female = 1
+    Male = 2
+#endregion
+
 # region Profession
 class Profession(IntEnum):
     _None = 0
