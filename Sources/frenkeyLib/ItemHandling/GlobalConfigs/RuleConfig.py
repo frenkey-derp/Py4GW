@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import ClassVar, Iterable, Self, SupportsIndex, cast
+from typing import ClassVar, Generic, Self, TypeVar, cast
 
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
@@ -10,36 +10,12 @@ from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DyesRule, ItemTypesRule, ModelIdsRule, RaritiesRule, Rule, UpgradesRule
 
+TRule = TypeVar("TRule", bound=Rule)
 
-class RuleConfig(list[Rule]):
-    '''
-    A config that contains rules for filtering items. This is used as a base class for the different configs, such as the loot config and the salvage config.
-    It contains the basic functionality for evaluating items against the rules, as well as blacklists and whitelists.
-    The specific configs can then add their own rules and functionality on top of this.
-    
-    All RuleConfigs are singletons, meaning that there will only be one instance of each config.
-    This is because the configs are meant to be global and shared across the entire application, and having multiple instances would lead to confusion and bugs.
-    The singleton pattern is implemented in a way that allows for easy subclassing, so that each specific config can have its own instance while still sharing the same base functionality.
-    '''
-    
-    _instances: ClassVar[dict[type[Self], Self]] = {}
+class RuleConfig(list[TRule], Generic[TRule]):
     allowed_rule_types: ClassVar[tuple[type[Rule], ...] | None] = None
-
-    def __new__(cls: type[Self]) -> Self:
-        instance = cast(Self | None, cls._instances.get(cls))
-        if instance is None:
-            instance = cast(Self, super().__new__(cls))
-            instance._initialized = False
-            cls._instances[cls] = instance
-        return instance
     
-    def __init__(self):
-        # only initialize once
-        if self._initialized:
-            return
-        
-        self._initialized = True
-        
+    def __init__(self):        
         self.blacklisted_items : list[int] = []
         self.whitelisted_items : list[int] = []
         
@@ -51,13 +27,26 @@ class RuleConfig(list[Rule]):
         
         self.blacklisted_items.clear()
         self.whitelisted_items.clear()
-    
-    def _evaluate_own_rules(self, item_id: int) -> bool:
-        '''
-        Evaluates an item against the current rules and returns whether it matches the rules. Takes the blacklist and whitelist into account as well, with the blacklist having the highest priority, then the whitelist and then the rules. 
-        This means that if an item is blacklisted, it will not match the rules even if it would normally match them, and if an item is whitelisted, it will match the rules even if it would not normally match them.
-        '''
-        
+
+    @classmethod
+    def GetAllowedRuleTypes(cls) -> tuple[type[Rule], ...] | None:
+        return cls.allowed_rule_types
+
+    @classmethod
+    def _is_allowed_rule_type(cls, rule: Rule) -> bool:
+        allowed_rule_types = cls.GetAllowedRuleTypes()
+        return allowed_rule_types is None or isinstance(rule, allowed_rule_types)
+
+    @classmethod
+    def _cast_rule(cls, rule: Rule) -> TRule:
+        if not cls._is_allowed_rule_type(rule):
+            raise TypeError(
+                f"{type(rule).__name__} is not allowed in {cls.__name__}."
+            )
+
+        return cast(TRule, rule)
+
+    def EvaluateItem(self, item_id: int) -> bool:        
         # --- Hard block: blacklists ---
         if item_id in self.blacklisted_items:
             return False
@@ -71,21 +60,6 @@ class RuleConfig(list[Rule]):
                 return True
             
         return False
-
-    def _get_protected_items_config(self) -> Self | None:
-        from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProtectedItemsConfig import ProtectedItemsConfig
-
-        if isinstance(self, ProtectedItemsConfig):
-            return None
-
-        return cast(Self, ProtectedItemsConfig())
-
-    def EvaluateItem(self, item_id: int) -> bool:
-        protected_items_config = self._get_protected_items_config()
-        if protected_items_config is not None and protected_items_config._evaluate_own_rules(item_id):
-            return False
-            
-        return self._evaluate_own_rules(item_id)
     
     def EvaluateItems(self, item_ids: list[int]) -> list[int]:
         '''
@@ -101,59 +75,14 @@ class RuleConfig(list[Rule]):
                 
         return filtered_items
 
-    @classmethod
-    def IsRuleAllowed(cls, rule: Rule) -> bool:
-        allowed_rule_types = cls.allowed_rule_types
-        if allowed_rule_types is None:
-            return True
-
-        return isinstance(rule, allowed_rule_types)
-
-    @classmethod
-    def GetAllowedRuleTypes(cls) -> tuple[type[Rule], ...] | None:
-        return cls.allowed_rule_types
-
-    def _ensure_rule_allowed(self, rule: Rule) -> None:
-        if self.IsRuleAllowed(rule):
-            return
-
-        allowed_rule_names = ", ".join(rule_type.__name__ for rule_type in self.allowed_rule_types or ())
-        raise TypeError(
-            f"{type(self).__name__} does not allow rules of type {type(rule).__name__}. "
-            f"Allowed rule types: {allowed_rule_names or 'None'}."
-        )
-
-    def append(self, rule: Rule) -> None:
-        self._ensure_rule_allowed(rule)
-        super().append(rule)
-
-    def extend(self, rules: Iterable[Rule]) -> None:
-        validated_rules = list(rules)
-        for rule in validated_rules:
-            self._ensure_rule_allowed(rule)
-        super().extend(validated_rules)
-
-    def insert(self, index: SupportsIndex, rule: Rule) -> None:
-        self._ensure_rule_allowed(rule)
-        super().insert(index, rule)
-
-    def __setitem__(self, index, value) -> None:
-        if isinstance(index, slice):
-            replacement_rules = list(value)
-            for rule in replacement_rules:
-                self._ensure_rule_allowed(rule)
-            super().__setitem__(index, replacement_rules)
-            return
-
-        self._ensure_rule_allowed(value)
-        super().__setitem__(index, value)
-
     def AddRule(self, rule: Rule):
         '''
         Adds a rule to the config if an equivalent rule is not already contained in the config. This is to prevent duplicate rules from being added, which would be redundant and adds unnecessary overhead when evaluating items against the rules.
         '''
+        typed_rule = self._cast_rule(rule)
+
         if not self.HasMatchingRule(rule):
-            self.append(rule)
+            self.append(typed_rule)
         
     def RemoveRule(self, rule: Rule):
         '''
@@ -353,7 +282,7 @@ class RuleConfig(list[Rule]):
         if not isinstance(json_data, list):
             raise ValueError("RuleConfig JSON payload must be a list of rule objects.")
 
-        parsed_rules: list[Rule] = []
+        parsed_rules: list[TRule] = []
 
         for rule_data in json_data:
             if not isinstance(rule_data, dict):
@@ -363,14 +292,19 @@ class RuleConfig(list[Rule]):
             if rule is None:
                 continue
 
-            if any(existing_rule.equals(rule) for existing_rule in parsed_rules):
+            if not cls._is_allowed_rule_type(rule):
                 continue
 
-            parsed_rules.append(rule)
+            typed_rule = cast(TRule, rule)
+
+            if any(existing_rule.equals(typed_rule) for existing_rule in parsed_rules):
+                continue
+
+            parsed_rules.append(typed_rule)
 
         instance = cls()
         instance.clear()
-        instance.extend(rule for rule in parsed_rules if instance.IsRuleAllowed(rule))
+        instance.extend(parsed_rules)
         
         return instance
     #endregion Json Serialization

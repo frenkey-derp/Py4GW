@@ -6,9 +6,10 @@ from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.GlobalConfig import GlobalConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 
-class LootConfig(RuleConfig):    
+class LootConfig(RuleConfig, GlobalConfig):    
     def GetfilteredLootArray(self, distance: float = Range.SafeCompass.value, multibox_loot: bool = False, allow_unasigned_loot=False) -> list[int]:        
         def IsValidItem(item_id):
             if not Agent.IsValid(item_id):

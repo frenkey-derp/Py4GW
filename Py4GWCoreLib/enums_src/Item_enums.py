@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 from enum import IntEnum
 from .Model_enums import ModelID
 
@@ -204,6 +204,40 @@ ITEM_TYPE_META_TYPES: dict[ItemType, list[ItemType]] = {
 
 # endregion
 
+class ItemAction(IntEnum):
+    NONE = 0
+    
+    PickUp = auto() # Pick up the item and put it in the inventory.
+    Drop = auto() # Drop the item to the floor the inventory.
+    
+    Hold = auto() # Hold the item in the inventory, no other actions will be performed on it. This can be useful to exclude certain items from being processed by other rules.
+    Stash = auto() # Move the item to the xunlai stash.
+    
+    # Item processing actions:
+    Identify = auto() # Identify the item.
+    ExtractUpgrade = auto() # Extract the upgrades of the item.
+    Salvage_Rare_Materials = auto() # Salvage the item for rare materials with an (Superior) Expert Salvage Kit.
+    Salvage_Common_Materials = auto() # Salvage the item for common materials with a (Basic) Salvage Kit.
+    Destroy = auto() # Destroy the item.
+    
+    # Merchant interactions:
+    Sell_To_Merchant = auto() # Sell the item to a merchant.
+    
+    Sell_To_Trader = auto() # Sell the item to a trader.
+    
+    Use = auto() # Use the item. 
+    
+    ## Some stuff we might be able to implement at some point in the future, but not a priority right now:
+    TradeToPlayer = auto() # Open the trade window with a specific player and offer the item. The player name should be specified in the rule's parameters.
+
+class SalvageMode(IntEnum):
+    NONE = auto()
+    LesserCraftingMaterials = auto()
+    RareCraftingMaterials = auto()
+    Prefix = auto()
+    Suffix = auto()
+    Inscription = auto()
+    
 MaterialMap = {
     ModelID.Bolt_Of_Cloth: "Bolt Of Cloth",
     ModelID.Bone: "Bone",

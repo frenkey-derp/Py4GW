@@ -1,15 +1,70 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, ClassVar, NamedTuple, Optional
+from typing import Any, ClassVar, NamedTuple, Optional, TypeAlias
 
 from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemAction, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
+from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, RangeInstruction, Upgrade, WeaponUpgrade, Inscription, OfTheProfession, OfAttributeUpgrade
+from Sources.frenkeyLib.ItemHandling.Items.ItemData import DAMAGE_RANGES
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+
+SerializedPropertyFilter: TypeAlias = dict[str, int | str]
+PropertyFilter: TypeAlias = ItemProperty | SerializedPropertyFilter
+
+
+def _property_filters_match(item_snapshot: ItemSnapshot, property_filters: list[PropertyFilter]) -> bool:
+    if len(property_filters) == 0:
+        return True
+
+    item_properties = {type(prop): prop for prop in item_snapshot.properties}
+    item_properties_by_name = {type(prop).__name__: prop for prop in item_snapshot.properties}
+
+    for prop in property_filters:
+        if isinstance(prop, dict):
+            property_type_name = str(prop.get("property_type", ""))
+            if property_type_name not in item_properties_by_name:
+                return False
+        elif type(prop) not in item_properties:
+            return False
+
+    return True
+
+
+def _serialize_property_filters(property_filters: list[PropertyFilter]) -> list[SerializedPropertyFilter]:
+    serialized_filters: list[SerializedPropertyFilter] = []
+    for prop in property_filters:
+        if isinstance(prop, dict):
+            serialized_filters.append(
+                {
+                    "property_type": str(prop.get("property_type", "")),
+                    "modifier_arg": int(prop.get("modifier_arg", -1)),
+                }
+            )
+        else:
+            serialized_filters.append(
+                {
+                    "property_type": type(prop).__name__,
+                    "modifier_arg": int(getattr(prop.modifier, "arg", -1)),
+                }
+            )
+
+    return serialized_filters
+
+
+def _deserialize_property_filters(data: dict[str, Any]) -> list[PropertyFilter]:
+    return [
+        {
+            "property_type": str(prop.get("property_type", "")),
+            "modifier_arg": int(prop.get("modifier_arg", -1)),
+        }
+        for prop in data.get("properties", [])
+        if isinstance(prop, dict)
+    ]
 
 class Rule:
     _registry: ClassVar[dict[str, type["Rule"]]] = {}
@@ -21,6 +76,7 @@ class Rule:
 
     def __init__(self):
         self.name = ""
+        self.action : ItemAction = ItemAction.NONE
         pass
 
     def get_item(self, item_id: int) -> Optional[ItemSnapshot]:
@@ -61,6 +117,7 @@ class Rule:
         payload: dict[str, Any] = {
             "rule_type": type(self).__name__,
             "name": self.name,
+            "action": self.action.name,
         }
         payload.update(self._serialize_data())
         return payload
@@ -74,6 +131,7 @@ class Rule:
 
         rule = rule_cls()
         rule.name = payload.get("name", "")
+        rule.action = ItemAction[payload.get("action", "NONE")] if "action" in payload and payload["action"] in ItemAction.__members__ else ItemAction.NONE
 
         rule._deserialize_data(payload)
         return rule
@@ -237,8 +295,326 @@ class ModelIdsAndItemTypesRule(Rule):
                 except ValueError:
                     self.items.append(ModelIdAndItemType(mid, item_type))
 
+class EncodedNameRule(Rule):
+    """
+    A rule that checks if an item's encoded name matches a specified encoded name. The encoded name is the combination of the item's name and its upgrades, as returned by the API's encoded_name field.
+    """
+
+    def __init__(self, encoded_names: Optional[list[str]] = None):
+        super().__init__()
+        self.encoded_names: list[str] = encoded_names if encoded_names is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.encoded_names) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+
+        encoded_name = item_snapshot.name_enc
+        return encoded_name in self.encoded_names if encoded_name else False
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"encoded_names": self.encoded_names}
+
+    def _comparison_data(self) -> Any:
+        return tuple(sorted(self.encoded_names))
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.encoded_names = [
+            name for name in data.get("encoded_names", [])
+            if isinstance(name, str)
+        ]
+
+class ModelFileIdRule(Rule):
+    """
+    A rule that checks if an item has a ModelFileID contained in a specified list of model file IDs.
+    **CAUTION**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
+    """
+
+    def __init__(self, model_file_ids: Optional[list[int]] = None):
+        super().__init__()
+        self.model_file_ids: list[int] = model_file_ids if model_file_ids is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.model_file_ids) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+
+        model_file_id = item_snapshot.model_file_id
+        return model_file_id in self.model_file_ids if model_file_id else False
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"model_file_ids": self.model_file_ids}
+
+    def _comparison_data(self) -> Any:
+        return tuple(sorted(self.model_file_ids))
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.model_file_ids = [
+            mid for mid in data.get("model_file_ids", [])
+            if isinstance(mid, int)
+        ]
+
+ModelFileIdAndItemType = NamedTuple("ModelFileIdAndItemType", [("model_file_id", int), ("item_type", ItemType)])
+class ModelFileIdAndItemTypeRule(Rule):
+    """
+    A rule that checks if an item has a ModelFileID contained in a specified list of model file IDs and an ItemType contained in a specified list of item types. Both conditions must be met for the rule to apply.
+    **CAUTION**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
+    """
+
+    def __init__(self, model_file_ids_and_item_types: Optional[list[ModelFileIdAndItemType]] = None):
+        super().__init__()
+        self.model_file_ids_and_item_types: list[ModelFileIdAndItemType] = model_file_ids_and_item_types if model_file_ids_and_item_types is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.model_file_ids_and_item_types) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None:
+            return False
+
+        model_file_id = item_snapshot.model_file_id
+        item_type = item_snapshot.item_type
+        for entry in self.model_file_ids_and_item_types:
+            if ((model_file_id == entry.model_file_id if model_file_id else False) and item_type == entry.item_type):
+                return True
+
+        return False
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "model_file_ids_and_item_types": [
+                {
+                    "model_file_id": entry.model_file_id,
+                    "item_type": entry.item_type.name,
+                }
+                for entry in self.model_file_ids_and_item_types
+            ]
+        }
+        
+    def _comparison_data(self) -> Any:
+        normalized_data = [
+            (entry.model_file_id, entry.item_type.name)
+            for entry in self.model_file_ids_and_item_types
+        ]
+        return tuple(sorted(normalized_data))
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.model_file_ids_and_item_types = []
+        for entry in data.get("model_file_ids_and_item_types", []):
+            if not isinstance(entry, dict):
+                continue
+            
+            mid = entry.get("model_file_id", None)
+            item_type_name = entry.get("item_type", None)
+            if mid is None or item_type_name is None or not isinstance(item_type_name, str) or item_type_name not in ItemType.__members__:
+                continue
+
+            self.model_file_ids_and_item_types.append(
+                ModelFileIdAndItemType(
+                    model_file_id=mid,
+                    item_type=ItemType[item_type_name]
+                )
+            )
 
 
+class WeaponSkinRule(Rule):
+    """
+    A rule that checks if a weapon matches one of the specified model file ids.
+    In addition, the rule can restrict requirement, max damage, and required item properties.
+    """
+
+    def __init__(
+        self,
+        model_file_ids: Optional[list[int]] = None,
+        requirement_min: int = 0,
+        requirement_max: int = 13,
+        only_max_damage: bool = True,
+        properties: Optional[list[PropertyFilter]] = None,
+    ):
+        super().__init__()
+        self.model_file_ids: list[int] = model_file_ids if model_file_ids is not None else []
+        self.requirement_min: int = requirement_min
+        self.requirement_max: int = requirement_max
+        self.only_max_damage: bool = only_max_damage
+        self.properties: list[PropertyFilter] = properties if properties is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.model_file_ids) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None or item_snapshot.model_file_id not in self.model_file_ids:
+            return False
+
+        if self.requirement_min > item_snapshot.requirement or self.requirement_max < item_snapshot.requirement:
+            return False
+
+        if self.only_max_damage:
+            damage_for_requirement = DAMAGE_RANGES.get(item_snapshot.item_type, {}).get(item_snapshot.requirement, (0, 0))
+            if item_snapshot.max_damage < damage_for_requirement[1] or item_snapshot.min_damage < damage_for_requirement[0]:
+                return False
+
+        return _property_filters_match(item_snapshot, self.properties)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "model_file_ids": list(self.model_file_ids),
+            "requirement_min": self.requirement_min,
+            "requirement_max": self.requirement_max,
+            "only_max_damage": self.only_max_damage,
+            "properties": _serialize_property_filters(self.properties),
+        }
+
+    def _comparison_data(self) -> Any:
+        return (
+            tuple(sorted(self.model_file_ids)),
+            self.requirement_min,
+            self.requirement_max,
+            self.only_max_damage,
+            tuple(
+                sorted(
+                    (str(prop.get("property_type", "")), int(prop.get("modifier_arg", -1)))
+                    for prop in _serialize_property_filters(self.properties)
+                )
+            ),
+        )
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.model_file_ids = [mid for mid in data.get("model_file_ids", []) if isinstance(mid, int)]
+        self.requirement_min = int(data.get("requirement_min", 0))
+        self.requirement_max = int(data.get("requirement_max", 13))
+        self.only_max_damage = bool(data.get("only_max_damage", True))
+        self.properties = _deserialize_property_filters(data)
+
+
+class WeaponTypeRule(Rule):
+    """
+    A rule that checks if an item is a specific weapon type with requirement, max damage, and optional property filters.
+    """
+
+    def __init__(
+        self,
+        item_type: Optional[ItemType] = None,
+        requirement_min: int = 0,
+        requirement_max: int = 13,
+        only_max_damage: bool = True,
+        properties: Optional[list[PropertyFilter]] = None,
+    ):
+        super().__init__()
+        self.item_type: ItemType | None = item_type
+        self.requirement_min: int = requirement_min
+        self.requirement_max: int = requirement_max
+        self.only_max_damage: bool = only_max_damage
+        self.properties: list[PropertyFilter] = properties if properties is not None else []
+
+    def is_valid(self) -> bool:
+        return self.item_type is not None
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None or item_snapshot.item_type != self.item_type:
+            return False
+
+        if self.requirement_min > item_snapshot.requirement or self.requirement_max < item_snapshot.requirement:
+            return False
+
+        if self.only_max_damage:
+            damage_for_requirement = DAMAGE_RANGES.get(item_snapshot.item_type, {}).get(item_snapshot.requirement, (0, 0))
+            if item_snapshot.max_damage < damage_for_requirement[1] or item_snapshot.min_damage < damage_for_requirement[0]:
+                return False
+
+        return _property_filters_match(item_snapshot, self.properties)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "item_type": self.item_type.name if self.item_type is not None else None,
+            "requirement_min": self.requirement_min,
+            "requirement_max": self.requirement_max,
+            "only_max_damage": self.only_max_damage,
+            "properties": _serialize_property_filters(self.properties),
+        }
+
+    def _comparison_data(self) -> Any:
+        return (
+            self.item_type.name if self.item_type is not None else None,
+            self.requirement_min,
+            self.requirement_max,
+            self.only_max_damage,
+            tuple(
+                sorted(
+                    (str(prop.get("property_type", "")), int(prop.get("modifier_arg", -1)))
+                    for prop in _serialize_property_filters(self.properties)
+                )
+            ),
+        )
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        item_type_name = data.get("item_type", None)
+        self.item_type = ItemType[item_type_name] if isinstance(item_type_name, str) and item_type_name in ItemType.__members__ else None
+        self.requirement_min = int(data.get("requirement_min", 0))
+        self.requirement_max = int(data.get("requirement_max", 13))
+        self.only_max_damage = bool(data.get("only_max_damage", True))
+        self.properties = _deserialize_property_filters(data)
+
+
+class SalvagesToMaterialRule(Rule):
+    """
+    A rule that checks if an item can salvage into any of the specified materials.
+    """
+
+    def __init__(self, materials: Optional[list[ModelID]] = None):
+        super().__init__()
+        self.materials: list[ModelID] = materials if materials is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.materials) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None or not item_snapshot.is_salvageable or item_snapshot.data is None:
+            return False
+
+        common = [entry.model_id for entry in (item_snapshot.data.common_salvage.values() if item_snapshot.data.common_salvage else {})]
+        rare = [entry.model_id for entry in (item_snapshot.data.rare_salvage.values() if item_snapshot.data.rare_salvage else {})]
+        return any(material in common + rare for material in self.materials)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"materials": [material.name for material in self.materials]}
+
+    def _comparison_data(self) -> Any:
+        return tuple(sorted(material.name for material in self.materials))
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.materials = [
+            ModelID[material_name]
+            for material_name in data.get("materials", [])
+            if isinstance(material_name, str) and material_name in ModelID.__members__
+        ]
 
 class RaritiesRule(Rule):
     """
@@ -490,20 +866,21 @@ class MaintainStockRule(StockRule):
             if instruction is not None:
                 self.stock_instructions.append(instruction)
 
-class ExtractModRule(Rule):
+class ExtractUpgradeRule(Rule):
     ui_selectable: ClassVar[bool] = False
     
     def __init__(self):
         super().__init__()
+        self.action : ItemAction = ItemAction.ExtractUpgrade
 
 UpgradeAndItemType = NamedTuple("UpgradeAndItemType", [("upgrade", WeaponUpgrade | Inscription), ("item_types", list[ItemType])])
 
-class MaxWeaponUpgradeRule(ExtractModRule):
+class MaxWeaponUpgradeRule(ExtractUpgradeRule):
     ui_selectable: ClassVar[bool] = True
     
     def __init__(self, upgrades: Optional[list[UpgradeAndItemType]] = None):
         super().__init__()
-        self.weapon_upgrades: list[UpgradeAndItemType] = upgrades if upgrades is not None else []        
+        self.weapon_upgrades: list[UpgradeAndItemType] = upgrades if upgrades is not None else []
         
     def is_valid(self) -> bool:
         return len(self.weapon_upgrades) > 0
@@ -598,7 +975,7 @@ class MaxWeaponUpgradeRule(ExtractModRule):
                         )
                     )
 
-class ArmorUpgradeRule(ExtractModRule):
+class ArmorUpgradeRule(ExtractUpgradeRule):
     ui_selectable: ClassVar[bool] = True
     
     def __init__(self, runes: Optional[list[ArmorUpgrade]] = None):
@@ -656,7 +1033,7 @@ class ArmorUpgradeRule(ExtractModRule):
                 self.armor_upgrades.append(upgrade_cls())
 
 RangedUpgrade = NamedTuple("RangedUpgrade", [("upgrade", WeaponUpgrade | Inscription), ("target", str), ("min_value", float), ("max_value", float), ("item_types", list[ItemType])])
-class UpgradeRangeRule(ExtractModRule):
+class UpgradeRangeRule(ExtractUpgradeRule):
     ui_selectable: ClassVar[bool] = True
     
     """
@@ -768,7 +1145,7 @@ class UpgradeRangeRule(ExtractModRule):
                     )
     
     
-class UpgradesRule(ExtractModRule):
+class UpgradesRule(ExtractUpgradeRule):
     ui_selectable: ClassVar[bool] = True
     
     """
