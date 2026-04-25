@@ -76,7 +76,6 @@ def main():
             MODULE_UI = UI(MODULE_CONFIG)
             MODULE_UI.floating_button.load_visibility()
         
-        MODULE_UI.floating_button.visible = True
         MODULE_UI.draw()
         _tick_trader_price_check()
     
