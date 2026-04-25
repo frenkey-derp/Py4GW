@@ -428,7 +428,6 @@ ModelIdAndItemType = NamedTuple("ModelIdAndItemType", [("model_id", ModelID|int)
 class ModelIdsAndItemTypesRule(Rule):
     """
     A rule that checks if an item has a ModelID contained in a specified list of model IDs and an ItemType contained in a specified list of item types. Both conditions must be met for the rule to apply.
-    \n**Disclaimer**: This rule is very basic and can result in unwanted matches as model IDs can be shared between different items and item types!
     """
 
     def __init__(self, model_ids: Optional[list[ModelIdAndItemType]] = None):
@@ -569,7 +568,6 @@ ModelFileIdAndItemType = NamedTuple("ModelFileIdAndItemType", [("model_file_id",
 class ModelFileIdAndItemTypeRule(Rule):
     """
     A rule that checks if an item has a ModelFileID contained in a specified list of model file IDs and an ItemType contained in a specified list of item types. Both conditions must be met for the rule to apply.
-    \n**Disclaimer**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
     """
 
     def __init__(self, model_file_ids_and_item_types: Optional[list[ModelFileIdAndItemType]] = None):
@@ -1023,6 +1021,8 @@ class ExtractUpgradeRule(Rule):
 UpgradeAndItemType = NamedTuple("UpgradeAndItemType", [("upgrade", WeaponUpgrade | Inscription), ("item_types", list[ItemType])])
 
 class MaxWeaponUpgradeRule(ExtractUpgradeRule):
+    """A rule that checks if an item has one of the selected weapon upgrades and inscriptions. The rule applies if at least one of the selected upgrades matches an upgrade on the item. For an upgrade to match, the upgrade type must be the same and all properties defined in the rule must match the item's upgrade properties. If the rule specifies item type restrictions for an upgrade, the upgrade only matches if the item's type is contained in the specified item types."""
+    
     ui_selectable: ClassVar[bool] = True
     
     def __init__(self, upgrades: Optional[list[UpgradeAndItemType]] = None):
@@ -1123,6 +1123,8 @@ class MaxWeaponUpgradeRule(ExtractUpgradeRule):
                     )
 
 class ArmorUpgradeRule(ExtractUpgradeRule):
+    """A rule that checks if an item has one of the selected armor upgrades. The rule applies if at least one of the selected upgrades matches an upgrade on the item. For an upgrade to match, the upgrade type must be the same and all properties defined in the rule must match the item's upgrade properties."""
+    
     ui_selectable: ClassVar[bool] = True
     
     def __init__(self, runes: Optional[list[ArmorUpgrade]] = None):
@@ -1181,11 +1183,11 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
 
 RangedUpgrade = NamedTuple("RangedUpgrade", [("upgrade", WeaponUpgrade | Inscription), ("target", str), ("min_value", float), ("max_value", float), ("item_types", list[ItemType])])
 class UpgradeRangeRule(ExtractUpgradeRule):
-    ui_selectable: ClassVar[bool] = True
-    
     """
     A rule that checks if an item has an upgrade within a specified range of values. The range is defined by a minimum and maximum value for the upgrade, and the rule applies if the item has an upgrade with a value that falls within that range.
     """
+    
+    ui_selectable: ClassVar[bool] = True
     def __init__(self, upgrade_ranges: Optional[list[RangedUpgrade]] = None):
         super().__init__()
         self.upgrade_ranges: list[RangedUpgrade] = upgrade_ranges if upgrade_ranges is not None else []
@@ -1293,11 +1295,11 @@ class UpgradeRangeRule(ExtractUpgradeRule):
     
     
 class UpgradesRule(ExtractUpgradeRule):
-    ui_selectable: ClassVar[bool] = True
-    
     """
     A rule that checks if an item has a one of the specified upgrades.
     """
+    ui_selectable: ClassVar[bool] = True
+    
     def __init__(self, upgrades: Optional[list[(tuple[Upgrade, list[ItemType]] | Upgrade)]] = None):
         super().__init__()
         #add ItemType.EquippableItem to all upgrades that are not already tuples
