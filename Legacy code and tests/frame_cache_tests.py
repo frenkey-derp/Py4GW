@@ -63,7 +63,7 @@ def main():
             item : ItemSnapshot = ItemSnapshot.from_item_id(item_id)
             # print(f"Item ID: {item_id}, Name: {item.name}, Rarity: {item.rarity.name}, Type: {item.item_type.name}")
             if item.has_upgrades:
-                print(f"Item ID: {item_id}, Name: {item.name}, Rarity: {item.rarity.name}, Type: {item.item_type.name}, Has Upgrades: Prefix: {item.prefix.name if item.prefix else None}, Suffix: {item.suffix.name if item.suffix else None}, Inherent: {item.inherent}, Inscription: {item.inscription.name if item.inscription else None}")
+                print(f"Item ID: {item_id}, Name: {item.name}, Rarity: {item.rarity.name}, Type: {item.item_type.name}, Has Upgrades: Prefix: {item.prefix.name if item.prefix else None}, Suffix: {item.suffix.name if item.suffix else None}, Inherent: {item.inherents}, Inscription: {item.inscription.name if item.inscription else None}")
                 
         print(f"[stpwtch2] [Loop {l}] Created {len(item_ids)} lazy item snapshots using from_item_id in {stpwtch2.elapsed():.4f} seconds.")
             
