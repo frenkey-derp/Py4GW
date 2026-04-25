@@ -1,9 +1,8 @@
-from enum import Enum
 import re
 import struct
 from typing import Optional
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, DamageType, Profession, Reduced_Ailment
-from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.item_mods_src.types import ItemBaneSpecies
 
@@ -401,6 +400,7 @@ class GWEncoded():
         Reduced_Ailment.Weakness:   bytes([0xA7, 0xA, 0xA, 0x1, 0x98, 0x62, 0x1, 0x0, 0x1, 0x0]),
     }
 
+    REQUIRES_NUM1_STR1 = bytes([0xA9, 0xA, 0xA, 0x1]) # Requires %num1% %str1%
     DAMAGE_TEXT = bytes([0x4E, 0xA])
     DAMAGE_PLUS_PERCENT = bytes([*ITEM_BONUS, *PLUS_PERCENT_TEMPLATE, *DAMAGE_TEXT, 0x1, 0x0, 0x1, 0x1, ]) # Damage +X%
 
@@ -419,6 +419,19 @@ class GWEncoded():
                                             *ITEM_DULL, *ATTACHES_TO, *ARMOR_TEXT, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1,
                                             *ITEM_DULL, *GOLD_VALUE, gold_amount, 0x1, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 
                                             *ITEM_DULL, *USE_TO_APPLY_TO_ITEM, 0x0, 0x0, 0x0])
+    
+    ItemsAtrribute = bytes([0x1, 0x81, 0x86, 0x5E])
+    #0xA9, 0xA, 0xA, 0x1, (0x1, 0x81, 0x22, 0x11), 0x1, 0x0, 0x1, 0x1, (0x9, 0x1)
+    
+    #0xA9, 0xA, 0xA, 0x1, (0x1, 0x81, 0x86, 0x5E)
+    @staticmethod
+    def _requires_attribute_level(attribute : Attribute = Attribute.None_, attribute_level: int = 0) -> bytes:        
+        return bytes([*GWEncoded.REQUIRES_NUM1_STR1, *GWEncoded.ATTRIBUTE_NAMES.get(attribute, GWEncoded.ItemsAtrribute), 0x1, 0x0, 0x1, 0x1, *GWEncoded._encode_string_table_number(attribute_level)])
+    
+    @staticmethod
+    #0xA9, 0xA, 0xA, 0x1, 0x1, 0x81, 0x86, 0x5E 0x1, 0x0, 0x1, 0x1,( 0x9, 0x1)
+    def _requires_items_attribute_level(attribute : Attribute = Attribute.None_, attribute_level: int = 0) -> bytes:        
+        return bytes([*GWEncoded.REQUIRES_NUM1_STR1, *GWEncoded.ATTRIBUTE_NAMES.get(attribute, GWEncoded.ItemsAtrribute), 0x1, 0x0, 0x1, 0x1, *GWEncoded._encode_string_table_number(attribute_level)])
     
     @staticmethod
     def _encode_string_table_number(value: int) -> bytes:

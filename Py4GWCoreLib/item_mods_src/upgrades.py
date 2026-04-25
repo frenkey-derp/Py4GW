@@ -122,7 +122,7 @@ class FixedValueInstruction(Instruction[UpgradeT, ValueT]):
 def property_value(
     property_type: type[PropertyT],
     selector: Callable[[PropertyT], ValueT | None],
-) -> Callable[[ItemProperties, UpgradeT], ValueT | None]:
+) -> Callable[[ItemProperties, UpgradeT], ValueT | None]: # type: ignore
     """Create a getter that reads a value from the first matching ItemProperty."""
 
     def getter(properties: ItemProperties, _: UpgradeT) -> ValueT | None:

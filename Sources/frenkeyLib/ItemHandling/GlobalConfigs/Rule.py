@@ -8,63 +8,262 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemAction, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
-from Py4GWCoreLib.item_mods_src.properties import ItemProperty
-from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, RangeInstruction, Upgrade, WeaponUpgrade, Inscription, OfTheProfession, OfAttributeUpgrade
+from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, Inherent, RangeInstruction, Upgrade, WeaponUpgrade, Inscription, OfTheProfession, OfAttributeUpgrade
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import DAMAGE_RANGES
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 
-SerializedPropertyFilter: TypeAlias = dict[str, int | str]
-PropertyFilter: TypeAlias = ItemProperty | SerializedPropertyFilter
+
+class DamageRange(NamedTuple):
+    min_value: int
+    max_value: int
 
 
-def _property_filters_match(item_snapshot: ItemSnapshot, property_filters: list[PropertyFilter]) -> bool:
-    if len(property_filters) == 0:
-        return True
+@dataclass
+class InherentFilter:
+    inherent: Inherent
+    ranges: dict[str, DamageRange]
 
-    item_properties = {type(prop): prop for prop in item_snapshot.properties}
-    item_properties_by_name = {type(prop).__name__: prop for prop in item_snapshot.properties}
+    @staticmethod
+    def from_inherent(inherent: Inherent, use_full_ranges: bool = False) -> "InherentFilter":
+        ranges: dict[str, DamageRange] = {}
+        for instruction in type(inherent).upgrade_info:
+            if not isinstance(instruction, RangeInstruction):
+                continue
 
-    for prop in property_filters:
-        if isinstance(prop, dict):
-            property_type_name = str(prop.get("property_type", ""))
-            if property_type_name not in item_properties_by_name:
-                return False
-        elif type(prop) not in item_properties:
+            if use_full_ranges:
+                ranges[instruction.target] = DamageRange(int(instruction.min_value), int(instruction.max_value))
+            else:
+                value = int(getattr(inherent, instruction.target, instruction.max_value))
+                ranges[instruction.target] = DamageRange(value, value)
+
+        return InherentFilter(inherent=inherent, ranges=ranges)
+
+
+WeaponRequirementRanges: TypeAlias = dict[int, DamageRange]
+InherentFilters: TypeAlias = list[InherentFilter]
+
+
+def _default_damage_range(item_type: Optional[ItemType], requirement: int) -> DamageRange:
+    if item_type is None:
+        return DamageRange(0, 0)
+    
+    min_value, max_value = DAMAGE_RANGES.get(item_type, {}).get(requirement, (0, 0))
+    return DamageRange(min_value, max_value)
+
+
+def _normalize_requirement_ranges(
+    requirements: Optional[WeaponRequirementRanges],
+    item_type: Optional[ItemType] = None,
+    requirement_min: int = 0,
+    requirement_max: int = 13,
+) -> WeaponRequirementRanges:
+    if requirements is not None:
+        return {
+            int(requirement): DamageRange(int(value.min_value), int(value.max_value))
+            for requirement, value in requirements.items()
+        }
+
+    return {
+        requirement: _default_damage_range(item_type, requirement)
+        for requirement in range(max(0, requirement_min), min(13, requirement_max) + 1)
+    }
+
+
+def _serialize_requirement_ranges(requirements: WeaponRequirementRanges) -> list[dict[str, int]]:
+    return [
+        {
+            "requirement": requirement,
+            "min_value": value.min_value,
+            "max_value": value.max_value,
+        }
+        for requirement, value in sorted(requirements.items())
+    ]
+
+
+def _deserialize_requirement_ranges(data: dict[str, Any], item_type: Optional[ItemType] = None) -> WeaponRequirementRanges:
+    raw_requirements = data.get("requirements")
+    if isinstance(raw_requirements, list):
+        requirements: WeaponRequirementRanges = {}
+        for entry in raw_requirements:
+            if not isinstance(entry, dict):
+                continue
+
+            requirement = entry.get("requirement")
+            min_value = entry.get("min_value")
+            max_value = entry.get("max_value")
+            if isinstance(requirement, int) and isinstance(min_value, int) and isinstance(max_value, int):
+                requirements[requirement] = DamageRange(min_value, max_value)
+
+        return requirements
+
+    return _normalize_requirement_ranges(
+        None,
+        item_type,
+        int(data.get("requirement_min", 0)),
+        int(data.get("requirement_max", 13)),
+    )
+
+
+def _requirement_range_matches(item_snapshot: ItemSnapshot, requirements: WeaponRequirementRanges) -> bool:
+    value_range = requirements.get(int(item_snapshot.requirement))
+    if value_range is None:
+        return False
+
+    if value_range.min_value == 0 and value_range.max_value == 0:
+        value_range = _default_damage_range(item_snapshot.item_type, item_snapshot.requirement)
+
+    return item_snapshot.min_damage >= value_range.min_value and item_snapshot.max_damage <= value_range.max_value
+
+
+def _normalize_range_bounds(min_value: Any, max_value: Any, fallback: DamageRange) -> DamageRange:
+    try:
+        normalized_min = int(min_value)
+        normalized_max = int(max_value)
+    except (TypeError, ValueError):
+        return fallback
+
+    if normalized_min > normalized_max:
+        normalized_min, normalized_max = normalized_max, normalized_min
+
+    return DamageRange(normalized_min, normalized_max)
+
+
+def _normalize_inherent_filters(inherents: Optional[list[InherentFilter | Inherent]]) -> InherentFilters:
+    if inherents is None:
+        return []
+
+    normalized: InherentFilters = []
+    for inherent in inherents:
+        if isinstance(inherent, InherentFilter):
+            normalized.append(inherent)
+        elif isinstance(inherent, Inherent):
+            normalized.append(InherentFilter.from_inherent(inherent))
+
+    return normalized
+
+
+def _serialize_inherent_filters(inherents: InherentFilters) -> list[dict[str, Any]]:
+    return [
+        {
+            "inherent": inherent_filter.inherent.to_dict(),
+            "ranges": [
+                {
+                    "target": target,
+                    "min_value": value_range.min_value,
+                    "max_value": value_range.max_value,
+                }
+                for target, value_range in sorted(inherent_filter.ranges.items())
+            ],
+        }
+        for inherent_filter in inherents
+    ]
+
+
+def _deserialize_inherent_range_filters(entry: dict[str, Any], inherent: Inherent) -> dict[str, DamageRange]:
+    default_filter = InherentFilter.from_inherent(inherent)
+    ranges = dict(default_filter.ranges)
+    raw_ranges = entry.get("ranges", [])
+
+    if isinstance(raw_ranges, dict):
+        raw_ranges = [
+            {**value, "target": target}
+            for target, value in raw_ranges.items()
+            if isinstance(value, dict)
+        ]
+
+    if not isinstance(raw_ranges, list):
+        return ranges
+
+    for raw_range in raw_ranges:
+        if not isinstance(raw_range, dict):
+            continue
+
+        target = raw_range.get("target")
+        if not isinstance(target, str) or target not in ranges:
+            continue
+
+        ranges[target] = _normalize_range_bounds(
+            raw_range.get("min_value"),
+            raw_range.get("max_value"),
+            ranges[target],
+        )
+
+    return ranges
+
+
+def _deserialize_inherent_filters(data: dict[str, Any]) -> InherentFilters:
+    raw_inherents = data.get("inherents", [])
+    if not raw_inherents:
+        raw_inherents = data.get("properties", [])
+
+    inherents: InherentFilters = []
+    for entry in raw_inherents:
+        if not isinstance(entry, dict):
+            continue
+
+        raw_upgrade = entry.get("inherent", entry)
+        if not isinstance(raw_upgrade, dict):
+            continue
+
+        upgrade = Upgrade.from_dict(raw_upgrade)
+        if isinstance(upgrade, Inherent):
+            ranges = _deserialize_inherent_range_filters(entry, upgrade) if "inherent" in entry else InherentFilter.from_inherent(upgrade).ranges
+            inherents.append(InherentFilter(inherent=upgrade, ranges=ranges))
+
+    return inherents
+
+
+def _inherent_range_targets(inherent: Inherent) -> set[str]:
+    return {
+        instruction.target
+        for instruction in type(inherent).upgrade_info
+        if isinstance(instruction, RangeInstruction)
+    }
+
+
+def _inherent_fixed_values(inherent: Inherent) -> dict[str, Any]:
+    range_targets = _inherent_range_targets(inherent)
+    return {
+        property_name: Upgrade._normalize_comparison_value(getattr(inherent, property_name))
+        for property_name in type(inherent)._get_serializable_property_names()
+        if property_name not in range_targets
+    }
+
+
+def _single_inherent_filter_matches(expected: InherentFilter, actual: Upgrade) -> bool:
+    if type(actual) is not type(expected.inherent):
+        return False
+
+    if not isinstance(actual, Inherent):
+        return False
+
+    if _inherent_fixed_values(expected.inherent) != _inherent_fixed_values(actual):
+        return False
+
+    for target, value_range in expected.ranges.items():
+        actual_value = getattr(actual, target, None)
+        if actual_value is None or actual_value < value_range.min_value or actual_value > value_range.max_value:
             return False
 
     return True
 
 
-def _serialize_property_filters(property_filters: list[PropertyFilter]) -> list[SerializedPropertyFilter]:
-    serialized_filters: list[SerializedPropertyFilter] = []
-    for prop in property_filters:
-        if isinstance(prop, dict):
-            serialized_filters.append(
-                {
-                    "property_type": str(prop.get("property_type", "")),
-                    "modifier_arg": int(prop.get("modifier_arg", -1)),
-                }
+def _inherent_filter_matches(expected: InherentFilter, item_inherents: list[Upgrade]) -> bool:
+    return any(_single_inherent_filter_matches(expected, inherent) for inherent in item_inherents)
+
+
+def _inherent_comparison_data(inherents: InherentFilters) -> tuple[Any, ...]:
+    return tuple(
+        sorted(
+            (
+                type(inherent_filter.inherent).__name__,
+                tuple(sorted(_inherent_fixed_values(inherent_filter.inherent).items())),
+                tuple(sorted(inherent_filter.ranges.items())),
             )
-        else:
-            serialized_filters.append(
-                {
-                    "property_type": type(prop).__name__,
-                    "modifier_arg": int(getattr(prop.modifier, "arg", -1)),
-                }
-            )
+            for inherent_filter in inherents
+        )
+    )
 
-    return serialized_filters
-
-
-def _deserialize_property_filters(data: dict[str, Any]) -> list[PropertyFilter]:
-    return [
-        {
-            "property_type": str(prop.get("property_type", "")),
-            "modifier_arg": int(prop.get("modifier_arg", -1)),
-        }
-        for prop in data.get("properties", [])
-        if isinstance(prop, dict)
-    ]
 
 class Rule:
     _registry: ClassVar[dict[str, type["Rule"]]] = {}
@@ -139,7 +338,7 @@ class Rule:
 class ModelIdsRule(Rule):
     """
     A rule that checks if an item has a ModelID contained in a specified list of model IDs.
-    **CAUTION**: This rule is very basic and can result in unwanted matches as model IDs can be shared between different items and item types!
+    \n**Disclaimer**: This rule is very basic and can result in unwanted matches as model IDs can be shared between different items and item types!
     """
 
     def __init__(self, model_ids: Optional[list[ModelID|int]] = None):
@@ -229,7 +428,7 @@ ModelIdAndItemType = NamedTuple("ModelIdAndItemType", [("model_id", ModelID|int)
 class ModelIdsAndItemTypesRule(Rule):
     """
     A rule that checks if an item has a ModelID contained in a specified list of model IDs and an ItemType contained in a specified list of item types. Both conditions must be met for the rule to apply.
-    **CAUTION**: This rule is very basic and can result in unwanted matches as model IDs can be shared between different items and item types!
+    \n**Disclaimer**: This rule is very basic and can result in unwanted matches as model IDs can be shared between different items and item types!
     """
 
     def __init__(self, model_ids: Optional[list[ModelIdAndItemType]] = None):
@@ -333,7 +532,7 @@ class EncodedNameRule(Rule):
 class ModelFileIdRule(Rule):
     """
     A rule that checks if an item has a ModelFileID contained in a specified list of model file IDs.
-    **CAUTION**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
+    \n**Disclaimer**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
     """
 
     def __init__(self, model_file_ids: Optional[list[int]] = None):
@@ -370,7 +569,7 @@ ModelFileIdAndItemType = NamedTuple("ModelFileIdAndItemType", [("model_file_id",
 class ModelFileIdAndItemTypeRule(Rule):
     """
     A rule that checks if an item has a ModelFileID contained in a specified list of model file IDs and an ItemType contained in a specified list of item types. Both conditions must be met for the rule to apply.
-    **CAUTION**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
+    \n**Disclaimer**: This rule is very basic and can result in unwanted matches as multiple items can share the same model file ID!
     """
 
     def __init__(self, model_file_ids_and_item_types: Optional[list[ModelFileIdAndItemType]] = None):
@@ -436,7 +635,7 @@ class ModelFileIdAndItemTypeRule(Rule):
 class WeaponSkinRule(Rule):
     """
     A rule that checks if a weapon matches one of the specified model file ids.
-    In addition, the rule can restrict requirement, max damage, and required item properties.
+    In addition, the rule can restrict requirements, damage ranges, and inherent upgrades.
     """
 
     def __init__(
@@ -445,17 +644,42 @@ class WeaponSkinRule(Rule):
         requirement_min: int = 0,
         requirement_max: int = 13,
         only_max_damage: bool = True,
-        properties: Optional[list[PropertyFilter]] = None,
+        requirements: Optional[WeaponRequirementRanges] = None,
+        inherents: Optional[list[InherentFilter | Inherent]] = None,
+        inscribable: bool = False,
     ):
         super().__init__()
         self.model_file_ids: list[int] = model_file_ids if model_file_ids is not None else []
-        self.requirement_min: int = requirement_min
-        self.requirement_max: int = requirement_max
-        self.only_max_damage: bool = only_max_damage
-        self.properties: list[PropertyFilter] = properties if properties is not None else []
+        self.requirements: WeaponRequirementRanges = _normalize_requirement_ranges(requirements, None, requirement_min, requirement_max)
+        self.inherents: InherentFilters = _normalize_inherent_filters(inherents)
+        self.inscribable : bool = inscribable
+
+    @property
+    def requirement_min(self) -> int:
+        return min(self.requirements.keys()) if self.requirements else 0
+
+    @requirement_min.setter
+    def requirement_min(self, value: int) -> None:
+        self.requirements = _normalize_requirement_ranges(None, None, int(value), self.requirement_max)
+
+    @property
+    def requirement_max(self) -> int:
+        return max(self.requirements.keys()) if self.requirements else 13
+
+    @requirement_max.setter
+    def requirement_max(self, value: int) -> None:
+        self.requirements = _normalize_requirement_ranges(None, None, self.requirement_min, int(value))
+
+    @property
+    def only_max_damage(self) -> bool:
+        return False
+
+    @only_max_damage.setter
+    def only_max_damage(self, value: bool) -> None:
+        return
 
     def is_valid(self) -> bool:
-        return len(self.model_file_ids) > 0
+        return len(self.model_file_ids) > 0 and len(self.requirements) > 0
 
     def applies(self, item_id: int) -> bool:
         if not self.is_valid():
@@ -465,50 +689,41 @@ class WeaponSkinRule(Rule):
         if item_snapshot is None or item_snapshot.model_file_id not in self.model_file_ids:
             return False
 
-        if self.requirement_min > item_snapshot.requirement or self.requirement_max < item_snapshot.requirement:
+        if not _requirement_range_matches(item_snapshot, self.requirements):
             return False
 
-        if self.only_max_damage:
-            damage_for_requirement = DAMAGE_RANGES.get(item_snapshot.item_type, {}).get(item_snapshot.requirement, (0, 0))
-            if item_snapshot.max_damage < damage_for_requirement[1] or item_snapshot.min_damage < damage_for_requirement[0]:
-                return False
+        inherents = item_snapshot.inherents if item_snapshot.inherents else []
+        if self.inherents and not any(_inherent_filter_matches(inherent, inherents) for inherent in self.inherents):
+            return False
 
-        return _property_filters_match(item_snapshot, self.properties)
+        return True
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
             "model_file_ids": list(self.model_file_ids),
-            "requirement_min": self.requirement_min,
-            "requirement_max": self.requirement_max,
-            "only_max_damage": self.only_max_damage,
-            "properties": _serialize_property_filters(self.properties),
+            "requirements": _serialize_requirement_ranges(self.requirements),
+            "inherents": _serialize_inherent_filters(self.inherents),
+            "inscribable": self.inscribable,
         }
 
     def _comparison_data(self) -> Any:
         return (
             tuple(sorted(self.model_file_ids)),
-            self.requirement_min,
-            self.requirement_max,
-            self.only_max_damage,
-            tuple(
-                sorted(
-                    (str(prop.get("property_type", "")), int(prop.get("modifier_arg", -1)))
-                    for prop in _serialize_property_filters(self.properties)
-                )
-            ),
+            tuple(sorted(self.requirements.items())),
+            _inherent_comparison_data(self.inherents),
+            self.inscribable,
         )
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         self.model_file_ids = [mid for mid in data.get("model_file_ids", []) if isinstance(mid, int)]
-        self.requirement_min = int(data.get("requirement_min", 0))
-        self.requirement_max = int(data.get("requirement_max", 13))
-        self.only_max_damage = bool(data.get("only_max_damage", True))
-        self.properties = _deserialize_property_filters(data)
+        self.requirements = _deserialize_requirement_ranges(data)
+        self.inherents = _deserialize_inherent_filters(data)
+        self.inscribable = data.get("inscribable", False)
 
 
 class WeaponTypeRule(Rule):
     """
-    A rule that checks if an item is a specific weapon type with requirement, max damage, and optional property filters.
+    A rule that checks if an item is a specific weapon type with requirement, damage range, and optional inherent upgrade filters.
     """
 
     def __init__(
@@ -517,17 +732,42 @@ class WeaponTypeRule(Rule):
         requirement_min: int = 0,
         requirement_max: int = 13,
         only_max_damage: bool = True,
-        properties: Optional[list[PropertyFilter]] = None,
+        requirements: Optional[WeaponRequirementRanges] = None,
+        inherents: Optional[list[InherentFilter | Inherent]] = None,
+        inscribable: bool = False,
     ):
         super().__init__()
         self.item_type: ItemType | None = item_type
-        self.requirement_min: int = requirement_min
-        self.requirement_max: int = requirement_max
-        self.only_max_damage: bool = only_max_damage
-        self.properties: list[PropertyFilter] = properties if properties is not None else []
+        self.requirements: WeaponRequirementRanges = _normalize_requirement_ranges(requirements, item_type, requirement_min, requirement_max)
+        self.inherents: InherentFilters = _normalize_inherent_filters(inherents)
+        self.inscribable : bool = inscribable
+
+    @property
+    def requirement_min(self) -> int:
+        return min(self.requirements.keys()) if self.requirements else 0
+
+    @requirement_min.setter
+    def requirement_min(self, value: int) -> None:
+        self.requirements = _normalize_requirement_ranges(None, self.item_type, int(value), self.requirement_max)
+
+    @property
+    def requirement_max(self) -> int:
+        return max(self.requirements.keys()) if self.requirements else 13
+
+    @requirement_max.setter
+    def requirement_max(self, value: int) -> None:
+        self.requirements = _normalize_requirement_ranges(None, self.item_type, self.requirement_min, int(value))
+
+    @property
+    def only_max_damage(self) -> bool:
+        return False
+
+    @only_max_damage.setter
+    def only_max_damage(self, value: bool) -> None:
+        return
 
     def is_valid(self) -> bool:
-        return self.item_type is not None
+        return self.item_type is not None and len(self.requirements) > 0
 
     def applies(self, item_id: int) -> bool:
         if not self.is_valid():
@@ -537,46 +777,37 @@ class WeaponTypeRule(Rule):
         if item_snapshot is None or item_snapshot.item_type != self.item_type:
             return False
 
-        if self.requirement_min > item_snapshot.requirement or self.requirement_max < item_snapshot.requirement:
+        if not _requirement_range_matches(item_snapshot, self.requirements):
             return False
 
-        if self.only_max_damage:
-            damage_for_requirement = DAMAGE_RANGES.get(item_snapshot.item_type, {}).get(item_snapshot.requirement, (0, 0))
-            if item_snapshot.max_damage < damage_for_requirement[1] or item_snapshot.min_damage < damage_for_requirement[0]:
-                return False
+        inherents = item_snapshot.inherents if item_snapshot.inherents else []
+        if self.inherents and not any(_inherent_filter_matches(inherent, inherents) for inherent in self.inherents):
+            return False
 
-        return _property_filters_match(item_snapshot, self.properties)
+        return True
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
             "item_type": self.item_type.name if self.item_type is not None else None,
-            "requirement_min": self.requirement_min,
-            "requirement_max": self.requirement_max,
-            "only_max_damage": self.only_max_damage,
-            "properties": _serialize_property_filters(self.properties),
+            "requirements": _serialize_requirement_ranges(self.requirements),
+            "inherents": _serialize_inherent_filters(self.inherents),
+            "inscribable": self.inscribable,
         }
 
     def _comparison_data(self) -> Any:
         return (
             self.item_type.name if self.item_type is not None else None,
-            self.requirement_min,
-            self.requirement_max,
-            self.only_max_damage,
-            tuple(
-                sorted(
-                    (str(prop.get("property_type", "")), int(prop.get("modifier_arg", -1)))
-                    for prop in _serialize_property_filters(self.properties)
-                )
-            ),
+            tuple(sorted(self.requirements.items())),
+            _inherent_comparison_data(self.inherents),
+            self.inscribable,
         )
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         item_type_name = data.get("item_type", None)
         self.item_type = ItemType[item_type_name] if isinstance(item_type_name, str) and item_type_name in ItemType.__members__ else None
-        self.requirement_min = int(data.get("requirement_min", 0))
-        self.requirement_max = int(data.get("requirement_max", 13))
-        self.only_max_damage = bool(data.get("only_max_damage", True))
-        self.properties = _deserialize_property_filters(data)
+        self.requirements = _deserialize_requirement_ranges(data, self.item_type)
+        self.inherents = _deserialize_inherent_filters(data)
+        self.inscribable = data.get("inscribable", False)
 
 
 class SalvagesToMaterialRule(Rule):

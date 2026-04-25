@@ -307,7 +307,7 @@ class ItemSnapshot:
         return self._get_parsed_item_data().inscription
 
     @property
-    def inherent(self) -> Optional[list[Upgrade]]:
+    def inherents(self) -> Optional[list[Upgrade]]:
         return self._get_parsed_item_data().inherent
 
     @property
