@@ -23,12 +23,28 @@ class GWStringEncoded:
         self.__plain = ""
         self.__bonuses_only = ""
         self.__full = ""
+        self.__singular = ""
 
     def decode(self) -> str:
         decoded = string_table.decode(self.encoded)
         if self.placeholder_bytes:
             decoded = decoded.replace(string_table.decode(self.placeholder_bytes), "").strip()
             
+        return decoded if decoded else ""
+    
+    def decode_with_amount(self, amount: int) -> str:
+        if amount < 1:
+            raise ValueError("Encoded string amounts must be non-negative.")
+
+        encoded = bytes([
+            *GWEncoded.NUM1_STR1,
+            0x1, 0x1,
+            *GWEncoded._encode_string_table_number(amount),
+            0xA, 0x1,
+            *self.encoded,
+            0x1, 0x0,
+        ])
+        decoded = string_table.decode_plain(encoded)
         return decoded if decoded else ""
     
     def get_decoded(self) -> str:
@@ -91,6 +107,24 @@ class GWStringEncoded:
             self.__full = full
 
         return self.__full
+    
+    @property
+    def singular(self) -> str:
+        if not self.__singular:
+            decoded = self.decode()
+            
+            if not decoded:
+                return self.fallback
+            
+            if '[s]' in decoded or '[pl:' in decoded:
+                decoded = self.decode_with_amount(1)
+            
+            self.__singular = self.remove_placeholder(decoded)
+            
+        return self.__singular
+    
+    def with_amount(self, amount: int = 1) -> str:
+        return self.decode_with_amount(amount) or f"{amount} {self.plain}"
 
 
 
@@ -150,6 +184,7 @@ class GWEncoded():
     STAFF_WRAPPING_OF_STR2 = bytes([0x33, 0xA, 0xA, 0x1, 0xBF, 0x22, 0x1, 0x0, 0xB, 0x1]) # Staff Wrapping of %str2%
     PARENTHESIS_STR1 = bytes([0xA8, 0xA, 0xA, 0x1]) # (%str1%)
     VS_STR1 = bytes([0xAF, 0xA, 0xA, 0x1])
+    NUM1_STR1 = bytes([0x35, 0xA])
 
     STR1_PLUS_NUM1 = bytes([0x84, 0xA, 0xA, 0x1])
 

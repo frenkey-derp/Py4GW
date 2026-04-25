@@ -13,7 +13,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
-from Sources.frenkeyLib.ItemHandling.Items.types import MaterialType
+from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
 
 PERSISTENT = True
 
@@ -116,7 +116,7 @@ class SalvageInfoCollection(dict[str, 'SalvageInfo']):
             
         return collection
 
-@dataclass
+@dataclass(eq=False)
 class ItemData:        
     model_id: int = -1
     item_type: ItemType = ItemType.Unknown
@@ -138,15 +138,40 @@ class ItemData:
     
     skin: Optional[str] = None
     
+    _names: GWStringEncoded = GWStringEncoded(b"", "Unknown Item")
+    
+    def __post_init__(self):
+        self._update_names()
+        
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        
+        if name == "name_encoded" or name == "english_name":
+            self._update_names()
+            
+    def __hash__(self) -> int:
+        return hash((self.model_id, self.item_type))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ItemData):
+            return NotImplemented
+
+        return self.model_id == other.model_id and self.item_type == other.item_type
+    
+    def _update_names(self):
+        self._names = GWStringEncoded(self.name_encoded or bytes(), self.english_name or "Unknown Item")
+    
+    @property
+    def names(self) -> GWStringEncoded:
+        return self._names
+
     @property
     def name(self) -> str:
-        if self.name_encoded:
-            try:
-                return string_table.decode(self.name_encoded)
-            except UnicodeDecodeError:
-                pass
-            
-        return self.english_name
+        return self._names.singular
+    
+    @property
+    def plural_name(self) -> str:
+        return self._names.with_amount(2)
 
     @staticmethod
     def _parse_name_encoded(value: Optional[str]) -> bytes:

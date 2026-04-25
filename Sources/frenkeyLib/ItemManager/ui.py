@@ -17,7 +17,9 @@ To keep it navigable, the class is organized in broad sections:
 """
 
 import json
+import inspect
 import os
+import re
 import time
 from typing import Any, Generic, NamedTuple, Optional, TypeVar
 
@@ -29,7 +31,7 @@ from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Item_enums import ITEM_TYPE_META_TYPES, ItemType
-from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
+from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
@@ -53,7 +55,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import Invent
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig 
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA
+from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config
@@ -143,7 +145,8 @@ class ConfigInfo(Generic[TConfig]):
         Py4GW.Console.Log("Item Manager", f"No load handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
 
 class UI:
-    GRAY_COLOR = (0.35, 0.35, 0.35, 1.0)
+    GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
+    LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
     ITEM_TYPE_TEXTURES = {
         
     }
@@ -274,12 +277,12 @@ class UI:
             DyeColor.Pink: os.path.join(self.texture_path, "Dyes", "Pink.png"),
         }
 
-        self._all_item_data_cache: list[Any] = []
-        self._item_by_model_file_id: dict[int, Any] = {}
-        self._item_by_encoded_name: dict[str, Any] = {}
-        self._unique_encoded_name_items: list[Any] = []
-        self._unique_model_file_id_items: list[Any] = []
-        self._salvage_material_options: list[ModelID] = []
+        self._all_item_data_cache: list[ItemData] = []
+        self._item_by_model_file_id: dict[int, ItemData] = {}
+        self._item_by_encoded_name: dict[str, ItemData] = {}
+        self._unique_encoded_name_items: list[ItemData] = []
+        self._unique_model_file_id_items: list[ItemData] = []
+        self._salvage_material_options: list[ItemData] = []
         self.property_filter_index: int = 0
         self.property_classes: list[type[ItemProperty]] = self._get_property_classes()
         self._rebuild_item_ui_caches()
@@ -340,6 +343,50 @@ class UI:
     def _humanize_name(value: str) -> str:
         return Utils.humanize_string(value.replace("NONE", "None").replace("None_", "None").replace("_None", "None")).replace("  ", " ").strip()
 
+    @staticmethod
+    def _normalize_search_query(value: str) -> str:
+        return UI.LEADING_SEARCH_AMOUNT_RE.sub("", value.strip(), count=1).lower()
+
+    @staticmethod
+    def _normalize_searchable_text(value: str) -> str:
+        return UI.LEADING_SEARCH_AMOUNT_RE.sub("", value.strip()).lower()
+
+    @staticmethod
+    def _singularize_search_query(value: str) -> str:
+        return re.sub(r"\b([a-zA-Z]{4,})s\b", r"\1", value)
+
+    @staticmethod
+    def _search_text_matches(search_query: str, *values: Any) -> bool:
+        if not search_query:
+            return True
+
+        raw_text = " ".join(str(value) for value in values if value is not None).lower()
+        searchable_text = UI._normalize_searchable_text(raw_text)
+        if search_query in raw_text or search_query in searchable_text:
+            return True
+
+        singular_query = UI._singularize_search_query(search_query)
+        return singular_query != search_query and singular_query in searchable_text
+
+    @staticmethod
+    def _format_rule_type_tooltip(rule_type: type) -> str:
+        title = UI._humanize_name(rule_type.__name__)
+        doc = inspect.getdoc(rule_type) or ""
+        doc = re.sub(r":class:`([^`]+)`", r"\1", doc)
+        doc = doc.replace("**", "")
+        return f"{title}\n\n{doc}" if doc else title
+
+    @staticmethod
+    def _show_wrapped_tooltip(text: str, wrap_width: float = 420.0) -> None:
+        if not PyImGui.is_item_hovered():
+            return
+
+        PyImGui.begin_tooltip()
+        PyImGui.push_text_wrap_pos(PyImGui.get_cursor_pos_x() + wrap_width)
+        PyImGui.text_wrapped(text)
+        PyImGui.pop_text_wrap_pos()
+        PyImGui.end_tooltip()
+
     def _format_upgrade_type_label(self, upgrade_type: type[Upgrade]) -> str:
         type_name = upgrade_type.__name__.replace("Upgrade", "")
         return self._humanize_name(type_name)
@@ -349,7 +396,7 @@ class UI:
         return name or self._format_upgrade_type_label(type(upgrade))
 
     @staticmethod
-    def _get_all_item_data() -> list[Any]:
+    def _get_all_item_data() -> list[ItemData]:
         return [item for sublist in ITEM_DATA.data.values() for item in sublist.values()]
 
     @staticmethod
@@ -372,7 +419,7 @@ class UI:
 
     @staticmethod
     def _get_item_display_name(item: Any) -> str:
-        return item.name or item.english_name or f"Model {item.model_id}"
+        return item.name or f"Model {item.model_id}"
 
     @staticmethod
     def _get_item_encoded_name_string(item: Any) -> str:
@@ -381,8 +428,13 @@ class UI:
         return ""
 
     @staticmethod
-    def _draw_item_texture(item: Any, size: tuple[float, float] = (32, 32)) -> None:
-        UI._draw_texture_from_model_file_id(getattr(item, "model_file_id", -1), size)
+    def _draw_item_texture(item: Optional[ItemData], size: tuple[float, float] = (32, 32)) -> None:
+        # UI._draw_texture_from_model_file_id(getattr(item, "model_file_id", -1), size)
+        texture = get_texture_for_model(item.model_id) if item and getattr(item, "model_id", -1) > 0 else None
+        if texture and "0-File_Not_found.png" in texture:
+            texture = None
+            
+        UI._draw_texture_or_dummy(texture, size)
 
     def _rebuild_item_ui_caches(self) -> None:
         all_items = self._get_all_item_data()
@@ -390,9 +442,9 @@ class UI:
 
         self._item_by_model_file_id = {}
         self._item_by_encoded_name = {}
-        encoded_name_items: dict[tuple[ItemType, str], Any] = {}
-        model_file_id_items: dict[tuple[ItemType, int], Any] = {}
-        salvage_materials: set[ModelID] = set()
+        encoded_name_items: dict[tuple[ItemType, str], ItemData] = {}
+        model_file_id_items: dict[tuple[ItemType, int], ItemData] = {}
+        salvage_materials: list[ItemData] = []
         for item in all_items:
             model_id = int(getattr(item, "model_id", -1))
             item_type = getattr(item, "item_type", ItemType.Unknown)
@@ -411,23 +463,18 @@ class UI:
             if model_file_id > 0:
                 model_file_id_items.setdefault((item_type, model_file_id), item)
 
-            for salvage_collection in [getattr(item, "common_salvage", None), getattr(item, "rare_salvage", None)]:
-                if salvage_collection:
-                    for salvage_entry in salvage_collection.values():
-                        try:
-                            salvage_materials.add(ModelID(int(salvage_entry.model_id)))
-                        except (ValueError, TypeError):
-                            continue
+            if item.category == "Material":
+                salvage_materials.append(item)
 
         sort_key = lambda item: (self._get_item_display_name(item), self._humanize_name(item.item_type.name), int(getattr(item, "model_id", -1)))
         self._unique_encoded_name_items = sorted(encoded_name_items.values(), key=sort_key)
         self._unique_model_file_id_items = sorted(model_file_id_items.values(), key=sort_key)
         self._salvage_material_options = sorted(salvage_materials, key=lambda material: material.name)
 
-    def _find_item_by_model_file_id(self, model_file_id: int) -> Any | None:
+    def _find_item_by_model_file_id(self, model_file_id: int) -> ItemData | None:
         return self._item_by_model_file_id.get(model_file_id)
 
-    def _find_item_by_encoded_name(self, encoded_name: str) -> Any | None:
+    def _find_item_by_encoded_name(self, encoded_name: str) -> ItemData | None:
         return self._item_by_encoded_name.get(encoded_name)
 
     def _draw_requirement_editor(self, rule: WeaponSkinRule | WeaponTypeRule) -> bool:
@@ -490,7 +537,7 @@ class UI:
         ImGui.separator()
 
         if len(properties) == 0:
-            ImGui.text_colored("No property filters configured.", UI.GRAY_COLOR, font_size=12)
+            ImGui.text_colored("No property filters configured.", UI.GRAY_COLOR.color_tuple, font_size=12)
             return changed
 
         if ImGui.begin_child(f"##property_filter_list_{unique_id}", (0, 160), border=True):
@@ -509,7 +556,7 @@ class UI:
                     ImGui.text(self._humanize_name(property_type_name))
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
-                    ImGui.text_colored(f"Modifier Arg: {modifier_arg}", UI.GRAY_COLOR, font_size=12)
+                    ImGui.text_colored(f"Modifier Arg: {modifier_arg}", UI.GRAY_COLOR.color_tuple, font_size=12)
                     PyImGui.end_group()
                 ImGui.end_child()
         ImGui.end_child()
@@ -522,14 +569,17 @@ class UI:
 
     @staticmethod
     def _draw_texture_from_model_file_id(model_file_id: int, size: tuple[float, float]) -> None:
-        # model_file_id = Item.GetTrueModelFileID(model_file_id)
-        model_file_texture : Optional[str] = None ##f"gwdat://{int(model_file_id)}" if int(model_file_id or 0) > 0 else None
-        
-        if model_file_texture is not None:
-            ImGui.image(model_file_texture, size)
+        model_file_id = Item.GetTrueModelFileID(model_file_id)
+        model_file_texture : Optional[str] = f"gwdat://{int(model_file_id)}" if int(model_file_id or 0) > 0 else None
+        UI._draw_texture_or_dummy(model_file_texture, size)
+            
+    @staticmethod
+    def _draw_texture_or_dummy(texture: Optional[str], size: tuple[float, float]) -> None:
+        if texture is not None:
+            ImGui.image(texture, size)
         else:
             ImGui.dummy(*size)
-    
+
     @staticmethod
     def _get_rarity_color(rarity) -> Color:
         rarity_colors = {
@@ -764,7 +814,7 @@ class UI:
                 self.armor_upgrade_price_threshold = max(0, new_threshold)
 
             quote_count = len(self._get_trader_armor_upgrade_quotes())
-            ImGui.text_colored(f"Available trader quotes: {quote_count}", UI.GRAY_COLOR, font_size=12)
+            ImGui.text_colored(f"Available trader quotes: {quote_count}", UI.GRAY_COLOR.color_tuple, font_size=12)
 
             if ImGui.button("Apply Threshold", -1):
                 changed = self._select_armor_upgrades_from_trader_prices(rule, self.armor_upgrade_price_threshold)
@@ -853,10 +903,10 @@ class UI:
                             if quote is not None:
                                 ImGui.text_colored(f"Trader Value: {UI.format_currency(quote.quoted_value)}\n", UI._get_rarity_color(Rarity.Gold).color_tuple, font_size=13)
                                 PyImGui.separator()
-                                ImGui.text_colored(f"Updated: {UI.format_time_ago(quote.checked_at)}\n", UI.GRAY_COLOR, font_size=12)
+                                ImGui.text_colored(f"Updated: {UI.format_time_ago(quote.checked_at)}\n", UI.GRAY_COLOR.color_tuple, font_size=12)
                             else:
                                 PyImGui.separator()
-                                ImGui.text_colored("No matching trader quote found for this upgrade.", UI.GRAY_COLOR, font_size=12)
+                                ImGui.text_colored("No matching trader quote found for this upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
 
                             PyImGui.end_tooltip()
                             
@@ -898,10 +948,9 @@ class UI:
             style.ToggleButtonEnabled.push_color(self._get_rarity_color(Rarity.Gold).opacity(0.85).rgb_tuple)
             style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
         
-            PyImGui.push_item_width(-1)
+            PyImGui.set_next_item_width(-1)
             _, self.max_weapon_upgrade_search = ImGui.search_field("##upgrade_search", self.max_weapon_upgrade_search, "Search Upgrades...")
-            PyImGui.pop_item_width()
-            search_query = self.max_weapon_upgrade_search.strip().lower()
+            search_query = self._normalize_search_query(self.max_weapon_upgrade_search)
             ImGui.separator()
             
             if ImGui.begin_child("##armor_upgrade_rule_upgrades", (0, 0), border=False):
@@ -929,10 +978,8 @@ class UI:
                     for variant in variants:
                         upgrade = variant()
                         upgrade_label = self._format_upgrade_label(upgrade)
-                        if search_query:
-                            searchable_text = f"{upgrade_label}".lower()
-                            if search_query not in searchable_text:
-                                continue
+                        if not self._search_text_matches(search_query, upgrade_label):
+                            continue
 
                         item_types : list[ItemType] = []
                         
@@ -1060,15 +1107,15 @@ class UI:
             ImGui.text("Add Upgrade Range Rule")
             ImGui.separator()
 
+            PyImGui.set_next_item_width(-1)
             _, self.upgrade_range_search = ImGui.search_field("##upgrade_range_search", self.upgrade_range_search, "Search Upgrades...")
-            search_query = self.upgrade_range_search.strip().lower()
+            search_query = self._normalize_search_query(self.upgrade_range_search)
 
             if ImGui.begin_child("##upgrade_range_candidates", (0, 300), border=True):
                 for upgrade_type, instruction in self._get_range_upgrade_options():
                     upgrade = upgrade_type()
                     option_label = self._format_upgrade_label(upgrade)
-                    searchable_text = f"{option_label}\n{upgrade.description_plain}".lower()
-                    if search_query and search_query not in searchable_text:
+                    if not self._search_text_matches(search_query, option_label, upgrade.description_plain):
                         continue
 
                     already_selected = any(
@@ -1083,7 +1130,7 @@ class UI:
                         PyImGui.set_cursor_pos(x, y - 4)
                         ImGui.text_colored(
                             f"{instruction.target}: {instruction.min_value} - {instruction.max_value}" + ("%" if instruction.target == "chance" else ""),
-                            UI.GRAY_COLOR,
+                            UI.GRAY_COLOR.color_tuple,
                             font_size=12,
                         )
 
@@ -1288,7 +1335,7 @@ class UI:
 
             PyImGui.set_next_item_width(-1)
             search_changed, self.model_id_search = ImGui.search_field("##model_id_search", self.model_id_search, "Search by name or model id...")
-            search_query = self.model_id_search.strip().lower()
+            search_query = self._normalize_search_query(self.model_id_search)
 
             if ImGui.begin_child("##model_id_candidates", (0, 320), border=True):
                 if search_changed:
@@ -1298,9 +1345,8 @@ class UI:
                     modelid_item_type = int(item.model_id)
                     already_selected = any(modelid_item_type == (int(mid.value) if isinstance(mid, ModelID) else mid) for mid, _ in selected_models)
                 
-                    item_name = item.name or item.english_name or f"Model {item.model_id}"
-                    searchable_text = f"{item_name}\n{item.model_id}".lower()
-                    if search_query and search_query not in searchable_text:
+                    item_name = item.name or f"Model {item.model_id}"
+                    if not self._search_text_matches(search_query, item.name, item.plural_name, item.model_id):
                         continue
                     
                     if already_selected:
@@ -1308,7 +1354,7 @@ class UI:
                     
                     if PyImGui.is_rect_visible(10, 42):
                         if ImGui.begin_selectable(f"##model_id_candidate_{item.item_type.name}_{modelid_item_type}", False, (0, 36)):
-                            UI._draw_texture_from_model_file_id(item.model_file_id, (32, 32))
+                            UI._draw_item_texture(item, (32, 32))
 
                             PyImGui.same_line(0, 8)
                             
@@ -1317,11 +1363,11 @@ class UI:
                             ImGui.text(item_name)
                             if len(item.attributes) == 1:
                                 PyImGui.same_line(0, 8)
-                                ImGui.text_colored(f"[{self._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR, font_size=12)
+                                ImGui.text_colored(f"[{self._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR.color_tuple, font_size=12)
                                 
                             _, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR, font_size=12)
+                            ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
 
                         if ImGui.end_selectable() and not already_selected:
@@ -1337,11 +1383,11 @@ class UI:
                                 ImGui.text(item_name)
                                 if len(item.attributes) == 1:
                                     PyImGui.same_line(0, 8)
-                                    ImGui.text_colored(f"[{self._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR, font_size=12)
+                                    ImGui.text_colored(f"[{self._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR.color_tuple, font_size=12)
                                     
                                 ImGui.separator()
-                                ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR, font_size=12)
-                                ImGui.text_colored(f"Item Type: {self._humanize_name(item.item_type.name)}", UI.GRAY_COLOR, font_size=12)
+                                ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(f"Item Type: {self._humanize_name(item.item_type.name)}", UI.GRAY_COLOR.color_tuple, font_size=12)
                             PyImGui.end_tooltip()
                                 
                     else:
@@ -1384,7 +1430,7 @@ class UI:
                         break
 
                     PyImGui.same_line(0, 8)
-                    UI._draw_texture_from_model_file_id(item_data.model_file_id if item_data is not None else -1, (32, 32))
+                    UI._draw_item_texture(item_data, (32, 32))
 
                     PyImGui.same_line(0, 8)
                     PyImGui.begin_group()
@@ -1392,7 +1438,7 @@ class UI:
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
                     item_type_name = self._humanize_name(modelid_item_type.item_type.name)
-                    ImGui.text_colored(f"{item_type_name} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""), UI.GRAY_COLOR, font_size=12)
+                    ImGui.text_colored(f"{item_type_name} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""), UI.GRAY_COLOR.color_tuple, font_size=12)
                     PyImGui.end_group()
                 ImGui.end_child()
         ImGui.end_child()
@@ -1417,12 +1463,13 @@ class UI:
             ImGui.text("Add Model ID")
             ImGui.separator()
 
+            PyImGui.set_next_item_width(-1)
             _, self.model_id_search = ImGui.search_field("##model_id_enum_search", self.model_id_search, "Search model ids or enter an integer...")
-            search_query = self.model_id_search.strip().lower()
+            search_query = self._normalize_search_query(self.model_id_search)
             matching_model_ids = [
                 model_id
                 for model_id in sorted(model_ids, key=lambda model_id: model_id.name)
-                if not search_query or search_query in f"{model_id.name} {int(model_id.value)}".lower()
+                if self._search_text_matches(search_query, model_id.name, int(model_id.value))
             ]
 
             manual_value: int | None = None
@@ -1454,7 +1501,7 @@ class UI:
                         ImGui.text(self._humanize_name(model_id.name))
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(f"{model_id_value}", UI.GRAY_COLOR, font_size=12)
+                        ImGui.text_colored(f"{model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
 
                     if ImGui.end_selectable() and not already_selected:
                         rule.model_ids.append(model_id)
@@ -1492,7 +1539,7 @@ class UI:
                 ImGui.text(label)
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR, font_size=12)
+                ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
             ImGui.end_child()
 
@@ -1515,11 +1562,11 @@ class UI:
 
             PyImGui.set_next_item_width(-1)
             _, self.encoded_name_search = ImGui.search_field("##encoded_name_search", self.encoded_name_search, "Search by item name or paste an encoded name...")
-            search_query = self.encoded_name_search.strip().lower()
+            search_query = self._normalize_search_query(self.encoded_name_search)
             matching_items = [
                 item
                 for item in items
-                if not search_query or search_query in f"{self._get_item_display_name(item)} {self._get_item_encoded_name_string(item)}".lower()
+                if self._search_text_matches(search_query, item.name, item.plural_name, self._get_item_encoded_name_string(item))
             ]
             
             #Allow each name only once from the list of candidates
@@ -1532,7 +1579,7 @@ class UI:
                         ImGui.text("Use typed encoded name")
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(manual_encoded_name, UI.GRAY_COLOR, font_size=12)
+                        ImGui.text_colored(manual_encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
 
                     if ImGui.end_selectable():
                         rule.encoded_names.append(manual_encoded_name)
@@ -1555,7 +1602,7 @@ class UI:
                             ImGui.text(item_name)
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(encoded_name, UI.GRAY_COLOR, font_size=12)
+                            ImGui.text_colored(encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
 
                         if ImGui.end_selectable() and not already_selected:
@@ -1598,7 +1645,7 @@ class UI:
                 ImGui.text(self._get_item_display_name(item) if item is not None else "Custom Encoded Name")
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(encoded_name, UI.GRAY_COLOR, font_size=12)
+                ImGui.text_colored(encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
             ImGui.end_child()
 
@@ -1619,8 +1666,9 @@ class UI:
             ImGui.text("Add Model File ID")
             ImGui.separator()
 
+            PyImGui.set_next_item_width(-1)
             _, self.model_file_id_search = ImGui.search_field("##model_file_id_search", self.model_file_id_search, "Search by item name or enter a model file id...")
-            search_query = self.model_file_id_search.strip().lower()
+            search_query = self._normalize_search_query(self.model_file_id_search)
 
             manual_value: int | None = None
             if search_query:
@@ -1643,8 +1691,7 @@ class UI:
                     model_file_id = int(item.model_file_id)
                     already_selected = model_file_id in selected_model_file_ids
                     item_name = self._get_item_display_name(item)
-                    searchable_text = f"{item_name} {model_file_id}".lower()
-                    if search_query and search_query not in searchable_text:
+                    if not self._search_text_matches(search_query, item_name, item.plural_name, model_file_id):
                         continue
 
                     if ImGui.begin_selectable(f"##model_file_id_{item.item_type.name}_{item.model_id}", False, (0, 36)):
@@ -1654,7 +1701,7 @@ class UI:
                         ImGui.text(item_name)
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR, font_size=12)
+                        ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
                         PyImGui.end_group()
 
                     if ImGui.end_selectable() and not already_selected:
@@ -1694,7 +1741,7 @@ class UI:
                 ImGui.text(self._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR, font_size=12)
+                ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
             ImGui.end_child()
 
@@ -1715,16 +1762,16 @@ class UI:
             ImGui.text("Add Item By Model File ID")
             ImGui.separator()
 
+            PyImGui.set_next_item_width(-1)
             _, self.model_file_id_search = ImGui.search_field("##model_file_id_item_type_search", self.model_file_id_search, "Search by item name or model file id...")
-            search_query = self.model_file_id_search.strip().lower()
+            search_query = self._normalize_search_query(self.model_file_id_search)
 
             if ImGui.begin_child("##model_file_id_item_type_candidates", (0, 320), border=True):
                 for item in items:
                     key = (int(item.model_file_id), item.item_type)
                     already_selected = key in selected_entries
                     item_name = self._get_item_display_name(item)
-                    searchable_text = f"{item_name} {item.item_type.name} {item.model_file_id}".lower()
-                    if search_query and search_query not in searchable_text:
+                    if not self._search_text_matches(search_query, item.name, item.plural_name, item.item_type.name, item.model_file_id):
                         continue
 
                     if ImGui.begin_selectable(f"##model_file_id_item_type_{item.item_type.name}_{item.model_id}", False, (0, 36)):
@@ -1736,7 +1783,7 @@ class UI:
                         PyImGui.set_cursor_pos(x, y - 4)
                         ImGui.text_colored(
                             f"{self._humanize_name(item.item_type.name)} | Model File ID: {item.model_file_id}",
-                            UI.GRAY_COLOR,
+                            UI.GRAY_COLOR.color_tuple,
                             font_size=12,
                         )
                         PyImGui.end_group()
@@ -1792,7 +1839,7 @@ class UI:
                 PyImGui.set_cursor_pos(x, y - 4)
                 ImGui.text_colored(
                     f"{self._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
-                    UI.GRAY_COLOR,
+                    UI.GRAY_COLOR.color_tuple,
                     font_size=12,
                 )
                 PyImGui.end_group()
@@ -1818,8 +1865,9 @@ class UI:
             ImGui.text("Add Weapon Skin")
             ImGui.separator()
 
+            PyImGui.set_next_item_width(-1)
             _, self.model_file_id_search = ImGui.search_field("##weapon_skin_search", self.model_file_id_search, "Search by item name or model file id...")
-            search_query = self.model_file_id_search.strip().lower()
+            search_query = self._normalize_search_query(self.model_file_id_search)
 
             if ImGui.begin_child("##weapon_skin_candidates", (0, 320), border=True):
                 for item in items:
@@ -1829,8 +1877,7 @@ class UI:
                     model_file_id = int(item.model_file_id)
                     already_selected = model_file_id in selected_model_file_ids
                     item_name = self._get_item_display_name(item)
-                    searchable_text = f"{item_name} {item.item_type.name} {model_file_id}".lower()
-                    if search_query and search_query not in searchable_text:
+                    if not self._search_text_matches(search_query, item.name, item.plural_name, item.item_type.name, model_file_id):
                         continue
 
                     if ImGui.begin_selectable(f"##weapon_skin_{item.item_type.name}_{item.model_id}", False, (0, 36)):
@@ -1842,7 +1889,7 @@ class UI:
                         PyImGui.set_cursor_pos(x, y - 4)
                         ImGui.text_colored(
                             f"{self._humanize_name(item.item_type.name)} | Model File ID: {model_file_id}",
-                            UI.GRAY_COLOR,
+                            UI.GRAY_COLOR.color_tuple,
                             font_size=12,
                         )
                         PyImGui.end_group()
@@ -1884,7 +1931,7 @@ class UI:
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
                 item_type_name = self._humanize_name(item.item_type.name) if item is not None else "Unknown"
-                ImGui.text_colored(f"{item_type_name} | Model File ID: {model_file_id}", UI.GRAY_COLOR, font_size=12)
+                ImGui.text_colored(f"{item_type_name} | Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
             ImGui.end_child()
 
@@ -1926,30 +1973,37 @@ class UI:
             ImGui.text("Add Salvage Material")
             ImGui.separator()
 
+            PyImGui.set_next_item_width(-1)
             _, self.material_search = ImGui.search_field("##salvage_material_search", self.material_search, "Search material name or model id...")
-            search_query = self.material_search.strip().lower()
+            search_query = self._normalize_search_query(self.material_search)
+            ImGui.show_tooltip("Search by material name or model id.")
 
             if ImGui.begin_child("##salvage_material_candidates", (0, 320), border=True):
                 for material in self._salvage_material_options:
                     already_selected = material in selected_materials
-                    label = self._humanize_name(material.name)
-                    searchable_text = f"{label} {int(material.value)}".lower()
-                    if search_query and search_query not in searchable_text:
+                    label = material.name
+                    if not self._search_text_matches(search_query, label, material.plural_name, int(material.model_id)):
                         continue
 
                     if ImGui.begin_selectable(f"##salvage_material_{material.name}", False, (0, 34)):
+                        UI._draw_item_texture(material, (32, 32))
+
+                        PyImGui.same_line(0, 8)
+                        PyImGui.begin_group()
                         ImGui.text(label)
+                        
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(f"Model ID: {int(material.value)}", UI.GRAY_COLOR, font_size=12)
-
+                        ImGui.text_colored(f"Model ID: {int(material.model_id)}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                        PyImGui.end_group()
+                        
                     if ImGui.end_selectable() and not already_selected:
-                        rule.materials.append(material)
+                        rule.materials.append(material.model_id)
                         changed = True
                         PyImGui.close_current_popup()
 
                     if PyImGui.is_item_hovered():
-                        tooltip = f"{label}\nModel ID: {int(material.value)}"
+                        tooltip = f"{label}\nModel ID: {int(material.model_id)}"
                         if already_selected:
                             tooltip = f"{tooltip}\nAlready selected."
                         ImGui.show_tooltip(tooltip)
@@ -1962,8 +2016,9 @@ class UI:
 
         ImGui.separator()
 
-        for index, material in enumerate(rule.materials):
-            unique_id = f"salvage_material_rule_{id(rule)}_{material.name}_{index}"
+        for index, mid in enumerate(rule.materials):
+            material = next((m for m in self._salvage_material_options if int(m.model_id) == int(mid)), None)
+            unique_id = f"salvage_material_rule_{id(rule)}_{material.name}_{index}" if material is not None else f"salvage_material_rule_{id(rule)}_{mid}_{index}"
             if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                 if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
                     rule.materials.pop(index)
@@ -1972,11 +2027,15 @@ class UI:
                     break
 
                 PyImGui.same_line(0, 8)
+                
+                UI._draw_item_texture(material, (32, 32)) if material is not None else ImGui.dummy(32, 32)
+                PyImGui.same_line(0, 8)
+                
                 PyImGui.begin_group()
-                ImGui.text(self._humanize_name(material.name))
+                ImGui.text(self._humanize_name(material.name  if material is not None else f"Unknown Material ({mid})"))
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(f"Model ID: {int(material.value)}", UI.GRAY_COLOR, font_size=12)
+                ImGui.text_colored(f"Model ID: {int(material.model_id) if material is not None else int(mid)}", UI.GRAY_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
             ImGui.end_child()
 
@@ -2047,7 +2106,7 @@ class UI:
                         ImGui.text(config.name)
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 5)
-                        ImGui.text_colored(config.config.__class__.__name__, UI.GRAY_COLOR, font_size=12)
+                        ImGui.text_colored(config.config.__class__.__name__, UI.GRAY_COLOR.color_tuple, font_size=12)
                         
                     if ImGui.end_selectable():
                         self.switch_to_config(config)
@@ -2166,7 +2225,7 @@ class UI:
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
                 helper_text = entry.description or "Target quantity to keep in inventory."
-                ImGui.text_colored(helper_text, UI.GRAY_COLOR, font_size=12)
+                ImGui.text_colored(helper_text, UI.GRAY_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
 
                 PyImGui.next_column()
@@ -2202,30 +2261,39 @@ class UI:
                         config_info.config.AddRule(new_rule)
                         config_info.save()
                         self.rule = new_rule
+                    self._show_wrapped_tooltip(self._format_rule_type_tooltip(rule_type))
                 ImGui.end_combo()
             
             ImGui.separator()
             PyImGui.spacing()
             
+            item_height = 50
             if ImGui.begin_child("##rules", (0, 0), border=False):
                 for i, rule in enumerate(config_info.config):                    
-                    if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, 35)):
-                        ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
-                        x, y = PyImGui.get_cursor_pos()
-                        PyImGui.set_cursor_pos(x, y - 5)
-                        ImGui.text_colored(f"{UI._humanize_name(rule.action.name)} - {rule.__class__.__name__}", UI.GRAY_COLOR, font_size=12)
-                    
-                    if ImGui.end_selectable():
-                        self.rule = rule
+                    if PyImGui.is_rect_visible(5, item_height):
+                        if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, item_height)):
+                            ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
+                            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
+                            PyImGui.separator()
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 2)
+                            ImGui.text(f"{UI._humanize_name(rule.action.name)}", font_size=13)
+                            PyImGui.set_cursor_pos(x, PyImGui.get_cursor_pos_y() - 5)
+                            ImGui.text_colored(f"{rule.__class__.__name__}", UI.GRAY_COLOR.color_tuple, font_size=11)
                         
-                    if PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
-                        self.context_menu_id = f"{rule.__class__.__name__} #{i}"
-                        self.context_menu_rule = rule
-                        self.context_menu_config = config_info                        
-                        PyImGui.open_popup(self.context_menu_id)
-                                                                        
-                    ImGui.show_tooltip(rule.__class__.__name__)       
-                    
+                        if ImGui.end_selectable():
+                            self.rule = rule
+                            
+                        if PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
+                            self.context_menu_id = f"{rule.__class__.__name__} #{i}"
+                            self.context_menu_rule = rule
+                            self.context_menu_config = config_info                        
+                            PyImGui.open_popup(self.context_menu_id)
+                                                                            
+                        self._show_wrapped_tooltip(self._format_rule_type_tooltip(rule.__class__))
+                    else:
+                        PyImGui.dummy(0, item_height)
+                        
                 if self.context_menu_id and self.context_menu_rule and self.context_menu_config:
                     if not self.draw_context_menu(self.context_menu_id, self.context_menu_config, self.context_menu_rule):
                         self.context_menu_id = None
@@ -2390,7 +2458,7 @@ class UI:
                 return self.draw_weapon_type_rule(rule)
 
             case SalvagesToMaterialRule():
-                ImGui.text_wrapped("This rule matches items that can salvage into any of the selected materials.")
+                ImGui.text_wrapped("This rule matches items that can salvage into any of the selected materials. We rely on the scraped salvage data from the GW-Wiki which is stored in our ITEM_DATA.")
                 return self.draw_salvages_to_material_rule(rule)
                         
             case ModelIdsAndItemTypesRule():

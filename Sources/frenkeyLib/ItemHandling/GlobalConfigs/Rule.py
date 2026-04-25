@@ -584,9 +584,9 @@ class SalvagesToMaterialRule(Rule):
     A rule that checks if an item can salvage into any of the specified materials.
     """
 
-    def __init__(self, materials: Optional[list[ModelID]] = None):
+    def __init__(self, materials: Optional[list[ModelID|int]] = None):
         super().__init__()
-        self.materials: list[ModelID] = materials if materials is not None else []
+        self.materials: list[ModelID|int] = materials if materials is not None else []
 
     def is_valid(self) -> bool:
         return len(self.materials) > 0
@@ -604,17 +604,19 @@ class SalvagesToMaterialRule(Rule):
         return any(material in common + rare for material in self.materials)
 
     def _serialize_data(self) -> dict[str, Any]:
-        return {"materials": [material.name for material in self.materials]}
+        return {"materials": [material.name if isinstance(material, ModelID) else str(material) for material in self.materials]}
 
     def _comparison_data(self) -> Any:
-        return tuple(sorted(material.name for material in self.materials))
+        return tuple(sorted(material.name if isinstance(material, ModelID) else str(material) for material in self.materials))
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
-        self.materials = [
-            ModelID[material_name]
-            for material_name in data.get("materials", [])
-            if isinstance(material_name, str) and material_name in ModelID.__members__
+        materials = [
+            ModelID[name] if isinstance(name, str) and name in ModelID.__members__ else int(name) if isinstance(name, (str, int)) and str(name).isdigit() else None
+            for name in data.get("materials", [])
+            if (isinstance(name, str) and name in ModelID.__members__) or (isinstance(name, (str, int)) and str(name).isdigit())
         ]
+        
+        self.materials = [material for material in materials if material is not None]
 
 class RaritiesRule(Rule):
     """
@@ -779,92 +781,6 @@ class StockInstruction:
             quantity=quantity,
             include_storage=include_storage,
         )
-
-class StockRule(Rule):
-    ui_selectable: ClassVar[bool] = False
-    
-class MaintainStockRule(StockRule):
-    ui_selectable: ClassVar[bool] = True
-
-    def __init__(self, stock_instructions: Optional[list[StockInstruction]] = None):
-        super().__init__()
-        self.stock_instructions = stock_instructions if stock_instructions is not None else []        
-    
-    def is_valid(self) -> bool:
-        return len(self.stock_instructions) > 0
-    
-    def applies(self, item_id: int) -> bool:
-        if not self.is_valid():
-            return False
-        
-        item_snapshot = self.get_item(item_id)
-        if item_snapshot is None:
-            return False
-        
-        for instruction in self.stock_instructions:
-            if item_snapshot.model_id == instruction.model_id and item_snapshot.item_type == instruction.item_type:
-                bags : list[Bags] = [*INVENTORY_BAGS]
-                
-                if instruction.include_storage:
-                    bags.extend(STORAGE_BAGS)
-                
-                bags_snapshot : dict[Bag, dict[int, Optional['ItemSnapshot']]] = ItemSnapshot.get_bags_snapshot(bags)
-                bag_items = [item for bag in bags_snapshot.values() for item in bag.values() if item is not None]
-                
-                count = sum(bag_item.quantity for bag_item in bag_items if bag_item.model_id == instruction.model_id and bag_item.item_type == instruction.item_type)
-                if count < instruction.quantity:
-                    return True
-        
-        return False
-    
-    @property
-    def restock_instructions(self) -> list[StockInstruction]:
-        instructions: list[StockInstruction] = []
-        
-        for instruction in self.stock_instructions:        
-            bags : list[Bags] = [*INVENTORY_BAGS]
-            
-            if instruction.include_storage:
-                bags.extend(STORAGE_BAGS)
-            
-            bags_snapshot : dict[Bag, dict[int, Optional['ItemSnapshot']]] = ItemSnapshot.get_bags_snapshot(bags)
-            bag_items = [item for bag in bags_snapshot.values() for item in bag.values() if item is not None]
-            
-            count = sum(bag_item.quantity for bag_item in bag_items if bag_item.model_id == instruction.model_id and bag_item.item_type == instruction.item_type)
-            if count < instruction.quantity:
-                instructions.append(
-                    StockInstruction(
-                        model_id=instruction.model_id, 
-                        item_type=instruction.item_type, 
-                        quantity=instruction.quantity - count, 
-                        include_storage=instruction.include_storage))
-            
-        return instructions
-
-    def _serialize_data(self) -> dict[str, Any]:
-        return {
-            "stock_instructions": [
-                instruction.to_dict()
-                for instruction in self.stock_instructions
-            ]
-        }
-
-    def _comparison_data(self) -> Any:
-        normalized_instructions = [
-            instruction.comparison_data()
-            for instruction in self.stock_instructions
-        ]
-        return tuple(sorted(normalized_instructions))
-
-    def _deserialize_data(self, data: dict[str, Any]) -> None:
-        self.stock_instructions = []
-        for entry in data.get("stock_instructions", []):
-            if not isinstance(entry, dict):
-                continue
-
-            instruction = StockInstruction.from_dict(entry)
-            if instruction is not None:
-                self.stock_instructions.append(instruction)
 
 class ExtractUpgradeRule(Rule):
     ui_selectable: ClassVar[bool] = False
