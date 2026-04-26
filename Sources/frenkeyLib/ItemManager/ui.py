@@ -26,12 +26,16 @@ from typing import Any, Generic, NamedTuple, Optional, TypeVar
 import Py4GW
 import PyImGui
 
+from Py4GWCoreLib.Agent import Agent
+from Py4GWCoreLib.AgentArray import AgentArray
 from Py4GWCoreLib.Item import Bag
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
-from Py4GWCoreLib.enums_src.GameData_enums import Profession
+from Py4GWCoreLib.enums_src.GameData_enums import Profession, Range
 from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, ITEM_TYPE_META_TYPES, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
@@ -50,7 +54,7 @@ from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWEncoded
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
@@ -58,6 +62,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DamageRange, Inhe
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
+from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config
@@ -243,6 +248,7 @@ class UI:
                 draw_callback=self.draw_main_window,
             )
 
+        self.show_preview_window: bool = False
         folder_path = os.path.join(Py4GW.Console.get_projects_path(), "Settings", "Global", "Item & Inventory", "Configs")
 
         self.configs : list[ConfigInfo] = [
@@ -368,6 +374,11 @@ class UI:
             Bag.Bag_2,
             Bag.Equipment_Pack,
         ]
+        self.loot_preview_search: str = ""
+        self.loot_preview_show_no_action: bool = False
+        self.loot_preview_distance: int = int(Range.SafeCompass.value)
+        self.buy_preview_search: str = ""
+        self.buy_preview_show_satisfied: bool = True
         self._rebuild_item_ui_caches()
 
     # -------------------------------------------------------------------------
@@ -2305,15 +2316,18 @@ class UI:
             ini_key=self.module_config.main_ini_key,
             name="Item Manager",
             p_open=self.floating_button.visible,
-            flags=PyImGui.WindowFlags.NoCollapse,
+            flags=PyImGui.WindowFlags.NoFlag,
         )
         self.floating_button.sync_begin_with_close(open_)
 
         if expanded:
             self.draw_explorer()
-
+            
+            if self.show_preview_window and self.config is not None:
+                self.draw_preview_window(self.config)
+                
         ImGui.End(self.module_config.main_ini_key)
-
+        
     def draw(self):
         self.floating_button.draw(self.module_config.floating_ini_key)
 
@@ -2344,6 +2358,29 @@ class UI:
         self.config = rule_config or (self.configs[0] if len(self.configs) > 0 else None)
         self._sync_selected_rule()
 
+    def draw_preview_window(self, config_info: ConfigInfo):          
+        expanded, open_ = ImGui.BeginWithClose(
+            ini_key=self.module_config.main_ini_key,
+            name="Item Manager - Preview",
+            p_open=self.show_preview_window,
+            flags=PyImGui.WindowFlags.NoFlag,
+        )
+        
+        match config_info.config:
+            case InventoryConfig():
+                self.draw_inventory_config_preview(config_info.config)
+            
+            case LootConfig():
+                self.draw_loot_config_preview(config_info.config)
+            
+            case BuyConfig():
+                self.draw_buy_config_preview(config_info.config)
+                
+        ImGui.End(self.module_config.main_ini_key)
+        
+        if not open_:
+            self.show_preview_window = False
+    
     def draw_explorer(self):
         style = ImGui.get_style()
         # style.TableBorderLight.push_color_direct((255,255,255,255))
@@ -2379,8 +2416,9 @@ class UI:
                     active_config_name = active_config.name if active_config is not None and active_config is not self.config else None
                     title = self.config.name if active_config_name is None else f"{self.config.name} / {active_config_name}"
 
-                    if ImGui.begin_table("##config_header", 3, PyImGui.TableFlags.NoBordersInBody, height=20):
+                    if ImGui.begin_table("##config_header", 4, PyImGui.TableFlags.NoBordersInBody, height=20):
                         PyImGui.table_setup_column("Title", PyImGui.TableColumnFlags.WidthStretch)
+                        PyImGui.table_setup_column("Preview", PyImGui.TableColumnFlags.WidthFixed, 100)
                         PyImGui.table_setup_column("Export", PyImGui.TableColumnFlags.WidthFixed, 100)
                         PyImGui.table_setup_column("Import", PyImGui.TableColumnFlags.WidthFixed, 100)
 
@@ -2389,7 +2427,10 @@ class UI:
 
                         ImGui.text(title, font_size=18)
                         PyImGui.table_next_column()
-
+                        if ImGui.button("Preview##preview_config", -1):
+                            self.show_preview_window = not self.show_preview_window
+                        
+                        PyImGui.table_next_column()
                         if ImGui.button("Export##export_config", -1):
                             self._save_active_config()
 
@@ -2493,12 +2534,10 @@ class UI:
                 PyImGui.end_columns()
             ImGui.end_child()
 
-
         if changed:
             config_info.save()
 
     def draw_rule_config(self, config_info: ConfigInfo[RuleConfig]):
-
         if ImGui.begin_table("##config_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Navigation", PyImGui.TableColumnFlags.WidthFixed, 200)
             PyImGui.table_setup_column("Content", PyImGui.TableColumnFlags.WidthStretch)
@@ -2563,19 +2602,57 @@ class UI:
             if ImGui.begin_child("##rule content", (0, 0), border=False):
                 if self.rule:
                     self.draw_rule(self.rule)
-                if isinstance(config_info.config, InventoryConfig):
-                    if self.rule:
-                        PyImGui.spacing()
-                        ImGui.separator()
-                        PyImGui.spacing()
-                    self.draw_inventory_config_preview(config_info.config)
-
+                
             ImGui.end_child()
 
             ImGui.end_table()
 
     def _set_inventory_preview_bags(self, bags: list[Bag]) -> None:
         self.inventory_preview_selected_bags = list(bags)
+
+    @staticmethod
+    def _get_first_matching_rule(config: RuleConfig, item_id: int) -> Rule | None:
+        if item_id in config.blacklisted_items:
+            return None
+
+        for rule in config:
+            if rule.applies(item_id):
+                return rule
+
+        return None
+
+    @staticmethod
+    def _is_valid_loot_agent(agent_id: int) -> bool:
+        if not Agent.IsValid(agent_id):
+            return False
+
+        player_agent_id = Player.GetAgentID()
+        owner_id = Agent.GetItemAgentOwnerID(agent_id)
+        return owner_id in (0, player_agent_id)
+
+    @staticmethod
+    def _get_buy_entry_inventory_quantity(entry: BuyConfigEntry) -> int:
+        inventory_snapshot = ItemSnapshot.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack])
+        total_quantity = 0
+
+        for bag_items in inventory_snapshot.values():
+            for item in bag_items.values():
+                if item is None or not item.is_valid or not item.is_inventory_item:
+                    continue
+
+                if entry.model_id is not None:
+                    model_id_value = int(entry.model_id.value) if isinstance(entry.model_id, ModelID) else int(entry.model_id)
+                    if item.model_id != model_id_value:
+                        continue
+                elif entry.item_type is not None and item.item_type != entry.item_type:
+                    continue
+
+                if entry.key == "keys" and item.model_id == int(ModelID.Lockpick.value):
+                    continue
+
+                total_quantity += item.quantity if item.is_stackable else 1
+
+        return total_quantity
 
     def draw_inventory_config_preview(self, config: InventoryConfig) -> None:
         ImGui.text("Preview", font_size=18)
@@ -2587,7 +2664,7 @@ class UI:
 
         button_width = 110
         if ImGui.button("Inventory", button_width):
-            self._set_inventory_preview_bags([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack])
+            self._set_inventory_preview_bags([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2])
         PyImGui.same_line(0, 5)
         if ImGui.button("Storage", button_width):
             self._set_inventory_preview_bags([
@@ -2699,6 +2776,163 @@ class UI:
                 ImGui.text(rule_name)
                 PyImGui.table_next_column()
                 ImGui.text_wrapped(entry.note if entry.note else ("Ready" if entry.executable else "-"))
+
+            ImGui.end_table()
+
+    def draw_loot_config_preview(self, config: LootConfig) -> None:
+        ImGui.text("Preview", font_size=18)
+        ImGui.text_wrapped("Preview how the current loot config would classify nearby ground items. This does not pick up anything.")
+
+        self.loot_preview_search = ImGui.input_text("Search##loot_preview_search", self.loot_preview_search)
+        self.loot_preview_show_no_action = ImGui.checkbox("Show No Action", self.loot_preview_show_no_action)
+        self.loot_preview_distance = ImGui.slider_int(
+            "Distance##loot_preview_distance",
+            self.loot_preview_distance,
+            0,
+            int(Range.SafeCompass.value),
+        )
+
+        if not Player.GetAgentID():
+            ImGui.text_wrapped("Loot preview is only available while the player is in-game.")
+            return
+
+        item_array = AgentArray.GetItemArray() or []
+        item_array = AgentArray.Filter.ByDistance(item_array, Player.GetXY(), self.loot_preview_distance)
+        item_array = AgentArray.Sort.ByDistance(item_array, Player.GetXY())
+
+        visible_entries: list[tuple[ItemSnapshot, Rule | None, ItemAction | None, str, float]] = []
+        action_counts: dict[str, int] = {}
+        player_pos = Player.GetXY()
+
+        for agent_id in item_array:
+            if not self._is_valid_loot_agent(agent_id):
+                continue
+
+            item_agent = Agent.GetItemAgentByID(agent_id)
+            if item_agent is None:
+                continue
+
+            item = ItemSnapshot.from_item_id(item_agent.item_id)
+            if item is None or not item.is_valid:
+                continue
+
+            rule = self._get_first_matching_rule(config, item.id)
+            action = rule.action if rule is not None else None
+            note = ""
+
+            if action in (ItemAction.NONE, ItemAction.Hold):
+                note = "No loot action will be executed."
+            elif action is None:
+                note = "No matching rule."
+
+            item_name = item.names.plain or item.name or f"Item {item.id}"
+            distance = Utils.Distance(player_pos, Agent.GetXY(agent_id))
+            action_name = self._humanize_name(action.name) if action is not None else "No Action"
+            rule_name = rule.name if rule and rule.name else rule.__class__.__name__ if rule else ""
+            search_blob = " ".join([item_name, action_name, rule_name, note])
+
+            if not self.loot_preview_show_no_action and action is None:
+                continue
+
+            if not self._search_text_matches(self._normalize_search_query(self.loot_preview_search), search_blob):
+                continue
+
+            if action is not None:
+                action_counts[action_name] = action_counts.get(action_name, 0) + 1
+
+            visible_entries.append((item, rule, action, note, distance))
+
+        summary_text = ", ".join(f"{action}: {count}" for action, count in sorted(action_counts.items()))
+        ImGui.text_wrapped(summary_text if summary_text else "No matching preview entries for the current filters.")
+
+        if not visible_entries:
+            ImGui.text_wrapped("No nearby loot entries matched the current preview filters.")
+            return
+
+        if ImGui.begin_table("##loot_preview_table", 5, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=320):
+            PyImGui.table_setup_column("Distance", PyImGui.TableColumnFlags.WidthFixed, 70)
+            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 120)
+            PyImGui.table_setup_column("Rule", PyImGui.TableColumnFlags.WidthFixed, 180)
+            PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_headers_row()
+
+            for item, rule, action, note, distance in visible_entries:
+                item_name = item.names.plain or item.name or f"Item {item.id}"
+                action_name = self._humanize_name(action.name) if action is not None else "No Action"
+                rule_name = rule.name if rule and rule.name else rule.__class__.__name__ if rule else "-"
+
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                ImGui.text(str(distance))
+                PyImGui.table_next_column()
+                ImGui.text(item_name)
+                PyImGui.table_next_column()
+                ImGui.text(action_name)
+                PyImGui.table_next_column()
+                ImGui.text(rule_name)
+                PyImGui.table_next_column()
+                ImGui.text_wrapped(note if note else "Ready")
+
+            ImGui.end_table()
+    
+    def draw_buy_config_preview(self, config: BuyConfig) -> None:
+        ImGui.text("Preview", font_size=18)
+        ImGui.text_wrapped("Preview the current inventory stock against your configured target amounts. This does not buy anything.")
+
+        self.buy_preview_search = ImGui.input_text("Search##buy_preview_search", self.buy_preview_search)
+        self.buy_preview_show_satisfied = ImGui.checkbox("Show Satisfied", self.buy_preview_show_satisfied)
+
+        entries = config.get_entries()
+        if not entries:
+            ImGui.text("No buy rules configured.")
+            return
+
+        visible_entries: list[tuple[BuyConfigEntry, int, int]] = []
+
+        for entry in entries:
+            current_quantity = self._get_buy_entry_inventory_quantity(entry)
+            missing_quantity = max(0, entry.quantity - current_quantity)
+            search_blob = " ".join([entry.label, entry.description, str(entry.quantity), str(current_quantity), str(missing_quantity)])
+
+            if not self.buy_preview_show_satisfied and missing_quantity <= 0:
+                continue
+
+            if not self._search_text_matches(self._normalize_search_query(self.buy_preview_search), search_blob):
+                continue
+
+            visible_entries.append((entry, current_quantity, missing_quantity))
+
+        configured_total = sum(1 for entry in entries if entry.quantity > 0)
+        pending_total = sum(1 for _, _, missing_quantity in visible_entries if missing_quantity > 0)
+        ImGui.text_wrapped(f"Configured entries: {configured_total}, still below target: {pending_total}")
+
+        if not visible_entries:
+            ImGui.text_wrapped("No buy entries matched the current preview filters.")
+            return
+
+        if ImGui.begin_table("##buy_preview_table", 5, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=280):
+            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column("Target", PyImGui.TableColumnFlags.WidthFixed, 70)
+            PyImGui.table_setup_column("Current", PyImGui.TableColumnFlags.WidthFixed, 70)
+            PyImGui.table_setup_column("Missing", PyImGui.TableColumnFlags.WidthFixed, 70)
+            PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_headers_row()
+
+            for entry, current_quantity, missing_quantity in visible_entries:
+                note = "Ready" if missing_quantity <= 0 else f"Needs {missing_quantity} more."
+
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                ImGui.text(entry.label)
+                PyImGui.table_next_column()
+                ImGui.text(str(entry.quantity))
+                PyImGui.table_next_column()
+                ImGui.text(str(current_quantity))
+                PyImGui.table_next_column()
+                ImGui.text(str(missing_quantity))
+                PyImGui.table_next_column()
+                ImGui.text_wrapped(note if entry.description == "" else f"{note} {entry.description}")
 
             ImGui.end_table()
 
