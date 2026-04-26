@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 STEP_NAMES: Final[tuple[str, ...]] = (
     "ALCOHOL_COUNTER",
+    "AUTO_COMBAT",
     "CANCEL_SKILL_REWARD_WINDOW",
     "CELERITY_COUNTER",
     "CITY_SPEED_COUNTER",
@@ -228,6 +229,7 @@ class UpkeepData:
                  alcohol_disable_visual: bool = True,
                  armor_of_salvation_active: bool = False,
                  armor_of_salvation_restock: int = 0,
+                 auto_combat_active: bool = True,
                  auto_inventory_management_active: bool = True,
                  auto_loot_active: bool = True,
                  #B
@@ -360,6 +362,7 @@ class UpkeepData:
 
         self.imp = Property(parent, "imp", active=imp_active)
         self.summoning_stone = Property(parent, "summoning_stone", active=summoning_stone_active)
+        self.auto_combat = Property(parent, "auto_combat", active=auto_combat_active)
         self.hero_ai = Property(parent, "hero_ai", active=hero_ai_active)
         self.hero_ai_paused = Property(parent, "hero_ai_paused", active=hero_ai_paused)
         

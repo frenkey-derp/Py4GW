@@ -67,22 +67,18 @@ class _MAP:
 
     def _coro_travel(self, target_map_id:int =0, target_map_name:str ="") -> Generator:
         from ...Routines import Routines
-
+        
+        if not Map.IsMapReady():
+            yield from Routines.Yield.wait(1000)
+            return
+        
         if target_map_name:
             target_map_id = Map.GetMapIDByName(target_map_name)
-
-        if target_map_id <= 0:
-            yield from Routines.Yield.wait(500)
-            return
-
+        
         current_map_id = Map.GetMapID()
 
-        # Same-map travel is a no-op success. Do not wait for a new map load.
+        # Check if we're already in the target map (or a variant of it)
         if Map.IsMapIDMatch(current_map_id, target_map_id):
-            yield
-            return
-
-        if not Map.IsMapReady():
             yield from Routines.Yield.wait(1000)
             return
         
@@ -113,11 +109,7 @@ class _MAP:
 
         current_map_id = Map.GetMapID()
         if Map.IsMapIDMatch(current_map_id, target_map_id):
-            yield
-            return
-
-        if not Map.IsMapReady():
-            yield from Routines.Yield.wait(1000)
+            yield from Routines.Yield.wait(500)
             return
 
         allowed_districts = self._get_random_district_candidates(region_pool)

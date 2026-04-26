@@ -21,6 +21,15 @@ class _Upkeepers:
         self._hero_ai_pause_snapshot = None
         
     
+    def upkeep_auto_combat(self):
+        from ...Routines import Routines
+        while True:
+            #print (f"autocombat is: {self._config.upkeep.auto_combat.is_active()}")
+            if self._config.upkeep.auto_combat.is_active():
+                yield from self._config.build_handler.ProcessSkillCasting()
+            else:
+                yield from Routines.Yield.wait(250)       
+           
     def upkeep_hero_ai(self):
         from ...Routines import Routines
         from ...GlobalCache import GLOBAL_CACHE
@@ -68,17 +77,7 @@ class _Upkeepers:
                     handler.disable_widget("HeroAI")
                 yield from Routines.Yield.wait(500)
                 continue
-
-            self.parent.ResetHeroAICombatState(
-                active=True,
-                following=True,
-                avoidance=True,
-                looting=True,
-                targeting=True,
-                combat=True,
-                skills=True,
-            )
-             
+            
             if not (self.parent.config.pause_on_danger_fn()):
                 self.cancel_movement_triggered = False
             
@@ -90,15 +89,6 @@ class _Upkeepers:
                     
             if self._config.upkeep.hero_ai.is_active() and not handler.is_widget_enabled("HeroAI"):
                 handler.enable_widget("HeroAI")
-                self.parent.ResetHeroAICombatState(
-                    active=True,
-                    following=True,
-                    avoidance=True,
-                    looting=True,
-                    targeting=True,
-                    combat=True,
-                    skills=True,
-                )
             elif not self._config.upkeep.hero_ai.is_active() and handler.is_widget_enabled("HeroAI"):
                 handler.disable_widget("HeroAI")
             yield from Routines.Yield.wait(500)

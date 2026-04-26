@@ -1,5 +1,5 @@
 from Py4GWCoreLib import BuildMgr, GLOBAL_CACHE, Profession
-from Py4GWCoreLib.Builds.Any.HeroAI import HeroAI_Build
+from Py4GWCoreLib.Builds.Any.AutoCombat import AutoCombat
 
 
 class BuildStatus:
@@ -94,8 +94,8 @@ class PhaseAwareBuildTemplate(BuildMgr):
 
         # Everything below is runtime-only state for the selected build handler.
         # Fallback executors handle the rest of the bar after local logic.
-        # HeroAI is the default example, but any executor build can be used.
-        self.SetFallback("HeroAI", HeroAI_Build(standalone_fallback=True))
+        # AutoCombat is the default example, but any executor build can be used.
+        self.SetFallback("AutoCombat", AutoCombat())
 
         # Register the local handlers instead of overriding ProcessOOC /
         # ProcessCombat directly. BuildMgr will call these and then apply the
@@ -218,7 +218,7 @@ class SinglePhaseBuildTemplate(BuildMgr):
             return
 
         # Runtime-only execution state starts here.
-        self.SetFallback("HeroAI", HeroAI_Build(standalone_fallback=True))
+        self.SetFallback("AutoCombat", AutoCombat())
 
         # Register one local callable. BuildMgr.ProcessSkillCasting() will call
         # it and then automatically hand off to the fallback executor.
