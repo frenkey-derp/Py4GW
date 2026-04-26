@@ -1,18 +1,30 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional, Sequence, cast
 
 import Py4GW
 
+from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, ItemAction
+from Py4GWCoreLib.enums_src.Item_enums import ItemAction, ItemType
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import ExtractUpgradeRule, Rule
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Sources.frenkeyLib.ItemHandling.Items.types import INVENTORY_BAGS
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
+
+
+@dataclass(slots=True)
+class InventoryPreviewEntry:
+    item: ItemSnapshot
+    action: Optional[ItemAction]
+    rule: Optional[Rule]
+    note: str = ""
+    executable: bool = True
 
 
 class InventoryBT:
@@ -20,7 +32,11 @@ class InventoryBT:
 
     _ACTIVE_NODE_KEY = "inventory_bt_active_node"
     _ACTIVE_ACTION_KEY = "inventory_bt_active_action"
+    _ACTIVE_ITEM_IDS_KEY = "inventory_bt_active_item_ids"
     _EXTRACT_WARNING_CACHE_KEY = "inventory_bt_extract_warning_cache"
+    _ITEM_COOLDOWNS_KEY = "inventory_bt_item_cooldowns"
+    _SUCCESS_COOLDOWN_TICKS = 1
+    _FAILURE_COOLDOWN_TICKS = 15
 
     ACTION_PRIORITY: tuple[ItemAction, ...] = (
         ItemAction.Destroy,
@@ -46,7 +62,9 @@ class InventoryBT:
         self.tree.reset()
         self.tree.blackboard.pop(self._ACTIVE_NODE_KEY, None)
         self.tree.blackboard.pop(self._ACTIVE_ACTION_KEY, None)
+        self.tree.blackboard.pop(self._ACTIVE_ITEM_IDS_KEY, None)
         self.tree.blackboard.pop(self._EXTRACT_WARNING_CACHE_KEY, None)
+        self.tree.blackboard.pop(self._ITEM_COOLDOWNS_KEY, None)
 
     @classmethod
     def Build(cls, config: Optional[InventoryConfig] = None) -> BehaviorTree:
@@ -54,8 +72,32 @@ class InventoryBT:
         return BehaviorTree(cls._build_root_node(inventory_config))
 
     @classmethod
+    def Preview(
+        cls,
+        config: Optional[InventoryConfig] = None,
+        bags: Optional[Sequence[Bag]] = None,
+    ) -> list[InventoryPreviewEntry]:
+        inventory_config = config or InventoryConfig()
+        preview_entries: list[InventoryPreviewEntry] = []
+        preview_bags = list(bags) if bags is not None else list(INVENTORY_BAGS)
+
+        if not preview_bags:
+            return preview_entries
+
+        snapshot = ItemSnapshot.get_bags_snapshot(preview_bags)
+        for bag in preview_bags:
+            for item in snapshot.get(bag, {}).values():
+                if item is None or not item.is_valid:
+                    continue
+
+                preview_entries.append(cls._build_preview_entry(inventory_config, item))
+
+        return preview_entries
+
+    @classmethod
     def _build_root_node(cls, config: InventoryConfig) -> BehaviorTree.Node:
         def _tick(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
+            cls._advance_item_cooldowns(node.blackboard)
             active_node = cast(BehaviorTree.Node | None, node.blackboard.get(cls._ACTIVE_NODE_KEY))
             if active_node is not None:
                 active_node.blackboard = node.blackboard
@@ -64,11 +106,17 @@ class InventoryBT:
                 if active_state == BehaviorTree.NodeState.RUNNING:
                     return BehaviorTree.NodeState.RUNNING
 
+                active_item_ids = cast(list[int], node.blackboard.get(cls._ACTIVE_ITEM_IDS_KEY, []))
                 node.blackboard.pop(cls._ACTIVE_NODE_KEY, None)
                 node.blackboard.pop(cls._ACTIVE_ACTION_KEY, None)
+                node.blackboard.pop(cls._ACTIVE_ITEM_IDS_KEY, None)
 
                 if active_state == BehaviorTree.NodeState.FAILURE:
+                    cls._set_item_cooldown(node.blackboard, active_item_ids, cls._FAILURE_COOLDOWN_TICKS)
                     return BehaviorTree.NodeState.FAILURE
+
+                cls._set_item_cooldown(node.blackboard, active_item_ids, cls._SUCCESS_COOLDOWN_TICKS)
+                return active_state
 
             action_batches = cls._collect_action_batches(config, node.blackboard)
             if not action_batches:
@@ -79,7 +127,7 @@ class InventoryBT:
                 if not item_ids:
                     continue
 
-                action_node = cls._build_action_node(config, action, item_ids, node.blackboard)
+                action_node, active_item_ids = cls._build_action_node(config, action, item_ids, node.blackboard)
                 if action_node is None:
                     continue
 
@@ -91,6 +139,7 @@ class InventoryBT:
 
                 node.blackboard[cls._ACTIVE_NODE_KEY] = action_node
                 node.blackboard[cls._ACTIVE_ACTION_KEY] = action.name
+                node.blackboard[cls._ACTIVE_ITEM_IDS_KEY] = active_item_ids
                 action_node.blackboard = node.blackboard
                 return action_node.tick()
 
@@ -101,8 +150,19 @@ class InventoryBT:
     @classmethod
     def _collect_action_batches(cls, config: InventoryConfig, blackboard: Optional[dict] = None) -> dict[ItemAction, list[int]]:
         action_batches: dict[ItemAction, list[int]] = {}
+        item_cooldowns = cast(dict[int, int], blackboard.setdefault(cls._ITEM_COOLDOWNS_KEY, {})) if blackboard is not None else {}
+        inventory_item_ids = cls._get_inventory_item_ids()
 
-        for item_id in cls._get_inventory_item_ids():
+        if item_cooldowns:
+            current_item_ids = set(inventory_item_ids)
+            stale_item_ids = [item_id for item_id in item_cooldowns if item_id not in current_item_ids]
+            for item_id in stale_item_ids:
+                item_cooldowns.pop(item_id, None)
+
+        for item_id in inventory_item_ids:
+            if item_cooldowns.get(item_id, 0) > 0:
+                continue
+
             action = cls._get_action_for_item(config, item_id)
             if action in (None, ItemAction.NONE, ItemAction.Hold):
                 continue
@@ -114,6 +174,62 @@ class InventoryBT:
             action_batches.setdefault(action, []).append(item_id)
 
         return action_batches
+
+    @classmethod
+    def _build_preview_entry(cls, config: InventoryConfig, item: ItemSnapshot) -> InventoryPreviewEntry:
+        rule = cls._get_first_matching_rule(config, item.id)
+        if rule is None:
+            return InventoryPreviewEntry(item=item, action=None, rule=None, note="No matching rule.", executable=False)
+
+        action = rule.action
+        if action in (ItemAction.NONE, ItemAction.Hold):
+            return InventoryPreviewEntry(
+                item=item,
+                action=action,
+                rule=rule,
+                note="No inventory action will be executed.",
+                executable=False,
+            )
+
+        if action == ItemAction.ExtractUpgrade:
+            matches = rule.get_matching_upgrades(item.id) if isinstance(rule, ExtractUpgradeRule) else []
+            if len(matches) == 1 and item.is_salvageable and item.item_type is not ItemType.Rune_Mod:
+                _, salvage_mode = matches[0]
+                return InventoryPreviewEntry(
+                    item=item,
+                    action=action,
+                    rule=rule,
+                    note=f"Will extract {cls._format_upgrade_match_name(salvage_mode, item.id)}.",
+                )
+
+            elif len(matches) > 1:
+                match_names = ", ".join(cls._format_upgrade_match_name(salvage_mode, item.id) for _, salvage_mode in matches)
+                return InventoryPreviewEntry(
+                    item=item,
+                    action=action,
+                    rule=rule,
+                    note=f"Skipped because multiple upgrades match: {match_names}.",
+                    executable=False,
+                )
+                
+            elif not item.is_salvageable or item.item_type is ItemType.Rune_Mod:
+                return InventoryPreviewEntry(
+                    item=item,
+                    action=action,
+                    rule=rule,
+                    note="Skipped because the item is not salvageable or is an Upgrade.",
+                    executable=False,
+                )
+
+            return InventoryPreviewEntry(
+                item=item,
+                action=action,
+                rule=rule,
+                note="Skipped because no extractable upgrade matched the rule.",
+                executable=False,
+            )
+
+        return InventoryPreviewEntry(item=item, action=action, rule=rule, note="")
 
     @staticmethod
     def _get_inventory_item_ids() -> list[int]:
@@ -155,33 +271,37 @@ class InventoryBT:
         action: ItemAction,
         item_ids: list[int],
         blackboard: Optional[dict] = None,
-    ) -> Optional[BehaviorTree.Node]:
+    ) -> tuple[Optional[BehaviorTree.Node], list[int]]:
         match action:
             case ItemAction.Identify:
-                return BTNodes.Items.IdentifyItems(item_ids)
+                unidentified_item_ids = [item_id for item_id in item_ids if (item := ItemSnapshot.from_item_id(item_id)) is not None and not item.is_identified]
+                if not unidentified_item_ids:
+                    return None, []
+                
+                return BTNodes.Items.IdentifyItems(unidentified_item_ids), unidentified_item_ids
             
             case ItemAction.Use:
-                return BTNodes.Items.UseItems(item_ids)
+                return BTNodes.Items.UseItems(item_ids), item_ids
             
             case ItemAction.Drop:
                 if Map.IsExplorable():
-                    return BTNodes.Items.DropItems(item_ids)
+                    return BTNodes.Items.DropItems(item_ids), item_ids
             
             case ItemAction.Destroy:
-                return BTNodes.Items.DestroyItems(item_ids)
+                return BTNodes.Items.DestroyItems(item_ids), item_ids
             
             case ItemAction.Stash:
-                return BTNodes.Items.DepositItems(item_ids)
+                return BTNodes.Items.DepositItems(item_ids), item_ids
             
             case ItemAction.Sell_To_Merchant:
                 if UIManagerExtensions.IsMerchantWindowOpen():
-                    return BTNodes.Merchant.SellItems(item_ids) 
+                    return BTNodes.Merchant.SellItems(item_ids), item_ids
                 
             case ItemAction.Sell_To_Trader:
                 if UIManagerExtensions.IsMerchantWindowOpen():
                     item_id = cls._get_first_valid_item_id(item_ids)
                     if item_id is not None:
-                        return BTNodes.Trader.SellItem(item_id)
+                        return BTNodes.Trader.SellItem(item_id), [item_id]
             
             case ItemAction.Salvage_Common_Materials:
                 item_id = cls._get_first_salvageable_item_id(item_ids)
@@ -190,22 +310,31 @@ class InventoryBT:
                         item_id,
                         salvage_mode=SalvageMode.LesserCraftingMaterials,
                         allow_expert_for_common_materials=True,
-                    )   
+                        state_key=f"inventory_bt_salvage_common_{item_id}",
+                    ), [item_id]
                     
             case ItemAction.Salvage_Rare_Materials: 
                 item_id = cls._get_first_salvageable_item_id(item_ids)
                 if item_id is not None:
-                    return BTNodes.Items.SalvageItem(item_id, salvage_mode=SalvageMode.RareCraftingMaterials)
+                    return BTNodes.Items.SalvageItem(
+                        item_id,
+                        salvage_mode=SalvageMode.RareCraftingMaterials,
+                        state_key=f"inventory_bt_salvage_rare_{item_id}",
+                    ), [item_id]
                 
             case ItemAction.ExtractUpgrade:
                 item_id, salvage_mode = cls._get_first_extractable_item(config, item_ids, blackboard)
                 if item_id is not None and salvage_mode is not None:
-                    return BTNodes.Items.SalvageItem(item_id, salvage_mode=salvage_mode)
+                    return BTNodes.Items.SalvageItem(
+                        item_id,
+                        salvage_mode=salvage_mode,
+                        state_key=f"inventory_bt_extract_{item_id}",
+                    ), [item_id]
             
             case _:
-                return None
+                return None, []
 
-        return None
+        return None, []
 
     @staticmethod
     def _get_first_valid_item_id(item_ids: list[int]) -> Optional[int]:
@@ -305,5 +434,29 @@ class InventoryBT:
             Py4GW.Console.MessageType.Warning,
         )
 
+    @classmethod
+    def _advance_item_cooldowns(cls, blackboard: dict) -> None:
+        item_cooldowns = cast(dict[int, int], blackboard.setdefault(cls._ITEM_COOLDOWNS_KEY, {}))
+        expired_item_ids: list[int] = []
 
-__all__ = ["InventoryBT"]
+        for item_id, remaining_ticks in item_cooldowns.items():
+            next_ticks = remaining_ticks - 1
+            if next_ticks <= 0:
+                expired_item_ids.append(item_id)
+            else:
+                item_cooldowns[item_id] = next_ticks
+
+        for item_id in expired_item_ids:
+            item_cooldowns.pop(item_id, None)
+
+    @classmethod
+    def _set_item_cooldown(cls, blackboard: dict, item_ids: Sequence[int], ticks: int) -> None:
+        if ticks <= 0:
+            return
+
+        item_cooldowns = cast(dict[int, int], blackboard.setdefault(cls._ITEM_COOLDOWNS_KEY, {}))
+        for item_id in item_ids:
+            item_cooldowns[item_id] = max(ticks, item_cooldowns.get(item_id, 0))
+
+
+__all__ = ["InventoryBT", "InventoryPreviewEntry"]

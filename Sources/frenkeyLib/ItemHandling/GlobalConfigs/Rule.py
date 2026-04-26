@@ -410,7 +410,7 @@ class ItemTypesRule(Rule):
             return False
 
         item_type = item_snapshot.item_type
-        return item_type in self.item_types if item_type else False
+        return any(item_type.matches(target_type) for target_type in self.item_types)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"item_types": [item_type.name for item_type in self.item_types]}
@@ -449,7 +449,7 @@ class ModelIdsAndItemTypesRule(Rule):
         model_id = item_snapshot.model_id
         item_type = item_snapshot.item_type
         for mid, it in self.items:
-            if ((model_id == mid.value if isinstance(mid, ModelID) else model_id == mid) and item_type == it):
+            if ((model_id == mid.value if isinstance(mid, ModelID) else model_id == mid) and item_type.matches(it)):
                 return True
 
         return False
@@ -551,7 +551,7 @@ class ModelFileIdRule(Rule):
             return False
 
         model_file_id = item_snapshot.model_file_id
-        return model_file_id in self.model_file_ids if model_file_id else False
+        return model_file_id in self.model_file_ids
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"model_file_ids": self.model_file_ids}
@@ -589,7 +589,7 @@ class ModelFileIdAndItemTypeRule(Rule):
         model_file_id = item_snapshot.model_file_id
         item_type = item_snapshot.item_type
         for entry in self.model_file_ids_and_item_types:
-            if ((model_file_id == entry.model_file_id if model_file_id else False) and item_type == entry.item_type):
+            if model_file_id == entry.model_file_id and item_type.matches(entry.item_type):
                 return True
 
         return False
@@ -869,7 +869,7 @@ class RaritiesRule(Rule):
             return False
 
         rarity = item_snapshot.rarity
-        return rarity in self.rarities if rarity else False
+        return rarity in self.rarities
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"rarities": [rarity.name for rarity in self.rarities]}
@@ -907,7 +907,9 @@ class RaritiesAndItemTypesRule(Rule):
 
         rarity = item_snapshot.rarity
         item_type = item_snapshot.item_type
-        return (rarity in self.rarities if rarity else False) and (item_type in self.item_types if item_type else False)
+        rarity_matches = rarity in self.rarities
+        item_type_matches = any(item_type.matches(target_type) for target_type in self.item_types)
+        return rarity_matches and item_type_matches
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -930,6 +932,69 @@ class RaritiesAndItemTypesRule(Rule):
             ItemType[name]
             for name in data.get("item_types", [])
             if isinstance(name, str) and name in ItemType.__members__
+        ]
+
+class UnidentifiedRule(Rule):
+    """
+    A rule that checks if an item is unidentified.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.action = ItemAction.Identify
+
+    def applies(self, item_id: int) -> bool:
+        item_snapshot = self.get_item(item_id)
+        return not item_snapshot.is_identified if item_snapshot is not None else False
+    
+    def _comparison_data(self) -> Any:
+        return ("unidentified",)
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"unidentified": True}
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        return
+
+class UnidentifiedAndRarityRule(Rule):
+    """
+    A rule that checks if an item is unidentified and has a rarity contained in a specified list of rarities. Both conditions must be met for the rule to apply.
+    """
+
+    def __init__(self, rarities: Optional[list[Rarity]] = None):
+        super().__init__()
+        
+        self.action = ItemAction.Identify
+        self.rarities: list[Rarity] = rarities if rarities is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.rarities) > 0
+
+    def applies(self, item_id: int) -> bool:
+        if not self.is_valid():
+            return False
+
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is None or item_snapshot.is_identified:
+            return False
+
+        rarity = item_snapshot.rarity
+        return rarity in self.rarities
+    
+    def _comparison_data(self) -> Any:
+        return ("unidentified", tuple(sorted(rarity.name for rarity in self.rarities)))
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "unidentified": True,
+            "rarities": [rarity.name for rarity in self.rarities],
+        }
+        
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.rarities = [
+            Rarity[name]
+            for name in data.get("rarities", [])
+            if isinstance(name, str) and name in Rarity.__members__
         ]
 
 class DyesRule(Rule):
@@ -957,7 +1022,7 @@ class DyesRule(Rule):
             return False
         
         item_color = item_snapshot.color
-        return item_color in self.dye_colors if item_color else False
+        return item_color in self.dye_colors
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"dye_colors": [color.name for color in self.dye_colors]}

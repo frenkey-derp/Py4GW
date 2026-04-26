@@ -26,11 +26,12 @@ from typing import Any, Generic, NamedTuple, Optional, TypeVar
 import Py4GW
 import PyImGui
 
+from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Profession
-from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, ITEM_TYPE_META_TYPES, ItemType
+from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, ITEM_TYPE_META_TYPES, ItemAction, ItemType
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
@@ -55,6 +56,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DamageRange, InherentFilter
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
+from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
@@ -121,11 +123,7 @@ class ConfigInfo(Generic[TConfig]):
 
         if isinstance(self.config, RuleConfig):
             loaded_config = self.config.Load(self.file_path)
-            self.config.clear()
-            self.config.extend(loaded_config)
-            self.config.blacklisted_items = list(loaded_config.blacklisted_items)
-            self.config.whitelisted_items = list(loaded_config.whitelisted_items)
-            Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {len(self.config)} rules.", Py4GW.Console.MessageType.Info)
+            Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {len(loaded_config)} rules.", Py4GW.Console.MessageType.Info)
             return
 
         if isinstance(self.config, BuyConfig):
@@ -147,6 +145,27 @@ class ConfigInfo(Generic[TConfig]):
 class UI:
     GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
+    INVENTORY_PREVIEW_BAGS: list[Bag] = [
+        Bag.Backpack,
+        Bag.Belt_Pouch,
+        Bag.Bag_1,
+        Bag.Bag_2,
+        Bag.Equipment_Pack,
+        Bag.Storage_1,
+        Bag.Storage_2,
+        Bag.Storage_3,
+        Bag.Storage_4,
+        Bag.Storage_5,
+        Bag.Storage_6,
+        Bag.Storage_7,
+        Bag.Storage_8,
+        Bag.Storage_9,
+        Bag.Storage_10,
+        Bag.Storage_11,
+        Bag.Storage_12,
+        Bag.Storage_13,
+        Bag.Storage_14,
+    ]
     ITEM_TYPE_ATTRIBUTES = {
         ItemType.Axe : Attribute.AxeMastery,
         ItemType.Bow : Attribute.Marksmanship,
@@ -339,6 +358,16 @@ class UI:
         self._unique_model_file_id_items: list[ItemData] = []
         self._salvage_material_options: list[ItemData] = []
         self.inherent_upgrade_search: str = ""
+        self.inventory_preview_search: str = ""
+        self.inventory_preview_show_no_action: bool = False
+        self.inventory_preview_show_hold: bool = False
+        self.inventory_preview_selected_bags: list[Bag] = [
+            Bag.Backpack,
+            Bag.Belt_Pouch,
+            Bag.Bag_1,
+            Bag.Bag_2,
+            Bag.Equipment_Pack,
+        ]
         self._rebuild_item_ui_caches()
 
     # -------------------------------------------------------------------------
@@ -2030,12 +2059,17 @@ class UI:
             PyImGui.table_next_row()
             PyImGui.table_next_column()
 
+            max_size = PyImGui.get_content_region_avail()
+            height = max_size[1]
+            candidates_height = min(350, height / 2)
+            details_height = height - candidates_height - 10
+            
             ImGui.text("Available Skins")
             PyImGui.set_next_item_width(-1)
             _, self.model_file_id_search = ImGui.search_field("##weapon_skin_search", self.model_file_id_search, "Search by item name or model file id...")
             search_query = self._normalize_search_query(self.model_file_id_search)
 
-            if ImGui.begin_child("##weapon_skin_candidates", (0, 320), border=True):
+            if ImGui.begin_child("##weapon_skin_candidates", (0, candidates_height - 30), border=True):
                 for item in weapon_items:
                     model_file_id = int(item.model_file_id)
                     already_selected = model_file_id in selected_model_file_ids
@@ -2072,7 +2106,7 @@ class UI:
 
             PyImGui.table_next_column()
             ImGui.text(f"Selected Skins ({len(rule.model_file_ids)})")
-            if ImGui.begin_child("##weapon_skin_selected", (0, 350), border=True):
+            if ImGui.begin_child("##weapon_skin_selected", (0, candidates_height), border=True):
                 if len(rule.model_file_ids) == 0:
                     ImGui.text_colored("No weapon skins selected.", UI.GRAY_COLOR.color_tuple, font_size=12)
 
@@ -2101,10 +2135,10 @@ class UI:
 
             PyImGui.table_next_column()
             
-            changed = self._draw_requirement_editor(rule, selected_weapon_types) or changed
+            changed = self._draw_requirement_editor(rule, selected_weapon_types, height=details_height) or changed
             PyImGui.table_next_column()
             
-            inherent_changed, rule.inscribable = self._draw_inherent_upgrades_editor(rule.inherents, f"weapon_skin_{id(rule)}", rule.inscribable)
+            inherent_changed, rule.inscribable = self._draw_inherent_upgrades_editor(rule.inherents, f"weapon_skin_{id(rule)}", rule.inscribable, height=details_height)
             changed = inherent_changed or changed
             ImGui.end_table()
             
@@ -2119,13 +2153,20 @@ class UI:
 
         max_content_height = PyImGui.get_content_region_avail()[1]
         y_start = PyImGui.get_cursor_pos_y()
+        details_height = 0
+        
         if ImGui.begin_table(f"##weapon_type_editor_{id(rule)}", 2, PyImGui.TableFlags.BordersInnerV | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Types", PyImGui.TableColumnFlags.WidthFixed, 190)
             PyImGui.table_setup_column("Details", PyImGui.TableColumnFlags.WidthStretch)
             PyImGui.table_next_row()
             PyImGui.table_next_column()
+            
+            max_size = PyImGui.get_content_region_avail()
+            height = max_size[1]
+            candidates_height = min(350, height / 2)
+            details_height = height - candidates_height - 10
 
-            if ImGui.begin_child(f"##weapon_type_list_{id(rule)}", (0, 360), border=True):
+            if ImGui.begin_child(f"##weapon_type_list_{id(rule)}", (0, candidates_height), border=True):
                 for item_type in weapon_item_types:
                     if self._draw_weapon_type_row(item_type, rule.item_type == item_type, f"weapon_type_{id(rule)}"):
                         rule.item_type = item_type
@@ -2148,14 +2189,14 @@ class UI:
                 ImGui.end_child()
 
                 selected_item_types = [rule.item_type] if rule.item_type is not None else []
-                changed = self._draw_requirement_editor(rule, selected_item_types, 300) or changed
+                changed = self._draw_requirement_editor(rule, selected_item_types, candidates_height - 56 - 6) or changed
 
 
             ImGui.end_table()
 
         y_end = PyImGui.get_cursor_pos_y()
         height = y_end - y_start
-        inherent_changed, rule.inscribable = self._draw_inherent_upgrades_editor(rule.inherents, f"weapon_type_{id(rule)}", rule.inscribable, height=max_content_height - height)
+        inherent_changed, rule.inscribable = self._draw_inherent_upgrades_editor(rule.inherents, f"weapon_type_{id(rule)}", rule.inscribable, height=details_height)
         changed = inherent_changed or changed
         return changed
 
@@ -2238,6 +2279,23 @@ class UI:
             ImGui.end_child()
 
         return changed
+
+    # -------------------------------------------------------------------------
+    # Unidentified rule editor
+    # -------------------------------------------------------------------------
+    def draw_unidentified_rule(self, rule: UnidentifiedRule) -> bool:
+        changed = False
+        PyImGui.text("This rule matches items that are not identified yet unidentified.")
+
+        return changed
+    
+    def draw_unidentified_and_rarity_rule(self, rule: UnidentifiedAndRarityRule) -> bool:
+        changed = False
+        
+        PyImGui.text("This rule matches items that are not identified yet unidentified.")        
+        changed = self._draw_rarity_selector(rule.rarities, "##rarities") or changed
+        
+        return changed  
 
     # -------------------------------------------------------------------------
     # Window lifecycle / top-level layout
@@ -2439,7 +2497,7 @@ class UI:
         if changed:
             config_info.save()
 
-    def draw_rule_config(self, config_info: ConfigInfo[RuleConfig[Any]]):
+    def draw_rule_config(self, config_info: ConfigInfo[RuleConfig]):
 
         if ImGui.begin_table("##config_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Navigation", PyImGui.TableColumnFlags.WidthFixed, 200)
@@ -2505,9 +2563,142 @@ class UI:
             if ImGui.begin_child("##rule content", (0, 0), border=False):
                 if self.rule:
                     self.draw_rule(self.rule)
-                    pass
+                if isinstance(config_info.config, InventoryConfig):
+                    if self.rule:
+                        PyImGui.spacing()
+                        ImGui.separator()
+                        PyImGui.spacing()
+                    self.draw_inventory_config_preview(config_info.config)
 
             ImGui.end_child()
+
+            ImGui.end_table()
+
+    def _set_inventory_preview_bags(self, bags: list[Bag]) -> None:
+        self.inventory_preview_selected_bags = list(bags)
+
+    def draw_inventory_config_preview(self, config: InventoryConfig) -> None:
+        ImGui.text("Preview", font_size=18)
+        ImGui.text_wrapped("Preview how the current Item Processing config would classify items in the selected bags. This does not execute any actions. InventoryBT itself still only processes live inventory bags.")
+
+        preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
+        action_counts: dict[ItemAction, int] = {}
+        visible_entries = []
+
+        button_width = 110
+        if ImGui.button("Inventory", button_width):
+            self._set_inventory_preview_bags([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack])
+        PyImGui.same_line(0, 5)
+        if ImGui.button("Storage", button_width):
+            self._set_inventory_preview_bags([
+                Bag.Storage_1,
+                Bag.Storage_2,
+                Bag.Storage_3,
+                Bag.Storage_4,
+                Bag.Storage_5,
+                Bag.Storage_6,
+                Bag.Storage_7,
+                Bag.Storage_8,
+                Bag.Storage_9,
+                Bag.Storage_10,
+                Bag.Storage_11,
+                Bag.Storage_12,
+                Bag.Storage_13,
+                Bag.Storage_14,
+            ])
+        PyImGui.same_line(0, 5)
+        if ImGui.button("All", button_width):
+            self._set_inventory_preview_bags(list(self.INVENTORY_PREVIEW_BAGS))
+        PyImGui.same_line(0, 5)
+        if ImGui.button("Clear", button_width):
+            self._set_inventory_preview_bags([])
+
+        self.inventory_preview_search = ImGui.input_text("Search##inventory_preview_search", self.inventory_preview_search)
+        self.inventory_preview_show_no_action = ImGui.checkbox("Show No Action", self.inventory_preview_show_no_action)
+        self.inventory_preview_show_hold = ImGui.checkbox("Show Hold", self.inventory_preview_show_hold)
+
+        if ImGui.begin_child("##inventory_preview_bags", (0, 90), border=True):
+            width = PyImGui.get_content_region_avail()[0]
+            columns = max(1, int(width // 170))
+            PyImGui.columns(columns, "inventory_preview_bag_columns", False)
+
+            for bag in self.INVENTORY_PREVIEW_BAGS:
+                is_selected = bag in self.inventory_preview_selected_bags
+                selected = ImGui.checkbox(f"{self._humanize_name(bag.name)}", is_selected)
+                if selected != is_selected:
+                    if selected:
+                        self.inventory_preview_selected_bags.append(bag)
+                    else:
+                        self.inventory_preview_selected_bags = [selected_bag for selected_bag in self.inventory_preview_selected_bags if selected_bag != bag]
+                PyImGui.next_column()
+
+            PyImGui.end_columns()
+        ImGui.end_child()
+
+        for entry in preview_entries:
+            action = entry.action
+            if action is None and not self.inventory_preview_show_no_action:
+                continue
+            if action == ItemAction.Hold and not self.inventory_preview_show_hold:
+                continue
+
+            search_blob = " ".join(
+                [
+                    entry.item.names.plain or entry.item.name or "",
+                    entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "",
+                    entry.note,
+                    entry.item.bag.name,
+                    action.name if action else "No Action",
+                ]
+            )
+            if not self._search_text_matches(self._normalize_search_query(self.inventory_preview_search), search_blob):
+                continue
+
+            if action is not None:
+                action_counts[action] = action_counts.get(action, 0) + 1
+
+            visible_entries.append(entry)
+
+        summary_text = ", ".join(
+            f"{self._humanize_name(action.name)}: {count}"
+            for action, count in sorted(action_counts.items(), key=lambda item: item[0].name)
+        )
+        ImGui.text_wrapped(summary_text if summary_text else "No matching preview entries for the current filters.")
+
+        if not self.inventory_preview_selected_bags:
+            ImGui.text_wrapped("Select at least one bag to preview items.")
+            return
+
+        if not visible_entries:
+            return
+
+        if ImGui.begin_table("##inventory_preview_table", 6, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=280):
+            PyImGui.table_setup_column("Bag", PyImGui.TableColumnFlags.WidthFixed, 110)
+            PyImGui.table_setup_column("Slot", PyImGui.TableColumnFlags.WidthFixed, 45)
+            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 120)
+            PyImGui.table_setup_column("Rule", PyImGui.TableColumnFlags.WidthFixed, 160)
+            PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_headers_row()
+
+            for entry in visible_entries:
+                rule_name = entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "-"
+                action_name = self._humanize_name(entry.action.name) if entry.action is not None else "No Action"
+                item_name = entry.item.names.plain or entry.item.name or f"Item {entry.item.id}"
+
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                ImGui.text(self._humanize_name(entry.item.bag.name))
+                PyImGui.table_next_column()
+                ImGui.text(str(entry.item.slot))
+                PyImGui.table_next_column()
+                ImGui.text(item_name)
+                PyImGui.table_next_column()
+                ImGui.text(action_name)
+                PyImGui.table_next_column()
+                ImGui.text(rule_name)
+                PyImGui.table_next_column()
+                ImGui.text_wrapped(entry.note if entry.note else ("Ready" if entry.executable else "-"))
 
             ImGui.end_table()
 
@@ -2646,6 +2837,14 @@ class UI:
             case ModelFileIdAndItemTypeRule():
                 ImGui.text_wrapped("This rule matches items using a combination of model file ID and item type.")
                 return self.draw_model_file_ids_and_item_type_rule(rule)
+
+            case UnidentifiedRule():
+                ImGui.text_wrapped("This rule matches unidentified items. You can specify requirement damage ranges and optional inherent upgrade filters.")
+                return self.draw_unidentified_rule(rule)
+            
+            case UnidentifiedAndRarityRule():
+                ImGui.text_wrapped("This rule matches unidentified items of specific rarities. You can specify requirement damage ranges and optional inherent upgrade filters.")
+                return self.draw_unidentified_and_rarity_rule(rule)                
 
             case WeaponSkinRule():
                 ImGui.text_wrapped("This rule matches weapon skins by model file id, with configurable requirement damage ranges and optional inherent upgrade filters.")

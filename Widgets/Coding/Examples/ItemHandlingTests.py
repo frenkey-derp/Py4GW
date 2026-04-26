@@ -27,6 +27,8 @@ Utils.ClearSubModules("frenkeyLib.Core")
 from Sources.frenkeyLib.Core.encoded_names import ItemName
 from Py4GWCoreLib.ItemMods import ItemMod 
 from Sources.frenkeyLib.ItemHandling.BTNodes import STORAGE_BAGS, BTNodes
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
+from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 from Sources.frenkeyLib.ItemHandling.Items.item_collecting import ItemCollector
 
@@ -38,6 +40,7 @@ SALVAGE_MODES = [m.name for m in SalvageMode]
 INI_KEY = ""
 INI_PATH = f"Widgets/{MODULE_NAME}"
 INI_FILENAME = f"{MODULE_NAME}.ini"
+INVENTORY_CONFIG_PATH = os.path.join(Py4GW.Console.get_projects_path(), "Settings", "Global", "Item & Inventory", "Configs", "inventoryconfig.json")
 
 hovered_item_id = 0
 tree : BehaviorTree | None = None
@@ -77,6 +80,12 @@ fully_decoded = False
 collect = True
 
 show_loot_config_view = False
+inventory_bt_enabled = False
+inventory_bt_runner: InventoryBT | None = None
+
+
+def reload_inventory_config() -> InventoryConfig:
+    return InventoryConfig.Load(INVENTORY_CONFIG_PATH)
 
 # method to convert list of int to hex string
 def int_list_to_hex_string(int_list: list[int]) -> str:
@@ -166,7 +175,7 @@ def dump_string_table_to_json(language: ServerLanguage | int | None = None, outp
         return None
     
 def main():
-    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_input, decoded_ouput, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect, show_loot_config_view
+    global INI_KEY, hovered_item_id, auto_tick, tree, language, enc_input, decoded_ouput, decoded_name, int_lang, language_index, decoded, encoded, fully_decoded, collect, show_loot_config_view, inventory_bt_enabled, inventory_bt_runner
     
     if not Routines.Checks.Map.IsMapReady():
         encoded = None
@@ -199,6 +208,20 @@ def main():
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error ticking behavior tree: {e}")
 
+    if inventory_bt_enabled:
+        if inventory_bt_runner is None:
+            inventory_bt_runner = InventoryBT(reload_inventory_config())
+
+        try:
+            inventory_bt_runner.tick()
+            
+        except Exception as e:
+            Py4GW.Console.Log(MODULE_NAME, f"Error ticking InventoryBT: {e}", Py4GW.Console.MessageType.Error)
+    
+    elif inventory_bt_runner is not None:
+        inventory_bt_runner.reset()
+        inventory_bt_runner = None
+
     win_open = ImGui.Begin(INI_KEY, MODULE_NAME)
     if win_open:
         ImGui.text_aligned(tree.root.name if tree else "No Tree Loaded", alignment= Alignment.MidCenter, color=GREEN.color_tuple if tree else RED.color_tuple, font_size=16, height=20)
@@ -215,6 +238,24 @@ def main():
         if ImGui.button("Start Tree", (avail - 5) / 2):
             auto_tick = True       
         PyImGui.end_disabled()
+
+        inventory_bt_enabled = ImGui.toggle_button("InventoryBT Enabled", inventory_bt_enabled, -1)
+        if inventory_bt_enabled and inventory_bt_runner is None:
+            inventory_bt_runner = InventoryBT(reload_inventory_config())
+
+        ImGui.text_wrapped(f"InventoryConfig path: {INVENTORY_CONFIG_PATH}")
+        ImGui.text_wrapped(f"Loaded InventoryConfig rules: {len(InventoryConfig())}")
+
+        if ImGui.button("Reload InventoryConfig", -1):
+            reloaded_config = reload_inventory_config()
+            inventory_bt_runner = InventoryBT(reloaded_config) if inventory_bt_enabled else None
+        ImGui.show_tooltip(f"Reload the saved config from {INVENTORY_CONFIG_PATH}")
+
+        if ImGui.button("Reset InventoryBT", -1):
+            if inventory_bt_runner is not None:
+                inventory_bt_runner.reset()
+            inventory_bt_runner = InventoryBT(reload_inventory_config()) if inventory_bt_enabled else None
+        ImGui.show_tooltip("Ticks InventoryBT every frame so you can test the current InventoryConfig against your live inventory.")
         
         PyImGui.separator()
         
@@ -629,6 +670,7 @@ def main():
             
             if ImGui.begin_tab_item("Rule Testing"):
                 ImGui.text_wrapped("Here we present the rule system like it would be used in the loot config or other item handling related systems. This is just a demonstration of how the rules can be created, edited and tested in a simple way.")
+                ImGui.text_wrapped(f"InventoryBT is currently {'enabled' if inventory_bt_enabled else 'disabled'} and uses the shared InventoryConfig singleton with {len(InventoryConfig())} rule(s).")
                 
                 show_loot_config_view = ImGui.toggle_button("Show Loot Config View", show_loot_config_view, -1)
                 ImGui.end_tab_item()

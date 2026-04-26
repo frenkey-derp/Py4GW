@@ -330,6 +330,6 @@ class RuleConfig(list[RuleModule.Rule]):
         
         with open(file_path, 'r', encoding='utf-8') as f:
             json_data = json.load(f)
-        
+            
         return cls.from_json(json_data)
     #endregion Loading and Saving

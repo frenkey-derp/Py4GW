@@ -16109,7 +16109,7 @@
             "model_file_id": 230711,
             "model_id": 1758,
             "name": "Crude Axe",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0xF9, 0x42, 0x60, 0x87, 0xAA, 0xC1, 0x91, 0x5, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -16618,7 +16618,7 @@
             "model_file_id": 63418,
             "model_id": 116,
             "name": "Hand Axe",
-            "name_encoded": "",
+            "name_encoded": "0x3C, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -19545,7 +19545,7 @@
             "model_file_id": 98840,
             "model_id": 1766,
             "name": "Composite Shortbow",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0x6, 0x43, 0x63, 0xF6, 0xCD, 0xB7, 0xDB, 0x5B, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": null,
@@ -19741,7 +19741,7 @@
             "model_file_id": 230724,
             "model_id": 1761,
             "name": "Caged Shortbow",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0xFC, 0x42, 0xE1, 0xF2, 0x7C, 0xA7, 0xE5, 0xA, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": null,
@@ -20634,7 +20634,7 @@
             "model_file_id": 9380,
             "model_id": 1764,
             "name": "Wooden Longbow",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0x4, 0x43, 0x8E, 0xFD, 0x2C, 0xCD, 0xD6, 0x19, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": null,
@@ -21056,7 +21056,7 @@
             "model_file_id": 98840,
             "model_id": 144,
             "name": "Shortbow",
-            "name_encoded": "",
+            "name_encoded": "0x4B, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": null,
@@ -25204,7 +25204,7 @@
             "model_file_id": 176429,
             "model_id": 1785,
             "name": "Ominous Eidolon",
-            "name_encoded": "0x2, 0x81, 0x48, 0x8, 0x0, 0x0",
+            "name_encoded": "0xF, 0x6F, 0x9F, 0x88, 0xA6, 0xD4, 0x24, 0x61, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -29618,7 +29618,7 @@
             "model_file_id": 89522,
             "model_id": 147,
             "name": "Inscribed Chakram",
-            "name_encoded": "",
+            "name_encoded": "0x5B, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -32093,7 +32093,7 @@
             "model_file_id": 89525,
             "model_id": 153,
             "name": "Jeweled Chakram",
-            "name_encoded": "",
+            "name_encoded": "0x5D, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -32688,7 +32688,7 @@
             "model_file_id": 230848,
             "model_id": 1786,
             "name": "Majestic Focus",
-            "name_encoded": "0x2, 0x81, 0x38, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x21, 0x43, 0x17, 0xBA, 0xEB, 0xF0, 0x25, 0x1C, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": null,
@@ -33720,7 +33720,7 @@
             "model_file_id": 98851,
             "model_id": 1792,
             "name": "Norn Axe",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0x3D, 0x53, 0xFD, 0xFC, 0x50, 0xD8, 0x73, 0xD, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": null,
@@ -36604,7 +36604,7 @@
             "model_file_id": 230895,
             "model_id": 2273,
             "name": "Bronze Crusher",
-            "name_encoded": "0x2, 0x81, 0x81, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x2E, 0x43, 0x99, 0x9F, 0xA5, 0x98, 0x1D, 0x39, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -36817,7 +36817,7 @@
             "model_file_id": 230890,
             "model_id": 2272,
             "name": "Copper Crusher",
-            "name_encoded": "0x2, 0x81, 0x7C, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x2D, 0x43, 0x4, 0xD0, 0xE, 0x8E, 0x38, 0x26, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -37031,7 +37031,7 @@
             "model_file_id": 39765,
             "model_id": 2227,
             "name": "Foehammer",
-            "name_encoded": "",
+            "name_encoded": "0x6A, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -37117,7 +37117,7 @@
             "model_file_id": 136176,
             "model_id": 2233,
             "name": "Righteous Maul",
-            "name_encoded": "",
+            "name_encoded": "0x75, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -40332,7 +40332,7 @@
             "model_file_id": 230989,
             "model_id": 1832,
             "name": "Arcane Scepter",
-            "name_encoded": "0x2, 0x81, 0xAD, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x4A, 0x43, 0xB0, 0xF2, 0xB2, 0xE7, 0x29, 0x72, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -45850,7 +45850,7 @@
             "model_file_id": 176563,
             "model_id": 1835,
             "name": "Hypnotic Scepter",
-            "name_encoded": "",
+            "name_encoded": "0x7A, 0x56, 0xBA, 0xD2, 0x6A, 0xFB, 0x84, 0x75, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -49962,7 +49962,7 @@
             "model_file_id": 93541,
             "model_id": 254,
             "name": "Cane",
-            "name_encoded": "",
+            "name_encoded": "0x9D, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -50005,7 +50005,7 @@
             "model_file_id": 93544,
             "model_id": 255,
             "name": "Cane",
-            "name_encoded": "",
+            "name_encoded": "0x9E, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -54772,7 +54772,7 @@
             "model_file_id": 231119,
             "model_id": 1877,
             "name": "Goldleaf Defender",
-            "name_encoded": "0x2, 0x81, 0xE1, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x6B, 0x43, 0x14, 0x8A, 0xCC, 0xC3, 0xFE, 0x4, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -56347,7 +56347,7 @@
             "model_file_id": 14368,
             "model_id": 2402,
             "name": "Reinforced Buckler",
-            "name_encoded": "",
+            "name_encoded": "0xAB, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -80297,7 +80297,7 @@
             "model_file_id": 301722,
             "model_id": 2041,
             "name": "Arrowblade Daggers",
-            "name_encoded": "",
+            "name_encoded": "0x2, 0x81, 0x7, 0x27, 0xC1, 0x9A, 0x0, 0xA4, 0x60, 0x1F, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -80423,7 +80423,7 @@
             "model_file_id": 230777,
             "model_id": 1774,
             "name": "Bronze Daggers",
-            "name_encoded": "0x2, 0x81, 0x26, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x10, 0x43, 0xA3, 0xD1, 0x0, 0xE1, 0x9C, 0x70, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -82158,7 +82158,7 @@
             "model_file_id": 164915,
             "model_id": 2218,
             "name": "Butterfly Knives",
-            "name_encoded": "",
+            "name_encoded": "0x47, 0x56, 0x12, 0xE8, 0x2E, 0xA8, 0x9E, 0x3C, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -91369,7 +91369,7 @@
             "model_file_id": 231058,
             "model_id": 1869,
             "name": "Elegant Scythe",
-            "name_encoded": "0x2, 0x81, 0x9, 0x9, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x5E, 0x43, 0x40, 0x8D, 0x5F, 0x8D, 0xB4, 0x58, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -91676,7 +91676,7 @@
             "model_file_id": 231073,
             "model_id": 1871,
             "name": "Hooked Scythe",
-            "name_encoded": "0x2, 0x81, 0xC, 0x9, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x61, 0x43, 0x7F, 0xA4, 0xC4, 0xB8, 0x32, 0x6A, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -93083,7 +93083,7 @@
             "model_file_id": 301879,
             "model_id": 2072,
             "name": "Forked Spear",
-            "name_encoded": "",
+            "name_encoded": "0x2, 0x81, 0x29, 0x27, 0x76, 0xBD, 0xAD, 0xA9, 0xFD, 0x35, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -93834,7 +93834,7 @@
             "model_file_id": 231256,
             "model_id": 1901,
             "name": "Tribal Spear",
-            "name_encoded": "0x2, 0x81, 0xF9, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x8C, 0x43, 0xDB, 0xB4, 0xFD, 0xAA, 0x36, 0x4C, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {

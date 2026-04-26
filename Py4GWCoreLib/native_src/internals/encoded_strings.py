@@ -130,7 +130,7 @@ class GWStringEncoded:
         try:
             start = s.index('[')
             end = s.index(']', start + 1)
-            return True
+            return end - start < 3
         except ValueError:
             return False
 
