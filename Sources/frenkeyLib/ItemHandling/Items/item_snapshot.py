@@ -239,7 +239,7 @@ class ItemSnapshot:
         return cast(Optional[bytes], self._name_enc)
 
     @property
-    def singular_name(self) -> Optional[bytes]:
+    def singular_name_enc(self) -> Optional[bytes]:
         if self._singular_name is _UNSET:
             self._singular_name = self._load_name_bytes(PyItem.GetSingleItemName)
 
@@ -266,6 +266,14 @@ class ItemSnapshot:
     @property
     def name(self) -> str:
         return string_table.decode(self.name_enc) if self.name_enc else ""
+
+    @property
+    def singular_name(self) -> str:
+        return string_table.decode(self.singular_name_enc) if self.singular_name_enc else ""
+    
+    @property
+    def complete_name(self) -> str:
+        return string_table.decode(self.complete_name_enc) if self.complete_name_enc else ""
 
     @property
     def bag(self) -> Bag:

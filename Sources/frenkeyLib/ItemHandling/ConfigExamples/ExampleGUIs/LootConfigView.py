@@ -62,7 +62,7 @@ def _decode_item_name(item: Optional[ItemSnapshot]) -> str:
     if item is None:
         return "Empty Slot"
 
-    for encoded in (item.complete_name_enc, item.singular_name, item.name_enc):
+    for encoded in (item.complete_name_enc, item.singular_name_enc, item.name_enc):
         if encoded:
             try:
                 decoded = GWStringEncoded(encoded, "").plain

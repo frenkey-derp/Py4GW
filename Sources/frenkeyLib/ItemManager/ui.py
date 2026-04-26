@@ -60,7 +60,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DamageRange, InherentFilter
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
-from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
+from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
@@ -372,7 +372,6 @@ class UI:
             Bag.Belt_Pouch,
             Bag.Bag_1,
             Bag.Bag_2,
-            Bag.Equipment_Pack,
         ]
         self.loot_preview_search: str = ""
         self.loot_preview_show_no_action: bool = False
@@ -469,7 +468,8 @@ class UI:
         doc = re.sub(r":class:`([^`]+)`", r"\1", doc)
         doc = doc.replace("**", "")
         doc = doc.replace("\n", "\n\n").strip()
-        return f"{title}\n\n{doc}" if doc else title
+        inversion_note = "Enable Inverted on a rule to apply it to items that do not match the configured criteria."
+        return f"{title}\n\n{doc}\n\n{inversion_note}" if doc else f"{title}\n\n{inversion_note}"
 
     @staticmethod
     def _show_wrapped_tooltip(text: str, wrap_width: float = 420.0) -> None:
@@ -1730,26 +1730,28 @@ class UI:
 
         ImGui.separator()
 
-        for index, model_id in enumerate(rule.model_ids):
-            model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-            label = self._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
-            unique_id = f"model_ids_rule_{id(rule)}_{model_id_value}_{index}"
+        if ImGui.begin_child("##added_model_id_candidates", (0, 0), border=False):
+            for index, model_id in enumerate(rule.model_ids):
+                model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                label = self._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
+                unique_id = f"model_ids_rule_{id(rule)}_{model_id_value}_{index}"
 
-            if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
-                    rule.model_ids.pop(index)
-                    changed = True
-                    ImGui.end_child()
-                    break
+                if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
+                        rule.model_ids.pop(index)
+                        changed = True
+                        ImGui.end_child()
+                        break
 
-                PyImGui.same_line(0, 8)
-                PyImGui.begin_group()
-                ImGui.text(label)
-                x, y = PyImGui.get_cursor_pos()
-                PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                PyImGui.end_group()
-            ImGui.end_child()
+                    PyImGui.same_line(0, 8)
+                    PyImGui.begin_group()
+                    ImGui.text(label)
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                    PyImGui.end_group()
+                ImGui.end_child()
+        ImGui.end_child()
 
         return changed
 
@@ -1833,27 +1835,29 @@ class UI:
 
         ImGui.separator()
 
-        for index, encoded_name in enumerate(rule.encoded_names):
-            item = self._find_item_by_encoded_name(encoded_name)
-            unique_id = f"encoded_name_rule_{id(rule)}_{index}"
+        if ImGui.begin_child("##added_encoded_name_candidates", (0, 0), border=False):
+            for index, encoded_name in enumerate(rule.encoded_names):
+                item = self._find_item_by_encoded_name(encoded_name)
+                unique_id = f"encoded_name_rule_{id(rule)}_{index}"
 
-            if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
-                    rule.encoded_names.pop(index)
-                    changed = True
-                    ImGui.end_child()
-                    break
+                if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                        rule.encoded_names.pop(index)
+                        changed = True
+                        ImGui.end_child()
+                        break
 
-                PyImGui.same_line(0, 8)
-                self._draw_item_texture(item)
-                PyImGui.same_line(0, 8)
-                PyImGui.begin_group()
-                ImGui.text(self._get_item_display_name(item) if item is not None else "Custom Encoded Name")
-                x, y = PyImGui.get_cursor_pos()
-                PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
-                PyImGui.end_group()
-            ImGui.end_child()
+                    PyImGui.same_line(0, 8)
+                    self._draw_item_texture(item)
+                    PyImGui.same_line(0, 8)
+                    PyImGui.begin_group()
+                    ImGui.text(self._get_item_display_name(item) if item is not None else "Custom Encoded Name")
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    ImGui.text_colored(encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                    PyImGui.end_group()
+                ImGui.end_child()
+        ImGui.end_child()
 
         return changed
 
@@ -1927,27 +1931,29 @@ class UI:
 
         ImGui.separator()
 
-        for index, model_file_id in enumerate(rule.model_file_ids):
-            item = self._find_item_by_model_file_id(model_file_id)
-            unique_id = f"model_file_id_rule_{id(rule)}_{model_file_id}_{index}"
+        if ImGui.begin_child("##added_model_file_id_candidates", (0, 0), border=False):
+            for index, model_file_id in enumerate(rule.model_file_ids):
+                item = self._find_item_by_model_file_id(model_file_id)
+                unique_id = f"model_file_id_rule_{id(rule)}_{model_file_id}_{index}"
 
-            if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
-                    rule.model_file_ids.pop(index)
-                    changed = True
-                    ImGui.end_child()
-                    break
+                if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                        rule.model_file_ids.pop(index)
+                        changed = True
+                        ImGui.end_child()
+                        break
 
-                PyImGui.same_line(0, 8)
-                self._draw_item_texture(item)
-                PyImGui.same_line(0, 8)
-                PyImGui.begin_group()
-                ImGui.text(self._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
-                x, y = PyImGui.get_cursor_pos()
-                PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                PyImGui.end_group()
-            ImGui.end_child()
+                    PyImGui.same_line(0, 8)
+                    self._draw_item_texture(item)
+                    PyImGui.same_line(0, 8)
+                    PyImGui.begin_group()
+                    ImGui.text(self._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                    PyImGui.end_group()
+                ImGui.end_child()
+        ImGui.end_child()
 
         return changed
 
@@ -2014,37 +2020,39 @@ class UI:
 
         ImGui.separator()
 
-        for index, entry in enumerate(list(rule.model_file_ids_and_item_types)):
-            item = next(
-                (
-                    candidate
-                    for candidate in items
-                    if int(candidate.model_file_id) == int(entry.model_file_id) and candidate.item_type == entry.item_type
-                ),
-                None,
-            )
-            unique_id = f"model_file_id_item_type_rule_{id(rule)}_{entry.model_file_id}_{entry.item_type.name}_{index}"
-
-            if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
-                    rule.model_file_ids_and_item_types.pop(index)
-                    changed = True
-                    ImGui.end_child()
-                    break
-
-                PyImGui.same_line(0, 8)
-                self._draw_item_texture(item)
-                PyImGui.same_line(0, 8)
-                PyImGui.begin_group()
-                ImGui.text(self._get_item_display_name(item) if item is not None else f"Unknown Item ({entry.model_file_id})")
-                x, y = PyImGui.get_cursor_pos()
-                PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(
-                    f"{self._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
-                    UI.GRAY_COLOR.color_tuple,
-                    font_size=12,
+        if ImGui.begin_child("##added_model_file_id_item_type_candidates", (0, 0), border=False):
+            for index, entry in enumerate(list(rule.model_file_ids_and_item_types)):
+                item = next(
+                    (
+                        candidate
+                        for candidate in items
+                        if int(candidate.model_file_id) == int(entry.model_file_id) and candidate.item_type == entry.item_type
+                    ),
+                    None,
                 )
-                PyImGui.end_group()
+                unique_id = f"model_file_id_item_type_rule_{id(rule)}_{entry.model_file_id}_{entry.item_type.name}_{index}"
+
+                if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                        rule.model_file_ids_and_item_types.pop(index)
+                        changed = True
+                        ImGui.end_child()
+                        break
+
+                    PyImGui.same_line(0, 8)
+                    self._draw_item_texture(item)
+                    PyImGui.same_line(0, 8)
+                    PyImGui.begin_group()
+                    ImGui.text(self._get_item_display_name(item) if item is not None else f"Unknown Item ({entry.model_file_id})")
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    ImGui.text_colored(
+                        f"{self._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
+                        UI.GRAY_COLOR.color_tuple,
+                        font_size=12,
+                    )
+                    PyImGui.end_group()
+                ImGui.end_child()
             ImGui.end_child()
 
         return changed
@@ -2266,27 +2274,29 @@ class UI:
 
         ImGui.separator()
 
-        for index, mid in enumerate(rule.materials):
-            material = next((m for m in self._salvage_material_options if int(m.model_id) == int(mid)), None)
-            unique_id = f"salvage_material_rule_{id(rule)}_{material.name}_{index}" if material is not None else f"salvage_material_rule_{id(rule)}_{mid}_{index}"
-            if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
-                    rule.materials.pop(index)
-                    changed = True
-                    ImGui.end_child()
-                    break
+        if ImGui.begin_child("##added_material_candidates", (0, 0), border=False):
+            for index, mid in enumerate(rule.materials):
+                material = next((m for m in self._salvage_material_options if int(m.model_id) == int(mid)), None)
+                unique_id = f"salvage_material_rule_{id(rule)}_{material.name}_{index}" if material is not None else f"salvage_material_rule_{id(rule)}_{mid}_{index}"
+                if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
+                        rule.materials.pop(index)
+                        changed = True
+                        ImGui.end_child()
+                        break
 
-                PyImGui.same_line(0, 8)
+                    PyImGui.same_line(0, 8)
 
-                UI._draw_item_texture(material, (32, 32)) if material is not None else ImGui.dummy(32, 32)
-                PyImGui.same_line(0, 8)
+                    UI._draw_item_texture(material, (32, 32)) if material is not None else ImGui.dummy(32, 32)
+                    PyImGui.same_line(0, 8)
 
-                PyImGui.begin_group()
-                ImGui.text(self._humanize_name(material.name  if material is not None else f"Unknown Material ({mid})"))
-                x, y = PyImGui.get_cursor_pos()
-                PyImGui.set_cursor_pos(x, y - 4)
-                ImGui.text_colored(f"Model ID: {int(material.model_id) if material is not None else int(mid)}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                PyImGui.end_group()
+                    PyImGui.begin_group()
+                    ImGui.text(self._humanize_name(material.name  if material is not None else f"Unknown Material ({mid})"))
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    ImGui.text_colored(f"Model ID: {int(material.model_id) if material is not None else int(mid)}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                    PyImGui.end_group()
+                ImGui.end_child()
             ImGui.end_child()
 
         return changed
@@ -2660,7 +2670,7 @@ class UI:
 
         preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
         action_counts: dict[ItemAction, int] = {}
-        visible_entries = []
+        visible_entries : list[InventoryPreviewEntry] = []
 
         button_width = 110
         if ImGui.button("Inventory", button_width):
@@ -2761,7 +2771,7 @@ class UI:
             for entry in visible_entries:
                 rule_name = entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "-"
                 action_name = self._humanize_name(entry.action.name) if entry.action is not None else "No Action"
-                item_name = entry.item.names.plain or entry.item.name or f"Item {entry.item.id}"
+                item_name = entry.item.complete_name or entry.item.singular_name or entry.item.name or f"Item {entry.item.id}"
 
                 PyImGui.table_next_row()
                 PyImGui.table_next_column()
@@ -2769,7 +2779,7 @@ class UI:
                 PyImGui.table_next_column()
                 ImGui.text(str(entry.item.slot))
                 PyImGui.table_next_column()
-                ImGui.text(item_name)
+                ImGui.text(item_name, render_markdown=True)
                 PyImGui.table_next_column()
                 ImGui.text(action_name)
                 PyImGui.table_next_column()
@@ -2944,7 +2954,7 @@ class UI:
         PyImGui.same_line(0, 5)
 
         width = PyImGui.get_content_region_avail()[0]
-        PyImGui.set_next_item_width(width - 155)
+        PyImGui.set_next_item_width(width - 155 - 155)
         rule_name_input_id = f"##rule_name_{id(rule)}"
         name = ImGui.input_text(rule_name_input_id, rule.name or "")
         if name != rule.name:
@@ -2968,7 +2978,6 @@ class UI:
             style.FrameBgHovered.pop_color_direct()
 
         if open:
-
             sorted_actions = sorted(ItemAction, key=lambda action: action.name)
             for action in sorted_actions:
                 if ImGui.selectable(UI._humanize_name(action.name), selected=rule.action == action):
@@ -2976,6 +2985,27 @@ class UI:
                     self._save_active_config()
             ImGui.end_combo()
         ImGui.show_tooltip("The action to perform on items that match this rule.")
+
+        PyImGui.same_line(0, 5)
+        PyImGui.set_next_item_width(150)
+        if PyImGui.begin_combo(
+            f"##rule_result_interpretation_{id(rule)}",
+            self._humanize_name(rule.result_interpretation.name),
+            PyImGui.ImGuiComboFlags.NoFlag,
+        ):
+            interpretations = {
+                ResultInterpretation.Match: "Handle items that match the specified conditions.",
+                ResultInterpretation.NoMatch: "Handle items that do not match the specified conditions.",
+            }
+
+            for interpretation, description in interpretations.items():
+                if ImGui.selectable(interpretation.name, selected=rule.result_interpretation == interpretation):
+                    rule.result_interpretation = interpretation
+                    self._save_active_config()
+                ImGui.show_tooltip(description)
+
+            ImGui.end_combo()
+        ImGui.show_tooltip("Controls whether the rule handles matching items or non-matching items.")
 
 
         ImGui.separator()
@@ -3055,6 +3085,7 @@ class UI:
 
     def _draw_rule_body(self, rule: Rule) -> bool:
         style = ImGui.get_style()
+        PyImGui.spacing()
         match rule:
             case ModelIdsRule():
                 ImGui.text_wrapped("This rule matches items based on their model IDs. You can specify one or more model IDs to match against the item.")

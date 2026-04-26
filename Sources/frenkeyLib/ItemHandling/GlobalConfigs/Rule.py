@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import IntEnum, auto
 from typing import Any, ClassVar, NamedTuple, Optional, TypeAlias
 
 from Py4GWCoreLib.Item import Bag, Item
@@ -18,6 +19,9 @@ class DamageRange(NamedTuple):
     min_value: int
     max_value: int
 
+class ResultInterpretation(IntEnum):
+    Match = auto()
+    NoMatch = auto()
 
 @dataclass
 class InherentFilter:
@@ -277,7 +281,7 @@ class Rule:
     def __init__(self):
         self.name = ""
         self.action : ItemAction = ItemAction.NONE
-        pass
+        self.result_interpretation: ResultInterpretation = ResultInterpretation.Match
 
     def get_item(self, item_id: int) -> Optional[ItemSnapshot]:
         try:
@@ -292,6 +296,15 @@ class Rule:
     def applies(self, item_id: int) -> bool:
         raise NotImplementedError("Subclasses must implement the applies method.")
 
+    def _apply_result_interpretation(self, matched: bool) -> bool:
+        match self.result_interpretation:
+            case ResultInterpretation.Match:
+                return matched
+            case ResultInterpretation.NoMatch:
+                return not matched
+            case _:
+                return matched
+
     def _comparison_data(self) -> Any:
         return ()
 
@@ -301,8 +314,8 @@ class Rule:
         
         if type(self) is not type(other):
             return False
-        
-        return self._comparison_data() == other._comparison_data()
+
+        return self.result_interpretation == other.result_interpretation and self._comparison_data() == other._comparison_data()
 
     def __eq__(self, other: object) -> bool:
         return self.equals(other)
@@ -318,6 +331,7 @@ class Rule:
             "rule_type": type(self).__name__,
             "name": self.name,
             "action": self.action.name,
+            "result_interpretation": self.result_interpretation.name,
         }
         payload.update(self._serialize_data())
         return payload
@@ -332,6 +346,11 @@ class Rule:
         rule = rule_cls()
         rule.name = payload.get("name", "")
         rule.action = ItemAction[payload.get("action", "NONE")] if "action" in payload and payload["action"] in ItemAction.__members__ else ItemAction.NONE
+        result_interpretation_name = payload.get("result_interpretation")
+        if isinstance(result_interpretation_name, str) and result_interpretation_name in ResultInterpretation.__members__:
+            rule.result_interpretation = ResultInterpretation[result_interpretation_name]
+        elif bool(payload.get("inverted", False)):
+            rule.result_interpretation = ResultInterpretation.NoMatch
 
         rule._deserialize_data(payload)
         return rule
@@ -364,9 +383,9 @@ class ModelIdsRule(Rule):
         for mid in self.model_ids:
             if isinstance(mid, ModelID):
                 if model_id == mid.value:
-                    return True
+                    return self._apply_result_interpretation(True)
             elif model_id == mid:
-                return True
+                return self._apply_result_interpretation(True)
         
         return False
 
@@ -410,7 +429,7 @@ class ItemTypesRule(Rule):
             return False
 
         item_type = item_snapshot.item_type
-        return any(item_type.matches(target_type) for target_type in self.item_types)
+        return self._apply_result_interpretation(any(item_type.matches(target_type) for target_type in self.item_types))
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"item_types": [item_type.name for item_type in self.item_types]}
@@ -450,7 +469,7 @@ class ModelIdsAndItemTypesRule(Rule):
         item_type = item_snapshot.item_type
         for mid, it in self.items:
             if ((model_id == mid.value if isinstance(mid, ModelID) else model_id == mid) and item_type.matches(it)):
-                return True
+                return self._apply_result_interpretation(True)
 
         return False
     
@@ -515,7 +534,7 @@ class EncodedNameRule(Rule):
             return False
 
         encoded_name = item_snapshot.name_enc
-        return encoded_name in self.encoded_names if encoded_name else False
+        return self._apply_result_interpretation(encoded_name in self.encoded_names) if encoded_name else False
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"encoded_names": self.encoded_names}
@@ -551,7 +570,7 @@ class ModelFileIdRule(Rule):
             return False
 
         model_file_id = item_snapshot.model_file_id
-        return model_file_id in self.model_file_ids
+        return self._apply_result_interpretation(model_file_id in self.model_file_ids)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"model_file_ids": self.model_file_ids}
@@ -590,7 +609,7 @@ class ModelFileIdAndItemTypeRule(Rule):
         item_type = item_snapshot.item_type
         for entry in self.model_file_ids_and_item_types:
             if model_file_id == entry.model_file_id and item_type.matches(entry.item_type):
-                return True
+                return self._apply_result_interpretation(True)
 
         return False
     
@@ -695,7 +714,7 @@ class WeaponSkinRule(Rule):
         if self.inherents and not any(_inherent_filter_matches(inherent, inherents) for inherent in self.inherents):
             return False
 
-        return True
+        return self._apply_result_interpretation(True)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -783,7 +802,7 @@ class WeaponTypeRule(Rule):
         if self.inherents and not any(_inherent_filter_matches(inherent, inherents) for inherent in self.inherents):
             return False
 
-        return True
+        return self._apply_result_interpretation(True)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -831,7 +850,7 @@ class SalvagesToMaterialRule(Rule):
 
         common = [entry.model_id for entry in (item_snapshot.data.common_salvage.values() if item_snapshot.data.common_salvage else {})]
         rare = [entry.model_id for entry in (item_snapshot.data.rare_salvage.values() if item_snapshot.data.rare_salvage else {})]
-        return any(material in common + rare for material in self.materials)
+        return self._apply_result_interpretation(any(material in common + rare for material in self.materials))
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"materials": [material.name if isinstance(material, ModelID) else str(material) for material in self.materials]}
@@ -869,7 +888,7 @@ class RaritiesRule(Rule):
             return False
 
         rarity = item_snapshot.rarity
-        return rarity in self.rarities
+        return self._apply_result_interpretation(rarity in self.rarities)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"rarities": [rarity.name for rarity in self.rarities]}
@@ -909,7 +928,7 @@ class RaritiesAndItemTypesRule(Rule):
         item_type = item_snapshot.item_type
         rarity_matches = rarity in self.rarities
         item_type_matches = any(item_type.matches(target_type) for target_type in self.item_types)
-        return rarity_matches and item_type_matches
+        return self._apply_result_interpretation(rarity_matches and item_type_matches)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -945,7 +964,7 @@ class UnidentifiedRule(Rule):
 
     def applies(self, item_id: int) -> bool:
         item_snapshot = self.get_item(item_id)
-        return not item_snapshot.is_identified if item_snapshot is not None else False
+        return self._apply_result_interpretation(not item_snapshot.is_identified) if item_snapshot is not None else False
     
     def _comparison_data(self) -> Any:
         return ("unidentified",)
@@ -979,7 +998,7 @@ class UnidentifiedAndRarityRule(Rule):
             return False
 
         rarity = item_snapshot.rarity
-        return rarity in self.rarities
+        return self._apply_result_interpretation(rarity in self.rarities)
     
     def _comparison_data(self) -> Any:
         return ("unidentified", tuple(sorted(rarity.name for rarity in self.rarities)))
@@ -1022,7 +1041,7 @@ class DyesRule(Rule):
             return False
         
         item_color = item_snapshot.color
-        return item_color in self.dye_colors
+        return self._apply_result_interpretation(item_color in self.dye_colors)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"dye_colors": [color.name for color in self.dye_colors]}
@@ -1140,7 +1159,7 @@ class MaxWeaponUpgradeRule(ExtractUpgradeRule):
         return len(self.weapon_upgrades) > 0
     
     def applies(self, item_id) -> bool:
-        return len(self.get_matching_upgrades(item_id)) > 0
+        return self._apply_result_interpretation(len(self.get_matching_upgrades(item_id)) > 0)
 
     def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
@@ -1249,7 +1268,7 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
         return len(self.armor_upgrades) > 0
     
     def applies(self, item_id: int) -> bool:
-        return len(self.get_matching_upgrades(item_id)) > 0
+        return self._apply_result_interpretation(len(self.get_matching_upgrades(item_id)) > 0)
 
     def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
@@ -1313,7 +1332,7 @@ class UpgradeRangeRule(ExtractUpgradeRule):
         return len(self.upgrade_ranges) > 0
     
     def applies(self, item_id: int) -> bool:
-        return len(self.get_matching_upgrades(item_id)) > 0
+        return self._apply_result_interpretation(len(self.get_matching_upgrades(item_id)) > 0)
 
     def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
@@ -1438,7 +1457,7 @@ class UpgradesRule(ExtractUpgradeRule):
         return len(self.upgrades) > 0
 
     def applies(self, item_id: int) -> bool:
-        return len(self.get_matching_upgrades(item_id)) > 0
+        return self._apply_result_interpretation(len(self.get_matching_upgrades(item_id)) > 0)
 
     def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
