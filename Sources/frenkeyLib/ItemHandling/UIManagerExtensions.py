@@ -3,6 +3,7 @@ import PyUIManager
 
 from Py4GWCoreLib.GWUI import GWUI
 from Py4GWCoreLib.UIManager import UIManager
+from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 
@@ -118,11 +119,13 @@ class UIManagerExtensions:
         return False
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsUpgradeWindowOpen")  
     def IsUpgradeWindowOpen() -> bool:
         upgrade_window_frame_id = UIManager.GetFrameIDByHash(2612519688)
         return UIManagerExtensions.IsElementVisible(upgrade_window_frame_id)
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsMerchantWindowOpen")
     def IsMerchantWindowOpen() -> bool:
         merchant_window_frame_id = UIManager.GetFrameIDByHash(3613855137)
         # merchant_window_frame_inner_id = UIManager.GetChildFrameID(3613855137, [
@@ -133,6 +136,7 @@ class UIManagerExtensions:
         return UIManagerExtensions.IsElementVisible(merchant_window_frame_id)
         
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsCollectorOpen")
     def IsCollectorOpen() -> bool:        
         merchant_buy_button = 1532320307
         crafter_craft_button = 1517397806
@@ -143,6 +147,7 @@ class UIManagerExtensions:
         return UIManagerExtensions.IsElementVisible(exchange_collector_button) and not UIManagerExtensions.IsElementVisible(sell_tab)
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsSkillTrainerOpen")
     def IsSkillTrainerOpen() -> bool:     
         display_type_button_id = UIManager.GetChildFrameID(1746895597,[3])
         sell_tab = UIManager.GetChildFrameID(3613855137, [0, 4294967294])
@@ -150,12 +155,14 @@ class UIManagerExtensions:
         return UIManagerExtensions.IsElementVisible(display_type_button_id) and not UIManagerExtensions.IsElementVisible(sell_tab)
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsCrafterOpen")
     def IsCrafterOpen() -> bool:
         crafter_craft_button_id = UIManager.GetFrameIDByHash(1517397806)
 
         return UIManagerExtensions.IsElementVisible(crafter_craft_button_id)
 
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsConfirmLesserMaterialsWindowOpen")
     def IsConfirmLesserMaterialsWindowOpen() -> bool:
         # salvage_lower_kit_id = UIManager.GetChildFrameID(140452905, [6,110])
         salvage_lower_kit_yes_button_id = UIManager.GetChildFrameID(140452905, [6, 110, 6])
@@ -164,7 +171,7 @@ class UIManagerExtensions:
 
         return UIManagerExtensions.IsElementVisible(salvage_lower_kit_yes_button_id)
 
-    @staticmethod
+    @staticmethod    
     def ConfirmLesserSalvage():
         salvage_lower_kit_yes_button_id = UIManager.GetChildFrameID(140452905, [6, 110, 6])
         
@@ -179,6 +186,7 @@ class UIManagerExtensions:
         PyUIManager.UIManager.test_mouse_action(salvage_with_mods_yes_button_id, 8, 0, 0) 
         
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="ConfirmModMaterialSalvageVisible")
     def ConfirmModMaterialSalvageVisible():
         salvage_with_mods_yes_button_id = UIManager.GetChildFrameID(684387150, [
                                                                     0, 6])
@@ -191,6 +199,7 @@ class UIManagerExtensions:
         UIManager.FrameClick(salvage_lower_kit_no_button_id)
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsAnySalvageConfirmationWindowOpen")
     def IsSalvageWindowOpen() -> bool:
         # salvage_window_frame_id = UIManager.GetFrameIDByHash(684387150)
         salvage_window_salvage_button_id = UIManager.GetChildFrameID(684387150, [2])
@@ -199,6 +208,7 @@ class UIManagerExtensions:
         return UIManagerExtensions.IsElementVisible(salvage_window_salvage_button_id)
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsSalvageWindowNoIdentifiedOpen")  
     def IsSalvageWindowNoIdentifiedOpen() -> bool:
         # salvage_window_frame_id = UIManager.GetFrameIDByHash(140452905)
         salvage_window_salvage_button_id = UIManager.GetChildFrameID(140452905, [6, 111, 6])
@@ -213,5 +223,6 @@ class UIManagerExtensions:
             
     
     @staticmethod
+    @frame_cache(category="UIManagerExtensions", source_lib="IsAnySalvageConfirmationWindowOpen")
     def AnySalvageRelatedWindowOpen() -> bool:
         return UIManagerExtensions.IsSalvageWindowOpen() or UIManagerExtensions.IsConfirmLesserMaterialsWindowOpen() or UIManagerExtensions.ConfirmModMaterialSalvageVisible()

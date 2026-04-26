@@ -11,6 +11,7 @@ from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import _UPGRADES, ArmorUpgrade, Inherent, RangeInstruction, Upgrade, WeaponUpgrade, Inscription, OfTheProfession, OfAttributeUpgrade
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import DAMAGE_RANGES
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 
 class DamageRange(NamedTuple):
@@ -1018,6 +1019,47 @@ class ExtractUpgradeRule(Rule):
         super().__init__()
         self.action : ItemAction = ItemAction.ExtractUpgrade
 
+    @staticmethod
+    def _get_extractable_upgrades(item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
+        prefix, suffix, inscription, _ = ItemMod.get_item_upgrades(item_id)
+        extractable_upgrades: list[tuple[Upgrade, SalvageMode]] = []
+
+        if prefix is not None:
+            extractable_upgrades.append((prefix, SalvageMode.Prefix))
+
+        if suffix is not None:
+            extractable_upgrades.append((suffix, SalvageMode.Suffix))
+
+        if inscription is not None:
+            extractable_upgrades.append((inscription, SalvageMode.Inscription))
+
+        return extractable_upgrades
+
+    @staticmethod
+    def _get_upgrade_matching_item_type(item_id: int, item_snapshot: ItemSnapshot) -> Optional[ItemType]:
+        item_type = item_snapshot.item_type
+        if item_type == ItemType.Rune_Mod:
+            item_type = ItemMod.get_target_item_type(item_id) or item_type
+
+        return item_type
+
+    @staticmethod
+    def _dedupe_matching_upgrades(matches: list[tuple[Upgrade, SalvageMode]]) -> list[tuple[Upgrade, SalvageMode]]:
+        deduped: list[tuple[Upgrade, SalvageMode]] = []
+        seen_modes: set[SalvageMode] = set()
+
+        for upgrade, salvage_mode in matches:
+            if salvage_mode in seen_modes:
+                continue
+
+            seen_modes.add(salvage_mode)
+            deduped.append((upgrade, salvage_mode))
+
+        return deduped
+
+    def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
+        return []
+
 UpgradeAndItemType = NamedTuple("UpgradeAndItemType", [("upgrade", WeaponUpgrade | Inscription), ("item_types", list[ItemType])])
 
 class MaxWeaponUpgradeRule(ExtractUpgradeRule):
@@ -1033,22 +1075,29 @@ class MaxWeaponUpgradeRule(ExtractUpgradeRule):
         return len(self.weapon_upgrades) > 0
     
     def applies(self, item_id) -> bool:
+        return len(self.get_matching_upgrades(item_id)) > 0
+
+    def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
-            return False
-        
+            return []
+
         item_snapshot = self.get_item(item_id)
         if item_snapshot is None:
-            return False
-        
-        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(item_id)
-        weapon_upgrades = [upgrade for upgrade in [prefix, suffix, inscription, *(inherent or [])] if (isinstance(upgrade, (WeaponUpgrade, Inscription)))]
-        
-        for u in self.weapon_upgrades:
-            for item_upgrade in weapon_upgrades:
-                if u.upgrade.matches(item_upgrade):
-                    return True
-        
-        return False
+            return []
+
+        item_type = self._get_upgrade_matching_item_type(item_id, item_snapshot)
+        extractable_upgrades = self._get_extractable_upgrades(item_id)
+        matches: list[tuple[Upgrade, SalvageMode]] = []
+
+        for selected_upgrade, valid_item_types in self.weapon_upgrades:
+            if item_type is not None and valid_item_types and not any(item_type.matches(valid_type) for valid_type in valid_item_types):
+                continue
+
+            for item_upgrade, salvage_mode in extractable_upgrades:
+                if isinstance(item_upgrade, (WeaponUpgrade, Inscription)) and selected_upgrade.matches(item_upgrade):
+                    matches.append((item_upgrade, salvage_mode))
+
+        return self._dedupe_matching_upgrades(matches)
     
     def _serialize_data(self) -> dict[str, Any]:
         # if upgrade is OfTheProfession or OfAttribute --> save attribute, else only save upgrade type name
@@ -1135,22 +1184,25 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
         return len(self.armor_upgrades) > 0
     
     def applies(self, item_id: int) -> bool:
+        return len(self.get_matching_upgrades(item_id)) > 0
+
+    def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
-            return False
-        
+            return []
+
         item_snapshot = self.get_item(item_id)
         if item_snapshot is None:
-            return False
-        
-        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(item_id)
-        armor_upgrades = [upgrade for upgrade in [prefix, suffix, inscription, *(inherent or [])] if isinstance(upgrade, ArmorUpgrade)]
-        
+            return []
+
+        extractable_upgrades = self._get_extractable_upgrades(item_id)
+        matches: list[tuple[Upgrade, SalvageMode]] = []
+
         for rune in self.armor_upgrades:
-            for item_rune in armor_upgrades:
-                if rune.matches(item_rune):
-                    return True
-        
-        return False
+            for item_upgrade, salvage_mode in extractable_upgrades:
+                if isinstance(item_upgrade, ArmorUpgrade) and rune.matches(item_upgrade):
+                    matches.append((item_upgrade, salvage_mode))
+
+        return self._dedupe_matching_upgrades(matches)
     
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -1196,33 +1248,36 @@ class UpgradeRangeRule(ExtractUpgradeRule):
         return len(self.upgrade_ranges) > 0
     
     def applies(self, item_id: int) -> bool:
+        return len(self.get_matching_upgrades(item_id)) > 0
+
+    def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
-            return False
-        
+            return []
+
         item_snapshot = self.get_item(item_id)
         if item_snapshot is None:
-            return False
-        
-        prefix, suffix, inscription, _ = ItemMod.get_item_upgrades(item_id)
-        item_upgrades : list[Upgrade] = [upgrade for upgrade in [prefix, suffix, inscription] if upgrade is not None]
-        
+            return []
+
+        item_type = self._get_upgrade_matching_item_type(item_id, item_snapshot)
+        extractable_upgrades = self._get_extractable_upgrades(item_id)
+        matches: list[tuple[Upgrade, SalvageMode]] = []
+
         for upgrade_range in self.upgrade_ranges:
-            item_upgrade = next(
-                (
-                    upgrade
-                    for upgrade in item_upgrades
-                    if isinstance(upgrade, (WeaponUpgrade, Inscription)) and upgrade_range.upgrade.matches(upgrade)
-                ),
-                None,
-            )
-            if item_upgrade is None:
+            if item_type is not None and upgrade_range.item_types and not any(item_type.matches(valid_type) for valid_type in upgrade_range.item_types):
                 continue
 
-            upgrade_value = getattr(item_upgrade, upgrade_range.target, None)
-            if isinstance(upgrade_value, (int, float)) and upgrade_range.min_value <= upgrade_value <= upgrade_range.max_value:
-                return True
+            for item_upgrade, salvage_mode in extractable_upgrades:
+                if not isinstance(item_upgrade, (WeaponUpgrade, Inscription)):
+                    continue
 
-        return False
+                if not upgrade_range.upgrade.matches(item_upgrade):
+                    continue
+
+                upgrade_value = getattr(item_upgrade, upgrade_range.target, None)
+                if isinstance(upgrade_value, (int, float)) and upgrade_range.min_value <= upgrade_value <= upgrade_range.max_value:
+                    matches.append((item_upgrade, salvage_mode))
+
+        return self._dedupe_matching_upgrades(matches)
     
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -1318,30 +1373,29 @@ class UpgradesRule(ExtractUpgradeRule):
         return len(self.upgrades) > 0
 
     def applies(self, item_id: int) -> bool:
+        return len(self.get_matching_upgrades(item_id)) > 0
+
+    def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
-            return False
-        
+            return []
+
         item_snapshot = self.get_item(item_id)
         if item_snapshot is None:
-            return False
-        
-        item_type = item_snapshot.item_type
-        if item_type == ItemType.Rune_Mod:
-            item_type = ItemMod.get_target_item_type(item_id) or item_type
-        
-        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(item_id)
-        item_upgrades = [upgrade for upgrade in [prefix, suffix, inscription, *(inherent or [])] if upgrade is not None]
-        
-        ## check if any of the specified upgrades match an upgrade on the item, while also matching the item type requirement by checking ItemType.is_matching_item_type() to allow for meta types like Weapon or EquippableItem
+            return []
+
+        item_type = self._get_upgrade_matching_item_type(item_id, item_snapshot)
+        extractable_upgrades = self._get_extractable_upgrades(item_id)
+        matches: list[tuple[Upgrade, SalvageMode]] = []
+
         for rule_upgrade, valid_item_types in self.upgrades:
-            if valid_item_types is not None and len(valid_item_types) > 0 and not any(item_type.matches(valid_type) for valid_type in valid_item_types):
+            if item_type is not None and valid_item_types and not any(item_type.matches(valid_type) for valid_type in valid_item_types):
                 continue
             
-            for item_upgrade in item_upgrades:
+            for item_upgrade, salvage_mode in extractable_upgrades:
                 if rule_upgrade.matches(item_upgrade):
-                    return True
+                    matches.append((item_upgrade, salvage_mode))
 
-        return False
+        return self._dedupe_matching_upgrades(matches)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {

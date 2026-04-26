@@ -1,7 +1,7 @@
 import json
 import os
 import struct
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import Py4GW
 import PyImGui
@@ -219,7 +219,7 @@ def main():
         PyImGui.separator()
         
         hovered_item_id = Inventory.GetHoveredItemID() or hovered_item_id
-        item = ItemSnapshot.from_item_id(hovered_item_id) if hovered_item_id else None
+        item : Optional[ItemSnapshot] = ItemSnapshot.from_item_id(hovered_item_id) if hovered_item_id else None
         
         if not item or not item.is_valid:
             hovered_item_id = 0
@@ -242,7 +242,7 @@ def main():
                 PyImGui.table_set_column_index(1)
                 PyImGui.text(value)
             
-            add_row("Item Name", item.name if item else "N/A")
+            add_row("Item Name", item.names.singular if item else "N/A")
             add_row("Item Data", item.data.english_name if item and item.data else "N/A")
             add_row("Model ID", str(item.model_id) if item else "N/A")
             add_row("Item Type", str(item.item_type.name) if item else "N/A")
