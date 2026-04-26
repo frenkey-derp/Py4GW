@@ -1,3 +1,4 @@
+from enum import Enum
 import math
 
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
@@ -32,6 +33,16 @@ class ImGui:
     Textured_Themes = [StyleTheme.Guild_Wars,
                        StyleTheme.Minimalus]
     overlay_instance = Overlay()
+    
+    class MARKDOWN_COLORS(Enum):
+        White = Color(255, 255, 255, 255)
+        Blue = Color(153, 238, 255, 255)
+        Green = Color(0, 255, 0, 255)
+        Purple = Color(187, 136, 238, 255)
+        Gold = Color(255, 204, 85, 255)
+        
+        Red = Color(255, 0, 0, 255)
+        Dull = Color(120, 120, 120, 255)
 
     @staticmethod
     def get_style() -> Style:
@@ -543,13 +554,48 @@ class ImGui:
     @staticmethod
     def _with_font(fn, text: str, font_size: int | None = None, font_style: str | None = None) -> None:
         if font_style is None: font_style = "Regular"
-        if font_size is not None: ImGui.push_font(font_style, font_size)
+        if font_size is not None: ImGui.push_font(font_style, font_size)            
         fn(text)
         if font_size is not None: ImGui.pop_font()
 
     @staticmethod
-    def text(text: str, font_size: int | None = None, font_style: str | None = None) -> None:
-        ImGui._with_font(PyImGui.text, text, font_size, font_style)
+    def get_markdown_color(text: str) -> Optional[Color]:
+        markdowns = {
+          "<c=@ItemCommon>": ImGui.MARKDOWN_COLORS.White,
+          "<c=@ItemBasic>": ImGui.MARKDOWN_COLORS.White,
+          "<c=@ItemBonus>": ImGui.MARKDOWN_COLORS.Blue,
+          "<c=@ItemEnhance>": ImGui.MARKDOWN_COLORS.Blue,
+          "<c=@ItemUncommon>": ImGui.MARKDOWN_COLORS.Purple,
+          "<c=@ItemRare>": ImGui.MARKDOWN_COLORS.Gold,
+          "<c=@ItemUnique>": ImGui.MARKDOWN_COLORS.Green,
+          "<c=@ItemRestrict>": ImGui.MARKDOWN_COLORS.Red,
+          "<c=@ItemDull>": ImGui.MARKDOWN_COLORS.Dull,
+        }
+        
+        for tag, color in markdowns.items():
+            if text.startswith(tag):
+                return color.value
+            
+    @staticmethod
+    def strip_markdown(text: str) -> str:
+        if text.startswith("<c="):
+            end_tag_index = text.find(">")
+            text = text[end_tag_index + 1:]
+    
+        if text.endswith("</c>"):
+            text = text[:-4]
+        
+        return text
+
+    @staticmethod
+    def text(text: str, font_size: int | None = None, font_style: str | None = None, render_markdown: bool = False) -> None:
+        markdown_color = ImGui.get_markdown_color(text) if render_markdown else None
+        if markdown_color is not None:
+            text = ImGui.strip_markdown(text)
+            ImGui._with_font(lambda t: PyImGui.text_colored(t, markdown_color.color_tuple), text, font_size, font_style)
+        
+        else:
+            ImGui._with_font(PyImGui.text, text, font_size, font_style)
 
     @staticmethod        
     def text_aligned(
@@ -560,6 +606,7 @@ class ImGui:
         font_size: int | None = None,
         font_style: str | None = None,
         color: tuple[float, float, float, float] | None = None,
+        render_markdown: bool = False,
     ):
         """Draws text aligned inside a given width/height box."""
         width = PyImGui.get_content_region_avail()[0] if width == 0 else width
@@ -586,8 +633,12 @@ class ImGui:
             x0, y0 = PyImGui.get_cursor_pos()
             
             PyImGui.set_cursor_pos(x, y)
-            if color is not None:
-                ImGui.text_colored(text, color)
+            markdown_color = ImGui.get_markdown_color(text) if render_markdown and color is None else None
+            render_color = markdown_color.color_tuple if markdown_color is not None else color
+            
+            if render_color is not None:
+                text = ImGui.strip_markdown(text) if markdown_color else text
+                ImGui.text_colored(text, render_color)
             else:
                 PyImGui.text(text)
             _, _, item_rect_size = ImGui.get_item_rect()
