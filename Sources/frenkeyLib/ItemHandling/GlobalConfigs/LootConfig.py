@@ -6,6 +6,7 @@ from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 
+from Py4GWCoreLib.enums_src.Item_enums import ItemAction
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 
 class LootConfig(RuleConfig):
@@ -26,6 +27,13 @@ class LootConfig(RuleConfig):
 
         self._initialized = True
         super().__init__()
+        
+    def EvaluateItem(self, item_id):
+        if not super().EvaluateItem(item_id):
+            return False
+        
+        matched_rule = self.GetMatchedRule(item_id)
+        return matched_rule is not None and matched_rule.action is ItemAction.PickUp
 
     def GetfilteredLootArray(self, distance: float = Range.SafeCompass.value, multibox_loot: bool = False, allow_unasigned_loot=False) -> list[int]:        
         def IsValidItem(item_id):

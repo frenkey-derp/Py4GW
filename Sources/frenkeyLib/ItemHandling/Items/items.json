@@ -15980,7 +15980,7 @@
             "model_file_id": 230661,
             "model_id": 1753,
             "name": "Dual Winged Axe",
-            "name_encoded": "0x2, 0x81, 0xD, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0xEF, 0x42, 0xC6, 0xC3, 0x8C, 0xBC, 0x62, 0x11, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -17527,7 +17527,7 @@
             "model_file_id": 136127,
             "model_id": 2206,
             "name": "Serpent Axe",
-            "name_encoded": "",
+            "name_encoded": "0x3E, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -18612,7 +18612,7 @@
             "model_file_id": 9488,
             "model_id": 113,
             "name": "Double-bladed Axe",
-            "name_encoded": "",
+            "name_encoded": "0x39, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -20336,7 +20336,7 @@
             "model_file_id": 97352,
             "model_id": 1762,
             "name": "Feathered Flatbow",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0x2, 0x43, 0x4C, 0x84, 0x6F, 0xD4, 0x6F, 0x4B, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": null,
@@ -22390,7 +22390,7 @@
             "model_file_id": 230752,
             "model_id": 1767,
             "name": "Spiked Recurve Bow",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0x9, 0x43, 0x7A, 0xAF, 0x3F, 0xB0, 0x6B, 0x59, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -22472,7 +22472,7 @@
             "model_file_id": 97346,
             "model_id": 1763,
             "name": "Stoneshard Hornbow",
-            "name_encoded": "",
+            "name_encoded": "0x1, 0x81, 0x3, 0x43, 0xEE, 0xEF, 0x2B, 0xB7, 0xD7, 0x3F, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": null,
@@ -29111,7 +29111,7 @@
             "model_file_id": 176424,
             "model_id": 1787,
             "name": "Gilded Artifact",
-            "name_encoded": "",
+            "name_encoded": "0xE, 0x6F, 0xCE, 0xE7, 0x1D, 0xCA, 0x50, 0x60, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -32050,7 +32050,7 @@
             "model_file_id": 89525,
             "model_id": 151,
             "name": "Jeweled Chakram",
-            "name_encoded": "",
+            "name_encoded": "0x5D, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
             "rare_salvage": {
@@ -33719,7 +33719,7 @@
             "item_type": "Offhand",
             "model_file_id": 98851,
             "model_id": 1792,
-            "name": "Norn Axe",
+            "name": "Aureate Chalice",
             "name_encoded": "0x1, 0x81, 0x3D, 0x53, 0xFD, 0xFC, 0x50, 0xD8, 0x73, 0xD, 0x0, 0x0",
             "nick_index": null,
             "profession": "Mesmer",
@@ -38327,7 +38327,7 @@
             "model_file_id": 9513,
             "model_id": 214,
             "name": "Ram's Hammer",
-            "name_encoded": "",
+            "name_encoded": "0x77, 0x28, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -38442,7 +38442,7 @@
             "model_file_id": 230915,
             "model_id": 2274,
             "name": "Ruby Maul",
-            "name_encoded": "0x2, 0x81, 0x7A, 0x8, 0x0, 0x0",
+            "name_encoded": "0x1, 0x81, 0x32, 0x43, 0x54, 0xB9, 0x4, 0xD6, 0x7, 0x5D, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {
@@ -78406,7 +78406,7 @@
             "model_file_id": 302027,
             "model_id": 2102,
             "name": "Lesser Etched Sword",
-            "name_encoded": "",
+            "name_encoded": "0x2, 0x81, 0x47, 0x27, 0xB2, 0xED, 0x27, 0xC5, 0xAC, 0x23, 0x0, 0x0",
             "nick_index": null,
             "profession": null,
             "rare_salvage": {

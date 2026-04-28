@@ -45,6 +45,16 @@ class RuleConfig(list[RuleModule.Rule]):
 
         return cast(RuleModule.Rule, rule)
 
+    def GetMatchedRule(self, item_id: int) -> RuleModule.Rule | None:
+        '''
+        Returns the first rule that matches the item id, or None if no rule matches.
+        '''
+        for rule in self:
+            if rule.applies(item_id):
+                return rule
+            
+        return None
+
     def EvaluateItem(self, item_id: int) -> bool:        
         # --- Hard block: blacklists ---
         if item_id in self.blacklisted_items:

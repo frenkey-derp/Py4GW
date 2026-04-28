@@ -13,8 +13,7 @@ from Py4GWCoreLib.Builds.Assassin.A_Me.SF_Ass_vaettir import SF_Ass_vaettir
 
 from typing import List, Tuple
 
-bot = Botting("YAVB 2.0", 
-              upkeep_birthday_cupcake_restock=1)
+bot = Botting("YAVB 2.0")
   
 MODULE_ICON = "Textures\\Module_Icons\\YAVB 2.0 mascot.png"
 
@@ -35,7 +34,6 @@ def InitializeBot(bot: Botting) -> None:
     bot.Properties.Disable("pause_on_danger")
     bot.Properties.Enable("halt_on_death")
     bot.Properties.Set("movement_timeout",value=-1)
-    bot.Properties.Enable("birthday_cupcake")
     bot.Properties.Enable("identify_kits")
     bot.Properties.Enable("salvage_kits")
     
@@ -50,6 +48,7 @@ def TownRoutines(bot: Botting) -> None:
     bot.Move.XYAndExitMap(-26375, 16180, target_map_id=482) # target_map_name="Bjora Marches")
     
 def TraverseBjoraMarches(bot: Botting) -> None:
+    bot.Properties.Enable("birthday_cupcake")
     bot.States.AddHeader("Traverse Bjora Marches")
     bot.Player.SetTitle(TitleID.Norn.value)
     path_points_to_traverse_bjora_marches: List[Tuple[float, float]] = [
@@ -79,6 +78,8 @@ def printEach(bot: Botting, seconds: int):
    
     
 def JagaMoraineFarmRoutine(bot: Botting) -> None:
+    bot.Properties.Disable("birthday_cupcake")
+    
     def _follow_and_wait(path_points: List[Tuple[float, float]], wait_state_name: str, cycle_timeout: int = 150):
         bot.Move.FollowPath(path_points)
         bot.States.AddCustomState(lambda: WaitForBall(bot, wait_state_name, cycle_timeout), f"Wait for {wait_state_name}")
@@ -149,6 +150,7 @@ def NeedsInventoryManagement(bot: Botting):
     
     
 def ResetFarmLoop(bot: Botting) -> None:
+    bot.Properties.Disable("birthday_cupcake")
     bot.States.AddHeader("Reset Farm Loop")
     bot.Move.XYAndExitMap(-20300, 5600 , target_map_id=546) #target_map_name="Jaga Moraine")
     bot.States.JumpToStepName("[H]Jaga Moraine Farm Routine_6")

@@ -11,6 +11,7 @@ from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.Inventory import Inventory
+from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
@@ -25,7 +26,6 @@ from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 Utils.ClearSubModules("ItemHandling")
 Utils.ClearSubModules("frenkeyLib.Core")
 from Sources.frenkeyLib.Core.encoded_names import ItemName
-from Py4GWCoreLib.ItemMods import ItemMod 
 from Sources.frenkeyLib.ItemHandling.BTNodes import STORAGE_BAGS, BTNodes
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
@@ -305,7 +305,7 @@ def main():
                     PyImGui.table_headers_row()
                     
                     if item and item.is_valid:
-                        prefix, suffix, inscription, inherent = ItemMod.get_item_upgrades(item.id)
+                        prefix, suffix, inscription, inherent = Item.Customization.GetUpgrades(item.id)
                         
                         PyImGui.table_next_row()
                         PyImGui.table_set_column_index(0)

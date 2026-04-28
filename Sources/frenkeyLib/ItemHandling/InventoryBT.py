@@ -191,6 +191,15 @@ class InventoryBT:
                 executable=False,
             )
 
+        if not cls._is_action_dispatchable(action):
+            return InventoryPreviewEntry(
+                item=item,
+                action=action,
+                rule=rule,
+                note=cls._get_blocked_action_note(action),
+                executable=False,
+            )
+
         if action == ItemAction.ExtractUpgrade:
             matches = rule.get_matching_upgrades(item.id) if isinstance(rule, ExtractUpgradeRule) else []
             if len(matches) == 1 and item.is_salvageable and item.item_type is not ItemType.Rune_Mod:
@@ -272,6 +281,9 @@ class InventoryBT:
         item_ids: list[int],
         blackboard: Optional[dict] = None,
     ) -> tuple[Optional[BehaviorTree.Node], list[int]]:
+        if not cls._is_action_dispatchable(action):
+            return None, []
+
         match action:
             case ItemAction.Identify:
                 unidentified_item_ids = [item_id for item_id in item_ids if (item := ItemSnapshot.from_item_id(item_id)) is not None and not item.is_identified]
@@ -291,7 +303,8 @@ class InventoryBT:
                 return BTNodes.Items.DestroyItems(item_ids), item_ids
             
             case ItemAction.Stash:
-                return BTNodes.Items.DepositItems(item_ids), item_ids
+                if Map.IsOutpost() or Map.IsGuildHall():
+                    return BTNodes.Items.DepositItems(item_ids), item_ids
             
             case ItemAction.Sell_To_Merchant:
                 if UIManagerExtensions.IsMerchantWindowOpen():
@@ -335,6 +348,32 @@ class InventoryBT:
                 return None, []
 
         return None, []
+
+    @staticmethod
+    def _is_action_dispatchable(action: ItemAction) -> bool:
+        match action:
+            case ItemAction.Drop:
+                return Map.IsExplorable()
+            case ItemAction.Stash:
+                return Map.IsOutpost() or Map.IsGuildHall()
+            case ItemAction.Sell_To_Merchant | ItemAction.Sell_To_Trader:
+                return UIManagerExtensions.IsMerchantWindowOpen()
+            case _:
+                return True
+
+    @staticmethod
+    def _get_blocked_action_note(action: ItemAction) -> str:
+        match action:
+            case ItemAction.Drop:
+                return "Waiting until the item can be processed in an explorable area."
+            case ItemAction.Stash:
+                return "Waiting until storage is available in an outpost or guild hall."
+            case ItemAction.Sell_To_Merchant:
+                return "Waiting until a merchant window is open."
+            case ItemAction.Sell_To_Trader:
+                return "Waiting until a trader window is open."
+            case _:
+                return "Waiting until the action can be dispatched."
 
     @staticmethod
     def _get_first_valid_item_id(item_ids: list[int]) -> Optional[int]:
