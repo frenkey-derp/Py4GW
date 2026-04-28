@@ -119,6 +119,7 @@ class Skilltarget (IntEnum):
     MinionOrAllyNonEnchanted = 18
     MinionNonEnchanted = 19
     AllyNonEnchanted = 20
+    ExploitableCorpse = 21
 
     #added targets
 
@@ -139,6 +140,8 @@ class Skilltarget (IntEnum):
     EnemyHealthy = 36
     EnemyCastingSpellOrChant = 37
     AllyWeaponSpell = 38
+    NonWeaponSpelledAlly = 39
+    ResurrectionAlly = 40
 
 
 

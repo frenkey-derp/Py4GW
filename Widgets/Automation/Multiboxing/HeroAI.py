@@ -21,6 +21,7 @@ from HeroAI.follow_runtime import FollowExecutionState, execute_follower_follow
 from HeroAI.windows import (HeroAI_FloatingWindows ,HeroAI_Windows,)
 from HeroAI.ui_base import HeroAI_BaseUI
 from HeroAI.ui import (draw_configure_window, draw_skip_cutscene_overlay)
+from HeroAI import team_viewer_broadcast
 from Py4GWCoreLib import (GLOBAL_CACHE, Agent, LootConfig,
                           Range, Routines, ThrottledTimer, SharedCommandType)
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
@@ -89,6 +90,10 @@ def HandleOutOfCombat(cached_data: CacheData):
     if cached_data.data.in_aggro:
         return False
 
+    player_agent_id = Player.GetAgentID()
+    if cached_data.combat_handler.InCastingRoutine() or Agent.IsCasting(player_agent_id):
+        return False
+
     heroai_build.set_cached_data(cached_data)
     next(heroai_build.ProcessOOC(), None)
     return heroai_build.DidTickSucceed()
@@ -151,8 +156,9 @@ def EnsureFollowModuleIni() -> None:
 def Follow(cached_data: CacheData) -> BehaviorTree.NodeState:
     return execute_follower_follow(cached_data, follow_execution_state)
 
-def handle_UI (cached_data: CacheData):    
+def handle_UI (cached_data: CacheData):
     global HeroAI_BT
+    team_viewer_broadcast.tick()
     if not cached_data.ui_state_data.show_classic_controls:
         HeroAI_BaseUI.DrawEmbeddedWindow(cached_data)
     else:
@@ -301,13 +307,13 @@ CastingBlockNode = BehaviorTree.ConditionNode(
     
 def movement_interrupt() -> BehaviorTree.NodeState:
     if Agent.IsMoving(Player.GetAgentID()):
-        return BehaviorTree.NodeState.RUNNING   # block automation
+        return BehaviorTree.NodeState.SUCCESS   # block lower-priority automation for this tick
     return BehaviorTree.NodeState.FAILURE      # allow next branch
 
 
 def user_interrupt() -> BehaviorTree.NodeState:
     if IsUserInterrupting():
-        return BehaviorTree.NodeState.RUNNING   # block non-OOC automation
+        return BehaviorTree.NodeState.SUCCESS   # block lower-priority automation for this tick
     return BehaviorTree.NodeState.FAILURE      # allow next branch
 
 
@@ -418,13 +424,13 @@ modulo = 0
 def main():
     global cached_data, map_quads, modulo
     
-    try:        
-        cached_data.Update()  
+    try:
+        cached_data.Update()
 
         if not _follow_ini_ready():
             get_widget_handler().enable_widget(FOLLOW_MODULE_NAME)
         HeroAI_FloatingWindows.update()
-        handle_UI(cached_data)  
+        handle_UI(cached_data)
         
         if initialize(cached_data):
             modulo += 1
