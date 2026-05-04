@@ -10,6 +10,7 @@ from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import DAMAGE_RANGES
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Sources.frenkeyLib.ItemHandling.Items.types import NICK_CYCLE_COUNT
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 
@@ -614,6 +615,30 @@ class QuantityCondition(Condition):
             self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
 
 
+class NickItemCondition(Condition):
+    """Matches Nicholas the Traveler items whose next cycle happens within the configured number of weeks."""
+    def __init__(self, weeks_before_next_cycle: int = 0):
+        self.weeks_before_next_cycle = max(0, min(NICK_CYCLE_COUNT, int(weeks_before_next_cycle)))
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        item_data = item_snapshot.data if item_snapshot is not None else None
+        weeks_until_next_nick = item_data.weeks_until_next_nick if item_data is not None else None
+        return weeks_until_next_nick is not None and weeks_until_next_nick <= self.weeks_before_next_cycle
+
+    def _comparison_data(self) -> Any:
+        return self.weeks_before_next_cycle
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "weeks_before_next_cycle": self.weeks_before_next_cycle,
+        }
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        raw_value = data.get("weeks_before_next_cycle", 0)
+        self.weeks_before_next_cycle = max(0, min(NICK_CYCLE_COUNT, int(raw_value if isinstance(raw_value, int) else 0)))
+
+
 class WeaponRequirementCondition(Condition):
     """Matches weapons with selected requirement values and allowed damage ranges."""
     def __init__(
@@ -653,7 +678,8 @@ class WeaponRequirementCondition(Condition):
 
 class InherentFiltersCondition(Condition):
     """Matches weapon inherents, including optional numeric ranges on the inherent values."""
-    def __init__(self, inherents: Optional[Sequence[InherentFilter | Inherent]] = None):
+    def __init__(self, inherents: Optional[Sequence[InherentFilter | Inherent]] = None, inscribable: bool = False):
+        self.inscribable = inscribable
         self.inherents = normalize_inherent_filters(inherents)
 
     def is_valid(self) -> bool:
@@ -665,25 +691,39 @@ class InherentFiltersCondition(Condition):
             return False
 
         item_inherents = item_snapshot.inherents if item_snapshot.inherents else []
-        return any(inherent_filter_matches(inherent, item_inherents) for inherent in self.inherents)
+        return any(inherent_filter_matches(inherent, item_inherents) for inherent in self.inherents) or (self.inscribable and item_snapshot.is_inscribable)
 
     def _comparison_data(self) -> Any:
-        return inherent_comparison_data(self.inherents)
+        return inherent_comparison_data(self.inherents), self.inscribable
 
     def _serialize_data(self) -> dict[str, Any]:
-        return {"inherents": serialize_inherent_filters(self.inherents)}
+        return {
+            "inherents": serialize_inherent_filters(self.inherents),
+            "inscribable": self.inscribable,
+            }
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         self.inherents = deserialize_inherent_filters(data)
+        self.inscribable = bool(data.get("inscribable", True))
 
 
 class InscribableCondition(Condition):
     """Matches items that are inscribable."""
+    def __init__(self, inscribable: bool = True):
+        super().__init__()
+        self.inscribable = inscribable
+        
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
-        return context.item_snapshot is not None and context.item_snapshot.is_inscribable
+        return context.item_snapshot is not None and context.item_snapshot.is_inscribable == self.inscribable
 
     def _comparison_data(self) -> Any:
-        return ("inscribable",)
+        return (self.inscribable,)
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"inscribable": self.inscribable}
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.inscribable = bool(data.get("inscribable", True))
 
 
 class SalvagesToMaterialsCondition(Condition):
@@ -749,11 +789,21 @@ class RaritiesCondition(Condition):
 
 class UnidentifiedCondition(Condition):
     """Matches items that are still unidentified."""
+    def __init__(self, identified: bool = False):
+        super().__init__()
+        self.identified = identified
+        
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
-        return context.item_snapshot is not None and not context.item_snapshot.is_identified
+        return context.item_snapshot is not None and context.item_snapshot.is_identified == self.identified
 
     def _comparison_data(self) -> Any:
-        return ("unidentified",)
+        return (self.identified,)
+    
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"identified": self.identified}
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.identified = bool(data.get("identified", False))
 
 
 class DyeColorsCondition(Condition):

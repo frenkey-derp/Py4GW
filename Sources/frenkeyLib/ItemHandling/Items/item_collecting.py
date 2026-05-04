@@ -5,14 +5,13 @@ import Py4GW
 from Py4GWCoreLib import Map, Merchant, Player
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
-from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Sources.frenkeyLib.Core.encoded_names import ItemName
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.Items.types import INVENTORY_BAGS, STORAGE_BAGS
 
 class ItemCollector:
     def __init__(self, inventory_interval_ms: int = 5_000, save_interval_ms: int = 1_000):
@@ -80,9 +79,9 @@ class ItemCollector:
         map_id = int(Map.GetMapID() or 0)
         return f"{account_email}|{player_name}|{map_id}"
 
-    def _scan_bags(self, bags: list[Bag]):
+    def _scan_bags(self, bags: list[Bags]):
         import PyInventory
-        snapshot : dict[Bag, dict[int, Optional[ItemSnapshot]]] = {}
+        snapshot : dict[Bags, dict[int, Optional[ItemSnapshot]]] = {}
         
         for bag in bags:            
             inventory_bag = PyInventory.Bag(bag.value, bag.name)

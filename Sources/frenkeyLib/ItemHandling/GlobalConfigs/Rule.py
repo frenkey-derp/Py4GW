@@ -27,6 +27,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdAndItemType,
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
+    NickItemCondition,
     QuantityCondition,
     RangedUpgrade,
     RaritiesCondition,
@@ -265,6 +266,24 @@ class QuantityRule(Rule):
             self.condition.min_quantity = self.condition.max_quantity
 
 
+class NickItemRule(Rule):
+    """Matches Nicholas the Traveler items that come up within the configured number of weeks."""
+    def __init__(self, weeks_before_next_cycle: int = 0):
+        super().__init__([NickItemCondition(weeks_before_next_cycle)])
+
+    @property
+    def condition(self) -> NickItemCondition:
+        return cast(NickItemCondition, self.conditions[0])
+
+    @property
+    def weeks_before_next_cycle(self) -> int:
+        return self.condition.weeks_before_next_cycle
+
+    @weeks_before_next_cycle.setter
+    def weeks_before_next_cycle(self, value: int) -> None:
+        self.condition.weeks_before_next_cycle = max(0, min(137, int(value)))
+
+
 class ModelIdsAndItemTypesRule(Rule):
     """Matches specific combinations of model ID and item type."""
     def __init__(self, model_ids: Optional[list[ModelIdAndItemType]] = None):
@@ -352,12 +371,8 @@ class WeaponSkinRule(Rule):
         conditions: list[Condition] = [
             ModelFileIdsCondition(model_file_ids),
             WeaponRequirementCondition(requirements, None, requirement_min, requirement_max),
+            InherentFiltersCondition(normalize_inherent_filters(inherents)),
         ]
-        normalized_inherents = normalize_inherent_filters(inherents)
-        if normalized_inherents:
-            conditions.append(InherentFiltersCondition(normalized_inherents))
-        if inscribable:
-            conditions.append(InscribableCondition())
 
         super().__init__(conditions)
         self._only_max_damage = only_max_damage
@@ -380,13 +395,12 @@ class WeaponSkinRule(Rule):
 
     @property
     def inherents(self) -> InherentFilters:
-        condition = self._inherent_condition()
-        return condition.inherents if condition is not None else []
+        return self._inherent_condition().inherents
 
     @inherents.setter
     def inherents(self, value: Sequence[InherentFilter | Inherent]) -> None:
         normalized = normalize_inherent_filters(value)
-        self._replace_optional_condition(InherentFiltersCondition, InherentFiltersCondition(normalized) if normalized else None)
+        self._inherent_condition().inherents = normalized if normalized else []
 
     @property
     def requirement_min(self) -> int:
@@ -414,11 +428,14 @@ class WeaponSkinRule(Rule):
 
     @property
     def inscribable(self) -> bool:
-        return any(isinstance(condition, InscribableCondition) for condition in self.conditions)
+        condition = self._inherent_condition()
+        return condition.inscribable if condition is not None else False
 
     @inscribable.setter
     def inscribable(self, value: bool) -> None:
-        self._replace_optional_condition(InscribableCondition, InscribableCondition() if value else None)
+        condition = self._inherent_condition()
+        if condition is not None:
+            condition.inscribable = value
 
     def _serialize_data(self) -> dict[str, Any]:
         payload = super()._serialize_data()
@@ -435,15 +452,9 @@ class WeaponSkinRule(Rule):
     def _requirement_condition(self) -> WeaponRequirementCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
-    def _inherent_condition(self) -> Optional[InherentFiltersCondition]:
-        return next((condition for condition in self.conditions if isinstance(condition, InherentFiltersCondition)), None)
-
-    def _replace_optional_condition(self, condition_type: type[Condition], replacement: Optional[Condition]) -> None:
-        self.conditions = [condition for condition in self.conditions if not isinstance(condition, condition_type)]
-        if replacement is not None:
-            self.conditions.append(replacement)
-
-
+    def _inherent_condition(self) -> InherentFiltersCondition:
+        return self.conditions[2]  # type: ignore[return-value]
+    
 class WeaponTypeRule(Rule):
     """Matches one weapon type with optional requirement and inherent filters."""
     def __init__(

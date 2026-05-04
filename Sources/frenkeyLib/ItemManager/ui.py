@@ -75,6 +75,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelFileIdsCondition,
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
+    NickItemCondition,
     QuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
@@ -86,6 +87,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Sources.frenkeyLib.ItemHandling.Items.types import NICK_CYCLE_COUNT
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config
@@ -174,6 +176,8 @@ class UI:
     CREME_COLOR : Color = ColorPalette.GetColor("creme")
     GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
+    _RULE_TYPES_CACHE: list[type[Rule]] | None = None
+    _CONDITION_TYPES_CACHE: list[type[Condition]] | None = None
     INVENTORY_PREVIEW_BAGS: list[Bags] = [
         Bags.Backpack,
         Bags.BeltPouch,
@@ -296,6 +300,12 @@ class UI:
             upgrade_type for upgrade_type in available_upgrade_types
             if not issubclass(upgrade_type, (UpgradeRune, AppliesToRune)) and upgrade_type is not UpgradeRune and upgrade_type is not AppliesToRune
         ]
+        self._armor_upgrade_types_by_profession: dict[Profession, list[type[Upgrade]]] = {}
+        self._weapon_upgrade_types_by_mod_type: dict[ItemUpgradeType, list[type[Upgrade]]] = {}
+        self._inherent_option_entries: list[tuple[type[Upgrade], str, str, str]] = []
+        self._inherent_search_cache: dict[str, list[tuple[type[Upgrade], str, str]]] = {}
+        self._range_upgrade_option_entries: list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction, str]] = []
+        self._range_upgrade_search_cache: dict[str, list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]]] = {}
 
         self.selected_upgrade_type_index = 0
 
@@ -383,10 +393,29 @@ class UI:
 
         self._all_item_data_cache: list[ItemData] = []
         self._item_by_model_file_id: dict[int, ItemData] = {}
+        self._item_by_model_id: dict[int, ItemData] = {}
+        self._item_by_model_file_id_and_item_type: dict[tuple[int, ItemType], ItemData] = {}
         self._item_by_encoded_name: dict[bytes, ItemData] = {}
+        self._sorted_model_ids: list[ModelID] = sorted([model_id for model_id in ModelID], key=lambda model_id: model_id.name)
+        self._sorted_item_types: list[ItemType] = sorted(ItemType, key=lambda item_type: item_type.name)
+        self._sorted_dye_colors: list[DyeColor] = sorted(DyeColor, key=lambda dye_color: dye_color.name)
         self._unique_encoded_name_items: list[ItemData] = []
         self._unique_model_file_id_items: list[ItemData] = []
+        self._nick_cycle_items: list[ItemData] = []
         self._salvage_material_options: list[ItemData] = []
+        self._model_id_search_entries: list[tuple[ModelID, str]] = []
+        self._encoded_name_search_entries: list[tuple[ItemData, str]] = []
+        self._model_file_id_search_entries: list[tuple[ItemData, str]] = []
+        self._model_id_item_search_entries: list[tuple[ItemData, str]] = []
+        self._salvage_material_search_entries: list[tuple[ItemData, str]] = []
+        self._model_id_search_cache: dict[str, list[ModelID]] = {}
+        self._encoded_name_search_cache: dict[str, list[ItemData]] = {}
+        self._model_file_id_search_cache: dict[str, list[ItemData]] = {}
+        self._model_id_item_search_cache: dict[str, list[ItemData]] = {}
+        self._nick_item_preview_cache: dict[int, list[ItemData]] = {}
+        self._salvage_material_search_cache: dict[str, list[ItemData]] = {}
+        self._live_search_normalized_cache: dict[str, tuple[str, str]] = {}
+        self._live_search_results_cache: dict[str, tuple[str, list[Any]]] = {}
         self.inherent_upgrade_search: str = ""
         self.inventory_preview_search: str = ""
         self.inventory_preview_show_no_action: bool = False
@@ -402,6 +431,7 @@ class UI:
         self.loot_preview_distance: int = int(Range.SafeCompass.value)
         self.buy_preview_search: str = ""
         self.buy_preview_show_satisfied: bool = True
+        self._rebuild_upgrade_ui_caches()
         self._rebuild_item_ui_caches()
 
     # -------------------------------------------------------------------------
@@ -440,6 +470,9 @@ class UI:
 
     @staticmethod
     def _get_rule_types() -> list[type[Rule]]:
+        if UI._RULE_TYPES_CACHE is not None:
+            return UI._RULE_TYPES_CACHE
+
         discovered_rule_types: list[type[Rule]] = []
 
         def visit(rule_type: type[Rule]) -> None:
@@ -454,10 +487,14 @@ class UI:
             for rule_type in discovered_rule_types
             if getattr(rule_type, "ui_selectable", True)
         ]
-        return sorted(types, key=lambda t: t.__name__)
+        UI._RULE_TYPES_CACHE = sorted(types, key=lambda t: t.__name__)
+        return UI._RULE_TYPES_CACHE
 
     @staticmethod
     def _get_condition_types() -> list[type[Condition]]:
+        if UI._CONDITION_TYPES_CACHE is not None:
+            return UI._CONDITION_TYPES_CACHE
+
         discovered_condition_types: list[type[Condition]] = []
 
         def visit(condition_type: type[Condition]) -> None:
@@ -474,7 +511,8 @@ class UI:
             and condition_type is not Condition
             and not inspect.isabstract(condition_type)
         ]
-        return sorted(types, key=lambda t: t.__name__)
+        UI._CONDITION_TYPES_CACHE = sorted(types, key=lambda t: t.__name__)
+        return UI._CONDITION_TYPES_CACHE
 
     @staticmethod
     def _humanize_name(value: str) -> str:
@@ -504,6 +542,36 @@ class UI:
 
         singular_query = UI._singularize_search_query(search_query)
         return singular_query != search_query and singular_query in searchable_text
+
+    @staticmethod
+    def _build_search_blob(*values: Any) -> str:
+        raw_text = " ".join(str(value) for value in values if value is not None)
+        return UI._normalize_searchable_text(raw_text)
+
+    @staticmethod
+    def _search_blob_matches(search_query: str, search_blob: str) -> bool:
+        if not search_query:
+            return True
+
+        if search_query in search_blob:
+            return True
+
+        singular_query = UI._singularize_search_query(search_query)
+        return singular_query != search_query and singular_query in search_blob
+
+    @staticmethod
+    def _filter_cached_entries(cache: dict[str, list[Any]], search_query: str, entries: list[tuple[Any, str]]) -> list[Any]:
+        cached = cache.get(search_query)
+        if cached is not None:
+            return cached
+
+        if not search_query:
+            result = [entry for entry, _ in entries]
+        else:
+            result = [entry for entry, search_blob in entries if UI._search_blob_matches(search_query, search_blob)]
+
+        cache[search_query] = result
+        return result
 
     @staticmethod
     def _format_rule_type_tooltip(rule_type: type) -> str:
@@ -571,6 +639,8 @@ class UI:
         self._all_item_data_cache = all_items
 
         self._item_by_model_file_id = {}
+        self._item_by_model_id = {}
+        self._item_by_model_file_id_and_item_type = {}
         self._item_by_encoded_name = {}
         encoded_name_items: dict[tuple[ItemType, str], ItemData] = {}
         model_file_id_items: dict[tuple[ItemType, int], ItemData] = {}
@@ -583,6 +653,12 @@ class UI:
 
             if model_file_id > 0 and model_file_id not in self._item_by_model_file_id:
                 self._item_by_model_file_id[model_file_id] = item
+
+            if model_id > 0 and model_id not in self._item_by_model_id:
+                self._item_by_model_id[model_id] = item
+
+            if model_file_id > 0:
+                self._item_by_model_file_id_and_item_type.setdefault((model_file_id, item_type), item)
 
             if item.name_encoded and item.name_encoded not in self._item_by_encoded_name:
                 self._item_by_encoded_name[item.name_encoded] = item
@@ -599,13 +675,232 @@ class UI:
         sort_key = lambda item: (self._get_item_display_name(item), self._humanize_name(item.item_type.name), int(getattr(item, "model_id", -1)))
         self._unique_encoded_name_items = sorted(encoded_name_items.values(), key=sort_key)
         self._unique_model_file_id_items = sorted(model_file_id_items.values(), key=sort_key)
+        self._nick_cycle_items = sorted(
+            [item for item in ITEM_DATA.Nick_Cycle if item.weeks_until_next_nick is not None],
+            key=lambda item: (cast(int, item.weeks_until_next_nick), self._get_item_display_name(item), item.model_id),
+        )
         self._salvage_material_options = sorted(salvage_materials, key=lambda material: material.name)
+        self._model_id_item_search_entries = [
+            (
+                item,
+                self._build_search_blob(
+                    item.name,
+                    item.plural_name,
+                    item.model_id,
+                    item.item_type.name,
+                    *(attribute.name for attribute in getattr(item, "attributes", [])),
+                ),
+            )
+            for item in sorted(all_items, key=lambda item: item.name)
+        ]
+        self._encoded_name_search_entries = [
+            (
+                item,
+                self._build_search_blob(
+                    item.name,
+                    item.plural_name,
+                    self._get_item_encoded_name_string(item),
+                    item.item_type.name,
+                    item.model_id,
+                ),
+            )
+            for item in self._unique_encoded_name_items
+        ]
+        self._model_file_id_search_entries = [
+            (
+                item,
+                self._build_search_blob(
+                    self._get_item_display_name(item),
+                    item.plural_name,
+                    item.model_file_id,
+                    item.item_type.name,
+                    item.model_id,
+                ),
+            )
+            for item in self._unique_model_file_id_items
+        ]
+        self._salvage_material_search_entries = [
+            (
+                material,
+                self._build_search_blob(material.name, material.plural_name, int(material.model_id)),
+            )
+            for material in self._salvage_material_options
+        ]
+        self._model_id_search_entries = [
+            (
+                model_id,
+                self._build_search_blob(model_id.name, int(model_id.value)),
+            )
+            for model_id in self._sorted_model_ids
+        ]
+        self._model_id_search_cache.clear()
+        self._encoded_name_search_cache.clear()
+        self._model_file_id_search_cache.clear()
+        self._model_id_item_search_cache.clear()
+        self._nick_item_preview_cache.clear()
+        self._salvage_material_search_cache.clear()
+        self._live_search_normalized_cache.clear()
+        self._live_search_results_cache.clear()
+
+    def _rebuild_upgrade_ui_caches(self) -> None:
+        self._armor_upgrade_types_by_profession = {
+            profession: sorted(
+                [
+                    upgrade_type
+                    for upgrade_type in self.available_upgrade_types
+                    if issubclass(upgrade_type, ArmorUpgrade) and getattr(upgrade_type, "profession", None) == profession
+                ],
+                key=lambda upgrade_type: (getattr(upgrade_type, "rarity", 0), self._format_upgrade_type_label(upgrade_type)),
+            )
+            for profession in Profession
+        }
+        self._weapon_upgrade_types_by_mod_type = {
+            mod_type: sorted(
+                [
+                    upgrade_type
+                    for upgrade_type in self.available_upgrade_types
+                    if (issubclass(upgrade_type, WeaponUpgrade) or issubclass(upgrade_type, Inscription))
+                    and getattr(upgrade_type, "mod_type", None) == mod_type
+                ],
+                key=lambda upgrade_type: self._format_upgrade_type_label(upgrade_type),
+            )
+            for mod_type in (ItemUpgradeType.Prefix, ItemUpgradeType.Suffix, ItemUpgradeType.Inscription)
+        }
+        self._inherent_option_entries = []
+        for inherent_type in self.available_inherent_upgrade_types:
+            inherent = inherent_type()
+            if not isinstance(inherent, Inherent):
+                continue
+
+            label = inherent.name_plain or self._humanize_name(inherent_type.__name__)
+            description = inherent.description_plain
+            self._inherent_option_entries.append(
+                (
+                    inherent_type,
+                    label,
+                    description,
+                    self._build_search_blob(label, description, inherent_type.__name__),
+                )
+            )
+
+        self._range_upgrade_option_entries = [
+            (
+                upgrade_type,
+                instruction,
+                self._build_search_blob(self._format_upgrade_type_label(upgrade_type), upgrade_type().__class__.__name__, upgrade_type().description_plain, instruction.target),
+            )
+            for upgrade_type, instruction in self._get_range_upgrade_options()
+        ]
+        self._inherent_search_cache.clear()
+        self._range_upgrade_search_cache.clear()
+        self._live_search_normalized_cache.clear()
+        self._live_search_results_cache.clear()
+
+    def _get_filtered_inherent_option_entries(self, search_query: str) -> list[tuple[type[Upgrade], str, str]]:
+        cached = self._inherent_search_cache.get(search_query)
+        if cached is not None:
+            return cached
+
+        if not search_query:
+            result = [(inherent_type, label, description) for inherent_type, label, description, _ in self._inherent_option_entries]
+        else:
+            result = [
+                (inherent_type, label, description)
+                for inherent_type, label, description, search_blob in self._inherent_option_entries
+                if self._search_blob_matches(search_query, search_blob)
+            ]
+
+        self._inherent_search_cache[search_query] = result
+        return result
+
+    def _get_armor_upgrade_types_for_profession(self, profession: Profession) -> list[type[Upgrade]]:
+        return self._armor_upgrade_types_by_profession.get(profession, [])
+
+    def _get_weapon_upgrade_types_for_mod_type(self, mod_type: ItemUpgradeType) -> list[type[Upgrade]]:
+        return self._weapon_upgrade_types_by_mod_type.get(mod_type, [])
+
+    def _get_filtered_range_upgrade_options(self, search_query: str) -> list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]]:
+        cached = self._range_upgrade_search_cache.get(search_query)
+        if cached is not None:
+            return cached
+
+        if not search_query:
+            result = [(upgrade_type, instruction) for upgrade_type, instruction, _ in self._range_upgrade_option_entries]
+        else:
+            result = [
+                (upgrade_type, instruction)
+                for upgrade_type, instruction, search_blob in self._range_upgrade_option_entries
+                if self._search_blob_matches(search_query, search_blob)
+            ]
+
+        self._range_upgrade_search_cache[search_query] = result
+        return result
 
     def _find_item_by_model_file_id(self, model_file_id: int) -> ItemData | None:
         return self._item_by_model_file_id.get(model_file_id)
 
+    def _find_item_by_model_id(self, model_id: int) -> ItemData | None:
+        return self._item_by_model_id.get(model_id)
+
+    def _find_item_by_model_file_id_and_item_type(self, model_file_id: int, item_type: ItemType) -> ItemData | None:
+        return self._item_by_model_file_id_and_item_type.get((int(model_file_id), item_type))
+
     def _find_item_by_encoded_name(self, encoded_name: bytes) -> ItemData | None:
         return self._item_by_encoded_name.get(encoded_name)
+
+    def _get_live_search_results(
+        self,
+        key: str,
+        raw_query: str,
+        resolver: Callable[[str], list[Any]],
+    ) -> tuple[str, list[Any]]:
+        normalized_entry = self._live_search_normalized_cache.get(key)
+        if normalized_entry is None or normalized_entry[0] != raw_query:
+            search_query = self._normalize_search_query(raw_query)
+            self._live_search_normalized_cache[key] = (raw_query, search_query)
+        else:
+            search_query = normalized_entry[1]
+
+        result_entry = self._live_search_results_cache.get(key)
+        if result_entry is None or result_entry[0] != search_query:
+            results = resolver(search_query)
+            self._live_search_results_cache[key] = (search_query, results)
+        else:
+            results = result_entry[1]
+
+        return search_query, results
+
+    @staticmethod
+    def _format_nick_weeks_label(weeks_until_next_nick: int) -> str:
+        if weeks_until_next_nick <= 0:
+            return "current week"
+        if weeks_until_next_nick == 1:
+            return "next week"
+        return f"{weeks_until_next_nick} weeks"
+
+    @staticmethod
+    def _get_nick_weeks_color(weeks_until_next_nick: int) -> tuple[float, float, float, float]:
+        if weeks_until_next_nick <= 0:
+            return (0.2, 1.0, 0.2, 1.0)
+        if weeks_until_next_nick <= 4:
+            return (0.45, 0.95, 0.2, 1.0)
+        if weeks_until_next_nick <= 12:
+            return (0.95, 0.85, 0.2, 1.0)
+        return (1.0, 0.65, 0.2, 1.0)
+
+    def _get_nick_item_preview_items(self, weeks_before_next_cycle: int) -> list[ItemData]:
+        clamped_weeks = max(0, min(NICK_CYCLE_COUNT, int(weeks_before_next_cycle)))
+        cached = self._nick_item_preview_cache.get(clamped_weeks)
+        if cached is not None:
+            return cached
+
+        result = [
+            item
+            for item in self._nick_cycle_items
+            if item.weeks_until_next_nick is not None and item.weeks_until_next_nick <= clamped_weeks
+        ]
+        self._nick_item_preview_cache[clamped_weeks] = result
+        return result
 
     def _format_weapon_value_range(self, item_type: Optional[ItemType], requirement: int) -> str:
         value_range = self._get_default_weapon_value_range(item_type, requirement)
@@ -1191,6 +1486,7 @@ class UI:
             self.inventory_preview_search = ImGui.input_text("Search##inventory_preview_search", self.inventory_preview_search)
             self.inventory_preview_show_no_action = ImGui.checkbox("Show No Action", self.inventory_preview_show_no_action)
             self.inventory_preview_show_hold = ImGui.checkbox("Show Hold", self.inventory_preview_show_hold)
+            inventory_preview_search_query = self._normalize_search_query(self.inventory_preview_search)
 
             if ImGui.begin_child("##inventory_preview_bags", (0, 90), border=True):
                 width = PyImGui.get_content_region_avail()[0]
@@ -1226,7 +1522,7 @@ class UI:
                         action.name if action else "No Action",
                     ]
                 )
-                if not self._search_text_matches(self._normalize_search_query(self.inventory_preview_search), search_blob):
+                if not self._search_text_matches(inventory_preview_search_query, search_blob):
                     continue
 
                 if action is not None:
@@ -1291,6 +1587,7 @@ class UI:
             0,
             int(Range.SafeCompass.value),
         )
+        loot_preview_search_query = self._normalize_search_query(self.loot_preview_search)
 
         if not Player.GetAgentID():
             ImGui.text_wrapped("Loot preview is only available while the player is in-game.")
@@ -1334,7 +1631,7 @@ class UI:
             if not self.loot_preview_show_no_action and action is None:
                 continue
 
-            if not self._search_text_matches(self._normalize_search_query(self.loot_preview_search), search_blob):
+            if not self._search_text_matches(loot_preview_search_query, search_blob):
                 continue
 
             if action is not None:
@@ -1382,6 +1679,7 @@ class UI:
 
         self.buy_preview_search = ImGui.input_text("Search##buy_preview_search", self.buy_preview_search)
         self.buy_preview_show_satisfied = ImGui.checkbox("Show Satisfied", self.buy_preview_show_satisfied)
+        buy_preview_search_query = self._normalize_search_query(self.buy_preview_search)
 
         entries = config.get_entries()
         if not entries:
@@ -1398,7 +1696,7 @@ class UI:
             if not self.buy_preview_show_satisfied and missing_quantity <= 0:
                 continue
 
-            if not self._search_text_matches(self._normalize_search_query(self.buy_preview_search), search_blob):
+            if not self._search_text_matches(buy_preview_search_query, search_blob):
                 continue
 
             visible_entries.append((entry, current_quantity, missing_quantity))
@@ -1567,7 +1865,6 @@ class UI:
         @staticmethod
         def ForModelIdsCondition(ui : "UI", rule : Rule, condition: ModelIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            model_ids = [m for m in ModelID]
             popup_id = "##model_ids_rule_add_popup"
             selected_model_ids = {
                 int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
@@ -1594,12 +1891,12 @@ class UI:
 
                     PyImGui.set_next_item_width(-1)
                     _, ui.model_id_search = ImGui.search_field("##model_id_enum_search", ui.model_id_search, "Search model ids or enter an integer...")
-                    search_query = ui._normalize_search_query(ui.model_id_search)
-                    matching_model_ids = [
-                        model_id
-                        for model_id in sorted(model_ids, key=lambda model_id: model_id.name)
-                        if ui._search_text_matches(search_query, model_id.name, int(model_id.value))
-                    ]
+                    search_query, matching_model_ids_raw = ui._get_live_search_results(
+                        f"model_ids_condition_{id(condition)}",
+                        ui.model_id_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_id_search_cache, normalized_query, ui._model_id_search_entries)),
+                    )
+                    matching_model_ids = cast(list[ModelID], matching_model_ids_raw)
 
                     manual_value: int | None = None
                     if search_query:
@@ -1608,7 +1905,7 @@ class UI:
                         except ValueError:
                             manual_value = None
 
-                    exact_enum_match = any(int(model_id.value) == manual_value for model_id in model_ids) if manual_value is not None else False
+                    exact_enum_match = any(int(model_id.value) == manual_value for model_id in ui._sorted_model_ids) if manual_value is not None else False
 
                     if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
                         if ImGui.begin_selectable(f"##manual_model_id_{manual_value}", False, (0, 34)):
@@ -1694,7 +1991,7 @@ class UI:
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.begin_child(f"##item_types_{id(condition)}", (0, 0), border=False):
                     PyImGui.columns(columns, "item_type_columns", False)
-                    sorted_item_types = sorted(ItemType, key=lambda it: it.name)
+                    sorted_item_types = ui._sorted_item_types
                     for item_type in sorted_item_types:
                         is_selected = item_type in condition.item_types
                         selected = ImGui.checkbox(f"{ui._humanize_name(item_type.name)}", is_selected)
@@ -1716,7 +2013,6 @@ class UI:
         @staticmethod
         def ForEncodedNamesCondition(ui: "UI", rule: Rule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            items = ui._unique_encoded_name_items
             popup_id = f"##encoded_name_condition_add_popup_{id(condition)}"
             selected_encoded_names = set(condition.encoded_names)
             
@@ -1740,12 +2036,12 @@ class UI:
 
                     PyImGui.set_next_item_width(-1)
                     _, ui.encoded_name_search = ImGui.search_field(f"##encoded_name_search_{id(condition)}", ui.encoded_name_search, "Search by item name or paste an encoded name...")
-                    search_query = ui._normalize_search_query(ui.encoded_name_search)
-                    matching_items = [
-                        item
-                        for item in items
-                        if ui._search_text_matches(search_query, item.name, item.plural_name, ui._get_item_encoded_name_string(item))
-                    ]
+                    search_query, matching_items_raw = ui._get_live_search_results(
+                        f"encoded_names_condition_{id(condition)}",
+                        ui.encoded_name_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._encoded_name_search_cache, normalized_query, ui._encoded_name_search_entries)),
+                    )
+                    matching_items = cast(list[ItemData], matching_items_raw)
 
                     matching_items = [
                         matching_items[i]
@@ -1837,7 +2133,6 @@ class UI:
         @staticmethod
         def ForModelFileIdsCondition(ui: "UI", rule: Rule, condition: ModelFileIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            items = ui._unique_model_file_id_items
             popup_id = f"##model_file_id_condition_add_popup_{id(condition)}"
             selected_model_file_ids = set(condition.model_file_ids)
                         
@@ -1861,7 +2156,12 @@ class UI:
 
                     PyImGui.set_next_item_width(-1)
                     _, ui.model_file_id_search = ImGui.search_field(f"##model_file_id_search_{id(condition)}", ui.model_file_id_search, "Search by item name or enter a model file id...")
-                    search_query = ui._normalize_search_query(ui.model_file_id_search)
+                    search_query, matching_items_raw = ui._get_live_search_results(
+                        f"model_file_ids_condition_{id(condition)}",
+                        ui.model_file_id_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_file_id_search_cache, normalized_query, ui._model_file_id_search_entries)),
+                    )
+                    matching_items = cast(list[ItemData], matching_items_raw)
 
                     manual_value: int | None = None
                     if search_query:
@@ -1880,12 +2180,10 @@ class UI:
                             PyImGui.close_current_popup()
 
                     if ImGui.begin_child(f"##model_file_id_candidates_{id(condition)}", (0, 320), border=True):
-                        for item in items:
+                        for item in matching_items:
                             model_file_id = int(item.model_file_id)
                             already_selected = model_file_id in selected_model_file_ids
                             item_name = ui._get_item_display_name(item)
-                            if not ui._search_text_matches(search_query, item_name, item.plural_name, model_file_id):
-                                continue
 
                             if ImGui.begin_selectable(f"##model_file_id_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
                                 ui._draw_item_texture(item)
@@ -1944,7 +2242,6 @@ class UI:
         @staticmethod
         def ForModelFileIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelFileIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            items = ui._unique_model_file_id_items
             popup_id = f"##model_file_id_item_type_condition_add_popup_{id(condition)}"
             selected_entries = {(entry.model_file_id, entry.item_type) for entry in condition.model_file_ids_and_item_types}
 
@@ -1968,15 +2265,18 @@ class UI:
 
                     PyImGui.set_next_item_width(-1)
                     _, ui.model_file_id_search = ImGui.search_field(f"##model_file_id_item_type_search_{id(condition)}", ui.model_file_id_search, "Search by item name or model file id...")
-                    search_query = ui._normalize_search_query(ui.model_file_id_search)
+                    search_query, matching_items_raw = ui._get_live_search_results(
+                        f"model_file_id_item_types_condition_{id(condition)}",
+                        ui.model_file_id_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_file_id_search_cache, normalized_query, ui._model_file_id_search_entries)),
+                    )
+                    matching_items = cast(list[ItemData], matching_items_raw)
 
                     if ImGui.begin_child(f"##model_file_id_item_type_candidates_{id(condition)}", (0, 320), border=True):
-                        for item in items:
+                        for item in matching_items:
                             key = (int(item.model_file_id), item.item_type)
                             already_selected = key in selected_entries
                             item_name = ui._get_item_display_name(item)
-                            if not ui._search_text_matches(search_query, item.name, item.plural_name, item.item_type.name, item.model_file_id):
-                                continue
 
                             if ImGui.begin_selectable(f"##model_file_id_item_type_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
                                 ui._draw_item_texture(item)
@@ -2016,14 +2316,7 @@ class UI:
 
                 if ImGui.begin_child(f"##added_model_file_id_item_type_candidates_{id(condition)}", (0, 0), border=False):
                     for index, entry in enumerate(list(condition.model_file_ids_and_item_types)):
-                        item = next(
-                            (
-                                candidate
-                                for candidate in items
-                                if int(candidate.model_file_id) == int(entry.model_file_id) and candidate.item_type == entry.item_type
-                            ),
-                            None,
-                        )
+                        item = ui._find_item_by_model_file_id_and_item_type(entry.model_file_id, entry.item_type)
                         unique_id = f"model_file_id_item_type_condition_{id(condition)}_{entry.model_file_id}_{entry.item_type.name}_{index}"
 
                         if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
@@ -2055,9 +2348,6 @@ class UI:
         @staticmethod
         def ForModelIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            items = [item for sublist in ITEM_DATA.data.values() for item in sublist.values()]
-            sorted_items = sorted(items, key=lambda item: item.name)
-
             popup_id = f"##model_id_item_type_condition_add_popup_{id(condition)}"
             selected_models = [(model_id, item_type) for model_id, item_type in condition.modelids_and_itemtypes]
 
@@ -2079,20 +2369,22 @@ class UI:
 
                     PyImGui.set_next_item_width(-1)
                     search_changed, ui.model_id_search = ImGui.search_field(f"##model_id_search_{id(condition)}", ui.model_id_search, "Search by name or model id...")
-                    search_query = ui._normalize_search_query(ui.model_id_search)
+                    search_query, matching_items_raw = ui._get_live_search_results(
+                        f"model_id_item_types_condition_{id(condition)}",
+                        ui.model_id_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_id_item_search_cache, normalized_query, ui._model_id_item_search_entries)),
+                    )
+                    matching_items = cast(list[ItemData], matching_items_raw)
 
                     if ImGui.begin_child(f"##model_id_candidates_{id(condition)}", (0, 320), border=True):
                         if search_changed:
                             PyImGui.set_scroll_y(0)
 
-                        for item in sorted_items:
+                        for item in matching_items:
                             modelid_item_type = int(item.model_id)
                             already_selected = any(modelid_item_type == (int(mid.value) if isinstance(mid, ModelID) else mid) for mid, _ in selected_models)
 
                             item_name = item.name or f"Model {item.model_id}"
-                            if not ui._search_text_matches(search_query, item.name, item.plural_name, item.model_id):
-                                continue
-
                             if already_selected:
                                 continue
 
@@ -2145,7 +2437,7 @@ class UI:
                     selected_items: list[tuple[ModelIdAndItemType, Any]] = []
                     for model_id, item_type in condition.modelids_and_itemtypes:
                         modelid_item_type = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                        item_data = next((item for item in sorted_items if item.model_id == modelid_item_type), None)
+                        item_data = ui._find_item_by_model_id(modelid_item_type)
                         selected_items.append((ModelIdAndItemType(model_id, item_type), item_data))
 
                     for index, (modelid_item_type, item_data) in enumerate(selected_items):
@@ -2199,7 +2491,7 @@ class UI:
                 selected_label = ui._humanize_name(condition.item_type.name) if condition.item_type is not None else "Select an item type"
                 PyImGui.set_next_item_width(-1)
                 if PyImGui.begin_combo(f"##exact_item_type_{id(condition)}", selected_label, PyImGui.ImGuiComboFlags.NoFlag):
-                    for item_type in sorted(ItemType, key=lambda item_type: item_type.name):
+                    for item_type in ui._sorted_item_types:
                         if ImGui.selectable(ui._humanize_name(item_type.name), selected=condition.item_type == item_type):
                             condition.item_type = item_type
                             changed = True
@@ -2233,6 +2525,96 @@ class UI:
                     condition.min_quantity = new_min
                     condition.max_quantity = new_max
                     changed = True
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForNickItemCondition(ui: "UI", rule: Rule, condition: NickItemCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            preview_items = ui._get_nick_item_preview_items(condition.weeks_before_next_cycle)
+
+            style = ImGui.get_style()
+            spacing = style.ItemSpacing.value2 or 0
+            row_height = 24 + 4
+            slider_height = 32
+            preview_height = min(320, max(row_height + spacing, len(preview_items) * (row_height)))
+            container_height = slider_height + 16 + preview_height + spacing
+            size = size if size is not None else (0, container_height)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                PyImGui.set_next_item_width(-1)
+                new_weeks = ImGui.slider_int(
+                    f"##nick_item_weeks_{id(condition)}",
+                    condition.weeks_before_next_cycle,
+                    0,
+                    NICK_CYCLE_COUNT,
+                )
+                ImGui.show_tooltip("Match Nicholas the Traveler items that return within this many weeks.")
+
+                if new_weeks != condition.weeks_before_next_cycle:
+                    condition.weeks_before_next_cycle = new_weeks
+                    preview_items = ui._get_nick_item_preview_items(condition.weeks_before_next_cycle)
+                    changed = True
+                style = ImGui.get_style()
+                style.CellPadding.push_style_var_direct(4, 4)
+                if not preview_items:
+                    ImGui.text_wrapped("No Nicholas the Traveler items match the current week threshold.")
+                elif ImGui.begin_table(
+                    f"##nick_item_preview_{id(condition)}",
+                    3,
+                    PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.BordersOuterV | PyImGui.TableFlags.BordersOuterH,
+                    height=preview_height,
+                ):
+                    PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 34)
+                    PyImGui.table_setup_column("Name")
+                    PyImGui.table_setup_column("Next Cycle", PyImGui.TableColumnFlags.WidthFixed, 90)
+
+                    for item in preview_items:
+                        weeks_until_next_nick = item.weeks_until_next_nick
+                        if weeks_until_next_nick is None:
+                            continue
+
+                        PyImGui.table_next_column()
+                        ui._draw_item_texture(item, size=(24, 24))
+                        hovered = PyImGui.is_item_hovered()
+
+                        PyImGui.table_next_column()
+                        ImGui.text_aligned(ui._get_item_display_name(item), alignment=Alignment.MidLeft, height=24)
+                        hovered = PyImGui.is_item_hovered() or hovered
+
+                        PyImGui.table_next_column()
+                        ImGui.text_aligned(
+                            ui._format_nick_weeks_label(weeks_until_next_nick),
+                            alignment=Alignment.MidLeft,
+                            color=ui._get_nick_weeks_color(weeks_until_next_nick),
+                            height=24
+                        )
+                        hovered = PyImGui.is_item_hovered() or hovered
+
+                        if hovered:
+                            PyImGui.set_next_window_size(420, 0)
+                            ImGui.begin_tooltip()
+                            ui._draw_item_texture(item, size=(40, 40))
+                            PyImGui.same_line(0, 8)
+                            PyImGui.begin_group()
+                            ImGui.text(ui._get_item_display_name(item))
+                            ImGui.text_colored(
+                                f"Nick cycle: {ui._format_nick_weeks_label(weeks_until_next_nick)}",
+                                ui._get_nick_weeks_color(weeks_until_next_nick),
+                                font_size=12,
+                            )
+                            if item.next_nick_week is not None:
+                                ImGui.text_colored(f"Next week starts: {item.next_nick_week.isoformat()}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            PyImGui.end_group()
+                            if item.acquisition:
+                                ImGui.separator()
+                                ImGui.text_wrapped(item.acquisition)
+                            ImGui.end_tooltip()
+
+                    ImGui.end_table()
+                    
+                    style.CellPadding.pop_style_var_direct()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -2285,8 +2667,7 @@ class UI:
                 if ImGui.begin_child(f"##dye_colors_{id(condition)}", (0, 0), border=False):
                     PyImGui.columns(columns, f"##dye_colors_columns_{id(condition)}", False)
                     
-                    sorted_dye_colors = sorted(DyeColor, key=lambda dc: dc.name)
-                    for dye_color in sorted_dye_colors:
+                    for dye_color in ui._sorted_dye_colors:
                         if dye_color == DyeColor.NoColor:
                             continue
 
@@ -2342,15 +2723,18 @@ class UI:
 
                     PyImGui.set_next_item_width(-1)
                     _, ui.material_search = ImGui.search_field(f"##salvage_material_search_{id(condition)}", ui.material_search, "Search material name or model id...")
-                    search_query = ui._normalize_search_query(ui.material_search)
+                    search_query, matching_materials_raw = ui._get_live_search_results(
+                        f"salvage_materials_condition_{id(condition)}",
+                        ui.material_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._salvage_material_search_cache, normalized_query, ui._salvage_material_search_entries)),
+                    )
                     ImGui.show_tooltip("Search by material name or model id.")
+                    matching_materials = cast(list[ItemData], matching_materials_raw)
 
                     if ImGui.begin_child(f"##salvage_material_candidates_{id(condition)}", (0, 320), border=True):
-                        for material in ui._salvage_material_options:
+                        for material in matching_materials:
                             already_selected = material in selected_materials
                             label = material.name
-                            if not ui._search_text_matches(search_query, label, material.plural_name, int(material.model_id)):
-                                continue
 
                             if ImGui.begin_selectable(f"##salvage_material_{id(condition)}_{material.name}", False, (0, 34)):
                                 UI._draw_item_texture(material, (32, 32))
@@ -2460,96 +2844,119 @@ class UI:
                         ImGui.text("Inherent Upgrades", font_size=16)
                         PyImGui.set_next_item_width(-1)
                         _, ui.inherent_upgrade_search = ImGui.search_field(f"##inherent_search_{unique_id}", ui.inherent_upgrade_search, "Search inherent upgrades...")
-                        search_query = ui._normalize_search_query(ui.inherent_upgrade_search)
+                        _, inherent_entries_raw = ui._get_live_search_results(
+                            f"inherent_filters_condition_{unique_id}",
+                            ui.inherent_upgrade_search,
+                            lambda normalized_query: cast(list[Any], ui._get_filtered_inherent_option_entries(normalized_query)),
+                        )
+                        inherent_entries = cast(list[tuple[type[Upgrade], str, str]], inherent_entries_raw)
 
                         if ImGui.begin_child(f"##inherent_selectables_{unique_id}", (0, 0), border=False):
-                            for index, inherent_type in enumerate(ui.available_inherent_upgrade_types):
+                            if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_inscribable", selected=condition.inscribable, size=selectable_size):
+                                ImGui.text("Inscription Slot")
+                                x, y = PyImGui.get_cursor_pos()
+                                PyImGui.set_cursor_pos(x, y - 4)
+                                ImGui.text_colored("Any inscribable version", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            
+                            if ImGui.end_selectable():
+                                condition.inscribable = not condition.inscribable
+                                changed = True
+                            
+                            if PyImGui.is_item_hovered():
+                                PyImGui.set_next_window_size((200, 0), cond=PyImGui.ImGuiCond.Appearing)
+                                ImGui.begin_tooltip()
+                                ImGui.text("Inscription Slot", font_size=16)
+                                ImGui.separator()
+                                ImGui.text_colored("Matches any item with an inscription slot, regardless of the inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.end_tooltip()
+                                    
+                            for index, (inherent_type, label, description) in enumerate(inherent_entries):
                                 inherent = inherent_type()
                                 if not isinstance(inherent, Inherent):
                                     continue
-
-                                label = inherent.name_plain or ui._humanize_name(inherent_type.__name__)
-                                description = inherent.description_plain
                                 already_selected = any(type(existing.inherent) is inherent_type for existing in condition.inherents)
-                                if not ui._search_text_matches(search_query, label, description, inherent_type.__name__):
-                                    continue
 
                                 inherent_filter = next((existing for existing in condition.inherents if type(existing.inherent) is inherent_type), None)
-                                if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_{inherent_type.__name__}", selected=already_selected, size=selected_selectable_size if already_selected else selectable_size):
-                                    ImGui.text(label)
-                                    x, y = PyImGui.get_cursor_pos()
-                                    PyImGui.set_cursor_pos(x, y - 4)
-                                    ImGui.text_colored(description, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                entry_size = (selected_selectable_size if already_selected else selectable_size)
+                                
+                                if PyImGui.is_rect_visible(10, entry_size[1]):
+                                    if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_{inherent_type.__name__}", selected=already_selected, size=entry_size):
+                                        ImGui.text(label)
+                                        x, y = PyImGui.get_cursor_pos()
+                                        PyImGui.set_cursor_pos(x, y - 4)
+                                        ImGui.text_colored(description, UI.GRAY_COLOR.color_tuple, font_size=12)
 
-                                    if already_selected and inherent_filter is not None:
-                                        range_instructions = ui._get_range_instructions(inherent)
-                                        PyImGui.begin_group()
-                                        if len(range_instructions) == 0:
-                                            ImGui.text_colored("Fixed inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        if already_selected and inherent_filter is not None:
+                                            range_instructions = ui._get_range_instructions(inherent)
+                                            PyImGui.begin_group()
+                                            if len(range_instructions) == 0:
+                                                ImGui.text_colored("Fixed inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                            else:
+                                                for instruction in range_instructions:
+                                                    current_range = inherent_filter.ranges.get(
+                                                        instruction.target,
+                                                        DamageRange(int(instruction.min_value), int(instruction.max_value)),
+                                                    )
+                                                    min_value = max(int(instruction.min_value), min(int(instruction.max_value), int(current_range.min_value)))
+                                                    max_value = max(min_value, min(int(instruction.max_value), int(current_range.max_value)))
+                                                    ImGui.text_colored(ui._humanize_name(instruction.target), UI.GRAY_COLOR.color_tuple, font_size=12)
+                                                    PyImGui.same_line(0, 8)
+                                                    PyImGui.set_next_item_width(80)
+                                                    new_min = ImGui.slider_int(
+                                                        f"Min##inherent_min_{unique_id}_{index}_{instruction.target}",
+                                                        min_value,
+                                                        int(instruction.min_value),
+                                                        int(instruction.max_value),
+                                                    )
+                                                    PyImGui.same_line(0, 6)
+                                                    PyImGui.set_next_item_width(80)
+                                                    new_max = ImGui.slider_int(
+                                                        f"Max##inherent_max_{unique_id}_{index}_{instruction.target}",
+                                                        max_value,
+                                                        int(instruction.min_value),
+                                                        int(instruction.max_value),
+                                                    )
+                                                    new_min = max(int(instruction.min_value), min(int(new_min), int(instruction.max_value)))
+                                                    new_max = max(int(instruction.min_value), min(int(new_max), int(instruction.max_value)))
+                                                    if new_min > new_max:
+                                                        new_min, new_max = new_max, new_min
+                                                    if new_min != min_value or new_max != max_value:
+                                                        inherent_filter.ranges[instruction.target] = DamageRange(new_min, new_max)
+                                                        changed = True
+                                            PyImGui.end_group()
+
+                                    if ImGui.end_selectable():
+                                        if not already_selected:
+                                            condition.inherents.append(InherentFilter.from_inherent(inherent, use_full_ranges=False))
                                         else:
-                                            for instruction in range_instructions:
-                                                current_range = inherent_filter.ranges.get(
-                                                    instruction.target,
-                                                    DamageRange(int(instruction.min_value), int(instruction.max_value)),
-                                                )
-                                                min_value = max(int(instruction.min_value), min(int(instruction.max_value), int(current_range.min_value)))
-                                                max_value = max(min_value, min(int(instruction.max_value), int(current_range.max_value)))
-                                                ImGui.text_colored(ui._humanize_name(instruction.target), UI.GRAY_COLOR.color_tuple, font_size=12)
-                                                PyImGui.same_line(0, 8)
-                                                PyImGui.set_next_item_width(80)
-                                                new_min = ImGui.slider_int(
-                                                    f"Min##inherent_min_{unique_id}_{index}_{instruction.target}",
-                                                    min_value,
-                                                    int(instruction.min_value),
-                                                    int(instruction.max_value),
-                                                )
-                                                PyImGui.same_line(0, 6)
-                                                PyImGui.set_next_item_width(80)
-                                                new_max = ImGui.slider_int(
-                                                    f"Max##inherent_max_{unique_id}_{index}_{instruction.target}",
-                                                    max_value,
-                                                    int(instruction.min_value),
-                                                    int(instruction.max_value),
-                                                )
-                                                new_min = max(int(instruction.min_value), min(int(new_min), int(instruction.max_value)))
-                                                new_max = max(int(instruction.min_value), min(int(new_max), int(instruction.max_value)))
-                                                if new_min > new_max:
-                                                    new_min, new_max = new_max, new_min
-                                                if new_min != min_value or new_max != max_value:
-                                                    inherent_filter.ranges[instruction.target] = DamageRange(new_min, new_max)
-                                                    changed = True
-                                        PyImGui.end_group()
+                                            condition.inherents[:] = [existing for existing in condition.inherents if type(existing.inherent) is not inherent_type]
+                                        changed = True
 
-                                if ImGui.end_selectable():
-                                    if not already_selected:
-                                        condition.inherents.append(InherentFilter.from_inherent(inherent, use_full_ranges=False))
-                                    else:
-                                        condition.inherents[:] = [existing for existing in condition.inherents if type(existing.inherent) is not inherent_type]
-                                    changed = True
+                                    if PyImGui.is_item_hovered():
+                                        text_size = PyImGui.calc_text_size(inherent.description_plain)
+                                        PyImGui.set_next_window_size(((text_size[0] + 20) * (1 if inherent_filter is None else 2), 0), cond=PyImGui.ImGuiCond.Appearing)
+                                        ImGui.begin_tooltip()
+                                        ImGui.text(label, font_size=16)
+                                        _, _, item_size = ImGui.get_item_rect()
+                                        ImGui.separator()
 
-                                if PyImGui.is_item_hovered():
-                                    text_size = PyImGui.calc_text_size(inherent.description_plain)
-                                    PyImGui.set_next_window_size(((text_size[0] + 20) * (1 if inherent_filter is None else 2), 0), cond=PyImGui.ImGuiCond.Appearing)
-                                    ImGui.begin_tooltip()
-                                    ImGui.text(label, font_size=16)
-                                    _, _, item_size = ImGui.get_item_rect()
-                                    ImGui.separator()
-
-                                    if inherent_filter is not None:
-                                        width = max((text_size[0] + 20) * 2, item_size[0])
-                                        if PyImGui.begin_child(f"##instruction_details_{unique_id}_{index}", (width, text_size[1] + 0), border=False):
-                                            PyImGui.columns(2, "##inherent_tooltip_columns", False)
-                                            for instruction in ui._get_range_instructions(inherent):
-                                                setattr(inherent, instruction.target, inherent_filter.ranges[instruction.target].min_value)
-                                                ImGui.text(inherent.description_plain)
-                                                PyImGui.next_column()
-                                                setattr(inherent, instruction.target, inherent_filter.ranges[instruction.target].max_value)
-                                                ImGui.text(inherent.description_plain)
-                                            PyImGui.end_columns()
-                                        PyImGui.end_child()
-                                    else:
-                                        ImGui.text(description)
-                                    ImGui.end_tooltip()
+                                        if inherent_filter is not None:
+                                            width = max((text_size[0] + 20) * 2, item_size[0])
+                                            if PyImGui.begin_child(f"##instruction_details_{unique_id}_{index}", (width, text_size[1] + 0), border=False):
+                                                PyImGui.columns(2, "##inherent_tooltip_columns", False)
+                                                for instruction in ui._get_range_instructions(inherent):
+                                                    setattr(inherent, instruction.target, inherent_filter.ranges[instruction.target].min_value)
+                                                    ImGui.text(inherent.description_plain)
+                                                    PyImGui.next_column()
+                                                    setattr(inherent, instruction.target, inherent_filter.ranges[instruction.target].max_value)
+                                                    ImGui.text(inherent.description_plain)
+                                                PyImGui.end_columns()
+                                            PyImGui.end_child()
+                                        else:
+                                            ImGui.text(description)
+                                        ImGui.end_tooltip()
+                                else:
+                                    ImGui.dummy(*entry_size)  
                         ImGui.end_child()
                     ImGui.end_child()
                 except Exception as e:
@@ -2559,17 +2966,29 @@ class UI:
 
         @staticmethod
         def ForInscribableCondition(ui: "UI", rule: Rule, condition: InscribableCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            print("Rendering InscribableCondition editor UI")
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                ImGui.text_wrapped("Requires the item to be inscribable.")
+                print("Inside condition container for InscribableCondition")
+                inscribable = ImGui.checkbox("Must be inscribable", condition.inscribable)
+                print(f"Checkbox value: {inscribable}, current condition value: {condition.inscribable}")
+                if inscribable != condition.inscribable:
+                    condition.inscribable = inscribable
+                    changed = True
             UI.ConditionEditor.EndConditionContainer()
-            return False
+            
+            return changed
 
         @staticmethod
         def ForUnidentifiedCondition(ui: "UI", rule: Rule, condition: UnidentifiedCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                ImGui.text_wrapped("Requires the item to be unidentified.")
+                identified = ImGui.checkbox("Must be identified", condition.identified)
+                if identified != condition.identified:
+                    condition.identified = identified
+                    changed = True
             UI.ConditionEditor.EndConditionContainer()
-            return False
+            return changed
 
         @staticmethod
         def ForArmorUpgradesCondition(ui: "UI", rule: Rule, condition: ArmorUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
@@ -2603,15 +3022,34 @@ class UI:
                     if ImGui.button("Apply Threshold", -1):
                         quotes = ui._get_trader_armor_upgrade_quotes()
                         added_count = 0
+                        upgrades_handled: list[ArmorUpgrade] = []
                         for quote in quotes:
+                            upgrades = ui._extract_armor_upgrades_from_trader_quote(quote)
+                            upgrades_handled.extend(upgrades)
+                            
                             if quote.quoted_value < ui.armor_upgrade_price_threshold:
                                 continue
-                            for selected_upgrade in ui._extract_armor_upgrades_from_trader_quote(quote):
+                            
+                            for selected_upgrade in upgrades:
                                 if any(ui._upgrade_equals(existing_upgrade, selected_upgrade) for existing_upgrade in condition.armor_upgrades):
                                     continue
                                 condition.armor_upgrades.append(selected_upgrade)
                                 changed = True
                                 added_count += 1
+
+                        for upgrade_type in ui._get_armor_upgrade_types_for_profession(ui.profession):
+                            unavailable_upgrade = cast(ArmorUpgrade, upgrade_type())
+                            
+                            if any(ui._upgrade_equals(existing_upgrade, unavailable_upgrade) for existing_upgrade in upgrades_handled):
+                                continue
+
+                            if any(ui._upgrade_equals(existing_upgrade, unavailable_upgrade) for existing_upgrade in condition.armor_upgrades):
+                                continue
+
+                            condition.armor_upgrades.append(unavailable_upgrade)
+                            changed = True
+                            added_count += 1
+                                
                         if not changed:
                             Py4GW.Console.Log("Item Manager", "Trader-based selection found matches, but all of them were already selected.", Py4GW.Console.MessageType.Warning)
                         else:
@@ -2645,11 +3083,7 @@ class UI:
                     PyImGui.table_next_column()
                     if ImGui.begin_child(f"##armor_upgrade_condition_upgrades_{id(condition)}", (0, 0), border=False):
                         try:
-                            upgrades = [
-                                upgrade_type for upgrade_type in ui.available_upgrade_types
-                                if issubclass(upgrade_type, ArmorUpgrade) and getattr(upgrade_type, "profession", None) == ui.profession
-                            ]
-                            sorted_upgrades = sorted(upgrades, key=lambda ut: (getattr(ut, "rarity", 0), ui._format_upgrade_type_label(ut)))
+                            sorted_upgrades = ui._get_armor_upgrade_types_for_profession(ui.profession)
                             insignias = [upgrade_type for upgrade_type in sorted_upgrades if issubclass(upgrade_type, Insignia)]
                             runes = [upgrade_type for upgrade_type in sorted_upgrades if issubclass(upgrade_type, Rune)]
 
@@ -2716,20 +3150,26 @@ class UI:
                     style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
                     PyImGui.set_next_item_width(-1)
                     _, ui.max_weapon_upgrade_search = ImGui.search_field(f"##upgrade_search_{id(condition)}", ui.max_weapon_upgrade_search, "Search Upgrades...")
-                    search_query = ui._normalize_search_query(ui.max_weapon_upgrade_search)
+                    _, matching_upgrade_types_raw = ui._get_live_search_results(
+                        f"max_weapon_upgrades_condition_{id(condition)}_{ui.mod_type.name}",
+                        ui.max_weapon_upgrade_search,
+                        lambda normalized_query: cast(
+                            list[Any],
+                            [
+                                upgrade_type
+                                for upgrade_type in ui._get_weapon_upgrade_types_for_mod_type(ui.mod_type)
+                                if not normalized_query or ui._search_text_matches(normalized_query, ui._format_upgrade_type_label(upgrade_type), getattr(upgrade_type, "name", ""))
+                            ],
+                        ),
+                    )
+                    matching_upgrade_types = cast(list[type[Upgrade]], matching_upgrade_types_raw)
                     ImGui.separator()
 
                     if ImGui.begin_child(f"##weapon_upgrade_condition_upgrades_{id(condition)}", (0, 0), border=False):
-                        upgrades = [
-                            upgrade_type for upgrade_type in ui.available_upgrade_types
-                            if (issubclass(upgrade_type, WeaponUpgrade) or issubclass(upgrade_type, Inscription)) and getattr(upgrade_type, "mod_type", None) == ui.mod_type
-                        ]
-                        for upgrade_type in sorted(upgrades, key=lambda ut: ui._format_upgrade_type_label(ut)):
+                        for upgrade_type in matching_upgrade_types:
                             for variant in [upgrade_type]:
-                                upgrade = variant()
+                                upgrade = cast(WeaponUpgrade | Inscription, variant())
                                 upgrade_label = ui._format_upgrade_label(upgrade)
-                                if not ui._search_text_matches(search_query, upgrade_label):
-                                    continue
 
                                 if isinstance(upgrade, WeaponUpgrade):
                                     item_types = ui._get_allowed_item_types(upgrade)
@@ -2813,14 +3253,17 @@ class UI:
                     ImGui.separator()
                     PyImGui.set_next_item_width(-1)
                     _, ui.upgrade_range_search = ImGui.search_field(f"##upgrade_range_search_{id(condition)}", ui.upgrade_range_search, "Search Upgrades...")
-                    search_query = ui._normalize_search_query(ui.upgrade_range_search)
+                    _, range_options_raw = ui._get_live_search_results(
+                        f"upgrade_ranges_condition_{id(condition)}",
+                        ui.upgrade_range_search,
+                        lambda normalized_query: cast(list[Any], ui._get_filtered_range_upgrade_options(normalized_query)),
+                    )
+                    range_options = cast(list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]], range_options_raw)
 
                     if ImGui.begin_child(f"##upgrade_range_candidates_{id(condition)}", (0, 300), border=True):
-                        for upgrade_type, instruction in ui._get_range_upgrade_options():
-                            upgrade = upgrade_type()
+                        for upgrade_type, instruction in range_options:
+                            upgrade = cast(WeaponUpgrade | Inscription, upgrade_type())
                             option_label = ui._format_upgrade_label(upgrade)
-                            if not ui._search_text_matches(search_query, option_label, upgrade.description_plain):
-                                continue
                             already_selected = any(isinstance(existing.upgrade, upgrade_type) and existing.target == instruction.target for existing in condition.upgrade_ranges)
                             if ImGui.begin_selectable(f"##upgrade_range_option_{id(condition)}_{upgrade_type.__name__}_{instruction.target}", False, (0, 36)):
                                 rarity_color = UI._get_rarity_color(upgrade.rarity)
@@ -2962,6 +3405,9 @@ class UI:
 
             case QuantityCondition():
                 return UI.ConditionEditor.ForQuantityCondition(self, rule, condition, draw_size)
+
+            case NickItemCondition():
+                return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, draw_size)
              
             case RaritiesCondition():
                 return UI.ConditionEditor.ForRaritiesCondition(self, rule, condition, draw_size)
@@ -3007,6 +3453,7 @@ class UI:
             ItemTypesCondition,
             ExactItemTypeCondition,
             QuantityCondition,
+            NickItemCondition,
             RaritiesCondition,
             DyeColorsCondition,
             SalvagesToMaterialsCondition,
@@ -3069,6 +3516,9 @@ class UI:
             case QuantityCondition():
                 return clamp(control_height + row_25 + 6)
 
+            case NickItemCondition():
+                return clamp(control_height + 24 + min(320, max(40, len(self._get_nick_item_preview_items(condition.weeks_before_next_cycle)) * row_28)))
+
             case RaritiesCondition():
                 return clamp(control_height + 8 + max(1, len(Rarity)) * row_25)
 
@@ -3089,10 +3539,10 @@ class UI:
                 return clamp(140 + max(1, len(condition.inherents)) * 90)
 
             case InscribableCondition():
-                return clamp(control_height + 8)
+                return clamp(control_height + 8 + row_28)
 
             case UnidentifiedCondition():
-                return clamp(control_height + 8)
+                return clamp(control_height + 8 + row_28)
 
             case ArmorUpgradesCondition():
                 return clamp(150 + max(1, len(condition.armor_upgrades)) * 24)
@@ -3189,13 +3639,15 @@ class UI:
                 
                 avail = PyImGui.get_content_region_avail()
                 width = (avail[0] - 5) * 0.5
-                height = avail[1]
+                height = (avail[1] - 5) * 0.5
                 changed = False
                 
-                for condition in rule.conditions:
-                    changed = self._draw_condition_editor(rule, condition, size=(width, height)) or changed
-                    PyImGui.same_line(0, 5)
-
+                changed = UI.ConditionEditor.ForModelFileIdsCondition(self, rule, rule._model_file_condition(), size=(width, height)) or changed
+                PyImGui.same_line(0, 5)
+                changed = UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
+                
+                changed = UI.ConditionEditor.ForInherentFiltersCondition(self, rule, rule._inherent_condition(), size=(width * 2, height)) or changed
+                
                 return changed
 
             case WeaponTypeRule():
@@ -3226,6 +3678,10 @@ class UI:
             case QuantityRule():
                 ImGui.text_wrapped("This rule matches items whose quantity falls inside the configured inclusive range.")
                 return UI.ConditionEditor.ForQuantityCondition(self, rule, rule.condition)
+
+            case NickItemRule():
+                ImGui.text_wrapped("This rule matches Nicholas the Traveler items that come up within the configured number of weeks, and previews the affected cycle items.")
+                return UI.ConditionEditor.ForNickItemCondition(self, rule, rule.condition)
 
             case RaritiesRule():
                 ImGui.text_wrapped("This rule matches items based on their rarity. You can specify one or more rarities to match against the item.")
