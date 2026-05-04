@@ -126,7 +126,6 @@ class ConfigInfo(Generic[TConfig]):
 
         if isinstance(self.config, RuleConfig):
             self.config.Save(self.file_path)
-            Py4GW.Console.Log("Item Manager", f"Saved config for {self.name} to {self.file_path} with {len(self.config)} rules.", Py4GW.Console.MessageType.Info)
             return
 
         if isinstance(self.config, BuyConfig):
@@ -139,8 +138,7 @@ class ConfigInfo(Generic[TConfig]):
             with open(self.file_path, 'w', encoding='utf-8') as file:
                 json.dump(json_data, file, indent=4, ensure_ascii=False)
 
-            configured_entries = sum(1 for entry in self.config.get_entries() if entry.quantity > 0)
-            Py4GW.Console.Log("Item Manager", f"Saved config for {self.name} to {self.file_path} with {configured_entries} configured consumables.", Py4GW.Console.MessageType.Info)
+            # configured_entries = sum(1 for entry in self.config.get_entries() if entry.quantity > 0)
             return
 
         Py4GW.Console.Log("Item Manager", f"No save handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
@@ -3708,19 +3706,48 @@ class UI:
 
             case ArmorUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their armor upgrades. You can specify one or more armor upgrades to match against the item.")
-                return UI.ConditionEditor.ForArmorUpgradesCondition(self, rule, rule.condition)
+                changed = self.draw_extracted_action(rule)
+                return UI.ConditionEditor.ForArmorUpgradesCondition(self, rule, rule.condition) or changed
 
             case MaxWeaponUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their weapon upgrades. You can specify one or more weapon upgrades to match against the item.")
-                return UI.ConditionEditor.ForMaxWeaponUpgradesCondition(self, rule, rule.condition)
+                changed = self.draw_extracted_action(rule) 
+                return UI.ConditionEditor.ForMaxWeaponUpgradesCondition(self, rule, rule.condition) or changed
 
             case UpgradeRangeRule():
                 ImGui.text_wrapped("This rule matches items based on their upgrades that have a numeric value within a specified range.")
-                return UI.ConditionEditor.ForUpgradeRangesCondition(self, rule, rule.condition)
+                changed = self.draw_extracted_action(rule)
+                return UI.ConditionEditor.ForUpgradeRangesCondition(self, rule, rule.condition) or changed
 
             case _:
                 ImGui.text("No editor available for this rule type.")
                 return False
+
+    def draw_extracted_action(self, rule : ArmorUpgradeRule | MaxWeaponUpgradeRule | UpgradeRangeRule) -> bool:
+        changed = False
+        style = ImGui.get_style()
+        unset = rule.extracted_action == ItemAction.NONE
+        if unset:
+            style.FrameBg.push_color_direct((229, 62, 48, 200))
+            style.FrameBgHovered.push_color_direct((231, 95, 81, 200))
+
+        PyImGui.set_next_item_width(-1)
+        open = PyImGui.begin_combo(f"##rule_extracted_action_{id(rule)}", UI._humanize_name(rule.extracted_action.name)  if rule.extracted_action != ItemAction.NONE else "Select an action", PyImGui.ImGuiComboFlags.NoFlag)
+
+        if unset:
+            style.FrameBg.pop_color_direct()
+            style.FrameBgHovered.pop_color_direct()
+
+        if open:
+            sorted_actions = sorted(ItemAction, key=lambda action: action.name)
+            for action in sorted_actions:
+                if ImGui.selectable(UI._humanize_name(action.name), selected=rule.extracted_action == action):
+                    rule.extracted_action = action
+                    changed = True
+            ImGui.end_combo()
+        ImGui.show_tooltip("The action to perform on the upgrade once extracted.")
+        
+        return changed
 
     def draw_rule(self, rule: Rule):
         self._draw_rule_header(rule)

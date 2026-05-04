@@ -128,6 +128,7 @@ class Rule:
     def _comparison_data(self) -> Any:
         return (
             self.condition_operator.name,
+            self.action.name,
             tuple((type(condition).__name__, condition._comparison_data()) for condition in self.conditions),
         )
 
@@ -716,8 +717,16 @@ class ExtractUpgradeRule(Rule):
     ui_selectable: ClassVar[bool] = False
 
     def __init__(self, conditions: Optional[list[Condition]] = None):
-        super().__init__(conditions, action=ItemAction.ExtractUpgrade)
+        super().__init__(conditions)
+        self.extracted_action : ItemAction = ItemAction.Stash
 
+    def get_effective_action(self, item_id: int) -> ItemAction:
+        item_snapshot = self.get_item(item_id)
+        if item_snapshot is not None and item_snapshot.item_type is ItemType.Rune_Mod:
+            return self.extracted_action
+
+        return self.action
+        
     def get_matching_upgrades(self, item_id: int) -> list[tuple[Upgrade, SalvageMode]]:
         if not self.is_valid():
             return []
@@ -741,6 +750,26 @@ class ExtractUpgradeRule(Rule):
             deduped.append((upgrade, salvage_mode))
 
         return deduped
+
+    def _comparison_data(self) -> Any:
+        return (
+            super()._comparison_data(),
+            self.extracted_action.name,
+        )
+
+    def _serialize_data(self) -> dict[str, Any]:
+        payload = super()._serialize_data()
+        payload["extracted_action"] = self.extracted_action.name
+        return payload
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        super()._deserialize_data(data)
+
+        extracted_action_name = data.get("extracted_action", ItemAction.Stash.name)
+        if isinstance(extracted_action_name, str) and extracted_action_name in ItemAction.__members__:
+            self.extracted_action = ItemAction[extracted_action_name]
+        else:
+            self.extracted_action = ItemAction.Stash
 
 
 class MaxWeaponUpgradeRule(ExtractUpgradeRule):
@@ -769,6 +798,7 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
 
     def __init__(self, runes: Optional[list[ArmorUpgrade]] = None):
         super().__init__([ArmorUpgradesCondition(runes)])
+        self.extracted_action = ItemAction.Sell_To_Trader
 
     @property
     def condition(self) -> ArmorUpgradesCondition:

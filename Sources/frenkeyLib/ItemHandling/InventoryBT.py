@@ -200,7 +200,7 @@ class InventoryBT:
         if rule is None:
             return InventoryPreviewEntry(item=item, action=None, rule=None, note="No matching rule.", executable=False)
 
-        action = rule.action
+        action = cls._get_rule_action(rule, item.id)
         if action in (ItemAction.NONE, ItemAction.Hold):
             return InventoryPreviewEntry(
                 item=item,
@@ -228,7 +228,7 @@ class InventoryBT:
                     rule=rule,
                     note="Skipped because the full item quantity does not fit in storage or material storage.",
                     executable=False,
-                )
+            )
 
         if action == ItemAction.ExtractUpgrade:
             matches = rule.get_matching_upgrades(item.id) if isinstance(rule, ExtractUpgradeRule) else []
@@ -268,6 +268,14 @@ class InventoryBT:
                 executable=False,
             )
 
+        if isinstance(rule, ExtractUpgradeRule) and item.item_type is ItemType.Rune_Mod:
+            return InventoryPreviewEntry(
+                item=item,
+                action=action,
+                rule=rule,
+                note=f"Already extracted upgrade matched the rule. Using {action.name}.",
+            )
+
         return InventoryPreviewEntry(item=item, action=action, rule=rule, note="")
 
     @staticmethod
@@ -291,6 +299,13 @@ class InventoryBT:
         rule = cls._get_first_matching_rule(config, item_id)
         if rule is None:
             return None
+
+        return cls._get_rule_action(rule, item_id)
+
+    @staticmethod
+    def _get_rule_action(rule: Rule, item_id: int) -> ItemAction:
+        if isinstance(rule, ExtractUpgradeRule):
+            return rule.get_effective_action(item_id)
 
         return rule.action
 
