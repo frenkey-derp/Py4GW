@@ -16,7 +16,6 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType, NICK_CYCLE_COUNT, NICK_C
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType, SharedCommandType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
-from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
 
 PERSISTENT = True
@@ -311,10 +310,20 @@ class ItemData:
         return dict(sorted(data.items(), key=lambda item: item[0]))
 
 project_path = Console.get_projects_path()
-default_item_json_path = os.path.join(project_path, "Sources", "frenkeyLib", "ItemHandling", "Items", "items.json")
-item_json_path = os.path.join(project_path, "Sources", "frenkeyLib", "ItemHandling", "Items", "items copy.json")
-if not os.path.exists(item_json_path):
-    item_json_path = default_item_json_path
+def get_local_item_json_path() -> str:
+    return os.path.join(project_path, "Settings", "Global", "Item & Inventory", "items.json")
+
+def get_item_json_source_path() -> str:
+    default_item_json_path = os.path.join(project_path, "Py4GWCoreLib", "item_data", "items.json")
+    item_json_path = get_local_item_json_path()
+    
+    if os.path.exists(item_json_path):
+        return item_json_path
+    
+    if os.path.exists(default_item_json_path):
+        return default_item_json_path
+    
+    return ""
 
 class ItemDataContainer():
     def __init__(self):
@@ -362,6 +371,10 @@ class ItemDataContainer():
         try:
             self.data.clear()
             
+            item_json_path = get_item_json_source_path()
+            if not item_json_path:
+                return
+            
             with open(item_json_path, "r", encoding="utf-8") as f:
                 json_data = json.load(f)
                 
@@ -400,7 +413,7 @@ class ItemDataContainer():
     
     def save_data(self):
         try:
-            with open(item_json_path, "w", encoding="utf-8") as f:
+            with open(get_local_item_json_path(), "w", encoding="utf-8") as f:
                 json_data = {item_type.name: {str(item_data.model_id): item_data.to_json() for item_data in items.values()} for item_type, items in self.data.items()}
                 json.dump(json_data, f, indent=4, ensure_ascii=False)
                 Console.Log("ItemDataContainer", f"Saved item data for {sum(len(items) for items in self.data.values())} items across {len(self.data)} item types.", Console.MessageType.Success)

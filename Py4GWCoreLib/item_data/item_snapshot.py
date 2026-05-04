@@ -1,11 +1,10 @@
 
 from typing import Optional, cast
 
-import Py4GW
 import PyInventory
 from PyItem import DyeInfo, ItemModifier, PyItem
 
-from Py4GWCoreLib.Item import Bag, Item
+from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.native_src.internals import string_table

@@ -1,15 +1,11 @@
 from typing import Optional
 
-import Py4GW
-
 from Py4GWCoreLib import Map, Merchant, Player
-from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
-from Sources.frenkeyLib.Core.encoded_names import ItemName
 from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
