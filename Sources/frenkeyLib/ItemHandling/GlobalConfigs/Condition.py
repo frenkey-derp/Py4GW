@@ -4,13 +4,12 @@ from dataclasses import dataclass, field
 from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias
 
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
+from Py4GWCoreLib.enums_src.Item_enums import NICK_CYCLE_COUNT, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import COMMON_MATERIALS, DAMAGE_RANGES, RARE_MATERIALS
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.Items.types import NICK_CYCLE_COUNT
+from Py4GWCoreLib.item_data.ItemData import COMMON_MATERIALS, DAMAGE_RANGES, RARE_MATERIALS
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 

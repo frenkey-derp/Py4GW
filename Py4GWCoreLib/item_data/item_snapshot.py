@@ -10,7 +10,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, DyeColo
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData
+from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.item_modifier_parser import ItemModifierParser
 from Py4GWCoreLib.item_mods_src.properties import AttributeRequirement, DamageProperty, TargetItemTypeProperty

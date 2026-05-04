@@ -34,7 +34,7 @@ from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
-from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, STORAGE_BAGS, Bags, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, NICK_CYCLE_COUNT, STORAGE_BAGS, Bags, ItemAction, ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
@@ -87,9 +87,8 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
 )
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.Items.types import NICK_CYCLE_COUNT
+from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config

@@ -29,7 +29,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
 from typing import Generator, List, Tuple

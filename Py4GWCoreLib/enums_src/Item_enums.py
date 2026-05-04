@@ -1,3 +1,4 @@
+import datetime
 from enum import Enum, auto
 from enum import IntEnum
 from .Model_enums import ModelID
@@ -206,6 +207,9 @@ ITEM_TYPE_META_TYPES: dict[ItemType, list[ItemType]] = {
 }
 
 # endregion
+
+NICK_CYCLE_START_DATE = datetime.datetime(2009, 4, 20)
+NICK_CYCLE_COUNT = 137
 
 class ItemAction(IntEnum):
     NONE = 0

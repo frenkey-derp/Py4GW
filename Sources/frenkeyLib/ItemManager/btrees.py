@@ -8,7 +8,7 @@ from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
 

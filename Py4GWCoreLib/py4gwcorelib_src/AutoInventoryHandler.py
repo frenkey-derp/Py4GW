@@ -137,7 +137,7 @@ class AutoInventoryHandler():
         )
 
     def _get_inventory_items(self):
-        from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+        from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
         snapshot = ItemSnapshot.get_bags_snapshot(INVENTORY_BAGS)
         return [

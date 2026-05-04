@@ -15,7 +15,7 @@ from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensi
 from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import ExtractUpgradeRule, Rule
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 @dataclass(slots=True)

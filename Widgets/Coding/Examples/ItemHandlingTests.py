@@ -21,8 +21,7 @@ from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.native_src.internals import string_table
-from Sources.frenkeyLib.ItemHandling.ConfigExamples.ExampleGUIs.LootConfigView import draw_loot_config_view
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
 Utils.ClearSubModules("ItemHandling")
@@ -32,7 +31,7 @@ from Sources.frenkeyLib.ItemHandling.BTNodes import STORAGE_BAGS, BTNodes
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
-from Sources.frenkeyLib.ItemHandling.Items.item_collecting import ItemCollector
+from Py4GWCoreLib.item_data.item_collecting import ItemCollector
 
 
 MODULE_NAME = "Item Handling Tests"
@@ -751,9 +750,3 @@ def main():
             fully_decoded = (not encoded.name_enc or decoded.name_enc != "") and (not encoded.info_string or decoded.info_string != "") and (not encoded.singular_name or decoded.singular_name != "") and (not encoded.complete_name_enc or decoded.complete_name_enc != "")
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error decoding item strings: {e}", Py4GW.Console.MessageType.Error)
-
-    if show_loot_config_view:
-        draw_loot_config_view()
-        
-    if collect:
-        ITEM_COLLECTOR.run()

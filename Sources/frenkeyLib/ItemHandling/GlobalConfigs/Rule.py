@@ -43,7 +43,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     normalize_inherent_filters,
     normalize_requirement_ranges,
 )
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
 

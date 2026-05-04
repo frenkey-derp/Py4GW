@@ -10,13 +10,14 @@ from typing import Optional
 from Py4GW import Console
 
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
-from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.enums_src.Item_enums import ItemType, NICK_CYCLE_COUNT, NICK_CYCLE_START_DATE
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
+from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType, SharedCommandType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
-from Sources.frenkeyLib.ItemHandling.Items.types import NICK_CYCLE_COUNT, NICK_CYCLE_START_DATE
 
 PERSISTENT = True
 
@@ -325,9 +326,6 @@ class ItemDataContainer():
         self.Nick_Cycle: list[ItemData] = []
                 
         self.load_data()
-        
-        self.Nick_Items = {item.nick_index: item for item_type in self.data.values() for item in item_type.values() if item.nick_index is not None}
-        self.Nick_Cycle = [self.Nick_Items[index] for index in range(1, NICK_CYCLE_COUNT + 1) if index in self.Nick_Items]
     
     def get_item_data(self, item_id: Optional[int] = None, item_type: Optional[ItemType] = None, model_id : Optional[int] = None) -> Optional[ItemData]:     
         """
@@ -362,6 +360,8 @@ class ItemDataContainer():
 
     def load_data(self):
         try:
+            self.data.clear()
+            
             with open(item_json_path, "r", encoding="utf-8") as f:
                 json_data = json.load(f)
                 
@@ -391,6 +391,9 @@ class ItemDataContainer():
                         self.data[item_data.item_type][item_data.model_id] = item_data
             
                 Console.Log("ItemDataContainer", f"Loaded item data for {sum(len(items) for items in self.data.values())} items across {len(self.data)} item types.", Console.MessageType.Success)
+            
+            self.Nick_Items = {item.nick_index: item for item_type in self.data.values() for item in item_type.values() if item.nick_index is not None}
+            self.Nick_Cycle = [self.Nick_Items[index] for index in range(1, NICK_CYCLE_COUNT + 1) if index in self.Nick_Items]
         except Exception as e:
             Console.Log("ItemDataContainer", f"Error loading item data: {e}", Console.MessageType.Error)
         
@@ -410,6 +413,12 @@ class ItemDataContainer():
             return
 
         self.save_data()
+        current_mail = Player.GetAccountEmail()
+        
+        if current_mail:
+            for acc in GLOBAL_CACHE.ShMem.GetAllAccounts().AccountData:
+                if acc.IsAccount and acc.AccountEmail != current_mail:
+                    GLOBAL_CACHE.ShMem.SendMessage(current_mail, acc.AccountEmail, SharedCommandType.Reload, (ReloadType.ItemData, ))
 
 ITEM_DATA = ItemDataContainer()
 

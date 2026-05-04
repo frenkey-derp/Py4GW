@@ -63,8 +63,8 @@ from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import MATERIAL_STORAGE_SLOTS
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.ItemData import MATERIAL_STORAGE_SLOTS
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemHandling.utility import GetDestinationSlots, GetItemsLocations, HasSpaceForItem

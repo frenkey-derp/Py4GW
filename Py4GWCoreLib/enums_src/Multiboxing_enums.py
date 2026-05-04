@@ -59,7 +59,7 @@ class SharedCommandType(IntEnum):
     RefreshHeroAIBuilds = auto()
     WithdrawGold = auto()
     
-    ReloadConfig = auto()
+    Reload = auto()
 
     #region privately Handled Commands
     MultiBoxing = auto() # privately Handled Command, by frenkey
@@ -70,11 +70,13 @@ class SharedCommandType(IntEnum):
     BroadcastChatCommand = auto() 
     #endregion
 
-class ConfigType(IntEnum):
+class ReloadType(IntEnum):
     Buying = auto()
     Looting = auto()
     Inventory = auto()
+    Crafting = auto()
     
+    ItemData = auto()
 
 
 class CombatPrepSkillsType(IntEnum):

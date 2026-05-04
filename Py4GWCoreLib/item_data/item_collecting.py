@@ -10,8 +10,8 @@ from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Sources.frenkeyLib.Core.encoded_names import ItemName
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
 class ItemCollector:
     def __init__(self, inventory_interval_ms: int = 5_000, save_interval_ms: int = 1_000):
@@ -224,8 +224,4 @@ class ItemCollector:
         return bytes()
 
 
-ITEM_COLLECTOR = ItemCollector()
-
-
-def collect_item_data():
-    ITEM_COLLECTOR.run()
+ITEM_DATA_COLLECTOR = ItemCollector()

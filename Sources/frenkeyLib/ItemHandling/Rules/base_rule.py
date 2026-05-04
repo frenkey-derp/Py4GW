@@ -8,8 +8,8 @@ import Py4GW
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import DAMAGE_RANGES
-from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.item_data.ItemData import DAMAGE_RANGES
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Py4GWCoreLib.item_mods_src.properties import ItemProperty
 from Py4GWCoreLib.item_mods_src.upgrades import HeavyUpgrade, Upgrade
 from Sources.frenkeyLib.ItemHandling.Rules.types import ItemAction

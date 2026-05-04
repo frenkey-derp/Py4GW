@@ -24,9 +24,10 @@ from Py4GWCoreLib import IniHandler
 from Py4GWCoreLib.Py4GWcorelib import Keystroke
 from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
-from Py4GWCoreLib.enums_src.Multiboxing_enums import ConfigType
+from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
+from Py4GWCoreLib.item_data.ItemData import ITEM_DATA
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
@@ -2424,33 +2425,32 @@ def EquipItem(index: int, message: SharedMessageStruct):
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
 # endregion
 
-#region ReloadConfig
-def ReloadConfig(index: int, message: SharedMessageStruct):
+#region Reload
+def Reload(index: int, message: SharedMessageStruct):
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
     try:
-        config_type = ConfigType(message.Params[0]) if len(message.Params) > 0 else None
-                
-        SETTINGS_DIR = os.path.join(
-            Py4GW.Console.get_projects_path(),
-            "Settings",
-            "Global",
-            "Item & Inventory",
-            "Configs",
-        )
+        config_type = ReloadType(message.Params[0]) if len(message.Params) > 0 else None
+        project_path = Py4GW.Console.get_projects_path()
+        settings_dir = os.path.join(project_path, "Settings", "Global", "Item & Inventory", "Configs")
         
-        INVENTORY_CONFIG_PATH = os.path.join(SETTINGS_DIR, "inventoryconfig.json")
-        LOOT_CONFIG_PATH = os.path.join(SETTINGS_DIR, "lootconfig.json")
-        BUY_CONFIG_PATH = os.path.join(SETTINGS_DIR, "buyconfig.json")
-
         match config_type:
-            case ConfigType.Buying:
+            case ReloadType.ItemData:
+                ITEM_DATA.load_data()
+                
+            case ReloadType.Crafting:
+                pass
+            
+            case ReloadType.Buying:
+                BUY_CONFIG_PATH = os.path.join(settings_dir, "buyconfig.json")
                 BuyConfig().Load(BUY_CONFIG_PATH)
             
-            case ConfigType.Inventory:
+            case ReloadType.Inventory:
+                INVENTORY_CONFIG_PATH = os.path.join(settings_dir, "inventoryconfig.json") 
                 InventoryConfig().Load(INVENTORY_CONFIG_PATH)
             
-            case ConfigType.Looting:
-                from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig            
+            case ReloadType.Looting:
+                from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig  
+                LOOT_CONFIG_PATH = os.path.join(settings_dir, "lootconfig.json")     
                 LootConfig().Load(LOOT_CONFIG_PATH)
             
     except Exception as exc:
@@ -2581,8 +2581,8 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(InventoryQuery(index, message))
         case SharedCommandType.EquipItem:
             GLOBAL_CACHE.Coroutines.append(EquipItem(index, message))
-        case SharedCommandType.ReloadConfig:
-            GLOBAL_CACHE.Coroutines.append(ReloadConfig(index, message))
+        case SharedCommandType.Reload:
+            GLOBAL_CACHE.Coroutines.append(Reload(index, message))
         case SharedCommandType.LootEx:
             # privately Handled Command, by frenkey
             pass
