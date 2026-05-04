@@ -16,19 +16,10 @@ class InstanceManager:
         return cls._instance
 
     def __init__(self, inventory_handler = None):
-        from Sources.frenkeyLib.LootEx.inventory_handling import LootEx_Merchant_Handler, LootExAutoInventoryHandler
-        
-        self.lootex_merchant_handler = LootEx_Merchant_Handler(inventory_handler)        
-        self.lootex_auto_inventory_handler = LootExAutoInventoryHandler(inventory_handler) 
-        
         if self._initialized:
             return
         
-        from Py4GWCoreLib.py4gwcorelib_src.MerchantHandler import MerchantHandler
         from Py4GWCoreLib.py4gwcorelib_src.AutoInventoryHandler import AutoInventoryHandler
-        
-        if getattr(self, "merchant_handler", None) is None:
-            self.merchant_handler = MerchantHandler()
         
         if getattr(self, "auto_inventory_handler", None) is None:
             self.auto_inventory_handler = AutoInventoryHandler()

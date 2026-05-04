@@ -1107,7 +1107,7 @@ class UI:
                             changed = True
 
                         if PyImGui.is_item_hovered():
-                            PyImGui.set_next_window_size((300, 50), cond=PyImGui.ImGuiCond.Appearing)
+                            PyImGui.set_next_window_size((400, 50), cond=PyImGui.ImGuiCond.Appearing)
                             PyImGui.begin_tooltip()
                             quote = self._get_trader_quote_for_armor_upgrade(upgrade)
                             PyImGui.text_wrapped(upgrade.description_plain)
@@ -2096,31 +2096,34 @@ class UI:
                     if not self._search_text_matches(search_query, item.name, item.plural_name, item.item_type.name, model_file_id):
                         continue
 
-                    if ImGui.begin_selectable(f"##weapon_skin_{item.item_type.name}_{item.model_id}", selected=already_selected, size=(0, 42)):
-                        self._draw_item_texture(item)
-                        PyImGui.same_line(0, 8)
-                        PyImGui.begin_group()
-                        ImGui.text(item_name)
-                        x, y = PyImGui.get_cursor_pos()
-                        PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(
-                            f"{self._humanize_name(item.item_type.name)} | Model File ID: {model_file_id}",
-                            UI.GRAY_COLOR.color_tuple,
-                            font_size=12,
-                        )
-                        PyImGui.end_group()
+                    if PyImGui.is_rect_visible(10, 42):
+                        if ImGui.begin_selectable(f"##weapon_skin_{item.item_type.name}_{item.model_id}", selected=already_selected, size=(0, 42)):
+                            self._draw_item_texture(item)
+                            PyImGui.same_line(0, 8)
+                            PyImGui.begin_group()
+                            ImGui.text(item_name)
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(
+                                f"{self._humanize_name(item.item_type.name)} | Model File ID: {model_file_id}",
+                                UI.GRAY_COLOR.color_tuple,
+                                font_size=12,
+                            )
+                            PyImGui.end_group()
 
-                    if ImGui.end_selectable():
-                        if not already_selected:
-                            rule.model_file_ids.append(model_file_id)
-                        else:
-                            rule.model_file_ids.remove(model_file_id)
+                        if ImGui.end_selectable():
+                            if not already_selected:
+                                rule.model_file_ids.append(model_file_id)
+                            else:
+                                rule.model_file_ids.remove(model_file_id)
 
-                        changed = True
+                            changed = True
 
-                    if PyImGui.is_item_hovered():
-                        tooltip = f"{item_name}\n{self._humanize_name(item.item_type.name)}\nModel File ID: {model_file_id}"
-                        ImGui.show_tooltip(tooltip)
+                        if PyImGui.is_item_hovered():
+                            tooltip = f"{item_name}\n{self._humanize_name(item.item_type.name)}\nModel File ID: {model_file_id}"
+                            ImGui.show_tooltip(tooltip)
+                    else:
+                        ImGui.dummy(0, 42)
             ImGui.end_child()
 
             PyImGui.table_next_column()

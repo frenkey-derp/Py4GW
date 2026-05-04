@@ -138,7 +138,8 @@ class GWStringEncoded:
         try:
             start = s.index('[')
             end = s.index(']', start + 1)
-            return end - start < 3
+            # if the brackets are more than 3 characters apart, it's unlikely to be a valid item name format, so we can assume it's not meant to be singularized unless it contains the plural indicator '[pl:'
+            return end - start < 3 or '[pl:' in s
         except ValueError:
             return False
 
