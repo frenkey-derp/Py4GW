@@ -28,13 +28,13 @@ import PyImGui
 
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
-from Py4GWCoreLib.Item import Bag
+from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
-from Py4GWCoreLib.enums_src.GameData_enums import Profession, Range
-from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, ITEM_TYPE_META_TYPES, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
+from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, STORAGE_BAGS, Bags, ItemAction, ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
@@ -49,6 +49,7 @@ from Py4GWCoreLib.item_mods_src.upgrades import (
     Upgrade,
     _UPGRADES,
     UpgradeRune,
+    WeaponUpgrade,
 )
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWEncoded
@@ -58,7 +59,8 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, B
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import DamageRange, InherentFilter
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import DamageRange
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import InherentFilter
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
@@ -359,7 +361,7 @@ class UI:
 
         self._all_item_data_cache: list[ItemData] = []
         self._item_by_model_file_id: dict[int, ItemData] = {}
-        self._item_by_encoded_name: dict[str, ItemData] = {}
+        self._item_by_encoded_name: dict[bytes, ItemData] = {}
         self._unique_encoded_name_items: list[ItemData] = []
         self._unique_model_file_id_items: list[ItemData] = []
         self._salvage_material_options: list[ItemData] = []
@@ -531,8 +533,8 @@ class UI:
             if model_file_id > 0 and model_file_id not in self._item_by_model_file_id:
                 self._item_by_model_file_id[model_file_id] = item
 
-            if encoded_name and encoded_name not in self._item_by_encoded_name:
-                self._item_by_encoded_name[encoded_name] = item
+            if item.name_encoded and item.name_encoded not in self._item_by_encoded_name:
+                self._item_by_encoded_name[item.name_encoded] = item
 
             if encoded_name:
                 encoded_name_items.setdefault((item_type, encoded_name), item)
@@ -551,7 +553,7 @@ class UI:
     def _find_item_by_model_file_id(self, model_file_id: int) -> ItemData | None:
         return self._item_by_model_file_id.get(model_file_id)
 
-    def _find_item_by_encoded_name(self, encoded_name: str) -> ItemData | None:
+    def _find_item_by_encoded_name(self, encoded_name: bytes) -> ItemData | None:
         return self._item_by_encoded_name.get(encoded_name)
 
     def _format_weapon_value_range(self, item_type: Optional[ItemType], requirement: int) -> str:
@@ -695,6 +697,8 @@ class UI:
                                             instruction.target,
                                             DamageRange(int(instruction.min_value), int(instruction.max_value)),
                                         )
+                                        current_range = current_range or DamageRange(int(instruction.min_value), int(instruction.max_value))
+                                        
                                         min_value = max(int(instruction.min_value), min(int(instruction.max_value), int(current_range.min_value)))
                                         max_value = max(min_value, min(int(instruction.max_value), int(current_range.max_value)))
                                         ImGui.text_colored(self._humanize_name(instruction.target), UI.GRAY_COLOR.color_tuple, font_size=12)
@@ -1755,6 +1759,12 @@ class UI:
 
         return changed
 
+    def _convert_str_to_encoded_bytes(self, text: str) -> bytes:
+        try:
+            return bytes(int(x, 16) for x in text.replace(",", " ").split())
+        except ValueError:
+            return text.encode("utf-8")
+        
     def draw_encoded_names_rule(self, rule: EncodedNameRule) -> bool:
         changed = False
         items = self._unique_encoded_name_items
@@ -1784,6 +1794,7 @@ class UI:
 
             if self.encoded_name_search.strip() and self.encoded_name_search.strip() not in selected_encoded_names:
                 manual_encoded_name = self.encoded_name_search.strip()
+                
                 if PyImGui.is_rect_visible(10, 40):
                     if ImGui.begin_selectable("##manual_encoded_name", False, (0, 40)):
                         ImGui.text("Use typed encoded name")
@@ -1792,7 +1803,7 @@ class UI:
                         ImGui.text_colored(manual_encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
 
                     if ImGui.end_selectable():
-                        rule.encoded_names.append(manual_encoded_name)
+                        rule.encoded_names.append(self._convert_str_to_encoded_bytes(manual_encoded_name))
                         changed = True
                         PyImGui.close_current_popup()
                 else:
@@ -1816,7 +1827,7 @@ class UI:
                             PyImGui.end_group()
 
                         if ImGui.end_selectable() and not already_selected:
-                            rule.encoded_names.append(encoded_name)
+                            rule.encoded_names.append(self._convert_str_to_encoded_bytes(encoded_name))
                             changed = True
                             PyImGui.close_current_popup()
 
@@ -1854,7 +1865,7 @@ class UI:
                     ImGui.text(self._get_item_display_name(item) if item is not None else "Custom Encoded Name")
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
-                    ImGui.text_colored(encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                    ImGui.text_colored(string_table.decode(encoded_name), UI.GRAY_COLOR.color_tuple, font_size=12)
                     PyImGui.end_group()
                 ImGui.end_child()
         ImGui.end_child()

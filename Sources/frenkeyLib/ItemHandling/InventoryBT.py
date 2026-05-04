@@ -19,8 +19,6 @@ from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Items.types import INVENTORY_BAGS, STORAGE_BAGS
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
-##TODO: We can not salvage if a window is still up. This causes the salvage kit to bug out 
-
 @dataclass(slots=True)
 class InventoryPreviewEntry:
     item: ItemSnapshot
