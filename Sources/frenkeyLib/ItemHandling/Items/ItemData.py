@@ -596,3 +596,11 @@ MATERIAL_STORAGE_SLOTS : dict[int, int] = {
     ModelID.Amber_Chunk: 36, # Amber Chunk
     ModelID.Jadeite_Shard: 37, # Jadeite Shard
 }
+
+RARE_MATERIALS : list[int] = [
+    mat for mat, slot in MATERIAL_STORAGE_SLOTS.items() if slot > MATERIAL_STORAGE_SLOTS[ModelID.Feather]
+]
+
+COMMON_MATERIALS : list[int] = [
+    mat for mat, slot in MATERIAL_STORAGE_SLOTS.items() if slot <= MATERIAL_STORAGE_SLOTS[ModelID.Feather]
+]

@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
-from Sources.frenkeyLib.ItemHandling.Items.ItemData import DAMAGE_RANGES
+from Sources.frenkeyLib.ItemHandling.Items.ItemData import COMMON_MATERIALS, DAMAGE_RANGES, RARE_MATERIALS
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.Items.types import NICK_CYCLE_COUNT
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
@@ -79,10 +79,7 @@ def normalize_requirement_ranges(
             for requirement, value in requirements.items()
         }
 
-    return {
-        requirement: _default_damage_range(item_type, requirement)
-        for requirement in range(max(0, requirement_min), min(13, requirement_max) + 1)
-    }
+    return {}
 
 
 def serialize_requirement_ranges(requirements: WeaponRequirementRanges) -> list[dict[str, int]]:
@@ -637,6 +634,34 @@ class NickItemCondition(Condition):
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         raw_value = data.get("weeks_before_next_cycle", 0)
         self.weeks_before_next_cycle = max(0, min(NICK_CYCLE_COUNT, int(raw_value if isinstance(raw_value, int) else 0)))
+
+
+class IsMaterialCondition(Condition):
+    """Matches common and rare materials, or only rare materials when configured."""
+    def __init__(self, rare_materials: bool = True, common_materials: bool = True):
+        self.rare_materials = bool(rare_materials)
+        self.common_materials = bool(common_materials)
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        if item_snapshot is None:
+            return False
+
+        model_id = int(item_snapshot.model_id)
+        if self.rare_materials:
+            return model_id in RARE_MATERIALS
+
+        return model_id in COMMON_MATERIALS or model_id in RARE_MATERIALS
+
+    def _comparison_data(self) -> Any:
+        return self.rare_materials, self.common_materials
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"rare_materials": self.rare_materials, "common_materials": self.common_materials}
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.rare_materials = bool(data.get("rare_materials", False))
+        self.common_materials = bool(data.get("common_materials", False))
 
 
 class WeaponRequirementCondition(Condition):

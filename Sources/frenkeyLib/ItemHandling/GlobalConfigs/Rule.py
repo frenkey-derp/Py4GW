@@ -20,6 +20,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     InherentFiltersCondition,
     InscribableCondition,
     ItemTypesCondition,
+    IsMaterialCondition,
     MaxWeaponUpgradesCondition,
     ModelFileIdAndItemType,
     ModelFileIdsAndItemTypesCondition,
@@ -283,6 +284,24 @@ class NickItemRule(Rule):
     @weeks_before_next_cycle.setter
     def weeks_before_next_cycle(self, value: int) -> None:
         self.condition.weeks_before_next_cycle = max(0, min(137, int(value)))
+
+
+class IsMaterialRule(Rule):
+    """Matches material items, optionally restricted to rare materials only."""
+    def __init__(self, rare_only: bool = False):
+        super().__init__([IsMaterialCondition(rare_only)])
+
+    @property
+    def condition(self) -> IsMaterialCondition:
+        return cast(IsMaterialCondition, self.conditions[0])
+
+    @property
+    def rare_only(self) -> bool:
+        return self.condition.rare_materials
+
+    @rare_only.setter
+    def rare_only(self, value: bool) -> None:
+        self.condition.rare_materials = bool(value)
 
 
 class ModelIdsAndItemTypesRule(Rule):

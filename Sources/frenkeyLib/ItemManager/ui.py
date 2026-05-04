@@ -54,6 +54,7 @@ from Py4GWCoreLib.item_mods_src.upgrades import (
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWEncoded
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
+from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
@@ -69,6 +70,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     InherentFilter,
     InherentFiltersCondition,
     InscribableCondition,
+    IsMaterialCondition,
     ItemTypesCondition,
     MaxWeaponUpgradesCondition,
     ModelFileIdsAndItemTypesCondition,
@@ -196,6 +198,7 @@ class UI:
         Bags.Storage12,
         Bags.Storage13,
         Bags.Storage14,
+        Bags.MaterialStorage,
     ]
     ITEM_TYPE_ATTRIBUTES = {
         ItemType.Axe : Attribute.AxeMastery,
@@ -276,6 +279,8 @@ class UI:
 
         self.show_preview_window: bool = False
         folder_path = os.path.join(Py4GW.Console.get_projects_path(), "Settings", "Global", "Item & Inventory", "Configs")
+        self.preview_entries : list[InventoryPreviewEntry] = []
+        self.preview_throttle : ThrottledTimer = ThrottledTimer(1000)
 
         self.configs : list[ConfigInfo] = [
             ConfigInfo(BuyConfig(), "Kits, Keys & Lockpicks", "Configure how many kits, keys and lockpicks to keep in stock", folder_path),
@@ -1463,8 +1468,11 @@ class UI:
         try:
             ImGui.text("Preview", font_size=18)
             ImGui.text_wrapped("Preview how the current Item Processing config would classify items in the selected bags. This does not execute any actions. InventoryBT itself still only processes live inventory bags.")
-        
-            preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
+
+            if self.preview_entries is None or self.preview_throttle.IsExpired():
+                self.preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
+                self.preview_throttle.Reset()
+                
             action_counts: dict[ItemAction, int] = {}
             visible_entries : list[InventoryPreviewEntry] = []
         
@@ -1504,7 +1512,7 @@ class UI:
                 PyImGui.end_columns()
             ImGui.end_child()
 
-            for entry in preview_entries:
+            for entry in self.preview_entries:
                 action = entry.action
                 if action is None and not self.inventory_preview_show_no_action:
                     continue
@@ -2208,8 +2216,6 @@ class UI:
 
                     PyImGui.end_popup()
 
-                ImGui.separator()
-
                 if ImGui.begin_child(f"##added_model_file_id_candidates_{id(condition)}", (0, 0), border=False):
                     for index, model_file_id in enumerate(condition.model_file_ids):
                         item = ui._find_item_by_model_file_id(model_file_id)
@@ -2618,6 +2624,28 @@ class UI:
             return changed
 
         @staticmethod
+        def ForIsMaterialCondition(ui: "UI", rule: Rule, condition: IsMaterialCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            size = size if size is not None else (0, 60)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                rare_materials = ImGui.checkbox("Include rare materials", condition.rare_materials)
+                ImGui.show_tooltip("Enable this to match rare materials.")
+
+                if rare_materials != condition.rare_materials:
+                    condition.rare_materials = rare_materials
+                    changed = True
+                    
+                common_materials = ImGui.checkbox("Include common materials", condition.common_materials)
+                if common_materials != condition.common_materials:
+                    condition.common_materials = common_materials
+                    changed = True
+                ImGui.show_tooltip("Enable this to match common materials.")
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
         def ForRaritiesCondition(ui: "UI", rule: Rule, condition: RaritiesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             
@@ -2803,7 +2831,7 @@ class UI:
             size = size if size is not None else (0, min(base_height + (element_height + spacing) * (14), available_height))
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                if ImGui.begin_child(f"##requirement_rows_{editor_id}", (0, 0), border=True):
+                if ImGui.begin_child(f"##requirement_rows_{editor_id}", (0, 0), border=False):
                     for requirement in range(0, 14):
                         selected = requirement in condition.requirements
                         default_range = ui._get_default_weapon_value_range(detail_item_type, requirement) or (0, 0)
@@ -2839,7 +2867,6 @@ class UI:
                     selectable_size = (0, 45)
                     selected_selectable_size = (0, 90)
                     if ImGui.begin_child(f"##inherent_candidates_{unique_id}", (0, 0), border=True):
-                        ImGui.text("Inherent Upgrades", font_size=16)
                         PyImGui.set_next_item_width(-1)
                         _, ui.inherent_upgrade_search = ImGui.search_field(f"##inherent_search_{unique_id}", ui.inherent_upgrade_search, "Search inherent upgrades...")
                         _, inherent_entries_raw = ui._get_live_search_results(
@@ -3289,7 +3316,7 @@ class UI:
                     instruction = ui._get_range_instruction(upgrade_range.upgrade, upgrade_range.target)
                     if instruction is None:
                         continue
-                    if ImGui.begin_child(f"##{unique_id}", (0, 100), border=True):
+                    if ImGui.begin_child(f"##{unique_id}", (0, 105), border=True):
                         style.CellPadding.push_style_var_direct(4, 4)
                         if ImGui.begin_table(f"##{unique_id}_table", 3, PyImGui.TableFlags.NoBordersInBody):
                             PyImGui.table_setup_column("Name", PyImGui.TableColumnFlags.WidthFixed, 200)
@@ -3406,6 +3433,9 @@ class UI:
 
             case NickItemCondition():
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, draw_size)
+
+            case IsMaterialCondition():
+                return UI.ConditionEditor.ForIsMaterialCondition(self, rule, condition, draw_size)
              
             case RaritiesCondition():
                 return UI.ConditionEditor.ForRaritiesCondition(self, rule, condition, draw_size)
@@ -3452,6 +3482,7 @@ class UI:
             ExactItemTypeCondition,
             QuantityCondition,
             NickItemCondition,
+            IsMaterialCondition,
             RaritiesCondition,
             DyeColorsCondition,
             SalvagesToMaterialsCondition,
@@ -3516,6 +3547,9 @@ class UI:
 
             case NickItemCondition():
                 return clamp(control_height + 24 + min(320, max(40, len(self._get_nick_item_preview_items(condition.weeks_before_next_cycle)) * row_28)))
+
+            case IsMaterialCondition():
+                return clamp(control_height + (row_25 * 2) + 8)
 
             case RaritiesCondition():
                 return clamp(control_height + 8 + max(1, len(Rarity)) * row_25)
@@ -3680,6 +3714,10 @@ class UI:
             case NickItemRule():
                 ImGui.text_wrapped("This rule matches Nicholas the Traveler items that come up within the configured number of weeks, and previews the affected cycle items.")
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, rule.condition)
+
+            case IsMaterialRule():
+                ImGui.text_wrapped("This rule matches materials. You can specify whether to match any material, only common or only rare materials.")
+                return UI.ConditionEditor.ForIsMaterialCondition(self, rule, rule.condition)
 
             case RaritiesRule():
                 ImGui.text_wrapped("This rule matches items based on their rarity. You can specify one or more rarities to match against the item.")
