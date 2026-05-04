@@ -176,7 +176,7 @@ def _restock_buy_entry(entry) -> BehaviorTree.Node:
         if entry.quantity <= 0:
             return BehaviorTree.NodeState.SUCCESS
 
-        if not UIManagerExtensions.IsMerchantWindowOpen():
+        if not UIManagerExtensions.MerchantWindow.IsOpen():
             return BehaviorTree.NodeState.FAILURE
 
         current_quantity = _current_buy_entry_quantity(entry)

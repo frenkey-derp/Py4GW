@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+import json
+import os
+from typing import Any, Self
 
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
@@ -32,6 +34,22 @@ class BuyConfig(GlobalConfig):
         self.lockpicks: int = 0
         self.keys: int = 0
 
+    @classmethod
+    def Load(cls: type[Self], file_path: str) -> Self:
+        '''
+        Loads the config from a JSON file at the specified file path and returns a new instance of the config with the loaded rules.
+        '''
+        if not os.path.isfile(file_path):
+            return cls()  # Return an empty config if the file does not exist
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
+        
+        instance = cls()
+        instance.load_dict(json_data or {})
+        
+        return instance
+    
     def to_dict(self) -> dict[str, int]:
         return {
             "lesser_salvage_kits": max(0, int(self.lesser_salvage_kits)),
@@ -128,11 +146,12 @@ class BuyConfig(GlobalConfig):
                 item_type=ItemType.Key,
                 description="Keeps lockpicks in stock.",
             ),
-            BuyConfigEntry(
-                key="keys",
-                label="Any Keys",
-                quantity=self.keys,
-                item_type=ItemType.Key,
-                description="Keeps generic chest keys in stock.",
-            ),
+            # TODO: Need a better key handling for this.
+            # BuyConfigEntry(
+            #     key="keys",
+            #     label="Any Keys",
+            #     quantity=self.keys,
+            #     item_type=ItemType.Key,
+            #     description="Keeps generic chest keys in stock.",
+            # ),
         ]

@@ -1,10 +1,11 @@
 
 from enum import IntEnum
 
-from Py4GWCoreLib.Item import Bag
+from Py4GWCoreLib.enums_src.Item_enums import Bags
 
-INVENTORY_BAGS = [Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2]
-STORAGE_BAGS = [Bag.Storage_1, Bag.Storage_2, Bag.Storage_3, Bag.Storage_4, Bag.Storage_5, Bag.Storage_6, Bag.Storage_7, Bag.Storage_8, Bag.Storage_9, Bag.Storage_10, Bag.Storage_11, Bag.Storage_12, Bag.Storage_13, Bag.Storage_14]
+
+INVENTORY_BAGS = [Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2]
+STORAGE_BAGS = [Bags.Storage1, Bags.Storage2, Bags.Storage3, Bags.Storage4, Bags.Storage5, Bags.Storage6, Bags.Storage7, Bags.Storage8, Bags.Storage9, Bags.Storage10, Bags.Storage11, Bags.Storage12, Bags.Storage13, Bags.Storage14]
 
 
 class MaterialType(IntEnum):

@@ -11,6 +11,7 @@ from Py4GW import Console
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
@@ -503,4 +504,43 @@ DAMAGE_RANGES : dict[ItemType, dict[int, tuple[int, int]]] = {
         8:  (11, 21),
         9:  (11, 22),
     },
+}
+
+MATERIAL_STORAGE_SLOTS : dict[int, int] = {
+    ModelID.Bone: 0,   # Bone
+    ModelID.Lump_Of_Charcoal: 26,  # Lump of Charcoal
+    ModelID.Monstrous_Claw: 19,  # Monstrous Claw
+    ModelID.Bolt_Of_Cloth: 5,   # Bolt of Cloth
+    ModelID.Bolt_Of_Linen: 13,  # Bolt of Linen
+    ModelID.Bolt_Of_Damask: 14,  # Bolt of Damask
+    ModelID.Bolt_Of_Silk: 15,  # Bolt of Silk
+    ModelID.Pile_Of_Glittering_Dust: 9,   # Pile of Glittering Dust
+    ModelID.Glob_Of_Ectoplasm: 16,  # Glob of Ectoplasm
+    ModelID.Monstrous_Eye: 20,  # Monstrous Eye
+    ModelID.Monstrous_Fang: 21,  # Monstrous Fang
+    ModelID.Feather: 11,  # Feather
+    ModelID.Plant_Fiber: 10,  # Plant Fiber
+    ModelID.Diamond: 24,  # Diamond
+    ModelID.Onyx_Gemstone: 25,  # Onyx Gemstone
+    ModelID.Ruby: 22,  # Ruby
+    ModelID.Sapphire: 23,  # Sapphire
+    ModelID.Tempered_Glass_Vial: 29,  # Tempered Glass Vial
+    ModelID.Tanned_Hide_Square: 2,   # Tanned Hide Square
+    ModelID.Fur_Square: 12,  # Fur Square
+    ModelID.Leather_Square: 30,  # Leather Square
+    ModelID.Elonian_Leather_Square: 31,  # Elonian Leather Square
+    ModelID.Vial_Of_Ink: 32,  # Vial of Ink
+    ModelID.Obsidian_Shard: 27,  # Obsidian Shard
+    ModelID.Wood_Plank: 6,   # Wood Plank
+    ModelID.Iron_Ingot: 1,   # Iron Ingot
+    ModelID.Steel_Ingot: 17,  # Steel Ingot
+    ModelID.Deldrimor_Steel_Ingot: 18,  # Deldrimor Steel Ingot
+    ModelID.Roll_Of_Parchment: 33,  # Roll of Parchment
+    ModelID.Roll_Of_Vellum: 34,  # Roll of Vellum
+    ModelID.Scale: 3,   # Scale
+    ModelID.Chitin_Fragment: 4,   # Chitin Fragment
+    ModelID.Granite_Slab: 8,   # Granite Slab
+    ModelID.Spiritwood_Plank: 35,  # Spiritwood Plank
+    ModelID.Amber_Chunk: 36, # Amber Chunk
+    ModelID.Jadeite_Shard: 37, # Jadeite Shard
 }

@@ -7,16 +7,19 @@ import Py4GW
 
 from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.enums_src.Item_enums import ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Item_enums import Bags, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
+from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import ExtractUpgradeRule, Rule
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.Items.types import INVENTORY_BAGS
+from Sources.frenkeyLib.ItemHandling.Items.types import INVENTORY_BAGS, STORAGE_BAGS
 from Sources.frenkeyLib.ItemHandling.Rules.types import SalvageMode
 
+##TODO: We can not salvage if a window is still up. This causes the salvage kit to bug out 
 
 @dataclass(slots=True)
 class InventoryPreviewEntry:
@@ -39,15 +42,15 @@ class InventoryBT:
     _FAILURE_COOLDOWN_TICKS = 15
 
     ACTION_PRIORITY: tuple[ItemAction, ...] = (
+        ItemAction.Sell_To_Merchant,
+        ItemAction.Sell_To_Trader,
+        ItemAction.Stash,
         ItemAction.Destroy,
         ItemAction.Drop,
         ItemAction.Use,
         ItemAction.Identify,
-        ItemAction.Stash,
-        ItemAction.Sell_To_Trader,
-        ItemAction.Sell_To_Merchant,
-        ItemAction.Salvage_Rare_Materials,
         ItemAction.Salvage_Common_Materials,
+        ItemAction.Salvage_Rare_Materials,
         ItemAction.ExtractUpgrade,
     )
 
@@ -72,14 +75,15 @@ class InventoryBT:
         return BehaviorTree(cls._build_root_node(inventory_config))
 
     @classmethod
+    @frame_cache(category="InventoryBT", source_lib="Preview")
     def Preview(
         cls,
         config: Optional[InventoryConfig] = None,
-        bags: Optional[Sequence[Bag]] = None,
+        bags: Optional[Sequence[Bags]] = None,
     ) -> list[InventoryPreviewEntry]:
         inventory_config = config or InventoryConfig()
         preview_entries: list[InventoryPreviewEntry] = []
-        preview_bags = list(bags) if bags is not None else list(INVENTORY_BAGS)
+        preview_bags = list(bags) if bags is not None else INVENTORY_BAGS
 
         if not preview_bags:
             return preview_entries
@@ -95,11 +99,29 @@ class InventoryBT:
         return preview_entries
 
     @classmethod
+    @frame_cache(category="InventoryBT", source_lib="GetExecuteableInventoryActions")
+    def GetExecuteableInventoryActions(cls, config: InventoryConfig):
+        entries = cls.Preview(config)
+        return [
+            entry for entry in entries
+            if entry.executable and entry.action is not None and entry.action != ItemAction.NONE
+        ]
+    
+    @classmethod
+    @frame_cache(category="InventoryBT", source_lib="HasExecuteableInventoryActions")
+    def HasExecuteableInventoryActions(cls, config: InventoryConfig) -> bool:
+        entries = cls.Preview(config)
+        return any(
+             entry.executable and entry.action is not None and entry.action != ItemAction.NONE
+             for entry in entries
+        )   
+        
+    @classmethod
     def _build_root_node(cls, config: InventoryConfig) -> BehaviorTree.Node:
-        def _tick(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
+        def _tick(node: BehaviorTree.Node) -> BehaviorTree.NodeState:            
             cls._advance_item_cooldowns(node.blackboard)
             active_node = cast(BehaviorTree.Node | None, node.blackboard.get(cls._ACTIVE_NODE_KEY))
-            if active_node is not None:
+            if active_node is not None:                
                 active_node.blackboard = node.blackboard
                 active_state = active_node.tick()
 
@@ -200,6 +222,17 @@ class InventoryBT:
                 executable=False,
             )
 
+        if action == ItemAction.Stash:
+            depositable_item_ids = BTNodes.Items.GetDepositableItemIds([item.id])
+            if item.id not in depositable_item_ids:
+                return InventoryPreviewEntry(
+                    item=item,
+                    action=action,
+                    rule=rule,
+                    note="Skipped because the full item quantity does not fit in storage or material storage.",
+                    executable=False,
+                )
+
         if action == ItemAction.ExtractUpgrade:
             matches = rule.get_matching_upgrades(item.id) if isinstance(rule, ExtractUpgradeRule) else []
             if len(matches) == 1 and item.is_salvageable and item.item_type is not ItemType.Rune_Mod:
@@ -242,15 +275,17 @@ class InventoryBT:
 
     @staticmethod
     def _get_inventory_item_ids() -> list[int]:
-        snapshot = ItemSnapshot.get_bags_snapshot(INVENTORY_BAGS)
+        items = ItemSnapshot.get_items(INVENTORY_BAGS)
         item_ids: list[int] = []
 
-        for bag_items in snapshot.values():
-            for item in bag_items.values():
-                if item is None or not item.is_valid or not item.is_inventory_item:
-                    continue
+        for item in items:
+            if item is None or not item.is_valid or not item.is_inventory_item:
+                continue
+            
+            if item.is_customized:
+                continue
 
-                item_ids.append(item.id)
+            item_ids.append(item.id)
 
         return item_ids
 
@@ -290,7 +325,11 @@ class InventoryBT:
                 if not unidentified_item_ids:
                     return None, []
                 
-                return BTNodes.Items.IdentifyItems(unidentified_item_ids), unidentified_item_ids
+                items = ItemSnapshot.get_items(INVENTORY_BAGS)
+                identification_kit_model_ids = {ModelID.Superior_Identification_Kit, ModelID.Identification_Kit}
+                
+                if any(item is not None and item.is_valid and item.model_id in identification_kit_model_ids for item in items):
+                    return BTNodes.Items.IdentifyItems(unidentified_item_ids), unidentified_item_ids
             
             case ItemAction.Use:
                 return BTNodes.Items.UseItems(item_ids), item_ids
@@ -304,45 +343,72 @@ class InventoryBT:
             
             case ItemAction.Stash:
                 if Map.IsOutpost() or Map.IsGuildHall():
-                    return BTNodes.Items.DepositItems(item_ids), item_ids
+                    instructions = BTNodes.Items.GetTransferInstructions(
+                        item_ids,
+                        STORAGE_BAGS,
+                        fill_materials_first=True,
+                    )
+                    depositable_item_ids = BTNodes.Items._get_planned_transfer_item_ids(instructions) if instructions else []
+                    if depositable_item_ids:
+                        return BTNodes.Items.DepositItems(
+                            depositable_item_ids,
+                            target=STORAGE_BAGS,
+                            fill_materials_first=True,
+                            precomputed_instructions=instructions,
+                        ), depositable_item_ids
             
             case ItemAction.Sell_To_Merchant:
-                if UIManagerExtensions.IsMerchantWindowOpen():
+                if UIManagerExtensions.MerchantWindow.IsOpen():
                     return BTNodes.Merchant.SellItems(item_ids), item_ids
                 
             case ItemAction.Sell_To_Trader:
-                if UIManagerExtensions.IsMerchantWindowOpen():
+                if UIManagerExtensions.MerchantWindow.IsOpen():
                     item_id = cls._get_first_valid_item_id(item_ids)
                     if item_id is not None:
                         return BTNodes.Trader.SellItem(item_id), [item_id]
             
             case ItemAction.Salvage_Common_Materials:
-                item_id = cls._get_first_salvageable_item_id(item_ids)
-                if item_id is not None:
-                    return BTNodes.Items.SalvageItem(
-                        item_id,
-                        salvage_mode=SalvageMode.LesserCraftingMaterials,
-                        allow_expert_for_common_materials=True,
-                        state_key=f"inventory_bt_salvage_common_{item_id}",
-                    ), [item_id]
+                items = ItemSnapshot.get_items(INVENTORY_BAGS)
+                salvage_kit_model_ids = {ModelID.Salvage_Kit, ModelID.Salvage_Kit_preSearing}
+                
+                if any(item is not None and item.is_valid and item.model_id in salvage_kit_model_ids for item in items):
+                    item_id = cls._get_first_salvageable_item_id(item_ids)
+                    if item_id is not None:
+                        return BTNodes.Items.SalvageItem(
+                            item_id,
+                            salvage_mode=SalvageMode.LesserCraftingMaterials,
+                            allow_expert_for_common_materials=True,
+                            state_key=f"inventory_bt_salvage_common_{item_id}",
+                            debug_enabled=True,
+                        ), [item_id]
                     
             case ItemAction.Salvage_Rare_Materials: 
-                item_id = cls._get_first_salvageable_item_id(item_ids)
-                if item_id is not None:
-                    return BTNodes.Items.SalvageItem(
-                        item_id,
-                        salvage_mode=SalvageMode.RareCraftingMaterials,
-                        state_key=f"inventory_bt_salvage_rare_{item_id}",
-                    ), [item_id]
+                items = ItemSnapshot.get_items(INVENTORY_BAGS)
+                salvage_kit_model_ids = {ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit}
+                
+                if any(item is not None and item.is_valid and item.model_id in salvage_kit_model_ids for item in items):
+                    item_id = cls._get_first_salvageable_item_id(item_ids)
+                    if item_id is not None:
+                        return BTNodes.Items.SalvageItem(
+                            item_id,
+                            salvage_mode=SalvageMode.RareCraftingMaterials,
+                            state_key=f"inventory_bt_salvage_rare_{item_id}",
+                            debug_enabled=True,
+                        ), [item_id]
                 
             case ItemAction.ExtractUpgrade:
-                item_id, salvage_mode = cls._get_first_extractable_item(config, item_ids, blackboard)
-                if item_id is not None and salvage_mode is not None:
-                    return BTNodes.Items.SalvageItem(
-                        item_id,
-                        salvage_mode=salvage_mode,
-                        state_key=f"inventory_bt_extract_{item_id}",
-                    ), [item_id]
+                items = ItemSnapshot.get_items(INVENTORY_BAGS)
+                salvage_kit_model_ids = {ModelID.Expert_Salvage_Kit, ModelID.Superior_Salvage_Kit}
+                
+                if any(item is not None and item.is_valid and item.model_id in salvage_kit_model_ids for item in items):
+                    item_id, salvage_mode = cls._get_first_extractable_item(config, item_ids, blackboard)
+                    if item_id is not None and salvage_mode is not None:
+                        return BTNodes.Items.SalvageItem(
+                            item_id,
+                            salvage_mode=salvage_mode,
+                            state_key=f"inventory_bt_extract_{item_id}",
+                            debug_enabled=True,
+                        ), [item_id]
             
             case _:
                 return None, []
@@ -357,7 +423,7 @@ class InventoryBT:
             case ItemAction.Stash:
                 return Map.IsOutpost() or Map.IsGuildHall()
             case ItemAction.Sell_To_Merchant | ItemAction.Sell_To_Trader:
-                return UIManagerExtensions.IsMerchantWindowOpen()
+                return UIManagerExtensions.MerchantWindow.IsOpen()
             case _:
                 return True
 

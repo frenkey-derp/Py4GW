@@ -57,8 +57,11 @@ class Bags(IntEnum):
     Storage13 = 20
     Storage14 = 21
     EquippedItems = 22
+    
+    Max = 23
 
-INVENTORY_BAGS = [Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2, Bags.EquipmentPack]
+INVENTORY_BAGS = [Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2]
+INVENTORY_WITH_EQUIPMENT_BAGS = [Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2, Bags.EquipmentPack]
 STORAGE_BAGS = [
     Bags.Storage1, Bags.Storage2, Bags.Storage3, Bags.Storage4, Bags.Storage5, Bags.Storage6,
     Bags.Storage7, Bags.Storage8, Bags.Storage9, Bags.Storage10, Bags.Storage11, Bags.Storage12,

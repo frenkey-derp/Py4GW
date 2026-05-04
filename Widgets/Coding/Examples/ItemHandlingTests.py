@@ -14,6 +14,7 @@ from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Routines import Routines
+from Py4GWCoreLib.UIManager import UIManager
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
@@ -22,6 +23,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.native_src.internals import string_table
 from Sources.frenkeyLib.ItemHandling.ConfigExamples.ExampleGUIs.LootConfigView import draw_loot_config_view
 from Sources.frenkeyLib.ItemHandling.Items.item_snapshot import ItemSnapshot
+from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
 Utils.ClearSubModules("ItemHandling")
 Utils.ClearSubModules("frenkeyLib.Core")
@@ -666,6 +668,63 @@ def main():
 
                 if ImGui.button("Dump String Table to JSON", -1):
                     dump_string_table_to_json(language)
+                ImGui.end_tab_item()
+            
+            if ImGui.begin_tab_item("Salvage Debug"):
+                if ImGui.begin_table("Salvage Debug", 3, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
+                    PyImGui.table_setup_column("Property", PyImGui.TableColumnFlags.WidthStretch)
+                    PyImGui.table_setup_column("Value", PyImGui.TableColumnFlags.WidthFixed, 100)
+                    PyImGui.table_setup_column("Button", PyImGui.TableColumnFlags.WidthFixed, 100)
+                    PyImGui.table_headers_row()
+                    
+                    entries = [
+                        ("AnySalvageRelatedWindowOpen", UIManagerExtensions.AnySalvageWindowOpen, UIManagerExtensions.CancelAnySalvageRelatedWindow),
+                        ("SalvageOptionsWindow", UIManagerExtensions.SalvageOptionsWindow.IsOpen, UIManagerExtensions.SalvageOptionsWindow.Cancel),
+                        ("SalvageConfirmationPopup", UIManagerExtensions.SalvageConfirmationPopup.IsOpen, UIManagerExtensions.SalvageConfirmationPopup.Cancel),
+                        ("LesserSalvageWindow", UIManagerExtensions.LesserSalvageWindow.IsOpen, UIManagerExtensions.LesserSalvageWindow.Cancel),
+                        ("ExpertSalvageUnidentifiedWindow", UIManagerExtensions.ExpertSalvageUnidentifiedWindow.IsOpen, UIManagerExtensions.ExpertSalvageUnidentifiedWindow.Cancel),
+                    ]
+                    
+                    for name, check_func, cancel_func in entries:
+                        PyImGui.table_next_row()
+                        PyImGui.table_set_column_index(0)
+                        
+                        ImGui.text(name)
+                        PyImGui.table_set_column_index(1)
+                        
+                        is_open = check_func()
+                        ImGui.text_colored("Open" if is_open else "Closed", GREEN.color_tuple if is_open else RED.color_tuple)
+                        
+                        PyImGui.table_set_column_index(2)
+                        PyImGui.begin_disabled(not is_open or cancel_func is None)
+                    
+                        if ImGui.button(f"Cancel##{name}", -1):
+                            if cancel_func is not None:
+                                cancel_func()
+                                Py4GW.Console.Log(MODULE_NAME, f"Called cancel function for {name}")
+                        
+                        PyImGui.end_disabled()
+                    
+                    for mode in SalvageMode:
+                        PyImGui.table_next_row()
+                        PyImGui.table_set_column_index(0)
+                        ImGui.text(f"SalvageMode.{mode.name}")
+                        PyImGui.table_set_column_index(1)
+                        
+                        is_open = UIManagerExtensions.SalvageOptionsWindow.IsOptionVisible(mode)
+                        ImGui.text_colored("Open" if is_open else "Closed", GREEN.color_tuple if is_open else RED.color_tuple)
+                        
+                        
+                        PyImGui.table_set_column_index(2)
+                        PyImGui.begin_disabled(not is_open)
+                        
+                        if ImGui.button(f"Test Salvage##{mode.name}", -1):
+                            UIManagerExtensions.SalvageOptionsWindow.SelectOption(mode)
+                            Py4GW.Console.Log(MODULE_NAME, f"Selected salvage option: {mode.name}")
+                        
+                        PyImGui.end_disabled()
+                    
+                    PyImGui.end_table()
                 ImGui.end_tab_item()
             
             if ImGui.begin_tab_item("Rule Testing"):

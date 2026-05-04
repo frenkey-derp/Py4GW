@@ -119,7 +119,7 @@ class BTrees:
             def _check_prices(node: BehaviorTree.Node):
                 now = time.monotonic()
 
-                if not UIManagerExtensions.IsMerchantWindowOpen():
+                if not UIManagerExtensions.MerchantWindow.IsOpen():
                     return BehaviorTree.NodeState.FAILURE
 
                 state = cast(_TraderPriceCheckState | None, node.blackboard.get(blackboard_key))
@@ -400,7 +400,7 @@ class TraderPriceCheckManager:
 
     @classmethod
     def tick(cls) -> BehaviorTree.NodeState | None:
-        if not UIManagerExtensions.IsMerchantWindowOpen():
+        if not UIManagerExtensions.MerchantWindow.IsOpen():
             if cls._tree is not None or cls._kind is not None:
                 cls.reset()
             return None

@@ -150,26 +150,26 @@ class ConfigInfo(Generic[TConfig]):
 class UI:
     GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
-    INVENTORY_PREVIEW_BAGS: list[Bag] = [
-        Bag.Backpack,
-        Bag.Belt_Pouch,
-        Bag.Bag_1,
-        Bag.Bag_2,
-        Bag.Equipment_Pack,
-        Bag.Storage_1,
-        Bag.Storage_2,
-        Bag.Storage_3,
-        Bag.Storage_4,
-        Bag.Storage_5,
-        Bag.Storage_6,
-        Bag.Storage_7,
-        Bag.Storage_8,
-        Bag.Storage_9,
-        Bag.Storage_10,
-        Bag.Storage_11,
-        Bag.Storage_12,
-        Bag.Storage_13,
-        Bag.Storage_14,
+    INVENTORY_PREVIEW_BAGS: list[Bags] = [
+        Bags.Backpack,
+        Bags.BeltPouch,
+        Bags.Bag1,
+        Bags.Bag2,
+        Bags.EquipmentPack,
+        Bags.Storage1,
+        Bags.Storage2,
+        Bags.Storage3,
+        Bags.Storage4,
+        Bags.Storage5,
+        Bags.Storage6,
+        Bags.Storage7,
+        Bags.Storage8,
+        Bags.Storage9,
+        Bags.Storage10,
+        Bags.Storage11,
+        Bags.Storage12,
+        Bags.Storage13,
+        Bags.Storage14,
     ]
     ITEM_TYPE_ATTRIBUTES = {
         ItemType.Axe : Attribute.AxeMastery,
@@ -367,11 +367,11 @@ class UI:
         self.inventory_preview_search: str = ""
         self.inventory_preview_show_no_action: bool = False
         self.inventory_preview_show_hold: bool = False
-        self.inventory_preview_selected_bags: list[Bag] = [
-            Bag.Backpack,
-            Bag.Belt_Pouch,
-            Bag.Bag_1,
-            Bag.Bag_2,
+        self.inventory_preview_selected_bags: list[Bags] = [
+            Bags.Backpack,
+            Bags.BeltPouch,
+            Bags.Bag1,
+            Bags.Bag2,
         ]
         self.loot_preview_search: str = ""
         self.loot_preview_show_no_action: bool = False
@@ -1004,7 +1004,7 @@ class UI:
     def _draw_armor_upgrade_price_popup(self, rule: ArmorUpgradeRule) -> bool:
         changed = False
         popup_id = "##armor_upgrade_price_popup"
-        trader_open = UIManagerExtensions.IsMerchantWindowOpen()
+        trader_open = UIManagerExtensions.MerchantWindow.IsOpen()
         kind = TraderPriceCheckManager.get_kind()
         PyImGui.begin_disabled(not trader_open or kind != "runes")
         if ImGui.button("Select From Trader Prices", -1):
@@ -2617,7 +2617,7 @@ class UI:
 
             ImGui.end_table()
 
-    def _set_inventory_preview_bags(self, bags: list[Bag]) -> None:
+    def _set_inventory_preview_bags(self, bags: list[Bags]) -> None:
         self.inventory_preview_selected_bags = list(bags)
 
     @staticmethod
@@ -2642,7 +2642,7 @@ class UI:
 
     @staticmethod
     def _get_buy_entry_inventory_quantity(entry: BuyConfigEntry) -> int:
-        inventory_snapshot = ItemSnapshot.get_bags_snapshot([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2, Bag.Equipment_Pack])
+        inventory_snapshot = ItemSnapshot.get_bags_snapshot([Bags.Backpack, Bags.BeltPouch, Bags.Bag1, Bags.Bag2, Bags.EquipmentPack])
         total_quantity = 0
 
         for bag_items in inventory_snapshot.values():
@@ -2665,129 +2665,117 @@ class UI:
         return total_quantity
 
     def draw_inventory_config_preview(self, config: InventoryConfig) -> None:
-        ImGui.text("Preview", font_size=18)
-        ImGui.text_wrapped("Preview how the current Item Processing config would classify items in the selected bags. This does not execute any actions. InventoryBT itself still only processes live inventory bags.")
+        try:
+            ImGui.text("Preview", font_size=18)
+            ImGui.text_wrapped("Preview how the current Item Processing config would classify items in the selected bags. This does not execute any actions. InventoryBT itself still only processes live inventory bags.")
+        
+            preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
+            action_counts: dict[ItemAction, int] = {}
+            visible_entries : list[InventoryPreviewEntry] = []
+        
+            button_width = 110
+            if ImGui.button("Inventory", button_width):
+                self._set_inventory_preview_bags(INVENTORY_BAGS)
+            PyImGui.same_line(0, 5)
+            if ImGui.button("Storage", button_width):
+                self._set_inventory_preview_bags(STORAGE_BAGS)
+            PyImGui.same_line(0, 5)
+            if ImGui.button("All", button_width):
+                self._set_inventory_preview_bags(list(self.INVENTORY_PREVIEW_BAGS))
+            PyImGui.same_line(0, 5)
+            if ImGui.button("Clear", button_width):
+                self._set_inventory_preview_bags([])
 
-        preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
-        action_counts: dict[ItemAction, int] = {}
-        visible_entries : list[InventoryPreviewEntry] = []
+            self.inventory_preview_search = ImGui.input_text("Search##inventory_preview_search", self.inventory_preview_search)
+            self.inventory_preview_show_no_action = ImGui.checkbox("Show No Action", self.inventory_preview_show_no_action)
+            self.inventory_preview_show_hold = ImGui.checkbox("Show Hold", self.inventory_preview_show_hold)
 
-        button_width = 110
-        if ImGui.button("Inventory", button_width):
-            self._set_inventory_preview_bags([Bag.Backpack, Bag.Belt_Pouch, Bag.Bag_1, Bag.Bag_2])
-        PyImGui.same_line(0, 5)
-        if ImGui.button("Storage", button_width):
-            self._set_inventory_preview_bags([
-                Bag.Storage_1,
-                Bag.Storage_2,
-                Bag.Storage_3,
-                Bag.Storage_4,
-                Bag.Storage_5,
-                Bag.Storage_6,
-                Bag.Storage_7,
-                Bag.Storage_8,
-                Bag.Storage_9,
-                Bag.Storage_10,
-                Bag.Storage_11,
-                Bag.Storage_12,
-                Bag.Storage_13,
-                Bag.Storage_14,
-            ])
-        PyImGui.same_line(0, 5)
-        if ImGui.button("All", button_width):
-            self._set_inventory_preview_bags(list(self.INVENTORY_PREVIEW_BAGS))
-        PyImGui.same_line(0, 5)
-        if ImGui.button("Clear", button_width):
-            self._set_inventory_preview_bags([])
+            if ImGui.begin_child("##inventory_preview_bags", (0, 90), border=True):
+                width = PyImGui.get_content_region_avail()[0]
+                columns = max(1, int(width // 170))
+                PyImGui.columns(columns, "inventory_preview_bag_columns", False)
 
-        self.inventory_preview_search = ImGui.input_text("Search##inventory_preview_search", self.inventory_preview_search)
-        self.inventory_preview_show_no_action = ImGui.checkbox("Show No Action", self.inventory_preview_show_no_action)
-        self.inventory_preview_show_hold = ImGui.checkbox("Show Hold", self.inventory_preview_show_hold)
+                for bag in self.INVENTORY_PREVIEW_BAGS:
+                    is_selected = bag in self.inventory_preview_selected_bags
+                    selected = ImGui.checkbox(f"{self._humanize_name(bag.name)}", is_selected)
+                    if selected != is_selected:
+                        if selected:
+                            self.inventory_preview_selected_bags.append(bag)
+                        else:
+                            self.inventory_preview_selected_bags = [selected_bag for selected_bag in self.inventory_preview_selected_bags if selected_bag != bag]
+                    PyImGui.next_column()
 
-        if ImGui.begin_child("##inventory_preview_bags", (0, 90), border=True):
-            width = PyImGui.get_content_region_avail()[0]
-            columns = max(1, int(width // 170))
-            PyImGui.columns(columns, "inventory_preview_bag_columns", False)
+                PyImGui.end_columns()
+            ImGui.end_child()
 
-            for bag in self.INVENTORY_PREVIEW_BAGS:
-                is_selected = bag in self.inventory_preview_selected_bags
-                selected = ImGui.checkbox(f"{self._humanize_name(bag.name)}", is_selected)
-                if selected != is_selected:
-                    if selected:
-                        self.inventory_preview_selected_bags.append(bag)
-                    else:
-                        self.inventory_preview_selected_bags = [selected_bag for selected_bag in self.inventory_preview_selected_bags if selected_bag != bag]
-                PyImGui.next_column()
+            for entry in preview_entries:
+                action = entry.action
+                if action is None and not self.inventory_preview_show_no_action:
+                    continue
+                if action == ItemAction.Hold and not self.inventory_preview_show_hold:
+                    continue
 
-            PyImGui.end_columns()
-        ImGui.end_child()
+                search_blob = " ".join(
+                    [
+                        entry.item.names.plain or entry.item.name or "",
+                        entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "",
+                        entry.note,
+                        entry.item.bag.name,
+                        action.name if action else "No Action",
+                    ]
+                )
+                if not self._search_text_matches(self._normalize_search_query(self.inventory_preview_search), search_blob):
+                    continue
 
-        for entry in preview_entries:
-            action = entry.action
-            if action is None and not self.inventory_preview_show_no_action:
-                continue
-            if action == ItemAction.Hold and not self.inventory_preview_show_hold:
-                continue
+                if action is not None:
+                    action_counts[action] = action_counts.get(action, 0) + 1
 
-            search_blob = " ".join(
-                [
-                    entry.item.names.plain or entry.item.name or "",
-                    entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "",
-                    entry.note,
-                    entry.item.bag.name,
-                    action.name if action else "No Action",
-                ]
+                visible_entries.append(entry)
+
+            summary_text = ", ".join(
+                f"{self._humanize_name(action.name)}: {count}"
+                for action, count in sorted(action_counts.items(), key=lambda item: item[0].name)
             )
-            if not self._search_text_matches(self._normalize_search_query(self.inventory_preview_search), search_blob):
-                continue
+            ImGui.text_wrapped(summary_text if summary_text else "No matching preview entries for the current filters.")
 
-            if action is not None:
-                action_counts[action] = action_counts.get(action, 0) + 1
+            if not self.inventory_preview_selected_bags:
+                ImGui.text_wrapped("Select at least one bag to preview items.")
+                return
 
-            visible_entries.append(entry)
+            if not visible_entries:
+                return
 
-        summary_text = ", ".join(
-            f"{self._humanize_name(action.name)}: {count}"
-            for action, count in sorted(action_counts.items(), key=lambda item: item[0].name)
-        )
-        ImGui.text_wrapped(summary_text if summary_text else "No matching preview entries for the current filters.")
+            if ImGui.begin_table("##inventory_preview_table", 6, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=280):
+                PyImGui.table_setup_column("Bag", PyImGui.TableColumnFlags.WidthFixed, 110)
+                PyImGui.table_setup_column("Slot", PyImGui.TableColumnFlags.WidthFixed, 45)
+                PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 120)
+                PyImGui.table_setup_column("Rule", PyImGui.TableColumnFlags.WidthFixed, 160)
+                PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_headers_row()
 
-        if not self.inventory_preview_selected_bags:
-            ImGui.text_wrapped("Select at least one bag to preview items.")
-            return
+                for entry in visible_entries:
+                    rule_name = entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "-"
+                    action_name = self._humanize_name(entry.action.name) if entry.action is not None else "No Action"
+                    item_name = entry.item.complete_name or entry.item.singular_name or entry.item.name or f"Item {entry.item.id}"
 
-        if not visible_entries:
-            return
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    ImGui.text(self._humanize_name(entry.item.bag.name))
+                    PyImGui.table_next_column()
+                    ImGui.text(str(entry.item.slot))
+                    PyImGui.table_next_column()
+                    ImGui.text(item_name, render_markdown=True)
+                    PyImGui.table_next_column()
+                    ImGui.text(action_name)
+                    PyImGui.table_next_column()
+                    ImGui.text(rule_name)
+                    PyImGui.table_next_column()
+                    ImGui.text_wrapped(entry.note if entry.note else ("Ready" if entry.executable else "-"))
 
-        if ImGui.begin_table("##inventory_preview_table", 6, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=280):
-            PyImGui.table_setup_column("Bag", PyImGui.TableColumnFlags.WidthFixed, 110)
-            PyImGui.table_setup_column("Slot", PyImGui.TableColumnFlags.WidthFixed, 45)
-            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
-            PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 120)
-            PyImGui.table_setup_column("Rule", PyImGui.TableColumnFlags.WidthFixed, 160)
-            PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
-            PyImGui.table_headers_row()
-
-            for entry in visible_entries:
-                rule_name = entry.rule.name if entry.rule and entry.rule.name else entry.rule.__class__.__name__ if entry.rule else "-"
-                action_name = self._humanize_name(entry.action.name) if entry.action is not None else "No Action"
-                item_name = entry.item.complete_name or entry.item.singular_name or entry.item.name or f"Item {entry.item.id}"
-
-                PyImGui.table_next_row()
-                PyImGui.table_next_column()
-                ImGui.text(self._humanize_name(entry.item.bag.name))
-                PyImGui.table_next_column()
-                ImGui.text(str(entry.item.slot))
-                PyImGui.table_next_column()
-                ImGui.text(item_name, render_markdown=True)
-                PyImGui.table_next_column()
-                ImGui.text(action_name)
-                PyImGui.table_next_column()
-                ImGui.text(rule_name)
-                PyImGui.table_next_column()
-                ImGui.text_wrapped(entry.note if entry.note else ("Ready" if entry.executable else "-"))
-
-            ImGui.end_table()
+                ImGui.end_table()
+        except Exception as e:
+            ImGui.text_wrapped(f"Error generating inventory preview: {str(e)}")
 
     def draw_loot_config_preview(self, config: LootConfig) -> None:
         ImGui.text("Preview", font_size=18)
