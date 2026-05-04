@@ -510,8 +510,8 @@ class UI:
         doc = re.sub(r":class:`([^`]+)`", r"\1", doc)
         doc = doc.replace("**", "")
         doc = doc.replace("\n", "\n\n").strip()
-        inversion_note = "Enable Inverted on a rule to apply it to items that do not match the configured criteria."
-        return f"{title}\n\n{doc}\n\n{inversion_note}" if doc else f"{title}\n\n{inversion_note}"
+        # inversion_note = "Enable Inverted on a rule to apply it to items that do not match the configured criteria."
+        return f"{title}\n\n{doc}" if doc else f"{title}"
 
     @staticmethod
     def _format_condition_type_tooltip(condition_type: type) -> str:
@@ -940,6 +940,16 @@ class UI:
                     config_info.config.insert(index + 1, rule)
                 config_info.save()
                 self.rule = None
+
+            ImGui.separator()
+
+            if ImGui.menu_item("Duplicate"):
+                index = config_info.config.index(rule)
+                duplicated_rule = Rule.from_dict(rule.to_dict())
+                if duplicated_rule is not None:
+                    config_info.config.insert(index + 1, duplicated_rule)
+                    config_info.save()
+                    self.rule = duplicated_rule
 
             ImGui.separator()
 
@@ -2154,7 +2164,7 @@ class UI:
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 selected_label = ui._humanize_name(condition.item_type.name) if condition.item_type is not None else "Select an item type"
-                PyImGui.set_next_item_width(size[0] if size[0] > 0 else -1)
+                PyImGui.set_next_item_width(-1)
                 if PyImGui.begin_combo(f"##exact_item_type_{id(condition)}", selected_label, PyImGui.ImGuiComboFlags.NoFlag):
                     for item_type in sorted(ItemType, key=lambda item_type: item_type.name):
                         if ImGui.selectable(ui._humanize_name(item_type.name), selected=condition.item_type == item_type):
@@ -2167,7 +2177,6 @@ class UI:
         @staticmethod
         def ForRaritiesCondition(ui: "UI", rule: Rule, condition: RaritiesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            style = ImGui.get_style()
             
             style = ImGui.get_style()
             spacing = style.ItemSpacing.value2 or 0
@@ -2206,8 +2215,13 @@ class UI:
             available_height = PyImGui.get_content_region_avail()[1]
             size = size if size is not None else (0, min(base_height + (element_height + spacing) * (len(DyeColor) - 1), available_height))
 
+            width = PyImGui.get_content_region_avail()[0]
+            columns = max(1, int(width // 200))
+            
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.begin_child(f"##dye_colors_{id(condition)}", (0, 0), border=False):
+                    PyImGui.columns(columns, f"##dye_colors_columns_{id(condition)}", False)
+                    
                     sorted_dye_colors = sorted(DyeColor, key=lambda dc: dc.name)
                     for dye_color in sorted_dye_colors:
                         if dye_color == DyeColor.NoColor:
@@ -2232,6 +2246,10 @@ class UI:
                             else:
                                 condition.dye_colors.append(dye_color)
                             changed = True
+                        
+                        PyImGui.next_column()
+                    
+                    PyImGui.end_columns()
                 ImGui.end_child()
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -2935,6 +2953,89 @@ class UI:
         )
         return issubclass(condition_type, supported_types)
 
+    def _clamp_condition_editor_height(self, estimated_height: float, max_height: float = 500) -> float:
+        minimum_height = 60
+        clamped_height = max(minimum_height, estimated_height)
+        
+        return min(clamped_height, max_height)
+
+    def _estimate_condition_editor_height(self, rule: Rule, condition: Condition, max_height: float = 500) -> float:
+        style = ImGui.get_style()
+        spacing = max(style.ItemSpacing.value2 or 0, 4)
+        wrapper_height = 56 if (len(rule.conditions) > 1 or isinstance(rule, CustomRule)) else 0
+        control_height = 32
+        section_gap = spacing + 12
+        row_25 = 25 + spacing
+        row_28 = 28 + spacing
+        row_40 = 40 + spacing
+        row_48 = 48 + spacing
+        row_56 = 56 + spacing
+
+        def clamp(content_height: float) -> float:
+            return self._clamp_condition_editor_height(content_height, max_height=max_height)
+
+        match condition:
+            case ModelIdsCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.model_ids)) * row_48)
+
+            case ItemTypesCondition():
+                available_width = max(PyImGui.get_content_region_avail()[0], 200)
+                columns = max(1, int(available_width // 200))
+                rows = max(1, (len(ItemType) + columns - 1) // columns)
+                return clamp(control_height + rows * row_25)
+
+            case EncodedNamesCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.encoded_names)) * row_56)
+
+            case ModelFileIdsCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.model_file_ids)) * row_56)
+
+            case ModelFileIdsAndItemTypesCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.model_file_ids_and_item_types)) * row_56)
+
+            case ModelIdsAndItemTypesCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.modelids_and_itemtypes)) * row_56)
+
+            case ExactItemTypeCondition():
+                return clamp(control_height + 8)
+
+            case RaritiesCondition():
+                return clamp(control_height + 8 + max(1, len(Rarity)) * row_25)
+
+            case DyeColorsCondition():
+                available_width = max(PyImGui.get_content_region_avail()[0], 200)
+                columns = max(1, int(available_width // 200))
+                dye_count = len([dye_color for dye_color in DyeColor if dye_color != DyeColor.NoColor])
+                rows = max(1, (dye_count + columns - 1) // columns)
+                return clamp(control_height + rows * row_28)
+
+            case SalvagesToMaterialsCondition():
+                return clamp(control_height + control_height + 12 + max(1, len(condition.materials)) * row_48)
+
+            case WeaponRequirementCondition():
+                return clamp(14 * row_40 + 12)
+
+            case InherentFiltersCondition():
+                return clamp(140 + max(1, len(condition.inherents)) * 90)
+
+            case InscribableCondition():
+                return clamp(control_height + 8)
+
+            case UnidentifiedCondition():
+                return clamp(control_height + 8)
+
+            case ArmorUpgradesCondition():
+                return clamp(150 + max(1, len(condition.armor_upgrades)) * 24)
+
+            case MaxWeaponUpgradesCondition():
+                return clamp(140 + max(1, len(condition.weapon_upgrades)) * 70)
+
+            case UpgradeRangesCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.upgrade_ranges)) * 100)
+
+            case _:
+                return clamp(180)
+
     def _draw_custom_rule(self, rule: CustomRule) -> bool:
         changed = False
         PyImGui.set_next_item_width(180)
@@ -2962,14 +3063,19 @@ class UI:
             ImGui.end_combo()
 
         ImGui.separator()
-        if not rule.conditions:
-            ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
-            return changed
+        
+        if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
+            if not rule.conditions:
+                ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
+                return changed
 
-        for condition in rule.conditions:
-            if self._draw_condition_editor(rule, condition, size=(0, 300)):
-                changed = True
+            for condition in rule.conditions:
+                condition_height = self._estimate_condition_editor_height(rule, condition, max_height=500)
                 
+                if self._draw_condition_editor(rule, condition, size=(0, condition_height)):
+                    changed = True
+        ImGui.end_child()
+        
         return changed
 
     def _draw_rule_body(self, rule: Rule) -> bool:
