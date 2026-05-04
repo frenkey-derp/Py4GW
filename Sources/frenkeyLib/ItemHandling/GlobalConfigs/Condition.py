@@ -423,17 +423,17 @@ class ExactItemTypeCondition(Condition):
 
 class ModelIdsAndItemTypesCondition(Condition):
     def __init__(self, items: Optional[list[ModelIdAndItemType]] = None):
-        self.items: list[ModelIdAndItemType] = items if items is not None else []
+        self.modelids_and_itemtypes: list[ModelIdAndItemType] = items if items is not None else []
 
     def is_valid(self) -> bool:
-        return len(self.items) > 0
+        return len(self.modelids_and_itemtypes) > 0
 
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
         item_snapshot = context.item_snapshot
         if item_snapshot is None:
             return False
 
-        for model_id, item_type in self.items:
+        for model_id, item_type in self.modelids_and_itemtypes:
             normalized_model_id = model_id.value if isinstance(model_id, ModelID) else model_id
             if item_snapshot.model_id == normalized_model_id and item_snapshot.item_type.matches(item_type):
                 return True
@@ -447,7 +447,7 @@ class ModelIdsAndItemTypesCondition(Condition):
                     int(model_id.value) if isinstance(model_id, ModelID) else int(model_id),
                     item_type.name,
                 )
-                for model_id, item_type in self.items
+                for model_id, item_type in self.modelids_and_itemtypes
             )
         )
 
@@ -458,12 +458,12 @@ class ModelIdsAndItemTypesCondition(Condition):
                     "model_id": int(model_id.value) if isinstance(model_id, ModelID) else int(model_id),
                     "item_type": item_type.name,
                 }
-                for model_id, item_type in self.items
+                for model_id, item_type in self.modelids_and_itemtypes
             ]
         }
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
-        self.items = []
+        self.modelids_and_itemtypes = []
         for entry in data.get("items", []):
             if not isinstance(entry, dict):
                 continue
@@ -478,7 +478,7 @@ class ModelIdsAndItemTypesCondition(Condition):
             except ValueError:
                 normalized_model_id = model_id
 
-            self.items.append(ModelIdAndItemType(normalized_model_id, ItemType[item_type_name]))
+            self.modelids_and_itemtypes.append(ModelIdAndItemType(normalized_model_id, ItemType[item_type_name]))
 
 
 class EncodedNamesCondition(Condition):

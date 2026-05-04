@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum, auto
-from typing import Any, ClassVar, Optional, Sequence
+from typing import Any, ClassVar, Optional, Sequence, cast
 
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemAction, ItemType, Rarity
@@ -202,31 +202,32 @@ class ModelIdsRule(Rule):
         super().__init__([ModelIdsCondition(model_ids)])
 
     @property
+    def condition(self) -> ModelIdsCondition:
+        return cast(ModelIdsCondition, self.conditions[0])
+    
+    @property
     def model_ids(self) -> list[ModelID | int]:
-        return self._condition().model_ids
+        return self.condition.model_ids
 
     @model_ids.setter
     def model_ids(self, value: list[ModelID | int]) -> None:
-        self._condition().model_ids = value
-
-    def _condition(self) -> ModelIdsCondition:
-        return self.conditions[0]  # type: ignore[return-value]
-
+        self.condition.model_ids = value
 
 class ItemTypesRule(Rule):
     def __init__(self, item_types: Optional[list[ItemType]] = None):
         super().__init__([ItemTypesCondition(item_types)])
 
     @property
+    def condition(self) -> ItemTypesCondition:
+        return cast(ItemTypesCondition, self.conditions[0])
+    
+    @property
     def item_types(self) -> list[ItemType]:
-        return self._condition().item_types
+        return self.condition.item_types
 
     @item_types.setter
     def item_types(self, value: list[ItemType]) -> None:
-        self._condition().item_types = value
-
-    def _condition(self) -> ItemTypesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.item_types = value
 
 
 class ModelIdsAndItemTypesRule(Rule):
@@ -234,15 +235,16 @@ class ModelIdsAndItemTypesRule(Rule):
         super().__init__([ModelIdsAndItemTypesCondition(model_ids)])
 
     @property
+    def condition(self) -> ModelIdsAndItemTypesCondition:
+        return cast(ModelIdsAndItemTypesCondition, self.conditions[0])
+
+    @property
     def items(self) -> list[ModelIdAndItemType]:
-        return self._condition().items
+        return self.condition.modelids_and_itemtypes
 
     @items.setter
     def items(self, value: list[ModelIdAndItemType]) -> None:
-        self._condition().items = value
-
-    def _condition(self) -> ModelIdsAndItemTypesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.modelids_and_itemtypes = value
 
 
 class EncodedNameRule(Rule):
@@ -250,15 +252,16 @@ class EncodedNameRule(Rule):
         super().__init__([EncodedNamesCondition(encoded_names)])
 
     @property
+    def condition(self) -> EncodedNamesCondition:
+        return cast(EncodedNamesCondition, self.conditions[0])
+    
+    @property
     def encoded_names(self) -> list[bytes]:
-        return self._condition().encoded_names
+        return self.condition.encoded_names
 
     @encoded_names.setter
     def encoded_names(self, value: list[bytes]) -> None:
-        self._condition().encoded_names = value
-
-    def _condition(self) -> EncodedNamesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.encoded_names = value
 
 
 class ModelFileIdRule(Rule):
@@ -266,15 +269,16 @@ class ModelFileIdRule(Rule):
         super().__init__([ModelFileIdsCondition(model_file_ids)])
 
     @property
+    def condition(self) -> ModelFileIdsCondition:
+        return cast(ModelFileIdsCondition, self.conditions[0])
+
+    @property
     def model_file_ids(self) -> list[int]:
-        return self._condition().model_file_ids
+        return self.condition.model_file_ids
 
     @model_file_ids.setter
     def model_file_ids(self, value: list[int]) -> None:
-        self._condition().model_file_ids = value
-
-    def _condition(self) -> ModelFileIdsCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.model_file_ids = value
 
 
 class ModelFileIdAndItemTypeRule(Rule):
@@ -282,15 +286,16 @@ class ModelFileIdAndItemTypeRule(Rule):
         super().__init__([ModelFileIdsAndItemTypesCondition(model_file_ids_and_item_types)])
 
     @property
+    def condition(self) -> ModelFileIdsAndItemTypesCondition:
+        return cast(ModelFileIdsAndItemTypesCondition, self.conditions[0])
+
+    @property
     def model_file_ids_and_item_types(self) -> list[ModelFileIdAndItemType]:
-        return self._condition().model_file_ids_and_item_types
+        return self.condition.model_file_ids_and_item_types
 
     @model_file_ids_and_item_types.setter
     def model_file_ids_and_item_types(self, value: list[ModelFileIdAndItemType]) -> None:
-        self._condition().model_file_ids_and_item_types = value
-
-    def _condition(self) -> ModelFileIdsAndItemTypesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.model_file_ids_and_item_types = value
 
 
 class WeaponSkinRule(Rule):
@@ -511,31 +516,32 @@ class SalvagesToMaterialRule(Rule):
         super().__init__([SalvagesToMaterialsCondition(materials)])
 
     @property
+    def condition(self) -> SalvagesToMaterialsCondition:
+        return cast(SalvagesToMaterialsCondition, self.conditions[0])
+    
+    @property
     def materials(self) -> list[ModelID | int]:
-        return self._condition().materials
+        return self.condition.materials
 
     @materials.setter
     def materials(self, value: list[ModelID | int]) -> None:
-        self._condition().materials = value
-
-    def _condition(self) -> SalvagesToMaterialsCondition:
-        return self.conditions[0]  # type: ignore[return-value]
-
+        self.condition.materials = value
 
 class RaritiesRule(Rule):
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         super().__init__([RaritiesCondition(rarities)])
 
     @property
+    def condition(self) -> RaritiesCondition:
+        return cast(RaritiesCondition, self.conditions[0])
+    
+    @property
     def rarities(self) -> list[Rarity]:
-        return self._condition().rarities
+        return self.condition.rarities
 
     @rarities.setter
     def rarities(self, value: list[Rarity]) -> None:
-        self._condition().rarities = value
-
-    def _condition(self) -> RaritiesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.rarities = value
 
 
 class RaritiesAndItemTypesRule(Rule):
@@ -568,7 +574,10 @@ class RaritiesAndItemTypesRule(Rule):
 class UnidentifiedRule(Rule):
     def __init__(self):
         super().__init__([UnidentifiedCondition()], action=ItemAction.Identify)
-
+    
+    @property
+    def condition(self) -> UnidentifiedCondition:
+        return cast(UnidentifiedCondition, self.conditions[0])
 
 class UnidentifiedAndRarityRule(Rule):
     def __init__(self, rarities: Optional[list[Rarity]] = None):
@@ -576,30 +585,30 @@ class UnidentifiedAndRarityRule(Rule):
 
     @property
     def rarities(self) -> list[Rarity]:
-        return self._condition().rarities
+        return self._rarities_condition().rarities
 
     @rarities.setter
     def rarities(self, value: list[Rarity]) -> None:
-        self._condition().rarities = value
+        self._rarities_condition().rarities = value
 
-    def _condition(self) -> RaritiesCondition:
-        return self.conditions[1]  # type: ignore[return-value]
-
+    def _rarities_condition(self) -> RaritiesCondition:
+        return cast(RaritiesCondition, self.conditions[1])
 
 class DyesRule(Rule):
     def __init__(self, dye_colors: Optional[list[DyeColor]] = None):
         super().__init__([DyeColorsCondition(dye_colors)])
 
     @property
+    def condition(self) -> DyeColorsCondition:
+        return cast(DyeColorsCondition, self.conditions[0])
+    
+    @property
     def dye_colors(self) -> list[DyeColor]:
-        return self._condition().dye_colors
+        return self.condition.dye_colors
 
     @dye_colors.setter
     def dye_colors(self, value: list[DyeColor]) -> None:
-        self._condition().dye_colors = value
-
-    def _condition(self) -> DyeColorsCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.dye_colors = value
 
 
 @dataclass
@@ -681,15 +690,16 @@ class MaxWeaponUpgradeRule(ExtractUpgradeRule):
         super().__init__([MaxWeaponUpgradesCondition(upgrades)])
 
     @property
+    def condition(self) -> MaxWeaponUpgradesCondition:
+        return cast(MaxWeaponUpgradesCondition, self.conditions[0])
+
+    @property
     def weapon_upgrades(self) -> list[UpgradeAndItemType]:
-        return self._condition().weapon_upgrades
+        return self.condition.weapon_upgrades
 
     @weapon_upgrades.setter
     def weapon_upgrades(self, value: list[UpgradeAndItemType]) -> None:
-        self._condition().weapon_upgrades = value
-
-    def _condition(self) -> MaxWeaponUpgradesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.weapon_upgrades = value
 
 
 class ArmorUpgradeRule(ExtractUpgradeRule):
@@ -699,15 +709,16 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
         super().__init__([ArmorUpgradesCondition(runes)])
 
     @property
+    def condition(self) -> ArmorUpgradesCondition:
+        return cast(ArmorUpgradesCondition, self.conditions[0])
+
+    @property
     def armor_upgrades(self) -> list[ArmorUpgrade]:
-        return self._condition().armor_upgrades
+        return self.condition.armor_upgrades
 
     @armor_upgrades.setter
     def armor_upgrades(self, value: list[ArmorUpgrade]) -> None:
-        self._condition().armor_upgrades = value
-
-    def _condition(self) -> ArmorUpgradesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.armor_upgrades = value
 
 
 class UpgradeRangeRule(ExtractUpgradeRule):
@@ -717,15 +728,16 @@ class UpgradeRangeRule(ExtractUpgradeRule):
         super().__init__([UpgradeRangesCondition(upgrade_ranges)])
 
     @property
+    def condition(self) -> UpgradeRangesCondition:
+        return cast(UpgradeRangesCondition, self.conditions[0])
+
+    @property
     def upgrade_ranges(self) -> list[RangedUpgrade]:
-        return self._condition().upgrade_ranges
+        return self.condition.upgrade_ranges
 
     @upgrade_ranges.setter
     def upgrade_ranges(self, value: list[RangedUpgrade]) -> None:
-        self._condition().upgrade_ranges = value
-
-    def _condition(self) -> UpgradeRangesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.upgrade_ranges = value
 
 
 class UpgradesRule(ExtractUpgradeRule):
@@ -735,12 +747,13 @@ class UpgradesRule(ExtractUpgradeRule):
         super().__init__([UpgradesCondition(upgrades)])
 
     @property
+    def condition(self) -> UpgradesCondition:
+        return cast(UpgradesCondition, self.conditions[0])
+
+    @property
     def upgrades(self) -> list[tuple[Upgrade, list[ItemType]]]:
-        return self._condition().upgrades
+        return self.condition.upgrades
 
     @upgrades.setter
     def upgrades(self, value: list[tuple[Upgrade, list[ItemType]] | Upgrade]) -> None:
-        self._condition().upgrades = UpgradesCondition(value).upgrades
-
-    def _condition(self) -> UpgradesCondition:
-        return self.conditions[0]  # type: ignore[return-value]
+        self.condition.upgrades = UpgradesCondition(value).upgrades
