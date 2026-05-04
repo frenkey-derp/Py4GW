@@ -533,10 +533,10 @@ class ModelFileIdsCondition(Condition):
 
 class ModelFileIdsAndItemTypesCondition(Condition):
     def __init__(self, items: Optional[list[ModelFileIdAndItemType]] = None):
-        self.items: list[ModelFileIdAndItemType] = items if items is not None else []
+        self.model_file_ids_and_item_types: list[ModelFileIdAndItemType] = items if items is not None else []
 
     def is_valid(self) -> bool:
-        return len(self.items) > 0
+        return len(self.model_file_ids_and_item_types) > 0
 
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
         item_snapshot = context.item_snapshot
@@ -545,11 +545,11 @@ class ModelFileIdsAndItemTypesCondition(Condition):
 
         return any(
             item_snapshot.model_file_id == entry.model_file_id and item_snapshot.item_type.matches(entry.item_type)
-            for entry in self.items
+            for entry in self.model_file_ids_and_item_types
         )
 
     def _comparison_data(self) -> Any:
-        return tuple(sorted((entry.model_file_id, entry.item_type.name) for entry in self.items))
+        return tuple(sorted((entry.model_file_id, entry.item_type.name) for entry in self.model_file_ids_and_item_types))
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
@@ -558,12 +558,12 @@ class ModelFileIdsAndItemTypesCondition(Condition):
                     "model_file_id": entry.model_file_id,
                     "item_type": entry.item_type.name,
                 }
-                for entry in self.items
+                for entry in self.model_file_ids_and_item_types
             ]
         }
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
-        self.items = []
+        self.model_file_ids_and_item_types = []
         for entry in data.get("items", []):
             if not isinstance(entry, dict):
                 continue
@@ -573,7 +573,7 @@ class ModelFileIdsAndItemTypesCondition(Condition):
             if not isinstance(model_file_id, int) or not isinstance(item_type_name, str) or item_type_name not in ItemType.__members__:
                 continue
 
-            self.items.append(ModelFileIdAndItemType(model_file_id=model_file_id, item_type=ItemType[item_type_name]))
+            self.model_file_ids_and_item_types.append(ModelFileIdAndItemType(model_file_id=model_file_id, item_type=ItemType[item_type_name]))
 
 
 class WeaponRequirementCondition(Condition):

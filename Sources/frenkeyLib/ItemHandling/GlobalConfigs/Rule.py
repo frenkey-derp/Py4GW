@@ -283,11 +283,11 @@ class ModelFileIdAndItemTypeRule(Rule):
 
     @property
     def model_file_ids_and_item_types(self) -> list[ModelFileIdAndItemType]:
-        return self._condition().items
+        return self._condition().model_file_ids_and_item_types
 
     @model_file_ids_and_item_types.setter
     def model_file_ids_and_item_types(self, value: list[ModelFileIdAndItemType]) -> None:
-        self._condition().items = value
+        self._condition().model_file_ids_and_item_types = value
 
     def _condition(self) -> ModelFileIdsAndItemTypesCondition:
         return self.conditions[0]  # type: ignore[return-value]

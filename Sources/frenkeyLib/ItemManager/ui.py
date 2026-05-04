@@ -59,8 +59,28 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, B
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import DamageRange
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import InherentFilter
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
+    ArmorUpgradesCondition,
+    Condition,
+    DamageRange,
+    DyeColorsCondition,
+    EncodedNamesCondition,
+    ExactItemTypeCondition,
+    InherentFilter,
+    InherentFiltersCondition,
+    InscribableCondition,
+    ItemTypesCondition,
+    MaxWeaponUpgradesCondition,
+    ModelFileIdsAndItemTypesCondition,
+    ModelFileIdsCondition,
+    ModelIdsAndItemTypesCondition,
+    ModelIdsCondition,
+    RaritiesCondition,
+    SalvagesToMaterialsCondition,
+    UnidentifiedCondition,
+    UpgradeRangesCondition,
+    WeaponRequirementCondition,
+)
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
 from Sources.frenkeyLib.ItemHandling.Items.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
@@ -435,6 +455,26 @@ class UI:
         return sorted(types, key=lambda t: t.__name__)
 
     @staticmethod
+    def _get_condition_types() -> list[type[Condition]]:
+        discovered_condition_types: list[type[Condition]] = []
+
+        def visit(condition_type: type[Condition]) -> None:
+            for child_condition_type in condition_type.__subclasses__():
+                if child_condition_type not in discovered_condition_types:
+                    discovered_condition_types.append(child_condition_type)
+                visit(child_condition_type)
+
+        visit(Condition)
+        types = [
+            condition_type
+            for condition_type in discovered_condition_types
+            if getattr(condition_type, "ui_selectable", True)
+            and condition_type is not Condition
+            and not inspect.isabstract(condition_type)
+        ]
+        return sorted(types, key=lambda t: t.__name__)
+
+    @staticmethod
     def _humanize_name(value: str) -> str:
         return Utils.humanize_string(value.replace("NONE", "None").replace("None_", "None").replace("_None", "None")).replace("  ", " ").strip()
 
@@ -472,6 +512,15 @@ class UI:
         doc = doc.replace("\n", "\n\n").strip()
         inversion_note = "Enable Inverted on a rule to apply it to items that do not match the configured criteria."
         return f"{title}\n\n{doc}\n\n{inversion_note}" if doc else f"{title}\n\n{inversion_note}"
+
+    @staticmethod
+    def _format_condition_type_tooltip(condition_type: type) -> str:
+        title = UI._humanize_name(condition_type.__name__)
+        doc = inspect.getdoc(condition_type) or ""
+        doc = re.sub(r":class:`([^`]+)`", r"\1", doc)
+        doc = doc.replace("**", "")
+        doc = doc.replace("\n", "\n\n").strip()
+        return f"{title}\n\n{doc}" if doc else title
 
     @staticmethod
     def _show_wrapped_tooltip(text: str, wrap_width: float = 420.0) -> None:
@@ -604,14 +653,15 @@ class UI:
 
         return clicked
 
-    def _draw_requirement_editor(self, rule: WeaponSkinRule | WeaponTypeRule, item_types: Optional[list[ItemType]] = None, height: float = 0) -> bool:
+    def _draw_requirement_editor(self, rule: WeaponSkinRule | WeaponTypeRule | WeaponRequirementCondition, item_types: Optional[list[ItemType]] = None, height: float = 0, unique_id: Optional[str] = None) -> bool:
         changed = False
         item_types = [item_type for item_type in (item_types or []) if item_type.is_weapon_type()]
         item_types = sorted(set(item_types), key=lambda item_type: item_type.name)
         detail_item_type = item_types[0] if len(item_types) == 1 else None
         height = height if height > 0 else PyImGui.get_content_region_avail()[1]
             
-        if ImGui.begin_child(f"##requirement_rows_{id(rule)}", (0, height), border=True):
+        editor_id = unique_id or str(id(rule))
+        if ImGui.begin_child(f"##requirement_rows_{editor_id}", (0, height), border=True):
             for requirement in range(0, 14):
                 selected = requirement in rule.requirements
                 default_range = self._get_default_weapon_value_range(detail_item_type, requirement) or (0, 0)
@@ -622,7 +672,7 @@ class UI:
                     min_value, max_value = default_range
                 value_text = self._format_weapon_value_range(detail_item_type, requirement)
 
-                if ImGui.begin_selectable(f"##requirement_selectable_{id(rule)}_{requirement}", selected=selected, size=(0, 40), border_color=UI.GRAY_COLOR.rgb_tuple):
+                if ImGui.begin_selectable(f"##requirement_selectable_{editor_id}_{requirement}", selected=selected, size=(0, 40), border_color=UI.GRAY_COLOR.rgb_tuple):
                     ImGui.text(string_table.decode(GWEncoded._requires_attribute_level(attribute_level=requirement, attribute=UI.ITEM_TYPE_ATTRIBUTES.get(detail_item_type or ItemType.Unknown, Attribute.None_))))
                     ImGui.text_colored(value_text, UI.GRAY_COLOR.color_tuple, font_size=12)
                     # min_damage = ImGui.slider_int(f"Min##requirement_slider_min_{id(rule)}_{requirement}", min_value, max_value, format="%d", flags=PyImGui.SliderFlags.NoInput)
@@ -639,7 +689,7 @@ class UI:
 
         return changed
 
-    def _draw_inherent_upgrades_editor(self, inherents: list[InherentFilter], unique_id: str, inscribable: bool, height: float = -1) -> tuple[bool, bool]:
+    def _draw_inherent_upgrades_editor(self, inherents: list[InherentFilter], unique_id: str, inscribable: bool, height: float = -1, show_inscribable_toggle: bool = True) -> tuple[bool, bool]:
         changed = False
 
         try:
@@ -655,15 +705,16 @@ class UI:
                 search_query = self._normalize_search_query(self.inherent_upgrade_search)
 
                 if ImGui.begin_child(f"##inherent_selectables_{unique_id}", (0, 0), border=False):
-                    if ImGui.begin_selectable(f"##inscribable{unique_id}", selected=inscribable, size=selectable_size):
-                        ImGui.text("Inscribable Weapons")
-                        x, y = PyImGui.get_cursor_pos()
-                        PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored("Any inscribable weapon", UI.GRAY_COLOR.color_tuple, font_size=12)
+                    if show_inscribable_toggle:
+                        if ImGui.begin_selectable(f"##inscribable{unique_id}", selected=inscribable, size=selectable_size):
+                            ImGui.text("Inscribable Weapons")
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored("Any inscribable weapon", UI.GRAY_COLOR.color_tuple, font_size=12)
 
-                    if ImGui.end_selectable():
-                        inscribable = not inscribable
-                        changed = True
+                        if ImGui.end_selectable():
+                            inscribable = not inscribable
+                            changed = True
 
                     for index, inherent_type in enumerate(self.available_inherent_upgrade_types):
                         inherent = inherent_type()
@@ -920,7 +971,7 @@ class UI:
     def _get_trader_quote_for_armor_upgrade(self, upgrade: ArmorUpgrade) -> TraderQuote | None:
         return self._get_armor_upgrade_quote_lookup().get(upgrade._comparison_data())
 
-    def _select_armor_upgrades_from_trader_prices(self, rule: ArmorUpgradeRule, minimum_value: int) -> bool:
+    def _select_armor_upgrades_from_trader_prices(self, rule: ArmorUpgradeRule | ArmorUpgradesCondition, minimum_value: int) -> bool:
         Py4GW.Console.Log("Item Manager", f"Selecting armor upgrades from trader prices with threshold {minimum_value} for profession {self.profession.name}.", Py4GW.Console.MessageType.Info)
 
         quotes = self._get_trader_armor_upgrade_quotes()
@@ -1005,7 +1056,7 @@ class UI:
 
         return changed
 
-    def _draw_armor_upgrade_price_popup(self, rule: ArmorUpgradeRule) -> bool:
+    def _draw_armor_upgrade_price_popup(self, rule: ArmorUpgradeRule | ArmorUpgradesCondition) -> bool:
         changed = False
         popup_id = "##armor_upgrade_price_popup"
         trader_open = UIManagerExtensions.MerchantWindow.IsOpen()
@@ -1043,7 +1094,7 @@ class UI:
 
         return changed
 
-    def _draw_armor_upgrades_rule(self, rule: ArmorUpgradeRule) -> bool:
+    def _draw_armor_upgrades_rule(self, rule: ArmorUpgradeRule | ArmorUpgradesCondition) -> bool:
         changed = False
 
         if self._draw_armor_upgrade_price_popup(rule):
@@ -1134,7 +1185,7 @@ class UI:
 
         return changed
 
-    def _draw_max_weapon_upgrades_rule(self, rule: MaxWeaponUpgradeRule) -> bool:
+    def _draw_max_weapon_upgrades_rule(self, rule: MaxWeaponUpgradeRule | MaxWeaponUpgradesCondition) -> bool:
         changed = False
 
         if ImGui.begin_table("##weapon_upgrade_rule_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
@@ -1310,7 +1361,7 @@ class UI:
             ),
         )
 
-    def _draw_upgrade_range_add_popup(self, rule: UpgradeRangeRule) -> bool:
+    def _draw_upgrade_range_add_popup(self, rule: UpgradeRangeRule | UpgradeRangesCondition) -> bool:
         changed = False
         popup_id = "##upgrade_range_add_popup"
 
@@ -1376,7 +1427,7 @@ class UI:
 
         return changed
 
-    def _draw_upgrade_range_rule(self, rule: UpgradeRangeRule) -> bool:
+    def _draw_upgrade_range_rule(self, rule: UpgradeRangeRule | UpgradeRangesCondition) -> bool:
         changed = False
 
         if self._draw_upgrade_range_add_popup(rule):
@@ -1531,7 +1582,7 @@ class UI:
     # -------------------------------------------------------------------------
     # Model / item identity rule editors
     # -------------------------------------------------------------------------
-    def draw_models_and_itemtype_rule(self, rule : ModelIdsAndItemTypesRule) -> bool:
+    def draw_models_and_itemtype_rule(self, rule : ModelIdsAndItemTypesRule | ModelIdsAndItemTypesCondition) -> bool:
         changed = False
         items = [item for sublist in ITEM_DATA.data.values() for item in sublist.values()]
         sorted_items = sorted(items, key=lambda item: item.name)
@@ -1659,7 +1710,7 @@ class UI:
 
         return changed
 
-    def draw_model_ids_rule(self, rule: ModelIdsRule) -> bool:
+    def draw_model_ids_rule(self, rule: ModelIdsRule | ModelIdsCondition) -> bool:
         changed = False
         model_ids = [m for m in ModelID]
         popup_id = "##model_ids_rule_add_popup"
@@ -1765,7 +1816,7 @@ class UI:
         except ValueError:
             return text.encode("utf-8")
         
-    def draw_encoded_names_rule(self, rule: EncodedNameRule) -> bool:
+    def draw_encoded_names_rule(self, rule: EncodedNameRule | EncodedNamesCondition) -> bool:
         changed = False
         items = self._unique_encoded_name_items
         popup_id = "##encoded_name_rule_add_popup"
@@ -1872,7 +1923,7 @@ class UI:
 
         return changed
 
-    def draw_model_file_ids_rule(self, rule: ModelFileIdRule) -> bool:
+    def draw_model_file_ids_rule(self, rule: ModelFileIdRule | ModelFileIdsCondition) -> bool:
         changed = False
         items = self._unique_model_file_id_items
         popup_id = "##model_file_id_rule_add_popup"
@@ -1968,7 +2019,7 @@ class UI:
 
         return changed
 
-    def draw_model_file_ids_and_item_type_rule(self, rule: ModelFileIdAndItemTypeRule) -> bool:
+    def draw_model_file_ids_and_item_type_rule(self, rule: ModelFileIdAndItemTypeRule | ModelFileIdsAndItemTypesCondition) -> bool:
         changed = False
         items = self._unique_model_file_id_items
         popup_id = "##model_file_id_item_type_rule_add_popup"
@@ -2233,7 +2284,7 @@ class UI:
         changed = inherent_changed or changed
         return changed
 
-    def draw_salvages_to_material_rule(self, rule: SalvagesToMaterialRule) -> bool:
+    def draw_salvages_to_material_rule(self, rule: SalvagesToMaterialRule | SalvagesToMaterialsCondition) -> bool:
         changed = False
         popup_id = "##salvage_material_rule_add_popup"
         selected_materials = set(rule.materials)
@@ -3039,7 +3090,7 @@ class UI:
     def _draw_rarity_selector(self, selected_rarities: list[Rarity], child_id: str = "##rarities") -> bool:
         changed = False
         style = ImGui.get_style()
-        if ImGui.begin_child(child_id, (0, 0), border=False):
+        if ImGui.begin_child(child_id, (0, 150), border=False):
             for rarity in Rarity:
                 is_selected = rarity in selected_rarities
                 style.Text.push_color_direct(self._get_rarity_color(rarity).rgb_tuple)
@@ -3085,91 +3136,391 @@ class UI:
         ImGui.end_child()
         return changed
 
+    def _draw_exact_item_type_selector(self, condition: ExactItemTypeCondition, child_id: str) -> bool:
+        selected_label = self._humanize_name(condition.item_type.name) if condition.item_type is not None else "Select an item type"
+        changed = False
+        if PyImGui.begin_combo(child_id, selected_label, PyImGui.ImGuiComboFlags.NoFlag):
+            for item_type in sorted(ItemType, key=lambda item_type: item_type.name):
+                if ImGui.selectable(self._humanize_name(item_type.name), selected=condition.item_type == item_type):
+                    condition.item_type = item_type
+                    changed = True
+            ImGui.end_combo()
+        return changed
+
+    def _get_condition_requirement_item_types(self, rule: Rule) -> list[ItemType]:
+        exact_type_condition = next((condition for condition in rule.conditions if isinstance(condition, ExactItemTypeCondition)), None)
+        if exact_type_condition is not None and exact_type_condition.item_type is not None:
+            return [exact_type_condition.item_type]
+
+        item_types_condition = next((condition for condition in rule.conditions if isinstance(condition, ItemTypesCondition)), None)
+        if item_types_condition is not None:
+            return list(item_types_condition.item_types)
+
+        model_file_ids_condition = next((condition for condition in rule.conditions if isinstance(condition, ModelFileIdsCondition)), None)
+        if model_file_ids_condition is not None:
+            item_types: list[ItemType] = []
+            for model_file_id in model_file_ids_condition.model_file_ids:
+                item = self._find_item_by_model_file_id(model_file_id)
+                if item is not None and item.item_type.is_weapon_type() and item.item_type not in item_types:
+                    item_types.append(item.item_type)
+            return item_types
+
+        return []
+
+    class ConditionEditor:
+        @staticmethod
+        def ForModelIdsCondition(ui : "UI", rule : Rule, condition: ModelIdsCondition, size : tuple[float, float] = (0, 0)) -> bool:
+            changed = False
+            model_ids = [m for m in ModelID]
+            popup_id = "##model_ids_rule_add_popup"
+            selected_model_ids = {
+                int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                for model_id in condition.model_ids
+            }
+
+            if ImGui.button("Add Model ID", -1):
+                ui.model_id_search = ""
+                PyImGui.open_popup(popup_id)
+
+            PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
+            if PyImGui.begin_popup(popup_id):
+                ImGui.text("Add Model ID")
+                ImGui.separator()
+
+                PyImGui.set_next_item_width(-1)
+                _, ui.model_id_search = ImGui.search_field("##model_id_enum_search", ui.model_id_search, "Search model ids or enter an integer...")
+                search_query = ui._normalize_search_query(ui.model_id_search)
+                matching_model_ids = [
+                    model_id
+                    for model_id in sorted(model_ids, key=lambda model_id: model_id.name)
+                    if ui._search_text_matches(search_query, model_id.name, int(model_id.value))
+                ]
+
+                manual_value: int | None = None
+                if search_query:
+                    try:
+                        manual_value = int(search_query)
+                    except ValueError:
+                        manual_value = None
+
+                exact_enum_match = any(int(model_id.value) == manual_value for model_id in model_ids) if manual_value is not None else False
+
+                if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
+                    if ImGui.begin_selectable(f"##manual_model_id_{manual_value}", False, (0, 34)):
+                        ImGui.text(f"Manual Model ID: {manual_value}")
+
+                    if ImGui.end_selectable():
+                        condition.model_ids.append(manual_value)
+                        changed = True
+                        PyImGui.close_current_popup()
+
+                    if PyImGui.is_item_hovered():
+                        ImGui.show_tooltip("Add this raw integer model id even if it is not part of the ModelID enum yet.")
+
+                if ImGui.begin_child("##model_id_enum_candidates", (0, 320), border=True):
+                    for model_id in matching_model_ids:
+                        model_id_value = int(model_id.value)
+                        already_selected = model_id_value in selected_model_ids
+                        if ImGui.begin_selectable(f"##model_id_enum_{model_id.name}", False, (0, 34)):
+                            ImGui.text(ui._humanize_name(model_id.name))
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(f"{model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
+
+                        if ImGui.end_selectable() and not already_selected:
+                            condition.model_ids.append(model_id)
+                            changed = True
+                            PyImGui.close_current_popup()
+
+                        if PyImGui.is_item_hovered():
+                            tooltip = f"{ui._humanize_name(model_id.name)}\nModel ID: {model_id_value}"
+                            ImGui.show_tooltip(tooltip)
+                ImGui.end_child()
+
+                if ImGui.button("Cancel", -1):
+                    PyImGui.close_current_popup()
+
+                PyImGui.end_popup()
+
+            ImGui.separator()
+
+            if ImGui.begin_child("##added_model_id_candidates", size, border=False):
+                for index, model_id in enumerate(condition.model_ids):
+                    model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                    label = ui._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
+                    unique_id = f"model_ids_rule_{id(condition)}_{model_id_value}_{index}"
+
+                    if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
+                            condition.model_ids.pop(index)
+                            changed = True
+                            ImGui.end_child()
+                            break
+
+                        PyImGui.same_line(0, 8)
+                        PyImGui.begin_group()
+                        ImGui.text(label)
+                        x, y = PyImGui.get_cursor_pos()
+                        PyImGui.set_cursor_pos(x, y - 4)
+                        ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                        PyImGui.end_group()
+                    ImGui.end_child()
+            ImGui.end_child()
+
+            return changed
+        
+        @staticmethod
+        def ForItemTypesCondition(ui : "UI", rule : Rule, condition: ItemTypesCondition, size : tuple[float, float] = (0, 0)) -> bool:
+            changed = False
+            if ImGui.begin_child(f"##item_types_{id(condition)}", size, border=False):
+                width = PyImGui.get_content_region_avail()[0]
+                columns = max(1, int(width // 200))
+                PyImGui.columns(columns, "item_type_columns", False)
+                sorted_item_types = sorted(ItemType, key=lambda it: it.name)
+                for item_type in sorted_item_types:
+                    is_selected = item_type in condition.item_types
+                    selected = ImGui.checkbox(f"{ui._humanize_name(item_type.name)}", is_selected)
+
+                    if selected != is_selected:
+                        if item_type in condition.item_types:
+                            condition.item_types.remove(item_type)
+                        else:
+                            condition.item_types.append(item_type)
+                        changed = True
+
+                    PyImGui.next_column()
+                PyImGui.end_columns()
+            ImGui.end_child()
+            return changed
+
+        
+    def _draw_condition_editor(self, rule: Rule, condition: Condition, section_id: str) -> bool:
+        match condition:
+            case ModelIdsCondition():
+                return UI.ConditionEditor.ForModelIdsCondition(self, rule, condition)
+            
+            case ItemTypesCondition():
+                return UI.ConditionEditor.ForItemTypesCondition(self, rule, condition)
+            
+            case EncodedNamesCondition():
+                return self.draw_encoded_names_rule(condition)
+            case ModelFileIdsCondition():
+                return self.draw_model_file_ids_rule(condition)
+            case ModelFileIdsAndItemTypesCondition():
+                return self.draw_model_file_ids_and_item_type_rule(condition)
+            case ModelIdsAndItemTypesCondition():
+                return self.draw_models_and_itemtype_rule(condition)
+            case ItemTypesCondition():
+                return self._draw_item_types_selector(condition.item_types, f"##item_types_{section_id}")
+            case ExactItemTypeCondition():
+                return self._draw_exact_item_type_selector(condition, f"##exact_item_type_{section_id}")
+            case RaritiesCondition():
+                return self._draw_rarity_selector(condition.rarities, f"##rarities_{section_id}")
+            case DyeColorsCondition():
+                return self._draw_dye_selector(condition.dye_colors, f"##dye_colors_{section_id}")
+            case SalvagesToMaterialsCondition():
+                return self.draw_salvages_to_material_rule(condition)
+            case WeaponRequirementCondition():
+                return self._draw_requirement_editor(
+                    condition,
+                    item_types=self._get_condition_requirement_item_types(rule),
+                    unique_id=section_id,
+                )
+            case InherentFiltersCondition():
+                changed, _ = self._draw_inherent_upgrades_editor(
+                    condition.inherents,
+                    unique_id=section_id,
+                    inscribable=False,
+                    show_inscribable_toggle=False,
+                )
+                return changed
+            case InscribableCondition():
+                ImGui.text_wrapped("Requires the item to be inscribable.")
+                return False
+            case UnidentifiedCondition():
+                ImGui.text_wrapped("Requires the item to be unidentified.")
+                return False
+            case ArmorUpgradesCondition():
+                return self._draw_armor_upgrades_rule(condition)
+            case MaxWeaponUpgradesCondition():
+                return self._draw_max_weapon_upgrades_rule(condition)
+            case UpgradeRangesCondition():
+                return self._draw_upgrade_range_rule(condition)
+            case _:
+                ImGui.text("No editor available for this condition.")
+                return False
+
+    def _draw_condition_section(self, rule: Rule, condition: Condition, index: int, allow_remove: bool = False) -> tuple[bool, bool]:
+        changed = False
+        removed = False
+        section_id = f"{id(rule)}_{index}_{type(condition).__name__}"
+        title = self._humanize_name(type(condition).__name__)
+        description = inspect.getdoc(type(condition)) or ""
+        description = re.sub(r":class:`([^`]+)`", r"\1", description).replace("**", "").strip()
+
+        if ImGui.begin_child(f"##condition_section_{section_id}", (0, 0), border=True):
+            if ImGui.begin_table(f"##condition_section_header_{section_id}", 2, PyImGui.TableFlags.NoBordersInBody):
+                PyImGui.table_setup_column("Title", PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_setup_column("Actions", PyImGui.TableColumnFlags.WidthFixed, 48 if allow_remove else 1)
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                ImGui.text(title, font_size=16)
+
+                if description:
+                    ImGui.text_colored(description, UI.GRAY_COLOR.color_tuple, font_size=12)
+
+                if allow_remove:
+                    PyImGui.table_next_column()
+                    if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##remove_condition_{section_id}", 38, 28):
+                        rule.conditions.pop(index)
+                        changed = True
+                        removed = True
+
+                ImGui.end_table()
+
+            if not removed:
+                ImGui.separator()
+                changed = self._draw_condition_editor(rule, condition, section_id) or changed
+        ImGui.end_child()
+
+        return changed, removed
+
+    def _draw_rule_condition_sections(self, rule: Rule, allow_remove: bool = False) -> bool:
+        changed = False
+        for index, condition in enumerate(rule.conditions):            
+            section_changed = self._draw_condition_editor(rule, condition, str(index))
+            changed = section_changed or changed
+        return changed
+
+    def _supports_custom_condition_editor(self, condition_type: type[Condition]) -> bool:
+        supported_types = (
+            ModelIdsCondition,
+            EncodedNamesCondition,
+            ModelFileIdsCondition,
+            ModelFileIdsAndItemTypesCondition,
+            ModelIdsAndItemTypesCondition,
+            ItemTypesCondition,
+            ExactItemTypeCondition,
+            RaritiesCondition,
+            DyeColorsCondition,
+            SalvagesToMaterialsCondition,
+            WeaponRequirementCondition,
+            InherentFiltersCondition,
+            InscribableCondition,
+            UnidentifiedCondition,
+            ArmorUpgradesCondition,
+            MaxWeaponUpgradesCondition,
+            UpgradeRangesCondition,
+        )
+        return issubclass(condition_type, supported_types)
+
+    def _draw_custom_rule(self, rule: CustomRule) -> bool:
+        changed = False
+        PyImGui.set_next_item_width(180)
+        if PyImGui.begin_combo(f"##custom_rule_operator_{id(rule)}", self._humanize_name(rule.condition_operator.name), PyImGui.ImGuiComboFlags.NoFlag):
+            for operator in ConditionOperator:
+                if ImGui.selectable(self._humanize_name(operator.name), selected=rule.condition_operator == operator):
+                    rule.condition_operator = operator
+                    changed = True
+            ImGui.end_combo()
+        ImGui.show_tooltip("Choose whether all conditions must match or whether any single condition is enough.")
+
+        PyImGui.same_line(0, 8)
+        if PyImGui.begin_combo(f"##custom_rule_add_condition_{id(rule)}", "Add Condition", PyImGui.ImGuiComboFlags.NoFlag):
+            existing_condition_types = {type(condition) for condition in rule.conditions}
+            for condition_type in self._get_condition_types():
+                if not self._supports_custom_condition_editor(condition_type):
+                    continue
+                if condition_type in existing_condition_types:
+                    continue
+
+                if ImGui.selectable(self._humanize_name(condition_type.__name__), False):
+                    rule.conditions.append(condition_type())
+                    changed = True
+                self._show_wrapped_tooltip(self._format_condition_type_tooltip(condition_type))
+            ImGui.end_combo()
+
+        ImGui.separator()
+        if not rule.conditions:
+            ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
+            return changed
+
+        return self._draw_rule_condition_sections(rule, allow_remove=True) or changed
+
     def _draw_rule_body(self, rule: Rule) -> bool:
-        style = ImGui.get_style()
         PyImGui.spacing()
         match rule:
+            case CustomRule():
+                ImGui.text_wrapped("Build this rule from reusable condition sections. Add any supported conditions, reorder the rule itself in the list, and choose whether all or any conditions must match.")
+                return self._draw_custom_rule(rule)
+
             case ModelIdsRule():
                 ImGui.text_wrapped("This rule matches items based on their model IDs. You can specify one or more model IDs to match against the item.")
-                return self.draw_model_ids_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case EncodedNameRule():
                 ImGui.text_wrapped("This rule matches items by their encoded item name. You can add values from the item database or paste a raw encoded name string.")
-                return self.draw_encoded_names_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case ModelFileIdRule():
                 ImGui.text_wrapped("This rule matches items based on their model file ID. You can add values from known item data or enter raw ids manually.")
-                return self.draw_model_file_ids_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case ModelFileIdAndItemTypeRule():
                 ImGui.text_wrapped("This rule matches items using a combination of model file ID and item type.")
-                return self.draw_model_file_ids_and_item_type_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case UnidentifiedRule():
-                ImGui.text_wrapped("This rule matches unidentified items. You can specify requirement damage ranges and optional inherent upgrade filters.")
-                return self.draw_unidentified_rule(rule)
+                ImGui.text_wrapped("This rule matches unidentified items.")
+                return self._draw_rule_condition_sections(rule)
             
             case UnidentifiedAndRarityRule():
-                ImGui.text_wrapped("This rule matches unidentified items of specific rarities. You can specify requirement damage ranges and optional inherent upgrade filters.")
-                return self.draw_unidentified_and_rarity_rule(rule)                
+                ImGui.text_wrapped("This rule matches unidentified items of specific rarities.")
+                return self._draw_rule_condition_sections(rule)
 
             case WeaponSkinRule():
                 ImGui.text_wrapped("This rule matches weapon skins by model file id, with configurable requirement damage ranges and optional inherent upgrade filters.")
-                return self.draw_weapon_skin_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case WeaponTypeRule():
                 ImGui.text_wrapped("This rule matches a weapon type, with configurable requirement damage ranges and optional inherent upgrade filters.")
-                return self.draw_weapon_type_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case SalvagesToMaterialRule():
                 ImGui.text_wrapped("This rule matches items that can salvage into any of the selected materials. We rely on the scraped salvage data from the GW-Wiki which is stored in our ITEM_DATA.")
-                return self.draw_salvages_to_material_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case ModelIdsAndItemTypesRule():
                 ImGui.text_wrapped("This rule matches items based on their model id and item type. You can specify one or more model id and item type pairs to match against the item.")
-                return self.draw_models_and_itemtype_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case ItemTypesRule():
                 ImGui.text_wrapped("This rule matches items based on their item types. You can specify one or more item types to match against the item.")
-                return self._draw_item_types_selector(rule.item_types, "##item_types")
+                return self._draw_rule_condition_sections(rule)
 
             case RaritiesRule():
                 ImGui.text_wrapped("This rule matches items based on their rarity. You can specify one or more rarities to match against the item.")
-                return self._draw_rarity_selector(rule.rarities, "##rarities")
+                return self._draw_rule_condition_sections(rule)
 
             case RaritiesAndItemTypesRule():
                 ImGui.text_wrapped("This rule matches items based on a combination of rarity and item type. You can specify pairs of rarities and item types to match against the item.")
-                changed = False
-                if ImGui.begin_table("##rarity_item_type_table", 2, PyImGui.TableFlags.NoBordersInBody):
-                    PyImGui.table_setup_column("Rarities", PyImGui.TableColumnFlags.WidthFixed, 200)
-                    PyImGui.table_setup_column("Item Types", PyImGui.TableColumnFlags.WidthStretch)
-
-                    PyImGui.table_next_row()
-                    PyImGui.table_next_column()
-
-                    changed = self._draw_rarity_selector(rule.rarities, "##rarities") or changed
-
-                    PyImGui.table_next_column()
-
-                    changed = self._draw_item_types_selector(rule.item_types, "##item_types") or changed
-                    ImGui.end_table()
-                return changed
+                return self._draw_rule_condition_sections(rule)
 
             case DyesRule():
                 ImGui.text_wrapped("This rule matches items based on their dye color. You can specify one or more dye colors to match against the item.")
-                return self._draw_dye_selector(rule.dye_colors, "##dye_colors")
+                return self._draw_rule_condition_sections(rule)
 
             case ArmorUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their armor upgrades. You can specify one or more armor upgrades to match against the item.")
-                return self._draw_armor_upgrades_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case MaxWeaponUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their weapon upgrades. You can specify one or more weapon upgrades to match against the item.")
-                return self._draw_max_weapon_upgrades_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case UpgradeRangeRule():
                 ImGui.text_wrapped("This rule matches items based on their upgrades that have a numeric value within a specified range.")
-                return self._draw_upgrade_range_rule(rule)
+                return self._draw_rule_condition_sections(rule)
 
             case _:
                 ImGui.text("No editor available for this rule type.")
