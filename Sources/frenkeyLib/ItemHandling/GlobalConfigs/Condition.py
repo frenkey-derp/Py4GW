@@ -284,6 +284,7 @@ def inherent_comparison_data(inherents: InherentFilters) -> tuple[Any, ...]:
 
 
 class Condition:
+    """Base condition that checks one reusable rule fragment against an item."""
     _registry: ClassVar[dict[str, type["Condition"]]] = {}
     ui_selectable: ClassVar[bool] = True
 
@@ -330,6 +331,7 @@ class Condition:
 
 
 class ModelIdsCondition(Condition):
+    """Matches items whose model ID is in the configured list."""
     def __init__(self, model_ids: Optional[list[ModelID | int]] = None):
         self.model_ids: list[ModelID | int] = model_ids if model_ids is not None else []
 
@@ -372,6 +374,7 @@ class ModelIdsCondition(Condition):
 
 
 class ItemTypesCondition(Condition):
+    """Matches items whose item type is one of the selected types."""
     def __init__(self, item_types: Optional[list[ItemType]] = None):
         self.item_types: list[ItemType] = item_types if item_types is not None else []
 
@@ -400,6 +403,7 @@ class ItemTypesCondition(Condition):
 
 
 class ExactItemTypeCondition(Condition):
+    """Matches items whose type matches one exact item type."""
     def __init__(self, item_type: Optional[ItemType] = None):
         self.item_type = item_type
 
@@ -422,6 +426,7 @@ class ExactItemTypeCondition(Condition):
 
 
 class ModelIdsAndItemTypesCondition(Condition):
+    """Matches specific combinations of model ID and item type."""
     def __init__(self, items: Optional[list[ModelIdAndItemType]] = None):
         self.modelids_and_itemtypes: list[ModelIdAndItemType] = items if items is not None else []
 
@@ -482,6 +487,7 @@ class ModelIdsAndItemTypesCondition(Condition):
 
 
 class EncodedNamesCondition(Condition):
+    """Matches items by their encoded name bytes."""
     def __init__(self, encoded_names: Optional[list[bytes]] = None):
         self.encoded_names: list[bytes] = encoded_names if encoded_names is not None else []
 
@@ -511,6 +517,7 @@ class EncodedNamesCondition(Condition):
 
 
 class ModelFileIdsCondition(Condition):
+    """Matches items whose model file ID is in the configured list."""
     def __init__(self, model_file_ids: Optional[list[int]] = None):
         self.model_file_ids: list[int] = model_file_ids if model_file_ids is not None else []
 
@@ -532,6 +539,7 @@ class ModelFileIdsCondition(Condition):
 
 
 class ModelFileIdsAndItemTypesCondition(Condition):
+    """Matches specific combinations of model file ID and item type."""
     def __init__(self, items: Optional[list[ModelFileIdAndItemType]] = None):
         self.model_file_ids_and_item_types: list[ModelFileIdAndItemType] = items if items is not None else []
 
@@ -576,7 +584,38 @@ class ModelFileIdsAndItemTypesCondition(Condition):
             self.model_file_ids_and_item_types.append(ModelFileIdAndItemType(model_file_id=model_file_id, item_type=ItemType[item_type_name]))
 
 
+class QuantityCondition(Condition):
+    """Matches items whose quantity falls inside the configured inclusive range."""
+    def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
+        self.min_quantity = max(0, min(250, int(min_quantity)))
+        self.max_quantity = max(0, min(250, int(max_quantity)))
+        if self.min_quantity > self.max_quantity:
+            self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        return item_snapshot is not None and self.min_quantity <= item_snapshot.quantity <= self.max_quantity
+
+    def _comparison_data(self) -> Any:
+        return (self.min_quantity, self.max_quantity)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "min_quantity": self.min_quantity,
+            "max_quantity": self.max_quantity,
+        }
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        min_quantity = data.get("min_quantity", 0)
+        max_quantity = data.get("max_quantity", 250)
+        self.min_quantity = max(0, min(250, int(min_quantity if isinstance(min_quantity, int) else 0)))
+        self.max_quantity = max(0, min(250, int(max_quantity if isinstance(max_quantity, int) else 250)))
+        if self.min_quantity > self.max_quantity:
+            self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+
+
 class WeaponRequirementCondition(Condition):
+    """Matches weapons with selected requirement values and allowed damage ranges."""
     def __init__(
         self,
         requirements: Optional[WeaponRequirementRanges] = None,
@@ -613,6 +652,7 @@ class WeaponRequirementCondition(Condition):
 
 
 class InherentFiltersCondition(Condition):
+    """Matches weapon inherents, including optional numeric ranges on the inherent values."""
     def __init__(self, inherents: Optional[Sequence[InherentFilter | Inherent]] = None):
         self.inherents = normalize_inherent_filters(inherents)
 
@@ -638,6 +678,7 @@ class InherentFiltersCondition(Condition):
 
 
 class InscribableCondition(Condition):
+    """Matches items that are inscribable."""
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
         return context.item_snapshot is not None and context.item_snapshot.is_inscribable
 
@@ -646,6 +687,7 @@ class InscribableCondition(Condition):
 
 
 class SalvagesToMaterialsCondition(Condition):
+    """Matches items that can salvage into one of the selected materials."""
     def __init__(self, materials: Optional[list[ModelID | int]] = None):
         self.materials: list[ModelID | int] = materials if materials is not None else []
 
@@ -681,6 +723,7 @@ class SalvagesToMaterialsCondition(Condition):
 
 
 class RaritiesCondition(Condition):
+    """Matches items whose rarity is one of the selected rarities."""
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         self.rarities: list[Rarity] = rarities if rarities is not None else []
 
@@ -705,6 +748,7 @@ class RaritiesCondition(Condition):
 
 
 class UnidentifiedCondition(Condition):
+    """Matches items that are still unidentified."""
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
         return context.item_snapshot is not None and not context.item_snapshot.is_identified
 
@@ -713,6 +757,7 @@ class UnidentifiedCondition(Condition):
 
 
 class DyeColorsCondition(Condition):
+    """Matches dye items whose color is one of the selected dye colors."""
     def __init__(self, dye_colors: Optional[list[DyeColor]] = None):
         self.dye_colors: list[DyeColor] = dye_colors if dye_colors is not None else []
 
@@ -738,6 +783,7 @@ class DyeColorsCondition(Condition):
 
 
 class UpgradeMatchCondition(Condition):
+    """Base condition for matching extractable upgrades on items."""
     ui_selectable: ClassVar[bool] = False
 
     @staticmethod
@@ -786,6 +832,7 @@ class UpgradeMatchCondition(Condition):
 
 
 class MaxWeaponUpgradesCondition(UpgradeMatchCondition):
+    """Matches selected max-value weapon upgrades or inscriptions, optionally limited by item type."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrades: Optional[list[UpgradeAndItemType]] = None):
@@ -858,6 +905,7 @@ class MaxWeaponUpgradesCondition(UpgradeMatchCondition):
 
 
 class ArmorUpgradesCondition(UpgradeMatchCondition):
+    """Matches armor containing selected runes or insignias."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrades: Optional[list[ArmorUpgrade]] = None):
@@ -899,6 +947,7 @@ class ArmorUpgradesCondition(UpgradeMatchCondition):
 
 
 class UpgradeRangesCondition(UpgradeMatchCondition):
+    """Matches upgrades whose numeric values fall inside configured ranges."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrade_ranges: Optional[list[RangedUpgrade]] = None):
@@ -1003,6 +1052,7 @@ class UpgradeRangesCondition(UpgradeMatchCondition):
 
 
 class UpgradesCondition(UpgradeMatchCondition):
+    """Matches selected upgrades without requiring them to be maxed or ranged."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrades: Optional[list[tuple[Upgrade, list[ItemType]] | Upgrade]] = None):

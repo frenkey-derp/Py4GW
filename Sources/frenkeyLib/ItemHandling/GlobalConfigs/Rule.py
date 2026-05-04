@@ -27,6 +27,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdAndItemType,
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
+    QuantityCondition,
     RangedUpgrade,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
@@ -55,6 +56,7 @@ class ConditionOperator(IntEnum):
 
 
 class Rule:
+    """Base rule that evaluates one or more reusable conditions against an item."""
     _registry: ClassVar[dict[str, type["Rule"]]] = {}
     ui_selectable: ClassVar[bool] = True
 
@@ -194,10 +196,12 @@ class Rule:
 
 
 class CustomRule(Rule):
+    """User-defined rule that can combine any supported condition sections."""
     pass
 
 
 class ModelIdsRule(Rule):
+    """Matches items whose model ID is in the configured list."""
     def __init__(self, model_ids: Optional[list[ModelID | int]] = None):
         super().__init__([ModelIdsCondition(model_ids)])
 
@@ -214,6 +218,7 @@ class ModelIdsRule(Rule):
         self.condition.model_ids = value
 
 class ItemTypesRule(Rule):
+    """Matches items whose item type is one of the selected types."""
     def __init__(self, item_types: Optional[list[ItemType]] = None):
         super().__init__([ItemTypesCondition(item_types)])
 
@@ -230,7 +235,38 @@ class ItemTypesRule(Rule):
         self.condition.item_types = value
 
 
+class QuantityRule(Rule):
+    """Matches items whose quantity falls inside the configured inclusive range."""
+    def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
+        super().__init__([QuantityCondition(min_quantity, max_quantity)])
+
+    @property
+    def condition(self) -> QuantityCondition:
+        return cast(QuantityCondition, self.conditions[0])
+
+    @property
+    def min_quantity(self) -> int:
+        return self.condition.min_quantity
+
+    @min_quantity.setter
+    def min_quantity(self, value: int) -> None:
+        self.condition.min_quantity = max(0, min(250, int(value)))
+        if self.condition.min_quantity > self.condition.max_quantity:
+            self.condition.max_quantity = self.condition.min_quantity
+
+    @property
+    def max_quantity(self) -> int:
+        return self.condition.max_quantity
+
+    @max_quantity.setter
+    def max_quantity(self, value: int) -> None:
+        self.condition.max_quantity = max(0, min(250, int(value)))
+        if self.condition.max_quantity < self.condition.min_quantity:
+            self.condition.min_quantity = self.condition.max_quantity
+
+
 class ModelIdsAndItemTypesRule(Rule):
+    """Matches specific combinations of model ID and item type."""
     def __init__(self, model_ids: Optional[list[ModelIdAndItemType]] = None):
         super().__init__([ModelIdsAndItemTypesCondition(model_ids)])
 
@@ -248,6 +284,7 @@ class ModelIdsAndItemTypesRule(Rule):
 
 
 class EncodedNameRule(Rule):
+    """Matches items by their encoded name bytes."""
     def __init__(self, encoded_names: Optional[list[bytes]] = None):
         super().__init__([EncodedNamesCondition(encoded_names)])
 
@@ -265,6 +302,7 @@ class EncodedNameRule(Rule):
 
 
 class ModelFileIdRule(Rule):
+    """Matches items whose model file ID is in the configured list."""
     def __init__(self, model_file_ids: Optional[list[int]] = None):
         super().__init__([ModelFileIdsCondition(model_file_ids)])
 
@@ -282,6 +320,7 @@ class ModelFileIdRule(Rule):
 
 
 class ModelFileIdAndItemTypeRule(Rule):
+    """Matches specific combinations of model file ID and item type."""
     def __init__(self, model_file_ids_and_item_types: Optional[list[ModelFileIdAndItemType]] = None):
         super().__init__([ModelFileIdsAndItemTypesCondition(model_file_ids_and_item_types)])
 
@@ -299,6 +338,7 @@ class ModelFileIdAndItemTypeRule(Rule):
 
 
 class WeaponSkinRule(Rule):
+    """Matches weapon skins by model file ID with optional requirement and inherent filters."""
     def __init__(
         self,
         model_file_ids: Optional[list[int]] = None,
@@ -405,6 +445,7 @@ class WeaponSkinRule(Rule):
 
 
 class WeaponTypeRule(Rule):
+    """Matches one weapon type with optional requirement and inherent filters."""
     def __init__(
         self,
         item_type: Optional[ItemType] = None,
@@ -512,6 +553,7 @@ class WeaponTypeRule(Rule):
 
 
 class SalvagesToMaterialRule(Rule):
+    """Matches items that can salvage into one of the selected materials."""
     def __init__(self, materials: Optional[list[ModelID | int]] = None):
         super().__init__([SalvagesToMaterialsCondition(materials)])
 
@@ -528,6 +570,7 @@ class SalvagesToMaterialRule(Rule):
         self.condition.materials = value
 
 class RaritiesRule(Rule):
+    """Matches items whose rarity is one of the selected rarities."""
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         super().__init__([RaritiesCondition(rarities)])
 
@@ -545,6 +588,7 @@ class RaritiesRule(Rule):
 
 
 class RaritiesAndItemTypesRule(Rule):
+    """Matches items by combining rarity and item type filters."""
     def __init__(self, rarities: Optional[list[Rarity]] = None, item_types: Optional[list[ItemType]] = None):
         super().__init__([RaritiesCondition(rarities), ItemTypesCondition(item_types)])
 
@@ -572,6 +616,7 @@ class RaritiesAndItemTypesRule(Rule):
 
 
 class UnidentifiedRule(Rule):
+    """Matches items that are still unidentified."""
     def __init__(self):
         super().__init__([UnidentifiedCondition()], action=ItemAction.Identify)
     
@@ -580,6 +625,7 @@ class UnidentifiedRule(Rule):
         return cast(UnidentifiedCondition, self.conditions[0])
 
 class UnidentifiedAndRarityRule(Rule):
+    """Matches unidentified items limited to the selected rarities."""
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         super().__init__([UnidentifiedCondition(), RaritiesCondition(rarities)], action=ItemAction.Identify)
 
@@ -595,6 +641,7 @@ class UnidentifiedAndRarityRule(Rule):
         return cast(RaritiesCondition, self.conditions[1])
 
 class DyesRule(Rule):
+    """Matches dye items whose color is one of the selected dye colors."""
     def __init__(self, dye_colors: Optional[list[DyeColor]] = None):
         super().__init__([DyeColorsCondition(dye_colors)])
 
@@ -613,6 +660,7 @@ class DyesRule(Rule):
 
 @dataclass
 class StockInstruction:
+    """Defines a desired stock target for a model ID and item type combination."""
     model_id: ModelID
     item_type: ItemType
     quantity: int
@@ -653,6 +701,7 @@ class StockInstruction:
 
 
 class ExtractUpgradeRule(Rule):
+    """Base rule for matching extractable upgrades on items."""
     ui_selectable: ClassVar[bool] = False
 
     def __init__(self, conditions: Optional[list[Condition]] = None):
@@ -684,6 +733,7 @@ class ExtractUpgradeRule(Rule):
 
 
 class MaxWeaponUpgradeRule(ExtractUpgradeRule):
+    """Matches weapons containing selected max-value weapon upgrades or inscriptions."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrades: Optional[list[UpgradeAndItemType]] = None):
@@ -703,6 +753,7 @@ class MaxWeaponUpgradeRule(ExtractUpgradeRule):
 
 
 class ArmorUpgradeRule(ExtractUpgradeRule):
+    """Matches armor containing selected runes or insignias."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, runes: Optional[list[ArmorUpgrade]] = None):
@@ -722,6 +773,7 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
 
 
 class UpgradeRangeRule(ExtractUpgradeRule):
+    """Matches upgrades whose numeric values fall inside configured ranges."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrade_ranges: Optional[list[RangedUpgrade]] = None):
@@ -741,6 +793,7 @@ class UpgradeRangeRule(ExtractUpgradeRule):
 
 
 class UpgradesRule(ExtractUpgradeRule):
+    """Matches selected upgrades without requiring them to be maxed or ranged."""
     ui_selectable: ClassVar[bool] = True
 
     def __init__(self, upgrades: Optional[list[tuple[Upgrade, list[ItemType]] | Upgrade]] = None):

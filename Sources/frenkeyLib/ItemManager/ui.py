@@ -75,6 +75,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelFileIdsCondition,
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
+    QuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
     UnidentifiedCondition,
@@ -170,6 +171,7 @@ class ConfigInfo(Generic[TConfig]):
         Py4GW.Console.Log("Item Manager", f"No load handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
 
 class UI:
+    CREME_COLOR : Color = ColorPalette.GetColor("creme")
     GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
     INVENTORY_PREVIEW_BAGS: list[Bags] = [
@@ -953,6 +955,16 @@ class UI:
 
             ImGui.separator()
 
+            copy_target = self._get_rule_copy_target_config(config_info)
+            if copy_target is not None and ImGui.menu_item(f"Copy To {copy_target.name}"):
+                duplicated_rule = Rule.from_dict(rule.to_dict())
+                if duplicated_rule is not None:
+                    copy_target.config.append(duplicated_rule)
+                    copy_target.save()
+
+            if copy_target is not None:
+                ImGui.separator()
+
             if ImGui.menu_item("Delete Rule"):
                 config_info.config.remove(rule)
                 config_info.save()
@@ -962,6 +974,27 @@ class UI:
             return True
 
         return False
+
+    def _get_rule_copy_target_config(self, config_info: ConfigInfo) -> ConfigInfo | None:
+        if not isinstance(config_info.config, RuleConfig):
+            return None
+
+        match config_info.config:
+            case LootConfig():
+                target_type = InventoryConfig
+            case InventoryConfig():
+                target_type = LootConfig
+            case _:
+                return None
+
+        return next(
+            (
+                candidate
+                for candidate in self.configs
+                if isinstance(candidate.config, target_type)
+            ),
+            None,
+        )
 
     def draw_config(self, config_info: ConfigInfo):
         if isinstance(config_info.config, RuleConfig):
@@ -1497,7 +1530,7 @@ class UI:
             size = size if size is not None else (0, 0)
             
             if ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper):
-                title = ui._humanize_name(type(condition).__name__)
+                title = ui._humanize_name(type(condition).__name__).replace("Condition", "")
                 description = inspect.getdoc(type(condition)) or ""
                 description = re.sub(r":class:`([^`]+)`", r"\1", description).replace("**", "").strip()
                 style = ImGui.get_style()
@@ -1505,7 +1538,7 @@ class UI:
                 width = PyImGui.get_content_region_avail()[0]
                 
                 if show_condition_wrapper:
-                    ImGui.text_wrapped(title, font_size=16)
+                    ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
                     if description:
                         ImGui.show_tooltip(description)
                     
@@ -2171,6 +2204,36 @@ class UI:
                             condition.item_type = item_type
                             changed = True
                     ImGui.end_combo()
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForQuantityCondition(ui: "UI", rule: Rule, condition: QuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+
+            size = size if size is not None else (0, 72)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                available_width = PyImGui.get_content_region_avail()[0]
+                slider_width = max(80, (available_width - 8) / 2)
+
+                PyImGui.push_item_width(slider_width)
+                new_min = ImGui.slider_int(f"##quantity_min_{id(condition)}", condition.min_quantity, 0, 250)
+                ImGui.show_tooltip("Minimum quantity required for the rule to apply")
+                
+                PyImGui.same_line(0, 8)
+                new_max = ImGui.slider_int(f"##quantity_max_{id(condition)}", condition.max_quantity, 0, 250)
+                ImGui.show_tooltip("Maximum quantity allowed for the rule to apply")
+                PyImGui.pop_item_width()
+
+                if new_min > new_max:
+                    new_min, new_max = new_max, new_min
+
+                if new_min != condition.min_quantity or new_max != condition.max_quantity:
+                    condition.min_quantity = new_min
+                    condition.max_quantity = new_max
+                    changed = True
+
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
@@ -2896,7 +2959,10 @@ class UI:
             
             case ExactItemTypeCondition():
                 return UI.ConditionEditor.ForExactItemTypeCondition(self, rule, condition, draw_size)
-            
+
+            case QuantityCondition():
+                return UI.ConditionEditor.ForQuantityCondition(self, rule, condition, draw_size)
+             
             case RaritiesCondition():
                 return UI.ConditionEditor.ForRaritiesCondition(self, rule, condition, draw_size)
             
@@ -2940,6 +3006,7 @@ class UI:
             ModelIdsAndItemTypesCondition,
             ItemTypesCondition,
             ExactItemTypeCondition,
+            QuantityCondition,
             RaritiesCondition,
             DyeColorsCondition,
             SalvagesToMaterialsCondition,
@@ -2999,6 +3066,9 @@ class UI:
             case ExactItemTypeCondition():
                 return clamp(control_height + 8)
 
+            case QuantityCondition():
+                return clamp(control_height + row_25 + 6)
+
             case RaritiesCondition():
                 return clamp(control_height + 8 + max(1, len(Rarity)) * row_25)
 
@@ -3056,7 +3126,7 @@ class UI:
                 if condition_type in existing_condition_types:
                     continue
 
-                if ImGui.selectable(self._humanize_name(condition_type.__name__), False):
+                if ImGui.selectable(self._humanize_name(condition_type.__name__).replace("Condition", ""), False):
                     rule.conditions.append(condition_type())
                     changed = True
                 self._show_wrapped_tooltip(self._format_condition_type_tooltip(condition_type))
@@ -3067,13 +3137,12 @@ class UI:
         if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
             if not rule.conditions:
                 ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
-                return changed
-
-            for condition in rule.conditions:
-                condition_height = self._estimate_condition_editor_height(rule, condition, max_height=500)
-                
-                if self._draw_condition_editor(rule, condition, size=(0, condition_height)):
-                    changed = True
+            else:
+                for condition in rule.conditions:
+                    condition_height = self._estimate_condition_editor_height(rule, condition, max_height=500)
+                    
+                    if self._draw_condition_editor(rule, condition, size=(0, condition_height)):
+                        changed = True
         ImGui.end_child()
         
         return changed
@@ -3153,6 +3222,10 @@ class UI:
             case ItemTypesRule():
                 ImGui.text_wrapped("This rule matches items based on their item types. You can specify one or more item types to match against the item.")
                 return UI.ConditionEditor.ForItemTypesCondition(self, rule, rule.condition)
+
+            case QuantityRule():
+                ImGui.text_wrapped("This rule matches items whose quantity falls inside the configured inclusive range.")
+                return UI.ConditionEditor.ForQuantityCondition(self, rule, rule.condition)
 
             case RaritiesRule():
                 ImGui.text_wrapped("This rule matches items based on their rarity. You can specify one or more rarities to match against the item.")
