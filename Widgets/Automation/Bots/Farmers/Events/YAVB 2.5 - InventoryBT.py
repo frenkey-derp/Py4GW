@@ -28,6 +28,7 @@ from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, ItemAction, ItemTy
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
+from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
@@ -355,6 +356,20 @@ def _get_inventory_work_signature():
     )
 
 
+def _get_inventory_layout_signature():
+    snapshot = ItemSnapshot.get_bags_snapshot(INVENTORY_BAGS)
+    return tuple(
+        (
+            bag.value,
+            slot,
+            item.id if item is not None and item.is_valid else 0,
+            item.quantity if item is not None and item.is_valid else 0,
+        )
+        for bag in INVENTORY_BAGS
+        for slot, item in sorted(snapshot.get(bag, {}).items())
+    )
+
+
 def _can_free_slots_in_town() -> bool:
     preview_entries = InventoryBT.Preview(InventoryConfig())
     return any(
@@ -411,11 +426,11 @@ def _open_merchant_window(timeout_ms: int = 8000):
 
 
 def _run_inventory_pass(*, tolerate_failure: bool = True, max_ticks: int = 80, settle_ticks: int = 3):
-    runner = InventoryBT(InventoryConfig())
+    config = InventoryConfig()
+    runner = InventoryBT(config)
     success_streak = 0
     
-    planned_actions = runner.Preview()
-    if not planned_actions or all(entry.action is None or entry.action == ItemAction.NONE for entry in planned_actions):
+    if not runner.HasExecuteableInventoryActions(config):
         return
 
     for _ in range(max_ticks):
@@ -823,9 +838,14 @@ def HandleSharedInventory(bot: Botting):
 
     bt = InventoryBT()
     config = InventoryConfig()
+    stalled_iterations = 0
+    attempted_forced_sort = False
     
     
     while True:
+        before_work_signature = _get_inventory_work_signature()
+        before_layout_signature = _get_inventory_layout_signature()
+
         if bt.HasExecuteableInventoryActions(config):            
             yield from RunInventoryBT(bt, config, tolerate_failure=False, max_ticks=30, settle_ticks=2)
             
@@ -835,7 +855,35 @@ def HandleSharedInventory(bot: Botting):
             if UIManagerExtensions.MerchantWindow.IsOpen():
                 if _needs_buy_restock():
                     yield from _restock_buy_config()
-                    
+
+        after_work_signature = _get_inventory_work_signature()
+        after_layout_signature = _get_inventory_layout_signature()
+
+        if before_work_signature == after_work_signature and before_layout_signature == after_layout_signature:
+            stalled_iterations += 1
+        else:
+            stalled_iterations = 0
+
+        if stalled_iterations >= 1:
+            if not attempted_forced_sort and InventoryBT._needs_inventory_sorting():
+                attempted_forced_sort = True
+                ConsoleLog(
+                    "Inventory Handling",
+                    "InventoryBT made no town progress. Forcing one inventory sort pass before continuing.",
+                    Py4GW.Console.MessageType.Info,
+                )
+                BTNodes.Bags.SortBags(INVENTORY_BAGS).tick()
+                yield from Routines.Yield.wait(250)
+                stalled_iterations = 0
+                continue
+
+            ConsoleLog(
+                "Inventory Handling",
+                "No further inventory progress is possible in town. Continuing with remaining non-stashable items.",
+                Py4GW.Console.MessageType.Info,
+            )
+            break
+
         if not bt.HasExecuteableInventoryActions(config):
             break
 

@@ -173,7 +173,10 @@ class ConfigInfo(Generic[TConfig]):
 
 class UI:
     CREME_COLOR : Color = ColorPalette.GetColor("creme")
+    GREEN_COLOR : Color = ColorPalette.GetColor("gw_green")
+    RED_COLOR : Color = ColorPalette.GetColor("red")
     GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
+    
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
     _RULE_TYPES_CACHE: list[type[Rule]] | None = None
     _CONDITION_TYPES_CACHE: list[type[Condition]] | None = None
@@ -1376,15 +1379,17 @@ class UI:
                 for i, rule in enumerate(config_info.config):
                     if PyImGui.is_rect_visible(5, item_height):
                         if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, item_height)):
+                            PyImGui.begin_disabled(not rule.enabled)
                             ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
                             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
                             PyImGui.separator()
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 2)
-                            ImGui.text(f"{UI._humanize_name(rule.action.name)}", font_size=13)
+                            ImGui.text(f"{UI._humanize_name(rule.action.name)}" + (" (Disabled)" if not rule.enabled else ""), font_size=13)
                             PyImGui.set_cursor_pos(x, PyImGui.get_cursor_pos_y() - 5)
                             ImGui.text_colored(f"{rule.__class__.__name__}", UI.GRAY_COLOR.color_tuple, font_size=11)
 
+                            PyImGui.end_disabled()
                         if ImGui.end_selectable():
                             self.rule = rule
 
@@ -1743,20 +1748,28 @@ class UI:
     # Rule rendering / dispatch
     # -------------------------------------------------------------------------
     def _draw_rule_header(self, rule: Rule) -> None:
+            
         ImGui.text_aligned("Name", alignment=Alignment.MidLeft, height=25)
-        PyImGui.same_line(0, 5)
+        PyImGui.same_line(60, 5)
 
-        width = PyImGui.get_content_region_avail()[0]
-        PyImGui.set_next_item_width(width - 155 - 155)
+        PyImGui.set_next_item_width(-1)
         rule_name_input_id = f"##rule_name_{id(rule)}"
         name = ImGui.input_text(rule_name_input_id, rule.name or "")
         if name != rule.name:
             rule.name = name
             self._save_active_config()
 
+        ImGui.text_aligned("Enabled" if rule.enabled else "Disabled", alignment=Alignment.MidLeft, height=25, color=UI.GREEN_COLOR.color_tuple if rule.enabled else UI.RED_COLOR.color_tuple)
+        PyImGui.same_line(60, 5)
+        enabled = PyImGui.checkbox("##rule_enabled", rule.enabled)
+        if enabled != rule.enabled:
+            rule.enabled = enabled
+            self._save_active_config()
+        ImGui.show_tooltip("Whether this rule is active. Disabled rules are ignored but keep their settings.")
 
         PyImGui.same_line(0, 5)
-        PyImGui.set_next_item_width(150)
+        width = PyImGui.get_content_region_avail()[0]
+        PyImGui.set_next_item_width(width - 155)
 
         style = ImGui.get_style()
         unset = rule.action == ItemAction.NONE

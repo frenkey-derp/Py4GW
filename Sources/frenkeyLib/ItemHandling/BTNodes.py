@@ -1172,6 +1172,7 @@ class BTNodes:
             target : list[Bags],
             quantities: Optional[list[int]] = None,
             fill_materials_first: bool = False,
+            log_plans: bool = False,
         ) -> dict[Bags, dict[int, BTNodes.Items.ItemTransferInstructions]]:
             """
             Build a destination-slot transfer plan for moving items into target bags.
@@ -1283,22 +1284,23 @@ class BTNodes:
                 destinations = BTNodes.Items._get_planned_destinations_for_item(moving_instructions, item.id)
                 destination_text = ", ".join(destinations) if destinations else "no destination"
 
-                if planned_qty <= 0:
-                    Py4GW.Console.Log(
-                        "GetTransferInstructions",
-                        f"Could not plan a move for '{item.names.plain}' (ID: {item.id}).",
-                    )
-                elif planned_qty < requested_qty:
-                    Py4GW.Console.Log(
-                        "GetTransferInstructions",
-                        f"Planned partial move of {planned_qty}/{requested_qty} for '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
-                    )
-                    
-                elif planned_qty == requested_qty:
-                    Py4GW.Console.Log(
-                        "GetTransferInstructions",
-                        f"Planned to move {requested_qty} of '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
-                    )
+                if log_plans:
+                    if planned_qty <= 0:
+                        Py4GW.Console.Log(
+                            "GetTransferInstructions",
+                            f"Could not plan a move for '{item.names.plain}' (ID: {item.id}).",
+                        )
+                    elif planned_qty < requested_qty:
+                        Py4GW.Console.Log(
+                            "GetTransferInstructions",
+                            f"Planned partial move of {planned_qty}/{requested_qty} for '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
+                        )
+                        
+                    elif planned_qty == requested_qty:
+                        Py4GW.Console.Log(
+                            "GetTransferInstructions",
+                            f"Planned to move {requested_qty} of '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
+                        )
                 
             return moving_instructions            
         
@@ -1349,6 +1351,7 @@ class BTNodes:
             target: list[Bags] = STORAGE_BAGS,
             fill_materials_first: bool = True,
             anniversary_panel: bool = False,
+            log_plans: bool = False,
         ) -> list[int]:
             if not anniversary_panel and Bags.Storage14 in target:
                 target = [b for b in target if b != Bags.Storage14]
@@ -1357,6 +1360,7 @@ class BTNodes:
                 item_ids,
                 target,
                 fill_materials_first=fill_materials_first,
+                log_plans=log_plans,
             )
 
             return BTNodes.Items._get_planned_transfer_item_ids(instructions)
@@ -1548,6 +1552,75 @@ class BTNodes:
             return BehaviorTree.ActionNode(name="Inventory.FillMaterialStorage", action_fn=_fill_material_storage, aftercast_ms=aftercast_ms)
         
         @staticmethod
+        def _get_default_sort_item_type_order() -> list[int]:
+            item_type_order = [
+                int(ItemType.Kit),
+                int(ItemType.Key),
+                int(ItemType.Usable),
+                int(ItemType.Trophy),
+                int(ItemType.Quest_Item),
+                int(ItemType.Materials_Zcoins),
+            ]
+            item_type_order += [int(item_type) for item_type in ItemType if int(item_type) not in item_type_order]
+            return item_type_order
+
+        @staticmethod
+        def GetPlannedBagLayout(
+            bags: list[Bags] = INVENTORY_BAGS,
+        ) -> dict[Bags, dict[int, Optional[ItemSnapshot]]]:
+            """
+            Build the planned bag layout for the current default sort order without moving items.
+
+            Meta:
+              Expose: true
+              Audience: intermediate
+              Display: Get Planned Bag Layout
+              Purpose: Compute the target bag-slot layout that Sort Bags would currently try to produce.
+              UserDescription: Use this when you want to inspect or compare the default planned bag arrangement before executing it.
+              Notes: Returns a slot map using the current live snapshot and the same ordering rules as Sort Bags.
+            """
+            snapshot = ItemSnapshot.get_bags_snapshot(bags)
+            item_type_order = BTNodes.Bags._get_default_sort_item_type_order()
+
+            ordered_slots: list[tuple[Bags, int]] = []
+            planned_layout: dict[Bags, dict[int, Optional[ItemSnapshot]]] = {}
+
+            for bag in bags:
+                planned_layout[bag] = {}
+                for slot in sorted(snapshot.get(bag, {}).keys()):
+                    ordered_slots.append((bag, slot))
+                    planned_layout[bag][slot] = None
+
+            items = [
+                item
+                for bag in bags
+                for _, item in sorted(snapshot.get(bag, {}).items())
+                if item is not None and item.is_valid
+            ]
+            sorted_items = sorted(
+                items,
+                key=lambda item: (
+                    item.item_type == ItemType.Unknown,
+                    item_type_order.index(item.item_type),
+                    item.model_id,
+                    -item.rarity.value,
+                    -item.quantity,
+                    -item.value,
+                    item.color.value,
+                    item.id,
+                ),
+            )
+
+            for index, item in enumerate(sorted_items):
+                if index >= len(ordered_slots):
+                    break
+
+                bag, slot = ordered_slots[index]
+                planned_layout[bag][slot] = item
+
+            return planned_layout
+
+        @staticmethod
         def CompactBags(
             bags : list[Bags] = INVENTORY_BAGS,         
             aftercast_ms: int = 150,
@@ -1616,54 +1689,21 @@ class BTNodes:
               Notes: The sort configuration is still marked as provisional in the implementation comments.
             """
             def _sort(node: BehaviorTree.Node):
-                snapshot = ItemSnapshot.get_bags_snapshot(bags)
+                planned_layout = BTNodes.Bags.GetPlannedBagLayout(bags)
+                moved_any = False
 
-                # TODO: Here we want to implement our sorting configuration, for now this is just the default behavior
-                item_typeOrder = [
-                    int(ItemType.Kit),
-                    int(ItemType.Key),
-                    int(ItemType.Usable),
-                    int(ItemType.Trophy),
-                    int(ItemType.Quest_Item),
-                    int(ItemType.Materials_Zcoins)
-                ]
-
-                # then everything else
-                item_typeOrder += [int(item)
-                                for item in ItemType if int(item) not in item_typeOrder]
-                
-                index_to_bag_map : dict[int, tuple[Bags, int]] = {}
-                index = 0
-                
                 for bag in bags:
-                    for slot in snapshot.get(bag, {}).keys():
-                        index_to_bag_map[index] = (bag, slot)
-                        index += 1
-                            
-                items = [item for bag in bags for slot, item in snapshot.get(bag, {}).items() if item and item.is_valid]
-                sorted_items = sorted(
-                    items,
-                    key=lambda item: (
-                        item.item_type == ItemType.Unknown,
-                        item_typeOrder.index(item.item_type),
-                        item.model_id,
-                        -item.rarity.value,
-                        -item.quantity,
-                        -item.value,
-                        item.color.value,
-                        item.id
-                    )
-                )
-                
-                for index, item in enumerate(sorted_items):
-                    bag, slot = index_to_bag_map.get(index, (None, None))
-                    
-                    if bag is None or slot is None:
-                        continue
-                
-                    Inventory.MoveItem(item.id, bag.value, slot, item.quantity)
-                
-                return BehaviorTree.NodeState.SUCCESS
+                    for slot, planned_item in sorted(planned_layout.get(bag, {}).items()):
+                        if planned_item is None or not planned_item.is_valid:
+                            continue
+
+                        if planned_item.bag == bag and planned_item.slot == slot:
+                            continue
+
+                        Inventory.MoveItem(planned_item.id, bag.value, slot, planned_item.quantity)
+                        moved_any = True
+
+                return BTNodes._success_if(moved_any)
 
             return BehaviorTree.ActionNode(name="Inventory.SortBags", action_fn=_sort, aftercast_ms=aftercast_ms)
 

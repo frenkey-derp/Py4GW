@@ -101,7 +101,7 @@ class InventoryBT:
         entries = cls.Preview(config)
         return [
             entry for entry in entries
-            if entry.executable and entry.action is not None and entry.action != ItemAction.NONE
+            if entry.executable and entry.action is not None and entry.action not in (ItemAction.NONE, ItemAction.Ignore)
         ]
     
     @classmethod
@@ -109,9 +109,9 @@ class InventoryBT:
     def HasExecuteableInventoryActions(cls, config: InventoryConfig) -> bool:
         entries = cls.Preview(config)
         return any(
-             entry.executable and entry.action is not None and entry.action != ItemAction.NONE
+             entry.executable and entry.action is not None and entry.action not in (ItemAction.NONE, ItemAction.Ignore)
              for entry in entries
-        )   
+        ) or cls._needs_inventory_sorting()
         
     @classmethod
     def _build_root_node(cls, config: InventoryConfig) -> BehaviorTree.Node:
@@ -139,6 +139,19 @@ class InventoryBT:
 
             action_batches = cls._collect_action_batches(config, node.blackboard)
             if not action_batches:
+                if cls._needs_inventory_sorting():
+                    action_node = BTNodes.Bags.SortBags(INVENTORY_BAGS)
+                    Py4GW.Console.Log(
+                        "InventoryBT",
+                        "Dispatching inventory sort maintenance.",
+                        Py4GW.Console.MessageType.Info,
+                    )
+                    node.blackboard[cls._ACTIVE_NODE_KEY] = action_node
+                    node.blackboard[cls._ACTIVE_ACTION_KEY] = "SortInventory"
+                    node.blackboard[cls._ACTIVE_ITEM_IDS_KEY] = []
+                    action_node.blackboard = node.blackboard
+                    return action_node.tick()
+
                 return BehaviorTree.NodeState.SUCCESS
 
             for action in cls.ACTION_PRIORITY:
@@ -183,11 +196,16 @@ class InventoryBT:
                 continue
 
             action = cls._get_action_for_item(config, item_id)
-            if action in (None, ItemAction.NONE, ItemAction.Hold):
+            if action in (None, ItemAction.NONE, ItemAction.Ignore, ItemAction.Hold):
                 continue
 
             if action == ItemAction.ExtractUpgrade:
                 if cls._get_single_extractable_match(config, item_id, blackboard) is None:
+                    continue
+            
+            if action == ItemAction.Stash:
+                depositable_item_ids = BTNodes.Items.GetDepositableItemIds([item_id], log_plans=False)
+                if item_id not in depositable_item_ids:
                     continue
 
             action_batches.setdefault(action, []).append(item_id)
@@ -201,7 +219,7 @@ class InventoryBT:
             return InventoryPreviewEntry(item=item, action=None, rule=None, note="No matching rule.", executable=False)
 
         action = cls._get_rule_action(rule, item.id)
-        if action in (ItemAction.NONE, ItemAction.Hold):
+        if action in (ItemAction.NONE, ItemAction.Ignore, ItemAction.Hold):
             return InventoryPreviewEntry(
                 item=item,
                 action=action,
@@ -220,7 +238,7 @@ class InventoryBT:
             )
 
         if action == ItemAction.Stash:
-            depositable_item_ids = BTNodes.Items.GetDepositableItemIds([item.id])
+            depositable_item_ids = BTNodes.Items.GetDepositableItemIds([item.id], log_plans=False)
             if item.id not in depositable_item_ids:
                 return InventoryPreviewEntry(
                     item=item,
@@ -308,6 +326,33 @@ class InventoryBT:
             return rule.get_effective_action(item_id)
 
         return rule.action
+
+    @classmethod
+    def _needs_inventory_sorting(cls) -> bool:
+        snapshot = ItemSnapshot.get_bags_snapshot(INVENTORY_BAGS)
+        planned_layout = BTNodes.Bags.GetPlannedBagLayout(INVENTORY_BAGS)
+
+        for bag in INVENTORY_BAGS:
+            current_bag = snapshot.get(bag, {})
+            planned_bag = planned_layout.get(bag, {})
+
+            for slot in sorted(current_bag.keys()):
+                current_item = current_bag.get(slot)
+                planned_item = planned_bag.get(slot)
+
+                current_signature = (
+                    current_item.id,
+                    current_item.quantity,
+                ) if current_item is not None and current_item.is_valid else None
+                planned_signature = (
+                    planned_item.id,
+                    planned_item.quantity,
+                ) if planned_item is not None and planned_item.is_valid else None
+
+                if current_signature != planned_signature:
+                    return True
+
+        return False
 
     @staticmethod
     def _get_first_matching_rule(config: InventoryConfig, item_id: int) -> Optional[Rule]:

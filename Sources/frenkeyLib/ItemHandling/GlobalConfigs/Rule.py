@@ -75,6 +75,7 @@ class Rule:
     ):
         self.name = ""
         self.action = action
+        self.enabled = True
         self.result_interpretation: ResultInterpretation = ResultInterpretation.Match
         self.condition_operator = condition_operator
         self.conditions: list[Condition] = conditions if conditions is not None else []
@@ -95,7 +96,7 @@ class Rule:
         self.conditions.clear()
 
     def is_valid(self) -> bool:
-        return len(self.conditions) > 0 and all(condition.is_valid() for condition in self.conditions)
+        return self.enabled and len(self.conditions) > 0 and all(condition.is_valid() for condition in self.conditions)
 
     def _create_context(self, item_id: int) -> ConditionEvaluationContext:
         return ConditionEvaluationContext(item_id=item_id, item_snapshot=self.get_item(item_id))
