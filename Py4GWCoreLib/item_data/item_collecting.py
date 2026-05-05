@@ -219,5 +219,4 @@ class ItemCollector:
 
         return bytes()
 
-
 ITEM_DATA_COLLECTOR = ItemCollector()
