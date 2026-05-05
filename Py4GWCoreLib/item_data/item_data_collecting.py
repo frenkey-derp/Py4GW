@@ -9,7 +9,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
-class ItemCollector:
+class ItemDataCollector:
     def __init__(self, inventory_interval_ms: int = 5_000, save_interval_ms: int = 1_000):
         self.checked_item_ids: set[int] = set()
         self.checked_model_keys: set[tuple[ItemType, int]] = set()
@@ -219,4 +219,4 @@ class ItemCollector:
 
         return bytes()
 
-ITEM_DATA_COLLECTOR = ItemCollector()
+ITEM_DATA_COLLECTOR = ItemDataCollector()

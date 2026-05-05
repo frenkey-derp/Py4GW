@@ -1,7 +1,7 @@
 import PyImGui
 from Py4GWCoreLib import *
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
-from Py4GWCoreLib.item_data.item_collecting import ITEM_DATA_COLLECTOR
+from Py4GWCoreLib.item_data.item_data_collecting import ITEM_DATA_COLLECTOR
 
 
 #do not ever disable this module, it is the main module for everything
