@@ -592,14 +592,29 @@ class UI:
         return result
 
     @staticmethod
-    def _format_rule_type_tooltip(rule_type: type) -> str:
+    def show_rule_type_tooltip(rule_type: type, wrap_width: float = 420.0):
+        if not PyImGui.is_item_hovered():
+            return
+        
         title = UI._humanize_name(rule_type.__name__)
         doc = inspect.getdoc(rule_type) or ""
         doc = re.sub(r":class:`([^`]+)`", r"\1", doc)
         doc = doc.replace("**", "")
         doc = doc.replace("\n", "\n\n").strip()
         # inversion_note = "Enable Inverted on a rule to apply it to items that do not match the configured criteria."
-        return f"{title}\n\n{doc}" if doc else f"{title}"
+        drag_note = "Drag and drop rules to reorder them, the higher in the list a rule is, the higher its priority."
+        
+        PyImGui.begin_tooltip()
+        PyImGui.push_text_wrap_pos(PyImGui.get_cursor_pos_x() + wrap_width)
+        ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
+        if doc:
+            PyImGui.text_wrapped(doc)    
+        PyImGui.pop_text_wrap_pos()
+        
+        ImGui.text_colored(drag_note, color=UI.GRAY_COLOR.color_tuple, font_size=12)
+        
+        PyImGui.end_tooltip()
+        
 
     @staticmethod
     def _format_condition_type_tooltip(condition_type: type) -> str:
@@ -1513,7 +1528,7 @@ class UI:
                         config_info.config.AddRule(new_rule)
                         config_info.save()
                         self.rule = new_rule
-                    self._show_wrapped_tooltip(self._format_rule_type_tooltip(rule_type))
+                    self.show_rule_type_tooltip(rule_type)
                 ImGui.end_combo()
 
             ImGui.separator()
@@ -1573,7 +1588,7 @@ class UI:
                                 self._drag_rule_target_index = i
                                 self._drag_rule_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
 
-                        self._show_wrapped_tooltip(self._format_rule_type_tooltip(rule.__class__))
+                        self.show_rule_type_tooltip(rule.__class__)
                     else:
                         PyImGui.dummy(0, item_height)
 
