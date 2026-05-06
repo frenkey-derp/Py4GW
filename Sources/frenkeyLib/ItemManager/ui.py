@@ -278,7 +278,10 @@ class UI:
                 toggle_default=False,
                 draw_callback=self.draw_main_window,
             )
-
+        
+        self.window_pos : tuple[float, float] | None = None
+        self.window_flags = PyImGui.WindowFlags.NoFlag
+        self.rules_hovered = False
         self.show_preview_window: bool = False
         folder_path = os.path.join(Py4GW.Console.get_projects_path(), "Settings", "Global", "Item & Inventory", "Configs")
         self.preview_entries : list[InventoryPreviewEntry] = []
@@ -317,6 +320,14 @@ class UI:
         self.context_menu_id : str | None = None
         self.context_menu_rule : Rule | None = None
         self.context_menu_config : ConfigInfo | None = None
+        self._drag_rule: Rule | None = None
+        self._drag_rule_source_config: ConfigInfo[RuleConfig] | None = None
+        self._drag_rule_source_index: int = -1
+        self._drag_rule_target_index: int = -1
+        self._drag_rule_target_after: bool = False
+        self._drag_rule_preview_label: str = ""
+        self._drag_rule_preview_subtitle: str = ""
+        self._drag_rule_window_pos: tuple[float, float] | None = None
 
         self.profession : Profession = Profession._None
         self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
@@ -1083,21 +1094,30 @@ class UI:
             return text.encode("utf-8")
         
     def draw_main_window(self) -> None:
+        active_drag = self._drag_rule_source_config is self.config and self._drag_rule is not None
+        window_flags = PyImGui.WindowFlags.NoMove if self.rules_hovered else PyImGui.WindowFlags.NoFlag
+        if active_drag and self._drag_rule_window_pos is not None:
+            PyImGui.set_next_window_pos(self._drag_rule_window_pos, PyImGui.ImGuiCond.Always)
+
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
             name="Item Manager",
             p_open=self.floating_button.visible,
-            flags=PyImGui.WindowFlags.NoFlag,
+            flags=window_flags,
         )
         self.floating_button.sync_begin_with_close(open_)
 
         if expanded:
+            self.window_pos = PyImGui.get_window_pos()
             self.draw_explorer()
             
             if self.show_preview_window and self.config is not None:
                 self.draw_preview_window(self.config)
                 
         ImGui.End(self.module_config.main_ini_key)
+
+        if active_drag:
+            self._draw_rule_drag_preview()
         
     def draw(self):
         self.floating_button.draw(self.module_config.floating_ini_key)
@@ -1275,6 +1295,102 @@ class UI:
 
         return False
 
+    def _clear_rule_drag(self) -> None:
+        self._drag_rule = None
+        self._drag_rule_source_config = None
+        self._drag_rule_source_index = -1
+        self._drag_rule_target_index = -1
+        self._drag_rule_target_after = False
+        self._drag_rule_preview_label = ""
+        self._drag_rule_preview_subtitle = ""
+        self._drag_rule_window_pos = None
+
+    def _begin_rule_drag(self, config_info: ConfigInfo[RuleConfig], rule: Rule, index: int) -> None:
+        self._drag_rule = rule
+        self._drag_rule_source_config = config_info
+        self._drag_rule_source_index = index
+        self._drag_rule_target_index = -1
+        self._drag_rule_target_after = False
+        self._drag_rule_preview_label = rule.name or f"{rule.__class__.__name__} #{index}"
+        self._drag_rule_preview_subtitle = UI._humanize_name(rule.action.name)
+        self._drag_rule_window_pos = self.window_pos
+
+    def _apply_rule_drag(self, config_info: ConfigInfo[RuleConfig]) -> None:
+        if self._drag_rule_source_config is not config_info or self._drag_rule is None:
+            self._clear_rule_drag()
+            return
+
+        if self._drag_rule_target_index < 0 or self._drag_rule_source_index < 0:
+            self._clear_rule_drag()
+            return
+
+        try:
+            source_index = config_info.config.index(self._drag_rule)
+        except ValueError:
+            self._clear_rule_drag()
+            return
+
+        insert_index = self._drag_rule_target_index + (1 if self._drag_rule_target_after else 0)
+        if insert_index > source_index:
+            insert_index -= 1
+
+        insert_index = max(0, min(insert_index, len(config_info.config) - 1))
+        if insert_index != source_index:
+            config_info.config.remove(self._drag_rule)
+            config_info.config.insert(insert_index, self._drag_rule)
+            config_info.save()
+            self.rule = self._drag_rule
+
+        self._clear_rule_drag()
+
+    def _draw_rule_drag_preview(self) -> None:
+        if self._drag_rule is None:
+            return
+
+        io = PyImGui.get_io()
+        preview_x = io.mouse_pos_x + 16
+        preview_y = io.mouse_pos_y + 16
+        preview_w = 240
+        preview_h = 42
+
+        outer_color = Utils.TupleToColor((0.18, 0.45, 0.72, 0.92))
+        inner_color = Utils.TupleToColor((0.10, 0.16, 0.24, 0.95))
+        text_color = Utils.TupleToColor((0.97, 0.95, 0.88, 1.0))
+        subtitle_color = Utils.TupleToColor(UI.GRAY_COLOR.color_tuple)
+        overlay_flags = (
+            PyImGui.WindowFlags.NoTitleBar
+            | PyImGui.WindowFlags.NoScrollbar
+            | PyImGui.WindowFlags.NoScrollWithMouse
+            | PyImGui.WindowFlags.NoCollapse
+            | PyImGui.WindowFlags.NoSavedSettings
+            | PyImGui.WindowFlags.NoInputs
+            | PyImGui.WindowFlags.NoFocusOnAppearing
+            | PyImGui.WindowFlags.NoBringToFrontOnFocus
+            | PyImGui.WindowFlags.NoBackground
+        )
+
+        PyImGui.set_next_window_pos(preview_x, preview_y)
+        PyImGui.set_next_window_size(preview_w, preview_h)
+        PyImGui.push_style_var2(ImGui.ImGuiStyleVar.WindowPadding, 0, 0)
+        PyImGui.push_style_color(PyImGui.ImGuiCol.WindowBg, (0.0, 0.0, 0.0, 0.0))
+        if PyImGui.begin("##rule_drag_preview_overlay", overlay_flags):
+            PyImGui.draw_list_add_rect_filled(preview_x, preview_y, preview_x + preview_w, preview_y + preview_h, outer_color, 6, PyImGui.DrawFlags.RoundCornersAll)
+            PyImGui.draw_list_add_rect_filled(preview_x + 2, preview_y + 2, preview_x + preview_w - 2, preview_y + preview_h - 2, inner_color, 5, PyImGui.DrawFlags.RoundCornersAll)
+            PyImGui.draw_list_add_text(preview_x + 10, preview_y + 8, text_color, self._drag_rule_preview_label)
+            PyImGui.draw_list_add_text(preview_x + 10, preview_y + 24, subtitle_color, self._drag_rule_preview_subtitle)
+        PyImGui.end()
+        PyImGui.pop_style_color(1)
+        PyImGui.pop_style_var(1)
+
+    def _draw_rule_drop_indicator(self, rect: tuple[float, float, float, float]) -> None:
+        x1, y1, x2, y2 = rect
+        line_color = Utils.TupleToColor((0.26, 0.72, 0.45, 0.98))
+        cap_color = Utils.TupleToColor((0.80, 0.96, 0.86, 1.0))
+
+        PyImGui.draw_list_add_rect_filled(x1, y1, x2, y2, line_color, 2, PyImGui.DrawFlags.RoundCornersAll)
+        PyImGui.draw_list_add_rect_filled(x1 - 2, y1 - 2, x1 + 4, y2 + 2, cap_color, 3, PyImGui.DrawFlags.RoundCornersAll)
+        PyImGui.draw_list_add_rect_filled(x2 - 4, y1 - 2, x2 + 2, y2 + 2, cap_color, 3, PyImGui.DrawFlags.RoundCornersAll)
+
     def _get_rule_copy_target_config(self, config_info: ConfigInfo) -> ConfigInfo | None:
         if not isinstance(config_info.config, RuleConfig):
             return None
@@ -1350,6 +1466,9 @@ class UI:
             config_info.save()
 
     def draw_rule_config(self, config_info: ConfigInfo[RuleConfig]):
+        active_drag = self._drag_rule_source_config is config_info and self._drag_rule is not None
+        drop_indicator_rect: tuple[float, float, float, float] | None = None
+        
         if ImGui.begin_table("##config_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Navigation", PyImGui.TableColumnFlags.WidthFixed, 200)
             PyImGui.table_setup_column("Content", PyImGui.TableColumnFlags.WidthStretch)
@@ -1375,7 +1494,12 @@ class UI:
             PyImGui.spacing()
 
             item_height = 50
-            if ImGui.begin_child("##rules", (0, 0), border=False):
+            drop_indicator_rect: tuple[float, float, float, float] | None = None
+            self.rules_hovered = False
+            
+            if ImGui.begin_child("##rules", (0, 0), border=False):                
+                io = PyImGui.get_io()
+                last_rule_rect: tuple[float, float, float, float] | None = None
                 for i, rule in enumerate(config_info.config):
                     if PyImGui.is_rect_visible(5, item_height):
                         if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, item_height)):
@@ -1393,15 +1517,58 @@ class UI:
                         if ImGui.end_selectable():
                             self.rule = rule
 
-                        if PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
+                        hovered = PyImGui.is_item_hovered()
+                        self.rules_hovered = self.rules_hovered or hovered
+                        
+                        if hovered and PyImGui.is_mouse_clicked(1):
                             self.context_menu_id = f"{rule.__class__.__name__} #{i}"
                             self.context_menu_rule = rule
                             self.context_menu_config = config_info
                             PyImGui.open_popup(self.context_menu_id)
+                            
+                        active = PyImGui.is_mouse_down(0)
+                        dragging = PyImGui.is_mouse_dragging(0, 0.01)
+                        
+                        item_rect_min, _, item_size = ImGui.get_item_rect()
+                        in_rect = ImGui.is_mouse_in_rect((item_rect_min[0], item_rect_min[1], item_size[0], item_size[1]))
+                        
+                        if self._drag_rule is None and active and dragging and in_rect:
+                            self._begin_rule_drag(config_info, rule, i)
+
+                        if self._drag_rule_source_config is config_info and self._drag_rule is not None:
+                            item_min_x, item_min_y = PyImGui.get_item_rect_min()
+                            item_max_x, item_max_y = PyImGui.get_item_rect_max()
+                            last_rule_rect = (item_min_x, item_min_y, item_max_x, item_max_y)
+                            if PyImGui.is_item_hovered():
+                                self._drag_rule_target_index = i
+                                self._drag_rule_target_after = io.mouse_pos_y >= ((item_min_y + item_max_y) / 2.0)
+
+                            if self._drag_rule_target_index == i:
+                                line_y = item_max_y - 2 if self._drag_rule_target_after else item_min_y
+                                drop_indicator_rect = (
+                                    item_min_x + 4,
+                                    line_y,
+                                    item_max_x - 4,
+                                    line_y + 3,
+                                )
 
                         self._show_wrapped_tooltip(self._format_rule_type_tooltip(rule.__class__))
                     else:
                         PyImGui.dummy(0, item_height)
+
+                if len(config_info.config) > 0:
+                    PyImGui.dummy(0, 10)
+                    if self._drag_rule_source_config is config_info and self._drag_rule is not None and PyImGui.is_item_hovered():
+                        self._drag_rule_target_index = len(config_info.config) - 1
+                        self._drag_rule_target_after = True
+                        if last_rule_rect is not None:
+                            item_min_x, _, item_max_x, item_max_y = last_rule_rect
+                            drop_indicator_rect = (
+                                item_min_x + 4,
+                                item_max_y - 2,
+                                item_max_x - 4,
+                                item_max_y + 1,
+                            )
 
                 if self.context_menu_id and self.context_menu_rule and self.context_menu_config:
                     if not self.draw_context_menu(self.context_menu_id, self.context_menu_config, self.context_menu_rule):
@@ -1418,8 +1585,15 @@ class UI:
                     self.draw_rule(self.rule)
                 
             ImGui.end_child()
-
+            
             ImGui.end_table()
+        
+        if active_drag:
+            if drop_indicator_rect is not None:
+                self._draw_rule_drop_indicator(drop_indicator_rect)
+            
+            if not PyImGui.is_mouse_down(0):
+                self._apply_rule_drag(config_info)
 
     def _set_inventory_preview_bags(self, bags: list[Bags]) -> None:
         self.inventory_preview_selected_bags = list(bags)
