@@ -1263,7 +1263,7 @@ class UI:
 
     def draw_context_menu(self, popup_id: str, config_info: ConfigInfo, rule: Rule) -> bool:
         if PyImGui.begin_popup(popup_id):
-            ImGui.text(rule.name or popup_id)
+            ImGui.text_colored(rule.name or popup_id, color=UI.CREME_COLOR.color_tuple, font_size=16)
             ImGui.separator()
 
             if ImGui.menu_item("Move Up"):
