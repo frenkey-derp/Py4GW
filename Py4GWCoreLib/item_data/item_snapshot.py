@@ -437,3 +437,10 @@ class ItemSnapshot:
                     items.append(item)
 
         return items
+    
+    @staticmethod
+    @frame_cache(category="ItemSnapshot", source_lib="get_item_count")
+    def get_item_count(item : "ItemSnapshot", bags: list[Bags] = [*INVENTORY_BAGS, *STORAGE_BAGS, Bags.MaterialStorage]) -> int:
+        items = ItemSnapshot.get_items(bags)
+
+        return sum(i.quantity for i in items if i.is_valid and i.same_kind_as(item))
