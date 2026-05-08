@@ -571,10 +571,23 @@ class ImGui:
           "<c=@ItemRestrict>": ImGui.MARKDOWN_COLORS.Red,
           "<c=@ItemDull>": ImGui.MARKDOWN_COLORS.Dull,
         }
-        
-        for tag, color in markdowns.items():
-            if text.startswith(tag):
-                return color.value
+
+        end_tag_index = text.find(">")
+        if not text.startswith("<c=") or end_tag_index == -1:
+            return None
+
+        opening_tag = text[: end_tag_index + 1]
+
+        color = markdowns.get(opening_tag)
+        if color is not None:
+            return color.value
+
+        color_value = opening_tag[3:-1].strip()
+        if color_value.startswith("#"):
+            try:
+                return Color.from_hex(color_value)
+            except ValueError:
+                return None
             
     @staticmethod
     def strip_markdown(text: str) -> str:
