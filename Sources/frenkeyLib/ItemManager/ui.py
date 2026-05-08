@@ -28,6 +28,7 @@ import PyImGui
 
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
+from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Bag, Item
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
@@ -35,7 +36,7 @@ from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
-from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, NICK_CYCLE_COUNT, STORAGE_BAGS, Bags, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, Bags, ItemAction, ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
@@ -58,8 +59,10 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
+from Sources.frenkeyLib.ItemHandling.Recipe import Crafting, CraftingPlan, CraftingRecipe, Ingredient, Recipe, ShoppingListEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ArmorUpgradesCondition,
@@ -79,9 +82,10 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
-    QuantityCondition,
+    StackQuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
+    FullStacksQuantityCondition,
     UnidentifiedCondition,
     UpgradeRangesCondition,
     WeaponRequirementCondition,
@@ -143,6 +147,16 @@ class ConfigInfo(Generic[TConfig]):
             # configured_entries = sum(1 for entry in self.config.get_entries() if entry.quantity > 0)
             return
 
+        if isinstance(self.config, CraftingConfig):
+            directory = os.path.dirname(self.file_path)
+            if directory:
+                os.makedirs(directory, exist_ok=True)
+
+            with open(self.file_path, 'w', encoding='utf-8') as file:
+                json.dump(self.config.to_dict(), file, indent=4, ensure_ascii=False)
+
+            return
+
         Py4GW.Console.Log("Item Manager", f"No save handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
 
     def load(self):
@@ -168,6 +182,23 @@ class ConfigInfo(Generic[TConfig]):
 
             configured_entries = sum(1 for entry in self.config.get_entries() if entry.quantity > 0)
             Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {configured_entries} configured consumables.", Py4GW.Console.MessageType.Info)
+            return
+
+        if isinstance(self.config, CraftingConfig):
+            if not os.path.isfile(self.file_path):
+                return
+
+            with open(self.file_path, 'r', encoding='utf-8') as file:
+                json_data = json.load(file)
+
+            if isinstance(json_data, dict):
+                self.config.load_dict(json_data)
+
+            Py4GW.Console.Log(
+                "Item Manager",
+                f"Loaded config for {self.name} from {self.file_path} with {len(self.config.selected_recipe_keys)} selected recipes.",
+                Py4GW.Console.MessageType.Info,
+            )
             return
 
         Py4GW.Console.Log("Item Manager", f"No load handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
@@ -292,6 +323,7 @@ class UI:
             ConfigInfo(BuyConfig(), "Kits, Keys & Lockpicks", "Configure how many kits, keys and lockpicks to keep in stock", folder_path),
             ConfigInfo(LootConfig(), "Looting", "Configure which items to pick up and which to ignore", folder_path),
             ConfigInfo(InventoryConfig(), "Item Processing", "Configure how to process items (Stash, Salvage, Extract Upgrades, Sell, ...)", folder_path),
+            ConfigInfo(CraftingConfig(), "Crafting", "Configure crafting settings", folder_path),
         ]
 
         for config_info in self.configs:
@@ -448,13 +480,59 @@ class UI:
         self.loot_preview_show_no_action: bool = False
         self.loot_preview_distance: int = int(Range.SafeCompass.value)
         self.buy_preview_search: str = ""
+        self.crafting_recipe_add_key: str = ""
         self.buy_preview_show_satisfied: bool = True
         self._rebuild_upgrade_ui_caches()
         self._rebuild_item_ui_caches()
 
+    def _get_all_crafting_recipe_entries(self) -> list[tuple[str, Recipe]]:
+        return [(recipe_entry.name, recipe_entry.value) for recipe_entry in CraftingRecipe]
+
+    def _get_crafting_recipe_by_key(self, recipe_key: str) -> Recipe | None:
+        recipe_entry = CraftingRecipe.__members__.get(recipe_key)
+        return recipe_entry.value if recipe_entry is not None else None
+
+    def _get_selected_crafting_recipes(self, config: CraftingConfig) -> list[tuple[str, Recipe]]:
+        selected_recipes: list[tuple[str, Recipe]] = []
+        seen_keys: set[str] = set()
+
+        for recipe_key in config.selected_recipe_keys:
+            if recipe_key in seen_keys:
+                continue
+
+            recipe = self._get_crafting_recipe_by_key(recipe_key)
+            if recipe is None:
+                continue
+
+            selected_recipes.append((recipe_key, recipe))
+            seen_keys.add(recipe_key)
+
+        return selected_recipes
+
+    def _get_item_label(self, model_id: int, item_type: ItemType, fallback: str | None = None, plain : bool = True) -> str:
+        item_data = ITEM_DATA.get_item_data(item_type=item_type, model_id=model_id)
+        if item_data is not None:
+            return (item_data.names.plain_singular if plain else item_data.names.singular) or (fallback or f"Model {model_id}")
+
+        if fallback:
+            return fallback
+
+        try:
+            model_name = ModelID(model_id).name
+            return self._humanize_name(model_name)
+        except ValueError:
+            return f"Model {model_id}"
+
     # -------------------------------------------------------------------------
     # General formatting / discovery helpers
     # -------------------------------------------------------------------------
+
+    @staticmethod
+    def format_stack_count(value: int) -> str:
+        full_stacks = value // MAX_STACK_SIZE
+        remaining = value % MAX_STACK_SIZE
+        
+        return f"{full_stacks} stacks + {remaining}" if full_stacks > 0 else str(remaining)
 
     @staticmethod
     def format_currency(value: int) -> str:
@@ -1185,6 +1263,9 @@ class UI:
             
             case BuyConfig():
                 self.draw_buy_config_preview(config_info.config)
+
+            case CraftingConfig():
+                self.draw_crafting_config(config_info)
                 
         ImGui.End(self.module_config.main_ini_key)
         
@@ -1461,6 +1542,10 @@ class UI:
         if isinstance(config_info.config, BuyConfig):
             self.draw_buy_config(config_info)
             return
+        
+        if isinstance(config_info.config, CraftingConfig):
+            self.draw_crafting_config(config_info)
+            return
 
         ImGui.text("No editor available for this config.")
 
@@ -1506,6 +1591,85 @@ class UI:
         if changed:
             config_info.save()
 
+    def draw_crafting_config(self, config_info: ConfigInfo[CraftingConfig]):
+        config = config_info.config
+        selected_recipes = self._get_selected_crafting_recipes(config)
+        selected_recipe_keys = {recipe_key for recipe_key, _ in selected_recipes}
+        available_recipe_entries = [
+            (recipe_key, recipe)
+            for recipe_key, recipe in self._get_all_crafting_recipe_entries()
+            if recipe_key not in selected_recipe_keys
+        ]
+
+        ImGui.text_wrapped("Select the items which should be craft to consume excess materials and balance crafting output.")
+        ImGui.separator()
+
+        toggle_value = ImGui.checkbox("Allow Shopping", config.allow_shopping)
+        if toggle_value != config.allow_shopping:
+            config.allow_shopping = toggle_value
+            config_info.save()
+
+        ImGui.show_tooltip("When enabled, the planner may suggest missing ingredients so all selected recipes can reach the same target amount.")
+
+        selected_add_label = "Add Recipe"
+        if self.crafting_recipe_add_key:
+            selected_recipe = self._get_crafting_recipe_by_key(self.crafting_recipe_add_key)
+            if selected_recipe is not None:
+                selected_add_label = selected_recipe.name
+
+        if PyImGui.begin_combo("##crafting_add_recipe", selected_add_label, PyImGui.ImGuiComboFlags.NoFlag):
+            for recipe_key, recipe in available_recipe_entries:
+                is_selected = self.crafting_recipe_add_key == recipe_key
+                if ImGui.selectable(recipe.name, is_selected):
+                    self.crafting_recipe_add_key = recipe_key
+            ImGui.end_combo()
+
+        PyImGui.same_line(0, 8)
+        add_disabled = self.crafting_recipe_add_key == "" or self.crafting_recipe_add_key in selected_recipe_keys
+        PyImGui.begin_disabled(add_disabled)
+        if ImGui.button("Add Selected Recipe", 150):
+            config.selected_recipe_keys.append(self.crafting_recipe_add_key)
+            config_info.save()
+            self.crafting_recipe_add_key = ""
+            selected_recipes = self._get_selected_crafting_recipes(config)
+        PyImGui.end_disabled()
+
+        PyImGui.same_line(0, 8)
+        clear_disabled = len(config.selected_recipe_keys) <= 0
+        PyImGui.begin_disabled(clear_disabled)
+        if ImGui.button("Clear Recipes", 110):
+            config.selected_recipe_keys = []
+            config_info.save()
+            selected_recipes = []
+        PyImGui.end_disabled()
+
+        if not selected_recipes:
+            ImGui.text_wrapped("No recipes selected yet. Add one or more recipes to calculate a balanced crafting plan.")
+            return
+
+        if ImGui.begin_child("##crafting_selected_recipes", (0, 120), border=True):
+            removed_recipe = False
+            for index, (recipe_key, recipe) in enumerate(selected_recipes):
+                unique_id = f"crafting_recipe_{recipe_key}_{index}"
+                if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                    ImGui.text(recipe.name)
+                    PyImGui.same_line(0, 10)
+                    ImGui.text_colored(
+                        self._get_item_label(recipe.result.model_id, recipe.result.item_type, fallback=recipe.name),
+                        UI.GRAY_COLOR.color_tuple,
+                        font_size=12,
+                    )
+                    PyImGui.same_line(PyImGui.get_content_region_avail()[0] - 75, 0)
+                    if ImGui.button(f"Remove##{unique_id}", 70):
+                        config.selected_recipe_keys = [key for key in config.selected_recipe_keys if key != recipe_key]
+                        config_info.save()
+                        selected_recipes = self._get_selected_crafting_recipes(config)
+                        removed_recipe = True
+                ImGui.end_child()
+                if removed_recipe:
+                    break
+        ImGui.end_child()
+
     def draw_rule_config(self, config_info: ConfigInfo[RuleConfig]):
         active_drag = self._drag_rule_source_config is config_info and self._drag_rule is not None
         self._drag_rule_target_rect = None
@@ -1536,6 +1700,7 @@ class UI:
 
             item_height = 50
             self.rules_hovered = False
+            scroll_y = 0.0
             
             if ImGui.begin_child("##rules", (0, 0), border=False):                
                 io = PyImGui.get_io()
@@ -1546,6 +1711,7 @@ class UI:
                 child_visible_right = child_pos[0] + child_size[0]
                 child_visible_bottom = child_pos[1] + child_size[1]
                 rule_rects: dict[int, tuple[float, float, float, float]] = {}
+                rule_gap_values: list[float] = []
                 for i, rule in enumerate(config_info.config):
                     if PyImGui.is_rect_visible(5, item_height):
                         if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, item_height)):
@@ -1583,6 +1749,12 @@ class UI:
 
                         if self._drag_rule_source_config is config_info and self._drag_rule is not None:
                             rule_rects[i] = (item_min[0], item_min[1], item_max[0], item_max[1])
+
+                            if i > 0 and (i - 1) in rule_rects:
+                                previous_rect = rule_rects[i - 1]
+                                gap = item_min[1] - previous_rect[3]
+                                if gap > 0.0:
+                                    rule_gap_values.append(gap)
                             
                             if in_rect:
                                 self._drag_rule_target_index = i
@@ -1623,6 +1795,7 @@ class UI:
 
                 if active_drag and self._drag_rule_target_index in rule_rects:
                     current_rect = rule_rects[self._drag_rule_target_index]
+                    usual_gap = rule_gap_values[0] if rule_gap_values else 10.0
                     x1 = max(current_rect[0] + 4, child_visible_left + 4)
                     x2 = min(current_rect[2] - 4, child_visible_right - 4)
                     can_draw_target_rect = True
@@ -1634,7 +1807,9 @@ class UI:
                             line_y = (current_rect[3] + next_rect[1]) / 2.0
                         else:
                             if current_rect[3] < child_visible_bottom:
-                                line_y = (current_rect[3] + child_visible_bottom) / 2.0
+                                bottom_gap = child_visible_bottom - current_rect[3]
+                                effective_gap = min(bottom_gap, usual_gap)
+                                line_y = current_rect[3] + (effective_gap / 2.0)
                             else:
                                 can_draw_target_rect = False
                     else:
@@ -1644,6 +1819,10 @@ class UI:
                         else:
                             if current_rect[1] > child_visible_top:
                                 line_y = (child_visible_top + current_rect[1]) / 2.0
+                            elif scroll_y <= 0.0:
+                                top_gap = max(current_rect[1] - child_visible_top, 0.0)
+                                effective_gap = min(top_gap if top_gap > 0.0 else usual_gap, usual_gap)
+                                line_y = child_visible_top + max(effective_gap / 2.0, 1.0)
                             else:
                                 can_draw_target_rect = False
 
@@ -2168,7 +2347,6 @@ class UI:
                 PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
                 if PyImGui.begin_popup(popup_id):
                     ImGui.text("Add Model ID")
-                    ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
                     _, ui.model_id_search = ImGui.search_field("##model_id_enum_search", ui.model_id_search, "Search model ids or enter an integer...")
@@ -2224,8 +2402,6 @@ class UI:
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup()
-
-                ImGui.separator()
 
                 if ImGui.begin_child("##added_model_id_candidates", (0, 0), border=False):
                     for index, model_id in enumerate(condition.model_ids):
@@ -2381,8 +2557,6 @@ class UI:
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup()
-
-                ImGui.separator()
 
                 if ImGui.begin_child(f"##added_encoded_name_candidates_{id(condition)}", (0, 0), border=False):
                     for index, encoded_name in enumerate(condition.encoded_names):
@@ -2591,8 +2765,6 @@ class UI:
 
                     PyImGui.end_popup()
 
-                ImGui.separator()
-
                 if ImGui.begin_child(f"##added_model_file_id_item_type_candidates_{id(condition)}", (0, 0), border=False):
                     for index, entry in enumerate(list(condition.model_file_ids_and_item_types)):
                         item = ui._find_item_by_model_file_id_and_item_type(entry.model_file_id, entry.item_type)
@@ -2710,8 +2882,6 @@ class UI:
 
                     PyImGui.end_popup()
 
-                ImGui.separator()
-
                 if ImGui.begin_child(f"##model_id_rule_list_{id(condition)}", (0, 0), border=False):
                     selected_items: list[tuple[ModelIdAndItemType, Any]] = []
                     for model_id, item_type in condition.modelids_and_itemtypes:
@@ -2779,7 +2949,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForQuantityCondition(ui: "UI", rule: Rule, condition: QuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForStackQuantityCondition(ui: "UI", rule: Rule, condition: StackQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
 
             size = size if size is not None else (0, 72)
@@ -2789,12 +2959,12 @@ class UI:
                 slider_width = max(80, (available_width - 8) / 2)
 
                 PyImGui.push_item_width(slider_width)
-                new_min = ImGui.slider_int(f"##quantity_min_{id(condition)}", condition.min_quantity, 0, 250)
-                ImGui.show_tooltip("Minimum quantity required for the rule to apply")
+                new_min = ImGui.slider_int(f"##stack_quantity_min_{id(condition)}", condition.min_quantity, 0, 250)
+                ImGui.show_tooltip("Minimum stack quantity required for the rule to apply")
                 
                 PyImGui.same_line(0, 8)
-                new_max = ImGui.slider_int(f"##quantity_max_{id(condition)}", condition.max_quantity, 0, 250)
-                ImGui.show_tooltip("Maximum quantity allowed for the rule to apply")
+                new_max = ImGui.slider_int(f"##stack_quantity_max_{id(condition)}", condition.max_quantity, 0, 250)
+                ImGui.show_tooltip("Maximum stack quantity allowed for the rule to apply")
                 PyImGui.pop_item_width()
 
                 if new_min > new_max:
@@ -2804,6 +2974,41 @@ class UI:
                     condition.min_quantity = new_min
                     condition.max_quantity = new_max
                     changed = True
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+        
+        @staticmethod
+        def ForFullStacksQuantityCondition(ui: "UI", rule: Rule, condition: FullStacksQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+
+            size = size if size is not None else (0, 72)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                available_width = PyImGui.get_content_region_avail()[0]
+                slider_width = max(80, (available_width - 8) / 2)
+
+                PyImGui.push_item_width(slider_width)
+                PyImGui.begin_group()
+                new_min = ImGui.slider_int(f"##total_quantity_min_{id(condition)}", condition.min_quantity, 0, 500)
+                ImGui.show_tooltip("Minimum stacks required for the rule to apply")
+                PyImGui.end_group()
+                
+                PyImGui.same_line(0, 8)
+                PyImGui.begin_group()
+                new_max = ImGui.slider_int(f"##total_quantity_max_{id(condition)}", condition.max_quantity, 0, 500)
+                ImGui.show_tooltip("Maximum stacks allowed for the rule to apply")
+
+                if new_min > new_max:
+                    new_min, new_max = new_max, new_min
+
+                if new_min != condition.min_quantity or new_max != condition.max_quantity:
+                    condition.min_quantity = new_min
+                    condition.max_quantity = new_max
+                    changed = True
+                
+                PyImGui.end_group()
+                PyImGui.pop_item_width()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -3061,8 +3266,6 @@ class UI:
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup()
-
-                ImGui.separator()
 
                 if ImGui.begin_child(f"##added_material_candidates_{id(condition)}", (0, 0), border=False):
                     for index, mid in enumerate(condition.materials):
@@ -3357,8 +3560,6 @@ class UI:
                         PyImGui.close_current_popup()
                     PyImGui.end_popup()
 
-                ImGui.separator()
-
                 if ImGui.begin_table(f"##armor_upgrade_condition_table_{id(condition)}", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
                     PyImGui.table_setup_column("Profession", PyImGui.TableColumnFlags.WidthFixed, 150)
                     PyImGui.table_setup_column("Upgrades", PyImGui.TableColumnFlags.WidthStretch)
@@ -3579,7 +3780,6 @@ class UI:
                         PyImGui.close_current_popup()
                     PyImGui.end_popup()
 
-                ImGui.separator()
                 style = ImGui.get_style()
                 style.ToggleButtonEnabled.push_color(ui._get_rarity_color(Rarity.Gold).opacity(0.85).rgb_tuple)
                 style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
@@ -3700,8 +3900,11 @@ class UI:
             case ExactItemTypeCondition():
                 return UI.ConditionEditor.ForExactItemTypeCondition(self, rule, condition, draw_size)
 
-            case QuantityCondition():
-                return UI.ConditionEditor.ForQuantityCondition(self, rule, condition, draw_size)
+            case StackQuantityCondition():
+                return UI.ConditionEditor.ForStackQuantityCondition(self, rule, condition, draw_size)
+            
+            case FullStacksQuantityCondition():
+                return UI.ConditionEditor.ForFullStacksQuantityCondition(self, rule, condition, draw_size)
 
             case NickItemCondition():
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, draw_size)
@@ -3752,7 +3955,8 @@ class UI:
             ModelIdsAndItemTypesCondition,
             ItemTypesCondition,
             ExactItemTypeCondition,
-            QuantityCondition,
+            StackQuantityCondition,
+            FullStacksQuantityCondition,
             NickItemCondition,
             IsMaterialCondition,
             RaritiesCondition,
@@ -3777,7 +3981,6 @@ class UI:
     def _estimate_condition_editor_height(self, rule: Rule, condition: Condition, max_height: float = 500) -> float:
         style = ImGui.get_style()
         spacing = max(style.ItemSpacing.value2 or 0, 4)
-        wrapper_height = 56 if (len(rule.conditions) > 1 or isinstance(rule, CustomRule)) else 0
         control_height = 32
         section_gap = spacing + 12
         row_25 = 25 + spacing
@@ -3785,13 +3988,15 @@ class UI:
         row_40 = 40 + spacing
         row_48 = 48 + spacing
         row_56 = 56 + spacing
+        row_50 = 50 + (spacing / 2)
+        row_60 = 60 + spacing
 
         def clamp(content_height: float) -> float:
             return self._clamp_condition_editor_height(content_height, max_height=max_height)
 
         match condition:
             case ModelIdsCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.model_ids)) * row_48)
+                return clamp(70 + (spacing / 2) + max(1, len(condition.model_ids)) * row_50)
 
             case ItemTypesCondition():
                 available_width = max(PyImGui.get_content_region_avail()[0], 200)
@@ -3809,12 +4014,15 @@ class UI:
                 return clamp(control_height + section_gap + max(1, len(condition.model_file_ids_and_item_types)) * row_56)
 
             case ModelIdsAndItemTypesCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.modelids_and_itemtypes)) * row_56)
+                return clamp(70 + (spacing / 2) + (max(1, len(condition.modelids_and_itemtypes)) * row_50))
 
             case ExactItemTypeCondition():
                 return clamp(control_height + 8)
 
-            case QuantityCondition():
+            case FullStacksQuantityCondition():
+                return clamp(control_height + row_25 + 6)
+            
+            case StackQuantityCondition():
                 return clamp(control_height + row_25 + 6)
 
             case NickItemCondition():
@@ -3981,7 +4189,7 @@ class UI:
 
             case QuantityRule():
                 ImGui.text_wrapped("This rule matches items whose quantity falls inside the configured inclusive range.")
-                return UI.ConditionEditor.ForQuantityCondition(self, rule, rule.condition)
+                return UI.ConditionEditor.ForStackQuantityCondition(self, rule, rule.condition)
 
             case NickItemRule():
                 ImGui.text_wrapped("This rule matches Nicholas the Traveler items that come up within the configured number of weeks, and previews the affected cycle items.")

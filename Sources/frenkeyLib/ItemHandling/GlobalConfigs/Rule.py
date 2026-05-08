@@ -29,7 +29,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
-    QuantityCondition,
+    StackQuantityCondition,
     RangedUpgrade,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
@@ -240,11 +240,11 @@ class ItemTypesRule(Rule):
 class QuantityRule(Rule):
     """Matches items whose quantity falls inside the configured inclusive range."""
     def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
-        super().__init__([QuantityCondition(min_quantity, max_quantity)])
+        super().__init__([StackQuantityCondition(min_quantity, max_quantity)])
 
     @property
-    def condition(self) -> QuantityCondition:
-        return cast(QuantityCondition, self.conditions[0])
+    def condition(self) -> StackQuantityCondition:
+        return cast(StackQuantityCondition, self.conditions[0])
 
     @property
     def min_quantity(self) -> int:
