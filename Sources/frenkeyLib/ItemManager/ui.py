@@ -62,6 +62,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, B
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProfileManager import GlobalConfigProfileManager
 from Sources.frenkeyLib.ItemHandling.Recipe import Crafting, CraftingPlan, CraftingRecipe, Ingredient, Recipe, ShoppingListEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
@@ -108,9 +109,10 @@ class ConfigInfo(Generic[TConfig]):
         config: TConfig,
         name: str,
         description: str,
-        folder_path: str,
+        folder_path: str | Callable[[], str],
         storage_key: str | None = None,
         tabs: list["ConfigInfo[Any]"] | None = None,
+        on_save: Callable[["ConfigInfo[Any]"], None] | None = None,
     ):
         self.config = config
         self.name = name
@@ -119,10 +121,16 @@ class ConfigInfo(Generic[TConfig]):
         self.storage_key = storage_key or self.config.__class__.__name__.lower()
         self.tabs = tabs or []
         self.selected_tab_index = 0
+        self.on_save = on_save
+
+    @property
+    def config_type(self) -> str:
+        return self.config.__class__.__name__
 
     @property
     def file_path(self) -> str:
-        return os.path.join(self.folder_path, f"{self.storage_key}.json")
+        folder_path = self.folder_path() if callable(self.folder_path) else self.folder_path
+        return os.path.join(folder_path, f"{self.storage_key}.json")
 
     def save(self):
         if self.tabs:
@@ -132,6 +140,8 @@ class ConfigInfo(Generic[TConfig]):
 
         if isinstance(self.config, RuleConfig):
             self.config.Save(self.file_path)
+            if self.on_save is not None:
+                self.on_save(self)
             return
 
         if isinstance(self.config, BuyConfig):
@@ -145,6 +155,8 @@ class ConfigInfo(Generic[TConfig]):
                 json.dump(json_data, file, indent=4, ensure_ascii=False)
 
             # configured_entries = sum(1 for entry in self.config.get_entries() if entry.quantity > 0)
+            if self.on_save is not None:
+                self.on_save(self)
             return
 
         if isinstance(self.config, CraftingConfig):
@@ -155,6 +167,8 @@ class ConfigInfo(Generic[TConfig]):
             with open(self.file_path, 'w', encoding='utf-8') as file:
                 json.dump(self.config.to_dict(), file, indent=4, ensure_ascii=False)
 
+            if self.on_save is not None:
+                self.on_save(self)
             return
 
         Py4GW.Console.Log("Item Manager", f"No save handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
@@ -166,12 +180,18 @@ class ConfigInfo(Generic[TConfig]):
             return
 
         if isinstance(self.config, RuleConfig):
+            if not os.path.isfile(self.file_path):
+                self.config.clear()
+                Py4GW.Console.Log("Item Manager", f"No config file found for {self.name} at {self.file_path}. Loaded empty config.", Py4GW.Console.MessageType.Info)
+                return
+
             loaded_config = self.config.Load(self.file_path)
             Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {len(loaded_config)} rules.", Py4GW.Console.MessageType.Info)
             return
 
         if isinstance(self.config, BuyConfig):
             if not os.path.isfile(self.file_path):
+                self.config.load_dict({})
                 return
 
             with open(self.file_path, 'r', encoding='utf-8') as file:
@@ -186,6 +206,7 @@ class ConfigInfo(Generic[TConfig]):
 
         if isinstance(self.config, CraftingConfig):
             if not os.path.isfile(self.file_path):
+                self.config.load_dict({})
                 return
 
             with open(self.file_path, 'r', encoding='utf-8') as file:
@@ -313,17 +334,46 @@ class UI:
         
         self.window_pos : tuple[float, float] | None = None
         self.window_flags = PyImGui.WindowFlags.NoFlag
+        self.main_window_focused = False
         self.rules_hovered = False
         self.show_preview_window: bool = False
-        folder_path = os.path.join(Py4GW.Console.get_projects_path(), "Settings", "Global", "Item & Inventory", "Configs")
+        self.show_manage_profile_window: bool = False
+        self.preview_window_config_type: str = 'BuyConfig'
+        self.manage_profile_window_config_type: str = 'BuyConfig'
+        self.profile_manager = GlobalConfigProfileManager()
+        self.profile_manager.refresh()
         self.preview_entries : list[InventoryPreviewEntry] = []
         self.preview_throttle : ThrottledTimer = ThrottledTimer(1000)
 
         self.configs : list[ConfigInfo] = [
-            ConfigInfo(BuyConfig(), "Kits, Keys & Lockpicks", "Configure how many kits, keys and lockpicks to keep in stock", folder_path),
-            ConfigInfo(LootConfig(), "Looting", "Configure which items to pick up and which to ignore", folder_path),
-            ConfigInfo(InventoryConfig(), "Item Processing", "Configure how to process items (Stash, Salvage, Extract Upgrades, Sell, ...)", folder_path),
-            ConfigInfo(CraftingConfig(), "Crafting", "Configure crafting settings", folder_path),
+            ConfigInfo(
+                BuyConfig(),
+                "Kits, Keys & Lockpicks",
+                "Configure how many kits, keys and lockpicks to keep in stock",
+                lambda: self.profile_manager.get_active_config_folder('BuyConfig'),
+                on_save=self._handle_config_saved,
+            ),
+            ConfigInfo(
+                LootConfig(),
+                "Looting",
+                "Configure which items to pick up and which to ignore",
+                lambda: self.profile_manager.get_active_config_folder('LootConfig'),
+                on_save=self._handle_config_saved,
+            ),
+            ConfigInfo(
+                InventoryConfig(),
+                "Item Processing",
+                "Configure how to process items (Stash, Salvage, Extract Upgrades, Sell, ...)",
+                lambda: self.profile_manager.get_active_config_folder('InventoryConfig'),
+                on_save=self._handle_config_saved,
+            ),
+            ConfigInfo(
+                CraftingConfig(),
+                "Crafting",
+                "Configure crafting settings",
+                lambda: self.profile_manager.get_active_config_folder('CraftingConfig'),
+                on_save=self._handle_config_saved,
+            ),
         ]
 
         for config_info in self.configs:
@@ -331,6 +381,7 @@ class UI:
 
         self.config : Optional[ConfigInfo] = None
         self.rule : Optional[Rule] = None
+        self.rule_index : Optional[int] = None
 
         self.switch_to_config(self.configs[0] if len(self.configs) > 0 else None)
         available_upgrade_types: list[type[Upgrade]] = list(_UPGRADES)
@@ -481,6 +532,15 @@ class UI:
         self.loot_preview_distance: int = int(Range.SafeCompass.value)
         self.buy_preview_search: str = ""
         self.crafting_recipe_add_key: str = ""
+        self.global_config_new_profile_name: str = ""
+        self._save_as_profile_popup_id: str = '##save_as_profile_popup'
+        self._save_as_profile_popup_requested: bool = False
+        self._manage_profile_selected_name: str = GlobalConfigProfileManager.SHARED_PROFILE_NAME
+        self._profile_action_popup_id: str = '##profile_action_popup'
+        self._profile_action_popup_requested: bool = False
+        self._profile_action_mode: str = ''
+        self._profile_action_source_name: str = ''
+        self._profile_action_target_name: str = ''
         self.buy_preview_show_satisfied: bool = True
         self._rebuild_upgrade_ui_caches()
         self._rebuild_item_ui_caches()
@@ -526,7 +586,11 @@ class UI:
     # -------------------------------------------------------------------------
     # General formatting / discovery helpers
     # -------------------------------------------------------------------------
-
+    def _set_active_rule(self, rule: Optional[Rule]) -> None:
+        if self.config and isinstance(self.config.config, RuleConfig):
+            self.rule = rule if rule in self.config.config else None
+            self.rule_index = self.config.config.index(self.rule) if self.rule is not None else None
+        
     @staticmethod
     def format_stack_count(value: int) -> str:
         full_stacks = value // MAX_STACK_SIZE
@@ -1207,11 +1271,17 @@ class UI:
         self.floating_button.sync_begin_with_close(open_)
 
         if expanded:
+            self.main_window_focused = PyImGui.is_window_focused()
             self.window_pos = PyImGui.get_window_pos()
             self.draw_explorer()
             
-            if self.show_preview_window and self.config is not None:
-                self.draw_preview_window(self.config)
+            preview_config = self._get_config_info_by_type(self.preview_window_config_type)
+            if self.show_preview_window and preview_config is not None:
+                self.draw_preview_window(preview_config)
+
+            manage_config = self._get_config_info_by_type(self.manage_profile_window_config_type)
+            if self.show_manage_profile_window and manage_config is not None:
+                self._draw_manage_profile_window(manage_config)
                 
         ImGui.End(self.module_config.main_ini_key)
 
@@ -1222,19 +1292,38 @@ class UI:
     def _get_active_config_info(self, config_info: ConfigInfo | None = None) -> ConfigInfo | None:
         return config_info or self.config
 
+    def _get_config_info_by_type(self, config_type: str) -> ConfigInfo | None:
+        normalized_config_type = str(config_type or '').strip()
+        for config_info in self.configs:
+            if config_info.config_type == normalized_config_type:
+                return config_info
+        return None
+
+    def _get_config_type_options(self) -> list[ConfigInfo]:
+        return self.configs
+
     def _sync_selected_rule(self) -> None:
         active_config = self._get_active_config_info()
         if active_config is None or not isinstance(active_config.config, RuleConfig):
-            self.rule = None
+            self._set_active_rule(None)
             return
 
         if self.rule not in active_config.config:
-            self.rule = active_config.config[0] if len(active_config.config) > 0 else None
+            self._set_active_rule(active_config.config[0] if len(active_config.config) > 0 else None)
 
     def _save_active_config(self) -> None:
         active_config = self._get_active_config_info()
         if active_config is not None:
             active_config.save()
+
+    def _save_all_configs(self) -> None:
+        for config_info in self.configs:
+            config_info.save()
+
+    def _reload_all_configs(self) -> None:
+        for config_info in self.configs:
+            config_info.load()
+        self._sync_selected_rule()
 
     def _load_active_config(self) -> None:
         active_config = self._get_active_config_info()
@@ -1242,37 +1331,389 @@ class UI:
             active_config.load()
             self._sync_selected_rule()
 
+    def _refresh_global_config_profile_context(self) -> None:
+        if self.profile_manager.refresh():
+            self._reload_all_configs()
+
+    def _handle_config_saved(self, config_info: ConfigInfo[Any]) -> None:
+        GlobalConfigProfileManager.broadcast_reload(config_info.config_type)
+
+    def _switch_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        self._save_all_configs()
+        if self.profile_manager.set_profile_for_current_character(target_config.config_type, profile_name):
+            self._reload_all_configs()
+
+    def _create_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        created_profile_name = self.profile_manager.create_profile(
+            target_config.config_type,
+            profile_name,
+            source_profile_name=self.profile_manager.get_active_profile_name(target_config.config_type),
+        )
+        if created_profile_name is None:
+            return
+
+        self.global_config_new_profile_name = ''
+        self._switch_global_config_profile(created_profile_name, target_config)
+
+    def _delete_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        if not self.profile_manager.delete_profile(target_config.config_type, profile_name):
+            return
+
+        GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
+        self.profile_manager.refresh(force=True)
+        self._reload_all_configs()
+
+    def _duplicate_global_config_profile(self, source_profile_name: str, target_profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        duplicated_profile_name = self.profile_manager.duplicate_profile(
+            target_config.config_type,
+            source_profile_name,
+            target_profile_name,
+        )
+        if duplicated_profile_name is None:
+            return
+
+        GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
+        self.profile_manager.refresh(force=True)
+
+    def _rename_global_config_profile(self, source_profile_name: str, target_profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        renamed_profile_name = self.profile_manager.rename_profile(
+            target_config.config_type,
+            source_profile_name,
+            target_profile_name,
+        )
+        if renamed_profile_name is None:
+            return
+
+        GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
+        self.profile_manager.refresh(force=True)
+        self._reload_all_configs()
+
+    def _open_save_as_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        active_profile_name = self.profile_manager.get_active_profile_name(target_config.config_type)
+        self.global_config_new_profile_name = '' if active_profile_name == GlobalConfigProfileManager.SHARED_PROFILE_NAME else active_profile_name
+        self._save_as_profile_popup_requested = True
+
+    def _draw_save_as_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+        
+        if self._save_as_profile_popup_requested:
+            PyImGui.open_popup(f"Save {self._humanize_name(target_config.config_type)} as Profile##{self._save_as_profile_popup_id}")
+            self._save_as_profile_popup_requested = False
+
+        PyImGui.set_next_window_size((360, 0), PyImGui.ImGuiCond.Always)
+        if not PyImGui.begin_popup_modal(f"Save {self._humanize_name(target_config.config_type)} as Profile##{self._save_as_profile_popup_id}", True, PyImGui.WindowFlags.AlwaysAutoResize):
+            return
+
+        ImGui.text_wrapped(f'Enter a name for the profile you want to create or overwrite for this config type. You can reuse an existing profile name to overwrite it with the current config values.')
+
+        PyImGui.set_next_item_width(-1)
+        self.global_config_new_profile_name = ImGui.input_text(
+            'Profile Name',
+            self.global_config_new_profile_name,
+        )
+
+        btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
+        create_disabled = GlobalConfigProfileManager.sanitize_profile_name(self.global_config_new_profile_name) == ''
+        PyImGui.begin_disabled(create_disabled)        
+        if ImGui.button('Save As', btn_width):
+            self._save_active_config()
+            self._create_global_config_profile(self.global_config_new_profile_name, target_config)
+            PyImGui.close_current_popup()
+        PyImGui.end_disabled()
+
+        PyImGui.same_line(0, 8)
+        if ImGui.button('Cancel', btn_width):
+            self.global_config_new_profile_name = ''
+            PyImGui.close_current_popup()
+
+        ImGui.show_tooltip('Creates or reuses a profile for this config type and assigns it to the current character.')
+        PyImGui.end_popup_modal()
+
+    def _open_manage_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        if not self.show_manage_profile_window:
+            self.manage_profile_window_config_type = target_config.config_type
+
+        profile_names = [
+            profile_name
+            for profile_name in self.profile_manager.list_profiles(target_config.config_type)
+            if profile_name != GlobalConfigProfileManager.SHARED_PROFILE_NAME
+        ]
+        active_profile_name = self.profile_manager.get_active_profile_name(target_config.config_type)
+        if active_profile_name in profile_names:
+            self._manage_profile_selected_name = active_profile_name
+        elif profile_names:
+            self._manage_profile_selected_name = profile_names[0]
+        else:
+            self._manage_profile_selected_name = GlobalConfigProfileManager.SHARED_PROFILE_NAME
+
+        self.show_manage_profile_window = True
+
+    def _open_profile_action_popup(self, mode: str, source_profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        normalized_mode = str(mode or '').strip().lower()
+        if normalized_mode not in ('rename', 'duplicate', 'delete'):
+            return
+
+        normalized_source_name = GlobalConfigProfileManager.sanitize_profile_name(source_profile_name)
+        if normalized_source_name == '' or normalized_source_name == GlobalConfigProfileManager.SHARED_PROFILE_NAME:
+            return
+
+        self._profile_action_mode = normalized_mode
+        self._profile_action_source_name = normalized_source_name
+        self._profile_action_target_name = normalized_source_name if normalized_mode == 'rename' else ''
+        self._profile_action_popup_requested = True
+
+    def _draw_profile_action_popup(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        if self._profile_action_mode not in ('rename', 'duplicate', 'delete'):
+            return
+
+        action_label = 'Delete' if self._profile_action_mode == 'delete' else ('Rename' if self._profile_action_mode == 'rename' else 'Duplicate')
+        popup_title = f'{action_label} Profile##{self._profile_action_popup_id}'
+        if self._profile_action_popup_requested:
+            PyImGui.open_popup(popup_title)
+            self._profile_action_popup_requested = False
+
+        PyImGui.set_next_window_size((380, 0), PyImGui.ImGuiCond.Always)
+        if not PyImGui.begin_popup_modal(popup_title, True, PyImGui.WindowFlags.AlwaysAutoResize):
+            return
+
+        ImGui.text(f'Config Type: {self._humanize_name(target_config.config_type)}')
+        if self._profile_action_mode == 'delete':
+            ImGui.text_wrapped(
+                f'Are you sure you want to delete profile "{self._profile_action_source_name}"? '
+                'This action is synced across accounts and characters using it will fall back to SHARED.'
+            )
+        else:
+            ImGui.text_wrapped(
+                f'{action_label} profile "{self._profile_action_source_name}" by entering the target profile name below.'
+            )
+            PyImGui.set_next_item_width(-1)
+            self._profile_action_target_name = ImGui.input_text('Profile Name', self._profile_action_target_name)
+
+        btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
+        target_name = GlobalConfigProfileManager.sanitize_profile_name(self._profile_action_target_name)
+        action_disabled = False if self._profile_action_mode == 'delete' else target_name == ''
+        PyImGui.begin_disabled(action_disabled)
+        if ImGui.button(action_label, btn_width):
+            if self._profile_action_mode == 'rename':
+                self._rename_global_config_profile(
+                    self._profile_action_source_name,
+                    self._profile_action_target_name,
+                    target_config,
+                )
+            elif self._profile_action_mode == 'delete':
+                self._delete_global_config_profile(
+                    self._profile_action_source_name,
+                    target_config,
+                )
+            else:
+                self._duplicate_global_config_profile(
+                    self._profile_action_source_name,
+                    self._profile_action_target_name,
+                    target_config,
+                )
+            self._profile_action_mode = ''
+            self._profile_action_popup_requested = False
+            self._profile_action_source_name = ''
+            self._profile_action_target_name = ''
+            PyImGui.close_current_popup()
+        PyImGui.end_disabled()
+
+        PyImGui.same_line(0, 8)
+        if ImGui.button('Cancel', btn_width):
+            self._profile_action_mode = ''
+            self._profile_action_popup_requested = False
+            self._profile_action_source_name = ''
+            self._profile_action_target_name = ''
+            PyImGui.close_current_popup()
+
+        PyImGui.end_popup_modal()
+
+    def _draw_manage_profile_window(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_config_info_by_type(self.manage_profile_window_config_type)
+        if target_config is None or not self.show_manage_profile_window:
+            return
+
+        PyImGui.set_next_window_size((520, 420), PyImGui.ImGuiCond.FirstUseEver)
+        expanded, open_ = ImGui.BeginWithClose(
+            ini_key=self.module_config.main_ini_key,
+            name=f'Manage Profiles',
+            p_open=self.show_manage_profile_window,
+            flags=PyImGui.WindowFlags.NoFlag,
+        )
+        self.show_manage_profile_window = open_
+        if not expanded:
+            ImGui.End(self.module_config.main_ini_key)
+            return
+
+        config_type_options = self._get_config_type_options()
+        config_type_labels = [config_option.name for config_option in config_type_options]
+        current_config_type_index = next(
+            (
+                index
+                for index, config_option in enumerate(config_type_options)
+                if config_option.config_type == target_config.config_type
+            ),
+            0,
+        )
+
+        PyImGui.set_next_item_width(-1)
+        selected_config_type_index = ImGui.combo('Config Type', current_config_type_index, config_type_labels)
+        if selected_config_type_index != current_config_type_index:
+            self.manage_profile_window_config_type = config_type_options[selected_config_type_index].config_type
+            self._profile_action_mode = ''
+            self._profile_action_popup_requested = False
+            self._profile_action_source_name = ''
+            self._profile_action_target_name = ''
+            ImGui.End(self.module_config.main_ini_key)
+            return
+
+        profile_names = [
+            profile_name
+            for profile_name in self.profile_manager.list_profiles(target_config.config_type)
+            if profile_name != GlobalConfigProfileManager.SHARED_PROFILE_NAME
+        ]
+        ImGui.text_wrapped('Manage profiles for the current config type. Rename and delete are synced across accounts.\nDeleting a profile makes users fall back to SHARED.')
+
+        if profile_names:            
+            style = ImGui.get_style()
+            style.CellPadding.push_style_var_direct(2, 6)
+            if ImGui.begin_table('##manage_profile_table', 4, PyImGui.TableFlags.BordersInnerH | PyImGui.TableFlags.BordersOuterV | PyImGui.TableFlags.BordersOuterH | PyImGui.TableFlags.RowBg | PyImGui.TableFlags.SizingStretchProp):
+                PyImGui.table_setup_column('Profile', PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_setup_column('##Rename', PyImGui.TableColumnFlags.WidthFixed, 30)
+                PyImGui.table_setup_column('##Duplicate', PyImGui.TableColumnFlags.WidthFixed, 30)
+                PyImGui.table_setup_column('##Delete', PyImGui.TableColumnFlags.WidthFixed, 30)
+
+                active_profile_name = self.profile_manager.get_active_profile_name(target_config.config_type)
+                for profile_name in profile_names:
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    PyImGui.same_line(0, 4)
+                    label = profile_name if profile_name != active_profile_name else f'{profile_name} (Active)'
+                    ImGui.text_aligned(label, alignment=Alignment.MidLeft, height=25)
+
+                    PyImGui.table_next_column()
+                    if ImGui.icon_button(f'{IconsFontAwesome5.ICON_EDIT}##{profile_name}', -1):
+                        self._open_profile_action_popup('rename', profile_name, target_config)
+                    ImGui.show_tooltip('Rename this profile. This action is synced across accounts.')
+
+                    PyImGui.table_next_column()
+                    if ImGui.icon_button(f'{IconsFontAwesome5.ICON_COPY}##{profile_name}', -1):
+                        self._open_profile_action_popup('duplicate', profile_name, target_config)
+                    ImGui.show_tooltip('Duplicate this profile. This action is synced across accounts.')
+
+                    PyImGui.table_next_column()
+                    if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##{profile_name}', -1):
+                        self._open_profile_action_popup('delete', profile_name, target_config)
+                    ImGui.show_tooltip('Delete this profile. This action is synced across accounts and makes users fall back to the shared profile.')
+
+                ImGui.end_table()
+            style.CellPadding.pop_style_var_direct()
+        else:
+            ImGui.text_colored('No custom profiles available for this config type.', UI.GRAY_COLOR.color_tuple, font_size=11)
+
+        if ImGui.button('Close', -1):
+            self.show_manage_profile_window = False
+            self._profile_action_mode = ''
+            self._profile_action_popup_requested = False
+            self._profile_action_source_name = ''
+            self._profile_action_target_name = ''
+        ImGui.End(self.module_config.main_ini_key)
+        self._draw_profile_action_popup(target_config)
+
     def switch_to_config(self, rule_config: ConfigInfo | None):
         self.config = rule_config or (self.configs[0] if len(self.configs) > 0 else None)
         self._sync_selected_rule()
 
-    def draw_preview_window(self, config_info: ConfigInfo):          
+    def draw_preview_window(self, config_info: ConfigInfo):    
+        preview_config = self._get_config_info_by_type(self.preview_window_config_type)
+        if preview_config is None:
+            self.show_preview_window = False
+            return
+
+        PyImGui.set_next_window_size((600, 800), PyImGui.ImGuiCond.FirstUseEver)      
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
             name="Item Manager - Preview",
             p_open=self.show_preview_window,
             flags=PyImGui.WindowFlags.NoFlag,
         )
-        
-        match config_info.config:
+
+        config_type_options = self._get_config_type_options()
+        config_type_labels = [config_option.name for config_option in config_type_options]
+        current_config_type_index = next(
+            (
+                index
+                for index, config_option in enumerate(config_type_options)
+                if config_option.config_type == preview_config.config_type
+            ),
+            0,
+        )
+
+        if expanded:
+            PyImGui.set_next_item_width(-1)
+            selected_config_type_index = ImGui.combo('Config Type', current_config_type_index, config_type_labels)
+            if selected_config_type_index != current_config_type_index:
+                self.preview_window_config_type = config_type_options[selected_config_type_index].config_type
+                preview_config = config_type_options[selected_config_type_index]
+
+        match preview_config.config:
             case InventoryConfig():
-                self.draw_inventory_config_preview(config_info.config)
+                self.draw_inventory_config_preview(preview_config.config)
             
             case LootConfig():
-                self.draw_loot_config_preview(config_info.config)
+                self.draw_loot_config_preview(preview_config.config)
             
             case BuyConfig():
-                self.draw_buy_config_preview(config_info.config)
+                self.draw_buy_config_preview(preview_config.config)
 
             case CraftingConfig():
-                self.draw_crafting_config(config_info)
+                self.draw_crafting_config(preview_config)
                 
         ImGui.End(self.module_config.main_ini_key)
         
         if not open_:
             self.show_preview_window = False
-    
+
     def draw_explorer(self):
+        self._refresh_global_config_profile_context()
         style = ImGui.get_style()
         # style.TableBorderLight.push_color_direct((255,255,255,255))
         # style.TableBorderStrong.push_color_direct((255,255,255,255))
@@ -1307,31 +1748,53 @@ class UI:
                     active_config_name = active_config.name if active_config is not None and active_config is not self.config else None
                     title = self.config.name if active_config_name is None else f"{self.config.name} / {active_config_name}"
 
+                    style.CellPadding.push_style_var_direct(2, 2)
                     if ImGui.begin_table("##config_header", 4, PyImGui.TableFlags.NoBordersInBody, height=20):
                         PyImGui.table_setup_column("Title", PyImGui.TableColumnFlags.WidthStretch)
-                        PyImGui.table_setup_column("Preview", PyImGui.TableColumnFlags.WidthFixed, 100)
+                        PyImGui.table_setup_column("Profile", PyImGui.TableColumnFlags.WidthStretch)
                         PyImGui.table_setup_column("Export", PyImGui.TableColumnFlags.WidthFixed, 100)
-                        PyImGui.table_setup_column("Import", PyImGui.TableColumnFlags.WidthFixed, 100)
+                        PyImGui.table_setup_column("Preview", PyImGui.TableColumnFlags.WidthFixed, 100)
 
                         PyImGui.table_next_row()
                         PyImGui.table_next_column()
 
                         ImGui.text(title, font_size=18)
                         PyImGui.table_next_column()
+                        
+                                                    
+                        self._refresh_global_config_profile_context()
+
+                        active_config = self._get_active_config_info()
+                        if active_config is not None:
+                            active_config_type = active_config.config_type
+                            profile_names = self.profile_manager.list_profiles(active_config_type)
+                            active_profile_name = self.profile_manager.get_active_profile_name(active_config_type)
+                            
+                            current_profile_index = profile_names.index(active_profile_name) if active_profile_name in profile_names else 0
+                            PyImGui.set_next_item_width(-32)
+                            selected_profile_index = ImGui.combo('##global_config_profile', current_profile_index, profile_names)
+                            if selected_profile_index != current_profile_index:
+                                self._switch_global_config_profile(profile_names[selected_profile_index], active_config)
+                            ImGui.show_tooltip('The selected profile is stored per character on this account.')
+                            PyImGui.same_line(0, 6)
+                            if ImGui.button('...##manage_profiles', 26):
+                                self._open_manage_profile_popup(active_config)
+                            ImGui.show_tooltip('Manage profiles for this config type.')
+                            
+                        PyImGui.table_next_column()
+                        if ImGui.button("Save As##export_config", -1):
+                            self._open_save_as_profile_popup(active_config)
+
+                        PyImGui.table_next_column()
                         if ImGui.button("Preview##preview_config", -1):
+                            if not self.show_preview_window and active_config is not None:
+                                self.preview_window_config_type = active_config.config_type
                             self.show_preview_window = not self.show_preview_window
                         
-                        PyImGui.table_next_column()
-                        if ImGui.button("Export##export_config", -1):
-                            self._save_active_config()
-
-                        PyImGui.table_next_column()
-                        if ImGui.button("Import##import_config", -1):
-                            self._load_active_config()
-                        if active_config is not None:
-                            ImGui.show_tooltip(f"Import {active_config.name} config from {active_config.file_path}")
                         ImGui.end_table()
 
+                    style.CellPadding.pop_style_var_direct()
+                    self._draw_save_as_profile_popup(active_config)
                     self.draw_config(self.config)
 
             ImGui.end_child()
@@ -1353,7 +1816,7 @@ class UI:
                     config_info.config.remove(rule)
                     config_info.config.insert(index - 1, rule)
                 config_info.save()
-                self.rule = None
+                self._set_active_rule(None)
 
             if ImGui.menu_item("Move Down"):
                 index = config_info.config.index(rule)
@@ -1361,7 +1824,7 @@ class UI:
                     config_info.config.remove(rule)
                     config_info.config.insert(index + 1, rule)
                 config_info.save()
-                self.rule = None
+                self._set_active_rule(None)
 
             ImGui.separator()
 
@@ -1371,7 +1834,7 @@ class UI:
                 if duplicated_rule is not None:
                     config_info.config.insert(index + 1, duplicated_rule)
                     config_info.save()
-                    self.rule = duplicated_rule
+                    self._set_active_rule(duplicated_rule)
 
             ImGui.separator()
 
@@ -1388,7 +1851,7 @@ class UI:
             if ImGui.menu_item("Delete Rule"):
                 config_info.config.remove(rule)
                 config_info.save()
-                self.rule = None
+                self._set_active_rule(None)
 
             ImGui.end_popup()
             return True
@@ -1445,7 +1908,7 @@ class UI:
             config_info.config.remove(self._drag_rule)
             config_info.config.insert(insert_index, self._drag_rule)
             config_info.save()
-            self.rule = self._drag_rule
+            self._set_active_rule(self._drag_rule)
 
         self._clear_rule_drag()
 
@@ -1673,6 +2136,7 @@ class UI:
     def draw_rule_config(self, config_info: ConfigInfo[RuleConfig]):
         active_drag = self._drag_rule_source_config is config_info and self._drag_rule is not None
         self._drag_rule_target_rect = None
+        style = ImGui.get_style()
         
         if ImGui.begin_table("##config_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Navigation", PyImGui.TableColumnFlags.WidthFixed, 200)
@@ -1691,7 +2155,7 @@ class UI:
                         new_rule = rule_type()
                         config_info.config.AddRule(new_rule)
                         config_info.save()
-                        self.rule = new_rule
+                        self._set_active_rule(new_rule)
                     self.show_rule_type_tooltip(rule_type)
                 ImGui.end_combo()
 
@@ -1700,8 +2164,9 @@ class UI:
 
             item_height = 50
             self.rules_hovered = False
-            scroll_y = 0.0
-            
+            scroll_y = 0.0           
+            selected_rule = self.config.config[self.rule_index] if self.config else None
+                    
             if ImGui.begin_child("##rules", (0, 0), border=False):                
                 io = PyImGui.get_io()
                 child_pos = PyImGui.get_window_pos()
@@ -1712,9 +2177,19 @@ class UI:
                 child_visible_bottom = child_pos[1] + child_size[1]
                 rule_rects: dict[int, tuple[float, float, float, float]] = {}
                 rule_gap_values: list[float] = []
+        
+                style.ButtonActive.push_color_direct((0,0,0,0))
+                style.Button.push_color_direct((0,0,0,0))
+                style.ButtonHovered.push_color_direct((0,0,0,0))
                 for i, rule in enumerate(config_info.config):
                     if PyImGui.is_rect_visible(5, item_height):
-                        if ImGui.begin_selectable(f"##rule_{i}", selected=self.rule is rule, size=(0, item_height)):
+                        cx,cy = PyImGui.get_cursor_pos()
+                        
+                        PyImGui.button(f"##rule_{i}", -1, item_height)                        
+                        PyImGui.set_item_allow_overlap()
+                        PyImGui.set_cursor_pos(cx, cy)
+                        
+                        if ImGui.begin_selectable(f"##rule_{i}", selected=selected_rule is rule, size=(0, item_height), child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar):
                             PyImGui.begin_disabled(not rule.enabled)
                             ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
                             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
@@ -1726,10 +2201,17 @@ class UI:
                             ImGui.text_colored(f"{rule.__class__.__name__}", UI.GRAY_COLOR.color_tuple, font_size=11)
 
                             PyImGui.end_disabled()
+                            
                         if ImGui.end_selectable():
-                            self.rule = rule
+                            self._set_active_rule(rule)
+                            selected_rule = rule
+                        
+                        
 
                         hovered = PyImGui.is_item_hovered()
+                        active = PyImGui.is_mouse_down(0)
+                        dragging = PyImGui.is_mouse_dragging(0, 0.01)
+                        
                         self.rules_hovered = self.rules_hovered or hovered
                         
                         if hovered and PyImGui.is_mouse_clicked(1):
@@ -1738,13 +2220,11 @@ class UI:
                             self.context_menu_config = config_info
                             PyImGui.open_popup(self.context_menu_id)
                             
-                        active = PyImGui.is_mouse_down(0)
-                        dragging = PyImGui.is_mouse_dragging(0, 0.01)
                         
                         item_min, item_max, item_size = ImGui.get_item_rect()
                         in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
                         
-                        if self._drag_rule is None and active and dragging and in_rect:
+                        if self._drag_rule is None and active and dragging and in_rect and PyImGui.is_window_focused() and PyImGui.is_item_hovered():
                             self._begin_rule_drag(config_info, rule, i)
 
                         if self._drag_rule_source_config is config_info and self._drag_rule is not None:
@@ -1764,6 +2244,10 @@ class UI:
                     else:
                         PyImGui.dummy(0, item_height)
 
+                style.ButtonActive.pop_color_direct()
+                style.Button.pop_color_direct()
+                style.ButtonHovered.pop_color_direct()
+                
                 if len(config_info.config) > 0:
                     PyImGui.dummy(0, 10)
                     if self._drag_rule_source_config is config_info and self._drag_rule is not None and PyImGui.is_item_hovered():
@@ -1852,8 +2336,8 @@ class UI:
             PyImGui.table_next_column()
 
             if ImGui.begin_child("##rule content", (0, 0), border=False):
-                if self.rule:
-                    self.draw_rule(self.rule)
+                if selected_rule:
+                    self.draw_rule(selected_rule)
                 
             ImGui.end_child()
             

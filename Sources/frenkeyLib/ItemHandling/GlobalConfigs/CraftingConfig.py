@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import os
 from typing import Any, ClassVar, Self, cast
 
 from Py4GWCoreLib.Item import Bag
@@ -43,3 +45,20 @@ class CraftingConfig():
             self.selected_recipe_keys = []
 
         self.allow_shopping = bool(data.get('allow_shopping', False))
+        
+    
+    @classmethod
+    def Load(cls: type[Self], file_path: str) -> Self:
+        '''
+        Loads the config from a JSON file at the specified file path and returns a new instance of the config with the loaded rules.
+        '''
+        if not os.path.isfile(file_path):
+            return cls()  # Return an empty config if the file does not exist
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
+        
+        instance = cls()
+        instance.load_dict(json_data or {})
+        
+        return instance

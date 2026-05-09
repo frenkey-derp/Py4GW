@@ -170,6 +170,7 @@ class Rule:
             "rule_type": type(self).__name__,
             "name": self.name,
             "action": self.action.name,
+            "enabled": self.enabled,
             "result_interpretation": self.result_interpretation.name,
         }
         payload.update(self._serialize_data())
@@ -186,7 +187,8 @@ class Rule:
         rule.name = payload.get("name", "")
         action_name = payload.get("action", "NONE")
         rule.action = ItemAction[action_name] if isinstance(action_name, str) and action_name in ItemAction.__members__ else ItemAction.NONE
-
+        rule.enabled = bool(payload.get("enabled", True))
+        
         result_interpretation_name = payload.get("result_interpretation")
         if isinstance(result_interpretation_name, str) and result_interpretation_name in ResultInterpretation.__members__:
             rule.result_interpretation = ResultInterpretation[result_interpretation_name]
