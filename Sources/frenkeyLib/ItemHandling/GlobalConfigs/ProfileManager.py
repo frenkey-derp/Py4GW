@@ -24,6 +24,7 @@ class GlobalConfigProfileManager:
         'LootConfig',
         'InventoryConfig',
         'CraftingConfig',
+        'SortingConfig',
     )
     _RELOAD_TYPES_BY_CONFIG_TYPE = {
         'BuyConfig': ReloadType.Buying,

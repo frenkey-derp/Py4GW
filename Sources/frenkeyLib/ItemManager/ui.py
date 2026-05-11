@@ -28,15 +28,14 @@ import PyImGui
 
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
-from Py4GWCoreLib.Inventory import Inventory
-from Py4GWCoreLib.Item import Bag, Item
+from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
-from Py4GWCoreLib.enums_src.Item_enums import DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, Bags, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, Bags, ItemAction, ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
@@ -63,7 +62,8 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import Craftin
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProfileManager import GlobalConfigProfileManager
-from Sources.frenkeyLib.ItemHandling.Recipe import Crafting, CraftingPlan, CraftingRecipe, Ingredient, Recipe, ShoppingListEntry
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import SlotGroupConfig, SlotMatcherConfig, Sorter, SortingConfig
+from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ArmorUpgradesCondition,
@@ -92,8 +92,9 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     WeaponRequirementCondition,
 )
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
+from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
-from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData, SalvageInfoCollection
+from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
@@ -171,6 +172,18 @@ class ConfigInfo(Generic[TConfig]):
                 self.on_save(self)
             return
 
+        if isinstance(self.config, SortingConfig):
+            directory = os.path.dirname(self.file_path)
+            if directory:
+                os.makedirs(directory, exist_ok=True)
+
+            with open(self.file_path, 'w', encoding='utf-8') as file:
+                json.dump(self.config.to_dict(), file, indent=4, ensure_ascii=False)
+
+            if self.on_save is not None:
+                self.on_save(self)
+            return
+
         Py4GW.Console.Log("Item Manager", f"No save handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
 
     def load(self):
@@ -218,6 +231,24 @@ class ConfigInfo(Generic[TConfig]):
             Py4GW.Console.Log(
                 "Item Manager",
                 f"Loaded config for {self.name} from {self.file_path} with {len(self.config.selected_recipe_keys)} selected recipes.",
+                Py4GW.Console.MessageType.Info,
+            )
+            return
+
+        if isinstance(self.config, SortingConfig):
+            if not os.path.isfile(self.file_path):
+                self.config.load_dict({})
+                return
+
+            with open(self.file_path, 'r', encoding='utf-8') as file:
+                json_data = json.load(file)
+
+            if isinstance(json_data, dict):
+                self.config.load_dict(json_data)
+
+            Py4GW.Console.Log(
+                "Item Manager",
+                f"Loaded config for {self.name} from {self.file_path} with {len(self.config.slot_groups)} slot groups.",
                 Py4GW.Console.MessageType.Info,
             )
             return
@@ -368,6 +399,13 @@ class UI:
                 on_save=self._handle_config_saved,
             ),
             ConfigInfo(
+                SortingConfig(),
+                "Bag Sorting",
+                "Configure slot groups and sort policies for inventory bags and Xunlai storage tabs",
+                lambda: self.profile_manager.get_active_config_folder('SortingConfig'),
+                on_save=self._handle_config_saved,
+            ),
+            ConfigInfo(
                 CraftingConfig(),
                 "Crafting",
                 "Configure crafting settings",
@@ -499,6 +537,7 @@ class UI:
         self._item_by_encoded_name: dict[bytes, ItemData] = {}
         self._sorted_model_ids: list[ModelID] = sorted([model_id for model_id in ModelID], key=lambda model_id: model_id.name)
         self._sorted_item_types: list[ItemType] = sorted(ItemType, key=lambda item_type: item_type.name)
+        self._sorted_rarities: list[Rarity] = sorted(Rarity, key=lambda rarity: rarity.value)
         self._sorted_dye_colors: list[DyeColor] = sorted(DyeColor, key=lambda dye_color: dye_color.name)
         self._unique_encoded_name_items: list[ItemData] = []
         self._unique_model_file_id_items: list[ItemData] = []
@@ -527,6 +566,9 @@ class UI:
             Bags.Bag1,
             Bags.Bag2,
         ]
+        self.sorting_selected_bag: Bags = Bags.Backpack
+        self.sorting_preview_selected_bags: list[Bags] = list(INVENTORY_BAGS)
+        self.sorting_group_model_id_search: str = ""
         self.loot_preview_search: str = ""
         self.loot_preview_show_no_action: bool = False
         self.loot_preview_distance: int = int(Range.SafeCompass.value)
@@ -542,6 +584,9 @@ class UI:
         self._profile_action_source_name: str = ''
         self._profile_action_target_name: str = ''
         self.buy_preview_show_satisfied: bool = True
+        
+        self.selected_bag_slots : list[tuple[Bags, int]] = []
+        
         self._rebuild_upgrade_ui_caches()
         self._rebuild_item_ui_caches()
 
@@ -1704,6 +1749,9 @@ class UI:
             case BuyConfig():
                 self.draw_buy_config_preview(preview_config.config)
 
+            case SortingConfig():
+                self.draw_sorting_config_preview(preview_config.config)
+
             case CraftingConfig():
                 self.draw_crafting_config(preview_config)
                 
@@ -2005,12 +2053,377 @@ class UI:
         if isinstance(config_info.config, BuyConfig):
             self.draw_buy_config(config_info)
             return
+
+        if isinstance(config_info.config, SortingConfig):
+            self.draw_sorting_config(config_info)
+            return
         
         if isinstance(config_info.config, CraftingConfig):
             self.draw_crafting_config(config_info)
             return
 
         ImGui.text("No editor available for this config.")
+
+    @staticmethod
+    def _slot_group_slots_to_text(group: SlotGroupConfig) -> str:
+        return ', '.join(str(slot) for slot in group.normalized_slots())
+
+    @staticmethod
+    def _parse_slot_group_slots(slots_text: str) -> list[int]:
+        slots: list[int] = []
+        for token in re.split(r'[\s,;]+', slots_text.strip()):
+            if token == '':
+                continue
+            try:
+                slots.append(max(0, int(token)))
+            except ValueError:
+                continue
+        return sorted(set(slots))
+
+    def _draw_sorter_combo(self, label: str, value: Sorter) -> tuple[bool, Sorter]:
+        sorter_types = [
+            sorter_type
+            for _, sorter_type in sorted(Sorter._registry.items(), key=lambda item: item[0])
+            if sorter_type.ui_selectable
+        ]
+        labels = [self._humanize_name(sorter_type.__name__.removesuffix('Sorter')) for sorter_type in sorter_types]
+        current_index = next((index for index, sorter_type in enumerate(sorter_types) if isinstance(value, sorter_type)), 0)
+        next_index = ImGui.combo(label, current_index, labels)
+        return next_index != current_index, sorter_types[next_index]()
+
+    def _execute_bag_sort(self, bags: list[Bags]) -> None:
+        action_node = BTNodes.Bags.SortBags(bags)
+        action_node.tick()
+        self.preview_throttle.Reset()
+
+    def _draw_slot_group_model_ids(self, matcher: SlotMatcherConfig, unique_id: str) -> bool:
+        changed = False
+        popup_id = f'##sorting_slot_group_model_ids_{unique_id}'
+        selected_model_ids = {
+            int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+            for model_id in matcher.model_ids
+        }
+
+        if ImGui.button(f'Add Model ID##{unique_id}', 140):
+            self.sorting_group_model_id_search = ''
+            PyImGui.open_popup(popup_id)
+
+        PyImGui.set_next_window_size((320, 0), cond=PyImGui.ImGuiCond.Appearing)
+        if PyImGui.begin_popup(popup_id):
+            PyImGui.set_next_item_width(-1)
+            _, self.sorting_group_model_id_search = ImGui.search_field(
+                f'##sorting_model_id_search_{unique_id}',
+                self.sorting_group_model_id_search,
+                'Search model ids or enter an integer...',
+            )
+            search_query, matching_model_ids_raw = self._get_live_search_results(
+                f'sorting_group_model_ids_{unique_id}',
+                self.sorting_group_model_id_search,
+                lambda normalized_query: cast(list[Any], self._filter_cached_entries(self._model_id_search_cache, normalized_query, self._model_id_search_entries)),
+            )
+            matching_model_ids = cast(list[ModelID], matching_model_ids_raw)
+
+            manual_value: int | None = None
+            if search_query:
+                try:
+                    manual_value = int(search_query)
+                except ValueError:
+                    manual_value = None
+
+            if manual_value is not None and manual_value not in selected_model_ids:
+                if ImGui.selectable(f'Manual Model ID: {manual_value}', False):
+                    matcher.model_ids.append(manual_value)
+                    changed = True
+                    PyImGui.close_current_popup()
+
+            if ImGui.begin_child(f'##sorting_model_id_candidates_{unique_id}', (0, 260), border=True):
+                for model_id in matching_model_ids:
+                    model_id_value = int(model_id.value)
+                    if model_id_value in selected_model_ids:
+                        continue
+                    if ImGui.selectable(f'{self._humanize_name(model_id.name)} ({model_id_value})', False):
+                        matcher.model_ids.append(model_id)
+                        changed = True
+                        PyImGui.close_current_popup()
+            ImGui.end_child()
+            PyImGui.end_popup()
+
+        if matcher.model_ids:
+            if ImGui.begin_child(f'##sorting_group_model_ids_selected_{unique_id}', (0, 110), border=True):
+                for index, model_id in enumerate(list(matcher.model_ids)):
+                    model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                    label = self._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f'Manual ID {model_id_value}'
+                    if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##sorting_remove_model_id_{unique_id}_{index}', 28, 22):
+                        matcher.model_ids.pop(index)
+                        changed = True
+                        break
+                    PyImGui.same_line(0, 6)
+                    ImGui.text(f'{label} ({model_id_value})')
+            ImGui.end_child()
+
+        return changed
+
+    def draw_sorting_config(self, config_info: ConfigInfo[SortingConfig]) -> None:
+        style = ImGui.get_style()
+        
+        slot_size = 32
+        grid_size = (slot_size * BAG_ROW_SLOTS) + 4
+        
+        width, height = PyImGui.get_content_region_avail()
+        item_spacing = style.ItemSpacing.value1
+        columns = max(1, int((width) / (grid_size + item_spacing)))
+        PyImGui.columns(columns, '##inventory_sorting_columns', False)
+        
+        style.CellPadding.push_style_var_direct(1, 1)
+        for b in INVENTORY_BAGS:
+            self.draw_bag_selector(b, slot_size, grid_size)
+            PyImGui.next_column()
+        PyImGui.end_columns()
+        
+        
+        PyImGui.columns(columns, '##storage_sorting_columns', False)
+        for b in STORAGE_BAGS:
+            self.draw_bag_selector(b, slot_size, grid_size)
+            PyImGui.next_column()
+            pass
+        style.CellPadding.pop_style_var_direct()
+        
+        PyImGui.end_columns()
+
+    def draw_bag_selector(self, b : Bags, slot_size : float, grid_size : float):
+        bag_size = MAX_BAG_SIZES.get(b, 0)        
+        PyImGui.begin_group()
+        ImGui.text_aligned(self._humanize_name(b.name), font_size=14, alignment=Alignment.MidCenter, width=grid_size)
+            
+        PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 12)            
+        if ImGui.begin_table(f'##sorting_bag_{b}', BAG_ROW_SLOTS, PyImGui.TableFlags.NoHostExtendX, width=grid_size, height=grid_size):
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+                
+            for slot in range(bag_size):
+                slot_id = (b, slot)
+                is_selected =  slot_id in self.selected_bag_slots
+                    
+                if ImGui.begin_selectable(f'##sorting_bag_{b}_slot_{slot}', size=(slot_size, slot_size), border=True, border_color=UI.GRAY_COLOR.rgb_tuple, selected=is_selected):
+                    pass
+                    
+                if ImGui.end_selectable():
+                    if is_selected:
+                        self.selected_bag_slots.remove(slot_id)
+                    else:
+                        self.selected_bag_slots.append(slot_id)
+                        
+                PyImGui.table_next_column()
+                    
+            ImGui.end_table()
+        PyImGui.end_group()
+        
+    
+    def drawx_sorting_config(self, config_info: ConfigInfo[SortingConfig]) -> None:
+        config = config_info.config
+        changed = False
+        bag_options = list(self.INVENTORY_PREVIEW_BAGS)
+        bag_labels = [self._humanize_name(bag.name) for bag in bag_options]
+
+        ImGui.text_wrapped('Define slot groups for inventory bags and storage tabs. Matching items are packed into those slots first, then remaining open slots are filled with the default sort policy.')
+        ImGui.separator()
+
+        if ImGui.button('Sort Inventory Bags', 170):
+            self._execute_bag_sort(list(INVENTORY_BAGS))
+        PyImGui.same_line(0, 6)
+        if ImGui.button('Sort Storage Tabs', 170):
+            self._execute_bag_sort(list(STORAGE_BAGS))
+        PyImGui.same_line(0, 6)
+        if ImGui.button('Preview Sorting', 170):
+            self.preview_window_config_type = config_info.config_type
+            self.show_preview_window = True
+
+        policy_changed, next_policy = self._draw_sorter_combo('Default Sort Policy', config.default_sorter)
+        if policy_changed:
+            config.default_sorter = next_policy
+            changed = True
+
+        selected_bag_index = bag_options.index(self.sorting_selected_bag) if self.sorting_selected_bag in bag_options else 0
+        next_bag_index = ImGui.combo('Bag / Storage Tab', selected_bag_index, bag_labels)
+        self.sorting_selected_bag = bag_options[next_bag_index]
+
+        if ImGui.button('Add Slot Group', 160):
+            config.slot_groups.append(
+                SlotGroupConfig(
+                    bag=self.sorting_selected_bag,
+                    slots=[0],
+                    sorter=type(config.default_sorter)(),
+                )
+            )
+            changed = True
+
+        visible_groups = [
+            group
+            for group in config.slot_groups
+            if group.bag == self.sorting_selected_bag
+        ]
+        visible_groups.sort(key=lambda group: (min(group.normalized_slots()) if group.normalized_slots() else 9999, group.display_name().lower()))
+
+        if not visible_groups:
+            ImGui.text_wrapped('No slot groups configured for this bag yet.')
+
+        for group in visible_groups:
+            unique_id = f'{id(group)}'
+            if ImGui.begin_child(f'##sorting_group_{unique_id}', (0, 0), border=True):
+                enabled_value = ImGui.checkbox(f'Enabled##sorting_group_enabled_{unique_id}', group.enabled)
+                if enabled_value != group.enabled:
+                    group.enabled = enabled_value
+                    changed = True
+
+                PyImGui.same_line(0, 10)
+                if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##sorting_group_delete_{unique_id}', 30, 22):
+                    config.slot_groups.remove(group)
+                    changed = True
+                    ImGui.end_child()
+                    break
+
+                group_name = ImGui.input_text(f'Name##sorting_group_name_{unique_id}', group.name)
+                if group_name != group.name:
+                    group.name = group_name
+                    changed = True
+
+                slots_text = ImGui.input_text(f'Slots##sorting_group_slots_{unique_id}', self._slot_group_slots_to_text(group))
+                parsed_slots = self._parse_slot_group_slots(slots_text)
+                if parsed_slots != group.normalized_slots():
+                    group.slots = parsed_slots
+                    changed = True
+                ImGui.show_tooltip('Comma-separated zero-based slot numbers.')
+
+                group_policy_changed, next_group_policy = self._draw_sorter_combo(f'Slot Policy##sorting_group_policy_{unique_id}', group.sorter)
+                if group_policy_changed:
+                    group.sorter = next_group_policy
+                    changed = True
+
+                PyImGui.separator()
+                ImGui.text_colored('Allowed Items', UI.CREME_COLOR.color_tuple, font_size=14)
+
+                changed = self._draw_slot_group_model_ids(group.matcher, unique_id) or changed
+
+                if ImGui.begin_child(f'##sorting_item_types_{unique_id}', (0, 120), border=True):
+                    width = PyImGui.get_content_region_avail()[0]
+                    columns = max(1, int(width // 180))
+                    PyImGui.columns(columns, f'sorting_item_type_columns_{unique_id}', False)
+                    for item_type in self._sorted_item_types:
+                        is_selected = item_type in group.matcher.item_types
+                        selected = ImGui.checkbox(f'{self._humanize_name(item_type.name)}##sorting_item_type_{unique_id}_{item_type.name}', is_selected)
+                        if selected != is_selected:
+                            if selected:
+                                group.matcher.item_types.append(item_type)
+                            else:
+                                group.matcher.item_types = [entry for entry in group.matcher.item_types if entry != item_type]
+                            changed = True
+                        PyImGui.next_column()
+                    PyImGui.end_columns()
+                ImGui.end_child()
+
+                if ImGui.begin_child(f'##sorting_rarities_{unique_id}', (0, 70), border=True):
+                    for rarity in self._sorted_rarities:
+                        is_selected = rarity in group.matcher.rarities
+                        selected = ImGui.checkbox(f'{rarity.name}##sorting_rarity_{unique_id}_{rarity.name}', is_selected)
+                        if selected != is_selected:
+                            if selected:
+                                group.matcher.rarities.append(rarity)
+                            else:
+                                group.matcher.rarities = [entry for entry in group.matcher.rarities if entry != rarity]
+                            changed = True
+                        PyImGui.same_line(0, 10)
+                ImGui.end_child()
+
+                min_quantity = ImGui.slider_int(f'Min Quantity##sorting_group_min_qty_{unique_id}', group.matcher.min_quantity, 0, 250)
+                max_quantity = ImGui.slider_int(f'Max Quantity##sorting_group_max_qty_{unique_id}', group.matcher.max_quantity, 0, 250)
+                normalized_min = min(min_quantity, max_quantity)
+                normalized_max = max(min_quantity, max_quantity)
+                if normalized_min != group.matcher.min_quantity or normalized_max != group.matcher.max_quantity:
+                    group.matcher.min_quantity = normalized_min
+                    group.matcher.max_quantity = normalized_max
+                    changed = True
+
+                ImGui.text_colored(f'Matches: {group.matcher.summary()}', UI.GRAY_COLOR.color_tuple, font_size=12)
+            ImGui.end_child()
+
+        if changed:
+            config_info.save()
+
+    def draw_sorting_config_preview(self, config: SortingConfig) -> None:
+        ImGui.text('Preview', font_size=18)
+        ImGui.text_wrapped('Preview the planned bag layout for the current sorting config. This shows the target slot layout before any moves are executed.')
+
+        button_width = 110
+        if ImGui.button('Inventory', button_width):
+            self.sorting_preview_selected_bags = list(INVENTORY_BAGS)
+        PyImGui.same_line(0, 5)
+        if ImGui.button('Storage', button_width):
+            self.sorting_preview_selected_bags = list(STORAGE_BAGS)
+        PyImGui.same_line(0, 5)
+        if ImGui.button('All', button_width):
+            self.sorting_preview_selected_bags = [bag for bag in self.INVENTORY_PREVIEW_BAGS if bag != Bags.MaterialStorage]
+        PyImGui.same_line(0, 5)
+        if ImGui.button('Sort Selected', button_width):
+            self._execute_bag_sort(self.sorting_preview_selected_bags)
+
+        if ImGui.begin_child('##sorting_preview_bags', (0, 90), border=True):
+            width = PyImGui.get_content_region_avail()[0]
+            columns = max(1, int(width // 170))
+            PyImGui.columns(columns, 'sorting_preview_bag_columns', False)
+            for bag in self.INVENTORY_PREVIEW_BAGS:
+                is_selected = bag in self.sorting_preview_selected_bags
+                selected = ImGui.checkbox(f'{self._humanize_name(bag.name)}##sorting_preview_{bag.name}', is_selected)
+                if selected != is_selected:
+                    if selected:
+                        self.sorting_preview_selected_bags.append(bag)
+                    else:
+                        self.sorting_preview_selected_bags = [entry for entry in self.sorting_preview_selected_bags if entry != bag]
+                PyImGui.next_column()
+            PyImGui.end_columns()
+        ImGui.end_child()
+
+        if not self.sorting_preview_selected_bags:
+            ImGui.text_wrapped('Select at least one bag or storage tab to preview.')
+            return
+
+        plan = BTNodes.Bags.GetBagSortPlan(self.sorting_preview_selected_bags)
+        for warning in plan.warnings:
+            ImGui.text_colored(warning, UI.RED_COLOR.color_tuple)
+
+        if ImGui.begin_table('##sorting_preview_table', 8, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=360):
+            PyImGui.table_setup_column('Bag', PyImGui.TableColumnFlags.WidthFixed, 110)
+            PyImGui.table_setup_column('Slot', PyImGui.TableColumnFlags.WidthFixed, 45)
+            PyImGui.table_setup_column('Target Item', PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column('From', PyImGui.TableColumnFlags.WidthFixed, 120)
+            PyImGui.table_setup_column('Group', PyImGui.TableColumnFlags.WidthFixed, 150)
+            PyImGui.table_setup_column('Allowed', PyImGui.TableColumnFlags.WidthFixed, 170)
+            PyImGui.table_setup_column('Policy', PyImGui.TableColumnFlags.WidthFixed, 120)
+            PyImGui.table_setup_column('Notes', PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_headers_row()
+
+            for entry in plan.entries:
+                item_name = entry.item.complete_name or entry.item.singular_name or entry.item.name if entry.item is not None else '(empty)'
+                source_text = f'{self._humanize_name(entry.source_bag.name)}:{entry.source_slot}' if entry.source_bag is not None and entry.source_slot is not None else '-'
+                note_text = 'Fallback placement' if entry.used_fallback else ('Already in place' if entry.item is not None and entry.source_bag == entry.bag and entry.source_slot == entry.slot else '')
+
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                ImGui.text(self._humanize_name(entry.bag.name))
+                PyImGui.table_next_column()
+                ImGui.text(str(entry.slot))
+                PyImGui.table_next_column()
+                ImGui.text(item_name or '(unnamed item)', render_markdown=True)
+                PyImGui.table_next_column()
+                ImGui.text(source_text)
+                PyImGui.table_next_column()
+                ImGui.text(entry.group_name)
+                PyImGui.table_next_column()
+                ImGui.text_wrapped(entry.group_summary)
+                PyImGui.table_next_column()
+                ImGui.text(self._humanize_name(entry.sorter.display_name))
+                PyImGui.table_next_column()
+                ImGui.text_wrapped(note_text if note_text else '-')
+            ImGui.end_table()
 
     def draw_buy_config(self, config_info: ConfigInfo[BuyConfig]) -> None:
         changed = False
@@ -2418,6 +2831,9 @@ class UI:
             PyImGui.same_line(0, 5)
             if ImGui.button("Clear", button_width):
                 self._set_inventory_preview_bags([])
+            PyImGui.same_line(0, 5)
+            if ImGui.button("Sort Bags", button_width) and self.inventory_preview_selected_bags:
+                self._execute_bag_sort(self.inventory_preview_selected_bags)
 
             self.inventory_preview_search = ImGui.input_text("Search##inventory_preview_search", self.inventory_preview_search)
             self.inventory_preview_show_no_action = ImGui.checkbox("Show No Action", self.inventory_preview_show_no_action)
