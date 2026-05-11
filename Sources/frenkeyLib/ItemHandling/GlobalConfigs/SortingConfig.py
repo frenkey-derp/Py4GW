@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as dataclass_field
 from enum import IntEnum, StrEnum, auto
 from typing import Any, ClassVar, Optional, Self, cast
 
@@ -42,12 +42,39 @@ class SortDirection(IntEnum):
 class SortArgument:
     field: SortField = SortField.ItemType
     direction: SortDirection = SortDirection.Ascending
+    custom_order: list[Any] = dataclass_field(default_factory=list)
 
     @property
     def display_name(self) -> str:
-        return self.field.value
+        return f'{self.field.value}{"*" if self.has_custom_order else ""}'
 
-    def get_value(self, item: ItemSnapshot) -> Any:
+    @property
+    def has_custom_order(self) -> bool:
+        return len(self.custom_order) > 0
+
+    @property
+    def supports_custom_order(self) -> bool:
+        return self.field in {SortField.ItemType, SortField.ModelId, SortField.Rarity}
+
+    @staticmethod
+    def _invert_string(value: str) -> tuple[int, ...]:
+        return tuple(-ord(character) for character in value)
+
+    @classmethod
+    def _transform_value(cls, value: Any, descending: bool) -> Any:
+        if not descending:
+            return value
+        if isinstance(value, bool):
+            return not value
+        if isinstance(value, (int, float)):
+            return -value
+        if isinstance(value, str):
+            return cls._invert_string(value)
+        if isinstance(value, tuple):
+            return tuple(cls._transform_value(entry, descending) for entry in value)
+        return value
+
+    def _get_natural_value(self, item: ItemSnapshot) -> Any:
         if self.field == SortField.ItemType:
             item_type_order = _default_item_type_order()
             if item.item_type == ItemType.Unknown:
@@ -69,10 +96,93 @@ class SortArgument:
             return (item.complete_name or item.singular_name or item.name or '').lower()
         return int(item.id)
 
+    def _get_custom_rank(self, item: ItemSnapshot) -> int | None:
+        if not self.has_custom_order:
+            return None
+
+        if self.field == SortField.ModelId:
+            normalized_entries: list[tuple[int, ItemType | None]] = []
+            for entry in self.custom_order:
+                if isinstance(entry, int):
+                    normalized_entries.append((int(entry), None))
+                    continue
+                if not isinstance(entry, dict):
+                    continue
+                model_id = entry.get('model_id')
+                item_type_name = entry.get('item_type')
+                if not isinstance(model_id, int):
+                    continue
+                if isinstance(item_type_name, str) and item_type_name in ItemType.__members__:
+                    normalized_entries.append((int(model_id), ItemType[item_type_name]))
+                else:
+                    normalized_entries.append((int(model_id), None))
+
+            for index, (model_id, item_type) in enumerate(normalized_entries):
+                if int(item.model_id) != model_id:
+                    continue
+                if item_type is None or item.item_type.matches(item_type):
+                    return index
+            return None
+
+        if self.field == SortField.ItemType:
+            normalized_item_types = [
+                ItemType[entry]
+                for entry in self.custom_order
+                if isinstance(entry, str) and entry in ItemType.__members__
+            ]
+            for index, item_type in enumerate(normalized_item_types):
+                if item.item_type.matches(item_type):
+                    return index
+            return None
+
+        if self.field == SortField.Rarity:
+            normalized_rarities = [
+                Rarity[entry]
+                for entry in self.custom_order
+                if isinstance(entry, str) and entry in Rarity.__members__
+            ]
+            return normalized_rarities.index(item.rarity) if item.rarity in normalized_rarities else None
+
+        return None
+
+    def get_sort_key_part(self, item: ItemSnapshot) -> Any:
+        natural_value = self._get_natural_value(item)
+        if not self.has_custom_order:
+            return self._transform_value(
+                natural_value,
+                self.direction == SortDirection.Descending,
+            )
+
+        custom_rank = self._get_custom_rank(item)
+        if custom_rank is None:
+            # Keep every non-match in the same bucket so later sort arguments
+            # can continue refining the order instead of being short-circuited
+            # by this argument's natural field value.
+            return (1, )
+
+        effective_rank = custom_rank
+        if self.direction == SortDirection.Descending:
+            effective_rank = max(0, len(self.custom_order) - 1 - custom_rank)
+
+        return (0, effective_rank)
+
     def to_dict(self) -> dict[str, Any]:
         return {
             'field': self.field.value,
             'direction': self.direction.name,
+            'custom_order': [
+                {
+                    'model_id': int(entry.get('model_id', 0)),
+                    'item_type': str(entry.get('item_type')),
+                }
+                if self.field == SortField.ModelId and isinstance(entry, dict) and isinstance(entry.get('model_id'), int) and isinstance(entry.get('item_type'), str)
+                else int(entry)
+                if self.field == SortField.ModelId and isinstance(entry, int)
+                else str(entry)
+                if isinstance(entry, str)
+                else entry
+                for entry in self.custom_order
+            ],
         }
 
     @classmethod
@@ -85,6 +195,11 @@ class SortArgument:
         return cls(
             field=SortField(field_name),
             direction=direction,
+            custom_order=[
+                entry
+                for entry in data.get('custom_order', [])
+                if isinstance(entry, (int, str, dict))
+            ] if isinstance(data.get('custom_order', []), list) else [],
         )
 
 
@@ -115,29 +230,13 @@ class Sorter:
         )
         return f'{preview}{"..." if len(self.arguments) > 3 else ""}'
 
-    @staticmethod
-    def _invert_string(value: str) -> tuple[int, ...]:
-        return tuple(-ord(character) for character in value)
-
-    def _transform_value(self, value: Any, descending: bool) -> Any:
-        if not descending:
-            return value
-        if isinstance(value, bool):
-            return not value
-        if isinstance(value, (int, float)):
-            return -value
-        if isinstance(value, str):
-            return self._invert_string(value)
-        if isinstance(value, tuple):
-            return tuple(self._transform_value(entry, descending) for entry in value)
-        return value
-
     def get_sort_key(self, item: ItemSnapshot) -> tuple[Any, ...]:
-        key_parts = [
-            self._transform_value(argument.get_value(item), argument.direction == SortDirection.Descending)
-            for argument in self.arguments
-        ]
-        if not any(argument.field == SortField.Id for argument in self.arguments):
+        default_arguments = _default_sort_arguments()
+        primary_arguments = self.arguments or default_arguments
+        fallback_arguments = [] if primary_arguments == default_arguments else default_arguments
+        key_parts = [argument.get_sort_key_part(item) for argument in primary_arguments]
+        key_parts.extend(argument.get_sort_key_part(item) for argument in fallback_arguments)
+        if not any(argument.field == SortField.Id for argument in [*primary_arguments, *fallback_arguments]):
             key_parts.append(int(item.id))
         return tuple(key_parts)
 
@@ -171,9 +270,9 @@ class DefaultSorter(Sorter):
 
 @dataclass(slots=True)
 class SlotMatcherConfig:
-    model_ids: list[ModelID | int] = field(default_factory=list)
-    item_types: list[ItemType] = field(default_factory=list)
-    rarities: list[Rarity] = field(default_factory=list)
+    model_ids: list[ModelID | int] = dataclass_field(default_factory=list)
+    item_types: list[ItemType] = dataclass_field(default_factory=list)
+    rarities: list[Rarity] = dataclass_field(default_factory=list)
     min_quantity: int = 0
     max_quantity: int = 250
 
@@ -288,9 +387,9 @@ class SlotReference:
 
 @dataclass(slots=True)
 class SlotGroupConfig:
-    slot_refs: list[SlotReference] = field(default_factory=list)
-    sorter: Sorter = field(default_factory=DefaultSorter)
-    matcher: SlotMatcherConfig = field(default_factory=SlotMatcherConfig)
+    slot_refs: list[SlotReference] = dataclass_field(default_factory=list)
+    sorter: Sorter = dataclass_field(default_factory=DefaultSorter)
+    matcher: SlotMatcherConfig = dataclass_field(default_factory=SlotMatcherConfig)
     name: str = ''
     enabled: bool = True
     is_default: bool = False
@@ -399,9 +498,9 @@ class BagSortPreviewEntry:
 
 @dataclass(slots=True)
 class BagSortPlan:
-    layout: dict[Bags, dict[int, Optional[ItemSnapshot]]] = field(default_factory=dict)
-    entries: list[BagSortPreviewEntry] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
+    layout: dict[Bags, dict[int, Optional[ItemSnapshot]]] = dataclass_field(default_factory=dict)
+    entries: list[BagSortPreviewEntry] = dataclass_field(default_factory=list)
+    warnings: list[str] = dataclass_field(default_factory=list)
 
 
 class SortingConfig:
