@@ -1545,8 +1545,7 @@ class BTNodes:
                 return BTNodes._success_if(moved_any or succeed_if_already_filled)
 
             return BehaviorTree.ActionNode(name="Inventory.FillMaterialStorage", action_fn=_fill_material_storage, aftercast_ms=aftercast_ms)
-        
-        @staticmethod
+                
         @staticmethod
         def GetBagSortPlan(
             bags: list[Bags] = INVENTORY_BAGS,
@@ -1568,25 +1567,25 @@ class BTNodes:
                     for slot in sorted(snapshot.get(bag, {}).keys())
                 }
 
-            explicit_groups: list[tuple[SlotGroupConfig, list[int]]] = []
+            explicit_groups: list[tuple[Bags, SlotGroupConfig, list[int]]] = []
             for bag in bags:
                 bag_groups = sorted(
                     sorting_config.get_groups_for_bag(bag),
-                    key=lambda group: min(group.normalized_slots()) if group.normalized_slots() else 9999,
+                    key=lambda group: min(group.normalized_slots_for_bag(bag)) if group.normalized_slots_for_bag(bag) else 9999,
                 )
                 for group in bag_groups:
                     slots = [
                         slot
-                        for slot in group.normalized_slots()
+                        for slot in group.normalized_slots_for_bag(bag)
                         if slot in plan.layout.get(bag, {}) and (bag, slot) not in occupied_slots
                     ]
                     if not slots:
                         continue
 
-                    explicit_groups.append((group, slots))
+                    explicit_groups.append((bag, group, slots))
                     occupied_slots.update((bag, slot) for slot in slots)
 
-            for group, slots in explicit_groups:
+            for bag, group, slots in explicit_groups:
                 matching_items = sorted(
                     [item for item in remaining_items if group.matches(item)],
                     key=lambda item: group.sorter.get_sort_key(item),
@@ -1597,10 +1596,10 @@ class BTNodes:
                     if planned_item is not None:
                         remaining_items.remove(planned_item)
 
-                    plan.layout[group.bag][slot] = planned_item
+                    plan.layout[bag][slot] = planned_item
                     plan.entries.append(
                         BagSortPreviewEntry(
-                            bag=group.bag,
+                            bag=bag,
                             slot=slot,
                             item=planned_item,
                             source_bag=planned_item.bag if planned_item is not None else None,

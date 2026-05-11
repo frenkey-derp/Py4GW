@@ -25,9 +25,11 @@ from typing import Any, Callable, Generic, NamedTuple, Optional, TypeVar
 
 import Py4GW
 import PyImGui
+import PyInventory
 
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
+from Py4GWCoreLib.ImGui_src.Style import Style
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
@@ -62,7 +64,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import Craftin
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProfileManager import GlobalConfigProfileManager
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import SlotGroupConfig, SlotMatcherConfig, Sorter, SortingConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import BagSortPlan, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
 from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
@@ -375,6 +377,9 @@ class UI:
         self.profile_manager.refresh()
         self.preview_entries : list[InventoryPreviewEntry] = []
         self.preview_throttle : ThrottledTimer = ThrottledTimer(1000)
+        self.sorting_preview_throttle : ThrottledTimer = ThrottledTimer(1000)
+        self.sorting_preview_plan: Optional[BagSortPlan] = None
+        self._sorting_preview_cache_key: tuple[tuple[int, ...], str] | None = None
 
         self.configs : list[ConfigInfo] = [
             ConfigInfo(
@@ -442,6 +447,7 @@ class UI:
         self.context_menu_id : str | None = None
         self.context_menu_rule : Rule | None = None
         self.context_menu_config : ConfigInfo | None = None
+        self.context_menu_sorting_group : SlotGroupConfig | None = None
         self._drag_rule: Rule | None = None
         self._drag_rule_source_config: ConfigInfo[RuleConfig] | None = None
         self._drag_rule_source_index: int = -1
@@ -451,6 +457,15 @@ class UI:
         self._drag_rule_preview_label: str = ""
         self._drag_rule_preview_subtitle: str = ""
         self._drag_rule_window_pos: tuple[float, float] | None = None
+        self._drag_sorting_group: SlotGroupConfig | None = None
+        self._drag_sorting_group_source_config: ConfigInfo[SortingConfig] | None = None
+        self._drag_sorting_group_source_index: int = -1
+        self._drag_sorting_group_target_index: int = -1
+        self._drag_sorting_group_target_rect: tuple[float, float, float, float] | None = None
+        self._drag_sorting_group_target_after: bool = False
+        self._drag_sorting_group_preview_label: str = ""
+        self._drag_sorting_group_preview_subtitle: str = ""
+        self._drag_sorting_group_window_pos: tuple[float, float] | None = None
 
         self.profession : Profession = Profession._None
         self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
@@ -586,6 +601,14 @@ class UI:
         self.buy_preview_show_satisfied: bool = True
         
         self.selected_bag_slots : list[tuple[Bags, int]] = []
+        self._sorting_bag_size_cache: dict[Bags, int] = {}
+        self._sorting_assigned_slot_cache: set[tuple[Bags, int]] = set()
+        self.sorting_group: Optional[SlotGroupConfig] = None
+        self.sorting_group_index: Optional[int] = None
+        self._sorting_pending_slot_group: Optional[SlotGroupConfig] = None
+        self._sorting_pending_slot_refs: list[SlotReference] = []
+        self._sorting_pending_conflict_groups: list[SlotGroupConfig] = []
+        self._sorting_slot_override_popup_id: str = '##sorting_slot_override_popup'
         
         self._rebuild_upgrade_ui_caches()
         self._rebuild_item_ui_caches()
@@ -635,6 +658,14 @@ class UI:
         if self.config and isinstance(self.config.config, RuleConfig):
             self.rule = rule if rule in self.config.config else None
             self.rule_index = self.config.config.index(self.rule) if self.rule is not None else None
+
+    def _set_active_sorting_group(self, group: Optional[SlotGroupConfig]) -> None:
+        if self.config and isinstance(self.config.config, SortingConfig):
+            self.sorting_group = group if group in self.config.config.slot_groups else None
+            self.sorting_group_index = self.config.config.slot_groups.index(self.sorting_group) if self.sorting_group is not None else None
+        else:
+            self.sorting_group = None
+            self.sorting_group_index = None
         
     @staticmethod
     def format_stack_count(value: int) -> str:
@@ -1298,14 +1329,19 @@ class UI:
             return text.encode("utf-8")
         
     def draw_main_window(self) -> None:
-        active_drag = self._drag_rule_source_config is self.config and self._drag_rule is not None
+        active_rule_drag = self._drag_rule_source_config is self.config and self._drag_rule is not None
+        active_sorting_drag = self._drag_sorting_group_source_config is self.config and self._drag_sorting_group is not None
         
-        if active_drag:
+        if active_rule_drag:
             self._draw_rule_drag_preview()
+        if active_sorting_drag:
+            self._draw_sorting_group_drag_preview()
             
         window_flags = PyImGui.WindowFlags.NoMove if self.rules_hovered else PyImGui.WindowFlags.NoFlag
-        if active_drag and self._drag_rule_window_pos is not None:
+        if active_rule_drag and self._drag_rule_window_pos is not None:
             PyImGui.set_next_window_pos(self._drag_rule_window_pos, PyImGui.ImGuiCond.Always)
+        elif active_sorting_drag and self._drag_sorting_group_window_pos is not None:
+            PyImGui.set_next_window_pos(self._drag_sorting_group_window_pos, PyImGui.ImGuiCond.Always)
 
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
@@ -1356,6 +1392,15 @@ class UI:
         if self.rule not in active_config.config:
             self._set_active_rule(active_config.config[0] if len(active_config.config) > 0 else None)
 
+    def _sync_selected_sorting_group(self) -> None:
+        active_config = self._get_active_config_info()
+        if active_config is None or not isinstance(active_config.config, SortingConfig):
+            self._set_active_sorting_group(None)
+            return
+
+        if self.sorting_group is not None and self.sorting_group not in active_config.config.slot_groups:
+            self._set_active_sorting_group(active_config.config.slot_groups[0] if len(active_config.config.slot_groups) > 0 else None)
+
     def _save_active_config(self) -> None:
         active_config = self._get_active_config_info()
         if active_config is not None:
@@ -1369,18 +1414,39 @@ class UI:
         for config_info in self.configs:
             config_info.load()
         self._sync_selected_rule()
+        self._sync_selected_sorting_group()
+        self._refresh_sorting_assigned_slot_cache()
+        self._invalidate_sorting_preview_cache()
 
     def _load_active_config(self) -> None:
         active_config = self._get_active_config_info()
         if active_config is not None:
             active_config.load()
             self._sync_selected_rule()
+            self._sync_selected_sorting_group()
+            self._refresh_sorting_assigned_slot_cache()
+            if isinstance(active_config.config, SortingConfig):
+                self._invalidate_sorting_preview_cache()
 
     def _refresh_global_config_profile_context(self) -> None:
         if self.profile_manager.refresh():
             self._reload_all_configs()
 
+    def _invalidate_sorting_preview_cache(self) -> None:
+        self.sorting_preview_plan = None
+        self._sorting_preview_cache_key = None
+        self.sorting_preview_throttle.Reset()
+
+    @staticmethod
+    def _build_sorting_preview_cache_key(config: SortingConfig, bags: list[Bags]) -> tuple[tuple[int, ...], str]:
+        normalized_bags = tuple(sorted((int(bag.value) for bag in bags)))
+        config_signature = json.dumps(config.to_dict(), sort_keys=True, ensure_ascii=False)
+        return normalized_bags, config_signature
+
     def _handle_config_saved(self, config_info: ConfigInfo[Any]) -> None:
+        if isinstance(config_info.config, SortingConfig):
+            self._refresh_sorting_assigned_slot_cache()
+            self._invalidate_sorting_preview_cache()
         GlobalConfigProfileManager.broadcast_reload(config_info.config_type)
 
     def _switch_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
@@ -1706,6 +1772,8 @@ class UI:
     def switch_to_config(self, rule_config: ConfigInfo | None):
         self.config = rule_config or (self.configs[0] if len(self.configs) > 0 else None)
         self._sync_selected_rule()
+        self._sync_selected_sorting_group()
+        self._refresh_sorting_assigned_slot_cache()
 
     def draw_preview_window(self, config_info: ConfigInfo):    
         preview_config = self._get_config_info_by_type(self.preview_window_config_type)
@@ -1906,6 +1974,54 @@ class UI:
 
         return False
 
+    def draw_sorting_group_context_menu(self, popup_id: str, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig) -> bool:
+        if PyImGui.begin_popup(popup_id):
+            ImGui.text_colored(group.name or group.display_name(), color=UI.CREME_COLOR.color_tuple, font_size=16)
+            ImGui.separator()
+
+            try:
+                index = config_info.config.slot_groups.index(group)
+            except ValueError:
+                ImGui.end_popup()
+                return False
+
+            if ImGui.menu_item("Move Up"):
+                if index > 0:
+                    config_info.config.slot_groups.remove(group)
+                    config_info.config.slot_groups.insert(index - 1, group)
+                config_info.save()
+                self._set_active_sorting_group(group)
+
+            if ImGui.menu_item("Move Down"):
+                if index < len(config_info.config.slot_groups) - 1:
+                    config_info.config.slot_groups.remove(group)
+                    config_info.config.slot_groups.insert(index + 1, group)
+                config_info.save()
+                self._set_active_sorting_group(group)
+
+            ImGui.separator()
+
+            if ImGui.menu_item("Duplicate"):
+                duplicated_group = SlotGroupConfig.from_dict(group.to_dict())
+                if duplicated_group is not None:
+                    duplicated_group.is_default = False
+                    duplicated_group.name = f"{group.name} Copy" if group.name else ""
+                    config_info.config.slot_groups.insert(index + 1, duplicated_group)
+                    config_info.save()
+                    self._set_active_sorting_group(duplicated_group)
+
+            ImGui.separator()
+
+            if ImGui.menu_item("Delete Group"):
+                config_info.config.slot_groups.remove(group)
+                config_info.save()
+                self._set_active_sorting_group(config_info.config.slot_groups[0] if len(config_info.config.slot_groups) > 0 else None)
+
+            ImGui.end_popup()
+            return True
+
+        return False
+
     def _clear_rule_drag(self) -> None:
         self._drag_rule = None
         self._drag_rule_source_config = None
@@ -1916,6 +2032,17 @@ class UI:
         self._drag_rule_preview_label = ""
         self._drag_rule_preview_subtitle = ""
         self._drag_rule_window_pos = None
+
+    def _clear_sorting_group_drag(self) -> None:
+        self._drag_sorting_group = None
+        self._drag_sorting_group_source_config = None
+        self._drag_sorting_group_source_index = -1
+        self._drag_sorting_group_target_index = -1
+        self._drag_sorting_group_target_rect = None
+        self._drag_sorting_group_target_after = False
+        self._drag_sorting_group_preview_label = ""
+        self._drag_sorting_group_preview_subtitle = ""
+        self._drag_sorting_group_window_pos = None
 
     def _begin_rule_drag(self, config_info: ConfigInfo[RuleConfig], rule: Rule, index: int) -> None:
         self._drag_rule = rule
@@ -1959,6 +2086,49 @@ class UI:
             self._set_active_rule(self._drag_rule)
 
         self._clear_rule_drag()
+
+    def _begin_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig, index: int) -> None:
+        self._drag_sorting_group = group
+        self._drag_sorting_group_source_config = config_info
+        self._drag_sorting_group_source_index = index
+        self._drag_sorting_group_target_index = -1
+        self._drag_sorting_group_target_rect = None
+        self._drag_sorting_group_target_after = False
+        self._drag_sorting_group_preview_label = group.name or f"Slot Group #{index + 1}"
+        self._drag_sorting_group_preview_subtitle = self._slot_group_selection_summary(group)
+        self._drag_sorting_group_window_pos = self.window_pos
+
+    def _apply_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig]) -> None:
+        if self._drag_sorting_group_source_config is not config_info or self._drag_sorting_group is None:
+            self._clear_sorting_group_drag()
+            return
+
+        if self._drag_sorting_group_target_rect is None:
+            self._clear_sorting_group_drag()
+            return
+
+        if self._drag_sorting_group_target_index < 0 or self._drag_sorting_group_source_index < 0:
+            self._clear_sorting_group_drag()
+            return
+
+        try:
+            source_index = config_info.config.slot_groups.index(self._drag_sorting_group)
+        except ValueError:
+            self._clear_sorting_group_drag()
+            return
+
+        insert_index = self._drag_sorting_group_target_index + (1 if self._drag_sorting_group_target_after else 0)
+        if insert_index > source_index:
+            insert_index -= 1
+
+        insert_index = max(0, min(insert_index, len(config_info.config.slot_groups) - 1))
+        if insert_index != source_index:
+            config_info.config.slot_groups.remove(self._drag_sorting_group)
+            config_info.config.slot_groups.insert(insert_index, self._drag_sorting_group)
+            config_info.save()
+            self._set_active_sorting_group(self._drag_sorting_group)
+
+        self._clear_sorting_group_drag()
 
     def _draw_rule_drag_preview(self) -> None:
         if self._drag_rule is None:
@@ -2024,6 +2194,54 @@ class UI:
         )
         overlay.EndDraw()
 
+    def _draw_sorting_group_drag_preview(self) -> None:
+        if self._drag_sorting_group is None:
+            return
+
+        io = PyImGui.get_io()
+        preview_x = io.mouse_pos_x
+        preview_y = io.mouse_pos_y
+        preview_w = 260
+        preview_h = 42
+
+        insert_color = Utils.TupleToColor((1.0, 1.0, 1.0, 0.95))
+        outer_color = Utils.TupleToColor((0.18, 0.45, 0.72, 0.92))
+        inner_color = Utils.TupleToColor((0.10, 0.16, 0.24, 0.95))
+        text_color = Utils.TupleToColor((0.97, 0.95, 0.88, 1.0))
+        subtitle_color = Utils.TupleToColor(UI.GRAY_COLOR.color_tuple)
+
+        overlay = Overlay()
+        overlay.BeginDraw()
+        if self._drag_sorting_group_target_rect is not None:
+            x1, y1, x2, y2 = self._drag_sorting_group_target_rect
+            overlay.DrawQuadFilled(x1 - 2, y1, x2 + 4, y1, x2 + 4, y2, x1 - 2, y2, insert_color)
+
+        overlay.DrawQuadFilled(
+            preview_x,
+            preview_y,
+            preview_x + preview_w,
+            preview_y,
+            preview_x + preview_w,
+            preview_y + preview_h,
+            preview_x,
+            preview_y + preview_h,
+            outer_color,
+        )
+        overlay.DrawQuadFilled(
+            preview_x + 2,
+            preview_y + 2,
+            preview_x + preview_w - 2,
+            preview_y + 2,
+            preview_x + preview_w - 2,
+            preview_y + preview_h - 2,
+            preview_x + 2,
+            preview_y + preview_h - 2,
+            inner_color,
+        )
+        overlay.DrawText(preview_x + 10, preview_y + 8, self._drag_sorting_group_preview_label, text_color, centered=False, scale=1.0)
+        overlay.DrawText(preview_x + 10, preview_y + 24, self._drag_sorting_group_preview_subtitle, subtitle_color, centered=False, scale=1.0)
+        overlay.EndDraw()
+
     def _get_rule_copy_target_config(self, config_info: ConfigInfo) -> ConfigInfo | None:
         if not isinstance(config_info.config, RuleConfig):
             return None
@@ -2066,7 +2284,27 @@ class UI:
 
     @staticmethod
     def _slot_group_slots_to_text(group: SlotGroupConfig) -> str:
-        return ', '.join(str(slot) for slot in group.normalized_slots())
+        return ', '.join(
+            f'{slot_ref.bag.name}:{slot_ref.slot}'
+            for slot_ref in group.normalized_slot_refs()
+        )
+
+    def _slot_group_selection_summary(self, group: SlotGroupConfig) -> str:
+        slot_refs = group.normalized_slot_refs()
+        if group.is_default:
+            return 'All unassigned slots'
+        if not slot_refs:
+            return 'No slots selected'
+        grouped_slots: dict[Bags, list[int]] = {}
+        for slot_ref in slot_refs:
+            grouped_slots.setdefault(slot_ref.bag, []).append(slot_ref.slot)
+        parts = []
+        for bag, slots in sorted(grouped_slots.items(), key=lambda item: item[0].value):
+            slot_list = ', '.join(str(slot) for slot in slots[:8])
+            if len(slots) > 8:
+                slot_list = f'{slot_list}, ...'
+            parts.append(f'{self._humanize_name(bag.name)}: {slot_list}')
+        return ' | '.join(parts)
 
     @staticmethod
     def _parse_slot_group_slots(slots_text: str) -> list[int]:
@@ -2080,21 +2318,103 @@ class UI:
                 continue
         return sorted(set(slots))
 
-    def _draw_sorter_combo(self, label: str, value: Sorter) -> tuple[bool, Sorter]:
-        sorter_types = [
-            sorter_type
-            for _, sorter_type in sorted(Sorter._registry.items(), key=lambda item: item[0])
-            if sorter_type.ui_selectable
-        ]
-        labels = [self._humanize_name(sorter_type.__name__.removesuffix('Sorter')) for sorter_type in sorter_types]
-        current_index = next((index for index, sorter_type in enumerate(sorter_types) if isinstance(value, sorter_type)), 0)
-        next_index = ImGui.combo(label, current_index, labels)
-        return next_index != current_index, sorter_types[next_index]()
+    def _draw_sort_argument_editor(self, sorter: Sorter, unique_id: str) -> bool:
+        changed = False
+        field_options = list(SortField)
+        field_labels = [self._humanize_name(field.value) for field in field_options]
+
+        if ImGui.collapsing_header(f'Sort Arguments##{unique_id}'):
+            if ImGui.begin_child(f'##sort_arguments_{unique_id}', (0, 180), border=True):
+                if ImGui.button(f'{IconsFontAwesome5.ICON_PLUS} Add Sort Argument##{unique_id}', -1):
+                    sorter.arguments.append(SortArgument())
+                    changed = True
+
+                if ImGui.begin_child(f'##sort_arguments_members_{unique_id}', (0, 0), border=False):
+                    style = ImGui.get_style()
+                    style.CellPadding.push_style_var_direct(2, 2)
+                    
+                    if ImGui.begin_table(f'##sort_arguments_table_{unique_id}', 5, PyImGui.TableFlags.SizingStretchProp):
+                        PyImGui.table_setup_column('Up', PyImGui.TableColumnFlags.WidthFixed, 30)
+                        PyImGui.table_setup_column('Down', PyImGui.TableColumnFlags.WidthFixed, 30)
+                        PyImGui.table_setup_column('Argument', PyImGui.TableColumnFlags.WidthStretch, 100)
+                        PyImGui.table_setup_column('Direction', PyImGui.TableColumnFlags.WidthFixed, 120)
+                        PyImGui.table_setup_column('Delete', PyImGui.TableColumnFlags.WidthFixed, 30)
+                    
+                        PyImGui.table_next_row()
+                        PyImGui.table_next_column()
+                                            
+                        for index, argument in enumerate(list(sorter.arguments)):
+                            row_id = f'sort_argument_{unique_id}_{index}'
+                            
+                            if ImGui.icon_button(f'{IconsFontAwesome5.ICON_ARROW_UP}##{row_id}_up', -1, 24) and index > 0:
+                                sorter.arguments[index - 1], sorter.arguments[index] = sorter.arguments[index], sorter.arguments[index - 1]
+                                changed = True
+                                
+                            PyImGui.table_next_column()
+                            
+                            if ImGui.icon_button(f'{IconsFontAwesome5.ICON_ARROW_DOWN}##{row_id}_down', -1, 24) and index < len(sorter.arguments) - 1:
+                                sorter.arguments[index + 1], sorter.arguments[index] = sorter.arguments[index], sorter.arguments[index + 1]
+                                changed = True
+                                
+                            PyImGui.table_next_column()
+                            
+                            current_field_index = field_options.index(argument.field) if argument.field in field_options else 0
+                            PyImGui.set_next_item_width(-1)
+                            next_field_index = ImGui.combo(f'##{row_id}_field', current_field_index, field_labels)
+                            if next_field_index != current_field_index:
+                                argument.field = field_options[next_field_index]
+                                changed = True
+                                
+                            PyImGui.table_next_column()
+                            PyImGui.set_next_item_width(-1)
+                            if PyImGui.begin_combo(f'##{row_id}_direction', argument.direction.name, PyImGui.ImGuiComboFlags.NoFlag):
+                                for direction in SortDirection:
+                                    is_selected = argument.direction == direction
+                                    if ImGui.selectable(direction.name, is_selected, flags=PyImGui.SelectableFlags.NoFlag, size=(0, 24)):
+                                        argument.direction = direction
+                                        changed = True
+                                PyImGui.end_combo()
+                            
+                            PyImGui.table_next_column()
+                            if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##{row_id}_delete', -1, 24):
+                                sorter.arguments.pop(index)
+                                changed = True
+                            PyImGui.table_next_column()
+                        
+                    
+                        ImGui.end_table()
+                    pass
+                
+                    style.CellPadding.pop_style_var_direct()
+                        
+                ImGui.end_child()
+                
+            ImGui.end_child()
+
+        return changed
 
     def _execute_bag_sort(self, bags: list[Bags]) -> None:
         action_node = BTNodes.Bags.SortBags(bags)
         action_node.tick()
         self.preview_throttle.Reset()
+
+    def _refresh_sorting_bag_size_cache(self) -> None:
+        self._sorting_bag_size_cache = {
+            bag: PyInventory.Bag(bag.value, bag.name).GetSize()
+            for bag in [*INVENTORY_BAGS, *STORAGE_BAGS]
+        }
+
+    def _refresh_sorting_assigned_slot_cache(self) -> None:
+        if self.config is None or not isinstance(self.config.config, SortingConfig):
+            self._sorting_assigned_slot_cache = set()
+            return
+
+        self._sorting_assigned_slot_cache = {
+            (slot_ref.bag, slot_ref.slot)
+            for group in self.config.config.slot_groups
+            if group.enabled
+            for slot_ref in group.normalized_slot_refs()
+        }
 
     def _draw_slot_group_model_ids(self, matcher: SlotMatcherConfig, unique_id: str) -> bool:
         changed = False
@@ -2103,19 +2423,25 @@ class UI:
             int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
             for model_id in matcher.model_ids
         }
+        style = ImGui.get_style()
+        spacing = style.ItemSpacing.value2 or 0
+        element_height = 48
 
-        if ImGui.button(f'Add Model ID##{unique_id}', 140):
+        if ImGui.button(f'Add Model ID##{unique_id}', -1):
             self.sorting_group_model_id_search = ''
             PyImGui.open_popup(popup_id)
 
-        PyImGui.set_next_window_size((320, 0), cond=PyImGui.ImGuiCond.Appearing)
+        PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
         if PyImGui.begin_popup(popup_id):
+            ImGui.text('Add Model ID')
+
             PyImGui.set_next_item_width(-1)
             _, self.sorting_group_model_id_search = ImGui.search_field(
                 f'##sorting_model_id_search_{unique_id}',
                 self.sorting_group_model_id_search,
                 'Search model ids or enter an integer...',
             )
+            PyImGui.set_next_item_width(-1)
             search_query, matching_model_ids_raw = self._get_live_search_results(
                 f'sorting_group_model_ids_{unique_id}',
                 self.sorting_group_model_id_search,
@@ -2130,81 +2456,153 @@ class UI:
                 except ValueError:
                     manual_value = None
 
-            if manual_value is not None and manual_value not in selected_model_ids:
-                if ImGui.selectable(f'Manual Model ID: {manual_value}', False):
+            exact_enum_match = any(int(model_id.value) == manual_value for model_id in self._sorted_model_ids) if manual_value is not None else False
+
+            if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
+                if ImGui.begin_selectable(f'##sorting_manual_model_id_{manual_value}_{unique_id}', False, (0, 34)):
+                    ImGui.text(f'Manual Model ID: {manual_value}')
+
+                if ImGui.end_selectable():
                     matcher.model_ids.append(manual_value)
                     changed = True
                     PyImGui.close_current_popup()
 
-            if ImGui.begin_child(f'##sorting_model_id_candidates_{unique_id}', (0, 260), border=True):
+                if PyImGui.is_item_hovered():
+                    ImGui.show_tooltip('Add this raw integer model id even if it is not part of the ModelID enum yet.')
+
+            if ImGui.begin_child(f'##sorting_model_id_candidates_{unique_id}', (0, 320), border=True):
                 for model_id in matching_model_ids:
                     model_id_value = int(model_id.value)
-                    if model_id_value in selected_model_ids:
-                        continue
-                    if ImGui.selectable(f'{self._humanize_name(model_id.name)} ({model_id_value})', False):
+                    already_selected = model_id_value in selected_model_ids
+                    if ImGui.begin_selectable(f'##sorting_model_id_enum_{unique_id}_{model_id.name}', False, (0, 34)):
+                        ImGui.text(self._humanize_name(model_id.name))
+                        x, y = PyImGui.get_cursor_pos()
+                        PyImGui.set_cursor_pos(x, y - 4)
+                        ImGui.text_colored(f'{model_id_value}', UI.GRAY_COLOR.color_tuple, font_size=12)
+
+                    if ImGui.end_selectable() and not already_selected:
                         matcher.model_ids.append(model_id)
                         changed = True
                         PyImGui.close_current_popup()
+                    if PyImGui.is_item_hovered():
+                        ImGui.show_tooltip(f'{self._humanize_name(model_id.name)}\nModel ID: {model_id_value}')
             ImGui.end_child()
+
+            if ImGui.button('Cancel', -1):
+                PyImGui.close_current_popup()
+
             PyImGui.end_popup()
 
         if matcher.model_ids:
-            if ImGui.begin_child(f'##sorting_group_model_ids_selected_{unique_id}', (0, 110), border=True):
-                for index, model_id in enumerate(list(matcher.model_ids)):
+            if ImGui.begin_child(f'##sorting_group_model_ids_selected_{unique_id}', (0, 0), border=False):
+                for index, model_id in enumerate(matcher.model_ids):
                     model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
                     label = self._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f'Manual ID {model_id_value}'
-                    if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##sorting_remove_model_id_{unique_id}_{index}', 28, 22):
-                        matcher.model_ids.pop(index)
-                        changed = True
-                        break
-                    PyImGui.same_line(0, 6)
-                    ImGui.text(f'{label} ({model_id_value})')
+                    item_unique_id = f'sorting_model_ids_rule_{unique_id}_{model_id_value}_{index}'
+
+                    if ImGui.begin_child(f'##{item_unique_id}', (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##{item_unique_id}', 40, 30):
+                            matcher.model_ids.pop(index)
+                            changed = True
+                            ImGui.end_child()
+                            break
+
+                        PyImGui.same_line(0, 8)
+                        PyImGui.begin_group()
+                        ImGui.text(label)
+                        x, y = PyImGui.get_cursor_pos()
+                        PyImGui.set_cursor_pos(x, y - 4)
+                        ImGui.text_colored(f'Model ID: {model_id_value}', UI.GRAY_COLOR.color_tuple, font_size=12)
+                        PyImGui.end_group()
+                    ImGui.end_child()
             ImGui.end_child()
 
         return changed
 
-    def draw_sorting_config(self, config_info: ConfigInfo[SortingConfig]) -> None:
+    def _draw_slot_group_slot_selector_popup(self, group: SlotGroupConfig, popup_id: str) -> bool:
+        changed = False
+        PyImGui.set_next_window_size((900, 700), cond=PyImGui.ImGuiCond.Always)
+        if PyImGui.begin_popup(popup_id):
+            ImGui.text('Select Slots')
+            ImGui.text_wrapped('Pick the slots that belong to this group. All selected slots must be in the same bag or storage tab.')
+            ImGui.separator()
+
+            changed = self.draw_slot_selector() or changed
+
+            selected_slot_refs = [
+                SlotReference(bag, slot)
+                for bag, slot in sorted(self.selected_bag_slots, key=lambda entry: (entry[0].value, entry[1]))
+            ]
+  
+            if selected_slot_refs:
+                changed = self._apply_slot_group_assignment(group, selected_slot_refs, override_existing=False) or changed
+            
+            PyImGui.end_popup()
+
+            
+        return self._draw_sorting_slot_override_popup() or changed
+
+    def draw_slot_selector(self, config_info: Optional[ConfigInfo[SortingConfig]] = None) -> bool:
         style = ImGui.get_style()
+        changed = False
+        selected_slot_set = set(self.selected_bag_slots)
         
-        slot_size = 32
+        slot_size = 24
         grid_size = (slot_size * BAG_ROW_SLOTS) + 4
         
         width, height = PyImGui.get_content_region_avail()
         item_spacing = style.ItemSpacing.value1
-        columns = max(1, int((width) / (grid_size + item_spacing)))
+        columns = max(1, int((width - 4) / (grid_size + item_spacing)))
         PyImGui.columns(columns, '##inventory_sorting_columns', False)
         
         style.CellPadding.push_style_var_direct(1, 1)
         for b in INVENTORY_BAGS:
-            self.draw_bag_selector(b, slot_size, grid_size)
+            changed = self.draw_bag_selector(b, slot_size, grid_size, style, selected_slot_set) or changed
             PyImGui.next_column()
         PyImGui.end_columns()
         
         
         PyImGui.columns(columns, '##storage_sorting_columns', False)
         for b in STORAGE_BAGS:
-            self.draw_bag_selector(b, slot_size, grid_size)
+            changed = self.draw_bag_selector(b, slot_size, grid_size, style, selected_slot_set) or changed
             PyImGui.next_column()
             pass
         style.CellPadding.pop_style_var_direct()
         
         PyImGui.end_columns()
+        return changed
 
-    def draw_bag_selector(self, b : Bags, slot_size : float, grid_size : float):
+    def draw_bag_selector(self, b : Bags, slot_size : float, grid_size : float, style : Style, selected_slot_set: set[tuple[Bags, int]]) -> bool:
+        changed = False
         bag_size = MAX_BAG_SIZES.get(b, 0)        
         PyImGui.begin_group()
-        ImGui.text_aligned(self._humanize_name(b.name), font_size=14, alignment=Alignment.MidCenter, width=grid_size)
+        if ImGui.button(self._humanize_name(b.name), width=grid_size, height=20):
+            any_selected_in_bag = any((b, slot) in selected_slot_set for slot in range(bag_size))
+            if any_selected_in_bag:
+                self.selected_bag_slots = [(bag, slot) for (bag, slot) in self.selected_bag_slots if bag != b]
+            else:
+                self.selected_bag_slots.extend([(b, slot) for slot in range(bag_size) if (b, slot) not in selected_slot_set])
+            changed = True
+    
+        inventory_bag_size = self._sorting_bag_size_cache.get(b, 0)
             
-        PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 12)            
-        if ImGui.begin_table(f'##sorting_bag_{b}', BAG_ROW_SLOTS, PyImGui.TableFlags.NoHostExtendX, width=grid_size, height=grid_size):
+        if ImGui.begin_table(f'##sorting_bag_{b}', BAG_ROW_SLOTS, PyImGui.TableFlags.NoHostExtendX, width=grid_size + 4, height=grid_size):
             PyImGui.table_next_row()
             PyImGui.table_next_column()
                 
             for slot in range(bag_size):
                 slot_id = (b, slot)
-                is_selected =  slot_id in self.selected_bag_slots
+                is_selected = slot_id in selected_slot_set
+                has_rule = self._sorting_slot_has_rule(slot_id)
+                
+                is_available = slot < inventory_bag_size
+                if has_rule:
+                    style.ChildBg.push_color_direct(UI.RED_COLOR.rgb_tuple)
+                
+                elif not is_available:
+                    style.ChildBg.push_color_direct(UI.GRAY_COLOR.rgb_tuple)
                     
-                if ImGui.begin_selectable(f'##sorting_bag_{b}_slot_{slot}', size=(slot_size, slot_size), border=True, border_color=UI.GRAY_COLOR.rgb_tuple, selected=is_selected):
+                if ImGui.begin_selectable(f'##sorting_bag_{b}_slot_{slot}', size=(slot_size, slot_size), border=True, border_color=UI.GRAY_COLOR.rgb_tuple, selected_color=UI.GREEN_COLOR.rgb_tuple, selected=is_selected):
                     pass
                     
                 if ImGui.end_selectable():
@@ -2212,142 +2610,371 @@ class UI:
                         self.selected_bag_slots.remove(slot_id)
                     else:
                         self.selected_bag_slots.append(slot_id)
+                    changed = True
                         
+                if has_rule or not is_available:
+                    style.ChildBg.pop_color_direct()
+                    
                 PyImGui.table_next_column()
                     
             ImGui.end_table()
         PyImGui.end_group()
+        return changed
         
-    
-    def drawx_sorting_config(self, config_info: ConfigInfo[SortingConfig]) -> None:
-        config = config_info.config
+    def _sorting_slot_has_rule(self, slot_id: tuple[Bags, int]) -> bool:
+        return slot_id in self._sorting_assigned_slot_cache
+
+    def _get_sorting_slot_conflict_groups(self, target_group: SlotGroupConfig, slot_refs: list[SlotReference]) -> list[SlotGroupConfig]:
+        if self.config is None or not isinstance(self.config.config, SortingConfig):
+            return []
+
+        conflicts: list[SlotGroupConfig] = []
+        target_slot_refs = set(slot_refs)
+        for group in self.config.config.slot_groups:
+            if group is target_group:
+                continue
+            if not group.enabled:
+                continue
+            if target_slot_refs.intersection(group.normalized_slot_refs()):
+                conflicts.append(group)
+        return conflicts
+
+    def _apply_slot_group_assignment(self, target_group: SlotGroupConfig, slot_refs: list[SlotReference], override_existing: bool) -> bool:
+        normalized_slot_refs = sorted(set(slot_refs), key=lambda slot_ref: (slot_ref.bag.value, slot_ref.slot))
+        conflicts = self._get_sorting_slot_conflict_groups(target_group, normalized_slot_refs)
+        if conflicts and not override_existing:
+            self._sorting_pending_slot_group = target_group
+            self._sorting_pending_slot_refs = list(normalized_slot_refs)
+            self._sorting_pending_conflict_groups = conflicts
+            PyImGui.open_popup(self._sorting_slot_override_popup_id)
+            return False
+
+        slot_ref_set = set(normalized_slot_refs)
+        for group in conflicts:
+            group.slot_refs = [
+                slot_ref
+                for slot_ref in group.normalized_slot_refs()
+                if slot_ref not in slot_ref_set
+            ]
+
+        target_group.slot_refs = list(normalized_slot_refs)
+        self.selected_bag_slots = [(slot_ref.bag, slot_ref.slot) for slot_ref in target_group.normalized_slot_refs()]
+        self._save_active_config()
+        return True
+
+    def _draw_sorting_slot_override_popup(self) -> bool:
         changed = False
-        bag_options = list(self.INVENTORY_PREVIEW_BAGS)
-        bag_labels = [self._humanize_name(bag.name) for bag in bag_options]
+        PyImGui.set_next_window_size((460, 0), cond=PyImGui.ImGuiCond.Appearing)
+        if PyImGui.begin_popup_modal(self._sorting_slot_override_popup_id, True, PyImGui.WindowFlags.AlwaysAutoResize):
+            ImGui.text('Override Slot Assignments')
+            ImGui.text_wrapped('Some selected slots are already assigned to another slot group. Overriding will remove those slots from the other groups.')
+            ImGui.separator()
 
-        ImGui.text_wrapped('Define slot groups for inventory bags and storage tabs. Matching items are packed into those slots first, then remaining open slots are filled with the default sort policy.')
-        ImGui.separator()
+            for group in self._sorting_pending_conflict_groups:
+                ImGui.text_wrapped(f'- {group.display_name()}')
 
-        if ImGui.button('Sort Inventory Bags', 170):
-            self._execute_bag_sort(list(INVENTORY_BAGS))
-        PyImGui.same_line(0, 6)
-        if ImGui.button('Sort Storage Tabs', 170):
-            self._execute_bag_sort(list(STORAGE_BAGS))
-        PyImGui.same_line(0, 6)
-        if ImGui.button('Preview Sorting', 170):
-            self.preview_window_config_type = config_info.config_type
-            self.show_preview_window = True
+            if ImGui.button('Override', 160):
+                if self._sorting_pending_slot_group is not None:
+                    changed = self._apply_slot_group_assignment(
+                        self._sorting_pending_slot_group,
+                        self._sorting_pending_slot_refs,
+                        override_existing=True,
+                    )
+                self._sorting_pending_slot_group = None
+                self._sorting_pending_slot_refs = []
+                self._sorting_pending_conflict_groups = []
+                PyImGui.close_current_popup()
 
-        policy_changed, next_policy = self._draw_sorter_combo('Default Sort Policy', config.default_sorter)
-        if policy_changed:
-            config.default_sorter = next_policy
+            PyImGui.same_line(0, 8)
+            if ImGui.button('Cancel', 160):
+                self._sorting_pending_slot_group = None
+                self._sorting_pending_slot_refs = []
+                self._sorting_pending_conflict_groups = []
+                PyImGui.close_current_popup()
+
+            PyImGui.end_popup()
+
+        return changed
+    
+    def draw_slot_group_config(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig) -> None:
+        changed = False
+        unique_id = f'{id(group)}'
+        slot_popup_id = f'##sorting_slot_selector_popup_{unique_id}'
+
+        ImGui.text_aligned("Name", alignment=Alignment.MidLeft, height=25)
+        PyImGui.same_line(60, 5)
+
+        PyImGui.begin_disabled(group.is_default)
+        PyImGui.set_next_item_width(-1)
+        rule_name_input_id = f"##rule_name_{id(group)}"
+        name = ImGui.input_text(rule_name_input_id, group.name or "")
+        if name != group.name:
+            group.name = name
+            self._save_active_config()
+
+        ImGui.text_aligned("Enabled" if group.enabled else "Disabled", alignment=Alignment.MidLeft, height=25, color=UI.GREEN_COLOR.color_tuple if group.enabled else UI.RED_COLOR.color_tuple)
+        PyImGui.same_line(60, 5)
+        enabled = PyImGui.checkbox("##rule_enabled", group.enabled)
+        if enabled != group.enabled:
+            group.enabled = enabled
+            self._save_active_config()
+        ImGui.show_tooltip("Whether this rule is active. Disabled rules are ignored but keep their settings.")
+        PyImGui.end_disabled()
+
+        PyImGui.same_line(0, 5)
+        changed = self._draw_sort_argument_editor(group.sorter, unique_id) or changed
+        # ImGui.text_colored(f'Sorter: {group.sorter.display_name}', UI.GRAY_COLOR.color_tuple, font_size=12)
+
+        if group.is_default:
+            ImGui.text_wrapped('This policy is used for every slot that is not assigned to a special slot group.')
+            if changed:
+                self._save_active_config()
+            return
+        
+        if ImGui.button(f'Choose Slots##sorting_group_slots_{unique_id}', -1):
+            self.selected_bag_slots = [(slot_ref.bag, slot_ref.slot) for slot_ref in group.normalized_slot_refs()]
+            self._refresh_sorting_bag_size_cache()
+            PyImGui.open_popup(slot_popup_id)
+
+        if self._draw_slot_group_slot_selector_popup(group, slot_popup_id):
             changed = True
 
-        selected_bag_index = bag_options.index(self.sorting_selected_bag) if self.sorting_selected_bag in bag_options else 0
-        next_bag_index = ImGui.combo('Bag / Storage Tab', selected_bag_index, bag_labels)
-        self.sorting_selected_bag = bag_options[next_bag_index]
+        ImGui.text_colored(self._slot_group_selection_summary(group), UI.GRAY_COLOR.color_tuple, font_size=12)
 
-        if ImGui.button('Add Slot Group', 160):
-            config.slot_groups.append(
-                SlotGroupConfig(
-                    bag=self.sorting_selected_bag,
-                    slots=[0],
-                    sorter=type(config.default_sorter)(),
-                )
-            )
-            changed = True
-
-        visible_groups = [
-            group
-            for group in config.slot_groups
-            if group.bag == self.sorting_selected_bag
-        ]
-        visible_groups.sort(key=lambda group: (min(group.normalized_slots()) if group.normalized_slots() else 9999, group.display_name().lower()))
-
-        if not visible_groups:
-            ImGui.text_wrapped('No slot groups configured for this bag yet.')
-
-        for group in visible_groups:
-            unique_id = f'{id(group)}'
-            if ImGui.begin_child(f'##sorting_group_{unique_id}', (0, 0), border=True):
-                enabled_value = ImGui.checkbox(f'Enabled##sorting_group_enabled_{unique_id}', group.enabled)
-                if enabled_value != group.enabled:
-                    group.enabled = enabled_value
+        PyImGui.separator()
+        
+        if ImGui.begin_child(f'##sorting_item_types_{unique_id}', (0, 150), border=True):
+            width = PyImGui.get_content_region_avail()[0]
+            columns = max(1, int(width // 180))
+            PyImGui.columns(columns, f'sorting_item_type_columns_{unique_id}', False)
+            for item_type in self._sorted_item_types:
+                is_selected = item_type in group.matcher.item_types
+                selected = ImGui.checkbox(f'{self._humanize_name(item_type.name)}##sorting_item_type_{unique_id}_{item_type.name}', is_selected)
+                if selected != is_selected:
+                    if selected:
+                        group.matcher.item_types.append(item_type)
+                    else:
+                        group.matcher.item_types = [entry for entry in group.matcher.item_types if entry != item_type]
                     changed = True
+                PyImGui.next_column()
+            PyImGui.end_columns()
+        ImGui.end_child()
 
+        if ImGui.begin_child(f'##sorting_rarities_{unique_id}', (0, 45), border=True):
+            for rarity in self._sorted_rarities:
+                is_selected = rarity in group.matcher.rarities
+                selected = ImGui.checkbox(f'##sorting_rarity_{unique_id}_{rarity.name}', is_selected)
+                if selected != is_selected:
+                    if selected:
+                        group.matcher.rarities.append(rarity)
+                    else:
+                        group.matcher.rarities = [entry for entry in group.matcher.rarities if entry != rarity]
+                    changed = True
+                PyImGui.same_line(0, 6)
+                ImGui.text_colored(rarity.name, self._get_rarity_color(rarity).color_tuple)
                 PyImGui.same_line(0, 10)
-                if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##sorting_group_delete_{unique_id}', 30, 22):
-                    config.slot_groups.remove(group)
-                    changed = True
-                    ImGui.end_child()
-                    break
+        ImGui.end_child()
 
-                group_name = ImGui.input_text(f'Name##sorting_group_name_{unique_id}', group.name)
-                if group_name != group.name:
-                    group.name = group_name
-                    changed = True
+        if ImGui.begin_child(f'##sorting_quantities_{unique_id}', (0, 93), border=True):
+            min_quantity = ImGui.slider_int(f'Min Quantity##sorting_group_min_qty_{unique_id}', group.matcher.min_quantity, 0, 250)
+            max_quantity = ImGui.slider_int(f'Max Quantity##sorting_group_max_qty_{unique_id}', group.matcher.max_quantity, 0, 250)
+            normalized_min = min(min_quantity, max_quantity)
+            normalized_max = max(min_quantity, max_quantity)
+            if normalized_min != group.matcher.min_quantity or normalized_max != group.matcher.max_quantity:
+                group.matcher.min_quantity = normalized_min
+                group.matcher.max_quantity = normalized_max
+                changed = True
+        ImGui.text_colored(f'Matches: {group.matcher.summary()}', UI.GRAY_COLOR.color_tuple, font_size=12)
+        ImGui.end_child()
 
-                slots_text = ImGui.input_text(f'Slots##sorting_group_slots_{unique_id}', self._slot_group_slots_to_text(group))
-                parsed_slots = self._parse_slot_group_slots(slots_text)
-                if parsed_slots != group.normalized_slots():
-                    group.slots = parsed_slots
-                    changed = True
-                ImGui.show_tooltip('Comma-separated zero-based slot numbers.')
-
-                group_policy_changed, next_group_policy = self._draw_sorter_combo(f'Slot Policy##sorting_group_policy_{unique_id}', group.sorter)
-                if group_policy_changed:
-                    group.sorter = next_group_policy
-                    changed = True
-
-                PyImGui.separator()
-                ImGui.text_colored('Allowed Items', UI.CREME_COLOR.color_tuple, font_size=14)
-
-                changed = self._draw_slot_group_model_ids(group.matcher, unique_id) or changed
-
-                if ImGui.begin_child(f'##sorting_item_types_{unique_id}', (0, 120), border=True):
-                    width = PyImGui.get_content_region_avail()[0]
-                    columns = max(1, int(width // 180))
-                    PyImGui.columns(columns, f'sorting_item_type_columns_{unique_id}', False)
-                    for item_type in self._sorted_item_types:
-                        is_selected = item_type in group.matcher.item_types
-                        selected = ImGui.checkbox(f'{self._humanize_name(item_type.name)}##sorting_item_type_{unique_id}_{item_type.name}', is_selected)
-                        if selected != is_selected:
-                            if selected:
-                                group.matcher.item_types.append(item_type)
-                            else:
-                                group.matcher.item_types = [entry for entry in group.matcher.item_types if entry != item_type]
-                            changed = True
-                        PyImGui.next_column()
-                    PyImGui.end_columns()
-                ImGui.end_child()
-
-                if ImGui.begin_child(f'##sorting_rarities_{unique_id}', (0, 70), border=True):
-                    for rarity in self._sorted_rarities:
-                        is_selected = rarity in group.matcher.rarities
-                        selected = ImGui.checkbox(f'{rarity.name}##sorting_rarity_{unique_id}_{rarity.name}', is_selected)
-                        if selected != is_selected:
-                            if selected:
-                                group.matcher.rarities.append(rarity)
-                            else:
-                                group.matcher.rarities = [entry for entry in group.matcher.rarities if entry != rarity]
-                            changed = True
-                        PyImGui.same_line(0, 10)
-                ImGui.end_child()
-
-                min_quantity = ImGui.slider_int(f'Min Quantity##sorting_group_min_qty_{unique_id}', group.matcher.min_quantity, 0, 250)
-                max_quantity = ImGui.slider_int(f'Max Quantity##sorting_group_max_qty_{unique_id}', group.matcher.max_quantity, 0, 250)
-                normalized_min = min(min_quantity, max_quantity)
-                normalized_max = max(min_quantity, max_quantity)
-                if normalized_min != group.matcher.min_quantity or normalized_max != group.matcher.max_quantity:
-                    group.matcher.min_quantity = normalized_min
-                    group.matcher.max_quantity = normalized_max
-                    changed = True
-
-                ImGui.text_colored(f'Matches: {group.matcher.summary()}', UI.GRAY_COLOR.color_tuple, font_size=12)
-            ImGui.end_child()
+        if ImGui.begin_child(f'##sorting_model_ids_{unique_id}', (0, 0), border=True):
+            changed = self._draw_slot_group_model_ids(group.matcher, unique_id) or changed
+        ImGui.end_child()        
 
         if changed:
-            config_info.save()
+            self._save_active_config()
+
+    def draw_sorting_config(self, config_info: ConfigInfo[SortingConfig]) -> None:
+        config = config_info.config
+        self._sync_selected_sorting_group()
+        active_drag = self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None
+        self._drag_sorting_group_target_rect = None
+        scroll_y = 0.0
+
+        if ImGui.begin_table('##sorting_config_table', 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
+            PyImGui.table_setup_column('Navigation', PyImGui.TableColumnFlags.WidthFixed, 220)
+            PyImGui.table_setup_column('Content', PyImGui.TableColumnFlags.WidthStretch)
+
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+
+            if ImGui.button('Add Sort Policy', -1):
+                new_group = SlotGroupConfig(
+                    slot_refs=[],
+                    sorter=type(config.default_group.sorter)(),
+                )
+                config.slot_groups.append(new_group)
+                config_info.save()
+                self._set_active_sorting_group(new_group)
+
+            ImGui.separator()
+            PyImGui.spacing()
+
+            if ImGui.begin_child('##sorting_groups', (0, 0), border=False):
+                io = PyImGui.get_io()
+                child_pos = PyImGui.get_window_pos()
+                child_size = PyImGui.get_window_size()
+                child_visible_left = child_pos[0]
+                child_visible_top = child_pos[1]
+                child_visible_right = child_pos[0] + child_size[0]
+                child_visible_bottom = child_pos[1] + child_size[1]
+                group_rects: dict[int, tuple[float, float, float, float]] = {}
+                group_gap_values: list[float] = []
+
+                if ImGui.begin_selectable('##sorting_default_sorter', selected=self.sorting_group is None, size=(0, 48), border=True):
+                    ImGui.text('Default Sort Policy')
+                    x, y = PyImGui.get_cursor_pos()
+                    PyImGui.set_cursor_pos(x, y - 4)
+                    ImGui.text_colored(config.default_group.sorter.display_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                if ImGui.end_selectable():
+                    self._set_active_sorting_group(None)
+
+                for index, group in enumerate(config.slot_groups):
+                    group_label = group.name or f'Slot Group #{index + 1}'
+                    group_summary = self._slot_group_selection_summary(group)
+                    if ImGui.begin_selectable(f'##sorting_group_nav_{index}', selected=self.sorting_group is group, size=(0, 56), border=True):
+                        PyImGui.begin_disabled(not group.enabled)
+                        ImGui.text(group_label)
+                        x, y = PyImGui.get_cursor_pos()
+                        PyImGui.set_cursor_pos(x, y - 4)
+                        ImGui.text_colored(group_summary, UI.GRAY_COLOR.color_tuple, font_size=12)
+                        PyImGui.end_disabled()
+                    if ImGui.end_selectable():
+                        self._set_active_sorting_group(group)
+
+                    hovered = PyImGui.is_item_hovered()
+                    active = PyImGui.is_mouse_down(0)
+                    dragging = PyImGui.is_mouse_dragging(0, 0.01)
+
+                    if hovered and PyImGui.is_mouse_clicked(1):
+                        self.context_menu_id = f"sorting_group_{index}"
+                        self.context_menu_sorting_group = group
+                        self.context_menu_config = config_info
+                        PyImGui.open_popup(self.context_menu_id)
+
+                    item_min, item_max, item_size = ImGui.get_item_rect()
+                    in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
+
+                    if self._drag_sorting_group is None and active and dragging and in_rect and PyImGui.is_window_focused() and PyImGui.is_item_hovered():
+                        self._begin_sorting_group_drag(config_info, group, index)
+
+                    if self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None:
+                        group_rects[index] = (item_min[0], item_min[1], item_max[0], item_max[1])
+                        if index > 0 and (index - 1) in group_rects:
+                            previous_rect = group_rects[index - 1]
+                            gap = item_min[1] - previous_rect[3]
+                            if gap > 0.0:
+                                group_gap_values.append(gap)
+
+                        if in_rect:
+                            self._drag_sorting_group_target_index = index
+                            self._drag_sorting_group_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
+
+                if len(config.slot_groups) > 0:
+                    PyImGui.dummy(0, 10)
+                    if self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None and PyImGui.is_item_hovered():
+                        self._drag_sorting_group_target_index = len(config.slot_groups) - 1
+                        self._drag_sorting_group_target_after = True
+
+                if active_drag:
+                    edge_threshold = 18.0
+                    scroll_y = PyImGui.get_scroll_y()
+                    scroll_max_y = PyImGui.get_scroll_max_y()
+                    mouse_y = io.mouse_pos_y
+
+                    if mouse_y < child_visible_top and scroll_y > 0.0:
+                        overshoot = min(child_visible_top - mouse_y, 40.0)
+                        scroll_step = 6.0 + (overshoot / 40.0) * 18.0
+                        PyImGui.set_scroll_y(max(0.0, scroll_y - scroll_step))
+                    elif mouse_y > child_visible_bottom and scroll_y < scroll_max_y:
+                        overshoot = min(mouse_y - child_visible_bottom, 40.0)
+                        scroll_step = 6.0 + (overshoot / 40.0) * 18.0
+                        PyImGui.set_scroll_y(min(scroll_max_y, scroll_y + scroll_step))
+
+                    if group_rects:
+                        if mouse_y <= child_visible_top + edge_threshold:
+                            self._drag_sorting_group_target_index = min(group_rects.keys())
+                            self._drag_sorting_group_target_after = False
+                        elif mouse_y >= child_visible_bottom - edge_threshold:
+                            self._drag_sorting_group_target_index = max(group_rects.keys())
+                            self._drag_sorting_group_target_after = True
+
+                if active_drag and self._drag_sorting_group_target_index in group_rects:
+                    current_rect = group_rects[self._drag_sorting_group_target_index]
+                    usual_gap = group_gap_values[0] if group_gap_values else 10.0
+                    x1 = max(current_rect[0] + 4, child_visible_left + 4)
+                    x2 = min(current_rect[2] - 4, child_visible_right - 4)
+                    can_draw_target_rect = True
+                    line_y = 0.0
+
+                    if self._drag_sorting_group_target_after:
+                        if self._drag_sorting_group_target_index + 1 in group_rects:
+                            next_rect = group_rects[self._drag_sorting_group_target_index + 1]
+                            line_y = (current_rect[3] + next_rect[1]) / 2.0
+                        else:
+                            if current_rect[3] < child_visible_bottom:
+                                bottom_gap = child_visible_bottom - current_rect[3]
+                                effective_gap = min(bottom_gap, usual_gap)
+                                line_y = current_rect[3] + (effective_gap / 2.0)
+                            else:
+                                can_draw_target_rect = False
+                    else:
+                        if self._drag_sorting_group_target_index - 1 in group_rects:
+                            previous_rect = group_rects[self._drag_sorting_group_target_index - 1]
+                            line_y = (previous_rect[3] + current_rect[1]) / 2.0
+                        else:
+                            if current_rect[1] > child_visible_top:
+                                line_y = (child_visible_top + current_rect[1]) / 2.0
+                            elif scroll_y <= 0.0:
+                                top_gap = max(current_rect[1] - child_visible_top, 0.0)
+                                effective_gap = min(top_gap if top_gap > 0.0 else usual_gap, usual_gap)
+                                line_y = child_visible_top + max(effective_gap / 2.0, 1.0)
+                            else:
+                                can_draw_target_rect = False
+
+                    rect_y1 = max(line_y - 1, child_visible_top) if can_draw_target_rect else 0.0
+                    rect_y2 = min(line_y + 1, child_visible_bottom) if can_draw_target_rect else 0.0
+                    if can_draw_target_rect and x1 < x2 and rect_y1 < rect_y2:
+                        self._drag_sorting_group_target_rect = (x1, rect_y1, x2, rect_y2)
+                    else:
+                        self._drag_sorting_group_target_rect = None
+
+                if self.context_menu_id and self.context_menu_sorting_group and self.context_menu_config is config_info:
+                    if not self.draw_sorting_group_context_menu(self.context_menu_id, config_info, self.context_menu_sorting_group):
+                        self.context_menu_id = None
+                        self.context_menu_sorting_group = None
+                        self.context_menu_config = None
+            ImGui.end_child()
+
+            c_min, c_max, c_size = ImGui.get_item_rect()
+            if active_drag and not ImGui.is_mouse_in_rect((c_min[0], c_min[1], c_size[0], c_size[1])):
+                self._drag_sorting_group_target_rect = None
+
+            PyImGui.table_next_column()
+
+            if ImGui.begin_child('##sorting_group_content', (0, 0), border=False):
+                if self.sorting_group is None:
+                    self.draw_slot_group_config(config_info, config.default_group)
+                    
+                else:
+                    self.draw_slot_group_config(config_info, self.sorting_group)
+                    
+            ImGui.end_child()
+
+            ImGui.end_table()
+
+        if active_drag and not PyImGui.is_mouse_down(0):
+            self._apply_sorting_group_drag(config_info)
 
     def draw_sorting_config_preview(self, config: SortingConfig) -> None:
         ImGui.text('Preview', font_size=18)
@@ -2356,12 +2983,15 @@ class UI:
         button_width = 110
         if ImGui.button('Inventory', button_width):
             self.sorting_preview_selected_bags = list(INVENTORY_BAGS)
+            self._invalidate_sorting_preview_cache()
         PyImGui.same_line(0, 5)
         if ImGui.button('Storage', button_width):
             self.sorting_preview_selected_bags = list(STORAGE_BAGS)
+            self._invalidate_sorting_preview_cache()
         PyImGui.same_line(0, 5)
         if ImGui.button('All', button_width):
             self.sorting_preview_selected_bags = [bag for bag in self.INVENTORY_PREVIEW_BAGS if bag != Bags.MaterialStorage]
+            self._invalidate_sorting_preview_cache()
         PyImGui.same_line(0, 5)
         if ImGui.button('Sort Selected', button_width):
             self._execute_bag_sort(self.sorting_preview_selected_bags)
@@ -2378,6 +3008,7 @@ class UI:
                         self.sorting_preview_selected_bags.append(bag)
                     else:
                         self.sorting_preview_selected_bags = [entry for entry in self.sorting_preview_selected_bags if entry != bag]
+                    self._invalidate_sorting_preview_cache()
                 PyImGui.next_column()
             PyImGui.end_columns()
         ImGui.end_child()
@@ -2386,7 +3017,16 @@ class UI:
             ImGui.text_wrapped('Select at least one bag or storage tab to preview.')
             return
 
-        plan = BTNodes.Bags.GetBagSortPlan(self.sorting_preview_selected_bags)
+        cache_key = self._build_sorting_preview_cache_key(config, self.sorting_preview_selected_bags)
+        if self.sorting_preview_plan is None or self._sorting_preview_cache_key != cache_key or self.sorting_preview_throttle.IsExpired():
+            self.sorting_preview_plan = BTNodes.Bags.GetBagSortPlan(self.sorting_preview_selected_bags)
+            self._sorting_preview_cache_key = cache_key
+            self.sorting_preview_throttle.Reset()
+
+        plan = self.sorting_preview_plan
+        if plan is None:
+            ImGui.text_wrapped('Unable to build sorting preview right now.')
+            return
         for warning in plan.warnings:
             ImGui.text_colored(warning, UI.RED_COLOR.color_tuple)
 
@@ -2420,7 +3060,7 @@ class UI:
                 PyImGui.table_next_column()
                 ImGui.text_wrapped(entry.group_summary)
                 PyImGui.table_next_column()
-                ImGui.text(self._humanize_name(entry.sorter.display_name))
+                ImGui.text(entry.sorter.display_name)
                 PyImGui.table_next_column()
                 ImGui.text_wrapped(note_text if note_text else '-')
             ImGui.end_table()
@@ -3241,7 +3881,6 @@ class UI:
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.button("Add Model ID", -1):
-                    ui.model_id_search = ""
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
