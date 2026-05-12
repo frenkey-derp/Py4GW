@@ -31,6 +31,7 @@ class GlobalConfigProfileManager:
         'LootConfig': ReloadType.Looting,
         'InventoryConfig': ReloadType.Inventory,
         'CraftingConfig': ReloadType.Crafting,
+        'SortingConfig': ReloadType.Sorting,
     }
 
     def __init__(self) -> None:
