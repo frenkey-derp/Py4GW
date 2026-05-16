@@ -12,7 +12,7 @@ from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
 from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.item_modifier_parser import ItemModifierParser
-from Py4GWCoreLib.item_mods_src.properties import AttributeRequirement, DamageProperty, TargetItemTypeProperty
+from Py4GWCoreLib.item_mods_src.properties import AttributeRequirement, DamageProperty, EnergyProperty, TargetItemTypeProperty
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
 
@@ -58,6 +58,7 @@ class _LazyParsedItemData:
         "min_damage",
         "max_damage",
         "target_item_type",
+        "energy",
     )
 
     def __init__(
@@ -73,6 +74,7 @@ class _LazyParsedItemData:
         min_damage: int,
         max_damage: int,
         target_item_type: ItemType,
+        energy: int,
     ):
         self.modifiers = modifiers
         self.properties = properties
@@ -85,6 +87,7 @@ class _LazyParsedItemData:
         self.min_damage = min_damage
         self.max_damage = max_damage
         self.target_item_type = target_item_type
+        self.energy = energy
 
 
 class ItemSnapshot:
@@ -212,6 +215,7 @@ class ItemSnapshot:
             requirement = next((p for p in properties if isinstance(p, AttributeRequirement)), None)
             damage = next((p for p in properties if isinstance(p, DamageProperty)), None)
             target_item_type = next((p for p in properties if isinstance(p, TargetItemTypeProperty)), None)
+            energy = next((p for p in properties if isinstance(p, EnergyProperty)), None)
 
             self._parsed_item_data = _LazyParsedItemData(
                 modifiers=modifiers,
@@ -225,6 +229,7 @@ class ItemSnapshot:
                 min_damage=damage.min_damage if damage else 0,
                 max_damage=damage.max_damage if damage else 0,
                 target_item_type=target_item_type.item_type if target_item_type else ItemType.Unknown,
+                energy=energy.energy if energy else 0,
             )
 
         return cast(_LazyParsedItemData, self._parsed_item_data)
@@ -327,6 +332,10 @@ class ItemSnapshot:
     @property
     def min_damage(self) -> int:
         return self._get_parsed_item_data().min_damage
+    
+    @property
+    def energy(self) -> int:
+        return self._get_parsed_item_data().energy
 
     @property
     def max_damage(self) -> int:
