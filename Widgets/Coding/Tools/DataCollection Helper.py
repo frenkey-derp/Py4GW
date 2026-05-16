@@ -3,7 +3,7 @@ from dataclasses import field
 from datetime import datetime, timedelta
 import json
 import os
-from typing import Optional
+from typing import Any, Optional, TypeVar, cast
 
 import Py4GW
 import PyImGui
@@ -19,7 +19,7 @@ from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Py4GWcorelib import Utils
 from Py4GWCoreLib.Routines import Routines
-from Py4GWCoreLib.UIManager import CrafterWindow, FrameInfo, UIManager, WindowFrame
+from Py4GWCoreLib.UIManager import CollectorWindow, CrafterWindow, FrameInfo, UIManager, WindowFrame
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
@@ -32,7 +32,8 @@ from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 project_path = Py4GW.Console.get_projects_path()
 MODULE_NAME = "Data Collection Helper"
 MODULE_ICON = os.path.join("Textures", "Module_Icons", "Research Code.png")
-DATA_FILE_PATH = os.path.join(project_path, 'Widgets', 'Data', 'armor_crafters.json')
+DATA_FILE_PATH = os.path.join(project_path, 'Widgets', 'Data', 'crafter_catalog.json')
+LEGACY_ARMORER_DATA_FILE_PATH = os.path.join(project_path, 'Widgets', 'Data', 'armor_crafters.json')
     
 def tooltip():
     PyImGui.set_next_window_size((400, 0))
@@ -66,96 +67,646 @@ def tooltip():
 class CraftingRequirements:
     materials: dict[ModelID, int] = field(default_factory=dict)
     gold: int = 0
-    skill_points: Optional[int] = None    
-    
-    
-@dataclass
-class CraftableItem:
-    name: str
-    item_type : ItemType
-    model_id : int
-    
-    required_materials : CraftingRequirements
-    
-@dataclass
-class CraftableWeapon(CraftableItem):
-    requirement : int
-    attribute : Attribute
-    damage : tuple[int, int] #min, max
-    prefix : Upgrade  
-    suffix : Upgrade  
-    inscription : Upgrade  
-    inherent : list[Upgrade]  
-    
-        
-@dataclass
-class CraftableArmor(CraftableItem):
-    armor_rating: int
-    profession : Profession
-    
+    skill_points: Optional[int] = None
+
     def to_dict(self) -> dict:
         return {
-            'name': self.name,
-            'armor_rating': self.armor_rating,
-            'item_type': self.item_type.name,
-            'model_id': self.model_id,
-            'profession': self.profession.name,
+            'materials': {str(int(model_id)): amount for model_id, amount in self.materials.items()},
+            'gold': self.gold,
+            'skill_points': self.skill_points,
         }
 
     @staticmethod
-    def from_dict(data: dict) -> 'CraftableArmor':
-        item_type_name = str(data.get('item_type', ItemType.Unknown.name))
-        profession_name = str(data.get('profession', Profession._None.name))
+    def from_dict(data: Optional[dict]) -> 'CraftingRequirements':
+        materials: dict[ModelID, int] = {}
+        for model_id, amount in dict(data.get('materials', {}) if data else {}).items():
+            try:
+                materials[ModelID(int(model_id))] = int(amount or 0)
+            except Exception:
+                continue
 
-        return CraftableArmor(
-            name=str(data.get('name', '')),
-            armor_rating=int(data.get('armor_rating', 0) or 0),
-            item_type=ItemType[item_type_name] if item_type_name in ItemType.__members__ else ItemType.Unknown,
-            model_id=int(data.get('model_id', 0) or 0),
-            profession=Profession[profession_name] if profession_name in Profession.__members__ else Profession._None,
+        return CraftingRequirements(
+            materials=materials,
+            gold=int((data or {}).get('gold', 0) or 0),
+            skill_points=None if (data or {}).get('skill_points') is None else int((data or {}).get('skill_points') or 0),
+        )
+
+
+@dataclass
+class Item:
+    name: str
+    item_type: ItemType = ItemType.Unknown
+    model_id: int = 0
+
+    SERIALIZATION_KIND = 'item'
+    
+    def to_dict(self) -> dict:
+        return {
+            'kind': self.SERIALIZATION_KIND,
+            'name': self.name,
+            'item_type': self.item_type.name,
+            'model_id': self.model_id,
+        }
+
+    @classmethod
+    def _base_kwargs_from_dict(cls, data: dict) -> dict[str, Any]:
+        item_type_name = str(data.get('item_type', ItemType.Unknown.name))
+        return {
+            'name': str(data.get('name', '')),
+            'item_type': ItemType[item_type_name] if item_type_name in ItemType.__members__ else ItemType.Unknown,
+            'model_id': int(data.get('model_id', 0) or 0),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Item':
+        return cls(**cls._base_kwargs_from_dict(data))
+
+
+@dataclass
+class Craftable:
+    required_materials: CraftingRequirements = field(default_factory=CraftingRequirements, kw_only=True)
+
+    def _craftable_to_dict(self) -> dict:
+        return {
+            'required_materials': self.required_materials.to_dict(),
+        }
+
+    @staticmethod
+    def _craftable_from_dict(data: dict) -> dict[str, Any]:
+        return {
+            'required_materials': CraftingRequirements.from_dict(data.get('required_materials')),
+        }
+    
+@dataclass
+class Collectible:
+    required_collectible: tuple[int, int] = field(default_factory=tuple[int, int], kw_only=True)
+
+    def _collectible_to_dict(self) -> dict:
+        return {
+            'required_collectible': (str(int(self.required_collectible[0])), self.required_collectible[1]) if self.required_collectible else None,
+        }
+
+    @staticmethod
+    def _collectible_from_dict(data: dict) -> dict[str, Any]:
+        return {
+            'required_collectible': (int(data.get('required_collectible', [0, 0])[0]), int(data.get('required_collectible', [0, 0])[1])) if data.get('required_collectible') else None,
+        }
+
+
+def _serialize_upgrade(upgrade: Optional[Upgrade]) -> Optional[str]:
+    if upgrade is None:
+        return None
+    return str(upgrade)
+
+
+def _serialize_upgrades(upgrades: list[Upgrade]) -> list[str]:
+    return [str(upgrade) for upgrade in upgrades if upgrade is not None]
+
+@dataclass
+class Weapon(Item):
+    requirement: int = 0
+    attribute: Attribute = Attribute.None_
+    damage: Optional[tuple[int, int]] = None  # min, max
+    energy: Optional[int] = None
+    prefix: Optional[Upgrade] = None
+    suffix: Optional[Upgrade] = None
+    inscription: Optional[Upgrade] = None
+    inherent: list[Upgrade] = field(default_factory=list)
+
+    SERIALIZATION_KIND = 'weapon'
+
+    def to_dict(self) -> dict:
+        payload = super().to_dict()
+        payload.update(
+            {
+                'requirement': self.requirement,
+                'attribute': self.attribute.name,
+                'damage': [self.damage[0], self.damage[1]] if self.damage is not None and (self.damage[0] != 0 or self.damage[1] != 0) else None,
+                'energy': self.energy,
+                'prefix': _serialize_upgrade(self.prefix),
+                'suffix': _serialize_upgrade(self.suffix),
+                'inscription': _serialize_upgrade(self.inscription),
+                'inherent': _serialize_upgrades(self.inherent),
+            }
+        )
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Weapon':
+        attribute_name = str(data.get('attribute', Attribute.None_.name))
+        damage_data = list(data.get('damage', None) or [])
+        
+        if damage_data[0] == 0 and damage_data[1] == 0:
+            damage_data = None
+            
+        energy_data = data.get('energy', None)
+        
+        return cls(
+            **Weapon._base_kwargs_from_dict(data),
+            requirement=int(data.get('requirement', 0) or 0),
+            attribute=Attribute[attribute_name] if attribute_name in Attribute.__members__ else Attribute.None_,
+            damage=(
+                int(damage_data[0]) if len(damage_data) > 0 else 0,
+                int(damage_data[1]) if len(damage_data) > 1 else 0,
+            ) if damage_data else None,
+            energy=int(energy_data) if energy_data is not None else None,
         )
 
 @dataclass
-class Npc:
-    name : str = ""
-    map_id : int = 0
-    position : tuple[float, float] = (0.0, 0.0)
-    model_id : int = 0
-    encoded_name : bytes = b""
+class Armor(Item):
+    armor_rating: int = 0
+    profession: Profession = Profession._None
+
+    SERIALIZATION_KIND = 'armor'
     
-@dataclass
-class Artisan(Npc):
-    items : list[CraftableItem] = field(default_factory=list)
+    def to_dict(self) -> dict:
+        payload = super().to_dict()
+        payload.update(
+            {
+                'armor_rating': self.armor_rating,
+                'profession': self.profession.name,
+            }
+        )
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Armor':
+        profession_name = str(data.get('profession', Profession._None.name))
+        return cls(
+            **Armor._base_kwargs_from_dict(data),
+            armor_rating=int(data.get('armor_rating', 0) or 0),
+            profession=Profession[profession_name] if profession_name in Profession.__members__ else Profession._None,
+        )
+
+
 
 @dataclass
-class ConsumableCrafter(Npc):
-    consumables : list[CraftableItem] = field(default_factory=list)
-
-@dataclass
-class Weaponsmith(Npc):
-    weapons : list[CraftableWeapon] = field(default_factory=list)
-    
-@dataclass
-class Armorer(Npc):
-    professions_armor_rating : dict[Profession, int] = field(default_factory=dict)
-    armors : dict[Profession, list[CraftableArmor]] = field(default_factory=dict)
+class CraftableWeapon(Weapon, Craftable):
+    SERIALIZATION_KIND = 'craftable_weapon'
 
     def to_dict(self) -> dict:
+        payload = Weapon.to_dict(self)
+        payload.update(self._craftable_to_dict())
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CraftableWeapon':
+        return cls(
+            **Weapon._base_kwargs_from_dict(data),
+            requirement=int(data.get('requirement', 0) or 0),
+            attribute=Attribute[str(data.get('attribute', Attribute.None_.name))] if str(data.get('attribute', Attribute.None_.name)) in Attribute.__members__ else Attribute.None_,
+            damage=(
+                int(list(data.get('damage', [0, 0]))[0]) if len(list(data.get('damage', [0, 0]))) > 0 else 0,
+                int(list(data.get('damage', [0, 0]))[1]) if len(list(data.get('damage', [0, 0]))) > 1 else 0,
+            ) if data.get('damage', None) is not None else None,
+            energy=int(data.get('energy', 0) or 0) if data.get('energy', None) is not None else None,
+            **Craftable._craftable_from_dict(data),
+        )
+
+
+@dataclass
+class CraftableArmor(Armor, Craftable):
+    SERIALIZATION_KIND = 'craftable_armor'
+
+    def to_dict(self) -> dict:
+        payload = Armor.to_dict(self)
+        payload.update(self._craftable_to_dict())
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CraftableArmor':
+        profession_name = str(data.get('profession', Profession._None.name))
+        return cls(
+            **Armor._base_kwargs_from_dict(data),
+            armor_rating=int(data.get('armor_rating', 0) or 0),
+            profession=Profession[profession_name] if profession_name in Profession.__members__ else Profession._None,
+            **Craftable._craftable_from_dict(data),
+        )
+
+@dataclass
+class CollectibleWeapon(Weapon, Collectible):
+    SERIALIZATION_KIND = 'collectible_weapon'
+
+    def to_dict(self) -> dict:
+        payload = Weapon.to_dict(self)
+        payload.update(self._collectible_to_dict())
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CollectibleWeapon':
+        return cls(
+            **Weapon._base_kwargs_from_dict(data),
+            requirement=int(data.get('requirement', 0) or 0),
+            attribute=Attribute[str(data.get('attribute', Attribute.None_.name))] if str(data.get('attribute', Attribute.None_.name)) in Attribute.__members__ else Attribute.None_,
+            damage=(
+                int(list(data.get('damage', [0, 0]))[0]) if len(list(data.get('damage', [0, 0]))) > 0 else 0,
+                int(list(data.get('damage', [0, 0]))[1]) if len(list(data.get('damage', [0, 0]))) > 1 else 0,
+            ) if data.get('damage', None) is not None else None,
+            energy=int(data.get('energy', 0) or 0) if data.get('energy', None) is not None else None,
+            **Collectible._collectible_from_dict(data),
+        )
+
+
+@dataclass
+class CollectibleArmor(Armor, Collectible):
+    SERIALIZATION_KIND = 'collectible_armor'
+
+    def to_dict(self) -> dict:
+        payload = Armor.to_dict(self)
+        payload.update(self._collectible_to_dict())
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CollectibleArmor':
+        profession_name = str(data.get('profession', Profession._None.name))
+        return cls(
+            **Armor._base_kwargs_from_dict(data),
+            armor_rating=int(data.get('armor_rating', 0) or 0),
+            profession=Profession[profession_name] if profession_name in Profession.__members__ else Profession._None,
+            **Collectible._collectible_from_dict(data),
+        )
+
+
+@dataclass
+class CollectorItem(Item, Collectible):
+    SERIALIZATION_KIND = 'collector_item'
+
+    def to_dict(self) -> dict:
+        payload = Item.to_dict(self)
+        payload.update(self._collectible_to_dict())
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CollectorItem':
+        return cls(
+            **Item._base_kwargs_from_dict(data),
+            **Collectible._collectible_from_dict(data),
+        )
+
+
+@dataclass
+class CraftableItem(Item, Craftable):
+    SERIALIZATION_KIND = 'craftable_item'
+
+    def to_dict(self) -> dict:
+        payload = Item.to_dict(self)
+        payload.update(self._craftable_to_dict())
+        return payload
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'CraftableItem':
+        return cls(
+            **Item._base_kwargs_from_dict(data),
+            **Craftable._craftable_from_dict(data),
+        )
+
+
+ITEM_KIND_MAP = {
+    Item.SERIALIZATION_KIND: Item,
+    Weapon.SERIALIZATION_KIND: Weapon,
+    Armor.SERIALIZATION_KIND: Armor,
+    CraftableItem.SERIALIZATION_KIND: CraftableItem,
+    CraftableWeapon.SERIALIZATION_KIND: CraftableWeapon,
+    CraftableArmor.SERIALIZATION_KIND: CraftableArmor,
+    CollectorItem.SERIALIZATION_KIND: CollectorItem,
+    CollectibleWeapon.SERIALIZATION_KIND: CollectibleWeapon,
+    CollectibleArmor.SERIALIZATION_KIND: CollectibleArmor,
+}
+
+
+TItem = TypeVar('TItem', bound=Item)
+
+
+def _deserialize_item(data: dict, default_cls: type[Item] = Item) -> Item:
+    kind = str(data.get('kind', '') or '')
+    item_cls = ITEM_KIND_MAP.get(kind)
+    if item_cls is None:
+        if 'required_collectible' in data:
+            if 'armor_rating' in data or 'profession' in data:
+                item_cls = CollectibleArmor
+            elif 'requirement' in data or 'attribute' in data or 'damage' in data:
+                item_cls = CollectibleWeapon
+            else:
+                item_cls = CollectorItem
+        elif 'required_materials' in data:
+            if 'armor_rating' in data or 'profession' in data:
+                item_cls = CraftableArmor
+            elif 'requirement' in data or 'attribute' in data or 'damage' in data:
+                item_cls = CraftableWeapon
+            else:
+                item_cls = CraftableItem
+        elif 'armor_rating' in data or 'profession' in data:
+            item_cls = Armor
+        elif 'requirement' in data or 'attribute' in data or 'damage' in data:
+            item_cls = Weapon
+        else:
+            item_cls = default_cls
+    return item_cls.from_dict(data)
+
+
+
+@dataclass
+class Npc:
+    name: str = ''
+    map_id: int = 0
+    position: tuple[float, float] = (0.0, 0.0)
+    model_id: int = 0
+    encoded_name: bytes = b''
+
+    def _base_to_dict(self) -> dict:
         return {
             'name': self.name,
             'encoded_name': list(self.encoded_name),
             'model_id': self.model_id,
             'map_id': self.map_id,
             'position': [self.position[0], self.position[1]],
-            'professions_armor_rating': {
+        }
+
+    @staticmethod
+    def _base_from_dict(data: dict) -> dict:
+        position_data = list(data.get('position', [0.0, 0.0]))
+        return {
+            'name': str(data.get('name', '')),
+            'encoded_name': bytes(data.get('encoded_name', [])),
+            'model_id': int(data.get('model_id', 0) or 0),
+            'map_id': int(data.get('map_id', 0) or 0),
+            'position': (
+                float(position_data[0]) if len(position_data) > 0 else 0.0,
+                float(position_data[1]) if len(position_data) > 1 else 0.0,
+            ),
+        }
+
+    def service_label(self) -> str:
+        return self.__class__.__name__
+
+    def HasMapUnlocked(self) -> bool:
+        return Map.IsMapUnlocked(self.map_id)
+
+    def GetAgentId(self) -> int:
+        if not Routines.Checks.Map.IsMapReady():
+            return 0
+
+        if self.position == (0.0, 0.0):
+            return 0
+
+        agents = AgentArray.GetAgentArray()
+        agents = AgentArray.Filter.ByDistance(agents, self.position, 50.0)
+
+        for agent_id in agents:
+            if agent_id is not None and Agent.GetModelID(agent_id) == self.model_id:
+                return agent_id
+
+        return 0
+
+    def MoveTo(self):
+        if not Routines.Checks.Map.IsMapReady():
+            return
+
+        if Map.GetBaseMapID() != Map.GetBaseMapID(self.map_id):
+            if Map.IsMapUnlocked(self.map_id):
+                Map.Travel(self.map_id)
+                return
+            Py4GW.Console.Log(MODULE_NAME, f"Map '{Map.GetMapName(self.map_id)}' is not unlocked yet.", Py4GW.Console.MessageType.Warning)
+            return
+
+        Player.Move(self.position[0], self.position[1])
+
+        if (agent_id := self.GetAgentId()) != 0:
+            Player.ChangeTarget(agent_id)
+            Player.Interact(agent_id)
+
+    def _service_window_is_open(self) -> bool:
+        return CrafterWindow.IsOpen()
+
+    def _close_service_window(self):
+        CrafterWindow.Close()
+
+    def _get_offered_items(self) -> list[int]:
+        offered_items = Merchant.Trading.Crafter.GetOfferedItems()
+        return list(offered_items or [])
+
+    def IsCrafterOpen(self) -> bool:
+        if not Routines.Checks.Map.IsMapReady():
+            return False
+
+        if Map.GetBaseMapID() != Map.GetBaseMapID(self.map_id):
+            return False
+
+        agent_id = self.GetAgentId()
+        if agent_id == 0:
+            return False
+
+        if Player.GetTargetID() != agent_id:
+            return False
+
+        return self._service_window_is_open()
+
+    def CloseCrafter(self):
+        if self._service_window_is_open():
+            self._close_service_window()
+
+    def CollectData(self) -> bool:
+        return False
+
+    def GetCollectedCount(self) -> int:
+        return 0
+
+    def GetCollectionSummary(self) -> str:
+        return 'N/A'
+
+
+@dataclass
+class Artisan(Npc):
+    items: list[CraftableItem] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload['items'] = [item.to_dict() for item in self.items]
+        return payload
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Artisan':
+        return Artisan(
+            **Npc._base_from_dict(data),
+            items=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in list(data.get('items', []))],
+        )
+
+    def CollectData(self) -> bool:
+        return _collect_simple_crafter_items(self, self.items)
+
+    def GetCollectedCount(self) -> int:
+        return len(self.items)
+
+    def GetCollectionSummary(self) -> str:
+        return f'{len(self.items)} items'
+
+
+@dataclass
+class ConsumableCrafter(Npc):
+    consumables: list[CraftableItem] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload['consumables'] = [item.to_dict() for item in self.consumables]
+        return payload
+
+    @staticmethod
+    def from_dict(data: dict) -> 'ConsumableCrafter':
+        return ConsumableCrafter(
+            **Npc._base_from_dict(data),
+            consumables=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in list(data.get('consumables', []))],
+        )
+
+    def CollectData(self) -> bool:
+        return _collect_simple_crafter_items(self, self.consumables)
+
+    def GetCollectedCount(self) -> int:
+        return len(self.consumables)
+
+    def GetCollectionSummary(self) -> str:
+        return f'{len(self.consumables)} consumables'
+
+
+@dataclass
+class Weaponsmith(Npc):
+    weapons: list[CraftableWeapon] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload['weapons'] = [weapon.to_dict() for weapon in self.weapons]
+        return payload
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Weaponsmith':
+        return Weaponsmith(
+            **Npc._base_from_dict(data),
+            weapons=[cast(CraftableWeapon, _deserialize_item(entry, CraftableWeapon)) for entry in list(data.get('weapons', []))],
+        )
+
+    def CollectData(self) -> bool:
+        if not self.IsCrafterOpen():
+            Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
+            return False
+
+        items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
+        collected_count = 0
+        pending_name_update = False
+
+        for item in items:
+            if item is None or not item.is_valid or not item.is_weapon:
+                continue
+
+            weapon_name = _get_snapshot_name(item)
+            if not weapon_name:
+                pending_name_update = True
+                continue
+
+            weapon = _build_craftable_item_from_snapshot(item)
+            if _upsert_named_item(self.weapons, weapon):
+                collected_count += 1
+
+        _log_collection_result(self.name, collected_count, 'weapon')
+        return not pending_name_update and collected_count > 0
+
+    def GetCollectedCount(self) -> int:
+        return len(self.weapons)
+
+    def GetCollectionSummary(self) -> str:
+        return f'{len(self.weapons)} weapons'
+
+
+@dataclass
+class Collector(Npc):
+    items: list[Item] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload['items'] = [item.to_dict() for item in self.items]
+        return payload
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Collector':
+        return Collector(
+            **Npc._base_from_dict(data),
+            items=[cast(Item, _deserialize_item(entry, CollectorItem)) for entry in list(data.get('items', []))],
+        )
+
+    def _service_window_is_open(self) -> bool:
+        return CollectorWindow.IsOpen()
+
+    def _close_service_window(self):
+        CollectorWindow.Close()
+
+    def _get_offered_items(self) -> list[int]:
+        offered_items = Merchant.Trading.Collector.GetOfferedItems()
+        return list(offered_items or [])
+
+    def CollectData(self) -> bool:
+        if not self.IsCrafterOpen():
+            Py4GW.Console.Log(MODULE_NAME, f"Collector '{self.name}' is not open. Please move to the collector and open their exchange window before collecting data.", Py4GW.Console.MessageType.Warning)
+            return False
+
+        items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
+        collected_count = 0
+        pending_name_update = False
+        
+        exchange_item = next(item.required_collectible for item in self.items if isinstance(item, Collectible) and item.required_collectible)
+
+        for item in items:
+            if item is None or not item.is_valid:
+                continue
+            
+            if item.model_id == exchange_item[0]:
+                continue
+
+            item_name = _get_snapshot_name(item)
+            if not item_name:
+                pending_name_update = True
+                continue
+            
+            existing = next((existing_item for existing_item in self.items if _same_item_identity(existing_item, item)), None)
+            required_collectible = getattr(existing, 'required_collectible', None) if existing is not None else None
+            collectible_item = _build_collectible_item_from_snapshot(item, required_collectible)
+            if _upsert_named_item(self.items, collectible_item):
+                collected_count += 1
+
+        _log_collection_result(self.name, collected_count, 'collector')
+        return not pending_name_update and collected_count > 0
+
+    def GetCollectedCount(self) -> int:
+        return len(self.items)
+
+    def GetCollectionSummary(self) -> str:
+        unresolved = sum(
+            1
+            for item in self.items
+            if isinstance(item, Collectible)
+            and item.required_collectible
+            and item.required_collectible[0] == 0
+        )
+        return f'{len(self.items)} items / {unresolved} unresolved'
+
+
+@dataclass
+class Armorer(Npc):
+    professions_armor_rating: dict[Profession, int] = field(default_factory=dict)
+    armors: dict[Profession, list[CraftableArmor]] = field(default_factory=dict)
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload.update(
+            {
+                'professions_armor_rating': {
                 profession.name: armor_rating
                 for profession, armor_rating in self.professions_armor_rating.items()
-            },
-            'armors': {
+                },
+                'armors': {
                 profession.name: [armor.to_dict() for armor in armors]
                 for profession, armors in self.armors.items()
-            },
-        }
+                },
+            }
+        )
+        return payload
 
     @staticmethod
     def from_dict(data: dict) -> 'Armorer':
@@ -170,85 +721,20 @@ class Armorer(Npc):
             if profession_name not in Profession.__members__:
                 continue
             profession = Profession[profession_name]
-            armors[profession] = [CraftableArmor.from_dict(entry) for entry in list(entries or [])]
-
-        position_data = list(data.get('position', [0.0, 0.0]))
-        position = (
-            float(position_data[0]) if len(position_data) > 0 else 0.0,
-            float(position_data[1]) if len(position_data) > 1 else 0.0,
-        )
+            armors[profession] = [cast(CraftableArmor, _deserialize_item(entry, CraftableArmor)) for entry in list(entries or [])]
 
         return Armorer(
-            name=str(data.get('name', '')),
-            encoded_name=bytes(data.get('encoded_name', [])),
-            model_id=int(data.get('model_id', 0) or 0),
-            map_id=int(data.get('map_id', 0) or 0),
-            position=position,
+            **Npc._base_from_dict(data),
             professions_armor_rating=professions_armor_rating,
             armors=armors,
         )
 
-    def HasMapUnlocked(self) -> bool:
-        return Map.IsMapUnlocked(self.map_id)
-    
-    def GetAgentId(self) -> int:
-        if not Routines.Checks.Map.IsMapReady():
-            return 0
-        
-        if self.position == (0.0, 0.0):
-            return 0
-        
-        agents = AgentArray.GetAgentArray()
-        agents = AgentArray.Filter.ByDistance(agents, self.position, 300.0, False)
-        
-        for agent_id in agents:
-            if agent_id is not None and Agent.GetModelID(agent_id) == self.model_id:
-                return agent_id
-        
-        return 0
-    
-    def MoveTo(self):
-        if not Routines.Checks.Map.IsMapReady():
-            return
-        
-        if Map.GetBaseMapID() != Map.GetBaseMapID(self.map_id):
-            if Map.IsMapUnlocked(self.map_id):
-                Map.Travel(self.map_id)
-                return
-            else:
-                Py4GW.Console.Log(MODULE_NAME, f"Map '{Map.GetMapName(self.map_id)}' is not unlocked yet.", Py4GW.Console.MessageType.Warning)
-                return
-        
-        Player.Move(self.position[0], self.position[1])
-        
-        if (agent_id := self.GetAgentId()) != 0:
-            Player.ChangeTarget(agent_id)
-            Player.Interact(agent_id)
-        
-    def IsCrafterOpen(self) -> bool:
-        if not Routines.Checks.Map.IsMapReady():
-            return False
-        
-        if Map.GetBaseMapID() != Map.GetBaseMapID(self.map_id):
-            return False
-        
-        agent_id = self.GetAgentId()
-        if agent_id == 0:
-            return False
-        
-        player_target_id = Player.GetTargetID()
-        if player_target_id != agent_id:
-            return False
-        
-        return CrafterWindow.IsOpen()
-    
     def CollectData(self) -> bool:
         if not self.IsCrafterOpen():
             Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
         
-        offered_items = Merchant.Trading.Crafter.GetOfferedItems()
-        items = [ItemSnapshot.from_item_id(item_id) for item_id in offered_items]
+        items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
         collected_count = 0
 
         pending_name_update = False
@@ -260,34 +746,30 @@ class Armorer(Npc):
             if profession in (None, Profession._None):
                 continue
 
-            armor_name = item.name
+            armor_name = _get_snapshot_name(item)
             if not armor_name:
                 pending_name_update = True
                 continue
-            
-            armor = CraftableArmor(
-                name=armor_name,
-                armor_rating=int(self.professions_armor_rating.get(profession, 0) or 0),
-                item_type=item.item_type,
-                model_id=item.model_id,
-                profession=profession,
-            )
-            
-            if self._upsert_craftable_armor(armor):
-                collected_count += 1
+                    
+            def _same_armor_item_identity(existing: Any, candidate: Any) -> bool:
+                same_type = existing.item_type == candidate.item_type or _is_unknown_item_type(existing.item_type) or _is_unknown_item_type(candidate.item_type)
+                same_profession = getattr(existing, 'profession', None) == getattr(candidate, 'profession', None)
 
-        if collected_count > 0:
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"Collected {collected_count} craftable armor entries from '{self.name}'.",
-                Py4GW.Console.MessageType.Success,
+                return same_profession and same_type
+        
+            existing = next(
+                existing_armor
+                for entries in self.armors.values()
+                for existing_armor in entries
+                if _same_armor_item_identity(existing_armor, item)
             )
-        else:
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"No new craftable armor entries were found for '{self.name}'.",
-                Py4GW.Console.MessageType.Warning,
-            )
+            
+            existing.name = armor_name  # Update name even if other fields are not merged to ensure future identity matches
+            existing.model_id = item.model_id  # Update model_id as well for better future matching
+            
+            collected_count += 1
+
+        _log_collection_result(self.name, collected_count, 'armor')
 
         return not pending_name_update and collected_count > 0
 
@@ -296,33 +778,29 @@ class Armorer(Npc):
         existing_index = next(
             (
                 index for index, existing in enumerate(entries)
-                if existing.model_id == armor.model_id and existing.item_type == armor.item_type
+                if _same_item_identity(existing, armor)
             ),
             -1,
         )
 
         if existing_index >= 0:
             existing = entries[existing_index]
-            if (
-                existing.name == armor.name
-                and existing.armor_rating == armor.armor_rating
-                and existing.profession == armor.profession
-            ):
+            if not _merge_armor_fields(existing, armor):
                 return False
-            entries[existing_index] = armor
         else:
             entries.append(armor)
 
         entries.sort(key=lambda entry: (entry.item_type.name, entry.name))
         return True
         
-    def CloseCrafter(self):
-        if self.IsCrafterOpen():
-            CrafterWindow.Close()
-            
-        
     def Save(self):
         save_crafters_to_json()
+
+    def GetCollectedCount(self) -> int:
+        return sum(len(entries) for entries in self.armors.values())
+
+    def GetCollectionSummary(self) -> str:
+        return _format_armor_ratings(self)
         
 P = Profession
 
@@ -517,9 +995,25 @@ CRAFTERS = [
     Armorer(name='Kailan', map_id=57, professions_armor_rating=PROPH_ARMOR_59, position=(17558.0, -18033.0), model_id=2028, encoded_name=bytes([0x49, 0x2D, 0x55, 0xD1, 0x8, 0xE6, 0x23, 0x53, 0x0, 0x0])),
     Armorer(name='Hanita', map_id=139, professions_armor_rating=PROPH_ARMOR_65, position=(-14449.0, 2275.0), model_id=2016, encoded_name=bytes([0x79, 0x2D, 0x55, 0xFA, 0xE0, 0x86, 0x4C, 0x62, 0x0, 0x0])),
     Armorer(name='Saphir', map_id=142, professions_armor_rating=PROPH_ARMOR_59, position=(173.0, -4431.0), model_id=1544, encoded_name=bytes([0x7F, 0x2D, 0xEC, 0xB6, 0x23, 0xEC, 0xCA, 0x31, 0x0, 0x0])),
+    
 ]
 
 RAW_CRAFTERS = CRAFTERS.copy()
+ARTISANS: list[Artisan] = []
+CONSUMABLE_CRAFTERS: list[ConsumableCrafter] = []
+WEAPONSMITHS: list[Weaponsmith] = []
+COLLECTORS: list[Collector] = []
+_data_initialized = False
+
+
+CRAFTER_TYPE_MAP = {
+    'armorers': (CRAFTERS, Armorer),
+    'artisans': (ARTISANS, Artisan),
+    'consumable_crafters': (CONSUMABLE_CRAFTERS, ConsumableCrafter),
+    'weaponsmiths': (WEAPONSMITHS, Weaponsmith),
+    'collectors': (COLLECTORS, Collector),
+}
+
 PROFESSION_ORDER = [
     Profession.Warrior,
     Profession.Ranger,
@@ -548,6 +1042,11 @@ PROFESSION_LABELS = {
 
 search_query = ''
 show_unlocked_only = False
+show_armorers = True
+show_artisans = True
+show_consumable_crafters = True
+show_weaponsmiths = True
+show_collectors = True
 out_posts = Map.GetOutpostIDs()
 sweep_stop_requested = False
 sweep_is_running = False
@@ -555,6 +1054,18 @@ sweep_status = 'Idle'
 sweep_current_name = ''
 sweep_current_index = 0
 sweep_total = 0
+
+AnyCrafter = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector
+
+
+def _ensure_initialized():
+    global _data_initialized
+
+    if _data_initialized:
+        return
+
+    load_crafters_from_json()
+    _data_initialized = True
 
 
 def _get_current_profession() -> Profession:
@@ -570,49 +1081,314 @@ def _get_current_profession() -> Profession:
         return Profession._None
 
 
+def _get_armor_rating_for_profession(profession: Profession) -> int:
+    if profession in (Profession.Warrior, Profession.Paragon):
+        return 80
+    if profession in (Profession.Ranger, Profession.Assassin, Profession.Dervish):
+        return 70
+    if profession in (Profession.Monk, Profession.Necromancer, Profession.Mesmer, Profession.Elementalist, Profession.Ritualist):
+        return 60
+    return 0
+
+
+def _iter_all_crafters() -> list[AnyCrafter]:
+    return [*CRAFTERS, *ARTISANS, *CONSUMABLE_CRAFTERS, *WEAPONSMITHS, *COLLECTORS]
+
+
+def _get_snapshot_name(item: ItemSnapshot) -> str:
+    return item.name or item.complete_name or item.singular_name
+
+
+def _build_craftable_item_from_snapshot(item: ItemSnapshot) -> CraftableItem | CraftableWeapon | CraftableArmor:
+    item_name = _get_snapshot_name(item)
+    if item.is_weapon:
+        return CraftableWeapon(
+            name=item_name,
+            item_type=item.item_type,
+            model_id=item.model_id,
+            requirement=item.requirement,
+            attribute=item.attribute,
+            damage=(item.min_damage, item.max_damage),
+            energy=item.energy,
+            prefix=item.prefix,
+            suffix=item.suffix,
+            inscription=item.inscription,
+            inherent=list(item.inherents or []),
+        )
+    if item.is_armor:
+        profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
+        return CraftableArmor(
+            name=item_name,
+            item_type=item.item_type,
+            model_id=item.model_id,
+            profession=profession,
+        )
+    return CraftableItem(
+        name=item_name,
+        item_type=item.item_type,
+        model_id=item.model_id,
+    )
+
+
+def _build_collectible_item_from_snapshot(item: ItemSnapshot, required_collectible: tuple[int, int] | None) -> Item:
+    item_name = _get_snapshot_name(item)
+    if item.is_weapon:
+        return CollectibleWeapon(
+            name=item_name,
+            item_type=item.item_type,
+            model_id=item.model_id,
+            requirement=item.requirement,
+            attribute=item.attribute,
+            damage=(item.min_damage, item.max_damage),
+            energy=item.energy,
+            prefix=item.prefix,
+            suffix=item.suffix,
+            inscription=item.inscription,
+            inherent=list(item.inherents or []),
+            required_collectible=required_collectible or tuple[int, int](),
+        )
+        
+    if item.is_armor:
+        profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
+        armor_rating = 0
+        if profession not in (None, Profession._None):
+            armor_rating = _get_armor_rating_for_profession(profession)
+        return CollectibleArmor(
+            name=item_name,
+            item_type=item.item_type,
+            model_id=item.model_id,
+            profession=profession,
+            armor_rating=armor_rating,
+            required_collectible=required_collectible or tuple[int, int](),
+        )
+        
+    return CollectorItem(
+        name=item_name,
+        item_type=item.item_type,
+        model_id=item.model_id,
+        required_collectible=required_collectible or tuple[int, int](),
+    )
+
+
+def _normalize_item_name(name: str) -> str:
+    return ''.join(character.lower() for character in name if character.isalnum())
+
+
+def _is_missing_name(name: str) -> bool:
+    return not name or name.startswith('Model')
+
+
+def _is_unknown_item_type(item_type: ItemType) -> bool:
+    return item_type == ItemType.Unknown
+
+
+def _named_item_sort_key(item: Any) -> tuple[str, str]:
+    item_type = item.item_type.name if hasattr(item.item_type, 'name') else str(item.item_type)
+    return item_type, item.name
+
+
+def _same_item_identity(existing: Any, candidate: Any) -> bool:
+    same_name = _normalize_item_name(existing.name) == _normalize_item_name(candidate.name)
+    same_type = existing.item_type == candidate.item_type or _is_unknown_item_type(existing.item_type) or _is_unknown_item_type(candidate.item_type)
+    same_attribute = getattr(existing, 'attribute', None) == getattr(candidate, 'attribute', None)
+    same_profession = getattr(existing, 'profession', None) == getattr(candidate, 'profession', None)
+
+    if existing.model_id and candidate.model_id and not hasattr(existing, 'attribute'):
+        return existing.model_id == candidate.model_id and same_type
+
+    return same_name and same_type and same_attribute
+
+
+def _merge_base_item_fields(existing: Any, candidate: Any) -> bool:
+    changed = False
+
+    if _is_missing_name(existing.name) and not _is_missing_name(candidate.name):
+        existing.name = candidate.name
+        changed = True
+
+    if _is_unknown_item_type(existing.item_type) and not _is_unknown_item_type(candidate.item_type):
+        existing.item_type = candidate.item_type
+        changed = True
+
+    if int(existing.model_id or 0) == 0 and int(candidate.model_id or 0) != 0:
+        existing.model_id = candidate.model_id
+        changed = True
+
+    if hasattr(existing, 'required_materials'):
+        existing_requirements = getattr(existing, 'required_materials', None)
+        candidate_requirements = getattr(candidate, 'required_materials', None)
+        if isinstance(existing_requirements, CraftingRequirements) and isinstance(candidate_requirements, CraftingRequirements):
+            if existing_requirements == CraftingRequirements() and candidate_requirements != CraftingRequirements():
+                existing.required_materials = candidate_requirements
+                changed = True
+
+    if hasattr(existing, 'required_collectible'):
+        existing_collectible = getattr(existing, 'required_collectible', None)
+        candidate_collectible = getattr(candidate, 'required_collectible', None)
+        if not existing_collectible and candidate_collectible:
+            existing.required_collectible = candidate_collectible
+            changed = True
+
+    return changed
+
+
+def _merge_weapon_fields(existing: Weapon, candidate: Weapon) -> bool:
+    changed = _merge_base_item_fields(existing, candidate)
+
+    if existing.requirement == 0 and candidate.requirement != 0:
+        existing.requirement = candidate.requirement
+        changed = True
+    if existing.attribute == Attribute.None_ and candidate.attribute != Attribute.None_:
+        existing.attribute = candidate.attribute
+        changed = True
+    if existing.damage == (0, 0) or existing.damage is None and candidate.damage != (0, 0):
+        existing.damage = candidate.damage
+        changed = True
+    if existing.energy is None and candidate.energy is not None:
+        existing.energy = candidate.energy
+        changed = True
+    if existing.prefix is None and candidate.prefix is not None:
+        existing.prefix = candidate.prefix
+        changed = True
+    if existing.suffix is None and candidate.suffix is not None:
+        existing.suffix = candidate.suffix
+        changed = True
+    if existing.inscription is None and candidate.inscription is not None:
+        existing.inscription = candidate.inscription
+        changed = True
+    if not existing.inherent and candidate.inherent:
+        existing.inherent = list(candidate.inherent)
+        changed = True
+
+    return changed
+
+
+def _merge_armor_fields(existing: Armor, candidate: Armor) -> bool:
+    changed = _merge_base_item_fields(existing, candidate)
+
+    if existing.armor_rating == 0 and candidate.armor_rating != 0:
+        existing.armor_rating = candidate.armor_rating
+        changed = True
+    if existing.profession == Profession._None and candidate.profession != Profession._None:
+        existing.profession = candidate.profession
+        changed = True
+
+    return changed
+
+
+def _upsert_named_item(items: list[Any], candidate: Any) -> bool:
+    existing_index = next((index for index, existing in enumerate(items) if _same_item_identity(existing, candidate)), -1)
+    if existing_index >= 0:
+        existing = items[existing_index]
+        if isinstance(existing, Weapon) and isinstance(candidate, Weapon):
+            changed = _merge_weapon_fields(existing, candidate)
+        elif isinstance(existing, Armor) and isinstance(candidate, Armor):
+            changed = _merge_armor_fields(existing, candidate)
+        else:
+            changed = _merge_base_item_fields(existing, candidate)
+        if not changed:
+            return False
+    else:
+        items.append(candidate)
+        changed = True
+
+    items.sort(key=_named_item_sort_key)
+    return changed
+
+
+def _log_collection_result(crafter_name: str, collected_count: int, item_label: str):
+    if collected_count > 0:
+        Py4GW.Console.Log(MODULE_NAME, f"Collected {collected_count} {item_label} entries from '{crafter_name}'.", Py4GW.Console.MessageType.Success)
+    else:
+        Py4GW.Console.Log(MODULE_NAME, f"No new {item_label} entries were found for '{crafter_name}'.", Py4GW.Console.MessageType.Warning)
+
+
+def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> bool:
+    if not crafter.IsCrafterOpen():
+        Py4GW.Console.Log(MODULE_NAME, f"Crafter '{crafter.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
+        return False
+
+    snapshots = [ItemSnapshot.from_item_id(item_id) for item_id in crafter._get_offered_items()]
+    collected_count = 0
+    pending_name_update = False
+
+    for item in snapshots:
+        if item is None or not item.is_valid:
+            continue
+
+        item_name = _get_snapshot_name(item)
+        if not item_name:
+            pending_name_update = True
+            continue
+
+        craftable_item = _build_craftable_item_from_snapshot(item)
+        if _upsert_named_item(items, craftable_item):
+            collected_count += 1
+
+    _log_collection_result(crafter.name, collected_count, 'craftable item')
+    return not pending_name_update and collected_count > 0
+
+
 def save_crafters_to_json(path: str = DATA_FILE_PATH):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     payload = {
-        'version': 1,
+        'version': 2,
         'saved_at': datetime.utcnow().isoformat(timespec='seconds') + 'Z',
-        'crafters': [crafter.to_dict() for crafter in CRAFTERS],
+        'armorers': [crafter.to_dict() for crafter in CRAFTERS],
+        'artisans': [crafter.to_dict() for crafter in ARTISANS],
+        'consumable_crafters': [crafter.to_dict() for crafter in CONSUMABLE_CRAFTERS],
+        'weaponsmiths': [crafter.to_dict() for crafter in WEAPONSMITHS],
+        'collectors': [crafter.to_dict() for crafter in COLLECTORS],
     }
 
     with open(path, 'w', encoding='utf-8') as file:
         json.dump(payload, file, indent=4, ensure_ascii=False)
 
+    total_count = sum(len(container) for container, _ in CRAFTER_TYPE_MAP.values())
     Py4GW.Console.Log(
         MODULE_NAME,
-        f"Saved {len(CRAFTERS)} crafters to '{path}'.",
+        f"Saved {total_count} crafters to '{path}'.",
         Py4GW.Console.MessageType.Success,
     )
 
 
 def load_crafters_from_json(path: str = DATA_FILE_PATH):
-    if not os.path.exists(path):
+    actual_path = path
+    if not os.path.exists(actual_path) and path == DATA_FILE_PATH and os.path.exists(LEGACY_ARMORER_DATA_FILE_PATH):
+        actual_path = LEGACY_ARMORER_DATA_FILE_PATH
+
+    if not os.path.exists(actual_path):
         Py4GW.Console.Log(
             MODULE_NAME,
-            f"Crafter data file '{path}' does not exist yet.",
+            f"Crafter data file '{actual_path}' does not exist yet.",
             Py4GW.Console.MessageType.Warning,
         )
         return False
 
-    with open(path, 'r', encoding='utf-8') as file:
+    with open(actual_path, 'r', encoding='utf-8') as file:
         payload = json.load(file)
 
-    loaded_crafters = [Armorer.from_dict(entry) for entry in list(payload.get('crafters', []))]
-    if not loaded_crafters:
+    loaded_any = False
+    if 'crafters' in payload:
+        CRAFTERS[:] = [Armorer.from_dict(entry) for entry in list(payload.get('crafters', []))]
+        loaded_any = bool(CRAFTERS)
+    else:
+        for key, (container, crafter_type) in CRAFTER_TYPE_MAP.items():
+            container[:] = [crafter_type.from_dict(entry) for entry in list(payload.get(key, []))]
+            loaded_any = loaded_any or bool(container)
+
+    if not loaded_any:
         Py4GW.Console.Log(
             MODULE_NAME,
-            f"No crafter entries were found in '{path}'.",
+            f"No crafter entries were found in '{actual_path}'.",
             Py4GW.Console.MessageType.Warning,
         )
         return False
 
-    CRAFTERS[:] = loaded_crafters
+    total_count = sum(len(container) for container, _ in CRAFTER_TYPE_MAP.values())
     Py4GW.Console.Log(
         MODULE_NAME,
-        f"Loaded {len(CRAFTERS)} crafters from '{path}'.",
+        f"Loaded {total_count} crafters from '{actual_path}'.",
         Py4GW.Console.MessageType.Success,
     )
     
@@ -628,19 +1404,20 @@ def load_crafters_from_json(path: str = DATA_FILE_PATH):
                 updated = True
                 
     if updated:
-        save_crafters_to_json()
+        save_crafters_to_json(DATA_FILE_PATH)
         
     return True
 
 
-def _find_current_open_crafter() -> Armorer | None:
+def _find_current_open_crafter() -> AnyCrafter | None:
     current_map_id = Map.GetBaseMapID()
-    for crafter in CRAFTERS:
+    for crafter in _iter_all_crafters():
         if Map.GetBaseMapID(crafter.map_id) != current_map_id:
             continue
         
         if crafter.IsCrafterOpen():
             return crafter
+        
     return None
 
 
@@ -649,7 +1426,7 @@ def _collect_current_open_crafter():
     if crafter is None:
         Py4GW.Console.Log(
             MODULE_NAME,
-            'No known crafter window is currently open on this map.',
+            'No known crafter or collector window is currently open on this map.',
             Py4GW.Console.MessageType.Warning,
         )
         return
@@ -666,18 +1443,35 @@ def _format_armor_ratings(crafter: Armorer) -> str:
     )
 
 
-def _matches_search(crafter: Armorer, query: str) -> bool:
+def _matches_search(crafter: AnyCrafter, query: str) -> bool:
     if not query:
         return True
 
     query = query.lower()
     map_name = Map.GetMapName(crafter.map_id).lower()
-    return query in crafter.name.lower() or query in map_name
+    service_name = crafter.service_label().lower()
+    return query in crafter.name.lower() or query in map_name or query in service_name
 
 
-def _get_visible_crafters() -> list[Armorer]:
-    visible: list[Armorer] = []
-    for crafter in CRAFTERS:
+def _is_type_visible(crafter: AnyCrafter) -> bool:
+    if isinstance(crafter, Armorer):
+        return show_armorers
+    if isinstance(crafter, Artisan):
+        return show_artisans
+    if isinstance(crafter, ConsumableCrafter):
+        return show_consumable_crafters
+    if isinstance(crafter, Weaponsmith):
+        return show_weaponsmiths
+    if isinstance(crafter, Collector):
+        return show_collectors
+    return True
+
+
+def _get_visible_crafters() -> list[AnyCrafter]:
+    visible: list[AnyCrafter] = []
+    for crafter in _iter_all_crafters():
+        if not _is_type_visible(crafter):
+            continue
         if show_unlocked_only and not crafter.HasMapUnlocked():
             continue
         if not _matches_search(crafter, search_query.strip()):
@@ -686,13 +1480,13 @@ def _get_visible_crafters() -> list[Armorer]:
     return visible
 
 
-def _is_position_collected(crafter: Armorer) -> bool:
+def _is_position_collected(crafter: AnyCrafter) -> bool:
     return (
         crafter.position != (0.0, 0.0)
         and crafter.model_id != 0
     )
     
-def _is_auto_reachable_crafter(crafter: Armorer) -> bool:
+def _is_auto_reachable_crafter(crafter: AnyCrafter) -> bool:
     return (
         crafter.HasMapUnlocked()
         and crafter.map_id in out_posts
@@ -701,22 +1495,38 @@ def _is_auto_reachable_crafter(crafter: Armorer) -> bool:
     )
 
 
-def _get_auto_reachable_crafters() -> list[Armorer]:
-    profession = _get_current_profession()   
-     
-    def armor_collected(armor : CraftableArmor) -> bool:
-        return not armor.name.startswith('Model')
-    
-    def armors_collected(crafter: Armorer) -> bool:
-        return all(
-            armor_collected(armor)
-            for armor in crafter.armors.get(profession, [])
-        ) 
-    
-    crafters = [crafter for crafter in CRAFTERS if _is_auto_reachable_crafter(crafter) and profession in crafter.professions_armor_rating and (not profession in crafter.armors or not armors_collected(crafter))]
-    sorted_by_map = sorted(crafters, key=lambda c: (c.professions_armor_rating.get(profession, -1) if profession is not None else 0, c.map_id), reverse=False)
-    
-    return sorted_by_map
+def _has_missing_collection_data(crafter: AnyCrafter) -> bool:
+    if isinstance(crafter, Armorer):
+        profession = _get_current_profession()
+        if profession == Profession._None or profession not in crafter.professions_armor_rating:
+            return False
+        armors = crafter.armors.get(profession, [])
+        return not armors or any(not armor.name or armor.name.startswith('Model') or armor.model_id == 0 for armor in armors)
+    if isinstance(crafter, Collector):
+        return not crafter.items or any(item.model_id == 0 or not item.name for item in crafter.items)
+    if isinstance(crafter, Weaponsmith):
+        return not crafter.weapons or any(weapon.model_id == 0 or not weapon.name for weapon in crafter.weapons)
+    if isinstance(crafter, ConsumableCrafter):
+        return not crafter.consumables or any(item.model_id == 0 or not item.name for item in crafter.consumables)
+    if isinstance(crafter, Artisan):
+        return not crafter.items or any(item.model_id == 0 or not item.name for item in crafter.items)
+    return False
+
+
+def _get_sort_value(crafter: AnyCrafter, profession: Profession) -> int:
+    if isinstance(crafter, Armorer) and profession is not None:
+        return crafter.professions_armor_rating.get(profession, -1)
+    return crafter.GetCollectedCount()
+
+
+def _get_auto_reachable_crafters() -> list[AnyCrafter]:
+    profession = _get_current_profession()
+    crafters = [
+        crafter
+        for crafter in _get_visible_crafters()
+        if _is_auto_reachable_crafter(crafter) and _has_missing_collection_data(crafter)
+    ]
+    return sorted(crafters, key=lambda c: (_get_sort_value(c, profession), c.map_id, c.name))
 
 
 def _set_sweep_status(status: str, crafter_name: str = '', current_index: int = 0, total: int = 0):
@@ -769,7 +1579,7 @@ def _request_stop_crafter_sweep():
     _set_sweep_status('Stopping after current step...', sweep_current_name, sweep_current_index, sweep_total)
 
 
-def _run_crafter_sweep(crafters: list[Armorer]):
+def _run_crafter_sweep(crafters: list[AnyCrafter]):
     total = len(crafters)
     closed_count = 0
 
@@ -814,30 +1624,30 @@ def _run_crafter_sweep(crafters: list[Armorer]):
             )
             continue
 
-        _set_sweep_status('Opening crafter window...', crafter.name, index, total)
+        _set_sweep_status(f"Opening {crafter.service_label().lower()} window...", crafter.name, index, total)
         window_opened = yield from _open_crafter_window(crafter)
         if not window_opened:
             Py4GW.Console.Log(
                 MODULE_NAME,
-                f"Skipping '{crafter.name}' because the crafter window did not open.",
+                f"Skipping '{crafter.name}' because the service window did not open.",
                 Py4GW.Console.MessageType.Warning,
             )
             continue
 
-        _set_sweep_status('Collecting visible craftable armor...', crafter.name, index, total)
+        _set_sweep_status(f"Collecting visible {crafter.service_label().lower()} data...", crafter.name, index, total)
         crafter.CollectData()
         save_crafters_to_json()
 
-        _set_sweep_status('Crafter window open, waiting 2 seconds...', crafter.name, index, total)
+        _set_sweep_status('Service window open, waiting 2 seconds...', crafter.name, index, total)
         yield from Routines.Yield.wait(2000)
-        CrafterWindow.Close()
+        crafter.CloseCrafter()
         yield from Routines.Yield.wait(500)
         closed_count += 1
 
     _finish_sweep(f'Sweep complete ({closed_count}/{total} windows opened).')
 
 
-def _open_crafter_window(crafter: Armorer, timeout_ms: int = 1500):
+def _open_crafter_window(crafter: AnyCrafter, timeout_ms: int = 1500):
     elapsed = 0
     retry_interval = 250
     reissue_interval = 1000
@@ -847,7 +1657,7 @@ def _open_crafter_window(crafter: Armorer, timeout_ms: int = 1500):
         if sweep_stop_requested:
             return False
 
-        if CrafterWindow.IsOpen():
+        if crafter._service_window_is_open():
             return True
 
         agent_id = crafter.GetAgentId()
@@ -871,7 +1681,7 @@ def _open_crafter_window(crafter: Armorer, timeout_ms: int = 1500):
         elapsed += retry_interval
         since_reissue += retry_interval
 
-    return CrafterWindow.IsOpen()
+    return crafter._service_window_is_open()
 
 
 def get_armor_rating_as_constant_name(crafter: Armorer) -> str:
@@ -884,9 +1694,32 @@ def get_armor_rating_as_constant_name(crafter: Armorer) -> str:
         
     return "CUSTOM"
 
+
+def _build_crafter_clipboard_text(crafter: AnyCrafter, position: tuple[float, float], model_id: int, encoded_name: bytes) -> str:
+    encoded_name_text = ', '.join(f'0x{byte:X}' for byte in encoded_name)
+    base_args = (
+        f"name='{crafter.name}', "
+        f"map_id={crafter.map_id}, "
+    )
+    if isinstance(crafter, Armorer):
+        base_args += f'professions_armor_rating={get_armor_rating_as_constant_name(crafter)}, '
+    base_args += (
+        f'position=({position[0]:.1f}, {position[1]:.1f}), '
+        f'model_id={model_id}, '
+        f'encoded_name=bytes([{encoded_name_text}])'
+    )
+    return f'{crafter.__class__.__name__}({base_args}),'
+
 def draw_window():
+    _ensure_initialized()
+
     global search_query
     global show_unlocked_only
+    global show_armorers
+    global show_artisans
+    global show_consumable_crafters
+    global show_weaponsmiths
+    global show_collectors
 
     current_map_id = Map.GetBaseMapID()
     current_map_name = Map.GetMapName(current_map_id)
@@ -894,22 +1727,31 @@ def draw_window():
     if current_profession == Profession._None:
         current_profession = Profession.Warrior
     visible_crafters = _get_visible_crafters()
-    # visible_crafters = [crafter for crafter in visible_crafters if current_profession is None or current_profession in crafter.professions_armor_rating]
-    sorted_by_map = sorted(visible_crafters, key=lambda c: (c.professions_armor_rating.get(current_profession, -1) if current_profession is not None else 0, c.map_id), reverse=False)
-    unlocked_count = sum(1 for crafter in CRAFTERS if crafter.HasMapUnlocked())
+    # sorted_by_map = sorted(visible_crafters, key=lambda c: (c.service_label(), _get_sort_value(c, current_profession), c.map_id, c.name))
+    sorted_by_map = sorted(visible_crafters, key=lambda c: (c.map_id, c.name))
+    all_crafters = _iter_all_crafters()
+    unlocked_count = sum(1 for crafter in all_crafters if crafter.HasMapUnlocked())
     auto_reachable_count = len(_get_auto_reachable_crafters())
-    collected_armor_count = sum(len(entries) for crafter in CRAFTERS for entries in crafter.armors.values())
+    total_collected_entries = sum(crafter.GetCollectedCount() for crafter in all_crafters)
+    armorer_count = len(CRAFTERS)
+    artisan_count = len(ARTISANS)
+    consumable_crafter_count = len(CONSUMABLE_CRAFTERS)
+    weaponsmith_count = len(WEAPONSMITHS)
+    collector_count = len(COLLECTORS)
 
     PyImGui.text(f'Current map: {current_map_name} ({current_map_id})')
-    PyImGui.text(f'Armorers: {len(visible_crafters)} shown / {len(CRAFTERS)} total / {unlocked_count} unlocked')
+    PyImGui.text(
+        f'NPCs: {len(visible_crafters)} shown / {len(all_crafters)} total / {unlocked_count} unlocked'
+        f' | A:{armorer_count} Ar:{artisan_count} C:{consumable_crafter_count} W:{weaponsmith_count} Co:{collector_count}'
+    )
     PyImGui.text(f'Auto-reachable sweep targets: {auto_reachable_count}')
-    PyImGui.text(f'Collected craftable armor entries: {collected_armor_count}')
+    PyImGui.text(f'Collected entries across all services: {total_collected_entries}')
     PyImGui.text(f'JSON path: {DATA_FILE_PATH}')
-    PyImGui.text('Collection note: automatic collection records the currently visible crafter page; run it on each profession to fill the full set.')
+    PyImGui.text('Collection note: automatic collection records the currently visible service page. Armorers still need one pass per profession to fill class-specific sets.')
     PyImGui.text(f'Sweep status: {sweep_status}')
     if sweep_current_name:
         PyImGui.text(f'Current sweep target: {sweep_current_name} ({sweep_current_index}/{sweep_total})')
-    if ImGui.button('Collect open crafter##crafter_collect_open', width=150):
+    if ImGui.button('Collect open NPC##crafter_collect_open', width=150):
         _collect_current_open_crafter()
     PyImGui.same_line(0, 10)
     if ImGui.button('Save JSON##crafter_save_json', width=100):
@@ -928,6 +1770,14 @@ def draw_window():
     search_query = PyImGui.input_text('Search##crafter_search', search_query, 128)
     PyImGui.same_line(0, 10)
     show_unlocked_only = PyImGui.checkbox('Unlocked only', show_unlocked_only)
+    show_armorers = PyImGui.checkbox('Armorers', show_armorers)
+    PyImGui.same_line(0, 10)
+    show_artisans = PyImGui.checkbox('Artisans', show_artisans)
+    PyImGui.same_line(0, 10)
+    show_consumable_crafters = PyImGui.checkbox('Consumables', show_consumable_crafters)
+    show_weaponsmiths = PyImGui.checkbox('Weaponsmiths', show_weaponsmiths)
+    PyImGui.same_line(0, 10)
+    show_collectors = PyImGui.checkbox('Collectors', show_collectors)
     PyImGui.separator()
 
     style = ImGui.get_style()
@@ -937,13 +1787,14 @@ def draw_window():
         | PyImGui.TableFlags.RowBg
         | PyImGui.TableFlags.ScrollY
         | PyImGui.TableFlags.Resizable
-        | PyImGui.TableFlags.SizingStretchSame
+        | PyImGui.TableFlags.SizingStretchProp
     )
-    if PyImGui.begin_table('##armor_crafters_table', 7, table_flags):
+    if PyImGui.begin_table('##armor_crafters_table', 8, table_flags):
+        PyImGui.table_setup_column('Type', PyImGui.TableColumnFlags.WidthFixed, 95)
         PyImGui.table_setup_column('Name', PyImGui.TableColumnFlags.WidthStretch, 140)
         PyImGui.table_setup_column('Map', PyImGui.TableColumnFlags.WidthStretch, 170)
         PyImGui.table_setup_column('Unlocked', PyImGui.TableColumnFlags.WidthFixed, 70)
-        PyImGui.table_setup_column('Armor', PyImGui.TableColumnFlags.WidthFixed, 70)
+        PyImGui.table_setup_column('Summary', PyImGui.TableColumnFlags.WidthStretch, 180)
         PyImGui.table_setup_column('Action', PyImGui.TableColumnFlags.WidthFixed, 70)
         PyImGui.table_setup_column('Copy', PyImGui.TableColumnFlags.WidthFixed, 70)
         PyImGui.table_setup_column('Collected', PyImGui.TableColumnFlags.WidthFixed, 70)
@@ -962,24 +1813,27 @@ def draw_window():
             PyImGui.table_next_row()
 
             PyImGui.table_set_column_index(0)
-            PyImGui.text(crafter.name)
+            PyImGui.text(crafter.service_label())
 
             PyImGui.table_set_column_index(1)
-            PyImGui.text(f'{map_name} ({crafter.map_id})')
+            PyImGui.text(crafter.name)
 
             PyImGui.table_set_column_index(2)
-            PyImGui.text('Yes' if is_unlocked else 'No')
+            PyImGui.text(f'{map_name} ({crafter.map_id})')
 
             PyImGui.table_set_column_index(3)
-            PyImGui.text(str(crafter.professions_armor_rating.get(current_profession, 'N/A')))
+            PyImGui.text('Yes' if is_unlocked else 'No')
 
             PyImGui.table_set_column_index(4)
+            PyImGui.text(crafter.GetCollectionSummary())
+
+            PyImGui.table_set_column_index(5)
             button_label = 'Move' if (crafter.position != (0, 0) and is_here) else 'Here' if is_here else 'Travel' if is_outpost else 'Manual'
-            button_disabled = (crafter.position == (0, 0) and is_here) or not is_unlocked or not is_outpost
+            button_disabled = (crafter.position == (0, 0) and is_here) or not is_unlocked or (not is_outpost and not is_here)
             if ImGui.button(f'{button_label}##crafter_move_{crafter.name}', width=-1, disabled=button_disabled):
                 crafter.MoveTo()
                 
-            PyImGui.table_set_column_index(5)
+            PyImGui.table_set_column_index(6)
             copy_label = f'Copy'
             if ImGui.button(f'{copy_label}##crafter_copy_{crafter.name}', width=-1):
                 crafter.CloseCrafter()  # Ensure the window is closed to avoid clipboard issues
@@ -988,34 +1842,60 @@ def draw_window():
                     target = Agent.GetAgentByID(target_id)
                     if target is not None:
                         enc_name_bytes = bytes(Agent.GetEncNameByID(target_id))
-                        enc_name = ', '.join(f'0x{b:X}' for b in enc_name_bytes)
-                        
                         pos = Agent.GetXY(target_id)
                         model_id = Agent.GetModelID(target_id)
-                        armor_rating_code = get_armor_rating_as_constant_name(crafter)
-                        
-                        clipboard_text = (
-                            f"ArmorCrafter(name='{crafter.name}', "
-                            f"map_id={crafter.map_id}, "
-                            f"professions_armor_rating={armor_rating_code}, "
-                            f"position=({pos[0]:.1f}, {pos[1]:.1f}), "
-                            f"model_id={model_id}, "
-                            f"encoded_name=bytes([{enc_name}])"
-                            f"),"
-                        )
+                        clipboard_text = _build_crafter_clipboard_text(crafter, pos, model_id, enc_name_bytes)
                         PyImGui.set_clipboard_text(clipboard_text)
 
-            PyImGui.table_set_column_index(6)
-            collected_count = sum(len(entries) for entries in crafter.armors.values())
-            PyImGui.text(str(collected_count))
+            PyImGui.table_set_column_index(7)
+            PyImGui.text(str(crafter.GetCollectedCount()))
             
             if not pos_collected:
                 style.Text.pop_color()
             
         PyImGui.end_table()
 
+def scan_for_crafters_with_missing_data():
+    mapid = Map.GetBaseMapID()
+    
+    crafters_on_map = [crafter for crafter in _iter_all_crafters() if Map.GetBaseMapID(crafter.map_id) == mapid]
+    if not crafters_on_map:
+        return
+    
+    missing_data_crafters = [crafter for crafter in crafters_on_map if not _is_position_collected(crafter)]
+    if not missing_data_crafters:
+        return
+    
+    updated = False
+    agents = AgentArray.GetAgentArray()
+    for agent_Id in agents:
+        agent = Agent.GetAgentByID(agent_Id)
+        
+        if agent is None or not Agent.IsValid(agent_Id):
+            continue
+        
+        agent_name = Agent.GetNameByID(agent_Id)
+        if not agent_name:
+            continue
+        
+        for crafter in missing_data_crafters:
+            if agent_name and crafter.name in agent_name:
+                pos = Agent.GetXY(agent_Id)
+                model_id = Agent.GetModelID(agent_Id)
+                enc_name_bytes = bytes(Agent.GetEncNameByID(agent_Id))
+                
+                if pos != (0.0, 0.0) and model_id != 0 and enc_name_bytes:
+                    crafter.position = pos
+                    crafter.model_id = model_id
+                    crafter.encoded_name = enc_name_bytes
+                    updated = True
+    
+    if updated:
+        save_crafters_to_json()
 
 def main():
+    _ensure_initialized()
+
     if not Routines.Checks.Map.IsMapReady():
         return
     
@@ -1023,8 +1903,8 @@ def main():
     if PyImGui.begin(MODULE_NAME, PyImGui.WindowFlags.NoFlag):
         draw_window()
     PyImGui.end()
+    
+    scan_for_crafters_with_missing_data()
 
-GLOBAL_CACHE.Coroutines.clear()
-load_crafters_from_json()
 if __name__ == "__main__":
     main()
