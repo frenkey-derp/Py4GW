@@ -219,7 +219,25 @@ def _deserialize_damage(data: dict[str, Any]) -> Optional[tuple[int, int]]:
     maximum = int(damage_entries[1] or 0)
     if minimum == 0 and maximum == 0:
         return None
+
     return minimum, maximum
+
+
+def _strip_none_for_json(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _strip_none_for_json(item)
+            for key, item in value.items()
+            if item is not None
+        }
+
+    if isinstance(value, list):
+        return [_strip_none_for_json(item) for item in value if item is not None]
+
+    if isinstance(value, tuple):
+        return [_strip_none_for_json(item) for item in value if item is not None]
+
+    return value
 
 @dataclass
 class Weapon(Item):
@@ -1781,16 +1799,16 @@ def save_crafters_to_json(path: str = DATA_FILE_PATH):
     }
 
     for key, (container, _) in CRAFTER_TYPE_MAP.items():
-        entries = [npc.to_dict() for npc in container]
+        entries = [_strip_none_for_json(npc.to_dict()) for npc in container]
         combined_payload[key] = entries
         with open(category_paths[key], 'w', encoding='utf-8') as file:
             json.dump(
-                {
+                _strip_none_for_json({
                     'version': 3,
                     'saved_at': combined_payload['saved_at'],
                     'category': key,
                     'entries': entries,
-                },
+                }),
                 file,
                 indent=4,
                 ensure_ascii=False,
@@ -1798,7 +1816,7 @@ def save_crafters_to_json(path: str = DATA_FILE_PATH):
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as file:
-        json.dump(combined_payload, file, indent=4, ensure_ascii=False)
+        json.dump(_strip_none_for_json(combined_payload), file, indent=4, ensure_ascii=False)
 
     total_count = sum(len(container) for container, _ in CRAFTER_TYPE_MAP.values())
     Py4GW.Console.Log(
