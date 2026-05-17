@@ -1,18 +1,18 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:04:16Z",
+    "saved_at": "2026-05-17T12:49:44Z",
     "category": "armorers",
     "entries": [
         {
             "name": "Eternal Forgemaster",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 34,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -42,12 +42,12 @@
                 0
             ],
             "model_id": 1558,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 814.0,
                 4651.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -1166,12 +1166,12 @@
                 0
             ],
             "model_id": 1558,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 1742.0,
                 5162.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -2185,12 +2185,12 @@
                 0
             ],
             "model_id": 2118,
+            "allegiance": "Ally",
             "map_id": 40,
             "position": [
                 22887.0,
                 10033.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -2943,12 +2943,12 @@
                 0
             ],
             "model_id": 2089,
+            "allegiance": "Ally",
             "map_id": 49,
             "position": [
                 6016.0,
                 -8406.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -4751,12 +4751,12 @@
                 0
             ],
             "model_id": 2028,
+            "allegiance": "Ally",
             "map_id": 57,
             "position": [
                 17558.0,
                 -18033.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 59,
                 "Ranger": 49,
@@ -5680,12 +5680,12 @@
             "name": "Sol Pyrrhus",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 63,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 71,
                 "Ranger": 61,
@@ -7558,13 +7558,13 @@
                 0
             ],
             "model_id": 3454,
+            "allegiance": "Ally",
+            "required_faction": "Kurzick",
             "map_id": 77,
             "position": [
                 6961.0,
                 -1537.0
             ],
-            "allegiance": "Ally",
-            "required_faction": "Kurzick",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -8216,12 +8216,12 @@
                 0
             ],
             "model_id": 2118,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 1545.0,
                 5585.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -8974,12 +8974,12 @@
                 0
             ],
             "model_id": 2120,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 1905.0,
                 6218.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -9746,12 +9746,12 @@
                 0
             ],
             "model_id": 2046,
+            "allegiance": "Ally",
             "map_id": 109,
             "position": [
                 1889.0,
                 1637.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 71,
                 "Ranger": 61,
@@ -11554,13 +11554,13 @@
                 0
             ],
             "model_id": 3454,
+            "allegiance": "Ally",
+            "required_faction": "Kurzick",
             "map_id": 130,
             "position": [
                 23180.0,
                 11879.0
             ],
-            "allegiance": "Ally",
-            "required_faction": "Kurzick",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -12213,12 +12213,12 @@
                 0
             ],
             "model_id": 2118,
+            "allegiance": "Ally",
             "map_id": 134,
             "position": [
                 6561.0,
                 5157.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -13321,12 +13321,12 @@
                 0
             ],
             "model_id": 2008,
+            "allegiance": "Ally",
             "map_id": 136,
             "position": [
                 20437.0,
                 -10959.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 59,
                 "Ranger": 49,
@@ -14247,12 +14247,12 @@
                 0
             ],
             "model_id": 2016,
+            "allegiance": "Ally",
             "map_id": 139,
             "position": [
                 -14449.0,
                 2275.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -16055,12 +16055,12 @@
                 0
             ],
             "model_id": 1559,
+            "allegiance": "Ally",
             "map_id": 156,
             "position": [
                 -12914.0,
                 18003.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -16787,12 +16787,12 @@
                 0
             ],
             "model_id": 1559,
+            "allegiance": "Ally",
             "map_id": 157,
             "position": [
                 5184.0,
                 -14389.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -17671,12 +17671,12 @@
                 0
             ],
             "model_id": 3670,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 4785.0,
                 798.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -18317,12 +18317,12 @@
             "name": "Voldo the Exotic",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -18896,12 +18896,12 @@
             "name": "Oroku",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 240,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -19501,12 +19501,12 @@
                 0
             ],
             "model_id": 3323,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -7260.0,
                 12622.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -20083,12 +20083,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -7115.0,
                 12636.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -20665,12 +20665,12 @@
                 0
             ],
             "model_id": 3323,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -6614.0,
                 12465.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -21219,12 +21219,12 @@
                 0
             ],
             "model_id": 3323,
+            "allegiance": "Ally",
             "map_id": 250,
             "position": [
                 20381.0,
                 9576.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -21773,12 +21773,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 250,
             "position": [
                 20508.0,
                 9497.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -22355,12 +22355,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 250,
             "position": [
                 19709.0,
                 9444.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -22937,12 +22937,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 251,
             "position": [
                 16647.0,
                 16881.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -23491,12 +23491,12 @@
                 0
             ],
             "model_id": 3323,
+            "allegiance": "Ally",
             "map_id": 251,
             "position": [
                 16656.0,
                 17055.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -24073,12 +24073,12 @@
                 0
             ],
             "model_id": 3332,
+            "allegiance": "Ally",
             "map_id": 251,
             "position": [
                 16425.0,
                 17446.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Assassin": 40,
                 "Elementalist": 30,
@@ -24655,12 +24655,12 @@
                 0
             ],
             "model_id": 3670,
+            "allegiance": "Ally",
             "map_id": 279,
             "position": [
                 13037.0,
                 -21167.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -25313,12 +25313,12 @@
                 0
             ],
             "model_id": 3323,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 16180.0,
                 -8821.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -25941,12 +25941,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 15807.0,
                 -8983.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Assassin": 70,
                 "Ritualist": 60
@@ -26123,12 +26123,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 16400.0,
                 -8815.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Assassin": 70,
                 "Ritualist": 60
@@ -26294,12 +26294,12 @@
             "name": "Ahamid",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 373,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -26316,12 +26316,12 @@
             "name": "Samuka",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 385,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -26347,12 +26347,12 @@
                 0
             ],
             "model_id": 3323,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 -700.0,
                 -5156.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26443,12 +26443,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 -1682.0,
                 -3970.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26539,12 +26539,12 @@
                 0
             ],
             "model_id": 3324,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 -891.0,
                 -5382.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26637,12 +26637,12 @@
                 0
             ],
             "model_id": 5718,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 -1805.0,
                 -4050.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -27443,12 +27443,12 @@
                 0
             ],
             "model_id": 5437,
+            "allegiance": "Ally",
             "map_id": 436,
             "position": [
                 -4916.0,
                 8985.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -28605,12 +28605,12 @@
                 0
             ],
             "model_id": 5674,
+            "allegiance": "Ally",
             "map_id": 438,
             "position": [
                 -14036.0,
                 8632.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -29327,12 +29327,12 @@
                 0
             ],
             "model_id": 4774,
+            "allegiance": "Ally",
             "map_id": 449,
             "position": [
                 -11202.0,
                 9346.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Paragon": 35,
@@ -29362,12 +29362,12 @@
                 0
             ],
             "model_id": 4773,
+            "allegiance": "Ally",
             "map_id": 491,
             "position": [
                 3944.0,
                 2378.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Paragon": 50,
@@ -29397,12 +29397,12 @@
                 0
             ],
             "model_id": 4774,
+            "allegiance": "Ally",
             "map_id": 492,
             "position": [
                 607.0,
                 2710.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Paragon": 65,
@@ -29432,12 +29432,12 @@
                 0
             ],
             "model_id": 4773,
+            "allegiance": "Ally",
             "map_id": 493,
             "position": [
                 -3164.0,
                 16472.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -29454,12 +29454,12 @@
             "name": "Keeper of Armor",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -30020,14 +30020,14 @@
                 0
             ],
             "model_id": 6810,
+            "allegiance": "Ally",
+            "required_title_id": "Asuran",
+            "required_title_rank": 5,
             "map_id": 640,
             "position": [
                 12781.0,
                 16732.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Asuran",
-            "required_title_rank": 5,
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -30744,14 +30744,14 @@
                 0
             ],
             "model_id": 6101,
+            "allegiance": "Ally",
+            "required_title_id": "Ebon_Vanguard",
+            "required_title_rank": 5,
             "map_id": 642,
             "position": [
                 -552.0,
                 1250.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Ebon_Vanguard",
-            "required_title_rank": 5,
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -30846,14 +30846,14 @@
                 0
             ],
             "model_id": 6436,
+            "allegiance": "Ally",
+            "required_title_id": "Norn",
+            "required_title_rank": 5,
             "map_id": 644,
             "position": [
                 18894.0,
                 -3806.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Norn",
-            "required_title_rank": 5,
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -31575,14 +31575,14 @@
                 0
             ],
             "model_id": 6287,
+            "allegiance": "Ally",
+            "required_title_id": "Deldrimor",
+            "required_title_rank": 5,
             "map_id": 652,
             "position": [
                 1860.0,
                 1681.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Deldrimor",
-            "required_title_rank": 5,
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -32845,12 +32845,12 @@
                 0
             ],
             "model_id": 1553,
+            "allegiance": "Ally",
             "map_id": 675,
             "position": [
                 5419.0,
                 -27343.0
             ],
-            "allegiance": "Ally",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,

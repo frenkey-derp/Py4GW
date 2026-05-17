@@ -1,42 +1,42 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:04:16Z",
+    "saved_at": "2026-05-17T12:49:52Z",
     "category": "collectors",
     "entries": [
         {
             "name": "Assassin's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Dervish's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Elementalist's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -54,12 +54,12 @@
                 0
             ],
             "model_id": 3436,
+            "allegiance": "Ally",
             "map_id": 349,
             "position": [
                 -11039.0,
                 -22574.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -199,24 +199,24 @@
             "name": "Mesmer's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Mirmahk",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 377,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -305,48 +305,48 @@
             "name": "Monk's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Necromancer's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Paragon's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Qogg",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 581,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -517,36 +517,36 @@
             "name": "Ranger's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Ritualist's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Thecos Bellyshaker",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 576,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -572,22 +572,35 @@
         },
         {
             "name": "Vael",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                151,
+                123,
+                95,
+                159,
+                44,
+                244,
+                25,
+                89,
+                0,
+                0
+            ],
+            "model_id": 6081,
+            "allegiance": "Ally",
             "map_id": 649,
             "position": [
-                0.0,
-                0.0
+                -22407.0,
+                10207.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
                     "name": "Mask of the Mo Zing",
                     "item_type": "Headpiece",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "_None",
+                    "model_id": 25786,
+                    "armor_rating": 70,
+                    "profession": "Assassin",
                     "required_collectible": [
                         "27052",
                         250
@@ -599,24 +612,24 @@
             "name": "Warrior's Chest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 710,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Gil Moriddan",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 13,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -684,12 +697,12 @@
             "name": "Lenerd Aberold",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 13,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -707,12 +720,12 @@
             "name": "Martel Bastions",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 13,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -806,12 +819,12 @@
             "name": "Wain Hughes",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 13,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -917,12 +930,12 @@
             "name": "Ember Whisperwind",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 17,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1002,12 +1015,12 @@
             "name": "Galstaff the Light",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 17,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1087,12 +1100,12 @@
             "name": "Julianna Furst",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 17,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1172,12 +1185,12 @@
             "name": "Ian Borish",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 18,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1257,12 +1270,12 @@
             "name": "Liris the Sage",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 18,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1368,12 +1381,12 @@
             "name": "Sir Robert",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 18,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1391,12 +1404,12 @@
                 0
             ],
             "model_id": 1551,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 2307.0,
                 4114.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1460,12 +1473,12 @@
             "name": "Cember Goreaxe",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 26,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1520,12 +1533,12 @@
             "name": "Hoknil the Greater",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 26,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1605,12 +1618,12 @@
             "name": "Volsung Stoneketil",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 26,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1661,12 +1674,12 @@
             "name": "Claw Tallfeather",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 31,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1768,12 +1781,12 @@
             "name": "Yu Lae",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 31,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1875,24 +1888,24 @@
             "name": "Dreaz Bowem",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 33,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Innis the White",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 33,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1924,12 +1937,12 @@
             "name": "Palben Tunne",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 33,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2009,12 +2022,12 @@
             "name": "Penelope Hoode",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 33,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2116,12 +2129,12 @@
             "name": "Saba Blackstone",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 33,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2230,12 +2243,12 @@
                 0
             ],
             "model_id": 1490,
+            "allegiance": "Ally",
             "map_id": 36,
             "position": [
                 605.0,
                 13167.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2326,12 +2339,12 @@
                 0
             ],
             "model_id": 1490,
+            "allegiance": "Ally",
             "map_id": 40,
             "position": [
                 22911.0,
                 9902.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2427,24 +2440,24 @@
             "name": "Aaron Fletcher",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 41,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Elwynn Kirby",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 41,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2524,12 +2537,12 @@
             "name": "Vargil the White",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 42,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2623,12 +2636,12 @@
             "name": "Crispin Bryllis",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 43,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2709,12 +2722,12 @@
             "name": "Farmer Conklin",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 43,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2799,12 +2812,12 @@
             "name": "Lady Engelram",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 43,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2889,12 +2902,12 @@
             "name": "Hember",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 44,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2974,12 +2987,12 @@
             "name": "Horton Longsnout",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 44,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3059,12 +3072,12 @@
             "name": "Lord Engelram",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 44,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3144,12 +3157,12 @@
             "name": "Elene the Vigilant",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 45,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3229,12 +3242,12 @@
             "name": "Agrippa Stonehands",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 46,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3314,12 +3327,12 @@
             "name": "Llourdes the Arcane",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 46,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3399,12 +3412,12 @@
             "name": "Meghan the Bright",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 46,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3484,12 +3497,12 @@
             "name": "Slayton Redblade",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 46,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3569,12 +3582,12 @@
             "name": "Orson Cooper",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 48,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3659,12 +3672,12 @@
             "name": "Serah Shaes",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 48,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3741,12 +3754,12 @@
             "name": "Tully Blackvine",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 48,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3842,12 +3855,12 @@
                 0
             ],
             "model_id": 1482,
+            "allegiance": "Ally",
             "map_id": 49,
             "position": [
                 -894.0,
                 -7069.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3948,12 +3961,12 @@
                 0
             ],
             "model_id": 1542,
+            "allegiance": "Ally",
             "map_id": 49,
             "position": [
                 -1241.0,
                 -7346.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4036,12 +4049,12 @@
                 0
             ],
             "model_id": 1483,
+            "allegiance": "Ally",
             "map_id": 49,
             "position": [
                 -1093.0,
                 -6606.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4142,12 +4155,12 @@
                 0
             ],
             "model_id": 3292,
+            "allegiance": "Ally",
             "map_id": 51,
             "position": [
                 9909.0,
                 -13715.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4259,12 +4272,12 @@
             "name": "Arris Weston",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 53,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4366,12 +4379,12 @@
             "name": "Daved Logsdon",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 53,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4484,12 +4497,12 @@
                 0
             ],
             "model_id": 2016,
+            "allegiance": "Ally",
             "map_id": 57,
             "position": [
                 19300.0,
                 -17611.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4593,12 +4606,12 @@
             "name": "Leighton Cranford",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 58,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4691,12 +4704,12 @@
             "name": "Wintun the Black",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 58,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4773,12 +4786,12 @@
             "name": "Beldon the Blade",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 59,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4876,12 +4889,12 @@
             "name": "Kira Thorne",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 59,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4983,12 +4996,12 @@
             "name": "Isabaeux Navarre",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 60,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5077,12 +5090,12 @@
             "name": "Robin Neils",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 60,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5162,12 +5175,12 @@
             "name": "Falhurst",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 61,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5247,12 +5260,12 @@
             "name": "Gruhn the Fisher",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 61,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -5270,12 +5283,12 @@
             "name": "Ian Sturmme",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 62,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5355,12 +5368,12 @@
             "name": "Tenlach Silverhand",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 62,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5440,12 +5453,12 @@
             "name": "Jamora the Wise",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 63,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5525,12 +5538,12 @@
             "name": "Vardis",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 63,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5610,12 +5623,12 @@
             "name": "Brion Elston",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 64,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5704,12 +5717,12 @@
             "name": "Brynden Cromwell",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 64,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5799,12 +5812,12 @@
             "name": "William Pennington",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 64,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5900,12 +5913,12 @@
                 0
             ],
             "model_id": 3447,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 8272.0,
                 -352.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6026,12 +6039,12 @@
                 0
             ],
             "model_id": 3443,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 8639.0,
                 4181.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6158,12 +6171,12 @@
                 0
             ],
             "model_id": 3435,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 9520.0,
                 1465.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -6232,12 +6245,12 @@
                 0
             ],
             "model_id": 3449,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 7569.0,
                 4272.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6356,12 +6369,12 @@
                 0
             ],
             "model_id": 3448,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 5085.0,
                 3744.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -6410,12 +6423,12 @@
                 0
             ],
             "model_id": 1490,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 1519.0,
                 3571.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -6449,12 +6462,12 @@
             "name": "Norin Stonegrimm",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 88,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -6534,12 +6547,12 @@
             "name": "Maccus Ironjaw",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 89,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -6619,12 +6632,12 @@
             "name": "Sander the Gray",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 89,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -6704,12 +6717,12 @@
             "name": "Nord Stonegrimm",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 90,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6802,12 +6815,12 @@
             "name": "Hagnon Warblade",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 91,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6888,12 +6901,12 @@
             "name": "Hoknil the Lesser",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 91,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6969,12 +6982,12 @@
             "name": "Merin Trollsbane",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 91,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7050,12 +7063,12 @@
             "name": "Radamon",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 91,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7144,12 +7157,12 @@
             "name": "Yorik Warblade",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 91,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7170,12 +7183,12 @@
             "name": "Turlo Oakenspear",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 94,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7255,12 +7268,12 @@
             "name": "Mag Ironwall",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 95,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7332,12 +7345,12 @@
             "name": "Vania Sewell",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 95,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7417,12 +7430,12 @@
             "name": "Bariel Darkroot",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 96,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7503,12 +7516,12 @@
             "name": "Goran Grimyak",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 96,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7572,12 +7585,12 @@
             "name": "Trego Stonebreaker",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 96,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7645,12 +7658,12 @@
             "name": "Kagan Treesplitter",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 98,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7730,12 +7743,12 @@
             "name": "Asgrim Brightaxe",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 99,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7815,12 +7828,12 @@
             "name": "Pyrs Harven",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 99,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7900,12 +7913,12 @@
             "name": "Lenn Giantsbane",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 100,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7961,12 +7974,12 @@
             "name": "Rothgar Hoofsplitter",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 100,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -8046,12 +8059,12 @@
             "name": "Corwin Luceinne",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 101,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8153,12 +8166,12 @@
             "name": "Sir Nyman",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 101,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -8176,12 +8189,12 @@
             "name": "Valeria Benes",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 101,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8279,12 +8292,12 @@
             "name": "Sally Kaugie",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 102,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8382,12 +8395,12 @@
             "name": "Dael",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 103,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -8405,12 +8418,12 @@
             "name": "Nicanor Gannel",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 104,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8512,12 +8525,12 @@
             "name": "Ouran Odwin",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 104,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8623,12 +8636,12 @@
             "name": "Ashram Fenn",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 105,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8722,12 +8735,12 @@
             "name": "Nazag Fenn",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 105,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -8745,12 +8758,12 @@
             "name": "Fytch",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 107,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -8818,12 +8831,12 @@
             "name": "Guardsman Noell",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 107,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8929,12 +8942,12 @@
             "name": "Paige Osbourne",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 107,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9040,12 +9053,12 @@
             "name": "Raymon Elsworth",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 107,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9147,12 +9160,12 @@
             "name": "Cedric Rogers",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 108,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9232,12 +9245,12 @@
             "name": "Jamie the Wanderer",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 108,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9317,12 +9330,12 @@
             "name": "Lord Dorn Lendrigen",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 108,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9418,12 +9431,12 @@
                 0
             ],
             "model_id": 2015,
+            "allegiance": "Ally",
             "map_id": 109,
             "position": [
                 2964.0,
                 2739.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9514,12 +9527,12 @@
                 0
             ],
             "model_id": 2405,
+            "allegiance": "Ally",
             "map_id": 109,
             "position": [
                 4776.0,
                 369.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9599,12 +9612,12 @@
             "name": "Cinder Linnwood",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 110,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9685,12 +9698,12 @@
             "name": "Luven Underwood",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 110,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9800,24 +9813,24 @@
             "name": "Brandon Harlin",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 111,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Karl Jakobs",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 111,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9923,12 +9936,12 @@
             "name": "Kraviec the Cursed",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 111,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10005,12 +10018,12 @@
             "name": "Uderit Ignis",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 111,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -10068,12 +10081,12 @@
             "name": "Sir Kaufman",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 112,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10153,12 +10166,12 @@
             "name": "Sir Pohl Sanbert",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 112,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10256,12 +10269,12 @@
             "name": "Fenster the Golden",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 113,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10341,12 +10354,12 @@
             "name": "Gustov the Silent",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 113,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10426,12 +10439,12 @@
             "name": "Kyle the Rich",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 113,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10511,12 +10524,12 @@
             "name": "Winfield Michelson",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 113,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10596,12 +10609,12 @@
             "name": "Kelsay Pradist",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 114,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10681,12 +10694,12 @@
             "name": "Sir Norrington",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 114,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10766,12 +10779,12 @@
             "name": "Arliss Vaughn",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 115,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10839,12 +10852,12 @@
             "name": "John Verado",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 115,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10933,12 +10946,12 @@
             "name": "Mourn Drakespur",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 115,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11023,12 +11036,12 @@
             "name": "Rylan Paval",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 115,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11096,12 +11109,12 @@
             "name": "Collector Corbis",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 121,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -11119,12 +11132,12 @@
             "name": "Collector Gabrian",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 121,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -11142,12 +11155,12 @@
             "name": "Collector Terra",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 121,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -11165,12 +11178,12 @@
             "name": "Denos Makaluum",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 130,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11317,12 +11330,12 @@
                 0
             ],
             "model_id": 3446,
+            "allegiance": "Ally",
             "map_id": 130,
             "position": [
                 22285.0,
                 8368.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11495,12 +11508,12 @@
                 0
             ],
             "model_id": 2037,
+            "allegiance": "Ally",
             "map_id": 134,
             "position": [
                 8045.0,
                 5625.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11591,12 +11604,12 @@
                 0
             ],
             "model_id": 1471,
+            "allegiance": "Ally",
             "map_id": 137,
             "position": [
                 3113.0,
                 8392.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11687,12 +11700,12 @@
                 0
             ],
             "model_id": 1490,
+            "allegiance": "Ally",
             "map_id": 139,
             "position": [
                 -13525.0,
                 937.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11783,12 +11796,12 @@
                 0
             ],
             "model_id": 2014,
+            "allegiance": "Ally",
             "map_id": 140,
             "position": [
                 5984.0,
                 -11252.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11879,12 +11892,12 @@
                 0
             ],
             "model_id": 2037,
+            "allegiance": "Ally",
             "map_id": 141,
             "position": [
                 2694.0,
                 -9762.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11985,12 +11998,12 @@
                 0
             ],
             "model_id": 1471,
+            "allegiance": "Ally",
             "map_id": 142,
             "position": [
                 -266.0,
                 -3171.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -12088,12 +12101,12 @@
             "name": "Pietro",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 144,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12161,12 +12174,12 @@
             "name": "Gwynn",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 145,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12214,12 +12227,12 @@
             "name": "Karleen",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 145,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12299,12 +12312,12 @@
             "name": "Brownlow",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 146,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12332,12 +12345,12 @@
             "name": "Humphreys",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 146,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12405,12 +12418,12 @@
             "name": "Jacobs",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 146,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12448,12 +12461,12 @@
             "name": "Walden",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 146,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12532,12 +12545,12 @@
                 0
             ],
             "model_id": 2405,
+            "allegiance": "Ally",
             "map_id": 154,
             "position": [
                 -14930.0,
                 16094.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12617,12 +12630,12 @@
             "name": "Mindle",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 161,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12670,12 +12683,12 @@
             "name": "Hatcher",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 162,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12755,12 +12768,12 @@
             "name": "Rownan",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 162,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12828,12 +12841,12 @@
             "name": "Varis",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 162,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12913,12 +12926,12 @@
             "name": "Makar Thoughtslayer",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 190,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12947,12 +12960,12 @@
                 0
             ],
             "model_id": 3662,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 4939.0,
                 -3962.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -13073,12 +13086,12 @@
                 0
             ],
             "model_id": 3649,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 8644.0,
                 -6893.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13147,12 +13160,12 @@
                 0
             ],
             "model_id": 3658,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 7191.0,
                 -5201.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13221,12 +13234,12 @@
                 0
             ],
             "model_id": 3286,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 2899.0,
                 -1982.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13307,12 +13320,12 @@
                 0
             ],
             "model_id": 3286,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 2881.0,
                 -1542.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13393,12 +13406,12 @@
                 0
             ],
             "model_id": 3286,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 2883.0,
                 -1062.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13446,12 +13459,12 @@
             "name": "Gruut Snowfoot",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 196,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -13555,12 +13568,12 @@
             "name": "Morokam",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 196,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -13664,12 +13677,12 @@
             "name": "Rei Ming",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 196,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -13773,12 +13786,12 @@
             "name": "Jung Zeng",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 197,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -13876,12 +13889,12 @@
             "name": "Kiishen",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 197,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -13979,12 +13992,12 @@
             "name": "Leijo",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 197,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14082,12 +14095,12 @@
             "name": "Yohei",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 197,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14189,12 +14202,12 @@
             "name": "Axton",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 198,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14292,12 +14305,12 @@
             "name": "Losi Hapatu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 199,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14403,12 +14416,12 @@
             "name": "Leon",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 200,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14518,12 +14531,12 @@
             "name": "Jahn Pitz",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 202,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -14591,12 +14604,12 @@
             "name": "Keotah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 203,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14690,12 +14703,12 @@
             "name": "Tarena",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 203,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -14763,12 +14776,12 @@
             "name": "Dmitri Scharkoff",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 205,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14904,12 +14917,12 @@
             "name": "Jonn Tertehl",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 205,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -14997,12 +15010,12 @@
             "name": "Chef Armand",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 210,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15096,12 +15109,12 @@
             "name": "Luci",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 211,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15214,12 +15227,12 @@
                 0
             ],
             "model_id": 3294,
+            "allegiance": "Ally",
             "map_id": 226,
             "position": [
                 -11299.0,
                 1496.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15339,12 +15352,12 @@
             "name": "Elder Ezio",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 227,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15453,12 +15466,12 @@
                 0
             ],
             "model_id": 3667,
+            "allegiance": "Ally",
             "map_id": 234,
             "position": [
                 -7201.0,
                 3808.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15584,12 +15597,12 @@
             "name": "Guardsman Ayoki",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 235,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -15693,12 +15706,12 @@
             "name": "Guardsman Kenji",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 235,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15822,12 +15835,12 @@
             "name": "Losai Hapatu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 235,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15951,12 +15964,12 @@
             "name": "Chen Po Chin",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 236,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16060,12 +16073,12 @@
             "name": "Craw Razorbeak",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 236,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16169,12 +16182,12 @@
             "name": "Guardsman Keiko",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 236,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16278,12 +16291,12 @@
             "name": "Mi Fai",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 236,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16387,12 +16400,12 @@
             "name": "Shenzun",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 236,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16496,12 +16509,12 @@
             "name": "Gorobei",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 237,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16605,12 +16618,12 @@
             "name": "Guardsman Kikuchiyo",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 237,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16714,12 +16727,12 @@
             "name": "Junsu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 237,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16823,12 +16836,12 @@
             "name": "Mirko",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 237,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16932,12 +16945,12 @@
             "name": "Xi Gai",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 237,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17041,12 +17054,12 @@
             "name": "Debiro Kuri",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 238,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -17170,12 +17183,12 @@
             "name": "Hai Lae",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 238,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -17213,12 +17226,12 @@
             "name": "Marik Kuri",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 238,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -17256,12 +17269,12 @@
             "name": "Seung Kim",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 238,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -17385,12 +17398,12 @@
             "name": "Bae Kwon",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -17428,12 +17441,12 @@
             "name": "Jiangpo",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17537,12 +17550,12 @@
             "name": "Kegai",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -17644,12 +17657,12 @@
             "name": "Lintao",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17753,12 +17766,12 @@
             "name": "Magistrate Wakai",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17862,12 +17875,12 @@
             "name": "Kyuzo",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 240,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17971,12 +17984,12 @@
             "name": "Magistrate Raisung",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 240,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18080,12 +18093,12 @@
             "name": "Ohtah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 241,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18202,12 +18215,12 @@
                 0
             ],
             "model_id": 3306,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -10816.0,
                 8508.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -18258,12 +18271,12 @@
                 0
             ],
             "model_id": 3286,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -7311.0,
                 8710.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -18304,12 +18317,12 @@
                 0
             ],
             "model_id": 3279,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -6904.0,
                 9030.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -18387,12 +18400,12 @@
             "name": "Catrine Embolom",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 247,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18509,12 +18522,12 @@
                 0
             ],
             "model_id": 3299,
+            "allegiance": "Ally",
             "map_id": 249,
             "position": [
                 -3707.0,
                 -14839.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18676,12 +18689,12 @@
                 0
             ],
             "model_id": 3293,
+            "allegiance": "Ally",
             "map_id": 250,
             "position": [
                 17168.0,
                 10618.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18796,12 +18809,12 @@
                 0
             ],
             "model_id": 3443,
+            "allegiance": "Ally",
             "map_id": 272,
             "position": [
                 2026.0,
                 3602.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18956,12 +18969,12 @@
                 0
             ],
             "model_id": 3444,
+            "allegiance": "Ally",
             "map_id": 272,
             "position": [
                 3029.0,
                 6568.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19139,12 +19152,12 @@
                 0
             ],
             "model_id": 3661,
+            "allegiance": "Ally",
             "map_id": 273,
             "position": [
                 3717.0,
                 4831.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19278,12 +19291,12 @@
                 0
             ],
             "model_id": 3664,
+            "allegiance": "Ally",
             "map_id": 273,
             "position": [
                 2099.0,
                 4174.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19425,12 +19438,12 @@
                 0
             ],
             "model_id": 3663,
+            "allegiance": "Ally",
             "map_id": 278,
             "position": [
                 19539.0,
                 -3581.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19545,12 +19558,12 @@
                 0
             ],
             "model_id": 3444,
+            "allegiance": "Ally",
             "map_id": 283,
             "position": [
                 -13491.0,
                 14196.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19677,12 +19690,12 @@
                 0
             ],
             "model_id": 3295,
+            "allegiance": "Ally",
             "map_id": 284,
             "position": [
                 4121.0,
                 -18505.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19801,12 +19814,12 @@
                 0
             ],
             "model_id": 3299,
+            "allegiance": "Ally",
             "map_id": 284,
             "position": [
                 2941.0,
                 -18193.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19921,12 +19934,12 @@
                 0
             ],
             "model_id": 3462,
+            "allegiance": "Ally",
             "map_id": 286,
             "position": [
                 15846.0,
                 2201.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20105,12 +20118,12 @@
                 0
             ],
             "model_id": 3444,
+            "allegiance": "Ally",
             "map_id": 286,
             "position": [
                 15925.0,
                 3793.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20283,12 +20296,12 @@
                 0
             ],
             "model_id": 3445,
+            "allegiance": "Ally",
             "map_id": 287,
             "position": [
                 28710.0,
                 6321.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20403,12 +20416,12 @@
                 0
             ],
             "model_id": 3666,
+            "allegiance": "Ally",
             "map_id": 288,
             "position": [
                 -17086.0,
                 14767.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20531,12 +20544,12 @@
                 0
             ],
             "model_id": 3662,
+            "allegiance": "Ally",
             "map_id": 289,
             "position": [
                 -12215.0,
                 -20735.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20651,12 +20664,12 @@
                 0
             ],
             "model_id": 3292,
+            "allegiance": "Ally",
             "map_id": 303,
             "position": [
                 14180.0,
                 15999.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20811,12 +20824,12 @@
                 0
             ],
             "model_id": 3451,
+            "allegiance": "Ally",
             "map_id": 349,
             "position": [
                 -10439.0,
                 -20910.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20953,12 +20966,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21475.0,
                 -10199.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21105,12 +21118,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21470.0,
                 -10375.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21257,12 +21270,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21487.0,
                 -10112.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21409,12 +21422,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21445.0,
                 -11332.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21471,12 +21484,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21448.0,
                 -11244.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21512,12 +21525,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21438.0,
                 -11426.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21574,12 +21587,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21465.0,
                 -10459.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21644,12 +21657,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21475.0,
                 -10289.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21796,12 +21809,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21440.0,
                 -11518.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21902,12 +21915,12 @@
                 0
             ],
             "model_id": 3318,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 21442.0,
                 -11600.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22075,12 +22088,12 @@
             "name": "Hlengiwe",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 369,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -22138,12 +22151,12 @@
             "name": "Poti",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 369,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22228,12 +22241,12 @@
             "name": "Tohsedi",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 371,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22318,12 +22331,12 @@
             "name": "Mubata",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 373,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -22361,12 +22374,12 @@
             "name": "Sinbi",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 373,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -22394,12 +22407,12 @@
             "name": "Talmehinu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 373,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22480,12 +22493,12 @@
             "name": "Haibir",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 375,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22566,12 +22579,12 @@
             "name": "Nihanu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 375,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22660,12 +22673,12 @@
             "name": "Pehtigam",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 375,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22754,12 +22767,12 @@
             "name": "Dalzbeh",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 379,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22861,12 +22874,12 @@
                 0
             ],
             "model_id": 4764,
+            "allegiance": "Ally",
             "map_id": 381,
             "position": [
                 2725.0,
                 -2492.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -22897,12 +22910,12 @@
                 0
             ],
             "model_id": 4763,
+            "allegiance": "Ally",
             "map_id": 381,
             "position": [
                 2067.0,
                 -3624.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -22920,12 +22933,12 @@
             "name": "Helenah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 382,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23010,12 +23023,12 @@
             "name": "Pobehr",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 384,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23100,12 +23113,12 @@
             "name": "Alton Thorne",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 385,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23186,12 +23199,12 @@
             "name": "Gamyuka",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 386,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23276,48 +23289,48 @@
             "name": "Kehtu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 386,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Hamri",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 392,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Shashi",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 392,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
             "name": "Olujime",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 395,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23402,12 +23415,12 @@
             "name": "Awadur",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 397,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23492,12 +23505,12 @@
             "name": "Bahlbahs",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 397,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23586,12 +23599,12 @@
             "name": "Peyema",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 399,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23680,12 +23693,12 @@
             "name": "Kurmauzeh",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 402,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23770,12 +23783,12 @@
             "name": "Nuwisha",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 402,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23873,12 +23886,12 @@
             "name": "Behruseh",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 404,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23963,12 +23976,12 @@
             "name": "Endah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 404,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24053,12 +24066,12 @@
             "name": "Hermehinu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 404,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24143,12 +24156,12 @@
             "name": "Ahoj",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 406,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24166,12 +24179,12 @@
             "name": "Kaya (collector)",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 406,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24269,12 +24282,12 @@
                 0
             ],
             "model_id": 4761,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 1418.0,
                 1147.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24325,12 +24338,12 @@
                 0
             ],
             "model_id": 4760,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 2134.0,
                 941.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24391,12 +24404,12 @@
                 0
             ],
             "model_id": 4761,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 2269.0,
                 1585.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24477,12 +24490,12 @@
                 0
             ],
             "model_id": 4760,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 1093.0,
                 3011.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24540,12 +24553,12 @@
             "name": "Dahwan",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 419,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24634,12 +24647,12 @@
             "name": "Gahnlar",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 419,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24728,12 +24741,12 @@
             "name": "Wekekuda",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 419,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24831,12 +24844,12 @@
                 0
             ],
             "model_id": 4764,
+            "allegiance": "Ally",
             "map_id": 424,
             "position": [
                 -2354.0,
                 1608.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24930,12 +24943,12 @@
             "name": "Adhitok",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 430,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24963,12 +24976,12 @@
             "name": "Kushau",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 430,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25108,12 +25121,12 @@
             "name": "Timahr",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 430,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25266,12 +25279,12 @@
                 0
             ],
             "model_id": 4766,
+            "allegiance": "Ally",
             "map_id": 431,
             "position": [
                 -5264.0,
                 7805.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25322,12 +25335,12 @@
                 0
             ],
             "model_id": 4823,
+            "allegiance": "Ally",
             "map_id": 431,
             "position": [
                 -2166.0,
                 5570.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25368,12 +25381,12 @@
                 0
             ],
             "model_id": 4829,
+            "allegiance": "Ally",
             "map_id": 431,
             "position": [
                 -2186.0,
                 4603.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25451,12 +25464,12 @@
             "name": "Mau",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 432,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -25560,12 +25573,12 @@
             "name": "Uhisheh",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 432,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -25669,12 +25682,12 @@
             "name": "Yahya",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 432,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25762,12 +25775,12 @@
             "name": "Smuggler (mesmer)",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 436,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25825,12 +25838,12 @@
             "name": "Smuggler (monk)",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 436,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25898,12 +25911,12 @@
             "name": "Smuggler (ranger)",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 436,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25951,12 +25964,12 @@
             "name": "Rahvu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 437,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26100,12 +26113,12 @@
             "name": "Charmamani",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 439,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26245,12 +26258,12 @@
             "name": "Chinwe",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 441,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26390,12 +26403,12 @@
             "name": "Nikun",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 441,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26531,12 +26544,12 @@
             "name": "Lahati",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 443,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26668,12 +26681,12 @@
             "name": "Kwesi",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 444,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26785,12 +26798,12 @@
             "name": "Fumeai",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 446,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26926,12 +26939,12 @@
             "name": "Dayoesh",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 448,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27071,12 +27084,12 @@
             "name": "Juba",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 448,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27229,12 +27242,12 @@
                 0
             ],
             "model_id": 4766,
+            "allegiance": "Ally",
             "map_id": 449,
             "position": [
                 -11254.0,
                 15220.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -27265,12 +27278,12 @@
                 0
             ],
             "model_id": 4766,
+            "allegiance": "Ally",
             "map_id": 449,
             "position": [
                 -8633.0,
                 7221.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -27290,12 +27303,12 @@
                 0
             ],
             "model_id": 4760,
+            "allegiance": "Ally",
             "map_id": 450,
             "position": [
                 4825.0,
                 7131.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27410,12 +27423,12 @@
                 0
             ],
             "model_id": 5036,
+            "allegiance": "Ally",
             "map_id": 450,
             "position": [
                 2000.0,
                 4756.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -27486,12 +27499,12 @@
                 0
             ],
             "model_id": 5037,
+            "allegiance": "Ally",
             "map_id": 450,
             "position": [
                 2766.0,
                 4820.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -27572,12 +27585,12 @@
                 0
             ],
             "model_id": 5036,
+            "allegiance": "Ally",
             "map_id": 450,
             "position": [
                 3154.0,
                 5612.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -27648,12 +27661,12 @@
                 0
             ],
             "model_id": 3295,
+            "allegiance": "Ally",
             "map_id": 450,
             "position": [
                 3806.0,
                 1959.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27756,12 +27769,12 @@
                 0
             ],
             "model_id": 5269,
+            "allegiance": "Ally",
             "map_id": 474,
             "position": [
                 4498.0,
                 -14246.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -29248,12 +29261,12 @@
                 0
             ],
             "model_id": 4763,
+            "allegiance": "Ally",
             "map_id": 477,
             "position": [
                 -18170.0,
                 -14830.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -29352,12 +29365,12 @@
                 0
             ],
             "model_id": 5734,
+            "allegiance": "Ally",
             "map_id": 478,
             "position": [
                 -2874.0,
                 611.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -29428,12 +29441,12 @@
                 0
             ],
             "model_id": 5734,
+            "allegiance": "Ally",
             "map_id": 478,
             "position": [
                 -3002.0,
                 -1671.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -29514,12 +29527,12 @@
                 0
             ],
             "model_id": 5734,
+            "allegiance": "Ally",
             "map_id": 478,
             "position": [
                 -1591.0,
                 -1256.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -29580,12 +29593,12 @@
                 0
             ],
             "model_id": 4760,
+            "allegiance": "Ally",
             "map_id": 479,
             "position": [
                 23483.0,
                 11549.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -29603,12 +29616,12 @@
             "name": "Jidun",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 481,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -29748,12 +29761,12 @@
             "name": "Paljab",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 481,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -29876,12 +29889,12 @@
             "name": "Klakki the Squire",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 482,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30042,12 +30055,12 @@
             "name": "Zukesha",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 483,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -30151,12 +30164,12 @@
             "name": "Ahchin",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 484,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30244,12 +30257,12 @@
             "name": "Chormar",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 484,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -30353,12 +30366,12 @@
             "name": "Damak",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 484,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30446,12 +30459,12 @@
             "name": "Gundok",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 484,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30539,12 +30552,12 @@
             "name": "Pehrub",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 484,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30632,12 +30645,12 @@
             "name": "Kapunk",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 485,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30798,12 +30811,12 @@
             "name": "Hoanjo",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 486,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30926,12 +30939,12 @@
             "name": "Iyemab",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 486,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31054,12 +31067,12 @@
             "name": "Lohfihau",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 486,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31182,12 +31195,12 @@
             "name": "Ehiyah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 488,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31327,12 +31340,12 @@
             "name": "Sheltah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 488,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31383,12 +31396,12 @@
                 0
             ],
             "model_id": 4749,
+            "allegiance": "Ally",
             "map_id": 491,
             "position": [
                 4315.0,
                 2073.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31426,12 +31439,12 @@
             "name": "Varr the Unlovable",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 499,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31568,12 +31581,12 @@
             "name": "Shaan",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 501,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31739,12 +31752,12 @@
                 0
             ],
             "model_id": 4763,
+            "allegiance": "Ally",
             "map_id": 502,
             "position": [
                 -1662.0,
                 3961.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31775,12 +31788,12 @@
                 0
             ],
             "model_id": 4753,
+            "allegiance": "Ally",
             "map_id": 502,
             "position": [
                 2082.0,
                 3875.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -31884,12 +31897,12 @@
             "name": "Keeper of Bone",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32033,12 +32046,12 @@
             "name": "Keeper of Illusion",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32182,12 +32195,12 @@
             "name": "Keeper of Light",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32331,12 +32344,12 @@
             "name": "Keeper of Nature",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32429,12 +32442,12 @@
             "name": "Keeper of Shadows",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32493,12 +32506,12 @@
             "name": "Keeper of Spirits",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32642,12 +32655,12 @@
             "name": "Keeper of Steel",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32732,12 +32745,12 @@
             "name": "Keeper of the Elements",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32915,12 +32928,12 @@
             "name": "Keeper of the Scythe",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32979,12 +32992,12 @@
             "name": "Keeper of the Spear",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33069,12 +33082,12 @@
             "name": "Marduc Snakeslayer",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 513,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33231,12 +33244,12 @@
             "name": "Tanni Silvermane",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 513,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33393,12 +33406,12 @@
             "name": "Danira",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 546,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33531,12 +33544,12 @@
             "name": "Hildir",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 546,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -33556,12 +33569,12 @@
             "name": "Ivarr Stewbrewer",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 548,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33698,12 +33711,12 @@
             "name": "Mitigan Backbreaker",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 548,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33856,12 +33869,12 @@
             "name": "Helming Baldbrow",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 553,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34018,12 +34031,12 @@
             "name": "Aell",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 558,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -34121,12 +34134,12 @@
             "name": "Akom",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 560,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -34297,12 +34310,12 @@
             "name": "Dextarr Dirtdigger",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 560,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -34322,12 +34335,12 @@
             "name": "Lars Bridgeater",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 560,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -34347,12 +34360,12 @@
             "name": "Roall",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 566,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34505,12 +34518,12 @@
             "name": "Kaplack",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 569,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -34608,12 +34621,12 @@
             "name": "Sark",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 570,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -34780,12 +34793,12 @@
             "name": "Jwup",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 572,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34922,12 +34935,12 @@
             "name": "Cait",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 573,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35035,12 +35048,12 @@
             "name": "Dagnor Grubeater",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 584,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35187,12 +35200,12 @@
             "name": "Kilgor Rageheart",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 604,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35300,12 +35313,12 @@
             "name": "Snap Flamekrak",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 604,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35413,12 +35426,12 @@
             "name": "Pekk",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 612,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -35568,12 +35581,12 @@
             "name": "Blonk",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 615,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35681,12 +35694,12 @@
             "name": "Onkk",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 615,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35794,12 +35807,12 @@
             "name": "Pathfinder Nolan",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 617,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35920,12 +35933,12 @@
                 0
             ],
             "model_id": 6826,
+            "allegiance": "Ally",
             "map_id": 624,
             "position": [
                 13454.0,
                 18524.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -36123,12 +36136,12 @@
                 0
             ],
             "model_id": 6828,
+            "allegiance": "Ally",
             "map_id": 624,
             "position": [
                 18167.0,
                 19363.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -36317,12 +36330,12 @@
             "name": "Jovial Pete",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 628,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36430,12 +36443,12 @@
             "name": "Pathfinder Mia",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 628,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36543,12 +36556,12 @@
             "name": "Fopp",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 630,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36656,12 +36669,12 @@
             "name": "Pathfinder Alon",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 630,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36769,12 +36782,12 @@
             "name": "Dobb",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 635,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36954,12 +36967,12 @@
                 0
             ],
             "model_id": 6888,
+            "allegiance": "Ally",
             "map_id": 190,
             "position": [
                 -24800.0,
                 11856.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36990,12 +37003,12 @@
                 0
             ],
             "model_id": 6830,
+            "allegiance": "Ally",
             "map_id": 640,
             "position": [
                 14311.0,
                 14103.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -37197,12 +37210,12 @@
                 0
             ],
             "model_id": 6448,
+            "allegiance": "Ally",
             "map_id": 644,
             "position": [
                 16577.0,
                 -11485.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -37240,12 +37253,12 @@
             "name": "Heather Meyre",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 647,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37343,12 +37356,12 @@
             "name": "Traybor Edwards",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 647,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37459,12 +37472,12 @@
                 0
             ],
             "model_id": 6659,
+            "allegiance": "Ally",
             "map_id": 648,
             "position": [
                 -14628.0,
                 14547.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -37632,100 +37645,208 @@
         },
         {
             "name": "Cain Sentor",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                2,
+                129,
+                248,
+                17,
+                159,
+                251,
+                119,
+                151,
+                43,
+                27,
+                0,
+                0
+            ],
+            "model_id": 6093,
+            "allegiance": "Ally",
             "map_id": 649,
             "position": [
-                0.0,
-                0.0
+                -22028.0,
+                5390.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
-                    "kind": "collector_item",
-                    "name": "Feathered Flatbow",
-                    "item_type": "Bow",
-                    "model_id": 0,
-                    "required_collectible": [
-                        "27051",
-                        5
-                    ]
-                },
-                {
-                    "kind": "collector_item",
+                    "kind": "collectible_weapon",
                     "name": "Double-bladed Axe",
                     "item_type": "Axe",
-                    "model_id": 0,
+                    "model_id": 28047,
+                    "requirement": 9,
+                    "attribute": "AxeMastery",
+                    "damage": [
+                        6,
+                        28
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"DamagePlusStanceUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"damage_increase\":15}}"
+                    ],
                     "required_collectible": [
                         "27051",
                         5
                     ]
                 },
                 {
-                    "kind": "collector_item",
+                    "kind": "collectible_weapon",
+                    "name": "Feathered Flatbow",
+                    "item_type": "Bow",
+                    "model_id": 28050,
+                    "requirement": 9,
+                    "attribute": "Marksmanship",
+                    "damage": [
+                        15,
+                        28
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"DamagePlusStanceUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"damage_increase\":15}}"
+                    ],
+                    "required_collectible": [
+                        "27051",
+                        5
+                    ]
+                },
+                {
+                    "kind": "collectible_weapon",
                     "name": "Elegant Scythe",
                     "item_type": "Scythe",
-                    "model_id": 1470,
+                    "model_id": 28212,
+                    "requirement": 9,
+                    "attribute": "ScytheMastery",
+                    "damage": [
+                        9,
+                        41
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"DamagePlusStanceUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"damage_increase\":15}}"
+                    ],
                     "required_collectible": [
                         "27051",
                         5
                     ]
                 },
                 {
-                    "kind": "collector_item",
+                    "kind": "collectible_weapon",
                     "name": "Spiraling Spear",
                     "item_type": "Spear",
-                    "model_id": 0,
+                    "model_id": 28242,
+                    "requirement": 9,
+                    "attribute": "SpearMastery",
+                    "damage": [
+                        14,
+                        27
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"DamagePlusStanceUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"damage_increase\":15}}"
+                    ],
                     "required_collectible": [
                         "27051",
                         5
                     ]
                 },
                 {
-                    "kind": "collector_item",
-                    "name": "Arcane Scepter",
-                    "item_type": "Wand",
-                    "model_id": 0,
-                    "required_collectible": [
-                        "27051",
-                        5
-                    ]
-                },
-                {
-                    "kind": "collector_item",
-                    "name": "Wailing Wand",
-                    "item_type": "Wand",
-                    "model_id": 1017,
-                    "required_collectible": [
-                        "27051",
-                        5
-                    ]
-                },
-                {
-                    "kind": "collector_item",
+                    "kind": "collectible_weapon",
                     "name": "Air Wand",
                     "item_type": "Wand",
-                    "model_id": 0,
+                    "model_id": 28167,
+                    "requirement": 9,
+                    "attribute": "AirMagic",
+                    "damage": [
+                        11,
+                        22
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeItemAttributeUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":20}}",
+                        "{\"upgrade_type\":\"EnergyPlusEnchantedUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "27051",
                         5
                     ]
                 },
                 {
-                    "kind": "collector_item",
+                    "kind": "collectible_weapon",
+                    "name": "Arcane Scepter",
+                    "item_type": "Wand",
+                    "model_id": 28146,
+                    "requirement": 9,
+                    "attribute": "FastCasting",
+                    "damage": [
+                        11,
+                        22
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeItemAttributeUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":20}}",
+                        "{\"upgrade_type\":\"EnergyPlusEnchantedUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"energy\":5}}"
+                    ],
+                    "required_collectible": [
+                        "27051",
+                        5
+                    ]
+                },
+                {
+                    "kind": "collectible_weapon",
                     "name": "Healing Rod",
                     "item_type": "Wand",
-                    "model_id": 0,
+                    "model_id": 28185,
+                    "requirement": 9,
+                    "attribute": "HealingPrayers",
+                    "damage": [
+                        11,
+                        22
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeItemAttributeUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":20}}",
+                        "{\"upgrade_type\":\"EnergyPlusEnchantedUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "27051",
                         5
                     ]
                 },
                 {
-                    "kind": "collector_item",
+                    "kind": "collectible_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 28197,
+                    "requirement": 9,
+                    "attribute": "SpawningPower",
+                    "damage": [
+                        11,
+                        22
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeItemAttributeUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":20}}",
+                        "{\"upgrade_type\":\"EnergyPlusEnchantedUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"energy\":5}}"
+                    ],
+                    "required_collectible": [
+                        "27051",
+                        5
+                    ]
+                },
+                {
+                    "kind": "collectible_weapon",
+                    "name": "Wailing Wand",
+                    "item_type": "Wand",
+                    "model_id": 28158,
+                    "requirement": 9,
+                    "attribute": "Curses",
+                    "damage": [
+                        11,
+                        22
+                    ],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeItemAttributeUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":20}}",
+                        "{\"upgrade_type\":\"EnergyPlusEnchantedUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "27051",
                         5
@@ -37737,12 +37858,12 @@
             "name": "Galton Franks",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 651,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37773,12 +37894,12 @@
                 0
             ],
             "model_id": 6274,
+            "allegiance": "Ally",
             "map_id": 652,
             "position": [
                 1665.0,
                 800.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -37819,12 +37940,12 @@
                 0
             ],
             "model_id": 1551,
+            "allegiance": "Ally",
             "map_id": 675,
             "position": [
                 5579.0,
                 -27069.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -38276,12 +38397,12 @@
             "name": "Artisan of Death",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -38477,12 +38598,12 @@
             "name": "Artisan of Elements",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -38725,12 +38846,12 @@
             "name": "Artisan of Illusion",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -38926,12 +39047,12 @@
             "name": "Artisan of Light",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39127,12 +39248,12 @@
             "name": "Artisan of Nature",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39225,12 +39346,12 @@
             "name": "Artisan of Scythes",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39289,12 +39410,12 @@
             "name": "Artisan of Shadows",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39353,12 +39474,12 @@
             "name": "Artisan of Spears",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39443,12 +39564,12 @@
             "name": "Artisan of Spirits",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39644,12 +39765,12 @@
             "name": "Artisan of Steel",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39734,12 +39855,12 @@
             "name": "Kolleen Redstone",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 838,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39820,12 +39941,12 @@
             "name": "Vixx",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 838,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collector_item",
@@ -39933,12 +40054,12 @@
             "name": "Camryn Jamison",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 844,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40044,12 +40165,12 @@
             "name": "Helton Wills",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 844,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "items": [
                 {
                     "kind": "collectible_weapon",

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from enum import IntEnum, auto
 import json
 import os
-from typing import Any, Optional, Sequence, TypeVar, cast
+from typing import Any, Iterable, Optional, Sequence, TypeVar, cast
 
 import Py4GW
 import PyImGui
@@ -33,8 +33,6 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 project_path = Py4GW.Console.get_projects_path()
 MODULE_NAME = "Data Collection Helper"
 MODULE_ICON = os.path.join("Textures", "Module_Icons", "Research Code.png")
-DATA_FILE_PATH = os.path.join(project_path, 'Widgets', 'Data', 'crafter_catalog.json')
-LEGACY_ARMORER_DATA_FILE_PATH = os.path.join(project_path, 'Widgets', 'Data', 'armor_crafters.json')
 DATA_DIRECTORY_PATH = os.path.join(project_path, 'Widgets', 'Data', 'npc_catalog')
     
 def tooltip():
@@ -486,8 +484,6 @@ def _deserialize_item(data: dict, default_cls: type[Item] = Item) -> Item:
 @dataclass
 class Npc:
     name: str = ''
-    map_id: int = 0
-    position: tuple[float, float] = (0.0, 0.0)
     model_id: int = 0
     encoded_name: bytes = b''
     allegiance : Allegiance = Allegiance.Neutral
@@ -500,8 +496,6 @@ class Npc:
             'name': self.name,
             'encoded_name': list(self.encoded_name),
             'model_id': self.model_id,
-            'map_id': self.map_id,
-            'position': [self.position[0], self.position[1]],
             'allegiance': self.allegiance.name,
             'required_title_id': self.required_title_id.name if self.required_title_id is not None else None,
             'required_title_rank': self.required_title_rank,
@@ -510,7 +504,6 @@ class Npc:
 
     @staticmethod
     def _base_from_dict(data: dict) -> dict:
-        position_data = list(data.get('position', [0.0, 0.0]))
         allegiance_name = str(data.get('allegiance', Allegiance.Neutral.name))
         raw_title_name = data.get('required_title_id', None)
         raw_faction_name = data.get('required_faction', None)
@@ -534,11 +527,6 @@ class Npc:
             'name': str(data.get('name', '')),
             'encoded_name': bytes(data.get('encoded_name', [])),
             'model_id': int(data.get('model_id', 0) or 0),
-            'map_id': int(data.get('map_id', 0) or 0),
-            'position': (
-                float(position_data[0]) if len(position_data) > 0 else 0.0,
-                float(position_data[1]) if len(position_data) > 1 else 0.0,
-            ),
             'allegiance': Allegiance[allegiance_name] if allegiance_name in Allegiance.__members__ else Allegiance.Neutral,
             'required_title_id': required_title_id,
             'required_title_rank': required_title_rank,
@@ -557,7 +545,26 @@ class Npc:
         return ', '.join(restrictions) if restrictions else 'Open'
 
     def HasMapUnlocked(self) -> bool:
-        return Map.IsMapUnlocked(self.map_id)
+        return True
+
+    def GetMapIDs(self) -> list[int]:
+        return []
+
+    def GetDisplayMapID(self) -> int:
+        map_ids = self.GetMapIDs()
+        return map_ids[0] if map_ids else 0
+
+    def GetDisplayPosition(self) -> tuple[float, float]:
+        return (0.0, 0.0)
+
+    def HasStationaryData(self) -> bool:
+        return False
+
+    def GetAgentId(self) -> int:
+        return 0
+
+    def MoveTo(self):
+        return
 
     def CanInteract(self) -> bool:
         if self.required_faction is not None and self.required_faction != FactionRequirement.None_ and not _meets_faction_requirement(self.required_faction):
@@ -565,6 +572,188 @@ class Npc:
         if self.required_title_id is not None and self.required_title_rank is not None and self.required_title_rank > 0:
             return _get_title_rank(self.required_title_id) >= self.required_title_rank
         return True
+
+    def _service_window_is_open(self) -> bool:
+        return CrafterWindow.IsOpen()
+
+    def _close_service_window(self):
+        CrafterWindow.Close()
+
+    def _get_offered_items(self) -> list[int]:
+        offered_items = MerchantTrading.Trading.Crafter.GetOfferedItems()
+        return list(offered_items or [])
+
+    def IsCrafterOpen(self) -> bool:
+        return False
+
+    def CloseCrafter(self):
+        if self._service_window_is_open():
+            self._close_service_window()
+
+    def CollectData(self) -> bool:
+        return False
+
+    def GetCollectedCount(self) -> int:
+        return 0
+
+    def GetCollectionSummary(self) -> str:
+        return 'N/A'
+
+
+@dataclass
+class FoeSpawn:
+    map_id: int = 0
+    position: tuple[float, float] = (0.0, 0.0)
+
+    def to_dict(self) -> dict:
+        return {
+            'map_id': self.map_id,
+            'position': [self.position[0], self.position[1]],
+        }
+
+    @staticmethod
+    def from_dict(data: dict) -> 'FoeSpawn':
+        position_data = list(data.get('position', [0.0, 0.0]))
+        return FoeSpawn(
+            map_id=int(data.get('map_id', 0) or 0),
+            position=(
+                float(position_data[0]) if len(position_data) > 0 else 0.0,
+                float(position_data[1]) if len(position_data) > 1 else 0.0,
+            ),
+        )
+
+    def HasMapUnlocked(self) -> bool:
+        return Map.IsMapUnlocked(self.map_id)
+
+
+@dataclass
+class Foe(Npc):
+    primary_profession: Optional[Profession] = None
+    secondary_profession: Optional[Profession] = None
+    spawns: list[FoeSpawn] = field(default_factory=list)
+
+    def __post_init__(self):
+        self.allegiance = Allegiance.Enemy
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload.update(
+            {
+                'primary_profession': self.primary_profession.name if self.primary_profession is not None else None,
+                'secondary_profession': self.secondary_profession.name if self.secondary_profession is not None else None,
+                'spawns': [spawn.to_dict() for spawn in self.spawns],
+            }
+        )
+        return payload
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Foe':
+        raw_primary_name = data.get('primary_profession', None)
+        raw_secondary_name = data.get('secondary_profession', None)
+        primary_name = str(raw_primary_name) if raw_primary_name is not None else ''
+        secondary_name = str(raw_secondary_name) if raw_secondary_name is not None else ''
+        legacy_map_id = int(data.get('map_id', 0) or 0)
+        spawns: list[FoeSpawn] = []
+        for spawn in list(data.get('spawns', [])):
+            if isinstance(spawn, dict):
+                spawns.append(FoeSpawn.from_dict(spawn))
+            else:
+                spawn_values = list(spawn)
+                spawns.append(
+                    FoeSpawn(
+                        map_id=legacy_map_id,
+                        position=(
+                            float(spawn_values[0]) if len(spawn_values) > 0 else 0.0,
+                            float(spawn_values[1]) if len(spawn_values) > 1 else 0.0,
+                        ),
+                    )
+                )
+        return Foe(
+            **Npc._base_from_dict(data),
+            primary_profession=Profession[primary_name] if primary_name and primary_name != Profession._None.name and primary_name in Profession.__members__ else None,
+            secondary_profession=Profession[secondary_name] if secondary_name and secondary_name != Profession._None.name and secondary_name in Profession.__members__ else None,
+            spawns=spawns,
+        )
+
+    def GetCollectedCount(self) -> int:
+        return len(self.spawns)
+
+    def GetCollectionSummary(self) -> str:
+        primary = self.primary_profession.name if self.primary_profession is not None else '?'
+        secondary = self.secondary_profession.name if self.secondary_profession is not None else '?'
+        return f'{len(self.spawns)} spawn(s) / {primary}-{secondary}'
+
+    def HasMapUnlocked(self) -> bool:
+        return any(spawn.HasMapUnlocked() for spawn in self.spawns) if self.spawns else False
+
+    def GetMapIDs(self) -> list[int]:
+        return list(dict.fromkeys(spawn.map_id for spawn in self.spawns if spawn.map_id != 0))
+
+    def GetDisplayMapID(self) -> int:
+        if not self.spawns:
+            return 0
+        current_base_map_id = Map.GetBaseMapID()
+        current_spawn = next((spawn for spawn in self.spawns if Map.GetBaseMapID(spawn.map_id) == current_base_map_id), None)
+        if current_spawn is not None:
+            return current_spawn.map_id
+        return self.spawns[0].map_id
+
+    def GetDisplayPosition(self) -> tuple[float, float]:
+        if not self.spawns:
+            return (0.0, 0.0)
+        current_base_map_id = Map.GetBaseMapID()
+        current_spawn = next((spawn for spawn in self.spawns if Map.GetBaseMapID(spawn.map_id) == current_base_map_id), None)
+        if current_spawn is not None:
+            return current_spawn.position
+        return self.spawns[0].position
+
+    def HasStationaryData(self) -> bool:
+        return bool(self.spawns)
+
+@dataclass
+class StationaryNpc(Npc):
+    map_id: int = 0
+    position: tuple[float, float] = (0.0, 0.0)
+
+    def _base_to_dict(self) -> dict:
+        payload = super()._base_to_dict()
+        payload.update(
+            {
+                'map_id': self.map_id,
+                'position': [self.position[0], self.position[1]],
+            }
+        )
+        return payload
+
+    @staticmethod
+    def _base_from_dict(data: dict) -> dict:
+        payload = Npc._base_from_dict(data)
+        position_data = list(data.get('position', [0.0, 0.0]))
+        payload.update(
+            {
+                'map_id': int(data.get('map_id', 0) or 0),
+                'position': (
+                    float(position_data[0]) if len(position_data) > 0 else 0.0,
+                    float(position_data[1]) if len(position_data) > 1 else 0.0,
+                ),
+            }
+        )
+        return payload
+
+    def HasMapUnlocked(self) -> bool:
+        return Map.IsMapUnlocked(self.map_id)
+
+    def GetMapIDs(self) -> list[int]:
+        return [self.map_id] if self.map_id != 0 else []
+
+    def GetDisplayMapID(self) -> int:
+        return self.map_id
+
+    def GetDisplayPosition(self) -> tuple[float, float]:
+        return self.position
+
+    def HasStationaryData(self) -> bool:
+        return self.position != (0.0, 0.0) and self.map_id != 0
 
     def GetAgentId(self) -> int:
         if not Routines.Checks.Map.IsMapReady():
@@ -603,16 +792,6 @@ class Npc:
             Player.ChangeTarget(agent_id)
             Player.Interact(agent_id)
 
-    def _service_window_is_open(self) -> bool:
-        return CrafterWindow.IsOpen()
-
-    def _close_service_window(self):
-        CrafterWindow.Close()
-
-    def _get_offered_items(self) -> list[int]:
-        offered_items = MerchantTrading.Trading.Crafter.GetOfferedItems()
-        return list(offered_items or [])
-
     def IsCrafterOpen(self) -> bool:
         if not Routines.Checks.Map.IsMapReady():
             return False
@@ -629,66 +808,8 @@ class Npc:
 
         return self._service_window_is_open()
 
-    def CloseCrafter(self):
-        if self._service_window_is_open():
-            self._close_service_window()
-
-    def CollectData(self) -> bool:
-        return False
-
-    def GetCollectedCount(self) -> int:
-        return 0
-
-    def GetCollectionSummary(self) -> str:
-        return 'N/A'
-
 @dataclass
-class Foe(Npc):
-    primary_profession: Profession = Profession._None
-    secondary_profession: Profession = Profession._None
-    spawns: list[tuple[float, float]] = field(default_factory=list)
-
-    def __post_init__(self):
-        self.allegiance = Allegiance.Enemy
-
-    def to_dict(self) -> dict:
-        payload = self._base_to_dict()
-        payload.update(
-            {
-                'primary_profession': self.primary_profession.name,
-                'secondary_profession': self.secondary_profession.name,
-                'spawns': [[spawn[0], spawn[1]] for spawn in self.spawns],
-            }
-        )
-        return payload
-
-    @staticmethod
-    def from_dict(data: dict) -> 'Foe':
-        primary_name = str(data.get('primary_profession', Profession._None.name))
-        secondary_name = str(data.get('secondary_profession', Profession._None.name))
-        return Foe(
-            **Npc._base_from_dict(data),
-            primary_profession=Profession[primary_name] if primary_name in Profession.__members__ else Profession._None,
-            secondary_profession=Profession[secondary_name] if secondary_name in Profession.__members__ else Profession._None,
-            spawns=[
-                (
-                    float(list(spawn)[0]) if len(list(spawn)) > 0 else 0.0,
-                    float(list(spawn)[1]) if len(list(spawn)) > 1 else 0.0,
-                )
-                for spawn in list(data.get('spawns', []))
-            ],
-        )
-
-    def GetCollectedCount(self) -> int:
-        return len(self.spawns)
-
-    def GetCollectionSummary(self) -> str:
-        primary = self.primary_profession.name if self.primary_profession != Profession._None else '?'
-        secondary = self.secondary_profession.name if self.secondary_profession != Profession._None else '?'
-        return f'{len(self.spawns)} spawn(s) / {primary}-{secondary}'
-        
-@dataclass
-class Ally(Npc):
+class Ally(StationaryNpc):
     def __post_init__(self):
         self.allegiance = Allegiance.Ally
 
@@ -697,7 +818,7 @@ class Ally(Npc):
 
     @staticmethod
     def from_dict(data: dict) -> 'Ally':
-        return Ally(**Npc._base_from_dict(data))
+        return Ally(**StationaryNpc._base_from_dict(data))
 
     def GetCollectionSummary(self) -> str:
         return self.interaction_label()
@@ -714,7 +835,7 @@ class Merchant(Ally):
     @staticmethod
     def from_dict(data: dict) -> 'Merchant':
         return Merchant(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             items=[_deserialize_item(entry, Item) for entry in list(data.get('items', []))],
         )
 
@@ -809,7 +930,7 @@ class Trader(Ally):
     def from_dict(data: dict) -> 'Trader':
         trader_type_name = str(data.get('trader_type', TraderType.Unknown.name))
         trader = Trader(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             items=[_deserialize_item(entry, Item) for entry in list(data.get('items', []))],
             _trader_type=TraderType[trader_type_name] if trader_type_name in TraderType.__members__ else TraderType.Unknown,
         )
@@ -846,7 +967,7 @@ class Artisan(Ally):
     @staticmethod
     def from_dict(data: dict) -> 'Artisan':
         return Artisan(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             items=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in list(data.get('items', []))],
         )
 
@@ -872,7 +993,7 @@ class ConsumableCrafter(Ally):
     @staticmethod
     def from_dict(data: dict) -> 'ConsumableCrafter':
         return ConsumableCrafter(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             consumables=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in list(data.get('consumables', []))],
         )
 
@@ -898,7 +1019,7 @@ class Weaponsmith(Ally):
     @staticmethod
     def from_dict(data: dict) -> 'Weaponsmith':
         return Weaponsmith(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             weapons=[cast(CraftableWeapon, _deserialize_item(entry, CraftableWeapon)) for entry in list(data.get('weapons', []))],
         )
 
@@ -948,7 +1069,7 @@ class Collector(Ally):
     @staticmethod
     def from_dict(data: dict) -> 'Collector':
         return Collector(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             items=[cast(Item, _deserialize_item(entry, CollectorItem)) for entry in list(data.get('items', []))],
         )
 
@@ -1053,7 +1174,7 @@ class Armorer(Ally):
             armors[profession] = [cast(CraftableArmor, _deserialize_item(entry, CraftableArmor)) for entry in list(entries or [])]
 
         return Armorer(
-            **Npc._base_from_dict(data),
+            **StationaryNpc._base_from_dict(data),
             professions_armor_rating=professions_armor_rating,
             armors=armors,
         )
@@ -1399,8 +1520,8 @@ show_weaponsmiths = True
 show_collectors = True
 show_merchants = True
 show_traders = True
-show_allies = True
-show_foes = True
+show_allies = False
+show_foes = False
 out_posts = Map.GetOutpostIDs()
 sweep_stop_requested = False
 sweep_is_running = False
@@ -1414,9 +1535,14 @@ _visible_npcs_cache_key: tuple[Any, ...] | None = None
 _stats_cache: dict[str, Any] = {}
 _stats_cache_revision = -1
 _last_passive_scan_at: datetime | None = None
-_last_scan_map_id = 0
+_last_scan_instance_key: tuple[int, int, int, int] | None = None
+_scanned_agent_ids_current_map: set[int] = set()
+_pending_agent_scan_attempts_current_map: dict[int, int] = {}
+_current_map_stationary_npcs: list[StationaryNpc] = []
+_current_map_missing_stationary_npcs: list[StationaryNpc] = []
 _pending_auto_save = False
 _last_auto_save_at: datetime | None = None
+_dirty_category_keys: set[str] = set()
 
 AnyCrafter = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant
 AnyNpc = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant | Trader | Ally | Foe
@@ -1445,6 +1571,15 @@ def _get_current_profession() -> Profession:
         return Profession._None
 
 
+def _get_current_map_instance_key() -> tuple[int, int, int, int]:
+    return (
+        int(Map.GetMapID() or 0),
+        int(Map.GetDistrict() or 0),
+        int(Map.GetRegion()[0] or 0),
+        int(Map.GetLanguage()[0] or 0),
+    )
+
+
 def _get_title_rank(title_id: TitleID) -> int:
     title = Player.GetTitle(int(title_id))
     if title is None:
@@ -1454,6 +1589,27 @@ def _get_title_rank(title_id: TitleID) -> int:
     if tiers:
         return sum(1 for tier in tiers if title.current_points >= tier.required)
     return int(title.current_title_tier_index or 0)
+
+
+def _is_stationary_npc_in_map(npc: StationaryNpc, map_id: int) -> bool:
+    return npc.map_id != 0 and Map.GetBaseMapID(npc.map_id) == Map.GetBaseMapID(map_id)
+
+
+def _is_stationary_npc_missing_metadata(npc: StationaryNpc) -> bool:
+    return npc.position == (0.0, 0.0) or npc.model_id == 0 or not npc.encoded_name
+
+
+def _rebuild_current_map_stationary_indexes(map_id: int):
+    global _current_map_stationary_npcs
+    global _current_map_missing_stationary_npcs
+
+    stationary_npcs = [
+        npc
+        for npc in [*_iter_all_crafters(), *TRADERS, *ALLIES]
+        if _is_stationary_npc_in_map(npc, map_id)
+    ]
+    _current_map_stationary_npcs = stationary_npcs
+    _current_map_missing_stationary_npcs = [npc for npc in stationary_npcs if _is_stationary_npc_missing_metadata(npc)]
 
 
 def _meets_faction_requirement(requirement: FactionRequirement) -> bool:
@@ -1482,6 +1638,26 @@ def _iter_all_crafters() -> list[AnyCrafter]:
 
 def _iter_all_npcs() -> list[AnyNpc]:
     return [*_iter_all_crafters(), *TRADERS, *ALLIES, *FOES]
+
+
+def _get_category_key_for_npc(npc: Npc) -> str:
+    if isinstance(npc, Armorer):
+        return 'armorers'
+    if isinstance(npc, Artisan):
+        return 'artisans'
+    if isinstance(npc, ConsumableCrafter):
+        return 'consumable_crafters'
+    if isinstance(npc, Weaponsmith):
+        return 'weaponsmiths'
+    if isinstance(npc, Collector):
+        return 'collectors'
+    if isinstance(npc, Merchant):
+        return 'merchants'
+    if isinstance(npc, Trader):
+        return 'traders'
+    if isinstance(npc, Foe):
+        return 'foes'
+    return 'allies'
 
 
 def _get_snapshot_name(item: ItemSnapshot) -> str:
@@ -1632,16 +1808,50 @@ def _named_item_sort_key(item: Any) -> tuple[str, str]:
     return item_type, item.name
 
 
+def _has_specific_attribute(item: Any) -> bool:
+    return getattr(item, 'attribute', Attribute.None_) != Attribute.None_
+
+
+def _has_specific_profession(item: Any) -> bool:
+    return getattr(item, 'profession', Profession._None) != Profession._None
+
+
+def _item_specificity_rank(item: Any) -> int:
+    if isinstance(item, CollectibleWeapon):
+        return 4
+    if isinstance(item, CollectibleArmor):
+        return 4
+    if isinstance(item, Weapon):
+        return 3
+    if isinstance(item, Armor):
+        return 3
+    if isinstance(item, CollectorItem):
+        return 2
+    return 1
+
+
 def _same_item_identity(existing: Any, candidate: Any) -> bool:
     same_name = _normalize_item_name(existing.name) == _normalize_item_name(candidate.name)
     same_type = existing.item_type == candidate.item_type or _is_unknown_item_type(existing.item_type) or _is_unknown_item_type(candidate.item_type)
-    same_attribute = getattr(existing, 'attribute', None) == getattr(candidate, 'attribute', None)
-    same_profession = getattr(existing, 'profession', None) == getattr(candidate, 'profession', None)
+    same_attribute = (
+        not _has_specific_attribute(existing)
+        or not _has_specific_attribute(candidate)
+        or getattr(existing, 'attribute', Attribute.None_) == getattr(candidate, 'attribute', Attribute.None_)
+    )
+    same_profession = (
+        not _has_specific_profession(existing)
+        or not _has_specific_profession(candidate)
+        or getattr(existing, 'profession', Profession._None) == getattr(candidate, 'profession', Profession._None)
+    )
+    same_collectible = getattr(existing, 'required_collectible', None) == getattr(candidate, 'required_collectible', None)
 
     if existing.model_id and candidate.model_id and not hasattr(existing, 'attribute'):
         return existing.model_id == candidate.model_id and same_type
 
-    return same_name and same_type and same_attribute
+    if same_collectible and same_collectible != tuple[int, int]():
+        return same_name and same_type and same_attribute and same_profession
+
+    return same_name and same_type and same_attribute and same_profession
 
 
 def _merge_base_item_fields(existing: Any, candidate: Any) -> bool:
@@ -1725,7 +1935,17 @@ def _upsert_named_item(items: list[Any], candidate: Any) -> bool:
     existing_index = next((index for index, existing in enumerate(items) if _same_item_identity(existing, candidate)), -1)
     if existing_index >= 0:
         existing = items[existing_index]
-        if isinstance(existing, Weapon) and isinstance(candidate, Weapon):
+        if _item_specificity_rank(candidate) > _item_specificity_rank(existing):
+            replacement = candidate
+            if isinstance(existing, Weapon) and isinstance(replacement, Weapon):
+                _merge_weapon_fields(replacement, existing)
+            elif isinstance(existing, Armor) and isinstance(replacement, Armor):
+                _merge_armor_fields(replacement, existing)
+            else:
+                _merge_base_item_fields(replacement, existing)
+            items[existing_index] = replacement
+            changed = True
+        elif isinstance(existing, Weapon) and isinstance(candidate, Weapon):
             changed = _merge_weapon_fields(existing, candidate)
         elif isinstance(existing, Armor) and isinstance(candidate, Armor):
             changed = _merge_armor_fields(existing, candidate)
@@ -1748,11 +1968,25 @@ def _log_collection_result(crafter_name: str, collected_count: int, item_label: 
         Py4GW.Console.Log(MODULE_NAME, f"No new {item_label} entries were found for '{crafter_name}'.", Py4GW.Console.MessageType.Warning)
 
 
-def _mark_data_dirty(queue_save: bool = False):
+def _touch_data_revision():
     global _data_revision
-    global _pending_auto_save
 
     _data_revision += 1
+
+
+def _mark_data_dirty(category_keys: str | Iterable[str] | None = None, queue_save: bool = False):
+    global _pending_auto_save
+    global _dirty_category_keys
+
+    _touch_data_revision()
+
+    if category_keys is None:
+        _dirty_category_keys.update(CRAFTER_TYPE_MAP.keys())
+    elif isinstance(category_keys, str):
+        _dirty_category_keys.add(category_keys)
+    else:
+        _dirty_category_keys.update(category_keys)
+
     if queue_save:
         _pending_auto_save = True
 
@@ -1805,23 +2039,31 @@ def _get_category_file_paths() -> dict[str, str]:
     return {key: os.path.join(DATA_DIRECTORY_PATH, f'{key}.json') for key in CRAFTER_TYPE_MAP}
 
 
-def save_crafters_to_json(path: str = DATA_FILE_PATH):
+def save_crafters_to_json():
+    global _dirty_category_keys
+
     category_paths = _get_category_file_paths()
     os.makedirs(DATA_DIRECTORY_PATH, exist_ok=True)
 
-    combined_payload = {
-        'version': 3,
-        'saved_at': datetime.utcnow().isoformat(timespec='seconds') + 'Z',
-    }
+    dirty_keys = list(_dirty_category_keys)
+    if not dirty_keys:
+        Py4GW.Console.Log(
+            MODULE_NAME,
+            'No category files have changed; skipping JSON save.',
+            Py4GW.Console.MessageType.Info,
+        )
+        return
 
-    for key, (container, _) in CRAFTER_TYPE_MAP.items():
+    saved_at = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+
+    for key in dirty_keys:
+        container, _ = CRAFTER_TYPE_MAP[key]
         entries = [_strip_none_for_json(npc.to_dict()) for npc in container]
-        combined_payload[key] = entries
         with open(category_paths[key], 'w', encoding='utf-8') as file:
             json.dump(
                 _strip_none_for_json({
                     'version': 3,
-                    'saved_at': combined_payload['saved_at'],
+                    'saved_at': saved_at,
                     'category': key,
                     'entries': entries,
                 }),
@@ -1830,51 +2072,35 @@ def save_crafters_to_json(path: str = DATA_FILE_PATH):
                 ensure_ascii=False,
             )
 
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as file:
-        json.dump(_strip_none_for_json(combined_payload), file, indent=4, ensure_ascii=False)
-
-    total_count = sum(len(container) for container, _ in CRAFTER_TYPE_MAP.values())
+    total_count = sum(len(CRAFTER_TYPE_MAP[key][0]) for key in dirty_keys)
     Py4GW.Console.Log(
         MODULE_NAME,
-        f"Saved {total_count} NPCs to '{DATA_DIRECTORY_PATH}'.",
+        f"Saved {len(dirty_keys)} changed file(s) with {total_count} NPCs to '{DATA_DIRECTORY_PATH}'.",
         Py4GW.Console.MessageType.Success,
     )
-    _mark_data_dirty()
+    for key in dirty_keys:
+        _dirty_category_keys.discard(key)
+    _touch_data_revision()
 
 
-def load_crafters_from_json(path: str = DATA_FILE_PATH):
+def load_crafters_from_json():
+    global _dirty_category_keys
+
     category_paths = _get_category_file_paths()
     loaded_any = False
-    if all(os.path.exists(category_path) for category_path in category_paths.values()):
-        for key, (container, crafter_type) in CRAFTER_TYPE_MAP.items():
-            with open(category_paths[key], 'r', encoding='utf-8') as file:
-                payload = json.load(file)
-            container[:] = [crafter_type.from_dict(entry) for entry in list(payload.get('entries', []))]
-            loaded_any = loaded_any or bool(container)
-    else:
-        actual_path = path
-        if not os.path.exists(actual_path) and path == DATA_FILE_PATH and os.path.exists(LEGACY_ARMORER_DATA_FILE_PATH):
-            actual_path = LEGACY_ARMORER_DATA_FILE_PATH
+    if not all(os.path.exists(category_path) for category_path in category_paths.values()):
+        Py4GW.Console.Log(
+            MODULE_NAME,
+            f"NPC data files do not exist yet in '{DATA_DIRECTORY_PATH}'.",
+            Py4GW.Console.MessageType.Warning,
+        )
+        return False
 
-        if not os.path.exists(actual_path):
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"NPC data files do not exist yet in '{DATA_DIRECTORY_PATH}'.",
-                Py4GW.Console.MessageType.Warning,
-            )
-            return False
-
-        with open(actual_path, 'r', encoding='utf-8') as file:
+    for key, (container, crafter_type) in CRAFTER_TYPE_MAP.items():
+        with open(category_paths[key], 'r', encoding='utf-8') as file:
             payload = json.load(file)
-
-        if 'crafters' in payload:
-            CRAFTERS[:] = [Armorer.from_dict(entry) for entry in list(payload.get('crafters', []))]
-            loaded_any = bool(CRAFTERS)
-        else:
-            for key, (container, crafter_type) in CRAFTER_TYPE_MAP.items():
-                container[:] = [crafter_type.from_dict(entry) for entry in list(payload.get(key, []))]
-                loaded_any = loaded_any or bool(container)
+        container[:] = [crafter_type.from_dict(entry) for entry in list(payload.get('entries', []))]
+        loaded_any = loaded_any or bool(container)
 
     if not loaded_any:
         Py4GW.Console.Log(
@@ -1890,6 +2116,7 @@ def load_crafters_from_json(path: str = DATA_FILE_PATH):
         f"Loaded {total_count} NPCs from '{DATA_DIRECTORY_PATH}'.",
         Py4GW.Console.MessageType.Success,
     )
+    _dirty_category_keys.clear()
     
     updated = False
     for crafter in CRAFTERS:
@@ -1903,9 +2130,10 @@ def load_crafters_from_json(path: str = DATA_FILE_PATH):
                 updated = True
                 
     if updated:
-        save_crafters_to_json(DATA_FILE_PATH)
+        _mark_data_dirty('armorers')
+        save_crafters_to_json()
     else:
-        _mark_data_dirty()
+        _touch_data_revision()
         
     return True
 
@@ -1913,7 +2141,7 @@ def load_crafters_from_json(path: str = DATA_FILE_PATH):
 def _find_current_open_crafter() -> AnyNpc | None:
     current_map_id = Map.GetBaseMapID()
     for crafter in _iter_all_npcs():
-        if Map.GetBaseMapID(crafter.map_id) != current_map_id:
+        if current_map_id not in [Map.GetBaseMapID(map_id) for map_id in crafter.GetMapIDs()]:
             continue
         
         if crafter.IsCrafterOpen():
@@ -1934,7 +2162,7 @@ def _collect_current_open_crafter():
 
     collected_count = crafter.CollectData()
     if collected_count > 0:
-        _mark_data_dirty()
+        _mark_data_dirty(_get_category_key_for_npc(crafter))
         save_crafters_to_json()
 
 def _format_armor_ratings(crafter: Armorer) -> str:
@@ -1950,9 +2178,9 @@ def _matches_search(crafter: AnyNpc, query: str) -> bool:
         return True
 
     query = query.lower()
-    map_name = Map.GetMapName(crafter.map_id).lower()
+    map_names = [Map.GetMapName(map_id).lower() for map_id in crafter.GetMapIDs()]
     service_name = crafter.service_label().lower()
-    return query in crafter.name.lower() or query in map_name or query in service_name
+    return query in crafter.name.lower() or any(query in map_name for map_name in map_names) or query in service_name
 
 
 def _is_type_visible(crafter: AnyNpc) -> bool:
@@ -2017,14 +2245,16 @@ def _get_visible_crafters() -> list[AnyNpc]:
 
 
 def _is_position_collected(crafter: AnyNpc) -> bool:
-    return (
-        crafter.position != (0.0, 0.0)
-        and crafter.model_id != 0
-    )
+    if isinstance(crafter, StationaryNpc):
+        return crafter.HasStationaryData() and crafter.model_id != 0
+    if isinstance(crafter, Foe):
+        return bool(crafter.spawns) and crafter.model_id != 0
+    return crafter.model_id != 0
     
 def _is_auto_reachable_crafter(crafter: AnyNpc) -> bool:
     return (
-        crafter.HasMapUnlocked()
+        isinstance(crafter, StationaryNpc)
+        and crafter.HasMapUnlocked()
         and crafter.map_id in out_posts
         and crafter.position != (0.0, 0.0)
         and crafter.model_id != 0
@@ -2041,22 +2271,16 @@ def _has_missing_collection_data(crafter: AnyNpc) -> bool:
     
     if isinstance(crafter, Collector):
         profession =  _get_current_profession()
-        Py4GW.Console.Log(MODULE_NAME, f"Checking collector '{crafter.name}' for missing collection data: current_profession={profession.name}")
-        
         armor_items = [item for item in crafter.items if isinstance(item, CollectibleArmor)]
         remaining_items = [item for item in crafter.items if not item in armor_items]       
-        Py4GW.Console.Log(MODULE_NAME, f"Collector '{crafter.name}' has {len(armor_items)} armor items and {len(remaining_items)} non-armor items. Total items: {len(crafter.items)}")
         profession_armors = [item for item in armor_items if item.profession == profession]
-        Py4GW.Console.Log(MODULE_NAME, f"Collector '{crafter.name}' has {len(profession_armors)} armor items for the current profession ({profession.name}).")
         
         incomplete_profession_armors = [item for item in profession_armors if item.model_id == 0 or not item.name]
-        Py4GW.Console.Log(MODULE_NAME, f"Collector '{crafter.name}' has {len(incomplete_profession_armors)} incomplete armor items for the current profession ({profession.name}).")
         
         needs_profession_armor = len(incomplete_profession_armors) > 0
         has_non_armor_items = len(remaining_items) > 0
         incomplete_items = [item for item in remaining_items if item.model_id == 0 or not item.name]
         
-        Py4GW.Console.Log(MODULE_NAME, f"Checking '{crafter.name}' for missing collection data: needs_profession_armor={needs_profession_armor}, has_non_armor_items={has_non_armor_items}, incomplete_non_armor_items={len(incomplete_items)}")
         
         return needs_profession_armor or \
                (has_non_armor_items and bool(not crafter.items or len(incomplete_items) > 0))
@@ -2079,14 +2303,13 @@ def _get_sort_value(crafter: AnyNpc, profession: Profession) -> int:
 
 
 def _get_auto_reachable_crafters() -> list[AnyCrafter]:
-    profession = _get_current_profession()
     crafters = [
         crafter
         for crafter in _get_visible_crafters()
         if _is_auto_reachable_crafter(crafter) and _has_missing_collection_data(crafter) and crafter.CanInteract()
     ]
             
-    sorted_crafters = sorted(crafters, key=lambda c: (c.map_id, c.name))
+    sorted_crafters = sorted(crafters, key=lambda c: (c.GetDisplayMapID(), c.name))
     
     return [crafter for crafter in sorted_crafters if isinstance(crafter, AnyCrafter)]
 
@@ -2178,11 +2401,13 @@ def _run_crafter_sweep(crafters: list[AnyCrafter]):
             _finish_sweep(f'Sweep stopped ({closed_count}/{total} completed).')
             return
 
-        map_name = Map.GetMapName(crafter.map_id)
+        map_id = crafter.GetDisplayMapID()
+        position = crafter.GetDisplayPosition()
+        map_name = Map.GetMapName(map_id)
         _set_sweep_status(f'Traveling to {map_name}...', crafter.name, index, total)
 
-        if Map.GetBaseMapID() != Map.GetBaseMapID(crafter.map_id):
-            travel_success = yield from Routines.Yield.Map.TravelToOutpost(crafter.map_id, timeout=20000, log=False)
+        if Map.GetBaseMapID() != Map.GetBaseMapID(map_id):
+            travel_success = yield from Routines.Yield.Map.TravelToOutpost(map_id, timeout=20000, log=False)
             if not travel_success:
                 Py4GW.Console.Log(
                     MODULE_NAME,
@@ -2198,14 +2423,14 @@ def _run_crafter_sweep(crafters: list[AnyCrafter]):
             return
 
         _set_sweep_status('Walking to crafter...', crafter.name, index, total)
-        distance_to_crafter = Utils.Distance(Player.GetXY(), crafter.position)
+        distance_to_crafter = Utils.Distance(Player.GetXY(), position)
         Py4GW.Console.Log(
             MODULE_NAME,
             f"Distance to '{crafter.name}' is {distance_to_crafter:.1f}. Allowing up to {int(distance_to_crafter * 10)} ms for movement.",
             Py4GW.Console.MessageType.Info,
         )
         
-        move_success = yield from Routines.Yield.Movement.FollowPath([crafter.position], tolerance=200, timeout=int(distance_to_crafter * 50), log=False)
+        move_success = yield from Routines.Yield.Movement.FollowPath([position], tolerance=200, timeout=int(distance_to_crafter * 50), log=False)
         if not move_success:
             Py4GW.Console.Log(
                 MODULE_NAME,
@@ -2226,8 +2451,10 @@ def _run_crafter_sweep(crafters: list[AnyCrafter]):
 
         _set_sweep_status(f"Collecting visible {crafter.service_label().lower()} data...", crafter.name, index, total)
         try:
-            crafter.CollectData()
-            save_crafters_to_json()
+            collected = crafter.CollectData()
+            if collected:
+                _mark_data_dirty(_get_category_key_for_npc(crafter))
+                save_crafters_to_json()
         except Exception as exc:
             Py4GW.Console.Log(
                 MODULE_NAME,
@@ -2276,7 +2503,7 @@ def _open_crafter_window(crafter: AnyCrafter, timeout_ms: int = 1500):
 
         player_distance = Utils.Distance(Player.GetXY(), Agent.GetXY(agent_id))
         if player_distance > 220.0:
-            yield from Routines.Yield.Movement.FollowPath([crafter.position], tolerance=150, timeout=5000, log=False)
+            yield from Routines.Yield.Movement.FollowPath([crafter.GetDisplayPosition()], tolerance=150, timeout=5000, log=False)
         else:
             yield from Routines.Yield.wait(retry_interval)
 
@@ -2315,9 +2542,6 @@ def _build_crafter_clipboard_text(crafter: AnyCrafter, position: tuple[float, fl
 
 def _update_npc_metadata(npc: Npc, position: tuple[float, float], model_id: int, encoded_name: bytes) -> bool:
     changed = False
-    if npc.position == (0.0, 0.0) and position != (0.0, 0.0):
-        npc.position = position
-        changed = True
     if npc.model_id == 0 and model_id != 0:
         npc.model_id = model_id
         changed = True
@@ -2327,11 +2551,19 @@ def _update_npc_metadata(npc: Npc, position: tuple[float, float], model_id: int,
     return changed
 
 
-def _find_npc_match(container: Sequence[AnyNpc], name: str, map_id: int, model_id: int = 0) -> AnyNpc | None:
+def _update_stationary_npc_metadata(npc: StationaryNpc, position: tuple[float, float], model_id: int, encoded_name: bytes) -> bool:
+    changed = _update_npc_metadata(npc, position, model_id, encoded_name)
+    if npc.position == (0.0, 0.0) and position != (0.0, 0.0):
+        npc.position = position
+        changed = True
+    return changed
+
+
+def _find_npc_match(container: Sequence[StationaryNpc], name: str, map_id: int, model_id: int = 0) -> StationaryNpc | None:
     normalized_name = _normalize_item_name(name)
     base_map_id = Map.GetBaseMapID(map_id)
     for npc in container:
-        if _normalize_item_name(npc.name) != normalized_name:
+        if not _normalize_item_name(npc.name) in normalized_name:
             continue
         if Map.GetBaseMapID(npc.map_id) != base_map_id:
             continue
@@ -2350,9 +2582,26 @@ def _classify_service_npc(name: str) -> type[AnyNpc]:
     return Ally
 
 
-def _resolve_profession_name(name: str) -> Profession:
+def _resolve_profession_name(name: str) -> Optional[Profession]:
     normalized = name.replace(' ', '')
-    return Profession[normalized] if normalized in Profession.__members__ else Profession._None
+    if not normalized or normalized == Profession._None.name:
+        return None
+    return Profession[normalized] if normalized in Profession.__members__ else None
+
+
+def _find_foe_match(name: str, model_id: int, encoded_name: bytes, primary: Optional[Profession], secondary: Optional[Profession]) -> Foe | None:
+    normalized_name = _normalize_item_name(name)
+    for foe in FOES:
+        if model_id != 0 and foe.model_id not in (0, model_id):
+            continue
+        if encoded_name and foe.encoded_name and foe.encoded_name != encoded_name:
+            continue
+        if foe.primary_profession != primary or foe.secondary_profession != secondary:
+            continue
+        if normalized_name and _normalize_item_name(foe.name) != normalized_name:
+            continue
+        return foe
+    return None
 
 
 def _upsert_foe_spawn(agent_id: int, map_id: int, updated: bool) -> bool:
@@ -2366,30 +2615,17 @@ def _upsert_foe_spawn(agent_id: int, map_id: int, updated: bool) -> bool:
     primary_name, secondary_name = Agent.GetProfessionNames(agent_id)
     primary = _resolve_profession_name(primary_name)
     secondary = _resolve_profession_name(secondary_name)
-
-    existing = next(
-        (
-            foe for foe in FOES
-            if _normalize_item_name(foe.name) == _normalize_item_name(name)
-            and Map.GetBaseMapID(foe.map_id) == Map.GetBaseMapID(map_id)
-            and foe.model_id in (0, model_id)
-            and foe.primary_profession == primary
-            and foe.secondary_profession == secondary
-        ),
-        None,
-    )
+    existing = _find_foe_match(name, model_id, encoded_name, primary, secondary)
 
     if existing is None:
         FOES.append(
             Foe(
                 name=name,
-                map_id=map_id,
-                position=position,
                 model_id=model_id,
                 encoded_name=encoded_name,
                 primary_profession=primary,
                 secondary_profession=secondary,
-                spawns=[position] if position != (0.0, 0.0) else [],
+                spawns=[FoeSpawn(map_id=map_id, position=position)] if position != (0.0, 0.0) else [],
             )
         )
         return True
@@ -2397,8 +2633,12 @@ def _upsert_foe_spawn(agent_id: int, map_id: int, updated: bool) -> bool:
     if _update_npc_metadata(existing, position, model_id, encoded_name):
         updated = True
 
-    if position != (0.0, 0.0) and all(Utils.Distance(position, spawn) >= 2500.0 for spawn in existing.spawns):
-        existing.spawns.append(position)
+    if position != (0.0, 0.0) and all(
+        Map.GetBaseMapID(spawn.map_id) != Map.GetBaseMapID(map_id)
+        or Utils.Distance(position, spawn.position) >= 2500.0
+        for spawn in existing.spawns
+    ):
+        existing.spawns.append(FoeSpawn(map_id=map_id, position=position))
         updated = True
 
     return updated
@@ -2406,29 +2646,56 @@ def _upsert_foe_spawn(agent_id: int, map_id: int, updated: bool) -> bool:
 
 def _scan_current_map_npcs():
     global _last_passive_scan_at
-    global _last_scan_map_id
+    global _last_scan_instance_key
+    global _scanned_agent_ids_current_map
+    global _pending_agent_scan_attempts_current_map
+    global _current_map_stationary_npcs
+    global _current_map_missing_stationary_npcs
 
     if not Routines.Checks.Map.IsMapReady():
         return
 
     now = datetime.utcnow()
     current_map_id = Map.GetBaseMapID()
-    if _last_scan_map_id != current_map_id:
-        _last_scan_map_id = current_map_id
+    current_instance_key = _get_current_map_instance_key()
+    if _last_scan_instance_key != current_instance_key:
+        _last_scan_instance_key = current_instance_key
         _last_passive_scan_at = None
+        _scanned_agent_ids_current_map.clear()
+        _pending_agent_scan_attempts_current_map.clear()
+        _rebuild_current_map_stationary_indexes(current_map_id)
 
     if _last_passive_scan_at is not None and now - _last_passive_scan_at < timedelta(seconds=1):
         return
     _last_passive_scan_at = now
 
+    agent_ids = [
+        agent_id
+        for agent_id in AgentArray.GetAgentArray()
+        if agent_id and agent_id not in _scanned_agent_ids_current_map
+    ]
+    if not agent_ids:
+        return
+
     updated = False
-    for agent_id in AgentArray.GetAgentArray():
-        if not agent_id or not Agent.IsValid(agent_id) or not Agent.IsNPC(agent_id):
+    dirty_categories: set[str] = set()
+    for agent_id in agent_ids:
+        if not Agent.IsValid(agent_id) or not Agent.IsNPC(agent_id):
+            _scanned_agent_ids_current_map.add(agent_id)
+            _pending_agent_scan_attempts_current_map.pop(agent_id, None)
             continue
 
         name = Agent.GetNameByID(agent_id)
         if not name:
+            attempts = _pending_agent_scan_attempts_current_map.get(agent_id, 0) + 1
+            if attempts >= 3:
+                _scanned_agent_ids_current_map.add(agent_id)
+                _pending_agent_scan_attempts_current_map.pop(agent_id, None)
+            else:
+                _pending_agent_scan_attempts_current_map[agent_id] = attempts
             continue
+        _scanned_agent_ids_current_map.add(agent_id)
+        _pending_agent_scan_attempts_current_map.pop(agent_id, None)
 
         position = Agent.GetXY(agent_id)
         model_id = int(Agent.GetModelID(agent_id) or 0)
@@ -2439,73 +2706,93 @@ def _scan_current_map_npcs():
         except Exception:
             allegiance = Allegiance.Neutral
 
-        known_npc = _find_npc_match(_iter_all_crafters() + MERCHANTS + TRADERS, name, current_map_id, model_id)
+        known_npc = _find_npc_match(_current_map_missing_stationary_npcs, name, current_map_id, model_id)
+        if known_npc is None:
+            known_npc = _find_npc_match(_current_map_stationary_npcs, name, current_map_id, model_id)
         if known_npc is not None:
-            if _update_npc_metadata(known_npc, position, model_id, encoded_name):
+            if _update_stationary_npc_metadata(known_npc, position, model_id, encoded_name):
                 updated = True
+                dirty_categories.add(_get_category_key_for_npc(known_npc))
+                if not _is_stationary_npc_missing_metadata(known_npc):
+                    _current_map_missing_stationary_npcs = [
+                        npc for npc in _current_map_missing_stationary_npcs if npc is not known_npc
+                    ]
             if isinstance(known_npc, Trader) and known_npc.trader_type == TraderType.Unknown:
                 known_npc.trader_type = TraderType.get_type_from_name(known_npc.name)
                 updated = True
+                dirty_categories.add('traders')
             continue
 
         if allegiance == Allegiance.Enemy:
+            if Agent.IsSpawned(agent_id):
+                continue
+            
+            previous_updated = updated
             updated = _upsert_foe_spawn(agent_id, current_map_id, updated)
+            if updated != previous_updated:
+                dirty_categories.add('foes')
             continue
 
         target_cls = _classify_service_npc(name)
         if target_cls is Trader:
             existing_trader = _find_npc_match(TRADERS, name, current_map_id, model_id)
             if existing_trader is None:
-                TRADERS.append(
-                    Trader(
-                        name=name,
-                        map_id=current_map_id,
-                        position=position,
-                        model_id=model_id,
-                        encoded_name=encoded_name,
-                        _trader_type=TraderType.get_type_from_name(name),
-                    )
-                )
-                updated = True
-            elif _update_npc_metadata(existing_trader, position, model_id, encoded_name):
-                updated = True
-            continue
-
-        if target_cls is Merchant:
-            existing_merchant = _find_npc_match(MERCHANTS, name, current_map_id, model_id)
-            if existing_merchant is None:
-                MERCHANTS.append(
-                    Merchant(
-                        name=name,
-                        map_id=current_map_id,
-                        position=position,
-                        model_id=model_id,
-                        encoded_name=encoded_name,
-                    )
-                )
-                updated = True
-            elif _update_npc_metadata(existing_merchant, position, model_id, encoded_name):
-                updated = True
-            continue
-
-        existing_ally = _find_npc_match(ALLIES, name, current_map_id, model_id)
-        if existing_ally is None:
-            ALLIES.append(
-                Ally(
+                trader = Trader(
                     name=name,
                     map_id=current_map_id,
                     position=position,
                     model_id=model_id,
                     encoded_name=encoded_name,
-                    allegiance=allegiance,
+                    _trader_type=TraderType.get_type_from_name(name),
                 )
+                TRADERS.append(trader)
+                _current_map_stationary_npcs.append(trader)
+                updated = True
+                dirty_categories.add('traders')
+            elif _update_stationary_npc_metadata(existing_trader, position, model_id, encoded_name):
+                updated = True
+                dirty_categories.add('traders')
+            continue
+
+        if target_cls is Merchant:
+            existing_merchant = _find_npc_match(MERCHANTS, name, current_map_id, model_id)
+            if existing_merchant is None:
+                merchant = Merchant(
+                    name=name,
+                    map_id=current_map_id,
+                    position=position,
+                    model_id=model_id,
+                    encoded_name=encoded_name,
+                )
+                MERCHANTS.append(merchant)
+                _current_map_stationary_npcs.append(merchant)
+                updated = True
+                dirty_categories.add('merchants')
+            elif _update_stationary_npc_metadata(existing_merchant, position, model_id, encoded_name):
+                updated = True
+                dirty_categories.add('merchants')
+            continue
+
+        existing_ally = _find_npc_match(ALLIES, name, current_map_id, model_id)
+        if existing_ally is None:
+            ally = Ally(
+                name=name,
+                map_id=current_map_id,
+                position=position,
+                model_id=model_id,
+                encoded_name=encoded_name,
+                allegiance=allegiance,
             )
+            ALLIES.append(ally)
+            _current_map_stationary_npcs.append(ally)
             updated = True
-        elif _update_npc_metadata(existing_ally, position, model_id, encoded_name):
+            dirty_categories.add('allies')
+        elif _update_stationary_npc_metadata(existing_ally, position, model_id, encoded_name):
             updated = True
+            dirty_categories.add('allies')
 
     if updated:
-        _mark_data_dirty(queue_save=True)
+        _mark_data_dirty(dirty_categories, queue_save=True)
 
 def draw_window():
     _ensure_initialized()
@@ -2529,7 +2816,7 @@ def draw_window():
     if current_profession == Profession._None:
         current_profession = Profession.Warrior
     visible_crafters = _get_visible_crafters()
-    sorted_by_map = sorted(visible_crafters, key=lambda c: (c.map_id, c.name))
+    sorted_by_map = sorted(visible_crafters, key=lambda c: (c.GetDisplayMapID(), c.name))
     stats = _get_dashboard_stats()
     all_crafters = stats['all_npcs']
 
@@ -2611,10 +2898,12 @@ def draw_window():
                 if not pos_collected:
                     style.Text.push_color_direct((255, 100, 100, 255))
                 
-                map_name = Map.GetMapName(crafter.map_id)
+                display_map_id = crafter.GetDisplayMapID()
+                display_position = crafter.GetDisplayPosition()
+                map_name = Map.GetMapName(display_map_id) if display_map_id != 0 else 'Unknown Map'
                 is_unlocked = crafter.HasMapUnlocked()
-                is_outpost = crafter.map_id in out_posts
-                is_here = current_map_id == Map.GetBaseMapID(crafter.map_id)
+                is_outpost = display_map_id in out_posts
+                is_here = display_map_id != 0 and current_map_id == Map.GetBaseMapID(display_map_id)
 
                 PyImGui.table_next_row()
                 row_height = int(max(row_height, PyImGui.get_content_region_avail()[1]))
@@ -2626,7 +2915,7 @@ def draw_window():
                 PyImGui.text(crafter.name)
 
                 PyImGui.table_set_column_index(2)
-                PyImGui.text(f'{map_name} ({crafter.map_id})')
+                PyImGui.text(f'{map_name} ({display_map_id})' if display_map_id != 0 else map_name)
 
                 PyImGui.table_set_column_index(3)
                 PyImGui.text('Yes' if is_unlocked else 'No')
@@ -2638,8 +2927,12 @@ def draw_window():
                 PyImGui.text(crafter.GetCollectionSummary())
 
                 PyImGui.table_set_column_index(6)
-                button_label = 'Move' if (crafter.position != (0, 0) and is_here) else 'Here' if is_here else 'Travel' if is_outpost else 'Manual'
-                button_disabled = (crafter.position == (0, 0) and is_here) or not is_unlocked or (not is_outpost and not is_here)
+                can_move = isinstance(crafter, StationaryNpc)
+                button_label = 'N/A'
+                button_disabled = True
+                if can_move:
+                    button_label = 'Move' if (display_position != (0.0, 0.0) and is_here) else 'Here' if is_here else 'Travel' if is_outpost else 'Manual'
+                    button_disabled = (display_position == (0.0, 0.0) and is_here) or not is_unlocked or (not is_outpost and not is_here)
                 if ImGui.button(f'{button_label}##crafter_move_{crafter.name}_{index}', width=-1, disabled=button_disabled):
                     crafter.MoveTo()
                                     

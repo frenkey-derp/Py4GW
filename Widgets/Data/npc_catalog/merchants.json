@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:04:16Z",
+    "saved_at": "2026-05-17T12:36:26Z",
     "category": "merchants",
     "entries": [
         {
@@ -20,12 +20,12 @@
                 0
             ],
             "model_id": 2090,
+            "allegiance": "Ally",
             "map_id": 857,
             "position": [
                 2158.0,
                 -2006.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -45,12 +45,12 @@
                 0
             ],
             "model_id": 3330,
+            "allegiance": "Ally",
             "map_id": 857,
             "position": [
                 -2750.0,
                 731.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -70,12 +70,12 @@
                 0
             ],
             "model_id": 4775,
+            "allegiance": "Ally",
             "map_id": 857,
             "position": [
                 2326.0,
                 3681.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -93,12 +93,12 @@
                 0
             ],
             "model_id": 3456,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 8481.0,
                 2005.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -118,12 +118,12 @@
                 0
             ],
             "model_id": 3459,
+            "allegiance": "Ally",
             "map_id": 77,
             "position": [
                 9171.0,
                 6750.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -141,12 +141,12 @@
                 0
             ],
             "model_id": 2065,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 2328.0,
                 2439.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -164,12 +164,12 @@
                 0
             ],
             "model_id": 2065,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 1050.0,
                 3310.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -187,12 +187,12 @@
                 0
             ],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 1846.0,
                 3229.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -210,12 +210,12 @@
                 0
             ],
             "model_id": 3458,
+            "allegiance": "Ally",
             "map_id": 130,
             "position": [
                 22233.0,
                 9568.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -233,12 +233,12 @@
                 0
             ],
             "model_id": 2140,
+            "allegiance": "Ally",
             "map_id": 131,
             "position": [
                 -5886.0,
                 23247.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -256,12 +256,12 @@
                 0
             ],
             "model_id": 2043,
+            "allegiance": "Ally",
             "map_id": 137,
             "position": [
                 2288.0,
                 9297.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -279,12 +279,12 @@
                 0
             ],
             "model_id": 3673,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 7823.0,
                 -2204.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -304,12 +304,12 @@
                 0
             ],
             "model_id": 3674,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 5842.0,
                 -897.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -327,12 +327,12 @@
                 0
             ],
             "model_id": 3330,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 1448.0,
                 -2024.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -350,12 +350,12 @@
                 0
             ],
             "model_id": 3327,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 589.0,
                 -1768.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -373,12 +373,12 @@
                 0
             ],
             "model_id": 3330,
+            "allegiance": "Ally",
             "map_id": 226,
             "position": [
                 -10881.0,
                 -1866.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -396,12 +396,12 @@
                 0
             ],
             "model_id": 3673,
+            "allegiance": "Ally",
             "map_id": 234,
             "position": [
                 -2010.0,
                 6972.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -419,12 +419,12 @@
                 0
             ],
             "model_id": 3330,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -11829.0,
                 11192.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -442,12 +442,12 @@
                 0
             ],
             "model_id": 3326,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -11866.0,
                 11444.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -465,12 +465,12 @@
                 0
             ],
             "model_id": 3326,
+            "allegiance": "Ally",
             "map_id": 249,
             "position": [
                 -6206.0,
                 -16962.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -488,12 +488,12 @@
                 0
             ],
             "model_id": 3330,
+            "allegiance": "Ally",
             "map_id": 250,
             "position": [
                 17290.0,
                 12426.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -511,12 +511,12 @@
                 0
             ],
             "model_id": 3456,
+            "allegiance": "Ally",
             "map_id": 272,
             "position": [
                 2436.0,
                 3313.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -536,12 +536,12 @@
                 0
             ],
             "model_id": 3459,
+            "allegiance": "Ally",
             "map_id": 272,
             "position": [
                 -1124.0,
                 4243.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -559,12 +559,12 @@
                 0
             ],
             "model_id": 3672,
+            "allegiance": "Ally",
             "map_id": 273,
             "position": [
                 1597.0,
                 5190.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -584,12 +584,12 @@
                 0
             ],
             "model_id": 3674,
+            "allegiance": "Ally",
             "map_id": 273,
             "position": [
                 -1441.0,
                 2730.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -607,12 +607,12 @@
                 0
             ],
             "model_id": 3672,
+            "allegiance": "Ally",
             "map_id": 279,
             "position": [
                 12363.0,
                 -20277.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -630,12 +630,12 @@
                 0
             ],
             "model_id": 3330,
+            "allegiance": "Ally",
             "map_id": 283,
             "position": [
                 -12851.0,
                 13654.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -653,12 +653,12 @@
                 0
             ],
             "model_id": 3456,
+            "allegiance": "Ally",
             "map_id": 286,
             "position": [
                 16317.0,
                 2928.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -678,12 +678,12 @@
                 0
             ],
             "model_id": 3459,
+            "allegiance": "Ally",
             "map_id": 286,
             "position": [
                 15315.0,
                 -1655.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -703,12 +703,12 @@
                 0
             ],
             "model_id": 5440,
+            "allegiance": "Ally",
             "map_id": 376,
             "position": [
                 -17174.0,
                 19188.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -728,12 +728,12 @@
                 0
             ],
             "model_id": 5720,
+            "allegiance": "Ally",
             "map_id": 398,
             "position": [
                 -1208.0,
                 3944.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -753,12 +753,12 @@
                 0
             ],
             "model_id": 5721,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 -2986.0,
                 735.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -778,12 +778,12 @@
                 0
             ],
             "model_id": 5720,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 -2722.0,
                 3159.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -803,12 +803,12 @@
                 0
             ],
             "model_id": 5441,
+            "allegiance": "Ally",
             "map_id": 424,
             "position": [
                 376.0,
                 -332.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -828,12 +828,12 @@
                 0
             ],
             "model_id": 4776,
+            "allegiance": "Ally",
             "map_id": 431,
             "position": [
                 -4075.0,
                 4595.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -853,12 +853,12 @@
                 0
             ],
             "model_id": 5669,
+            "allegiance": "Ally",
             "map_id": 474,
             "position": [
                 4754.0,
                 -12912.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -878,12 +878,12 @@
                 0
             ],
             "model_id": 5440,
+            "allegiance": "Ally",
             "map_id": 478,
             "position": [
                 1487.0,
                 1645.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -903,12 +903,12 @@
                 0
             ],
             "model_id": 4775,
+            "allegiance": "Ally",
             "map_id": 491,
             "position": [
                 3232.0,
                 2348.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -928,12 +928,12 @@
                 0
             ],
             "model_id": 6813,
+            "allegiance": "Ally",
             "map_id": 624,
             "position": [
                 14618.0,
                 15326.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -953,12 +953,12 @@
                 0
             ],
             "model_id": 6115,
+            "allegiance": "Ally",
             "map_id": 638,
             "position": [
                 -8339.0,
                 -22433.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -978,12 +978,12 @@
                 0
             ],
             "model_id": 6812,
+            "allegiance": "Ally",
             "map_id": 640,
             "position": [
                 19575.0,
                 14751.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1003,12 +1003,12 @@
                 0
             ],
             "model_id": 6813,
+            "allegiance": "Ally",
             "map_id": 640,
             "position": [
                 18653.0,
                 13934.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1028,12 +1028,12 @@
                 0
             ],
             "model_id": 6118,
+            "allegiance": "Ally",
             "map_id": 641,
             "position": [
                 23948.0,
                 -12824.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1053,12 +1053,12 @@
                 0
             ],
             "model_id": 6102,
+            "allegiance": "Ally",
             "map_id": 642,
             "position": [
                 -2748.0,
                 1019.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1078,12 +1078,12 @@
                 0
             ],
             "model_id": 6438,
+            "allegiance": "Ally",
             "map_id": 643,
             "position": [
                 11580.0,
                 21619.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1103,12 +1103,12 @@
                 0
             ],
             "model_id": 6439,
+            "allegiance": "Ally",
             "map_id": 644,
             "position": [
                 17664.0,
                 -7724.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1128,12 +1128,12 @@
                 0
             ],
             "model_id": 6438,
+            "allegiance": "Ally",
             "map_id": 644,
             "position": [
                 15425.0,
                 -8617.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1153,12 +1153,12 @@
                 0
             ],
             "model_id": 6286,
+            "allegiance": "Ally",
             "map_id": 652,
             "position": [
                 -1826.0,
                 674.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1178,12 +1178,12 @@
                 0
             ],
             "model_id": 6245,
+            "allegiance": "Ally",
             "map_id": 675,
             "position": [
                 7319.0,
                 -24874.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1201,12 +1201,12 @@
                 0
             ],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 4618.0,
                 4838.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1224,12 +1224,12 @@
                 0
             ],
             "model_id": 2161,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 5475.0,
                 6525.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1247,12 +1247,12 @@
                 0
             ],
             "model_id": 2161,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 6402.0,
                 6169.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1270,12 +1270,12 @@
                 0
             ],
             "model_id": 2047,
+            "allegiance": "Ally",
             "map_id": 109,
             "position": [
                 3797.0,
                 2281.0
             ],
-            "allegiance": "Ally",
             "items": []
         },
         {
@@ -1295,12 +1295,37 @@
                 0
             ],
             "model_id": 5044,
+            "allegiance": "Ally",
             "map_id": 450,
             "position": [
                 136.0,
                 13106.0
             ],
+            "items": []
+        },
+        {
+            "name": "Gufa [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                203,
+                30,
+                209,
+                147,
+                143,
+                185,
+                97,
+                89,
+                0,
+                0
+            ],
+            "model_id": 6438,
             "allegiance": "Ally",
+            "map_id": 650,
+            "position": [
+                -23096.0,
+                15012.0
+            ],
             "items": []
         }
     ]
