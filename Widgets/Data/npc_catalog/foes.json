@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:47:14Z",
+    "saved_at": "2026-05-17T13:58:43Z",
     "category": "foes",
     "entries": [
         {
@@ -781,6 +781,32 @@
                     "position": [
                         -6991.8701171875,
                         -6695.07373046875
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Charr Axe Fiend",
+            "encoded_name": [
+                72,
+                15,
+                51,
+                135,
+                49,
+                143,
+                8,
+                79,
+                0,
+                0
+            ],
+            "model_id": 1455,
+            "allegiance": "Enemy",
+            "spawns": [
+                {
+                    "map_id": 148,
+                    "position": [
+                        6833.94482421875,
+                        15591.4052734375
                     ]
                 }
             ]

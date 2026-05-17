@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:57:53Z",
+    "saved_at": "2026-05-17T13:46:50Z",
     "category": "collectors",
     "entries": [
         {
@@ -18701,7 +18701,7 @@
                     "name": "Shing Jea Shoes",
                     "item_type": "Boots",
                     "model_id": 11469,
-                    "armor_rating": 0,
+                    "armor_rating": 45,
                     "profession": "Assassin",
                     "required_collectible": [
                         "830",
@@ -37222,14 +37222,12 @@
                     "name": "Crown",
                     "item_type": "Headpiece",
                     "model_id": 25776,
-                    "armor_rating": 0,
-                    "profession": "Assassin"
-                },
-                {
-                    "kind": "collector_item",
-                    "name": "Bison Championship Token[s]",
-                    "item_type": "Trophy",
-                    "model_id": 27563
+                    "armor_rating": 70,
+                    "profession": "Assassin",
+                    "required_collectible": [
+                        "27563",
+                        5
+                    ]
                 },
                 {
                     "kind": "collector_item",
@@ -37237,15 +37235,9 @@
                     "item_type": "Usable",
                     "model_id": 24593,
                     "required_collectible": [
-                        "0",
+                        "27563",
                         5
                     ]
-                },
-                {
-                    "kind": "collector_item",
-                    "name": "Aged Dwarven Ale[s]",
-                    "item_type": "Usable",
-                    "model_id": 24593
                 }
             ]
         },
@@ -37906,8 +37898,12 @@
                     "name": "Destroyer Gauntlets",
                     "item_type": "Gloves",
                     "model_id": 26188,
-                    "armor_rating": 0,
-                    "profession": "Assassin"
+                    "armor_rating": 70,
+                    "profession": "Assassin",
+                    "required_collectible": [
+                        "27033",
+                        250
+                    ]
                 },
                 {
                     "kind": "collectible_armor",

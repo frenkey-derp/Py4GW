@@ -570,6 +570,7 @@ class Npc:
         return
 
     def CanInteract(self) -> bool:        
+        
         if self.required_faction is not None and self.required_faction != FactionRequirement.None_ and not _meets_faction_requirement(self.required_faction):
             return False
         
@@ -877,7 +878,7 @@ class Merchant(Ally):
         _log_collection_result(self.name, collected_count, 'merchant item')
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this merchant again...", Py4GW.Console.MessageType.Warning)
-        return not pending_name_update and collected_count > 0
+        return collected_count > 0
 
     def GetCollectedCount(self) -> int:
         return len(self.items)
@@ -1056,7 +1057,7 @@ class Weaponsmith(Ally):
         _log_collection_result(self.name, collected_count, 'weapon')
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
-        return not pending_name_update and collected_count > 0
+        return collected_count > 0
 
     def GetCollectedCount(self) -> int:
         return len(self.weapons)
@@ -1129,7 +1130,7 @@ class Collector(Ally):
         _log_collection_result(self.name, collected_count, 'collector')
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
-        return not pending_name_update and collected_count > 0
+        return collected_count > 0
 
     def GetCollectedCount(self) -> int:
         return len(self.items)
@@ -1212,29 +1213,52 @@ class Armorer(Ally):
             def _same_armor_item_identity(existing: Any, candidate: Any) -> bool:
                 same_type = existing.item_type == candidate.item_type or _is_unknown_item_type(existing.item_type) or _is_unknown_item_type(candidate.item_type)
                 same_profession = getattr(existing, 'profession', None) == getattr(candidate, 'profession', None)
+                generic_armors =[
+                    "Crown",
+                    "Bandana",
+                    "Blindfold",
+                    "Dread Mask",
+                    "Highlander Woad",
+                    "Mask of the Mo Zing",
+                    "Norn Woad",
+                    "Slim Spectacles",
+                    "Spectacles",
+                    "Tinted Spectacles",
+                    "Chaos Gloves",
+                    "Destroyer Gauntlets",
+                    "Dragon Gauntlets",
+                    "Glacial Gauntlets",
+                    "Stone Gauntlets",
+                ]
 
-                return same_profession and same_type
+                existing_name = getattr(existing, 'name', '')
+                candidate_name = getattr(candidate, 'name', '')
+                return same_profession and same_type and candidate_name.lower() in existing_name.lower()
+
+            armor = _build_craftable_armor_from_snapshot(item)
+            armor.name = armor_name
+            armor.armor_rating = int(self.professions_armor_rating.get(profession, 0) or 0)
+            armor.profession = profession
 
             existing = next(
                 (
                     existing_armor
                     for entries in self.armors.values()
                     for existing_armor in entries
-                    if _same_armor_item_identity(existing_armor, item)
+                    if _same_armor_item_identity(existing_armor, armor)
                 ),
                 None,
             )
 
             if existing is not None:
-                existing.name = armor_name  # Update name even if other fields are not merged to ensure future identity matches
-                existing.model_id = item.model_id  # Update model_id as well for better future matching
-                collected_count += 1
+                if _merge_armor_fields(existing, armor):
+                    collected_count += 1
+                else:
+                    # Keep these aligned even when nothing else changed so future identity matches stay stable.
+                    existing.name = armor_name
+                    existing.model_id = item.model_id
                 continue
 
-            armor = _build_craftable_armor_from_snapshot(item)
-            armor.name = armor_name
-            armor.armor_rating = int(self.professions_armor_rating.get(profession, 0) or 0)
-            armor.profession = profession
             if self._upsert_craftable_armor(armor):
                 collected_count += 1
 
@@ -1242,7 +1266,7 @@ class Armorer(Ally):
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
             
-        return not pending_name_update and collected_count > 0
+        return collected_count > 0
 
     def _upsert_craftable_armor(self, armor: CraftableArmor) -> bool:
         entries = self.armors.setdefault(armor.profession, [])
@@ -2038,7 +2062,7 @@ def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> b
     _log_collection_result(crafter.name, collected_count, 'craftable item')
     if pending_name_update:
         Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{crafter.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
-    return not pending_name_update and collected_count > 0
+    return collected_count > 0
 
 
 def _get_category_file_paths() -> dict[str, str]:
@@ -2430,13 +2454,14 @@ def _run_crafter_sweep(crafters: list[AnyCrafter]):
 
         _set_sweep_status('Walking to crafter...', crafter.name, index, total)
         distance_to_crafter = Utils.Distance(Player.GetXY(), position)
+        timeout_ms = int(distance_to_crafter * 12)
         Py4GW.Console.Log(
             MODULE_NAME,
-            f"Distance to '{crafter.name}' is {distance_to_crafter:.1f}. Allowing up to {int(distance_to_crafter * 10)} ms for movement.",
+            f"Distance to '{crafter.name}' is {distance_to_crafter:.1f}. Allowing up to {timeout_ms} ms for movement.",
             Py4GW.Console.MessageType.Info,
         )
         
-        move_success = yield from Routines.Yield.Movement.FollowPath([position], tolerance=200, timeout=int(distance_to_crafter * 50), log=False)
+        move_success = yield from Routines.Yield.Movement.FollowPath([position], tolerance=200, timeout=timeout_ms, log=False)
         if not move_success:
             Py4GW.Console.Log(
                 MODULE_NAME,

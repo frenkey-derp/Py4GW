@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:57:53Z",
+    "saved_at": "2026-05-17T13:58:47Z",
     "category": "weaponsmiths",
     "entries": [
         {
@@ -4607,15 +4607,44 @@
         },
         {
             "name": "Arthur Ayala",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                173,
+                56,
+                99,
+                183,
+                38,
+                229,
+                92,
+                47,
+                0,
+                0
+            ],
+            "model_id": 1471,
             "allegiance": "Ally",
             "map_id": 148,
             "position": [
-                0.0,
-                0.0
+                9050.0,
+                11275.0
             ],
             "weapons": [
+                {
+                    "kind": "craftable_weapon",
+                    "name": "Kyhlo Axe",
+                    "item_type": "Axe",
+                    "model_id": 12,
+                    "requirement": 0,
+                    "attribute": "None_",
+                    "damage": [
+                        5,
+                        10
+                    ],
+                    "energy": 0,
+                    "inherent": [],
+                    "required_materials": {
+                        "materials": {},
+                        "gold": 0
+                    }
+                },
                 {
                     "kind": "craftable_weapon",
                     "name": "Kyhlo Axe of Fortitude",
@@ -4638,15 +4667,36 @@
                 },
                 {
                     "kind": "craftable_weapon",
+                    "name": "Ascalon Longbow",
+                    "item_type": "Bow",
+                    "model_id": 461,
+                    "requirement": 0,
+                    "attribute": "None_",
+                    "damage": [
+                        7,
+                        10
+                    ],
+                    "energy": 0,
+                    "inherent": [],
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 100
+                    }
+                },
+                {
+                    "kind": "craftable_weapon",
                     "name": "Foehammer",
                     "item_type": "Hammer",
-                    "model_id": 0,
+                    "model_id": 1685,
                     "requirement": 3,
                     "attribute": "HammerMastery",
                     "damage": [
                         13,
                         20
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_materials": {
                         "materials": {
@@ -4658,50 +4708,105 @@
                 },
                 {
                     "kind": "craftable_weapon",
-                    "name": "Rinblade",
-                    "item_type": "Sword",
-                    "model_id": 0,
-                    "requirement": 3,
-                    "attribute": "Swordsmanship",
-                    "damage": [
-                        10,
-                        14
+                    "name": "Accursed Icon",
+                    "item_type": "Offhand",
+                    "model_id": 1060,
+                    "requirement": 0,
+                    "attribute": "None_",
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
                     ],
-                    "inherent": [],
                     "required_materials": {
                         "materials": {
-                            "948": 5
+                            "955": 1
                         },
-                        "gold": 100
+                        "gold": 50
                     }
                 },
                 {
                     "kind": "craftable_weapon",
-                    "name": "Ascalon Longbow",
-                    "item_type": "Bow",
-                    "model_id": 0,
+                    "name": "Flame Artifact",
+                    "item_type": "Offhand",
+                    "model_id": 1163,
                     "requirement": 0,
                     "attribute": "None_",
-                    "damage": [
-                        7,
-                        10
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
                     ],
-                    "inherent": [],
                     "required_materials": {
                         "materials": {
-                            "946": 5
+                            "929": 1
                         },
-                        "gold": 100
+                        "gold": 50
+                    }
+                },
+                {
+                    "kind": "craftable_weapon",
+                    "name": "Grim Cesta",
+                    "item_type": "Offhand",
+                    "model_id": 1080,
+                    "requirement": 0,
+                    "attribute": "None_",
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
+                    "required_materials": {
+                        "materials": {
+                            "921": 1
+                        },
+                        "gold": 50
+                    }
+                },
+                {
+                    "kind": "craftable_weapon",
+                    "name": "Healing Ankh",
+                    "item_type": "Offhand",
+                    "model_id": 1222,
+                    "requirement": 0,
+                    "attribute": "None_",
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
+                    "required_materials": {
+                        "materials": {
+                            "955": 1
+                        },
+                        "gold": 50
+                    }
+                },
+                {
+                    "kind": "craftable_weapon",
+                    "name": "Idol",
+                    "item_type": "Offhand",
+                    "model_id": 1040,
+                    "requirement": 0,
+                    "attribute": "None_",
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
+                    "required_materials": {
+                        "materials": {
+                            "921": 1
+                        },
+                        "gold": 50
                     }
                 },
                 {
                     "kind": "craftable_weapon",
                     "name": "Inscribed Chakram",
                     "item_type": "Offhand",
-                    "model_id": 0,
+                    "model_id": 969,
                     "requirement": 0,
                     "attribute": "None_",
-                    "inherent": [],
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
                     "required_materials": {
                         "materials": {
                             "948": 1
@@ -4713,10 +4818,13 @@
                     "kind": "craftable_weapon",
                     "name": "Jeweled Chakram",
                     "item_type": "Offhand",
-                    "model_id": 0,
+                    "model_id": 999,
                     "requirement": 0,
                     "attribute": "None_",
-                    "inherent": [],
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
                     "required_materials": {
                         "materials": {
                             "948": 1
@@ -4726,45 +4834,18 @@
                 },
                 {
                     "kind": "craftable_weapon",
-                    "name": "Idol",
+                    "name": "Protective Icon",
                     "item_type": "Offhand",
-                    "model_id": 0,
+                    "model_id": 1243,
                     "requirement": 0,
                     "attribute": "None_",
-                    "inherent": [],
-                    "required_materials": {
-                        "materials": {
-                            "921": 1
-                        },
-                        "gold": 50
-                    }
-                },
-                {
-                    "kind": "craftable_weapon",
-                    "name": "Accursed Icon",
-                    "item_type": "Offhand",
-                    "model_id": 0,
-                    "requirement": 0,
-                    "attribute": "None_",
-                    "inherent": [],
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
                     "required_materials": {
                         "materials": {
                             "955": 1
-                        },
-                        "gold": 50
-                    }
-                },
-                {
-                    "kind": "craftable_weapon",
-                    "name": "Grim Cesta",
-                    "item_type": "Offhand",
-                    "model_id": 0,
-                    "requirement": 0,
-                    "attribute": "None_",
-                    "inherent": [],
-                    "required_materials": {
-                        "materials": {
-                            "921": 1
                         },
                         "gold": 50
                     }
@@ -4773,10 +4854,13 @@
                     "kind": "craftable_weapon",
                     "name": "Storm Artifact",
                     "item_type": "Offhand",
-                    "model_id": 0,
+                    "model_id": 1114,
                     "requirement": 0,
                     "attribute": "None_",
-                    "inherent": [],
+                    "energy": 3,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":3}}"
+                    ],
                     "required_materials": {
                         "materials": {
                             "929": 1
@@ -4786,47 +4870,22 @@
                 },
                 {
                     "kind": "craftable_weapon",
-                    "name": "Flame Artifact",
-                    "item_type": "Offhand",
-                    "model_id": 0,
-                    "requirement": 0,
-                    "attribute": "None_",
+                    "name": "Rinblade",
+                    "item_type": "Sword",
+                    "model_id": 2969,
+                    "requirement": 3,
+                    "attribute": "Swordsmanship",
+                    "damage": [
+                        10,
+                        14
+                    ],
+                    "energy": 0,
                     "inherent": [],
                     "required_materials": {
                         "materials": {
-                            "929": 1
+                            "948": 5
                         },
-                        "gold": 50
-                    }
-                },
-                {
-                    "kind": "craftable_weapon",
-                    "name": "Healing Ankh",
-                    "item_type": "Offhand",
-                    "model_id": 0,
-                    "requirement": 0,
-                    "attribute": "None_",
-                    "inherent": [],
-                    "required_materials": {
-                        "materials": {
-                            "955": 1
-                        },
-                        "gold": 50
-                    }
-                },
-                {
-                    "kind": "craftable_weapon",
-                    "name": "Protective Icon",
-                    "item_type": "Offhand",
-                    "model_id": 0,
-                    "requirement": 0,
-                    "attribute": "None_",
-                    "inherent": [],
-                    "required_materials": {
-                        "materials": {
-                            "955": 1
-                        },
-                        "gold": 50
+                        "gold": 100
                     }
                 }
             ]
