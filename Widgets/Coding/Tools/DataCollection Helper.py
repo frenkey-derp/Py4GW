@@ -606,6 +606,8 @@ class Weaponsmith(Npc):
                 collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'weapon')
+        if pending_name_update:
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
         return not pending_name_update and collected_count > 0
 
     def GetCollectedCount(self) -> int:
@@ -671,6 +673,8 @@ class Collector(Npc):
                 collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'collector')
+        if pending_name_update:
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
         return not pending_name_update and collected_count > 0
 
     def GetCollectedCount(self) -> int:
@@ -770,7 +774,9 @@ class Armorer(Npc):
             collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'armor')
-
+        if pending_name_update:
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
+            
         return not pending_name_update and collected_count > 0
 
     def _upsert_craftable_armor(self, armor: CraftableArmor) -> bool:
@@ -1096,7 +1102,7 @@ def _iter_all_crafters() -> list[AnyCrafter]:
 
 
 def _get_snapshot_name(item: ItemSnapshot) -> str:
-    return item.name or item.complete_name or item.singular_name
+    return item.names.__plain_singular
 
 
 def _build_craftable_item_from_snapshot(item: ItemSnapshot) -> CraftableItem | CraftableWeapon | CraftableArmor:
@@ -1326,6 +1332,8 @@ def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> b
             collected_count += 1
 
     _log_collection_result(crafter.name, collected_count, 'craftable item')
+    if pending_name_update:
+        Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{crafter.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
     return not pending_name_update and collected_count > 0
 
 
@@ -1503,9 +1511,15 @@ def _has_missing_collection_data(crafter: AnyCrafter) -> bool:
         armors = crafter.armors.get(profession, [])
         return not armors or any(not armor.name or armor.name.startswith('Model') or armor.model_id == 0 for armor in armors)
     if isinstance(crafter, Collector):
-        return not crafter.items or any(item.model_id == 0 or not item.name for item in crafter.items)
+        armor_items = [item for item in crafter.items if isinstance(item, CollectibleArmor)]
+        has_profession_armor = any(item.profession == _get_current_profession() for item in armor_items) if armor_items else True
+        has_non_armor_items = any(not isinstance(item, CollectibleArmor) for item in crafter.items)
+        
+        return (has_profession_armor and any(not item.name or item.name.startswith('Model') or item.model_id == 0 for item in armor_items)) or \
+               (has_non_armor_items and (not crafter.items or any(item.model_id == 0 or not item.name for item in crafter.items)))
+               
     if isinstance(crafter, Weaponsmith):
-        return not crafter.weapons or any(weapon.model_id == 0 or not weapon.name for weapon in crafter.weapons)
+        return (len(crafter.weapons) > 0 and any(weapon.model_id == 0 or not weapon.name for weapon in crafter.weapons))
     if isinstance(crafter, ConsumableCrafter):
         return not crafter.consumables or any(item.model_id == 0 or not item.name for item in crafter.consumables)
     if isinstance(crafter, Artisan):
@@ -1526,7 +1540,7 @@ def _get_auto_reachable_crafters() -> list[AnyCrafter]:
         for crafter in _get_visible_crafters()
         if _is_auto_reachable_crafter(crafter) and _has_missing_collection_data(crafter)
     ]
-    return sorted(crafters, key=lambda c: (_get_sort_value(c, profession), c.map_id, c.name))
+    return sorted(crafters, key=lambda c: (c.map_id, c.name))
 
 
 def _set_sweep_status(status: str, crafter_name: str = '', current_index: int = 0, total: int = 0):
@@ -1720,6 +1734,7 @@ def draw_window():
     global show_consumable_crafters
     global show_weaponsmiths
     global show_collectors
+    global sweep_is_running
 
     current_map_id = Map.GetBaseMapID()
     current_map_name = Map.GetMapName(current_map_id)
@@ -1763,6 +1778,7 @@ def draw_window():
         _start_crafter_sweep()
     PyImGui.same_line(0, 10)
     if ImGui.button('Stop sweep##crafter_sweep_stop', width=100, disabled=not sweep_is_running):
+        sweep_is_running = False
         _request_stop_crafter_sweep()
     PyImGui.separator()
 
