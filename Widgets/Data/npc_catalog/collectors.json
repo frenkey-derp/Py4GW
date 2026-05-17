@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T16:08:23Z",
+    "saved_at": "2026-05-17T16:42:58Z",
     "category": "collectors",
     "entries": [
         {
@@ -24941,20 +24941,43 @@
         },
         {
             "name": "Adhitok",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                211,
+                54,
+                70,
+                135,
+                251,
+                167,
+                226,
+                115,
+                0,
+                0
+            ],
+            "model_id": 4760,
             "allegiance": "Ally",
             "map_id": 430,
             "position": [
-                0.0,
-                0.0
+                16881.0,
+                3874.0
             ],
             "items": [
                 {
                     "kind": "collector_item",
                     "name": "Identification Kit",
                     "item_type": "Kit",
-                    "model_id": 0,
+                    "model_id": 12435,
+                    "required_collectible": [
+                        "1600",
+                        3
+                    ]
+                },
+                {
+                    "kind": "collector_item",
+                    "name": "Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2993,
                     "required_collectible": [
                         "1600",
                         3
@@ -24974,26 +24997,40 @@
         },
         {
             "name": "Kushau",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                205,
+                54,
+                235,
+                197,
+                48,
+                241,
+                86,
+                71,
+                0,
+                0
+            ],
+            "model_id": 4824,
             "allegiance": "Ally",
             "map_id": 430,
             "position": [
-                0.0,
-                0.0
+                -18318.0,
+                4621.0
             ],
             "items": [
                 {
                     "kind": "collectible_weapon",
                     "name": "Winged Axe",
                     "item_type": "Axe",
-                    "model_id": 0,
+                    "model_id": 21836,
                     "requirement": 1,
                     "attribute": "AxeMastery",
                     "damage": [
                         5,
                         9
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1598",
@@ -25004,13 +25041,14 @@
                     "kind": "collectible_weapon",
                     "name": "Composite Shortbow",
                     "item_type": "Bow",
-                    "model_id": 0,
+                    "model_id": 21844,
                     "requirement": 1,
                     "attribute": "Marksmanship",
                     "damage": [
                         8,
                         11
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1598",
@@ -25021,13 +25059,14 @@
                     "kind": "collectible_weapon",
                     "name": "Suntouched Scythe",
                     "item_type": "Scythe",
-                    "model_id": 0,
+                    "model_id": 21850,
                     "requirement": 1,
                     "attribute": "ScytheMastery",
                     "damage": [
                         7,
                         12
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1598",
@@ -25038,10 +25077,13 @@
                     "kind": "collectible_weapon",
                     "name": "Heraldic Shield",
                     "item_type": "Shield",
-                    "model_id": 0,
+                    "model_id": 21854,
                     "requirement": 1,
                     "attribute": "Command",
-                    "inherent": [],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HealthPlusUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"health\":10}}"
+                    ],
                     "required_collectible": [
                         "1598",
                         3
@@ -25051,14 +25093,18 @@
                     "kind": "collectible_weapon",
                     "name": "Evil Eye Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21870,
                     "requirement": 1,
-                    "attribute": "BloodMagic",
+                    "attribute": "IllusionMagic",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1598",
                         3
@@ -25068,14 +25114,18 @@
                     "kind": "collectible_weapon",
                     "name": "Illusory Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21867,
                     "requirement": 1,
-                    "attribute": "IllusionMagic",
+                    "attribute": "BloodMagic",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1598",
                         3
@@ -25085,14 +25135,18 @@
                     "kind": "collectible_weapon",
                     "name": "Pyrewood Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21881,
                     "requirement": 1,
                     "attribute": "FireMagic",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1598",
                         3
@@ -25102,13 +25156,14 @@
                     "kind": "collectible_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 0,
+                    "model_id": 21891,
                     "requirement": 1,
                     "attribute": "Swordsmanship",
                     "damage": [
                         6,
                         8
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1598",
@@ -25119,26 +25174,40 @@
         },
         {
             "name": "Timahr",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                181,
+                54,
+                254,
+                168,
+                224,
+                145,
+                166,
+                55,
+                0,
+                0
+            ],
+            "model_id": 4761,
             "allegiance": "Ally",
             "map_id": 430,
             "position": [
-                0.0,
-                0.0
+                463.0,
+                2686.0
             ],
             "items": [
                 {
                     "kind": "collectible_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 0,
+                    "model_id": 21841,
                     "requirement": 1,
                     "attribute": "Marksmanship",
                     "damage": [
                         8,
                         11
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1670",
@@ -25149,13 +25218,14 @@
                     "kind": "collectible_weapon",
                     "name": "Barrel Hammer",
                     "item_type": "Hammer",
-                    "model_id": 0,
+                    "model_id": 21847,
                     "requirement": 1,
                     "attribute": "HammerMastery",
                     "damage": [
                         8,
                         11
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1670",
@@ -25166,10 +25236,13 @@
                     "kind": "collectible_weapon",
                     "name": "Shield of the Lion",
                     "item_type": "Shield",
-                    "model_id": 0,
+                    "model_id": 21857,
                     "requirement": 1,
                     "attribute": "Strength",
-                    "inherent": [],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HealthPlusUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"health\":10}}"
+                    ],
                     "required_collectible": [
                         "1670",
                         3
@@ -25179,13 +25252,14 @@
                     "kind": "collectible_weapon",
                     "name": "Suntouched Spear",
                     "item_type": "Spear",
-                    "model_id": 0,
+                    "model_id": 21861,
                     "requirement": 1,
                     "attribute": "SpearMastery",
                     "damage": [
                         6,
                         9
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1670",
@@ -25196,14 +25270,18 @@
                     "kind": "collectible_weapon",
                     "name": "Divine Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21885,
                     "requirement": 1,
-                    "attribute": "DivineFavor",
+                    "attribute": "AirMagic",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1670",
                         3
@@ -25213,14 +25291,18 @@
                     "kind": "collectible_weapon",
                     "name": "Ensorcelling Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21864,
                     "requirement": 1,
-                    "attribute": "DominationMagic",
+                    "attribute": "DivineFavor",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1670",
                         3
@@ -25230,14 +25312,18 @@
                     "kind": "collectible_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21877,
                     "requirement": 1,
-                    "attribute": "AirMagic",
+                    "attribute": "DeathMagic",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1670",
                         3
@@ -25247,14 +25333,18 @@
                     "kind": "collectible_weapon",
                     "name": "Wailing Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21874,
                     "requirement": 1,
-                    "attribute": "DeathMagic",
+                    "attribute": "DominationMagic",
                     "damage": [
                         5,
                         7
                     ],
-                    "inherent": [],
+                    "energy": 5,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":5}}"
+                    ],
                     "required_collectible": [
                         "1670",
                         3
@@ -25462,15 +25552,40 @@
         },
         {
             "name": "Mau",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                195,
+                54,
+                232,
+                195,
+                223,
+                224,
+                157,
+                1,
+                0,
+                0
+            ],
+            "model_id": 4758,
             "allegiance": "Ally",
             "map_id": 432,
             "position": [
-                0.0,
-                0.0
+                -10020.0,
+                9102.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Elonian Shoes",
+                    "item_type": "Boots",
+                    "model_id": 18787,
+                    "armor_rating": 40,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1596",
+                        3
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -25554,37 +25669,50 @@
                         "1596",
                         3
                     ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Dervish",
-                    "required_collectible": [
-                        "1596",
-                        3
-                    ]
                 }
             ]
         },
         {
             "name": "Uhisheh",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                175,
+                54,
+                80,
+                163,
+                121,
+                146,
+                57,
+                58,
+                0,
+                0
+            ],
+            "model_id": 4763,
             "allegiance": "Ally",
             "map_id": 432,
             "position": [
-                0.0,
-                0.0
+                16608.0,
+                3921.0
             ],
             "items": [
                 {
                     "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
+                    "name": "Elonian Vambraces",
+                    "item_type": "Gloves",
+                    "model_id": 18789,
+                    "armor_rating": 40,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "0",
+                        1
+                    ]
+                },
+                {
+                    "kind": "collectible_armor",
+                    "name": "Rinkhal Talon",
+                    "item_type": "Trophy",
+                    "model_id": 1592,
                     "armor_rating": 0,
                     "profession": "Warrior",
                     "required_collectible": [
@@ -25647,18 +25775,6 @@
                     "model_id": 0,
                     "armor_rating": 0,
                     "profession": "Elementalist",
-                    "required_collectible": [
-                        "0",
-                        1
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "0",
                         1
@@ -25680,15 +25796,40 @@
         },
         {
             "name": "Yahya",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                31,
+                73,
+                8,
+                172,
+                35,
+                140,
+                125,
+                53,
+                0,
+                0
+            ],
+            "model_id": 4766,
             "allegiance": "Ally",
             "map_id": 432,
             "position": [
-                0.0,
-                0.0
+                12257.0,
+                -5697.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Elonian Robes",
+                    "item_type": "Chestpiece",
+                    "model_id": 18788,
+                    "armor_rating": 70,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1577",
+                        3
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -25768,18 +25909,6 @@
                     "model_id": 0,
                     "armor_rating": 80,
                     "profession": "Paragon",
-                    "required_collectible": [
-                        "1577",
-                        3
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 70,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "1577",
                         3
@@ -29630,26 +29759,40 @@
         },
         {
             "name": "Jidun",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                193,
+                54,
+                63,
+                130,
+                119,
+                168,
+                163,
+                83,
+                0,
+                0
+            ],
+            "model_id": 4760,
             "allegiance": "Ally",
             "map_id": 481,
             "position": [
-                0.0,
-                0.0
+                -6959.0,
+                -1365.0
             ],
             "items": [
                 {
                     "kind": "collectible_weapon",
                     "name": "Winged Axe",
                     "item_type": "Axe",
-                    "model_id": 0,
+                    "model_id": 21838,
                     "requirement": 7,
                     "attribute": "AxeMastery",
                     "damage": [
                         6,
                         21
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "19189",
@@ -29660,13 +29803,14 @@
                     "kind": "collectible_weapon",
                     "name": "Composite Shortbow",
                     "item_type": "Bow",
-                    "model_id": 0,
+                    "model_id": 21846,
                     "requirement": 7,
                     "attribute": "Marksmanship",
                     "damage": [
                         13,
                         22
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "19189",
@@ -29677,13 +29821,14 @@
                     "kind": "collectible_weapon",
                     "name": "Suntouched Scythe",
                     "item_type": "Scythe",
-                    "model_id": 0,
+                    "model_id": 21852,
                     "requirement": 7,
                     "attribute": "ScytheMastery",
                     "damage": [
                         10,
                         31
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "19189",
@@ -29694,10 +29839,13 @@
                     "kind": "collectible_weapon",
                     "name": "Heraldic Shield",
                     "item_type": "Shield",
-                    "model_id": 0,
+                    "model_id": 21856,
                     "requirement": 7,
                     "attribute": "Command",
-                    "inherent": [],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HealthPlusUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"health\":20}}"
+                    ],
                     "required_collectible": [
                         "19189",
                         1
@@ -29707,14 +29855,17 @@
                     "kind": "collectible_weapon",
                     "name": "Illusory Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21869,
                     "requirement": 7,
                     "attribute": "IllusionMagic",
                     "damage": [
                         10,
                         17
                     ],
-                    "inherent": [],
+                    "energy": 10,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":10}}"
+                    ],
                     "required_collectible": [
                         "19189",
                         1
@@ -29724,14 +29875,17 @@
                     "kind": "collectible_weapon",
                     "name": "Pyrewood Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21883,
                     "requirement": 7,
                     "attribute": "FireMagic",
                     "damage": [
                         10,
                         17
                     ],
-                    "inherent": [],
+                    "energy": 10,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":10}}"
+                    ],
                     "required_collectible": [
                         "19189",
                         1
@@ -29741,14 +29895,17 @@
                     "kind": "collectible_weapon",
                     "name": "Spinal Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21872,
                     "requirement": 7,
                     "attribute": "BloodMagic",
                     "damage": [
                         10,
                         17
                     ],
-                    "inherent": [],
+                    "energy": 10,
+                    "inherent": [
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":10}}"
+                    ],
                     "required_collectible": [
                         "19189",
                         1
@@ -29758,13 +29915,14 @@
                     "kind": "collectible_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 0,
+                    "model_id": 21893,
                     "requirement": 7,
                     "attribute": "Swordsmanship",
                     "damage": [
                         13,
                         17
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "19189",
@@ -29775,26 +29933,40 @@
         },
         {
             "name": "Paljab",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                207,
+                54,
+                49,
+                130,
+                54,
+                221,
+                110,
+                126,
+                0,
+                0
+            ],
+            "model_id": 4761,
             "allegiance": "Ally",
             "map_id": 481,
             "position": [
-                0.0,
-                0.0
+                3631.0,
+                16098.0
             ],
             "items": [
                 {
                     "kind": "collectible_weapon",
                     "name": "Composite Shortbow",
                     "item_type": "Bow",
-                    "model_id": 0,
+                    "model_id": 21845,
                     "requirement": 5,
                     "attribute": "Marksmanship",
                     "damage": [
                         10,
                         16
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1601",
@@ -29805,10 +29977,13 @@
                     "kind": "collectible_weapon",
                     "name": "Daedal Shield",
                     "item_type": "Shield",
-                    "model_id": 0,
+                    "model_id": 21853,
                     "requirement": 5,
                     "attribute": "Motivation",
-                    "inherent": [],
+                    "energy": 0,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HealthPlusUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"health\":15}}"
+                    ],
                     "required_collectible": [
                         "1601",
                         3
@@ -29818,13 +29993,14 @@
                     "kind": "collectible_weapon",
                     "name": "Suntouched Spear",
                     "item_type": "Spear",
-                    "model_id": 0,
+                    "model_id": 21862,
                     "requirement": 5,
                     "attribute": "SpearMastery",
                     "damage": [
                         10,
                         15
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1601",
@@ -29835,14 +30011,18 @@
                     "kind": "collectible_weapon",
                     "name": "Boneclaw Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21875,
                     "requirement": 5,
                     "attribute": "DeathMagic",
                     "damage": [
                         8,
                         12
                     ],
-                    "inherent": [],
+                    "energy": 8,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":8}}"
+                    ],
                     "required_collectible": [
                         "1601",
                         3
@@ -29852,14 +30032,18 @@
                     "kind": "collectible_weapon",
                     "name": "Divine Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21886,
                     "requirement": 5,
                     "attribute": "DivineFavor",
                     "damage": [
                         8,
                         12
                     ],
-                    "inherent": [],
+                    "energy": 8,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":8}}"
+                    ],
                     "required_collectible": [
                         "1601",
                         3
@@ -29869,14 +30053,18 @@
                     "kind": "collectible_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 0,
+                    "model_id": 21878,
                     "requirement": 5,
                     "attribute": "AirMagic",
                     "damage": [
                         8,
                         12
                     ],
-                    "inherent": [],
+                    "energy": 8,
+                    "inherent": [
+                        "{\"upgrade_type\":\"HalvesSkillRechargeGeneralOffhandUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"Unknown\"},\"chance\":10}}",
+                        "{\"upgrade_type\":\"EnergyUpgrade\",\"values\":{\"target_item_type\":{\"enum_type\":\"ItemType\",\"value\":\"EquippableItem\"},\"energy\":8}}"
+                    ],
                     "required_collectible": [
                         "1601",
                         3
@@ -29886,13 +30074,14 @@
                     "kind": "collectible_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 0,
+                    "model_id": 21892,
                     "requirement": 5,
                     "attribute": "Swordsmanship",
                     "damage": [
                         9,
                         13
                     ],
+                    "energy": 0,
                     "inherent": [],
                     "required_collectible": [
                         "1601",
@@ -30178,15 +30367,40 @@
         },
         {
             "name": "Ahchin",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                213,
+                75,
+                14,
+                147,
+                115,
+                165,
+                44,
+                14,
+                0,
+                0
+            ],
+            "model_id": 5352,
             "allegiance": "Ally",
             "map_id": 484,
             "position": [
-                0.0,
-                0.0
+                14906.0,
+                -4321.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Reaper Elonian Hood",
+                    "item_type": "Headpiece",
+                    "model_id": 18826,
+                    "armor_rating": 70,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1577",
+                        3
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -30266,18 +30480,6 @@
                     "model_id": 0,
                     "armor_rating": 80,
                     "profession": "Paragon",
-                    "required_collectible": [
-                        "1577",
-                        3
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 70,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "1577",
                         3
@@ -30287,15 +30489,40 @@
         },
         {
             "name": "Chormar",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                179,
+                54,
+                254,
+                169,
+                75,
+                149,
+                43,
+                81,
+                0,
+                0
+            ],
+            "model_id": 4749,
             "allegiance": "Ally",
             "map_id": 484,
             "position": [
-                0.0,
-                0.0
+                -1103.0,
+                13720.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Elonian Leggings",
+                    "item_type": "Leggings",
+                    "model_id": 18830,
+                    "armor_rating": 55,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1671",
+                        2
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -30375,18 +30602,6 @@
                     "model_id": 0,
                     "armor_rating": 0,
                     "profession": "Paragon",
-                    "required_collectible": [
-                        "1671",
-                        2
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "1671",
                         2
@@ -30396,15 +30611,40 @@
         },
         {
             "name": "Damak",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                187,
+                54,
+                69,
+                133,
+                224,
+                181,
+                54,
+                77,
+                0,
+                0
+            ],
+            "model_id": 4770,
             "allegiance": "Ally",
             "map_id": 484,
             "position": [
-                0.0,
-                0.0
+                16144.0,
+                -2124.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Elonian Robes",
+                    "item_type": "Chestpiece",
+                    "model_id": 18828,
+                    "armor_rating": 70,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1579",
+                        3
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -30484,18 +30724,6 @@
                     "model_id": 0,
                     "armor_rating": 80,
                     "profession": "Paragon",
-                    "required_collectible": [
-                        "1579",
-                        3
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 70,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "1579",
                         3
@@ -30505,15 +30733,40 @@
         },
         {
             "name": "Gundok",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                203,
+                54,
+                151,
+                227,
+                153,
+                235,
+                81,
+                83,
+                0,
+                0
+            ],
+            "model_id": 4749,
             "allegiance": "Ally",
             "map_id": 484,
             "position": [
-                0.0,
-                0.0
+                8159.0,
+                12824.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Elonian Vambraces",
+                    "item_type": "Gloves",
+                    "model_id": 18829,
+                    "armor_rating": 70,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1597",
+                        3
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -30593,18 +30846,6 @@
                     "model_id": 0,
                     "armor_rating": 80,
                     "profession": "Paragon",
-                    "required_collectible": [
-                        "1597",
-                        3
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 70,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "1597",
                         3
@@ -30614,15 +30855,40 @@
         },
         {
             "name": "Pehrub",
-            "encoded_name": [],
-            "model_id": 0,
+            "encoded_name": [
+                1,
+                129,
+                197,
+                54,
+                95,
+                132,
+                168,
+                220,
+                181,
+                76,
+                0,
+                0
+            ],
+            "model_id": 4766,
             "allegiance": "Ally",
             "map_id": 484,
             "position": [
-                0.0,
-                0.0
+                -15342.0,
+                -8901.0
             ],
             "items": [
+                {
+                    "kind": "collectible_armor",
+                    "name": "Elonian Shoes",
+                    "item_type": "Boots",
+                    "model_id": 18827,
+                    "armor_rating": 70,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1596",
+                        3
+                    ]
+                },
                 {
                     "kind": "collectible_armor",
                     "name": "",
@@ -30702,18 +30968,6 @@
                     "model_id": 0,
                     "armor_rating": 80,
                     "profession": "Paragon",
-                    "required_collectible": [
-                        "1596",
-                        3
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 70,
-                    "profession": "Dervish",
                     "required_collectible": [
                         "1596",
                         3

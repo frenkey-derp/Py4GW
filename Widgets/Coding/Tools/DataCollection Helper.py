@@ -2144,19 +2144,55 @@ def load_crafters_from_json():
 
     category_paths = _get_category_file_paths()
     loaded_any = False
-    if not all(os.path.exists(category_path) for category_path in category_paths.values()):
+    loaded_files: list[str] = []
+    missing_files: list[str] = []
+    failed_files: list[str] = []
+
+    for key, (container, crafter_type) in CRAFTER_TYPE_MAP.items():
+        category_path = category_paths[key]
+        if not os.path.exists(category_path):
+            container[:] = []
+            missing_files.append(os.path.basename(category_path))
+            continue
+
+        try:
+            with open(category_path, 'r', encoding='utf-8') as file:
+                payload = json.load(file)
+        except Exception as exc:
+            container[:] = []
+            failed_files.append(os.path.basename(category_path))
+            Py4GW.Console.Log(
+                MODULE_NAME,
+                f"Failed to load '{category_path}': {exc}",
+                Py4GW.Console.MessageType.Warning,
+            )
+            continue
+
+        container[:] = [crafter_type.from_dict(entry) for entry in list(payload.get('entries', []))]
+        loaded_files.append(os.path.basename(category_path))
+        loaded_any = loaded_any or bool(container)
+
+    if missing_files:
         Py4GW.Console.Log(
             MODULE_NAME,
-            f"NPC data files do not exist yet in '{DATA_DIRECTORY_PATH}'.",
+            f"Skipped missing NPC data file(s): {', '.join(missing_files)}.",
+            Py4GW.Console.MessageType.Warning,
+        )
+
+    if failed_files:
+        Py4GW.Console.Log(
+            MODULE_NAME,
+            f"Skipped unreadable NPC data file(s): {', '.join(failed_files)}.",
+            Py4GW.Console.MessageType.Warning,
+        )
+
+    if not loaded_files:
+        Py4GW.Console.Log(
+            MODULE_NAME,
+            f"No readable NPC data files were found in '{DATA_DIRECTORY_PATH}'.",
             Py4GW.Console.MessageType.Warning,
         )
         return False
-
-    for key, (container, crafter_type) in CRAFTER_TYPE_MAP.items():
-        with open(category_paths[key], 'r', encoding='utf-8') as file:
-            payload = json.load(file)
-        container[:] = [crafter_type.from_dict(entry) for entry in list(payload.get('entries', []))]
-        loaded_any = loaded_any or bool(container)
 
     if not loaded_any:
         Py4GW.Console.Log(
