@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T15:04:48Z",
+    "saved_at": "2026-05-17T15:39:16Z",
     "category": "collectors",
     "entries": [
         {
@@ -2254,8 +2254,8 @@
                     "kind": "collectible_armor",
                     "name": "Krytan Boots",
                     "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "model_id": 318,
+                    "armor_rating": 41,
                     "profession": "Warrior",
                     "required_collectible": [
                         "479",
@@ -18714,18 +18714,6 @@
                     "item_type": "Boots",
                     "model_id": 0,
                     "armor_rating": 0,
-                    "profession": "Mesmer",
-                    "required_collectible": [
-                        "830",
-                        1
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
                     "profession": "Elementalist",
                     "required_collectible": [
                         "830",
@@ -18750,6 +18738,18 @@
                     "item_type": "Boots",
                     "model_id": 0,
                     "armor_rating": 0,
+                    "profession": "Warrior",
+                    "required_collectible": [
+                        "830",
+                        1
+                    ]
+                },
+                {
+                    "kind": "collectible_armor",
+                    "name": "Shing Jea Boots",
+                    "item_type": "Boots",
+                    "model_id": 11499,
+                    "armor_rating": 45,
                     "profession": "Ranger",
                     "required_collectible": [
                         "830",
@@ -18758,11 +18758,11 @@
                 },
                 {
                     "kind": "collectible_armor",
-                    "name": "",
+                    "name": "Shing Jea Footwear",
                     "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Warrior",
+                    "model_id": 11474,
+                    "armor_rating": 35,
+                    "profession": "Mesmer",
                     "required_collectible": [
                         "830",
                         1

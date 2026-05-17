@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T15:09:00Z",
+    "saved_at": "2026-05-17T15:38:59Z",
     "category": "armorers",
     "entries": [
         {
@@ -927,8 +927,8 @@
                         "kind": "craftable_armor",
                         "name": "Platemail Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23032,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -940,10 +940,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Chainmail Boots",
+                        "name": "Tyrian Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23402,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -958,27 +958,12 @@
                         "name": "Wyvern Boots",
                         "item_type": "Boots",
                         "model_id": 23026,
-                        "armor_rating": 0,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
                                 "948": 25,
                                 "953": 4
-                            },
-                            "gold": 1000
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Platemail Chestpiece",
-                        "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Warrior",
-                        "required_materials": {
-                            "materials": {
-                                "948": 75,
-                                "949": 12
                             },
                             "gold": 1000
                         }
@@ -1000,10 +985,25 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Wyvern Chestpiece",
+                        "name": "Tyrian Cuirass",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23094,
+                        "armor_rating": 80,
+                        "profession": "Warrior",
+                        "required_materials": {
+                            "materials": {
+                                "948": 75,
+                                "949": 12
+                            },
+                            "gold": 1000
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Wyvern Hauberk",
+                        "item_type": "Chestpiece",
+                        "model_id": 23088,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1015,10 +1015,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Platemail Gloves",
+                        "name": "Platemail Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23156,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1030,10 +1030,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Chainmail Gloves",
+                        "name": "Tyrian Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23404,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1045,10 +1045,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Wyvern Gloves",
+                        "name": "Wyvern Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23150,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1060,10 +1060,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Platemail Headpiece",
+                        "name": "Platemail Helm",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23256,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1075,10 +1075,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Chainmail Headpiece",
+                        "name": "Tyrian Helm",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23398,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1090,10 +1090,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Wyvern Headpiece",
+                        "name": "Wyvern Helm",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23226,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1107,8 +1107,8 @@
                         "kind": "craftable_armor",
                         "name": "Platemail Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23329,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1120,10 +1120,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Chainmail Leggings",
+                        "name": "Tyrian Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23405,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1137,8 +1137,8 @@
                         "kind": "craftable_armor",
                         "name": "Wyvern Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23323,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1946,8 +1946,8 @@
                         "kind": "craftable_armor",
                         "name": "Charr Hide Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23024,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1959,10 +1959,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Gladiator's Boots",
+                        "name": "Gladiator Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23028,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1977,7 +1977,7 @@
                         "name": "Templar Boots",
                         "item_type": "Boots",
                         "model_id": 23030,
-                        "armor_rating": 0,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -1989,10 +1989,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Charr Hide Chestpiece",
+                        "name": "Charr Hide Cuirass",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23086,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2004,10 +2004,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Gladiator's Chestpiece",
+                        "name": "Gladiator Hauberk",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23090,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2019,10 +2019,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Templar Chestpiece",
+                        "name": "Templar Cuirass",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23092,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2034,10 +2034,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Charr Hide Gloves",
+                        "name": "Charr Hide Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23148,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2049,10 +2049,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Gladiator's Gloves",
+                        "name": "Gladiator Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23152,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2064,10 +2064,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Templar Gloves",
+                        "name": "Templar Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23154,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2079,10 +2079,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Charr Hide Headpiece",
+                        "name": "Charr Hide Helm",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23216,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2094,10 +2094,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Gladiator's Headpiece",
+                        "name": "Gladiator Helm",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23236,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2109,10 +2109,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Templar Headpiece",
+                        "name": "Templar Helm",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23246,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2126,8 +2126,8 @@
                         "kind": "craftable_armor",
                         "name": "Charr Hide Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23321,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2139,10 +2139,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Gladiator's Leggings",
+                        "name": "Gladiator Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23325,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -2156,8 +2156,8 @@
                         "kind": "craftable_armor",
                         "name": "Templar Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23327,
+                        "armor_rating": 80,
                         "profession": "Warrior",
                         "required_materials": {
                             "materials": {
@@ -13893,8 +13893,8 @@
                         "kind": "craftable_armor",
                         "name": "Drakescale Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 405,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13907,8 +13907,8 @@
                         "kind": "craftable_armor",
                         "name": "Fur-Lined Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 388,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13921,8 +13921,8 @@
                         "kind": "craftable_armor",
                         "name": "Leather Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 414,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13933,10 +13933,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Drakescale Chestpiece",
+                        "name": "Drakescale Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 873,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13947,10 +13947,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Fur-Lined Chestpiece",
+                        "name": "Fur-Lined Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 856,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13961,10 +13961,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Leather Chestpiece",
+                        "name": "Leather Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 882,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13977,8 +13977,8 @@
                         "kind": "craftable_armor",
                         "name": "Drakescale Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 1652,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -13991,8 +13991,8 @@
                         "kind": "craftable_armor",
                         "name": "Fur-Lined Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 1635,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -14005,8 +14005,8 @@
                         "kind": "craftable_armor",
                         "name": "Leather Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 1661,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -14017,10 +14017,22 @@
                     },
                     {
                         "kind": "craftable_armor",
+                        "name": "Traveler Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 2086,
+                        "armor_rating": 49,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
                         "name": "Drakescale Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 2490,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -14033,8 +14045,8 @@
                         "kind": "craftable_armor",
                         "name": "Fur-Lined Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 2473,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -14047,8 +14059,8 @@
                         "kind": "craftable_armor",
                         "name": "Leather Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 2499,
+                        "armor_rating": 49,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16043,42 +16055,15 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Elegant Boots",
-                        "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {
-                                "925": 50,
-                                "928": 5
-                            },
-                            "gold": 15000
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
                         "name": "Elite Elegant Footwear",
                         "item_type": "Boots",
                         "model_id": 22986,
                         "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Noble Boots",
-                        "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Mesmer",
-                        "required_materials": {
                             "materials": {
                                 "925": 50,
-                                "927": 5
+                                "928": 5
                             },
                             "gold": 15000
                         }
@@ -16091,8 +16076,11 @@
                         "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
-                            "materials": {},
-                            "gold": 0
+                            "materials": {
+                                "925": 50,
+                                "927": 5
+                            },
+                            "gold": 15000
                         }
                     },
                     {
@@ -16101,18 +16089,6 @@
                         "item_type": "Chestpiece",
                         "model_id": 23048,
                         "armor_rating": 60,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Elegant Chestpiece",
-                        "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -16128,18 +16104,6 @@
                         "item_type": "Chestpiece",
                         "model_id": 23044,
                         "armor_rating": 60,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Noble Chestpiece",
-                        "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -16187,18 +16151,6 @@
                         "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Elegant Leggings",
-                        "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Mesmer",
-                        "required_materials": {
                             "materials": {
                                 "925": 100,
                                 "928": 10
@@ -16212,18 +16164,6 @@
                         "item_type": "Leggings",
                         "model_id": 23279,
                         "armor_rating": 60,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Noble Leggings",
-                        "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -16543,8 +16483,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Fur-Lined Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23037,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16559,7 +16499,7 @@
                         "name": "Elite Studded Leather Boots",
                         "item_type": "Boots",
                         "model_id": 23039,
-                        "armor_rating": 0,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16571,10 +16511,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Fur-Lined Chestpiece",
+                        "name": "Elite Fur-Lined Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23099,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16586,10 +16526,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Studded Leather Chestpiece",
+                        "name": "Elite Studded Leather Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23101,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16603,8 +16543,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Fur-Lined Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23161,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16618,8 +16558,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Studded Leather Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23163,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16633,8 +16573,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Fur-Lined Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23334,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16648,8 +16588,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Studded Leather Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23336,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -16969,42 +16909,15 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Enchanter Boots",
-                        "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {
-                                "925": 50,
-                                "929": 5
-                            },
-                            "gold": 15000
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
                         "name": "Elite Enchanter Footwear",
                         "item_type": "Boots",
                         "model_id": 22984,
                         "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Rogue Boots",
-                        "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Mesmer",
-                        "required_materials": {
                             "materials": {
                                 "925": 50,
-                                "943": 5
+                                "929": 5
                             },
                             "gold": 15000
                         }
@@ -17017,8 +16930,11 @@
                         "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
-                            "materials": {},
-                            "gold": 0
+                            "materials": {
+                                "925": 50,
+                                "943": 5
+                            },
+                            "gold": 15000
                         }
                     },
                     {
@@ -17027,18 +16943,6 @@
                         "item_type": "Chestpiece",
                         "model_id": 23046,
                         "armor_rating": 60,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Enchanter Chestpiece",
-                        "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -17054,18 +16958,6 @@
                         "item_type": "Chestpiece",
                         "model_id": 23050,
                         "armor_rating": 60,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Rogue Chestpiece",
-                        "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -17113,18 +17005,6 @@
                         "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Enchanter Leggings",
-                        "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
-                        "profession": "Mesmer",
-                        "required_materials": {
                             "materials": {
                                 "925": 100,
                                 "929": 10
@@ -17138,18 +17018,6 @@
                         "item_type": "Leggings",
                         "model_id": 23285,
                         "armor_rating": 60,
-                        "profession": "Mesmer",
-                        "required_materials": {
-                            "materials": {},
-                            "gold": 0
-                        }
-                    },
-                    {
-                        "kind": "craftable_armor",
-                        "name": "Elite Rogue Leggings",
-                        "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -17953,10 +17821,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Luxon Boots",
+                        "name": "Luxon Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23564,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -17969,10 +17837,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Luxon Chestpiece",
+                        "name": "Luxon Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23565,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -17987,8 +17855,8 @@
                         "kind": "craftable_armor",
                         "name": "Luxon Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23566,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -18001,10 +17869,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Luxon Headpiece",
+                        "name": "Luxon Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23563,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -18017,10 +17885,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Luxon Leggings",
+                        "name": "Luxon Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23567,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -18184,8 +18052,8 @@
                         "kind": "craftable_armor",
                         "name": "Luxon Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23828,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -18198,10 +18066,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Luxon Chestpiece",
+                        "name": "Luxon Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23829,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -18217,7 +18085,7 @@
                         "name": "Luxon Gloves",
                         "item_type": "Gloves",
                         "model_id": 23830,
-                        "armor_rating": 0,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -18230,10 +18098,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Luxon Headpiece",
+                        "name": "Luxon Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23827,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -18248,8 +18116,8 @@
                         "kind": "craftable_armor",
                         "name": "Luxon Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23831,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -19765,10 +19633,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Boots",
+                        "name": "Canthan Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7353,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -19779,10 +19647,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Chestpiece",
+                        "name": "Canthan Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7354,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -19795,8 +19663,8 @@
                         "kind": "craftable_armor",
                         "name": "Canthan Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7355,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -19807,10 +19675,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Headpiece",
+                        "name": "Canthan Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7256,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -19821,10 +19689,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Leggings",
+                        "name": "Canthan Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7356,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -19969,8 +19837,8 @@
                         "kind": "craftable_armor",
                         "name": "Canthan Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10308,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -19981,10 +19849,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Chestpiece",
+                        "name": "Canthan Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10309,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -19997,8 +19865,8 @@
                         "kind": "craftable_armor",
                         "name": "Canthan Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10310,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20009,10 +19877,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Headpiece",
+                        "name": "Canthan Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10179,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20025,8 +19893,8 @@
                         "kind": "craftable_armor",
                         "name": "Canthan Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10311,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20347,10 +20215,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Boots",
+                        "name": "Shing Jea Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7537,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20361,10 +20229,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Chestpiece",
+                        "name": "Shing Jea Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7538,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20377,8 +20245,8 @@
                         "kind": "craftable_armor",
                         "name": "Shing Jea Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7539,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20389,10 +20257,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Headpiece",
+                        "name": "Shing Jea Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7520,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20403,10 +20271,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Leggings",
+                        "name": "Shing Jea Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7540,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20552,7 +20420,7 @@
                         "name": "Shing Jea Boots",
                         "item_type": "Boots",
                         "model_id": 10604,
-                        "armor_rating": 0,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20563,10 +20431,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Chestpiece",
+                        "name": "Shing Jea Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10605,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20580,7 +20448,7 @@
                         "name": "Shing Jea Gloves",
                         "item_type": "Gloves",
                         "model_id": 10606,
-                        "armor_rating": 0,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20591,10 +20459,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Headpiece",
+                        "name": "Shing Jea Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10475,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20608,7 +20476,7 @@
                         "name": "Shing Jea Leggings",
                         "item_type": "Leggings",
                         "model_id": 10607,
-                        "armor_rating": 0,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -20929,10 +20797,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Boots",
+                        "name": "Ascalon Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7485,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20943,10 +20811,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Chestpiece",
+                        "name": "Ascalon Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7486,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20959,8 +20827,8 @@
                         "kind": "craftable_armor",
                         "name": "Ascalon Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7487,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -20971,10 +20839,22 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Leggings",
+                        "name": "Animal Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 7385,
+                        "armor_rating": 15,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7488,
+                        "armor_rating": 15,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -21120,7 +21000,7 @@
                         "name": "Ascalon Boots",
                         "item_type": "Boots",
                         "model_id": 10456,
-                        "armor_rating": 0,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21131,10 +21011,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Chestpiece",
+                        "name": "Ascalon Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10457,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21148,7 +21028,7 @@
                         "name": "Ascalon Gloves",
                         "item_type": "Gloves",
                         "model_id": 10458,
-                        "armor_rating": 0,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21159,10 +21039,22 @@
                     },
                     {
                         "kind": "craftable_armor",
+                        "name": "Traveler Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 14577,
+                        "armor_rating": 25,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
                         "name": "Ascalon Leggings",
                         "item_type": "Leggings",
                         "model_id": 10459,
-                        "armor_rating": 0,
+                        "armor_rating": 25,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21483,10 +21375,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Boots",
+                        "name": "Ascalon Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7493,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -21497,10 +21389,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Chestpiece",
+                        "name": "Ascalon Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7494,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -21513,8 +21405,8 @@
                         "kind": "craftable_armor",
                         "name": "Ascalon Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7495,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -21525,10 +21417,22 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Leggings",
+                        "name": "Animal Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 7395,
+                        "armor_rating": 45,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7496,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -21674,7 +21578,7 @@
                         "name": "Ascalon Boots",
                         "item_type": "Boots",
                         "model_id": 10464,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21685,10 +21589,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Chestpiece",
+                        "name": "Ascalon Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10465,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21702,7 +21606,7 @@
                         "name": "Ascalon Gloves",
                         "item_type": "Gloves",
                         "model_id": 10466,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -21713,10 +21617,22 @@
                     },
                     {
                         "kind": "craftable_armor",
+                        "name": "Traveler Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 14579,
+                        "armor_rating": 55,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
                         "name": "Ascalon Leggings",
                         "item_type": "Leggings",
                         "model_id": 10467,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22037,10 +21953,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Boots",
+                        "name": "Shing Jea Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7545,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22051,10 +21967,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Chestpiece",
+                        "name": "Shing Jea Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7546,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22067,8 +21983,8 @@
                         "kind": "craftable_armor",
                         "name": "Shing Jea Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7547,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22079,10 +21995,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Headpiece",
+                        "name": "Shing Jea Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7530,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22093,10 +22009,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Leggings",
+                        "name": "Shing Jea Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7548,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22242,7 +22158,7 @@
                         "name": "Shing Jea Boots",
                         "item_type": "Boots",
                         "model_id": 10612,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22253,10 +22169,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Chestpiece",
+                        "name": "Shing Jea Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10613,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22270,7 +22186,7 @@
                         "name": "Shing Jea Gloves",
                         "item_type": "Gloves",
                         "model_id": 10614,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22281,10 +22197,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Headpiece",
+                        "name": "Shing Jea Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10485,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22298,7 +22214,7 @@
                         "name": "Shing Jea Leggings",
                         "item_type": "Leggings",
                         "model_id": 10615,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22619,10 +22535,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Boots",
+                        "name": "Canthan Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7361,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22633,10 +22549,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Chestpiece",
+                        "name": "Canthan Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7362,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22649,8 +22565,8 @@
                         "kind": "craftable_armor",
                         "name": "Canthan Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7363,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22661,10 +22577,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Headpiece",
+                        "name": "Canthan Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7266,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22675,10 +22591,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Leggings",
+                        "name": "Canthan Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7364,
+                        "armor_rating": 45,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -22824,7 +22740,7 @@
                         "name": "Canthan Boots",
                         "item_type": "Boots",
                         "model_id": 10316,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22835,10 +22751,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Chestpiece",
+                        "name": "Canthan Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10317,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22852,7 +22768,7 @@
                         "name": "Canthan Gloves",
                         "item_type": "Gloves",
                         "model_id": 10318,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22863,10 +22779,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Headpiece",
+                        "name": "Canthan Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10189,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -22880,7 +22796,7 @@
                         "name": "Canthan Leggings",
                         "item_type": "Leggings",
                         "model_id": 10319,
-                        "armor_rating": 0,
+                        "armor_rating": 55,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23201,10 +23117,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Boots",
+                        "name": "Ascalon Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7489,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23215,10 +23131,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Chestpiece",
+                        "name": "Ascalon Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7490,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23231,8 +23147,8 @@
                         "kind": "craftable_armor",
                         "name": "Ascalon Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7491,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23243,10 +23159,22 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Leggings",
+                        "name": "Animal Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 7390,
+                        "armor_rating": 30,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7492,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23392,7 +23320,7 @@
                         "name": "Ascalon Boots",
                         "item_type": "Boots",
                         "model_id": 10460,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23403,10 +23331,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ascalon Chestpiece",
+                        "name": "Ascalon Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10461,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23420,7 +23348,7 @@
                         "name": "Ascalon Gloves",
                         "item_type": "Gloves",
                         "model_id": 10462,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23431,10 +23359,22 @@
                     },
                     {
                         "kind": "craftable_armor",
+                        "name": "Traveler Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 14578,
+                        "armor_rating": 40,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
                         "name": "Ascalon Leggings",
                         "item_type": "Leggings",
                         "model_id": 10463,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23755,10 +23695,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Boots",
+                        "name": "Shing Jea Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7541,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23769,10 +23709,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Chestpiece",
+                        "name": "Shing Jea Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7542,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23785,8 +23725,8 @@
                         "kind": "craftable_armor",
                         "name": "Shing Jea Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7543,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23797,10 +23737,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Headpiece",
+                        "name": "Shing Jea Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7525,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23811,10 +23751,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Leggings",
+                        "name": "Shing Jea Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7544,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -23960,7 +23900,7 @@
                         "name": "Shing Jea Boots",
                         "item_type": "Boots",
                         "model_id": 10608,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23971,10 +23911,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Chestpiece",
+                        "name": "Shing Jea Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10609,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23988,7 +23928,7 @@
                         "name": "Shing Jea Gloves",
                         "item_type": "Gloves",
                         "model_id": 10610,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -23999,10 +23939,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Shing Jea Headpiece",
+                        "name": "Shing Jea Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10480,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24016,7 +23956,7 @@
                         "name": "Shing Jea Leggings",
                         "item_type": "Leggings",
                         "model_id": 10611,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24337,10 +24277,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Boots",
+                        "name": "Canthan Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7357,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24351,10 +24291,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Chestpiece",
+                        "name": "Canthan Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7358,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24367,8 +24307,8 @@
                         "kind": "craftable_armor",
                         "name": "Canthan Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7359,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24379,10 +24319,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Headpiece",
+                        "name": "Canthan Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7261,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24393,10 +24333,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Leggings",
+                        "name": "Canthan Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 7360,
+                        "armor_rating": 30,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24542,7 +24482,7 @@
                         "name": "Canthan Boots",
                         "item_type": "Boots",
                         "model_id": 10312,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24553,10 +24493,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Chestpiece",
+                        "name": "Canthan Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10313,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24570,7 +24510,7 @@
                         "name": "Canthan Gloves",
                         "item_type": "Gloves",
                         "model_id": 10314,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24581,10 +24521,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Canthan Headpiece",
+                        "name": "Canthan Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 10184,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24598,7 +24538,7 @@
                         "name": "Canthan Leggings",
                         "item_type": "Leggings",
                         "model_id": 10315,
-                        "armor_rating": 0,
+                        "armor_rating": 40,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -24937,10 +24877,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Luxon Boots",
+                        "name": "Elite Luxon Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23572,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24953,10 +24893,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Luxon Chestpiece",
+                        "name": "Elite Luxon Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23573,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24971,8 +24911,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Luxon Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23574,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -24985,10 +24925,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Luxon Headpiece",
+                        "name": "Elite Luxon Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23571,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -25001,10 +24941,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Luxon Leggings",
+                        "name": "Elite Luxon Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23575,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -25169,8 +25109,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Luxon Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23836,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -25183,10 +25123,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Luxon Chestpiece",
+                        "name": "Elite Luxon Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23837,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -25201,8 +25141,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Luxon Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23838,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -25215,10 +25155,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Elite Luxon Headpiece",
+                        "name": "Elite Luxon Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23835,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -25233,8 +25173,8 @@
                         "kind": "craftable_armor",
                         "name": "Elite Luxon Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23839,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -26601,6 +26541,130 @@
                             "gold": 0
                         }
                     }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Boots",
+                        "item_type": "Boots",
+                        "model_id": 23796,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 23797,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 23798,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23795,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 23799,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Mesmer": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Footwear",
+                        "item_type": "Boots",
+                        "model_id": 23532,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Attire",
+                        "item_type": "Chestpiece",
+                        "model_id": 23533,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 23534,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23531,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Canthan Hose",
+                        "item_type": "Leggings",
+                        "model_id": 23535,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
                 ]
             }
         },
@@ -26759,6 +26823,130 @@
                             "gold": 0
                         }
                     }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Boots",
+                        "item_type": "Boots",
+                        "model_id": 23844,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 23845,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 23846,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23843,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 23847,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Mesmer": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Footwear",
+                        "item_type": "Boots",
+                        "model_id": 23580,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Attire",
+                        "item_type": "Chestpiece",
+                        "model_id": 23581,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 23582,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23579,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Shing Jea Hose",
+                        "item_type": "Leggings",
+                        "model_id": 23583,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
                 ]
             }
         },
@@ -26912,6 +27100,130 @@
                         "model_id": 23379,
                         "armor_rating": 60,
                         "profession": "Monk",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Boots",
+                        "item_type": "Boots",
+                        "model_id": 23415,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 23416,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 23417,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Simple Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23273,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 23418,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Mesmer": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Footwear",
+                        "item_type": "Boots",
+                        "model_id": 23340,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Attire",
+                        "item_type": "Chestpiece",
+                        "model_id": 23341,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 23342,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Discreet Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23186,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Ascalon Hose",
+                        "item_type": "Leggings",
+                        "model_id": 23343,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
                         "required_materials": {
                             "materials": {},
                             "gold": 0
@@ -27169,10 +27481,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Vabbian Boots",
+                        "name": "Vabbian Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17224,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -27186,10 +27498,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Vabbian Chestpiece",
+                        "name": "Vabbian Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17225,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -27205,8 +27517,8 @@
                         "kind": "craftable_armor",
                         "name": "Vabbian Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17226,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -27220,10 +27532,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Vabbian Headpiece",
+                        "name": "Vabbian Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 19833,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -27237,10 +27549,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Vabbian Leggings",
+                        "name": "Vabbian Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17227,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -27541,8 +27853,8 @@
                         "kind": "craftable_armor",
                         "name": "Vabbian Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17649,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -27556,10 +27868,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Vabbian Chestpiece",
+                        "name": "Vabbian Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17650,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -27575,8 +27887,8 @@
                         "kind": "craftable_armor",
                         "name": "Vabbian Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17651,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -27590,10 +27902,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Vabbian Headpiece",
+                        "name": "Vabbian Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 19914,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -27609,8 +27921,8 @@
                         "kind": "craftable_armor",
                         "name": "Vabbian Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17652,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -29186,10 +29498,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Ancient Boots",
+                        "name": "Ancient Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17229,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -29201,10 +29513,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ancient Chestpiece",
+                        "name": "Ancient Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17230,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -29218,8 +29530,8 @@
                         "kind": "craftable_armor",
                         "name": "Ancient Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17231,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -29231,10 +29543,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ancient Headpiece",
+                        "name": "Ancient Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 19837,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -29246,10 +29558,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ancient Leggings",
+                        "name": "Ancient Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17232,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -29526,8 +29838,8 @@
                         "kind": "craftable_armor",
                         "name": "Ancient Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17654,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -29539,10 +29851,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ancient Chestpiece",
+                        "name": "Ancient Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17655,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -29556,8 +29868,8 @@
                         "kind": "craftable_armor",
                         "name": "Ancient Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17656,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -29569,10 +29881,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Ancient Headpiece",
+                        "name": "Ancient Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 19918,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -29586,8 +29898,8 @@
                         "kind": "craftable_armor",
                         "name": "Ancient Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 17657,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -29995,6 +30307,130 @@
                             "gold": 0
                         }
                     }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Boots",
+                        "item_type": "Boots",
+                        "model_id": 17580,
+                        "armor_rating": 25,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 17581,
+                        "armor_rating": 25,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 17582,
+                        "armor_rating": 25,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 17611,
+                        "armor_rating": 25,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 17583,
+                        "armor_rating": 25,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Mesmer": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Footwear",
+                        "item_type": "Boots",
+                        "model_id": 17155,
+                        "armor_rating": 15,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Attire",
+                        "item_type": "Chestpiece",
+                        "model_id": 17156,
+                        "armor_rating": 15,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 17157,
+                        "armor_rating": 15,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 17186,
+                        "armor_rating": 15,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Hose",
+                        "item_type": "Leggings",
+                        "model_id": 17158,
+                        "armor_rating": 15,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
                 ]
             }
         },
@@ -30359,6 +30795,68 @@
                             "gold": 0
                         }
                     }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Boots",
+                        "item_type": "Boots",
+                        "model_id": 17596,
+                        "armor_rating": 55,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 17597,
+                        "armor_rating": 55,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 17598,
+                        "armor_rating": 55,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 17627,
+                        "armor_rating": 55,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 17599,
+                        "armor_rating": 55,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
                 ]
             }
         },
@@ -30646,6 +31144,130 @@
                         "model_id": 17424,
                         "armor_rating": 60,
                         "profession": "Monk",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Boots",
+                        "item_type": "Boots",
+                        "model_id": 17604,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 17605,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 17606,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 17635,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 17607,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Mesmer": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Footwear",
+                        "item_type": "Boots",
+                        "model_id": 17179,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Attire",
+                        "item_type": "Chestpiece",
+                        "model_id": 17180,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 17181,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 17210,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Sunspear Hose",
+                        "item_type": "Leggings",
+                        "model_id": 17182,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
                         "required_materials": {
                             "materials": {},
                             "gold": 0
@@ -31434,10 +32056,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Asuran Boots",
+                        "name": "Asuran Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 24893,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -31449,10 +32071,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Asuran Chestpiece",
+                        "name": "Asuran Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 24894,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -31466,8 +32088,8 @@
                         "kind": "craftable_armor",
                         "name": "Asuran Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 24895,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -31479,10 +32101,34 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Asuran Headpiece",
+                        "name": "Asuran Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 24877,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Slim Spectacles",
+                        "item_type": "Headpiece",
+                        "model_id": 25955,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Spectacles",
+                        "item_type": "Headpiece",
+                        "model_id": 25965,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -31494,10 +32140,22 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Asuran Leggings",
+                        "name": "Tinted Spectacles",
+                        "item_type": "Headpiece",
+                        "model_id": 25975,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Asuran Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 24896,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -31739,8 +32397,8 @@
                         "kind": "craftable_armor",
                         "name": "Asuran Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25552,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -31752,10 +32410,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Asuran Chestpiece",
+                        "name": "Asuran Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25553,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -31769,8 +32427,8 @@
                         "kind": "craftable_armor",
                         "name": "Asuran Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25554,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -31782,10 +32440,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Asuran Headpiece",
+                        "name": "Asuran Mask",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25551,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -31793,14 +32451,50 @@
                                 "942": 5
                             },
                             "gold": 10000
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Slim Spectacles",
+                        "item_type": "Headpiece",
+                        "model_id": 25960,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Spectacles",
+                        "item_type": "Headpiece",
+                        "model_id": 25970,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Tinted Spectacles",
+                        "item_type": "Headpiece",
+                        "model_id": 25980,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
                         }
                     },
                     {
                         "kind": "craftable_armor",
                         "name": "Asuran Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25555,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -32178,6 +32872,130 @@
                             "gold": 0
                         }
                     }
+                ],
+                "Ranger": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Boots",
+                        "item_type": "Boots",
+                        "model_id": 25698,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Vest",
+                        "item_type": "Chestpiece",
+                        "model_id": 25699,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 25700,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 25697,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Leggings",
+                        "item_type": "Leggings",
+                        "model_id": 25701,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
+                ],
+                "Mesmer": [
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Footwear",
+                        "item_type": "Boots",
+                        "model_id": 25661,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Attire",
+                        "item_type": "Chestpiece",
+                        "model_id": 25662,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Gloves",
+                        "item_type": "Gloves",
+                        "model_id": 25663,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 25660,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Monument Hose",
+                        "item_type": "Leggings",
+                        "model_id": 25664,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    }
                 ]
             }
         },
@@ -32408,10 +33226,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Norn Boots",
+                        "name": "Norn Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25588,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -32423,10 +33241,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Norn Chestpiece",
+                        "name": "Norn Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25589,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -32441,7 +33259,7 @@
                         "name": "Norn Gloves",
                         "item_type": "Gloves",
                         "model_id": 25590,
-                        "armor_rating": 0,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -32453,10 +33271,34 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Norn Headpiece",
+                        "name": "Highlander Woad",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 26169,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Norn Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 25587,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Norn Woad",
+                        "item_type": "Headpiece",
+                        "model_id": 26179,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -32468,10 +33310,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Norn Leggings",
+                        "name": "Norn Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25591,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -32701,8 +33543,8 @@
                         "kind": "craftable_armor",
                         "name": "Norn Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25625,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -32714,10 +33556,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Norn Chestpiece",
+                        "name": "Norn Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25626,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -32731,8 +33573,8 @@
                         "kind": "craftable_armor",
                         "name": "Norn Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25627,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -32744,10 +33586,34 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Norn Headpiece",
+                        "name": "Highlander Woad",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 26174,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Norn Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 25624,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Norn Woad",
+                        "item_type": "Headpiece",
+                        "model_id": 26184,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -32761,8 +33627,8 @@
                         "kind": "craftable_armor",
                         "name": "Norn Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25628,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33176,7 +34042,7 @@
                         "name": "Embroidered Boots",
                         "item_type": "Boots",
                         "model_id": 27205,
-                        "armor_rating": 0,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33191,7 +34057,7 @@
                         "name": "Leather Long Coat",
                         "item_type": "Chestpiece",
                         "model_id": 27203,
-                        "armor_rating": 0,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33205,8 +34071,8 @@
                         "kind": "craftable_armor",
                         "name": "Chaos Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25990,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33220,8 +34086,8 @@
                         "kind": "craftable_armor",
                         "name": "Dragon Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 26214,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33237,8 +34103,8 @@
                         "kind": "craftable_armor",
                         "name": "Stone Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 26224,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33252,8 +34118,8 @@
                         "kind": "craftable_armor",
                         "name": "Bandana",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25762,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33267,7 +34133,7 @@
                         "name": "Sterling Leggings",
                         "item_type": "Leggings",
                         "model_id": 27204,
-                        "armor_rating": 0,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -33527,10 +34393,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Mesmer Silken Footwear",
+                        "name": "Silken Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 27214,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -33544,8 +34410,8 @@
                         "kind": "craftable_armor",
                         "name": "Elegant Long Coat",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 27212,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -33559,8 +34425,8 @@
                         "kind": "craftable_armor",
                         "name": "Chaos Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 25985,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -33574,8 +34440,8 @@
                         "kind": "craftable_armor",
                         "name": "Dragon Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 26209,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -33591,8 +34457,8 @@
                         "kind": "craftable_armor",
                         "name": "Stone Gauntlets",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 26219,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -33606,8 +34472,8 @@
                         "kind": "craftable_armor",
                         "name": "Bandana",
                         "item_type": "Headpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 24749,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -33618,10 +34484,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Mesmer Studded Hose",
+                        "name": "Studded Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 27213,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -34429,10 +35295,10 @@
                 "Mesmer": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Stylish Boots",
+                        "name": "Tyrian Footwear",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23344,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -34444,10 +35310,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Stylish Chestpiece",
+                        "name": "Tyrian Attire",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23345,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -34459,10 +35325,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Stylish Gloves",
+                        "name": "Tyrian Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23346,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -34474,10 +35340,22 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Stylish Leggings",
+                        "name": "Animal Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23182,
+                        "armor_rating": 60,
+                        "profession": "Mesmer",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Tyrian Hose",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23347,
+                        "armor_rating": 60,
                         "profession": "Mesmer",
                         "required_materials": {
                             "materials": {
@@ -34748,10 +35626,10 @@
                 "Ranger": [
                     {
                         "kind": "craftable_armor",
-                        "name": "Leather Boots",
+                        "name": "Tyrian Boots",
                         "item_type": "Boots",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23419,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -34763,10 +35641,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Leather Chestpiece",
+                        "name": "Tyrian Vest",
                         "item_type": "Chestpiece",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23420,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -34778,10 +35656,10 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Leather Gloves",
+                        "name": "Tyrian Gloves",
                         "item_type": "Gloves",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23421,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {
@@ -34793,10 +35671,22 @@
                     },
                     {
                         "kind": "craftable_armor",
-                        "name": "Leather Leggings",
+                        "name": "Traveler Mask",
+                        "item_type": "Headpiece",
+                        "model_id": 23277,
+                        "armor_rating": 70,
+                        "profession": "Ranger",
+                        "required_materials": {
+                            "materials": {},
+                            "gold": 0
+                        }
+                    },
+                    {
+                        "kind": "craftable_armor",
+                        "name": "Tyrian Leggings",
                         "item_type": "Leggings",
-                        "model_id": 0,
-                        "armor_rating": 0,
+                        "model_id": 23422,
+                        "armor_rating": 70,
                         "profession": "Ranger",
                         "required_materials": {
                             "materials": {

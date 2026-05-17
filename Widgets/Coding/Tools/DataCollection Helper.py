@@ -490,6 +490,7 @@ class Npc:
     required_title_id: Optional[TitleID] = None
     required_title_rank: Optional[int] = None
     required_faction: Optional[FactionRequirement] = None
+    last_collection_had_pending_names: bool = field(default=False, repr=False, compare=False)
     unreachable: Optional[bool] = None
 
     def _base_to_dict(self) -> dict:
@@ -858,6 +859,7 @@ class Merchant(Ally):
         return list(MerchantTrading.Trading.Merchant.GetOfferedItems() or [])
 
     def CollectData(self) -> bool:
+        self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
             Py4GW.Console.Log(MODULE_NAME, f"Merchant '{self.name}' is not open. Please open their merchant window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
@@ -876,6 +878,7 @@ class Merchant(Ally):
                 collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'merchant item')
+        self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this merchant again...", Py4GW.Console.MessageType.Warning)
         return collected_count > 0
@@ -1033,6 +1036,7 @@ class Weaponsmith(Ally):
         )
 
     def CollectData(self) -> bool:
+        self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
             Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
@@ -1055,6 +1059,7 @@ class Weaponsmith(Ally):
                 collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'weapon')
+        self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
         return collected_count > 0
@@ -1093,6 +1098,7 @@ class Collector(Ally):
         return list(offered_items or [])
 
     def CollectData(self) -> bool:
+        self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
             Py4GW.Console.Log(MODULE_NAME, f"Collector '{self.name}' is not open. Please move to the collector and open their exchange window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
@@ -1128,6 +1134,7 @@ class Collector(Ally):
                 collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'collector')
+        self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
         return collected_count > 0
@@ -1189,6 +1196,7 @@ class Armorer(Ally):
         )
 
     def CollectData(self) -> bool:
+        self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
             Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
@@ -1270,7 +1278,8 @@ class Armorer(Ally):
 
             if existing is None:
                 candidate_words = _split_item_name_words(armor.name)
-                candidate_first_word = candidate_words[0] if candidate_words else ''
+                candidate_core_words = _strip_elite_prefix(candidate_words)
+                candidate_first_word = candidate_core_words[0] if candidate_core_words else ''
 
                 scored_matches: list[tuple[int, CraftableArmor]] = []
                 for existing_armor in same_slot_entries:
@@ -1278,8 +1287,9 @@ class Armorer(Ally):
                         continue
 
                     existing_words = _split_item_name_words(existing_armor.name)
-                    existing_first_word = existing_words[0] if existing_words else ''
-                    shared_words = set(candidate_words) & set(existing_words)
+                    existing_core_words = _strip_elite_prefix(existing_words)
+                    existing_first_word = existing_core_words[0] if existing_core_words else ''
+                    shared_words = set(candidate_core_words) & set(existing_core_words)
                     score = 0
 
                     if candidate_first_word and candidate_first_word == existing_first_word:
@@ -1312,6 +1322,7 @@ class Armorer(Ally):
                 collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'armor')
+        self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
             
@@ -1815,6 +1826,12 @@ def _split_item_name_words(name: str) -> list[str]:
     return [word for word in ''.join(character.lower() if character.isalnum() else ' ' for character in name).split() if word]
 
 
+def _strip_elite_prefix(words: list[str]) -> list[str]:
+    if words and words[0] == 'elite':
+        return words[1:]
+    return words
+
+
 def _is_missing_name(name: str) -> bool:
     return not name or name.startswith('Model')
 
@@ -1864,9 +1881,24 @@ def _same_item_identity(existing: Any, candidate: Any) -> bool:
         or getattr(existing, 'profession', Profession._None) == getattr(candidate, 'profession', Profession._None)
     )
     same_collectible = getattr(existing, 'required_collectible', None) == getattr(candidate, 'required_collectible', None)
+    collectible_placeholder_match = (
+        same_collectible
+        and same_collectible != tuple[int, int]()
+        and same_type
+        and same_profession
+        and (
+            _is_missing_name(getattr(existing, 'name', ''))
+            or _is_missing_name(getattr(candidate, 'name', ''))
+            or int(getattr(existing, 'model_id', 0) or 0) == 0
+            or int(getattr(candidate, 'model_id', 0) or 0) == 0
+        )
+    )
 
     if existing.model_id and candidate.model_id and not hasattr(existing, 'attribute'):
         return existing.model_id == candidate.model_id and same_type
+
+    if collectible_placeholder_match:
+        return True
 
     if same_collectible and same_collectible != tuple[int, int]():
         return same_name and same_type and same_attribute and same_profession
@@ -2028,6 +2060,7 @@ def _flush_pending_auto_save():
 
 
 def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> bool:
+    crafter.last_collection_had_pending_names = False
     if not crafter.IsCrafterOpen():
         Py4GW.Console.Log(MODULE_NAME, f"Crafter '{crafter.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
         return False
@@ -2050,6 +2083,7 @@ def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> b
             collected_count += 1
 
     _log_collection_result(crafter.name, collected_count, 'craftable item')
+    crafter.last_collection_had_pending_names = pending_name_update
     if pending_name_update:
         Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{crafter.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
     return collected_count > 0
@@ -2453,9 +2487,12 @@ def _run_crafter_sweep(crafters: list[AnyCrafter]):
             )
             continue
 
+        _set_sweep_status('Waiting for window contents...', crafter.name, index, total)
+        yield from Routines.Yield.wait(500)
+
         _set_sweep_status(f"Collecting visible {crafter.service_label().lower()} data...", crafter.name, index, total)
         try:
-            collected = crafter.CollectData()
+            collected = yield from _collect_crafter_data_with_retries(crafter)
             if collected:
                 _mark_data_dirty(_get_category_key_for_npc(crafter))
                 save_crafters_to_json()
@@ -2515,6 +2552,30 @@ def _open_crafter_window(crafter: AnyCrafter, timeout_ms: int = 1500):
         since_reissue += retry_interval
 
     return crafter._service_window_is_open()
+
+
+def _collect_crafter_data_with_retries(crafter: AnyCrafter, max_attempts: int = 3, retry_wait_ms: int = 500):
+    collected_any = False
+
+    for attempt in range(1, max_attempts + 1):
+        if sweep_stop_requested:
+            return False
+
+        collected = crafter.CollectData()
+        collected_any = collected_any or collected
+
+        if not crafter.last_collection_had_pending_names:
+            return collected_any
+
+        if attempt < max_attempts:
+            Py4GW.Console.Log(
+                MODULE_NAME,
+                f"Retrying '{crafter.name}' collection because some item names are not ready yet ({attempt}/{max_attempts - 1}).",
+                Py4GW.Console.MessageType.Info,
+            )
+            yield from Routines.Yield.wait(retry_wait_ms)
+
+    return collected_any
 
 
 def get_armor_rating_as_constant_name(crafter: Armorer) -> str:
@@ -2974,61 +3035,12 @@ def main():
 def clean_data():
     _ensure_initialized()
 
-    tyrian_map : dict[Profession, str] = {
-        Profession.Warrior: 'Chainmail',
-        Profession.Ranger: 'Leather',
-        Profession.Monk: 'Tyrian',
-        Profession.Necromancer: 'Tyrian',
-        Profession.Mesmer: 'Stylish',
-        Profession.Elementalist: 'Tyrian',
-    }
     profession_names = {
         profession.name: profession
         for profession in Profession
         if profession != Profession._None
     }
     changed_categories: set[str] = set()
-
-    for a in ARMORERS:
-        for prof, prof_armors in a.armors.items():
-            for armor in prof_armors:
-                if armor.name.startswith('Tyrian'):
-                    replacement = tyrian_map.get(prof, None)
-                    if replacement:
-                        updated_name = armor.name.replace('Tyrian', replacement, 1)
-                        if updated_name != armor.name:
-                            armor.name = updated_name
-                            changed_categories.add('armorers')
-
-    for c in COLLECTORS:
-        for index, item in enumerate(c.items):
-            if isinstance(item, CollectibleArmor) and item.name.startswith('Tyrian'):
-                replacement = tyrian_map.get(item.profession, None)
-                if replacement:
-                    updated_name = item.name.replace('Tyrian', replacement, 1)
-                    if updated_name != item.name:
-                        item.name = updated_name
-                        changed_categories.add('collectors')
-                        
-            profession = profession_names.get(item.name, None)
-            if profession is None:
-                continue
-
-            item_type = item.item_type if not _is_unknown_item_type(item.item_type) else ItemType.Unknown
-            model_id = item.model_id
-            required_collectible = item.required_collectible if isinstance(item, Collectible) else tuple[int, int]()
-            replacement_item = CollectibleArmor(
-                name='',
-                item_type=item_type,
-                model_id=model_id,
-                profession=profession,
-                armor_rating=_get_armor_rating_for_profession(profession),
-                required_collectible=required_collectible,
-            )
-            c.items[index] = replacement_item
-            changed_categories.add('collectors')
-
-        c.items.sort(key=_named_item_sort_key)
 
     if changed_categories:
         _mark_data_dirty(changed_categories)
