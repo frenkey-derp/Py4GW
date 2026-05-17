@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T14:07:48Z",
+    "saved_at": "2026-05-17T16:00:14Z",
     "category": "traders",
     "entries": [
         {
@@ -2585,6 +2585,102 @@
                 4252.0
             ],
             "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Haddon [Dye Trader]",
+            "encoded_name": [
+                91,
+                45,
+                4,
+                209,
+                49,
+                230,
+                217,
+                31,
+                0,
+                0
+            ],
+            "model_id": 2070,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7523.0,
+                5790.0
+            ],
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Angel [Rune Trader]",
+            "encoded_name": [
+                94,
+                45,
+                111,
+                230,
+                232,
+                194,
+                214,
+                12,
+                0,
+                0
+            ],
+            "model_id": 2035,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7052.0,
+                5669.0
+            ],
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Argus [Rare Material Trader]",
+            "encoded_name": [
+                93,
+                45,
+                63,
+                224,
+                133,
+                233,
+                124,
+                106,
+                0,
+                0
+            ],
+            "model_id": 2033,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7483.0,
+                6063.0
+            ],
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Shad [Material Trader]",
+            "encoded_name": [
+                92,
+                45,
+                80,
+                202,
+                145,
+                215,
+                194,
+                67,
+                0,
+                0
+            ],
+            "model_id": 2071,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                6988.0,
+                6146.0
+            ],
+            "trader_type": "Material",
             "items": []
         }
     ]

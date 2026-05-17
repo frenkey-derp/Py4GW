@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T15:39:24Z",
+    "saved_at": "2026-05-17T16:07:45Z",
     "category": "allies",
     "entries": [
         {
@@ -29039,6 +29039,1396 @@
             "position": [
                 20309.25,
                 9065.751953125
+            ]
+        },
+        {
+            "name": "Alesia [Healer Henchman]",
+            "encoded_name": [
+                198,
+                44,
+                86,
+                229,
+                47,
+                144,
+                233,
+                104,
+                0,
+                0
+            ],
+            "model_id": 1889,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9879.0,
+                4941.0
+            ]
+        },
+        {
+            "name": "Stefan [Fighter Henchman]",
+            "encoded_name": [
+                251,
+                44,
+                0,
+                226,
+                148,
+                202,
+                24,
+                75,
+                0,
+                0
+            ],
+            "model_id": 1891,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9911.0,
+                4866.0
+            ]
+        },
+        {
+            "name": "Orion [Mage Henchman]",
+            "encoded_name": [
+                192,
+                44,
+                204,
+                180,
+                59,
+                205,
+                211,
+                8,
+                0,
+                0
+            ],
+            "model_id": 1888,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9878.0,
+                4772.0
+            ]
+        },
+        {
+            "name": "Reyna [Archer Henchman]",
+            "encoded_name": [
+                63,
+                45,
+                193,
+                155,
+                207,
+                175,
+                41,
+                57,
+                0,
+                0
+            ],
+            "model_id": 1892,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9852.0,
+                4682.0
+            ]
+        },
+        {
+            "name": "Dunham [Enchanter Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                185,
+                58,
+                61,
+                174,
+                82,
+                227,
+                131,
+                118,
+                0,
+                0
+            ],
+            "model_id": 1886,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9819.0,
+                4590.0
+            ]
+        },
+        {
+            "name": "Claude [Cultist Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                187,
+                58,
+                166,
+                220,
+                249,
+                168,
+                69,
+                38,
+                0,
+                0
+            ],
+            "model_id": 1887,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9846.0,
+                5021.0
+            ]
+        },
+        {
+            "name": "Little Thom [Brawler Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                191,
+                58,
+                141,
+                197,
+                220,
+                226,
+                170,
+                25,
+                0,
+                0
+            ],
+            "model_id": 1890,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9806.0,
+                5097.0
+            ]
+        },
+        {
+            "name": "Captain Osric [Skills]",
+            "encoded_name": [
+                161,
+                59,
+                191,
+                182,
+                154,
+                155,
+                143,
+                104,
+                0,
+                0
+            ],
+            "model_id": 2148,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9086.0,
+                5816.0
+            ]
+        },
+        {
+            "name": "Necromancer Morgan",
+            "encoded_name": [
+                145,
+                59,
+                98,
+                174,
+                34,
+                240,
+                241,
+                113,
+                0,
+                0
+            ],
+            "model_id": 1473,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                10002.0,
+                7940.0
+            ]
+        },
+        {
+            "name": "Tabor Woolridge",
+            "encoded_name": [
+                143,
+                59,
+                195,
+                195,
+                158,
+                255,
+                240,
+                115,
+                0,
+                0
+            ],
+            "model_id": 1469,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9718.0,
+                6470.0
+            ]
+        },
+        {
+            "name": "Sebedoh the Mesmer",
+            "encoded_name": [
+                141,
+                59,
+                20,
+                141,
+                164,
+                227,
+                255,
+                78,
+                0,
+                0
+            ],
+            "model_id": 1468,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                8023.0,
+                5011.0
+            ]
+        },
+        {
+            "name": "Grand Mason Stonecleaver",
+            "encoded_name": [
+                147,
+                59,
+                48,
+                157,
+                224,
+                147,
+                46,
+                53,
+                0,
+                0
+            ],
+            "model_id": 1555,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                6864.0,
+                5139.0
+            ]
+        },
+        {
+            "name": "Bromgar [Arena Guard]",
+            "encoded_name": [
+                139,
+                59,
+                205,
+                192,
+                224,
+                221,
+                71,
+                23,
+                0,
+                0
+            ],
+            "model_id": 1556,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                8101.0,
+                7050.0
+            ]
+        },
+        {
+            "name": "Van the Warrior",
+            "encoded_name": [
+                155,
+                59,
+                79,
+                143,
+                125,
+                241,
+                220,
+                84,
+                0,
+                0
+            ],
+            "model_id": 2077,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                7110.0,
+                5422.0
+            ]
+        },
+        {
+            "name": "Howland the Elementalist",
+            "encoded_name": [
+                153,
+                59,
+                139,
+                157,
+                94,
+                132,
+                138,
+                27,
+                0,
+                0
+            ],
+            "model_id": 1475,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                8431.0,
+                6014.0
+            ]
+        },
+        {
+            "name": "Xunlai Agent [Storage]",
+            "encoded_name": [
+                1,
+                129,
+                32,
+                31,
+                123,
+                173,
+                243,
+                229,
+                154,
+                16,
+                0,
+                0
+            ],
+            "model_id": 221,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9713.0,
+                5639.0
+            ]
+        },
+        {
+            "name": "Xunlai Chest",
+            "encoded_name": [
+                1,
+                129,
+                176,
+                70,
+                20,
+                239,
+                143,
+                193,
+                215,
+                36,
+                0,
+                0
+            ],
+            "model_id": 5052,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9743.0,
+                5789.0
+            ]
+        },
+        {
+            "name": "Traveler's Vale",
+            "encoded_name": [
+                120,
+                42,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 134,
+            "position": [
+                9089.0,
+                4328.0
+            ]
+        },
+        {
+            "name": "Alesia [Healer Henchman]",
+            "encoded_name": [
+                198,
+                44,
+                86,
+                229,
+                47,
+                144,
+                233,
+                104,
+                0,
+                0
+            ],
+            "model_id": 1917,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15475.0,
+                19281.0
+            ]
+        },
+        {
+            "name": "Stefan [Fighter Henchman]",
+            "encoded_name": [
+                251,
+                44,
+                0,
+                226,
+                148,
+                202,
+                24,
+                75,
+                0,
+                0
+            ],
+            "model_id": 1920,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15566.0,
+                19298.0
+            ]
+        },
+        {
+            "name": "Orion [Mage Henchman]",
+            "encoded_name": [
+                192,
+                44,
+                204,
+                180,
+                59,
+                205,
+                211,
+                8,
+                0,
+                0
+            ],
+            "model_id": 1916,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15436.0,
+                19258.0
+            ]
+        },
+        {
+            "name": "Reyna [Archer Henchman]",
+            "encoded_name": [
+                63,
+                45,
+                193,
+                155,
+                207,
+                175,
+                41,
+                57,
+                0,
+                0
+            ],
+            "model_id": 1921,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15614.0,
+                19285.0
+            ]
+        },
+        {
+            "name": "Dunham [Enchanter Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                185,
+                58,
+                61,
+                174,
+                82,
+                227,
+                131,
+                118,
+                0,
+                0
+            ],
+            "model_id": 1914,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15658.0,
+                19260.0
+            ]
+        },
+        {
+            "name": "Claude [Cultist Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                187,
+                58,
+                166,
+                220,
+                249,
+                168,
+                69,
+                38,
+                0,
+                0
+            ],
+            "model_id": 1915,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15364.0,
+                19200.0
+            ]
+        },
+        {
+            "name": "Little Thom [Brawler Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                191,
+                58,
+                141,
+                197,
+                220,
+                226,
+                170,
+                25,
+                0,
+                0
+            ],
+            "model_id": 1919,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15404.0,
+                19225.0
+            ]
+        },
+        {
+            "name": "Lina [Protector Henchman]",
+            "encoded_name": [
+                2,
+                129,
+                190,
+                58,
+                213,
+                191,
+                84,
+                234,
+                79,
+                61,
+                0,
+                0
+            ],
+            "model_id": 1918,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -15701.0,
+                19237.0
+            ]
+        },
+        {
+            "name": "Annelle Fipps",
+            "encoded_name": [
+                57,
+                50,
+                222,
+                252,
+                239,
+                247,
+                246,
+                40,
+                0,
+                0
+            ],
+            "model_id": 2404,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -14716.0,
+                18922.0
+            ]
+        },
+        {
+            "name": "Eulenias",
+            "encoded_name": [
+                114,
+                50,
+                57,
+                216,
+                112,
+                206,
+                184,
+                95,
+                0,
+                0
+            ],
+            "model_id": 2879,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -14509.0,
+                18266.0
+            ]
+        },
+        {
+            "name": "Agastos the Brave",
+            "encoded_name": [
+                122,
+                50,
+                254,
+                234,
+                84,
+                150,
+                172,
+                58,
+                0,
+                0
+            ],
+            "model_id": 2884,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -14795.0,
+                16421.0
+            ]
+        },
+        {
+            "name": "Xunlai Agent [Storage]",
+            "encoded_name": [
+                1,
+                129,
+                32,
+                31,
+                123,
+                173,
+                243,
+                229,
+                154,
+                16,
+                0,
+                0
+            ],
+            "model_id": 221,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -14222.0,
+                16886.0
+            ]
+        },
+        {
+            "name": "Xunlai Chest",
+            "encoded_name": [
+                1,
+                129,
+                176,
+                70,
+                20,
+                239,
+                143,
+                193,
+                215,
+                36,
+                0,
+                0
+            ],
+            "model_id": 5052,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -14108.0,
+                16984.0
+            ]
+        },
+        {
+            "name": "The Scar",
+            "encoded_name": [
+                200,
+                41,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -14125.0,
+                17418.0
+            ]
+        },
+        {
+            "name": "Skyward Reach",
+            "encoded_name": [
+                204,
+                41,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 154,
+            "position": [
+                -16750.0,
+                22613.0
+            ]
+        },
+        {
+            "name": "Crafters' Corner",
+            "encoded_name": [
+                100,
+                33,
+                238,
+                242,
+                7,
+                170,
+                104,
+                13,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                3533.0,
+                4534.0
+            ]
+        },
+        {
+            "name": "Gordon Ecker [Tyrian Loremaster]",
+            "encoded_name": [
+                2,
+                129,
+                150,
+                74,
+                101,
+                224,
+                56,
+                202,
+                75,
+                53,
+                0,
+                0
+            ],
+            "model_id": 2041,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2072.0,
+                9056.0
+            ]
+        },
+        {
+            "name": "Durmand [Historian]",
+            "encoded_name": [
+                2,
+                129,
+                99,
+                50,
+                17,
+                232,
+                146,
+                146,
+                234,
+                40,
+                0,
+                0
+            ],
+            "model_id": 2041,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2586.0,
+                7559.0
+            ]
+        },
+        {
+            "name": "Diane [Scribe]",
+            "encoded_name": [
+                2,
+                129,
+                40,
+                52,
+                214,
+                222,
+                36,
+                180,
+                244,
+                37,
+                0,
+                0
+            ],
+            "model_id": 2010,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2490.0,
+                7480.0
+            ]
+        },
+        {
+            "name": "Akemi [Scribe]",
+            "encoded_name": [
+                2,
+                129,
+                148,
+                52,
+                215,
+                189,
+                14,
+                183,
+                89,
+                5,
+                0,
+                0
+            ],
+            "model_id": 3307,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2675.0,
+                7483.0
+            ]
+        },
+        {
+            "name": "Archivist of Whispers [Scribe]",
+            "encoded_name": [
+                2,
+                129,
+                150,
+                52,
+                133,
+                191,
+                239,
+                130,
+                54,
+                11,
+                0,
+                0
+            ],
+            "model_id": 5269,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2771.0,
+                7482.0
+            ]
+        },
+        {
+            "name": "Tuomas [Scribe]",
+            "encoded_name": [
+                2,
+                129,
+                42,
+                52,
+                85,
+                172,
+                68,
+                196,
+                189,
+                118,
+                0,
+                0
+            ],
+            "model_id": 2116,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2389.0,
+                7477.0
+            ]
+        },
+        {
+            "name": "Armen the Guide",
+            "encoded_name": [
+                249,
+                24,
+                90,
+                209,
+                203,
+                133,
+                221,
+                27,
+                0,
+                0
+            ],
+            "model_id": 2065,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2376.0,
+                9268.0
+            ]
+        },
+        {
+            "name": "Magi Malaquire",
+            "encoded_name": [
+                1,
+                49,
+                149,
+                188,
+                197,
+                179,
+                93,
+                72,
+                0,
+                0
+            ],
+            "model_id": 2041,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                3233.0,
+                10304.0
+            ]
+        },
+        {
+            "name": "Samuka [Armor]",
+            "encoded_name": [
+                86,
+                45,
+                152,
+                194,
+                142,
+                158,
+                141,
+                85,
+                0,
+                0
+            ],
+            "model_id": 2008,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2343.0,
+                6843.0
+            ]
+        },
+        {
+            "name": "Grahame [Weapons]",
+            "encoded_name": [
+                96,
+                45,
+                55,
+                208,
+                104,
+                141,
+                91,
+                78,
+                0,
+                0
+            ],
+            "model_id": 2018,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2806.0,
+                6887.0
+            ]
+        },
+        {
+            "name": "Loremaster Ermenred",
+            "encoded_name": [
+                22,
+                49,
+                188,
+                132,
+                65,
+                185,
+                80,
+                37,
+                0,
+                0
+            ],
+            "model_id": 2041,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                3089.0,
+                8527.0
+            ]
+        },
+        {
+            "name": "Lionguard",
+            "encoded_name": [
+                135,
+                43,
+                159,
+                130,
+                205,
+                161,
+                115,
+                83,
+                0,
+                0
+            ],
+            "model_id": 2013,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                2789.1572265625,
+                5767.89404296875
+            ]
+        },
+        {
+            "name": "Xunlai Gift-Giver Teodorus",
+            "encoded_name": [
+                3,
+                129,
+                90,
+                10,
+                127,
+                216,
+                115,
+                199,
+                207,
+                127,
+                0,
+                0
+            ],
+            "model_id": 2080,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7297.0,
+                5758.0
+            ]
+        },
+        {
+            "name": "Lion's Arch Keep Gate Guard",
+            "encoded_name": [
+                2,
+                129,
+                252,
+                102,
+                79,
+                189,
+                31,
+                139,
+                144,
+                19,
+                0,
+                0
+            ],
+            "model_id": 2011,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7611.0,
+                10627.0
+            ]
+        },
+        {
+            "name": "Merkin [Guild Registrar]",
+            "encoded_name": [
+                78,
+                45,
+                42,
+                184,
+                142,
+                132,
+                126,
+                107,
+                0,
+                0
+            ],
+            "model_id": 2041,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7081.0,
+                10146.0
+            ]
+        },
+        {
+            "name": "Liran [Guild Emblemer]",
+            "encoded_name": [
+                77,
+                45,
+                244,
+                176,
+                57,
+                137,
+                224,
+                52,
+                0,
+                0
+            ],
+            "model_id": 2008,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7336.0,
+                9778.0
+            ]
+        },
+        {
+            "name": "Len Caldoron",
+            "encoded_name": [
+                2,
+                129,
+                178,
+                17,
+                6,
+                234,
+                64,
+                150,
+                38,
+                30,
+                0,
+                0
+            ],
+            "model_id": 2020,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                6332.0,
+                9444.0
+            ]
+        },
+        {
+            "name": "Xunlai Agent [Storage]",
+            "encoded_name": [
+                1,
+                129,
+                32,
+                31,
+                123,
+                173,
+                243,
+                229,
+                154,
+                16,
+                0,
+                0
+            ],
+            "model_id": 221,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                9830.0,
+                4979.0
+            ]
+        },
+        {
+            "name": "Xunlai Chest",
+            "encoded_name": [
+                1,
+                129,
+                176,
+                70,
+                20,
+                239,
+                143,
+                193,
+                215,
+                36,
+                0,
+                0
+            ],
+            "model_id": 5052,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                9812.0,
+                5147.0
+            ]
+        },
+        {
+            "name": "Ludor [Festival Hats]",
+            "encoded_name": [
+                1,
+                129,
+                247,
+                98,
+                141,
+                172,
+                59,
+                237,
+                105,
+                118,
+                0,
+                0
+            ],
+            "model_id": 2087,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7654.0,
+                5480.0
+            ]
+        },
+        {
+            "name": "Khrysten [Costume Maker]",
+            "encoded_name": [
+                2,
+                129,
+                230,
+                92,
+                0,
+                0
+            ],
+            "model_id": 2081,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7700.0,
+                5322.0
+            ]
+        },
+        {
+            "name": "Brother Bilshan",
+            "encoded_name": [
+                4,
+                49,
+                121,
+                240,
+                44,
+                174,
+                130,
+                7,
+                0,
+                0
+            ],
+            "model_id": 2014,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                3118.861572265625,
+                6352.0654296875
+            ]
+        },
+        {
+            "name": "Valkenhien [Mercenary Registrar]",
+            "encoded_name": [
+                2,
+                129,
+                178,
+                112,
+                134,
+                155,
+                238,
+                159,
+                85,
+                68,
+                0,
+                0
+            ],
+            "model_id": 222,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                6589.0,
+                8744.0
+            ]
+        },
+        {
+            "name": "Zenjal [Zaishen Guide]",
+            "encoded_name": [
+                2,
+                129,
+                134,
+                117,
+                168,
+                153,
+                136,
+                199,
+                129,
+                79,
+                0,
+                0
+            ],
+            "model_id": 7799,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                5726.0,
+                9636.0
+            ]
+        },
+        {
+            "name": "Jiaju Tai",
+            "encoded_name": [
+                238,
+                48,
+                133,
+                158,
+                230,
+                233,
+                215,
+                47,
+                0,
+                0
+            ],
+            "model_id": 2002,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                1444.0,
+                1925.0
+            ]
+        },
+        {
+            "name": "Alton Thorne  [Collector]",
+            "encoded_name": [
+                253,
+                45,
+                197,
+                208,
+                24,
+                242,
+                243,
+                7,
+                0,
+                0
+            ],
+            "model_id": 2014,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                7313.0,
+                713.0
+            ]
+        },
+        {
+            "name": "Lionguard Bedo",
+            "encoded_name": [
+                1,
+                129,
+                254,
+                78,
+                95,
+                177,
+                39,
+                217,
+                6,
+                82,
+                0,
+                0
+            ],
+            "model_id": 2011,
+            "allegiance": "Ally",
+            "map_id": 55,
+            "position": [
+                10227.0,
+                1664.0
+            ]
+        },
+        {
+            "name": "Lahtenda Bog",
+            "encoded_name": [
+                1,
+                129,
+                20,
+                15,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 492,
+            "position": [
+                429.0,
+                -4057.0
             ]
         }
     ]

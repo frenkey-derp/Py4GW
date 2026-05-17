@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T15:39:16Z",
+    "saved_at": "2026-05-17T16:08:23Z",
     "category": "collectors",
     "entries": [
         {
@@ -9440,10 +9440,10 @@
             "items": [
                 {
                     "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "name": "Krytan Helm",
+                    "item_type": "Headpiece",
+                    "model_id": 1988,
+                    "armor_rating": 80,
                     "profession": "Warrior",
                     "required_collectible": [
                         "0",
@@ -9452,9 +9452,9 @@
                 },
                 {
                     "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
+                    "name": "Bleached Shell",
+                    "item_type": "Trophy",
+                    "model_id": 458,
                     "armor_rating": 0,
                     "profession": "Ranger",
                     "required_collectible": [
@@ -9536,10 +9536,10 @@
             "items": [
                 {
                     "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "name": "Krytan Helm",
+                    "item_type": "Headpiece",
+                    "model_id": 1983,
+                    "armor_rating": 80,
                     "profession": "Warrior",
                     "required_collectible": [
                         "459",
@@ -11519,8 +11519,8 @@
                     "kind": "collectible_armor",
                     "name": "Krytan Boots",
                     "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "model_id": 319,
+                    "armor_rating": 47,
                     "profession": "Warrior",
                     "required_collectible": [
                         "497",
@@ -11651,8 +11651,8 @@
                     "kind": "collectible_armor",
                     "name": "Krytan Helm",
                     "item_type": "Headpiece",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "model_id": 1991,
+                    "armor_rating": 59,
                     "profession": "Warrior",
                     "required_collectible": [
                         "437",
@@ -12554,10 +12554,10 @@
             "items": [
                 {
                     "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "name": "Krytan Helm",
+                    "item_type": "Headpiece",
+                    "model_id": 1993,
+                    "armor_rating": 80,
                     "profession": "Warrior",
                     "required_collectible": [
                         "446",
@@ -18698,10 +18698,10 @@
             "items": [
                 {
                     "kind": "collectible_armor",
-                    "name": "",
+                    "name": "Shing Jea Boots",
                     "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "model_id": 11479,
+                    "armor_rating": 35,
                     "profession": "Necromancer",
                     "required_collectible": [
                         "830",
@@ -18710,34 +18710,10 @@
                 },
                 {
                     "kind": "collectible_armor",
-                    "name": "",
+                    "name": "Shing Jea Boots",
                     "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Elementalist",
-                    "required_collectible": [
-                        "830",
-                        1
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Ritualist",
-                    "required_collectible": [
-                        "830",
-                        1
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Boots",
-                    "model_id": 0,
-                    "armor_rating": 0,
+                    "model_id": 11494,
+                    "armor_rating": 55,
                     "profession": "Warrior",
                     "required_collectible": [
                         "830",
@@ -18775,6 +18751,30 @@
                     "model_id": 11489,
                     "armor_rating": 35,
                     "profession": "Monk",
+                    "required_collectible": [
+                        "830",
+                        1
+                    ]
+                },
+                {
+                    "kind": "collectible_armor",
+                    "name": "Shing Jea Shoes",
+                    "item_type": "Boots",
+                    "model_id": 11484,
+                    "armor_rating": 35,
+                    "profession": "Elementalist",
+                    "required_collectible": [
+                        "830",
+                        1
+                    ]
+                },
+                {
+                    "kind": "collectible_armor",
+                    "name": "Shing Jea Shoes",
+                    "item_type": "Boots",
+                    "model_id": 11504,
+                    "armor_rating": 35,
+                    "profession": "Ritualist",
                     "required_collectible": [
                         "830",
                         1
@@ -31889,13 +31889,37 @@
                 },
                 {
                     "kind": "collectible_armor",
+                    "name": "Elonian Leggings",
+                    "item_type": "Leggings",
+                    "model_id": 18790,
+                    "armor_rating": 40,
+                    "profession": "Dervish",
+                    "required_collectible": [
+                        "1603",
+                        3
+                    ]
+                },
+                {
+                    "kind": "collectible_armor",
+                    "name": "Istani Leggings",
+                    "item_type": "Leggings",
+                    "model_id": 18780,
+                    "armor_rating": 50,
+                    "profession": "Warrior",
+                    "required_collectible": [
+                        "1603",
+                        3
+                    ]
+                },
+                {
+                    "kind": "collectible_armor",
                     "name": "",
                     "item_type": "Unknown",
                     "model_id": 0,
                     "armor_rating": 0,
                     "profession": "Warrior",
                     "required_collectible": [
-                        "0",
+                        "1603",
                         3
                     ]
                 },
@@ -31907,7 +31931,7 @@
                     "armor_rating": 0,
                     "profession": "Ranger",
                     "required_collectible": [
-                        "0",
+                        "1603",
                         3
                     ]
                 },
@@ -31919,7 +31943,7 @@
                     "armor_rating": 0,
                     "profession": "Monk",
                     "required_collectible": [
-                        "0",
+                        "1603",
                         3
                     ]
                 },
@@ -31931,7 +31955,7 @@
                     "armor_rating": 0,
                     "profession": "Necromancer",
                     "required_collectible": [
-                        "0",
+                        "1603",
                         3
                     ]
                 },
@@ -31943,7 +31967,7 @@
                     "armor_rating": 0,
                     "profession": "Mesmer",
                     "required_collectible": [
-                        "0",
+                        "1603",
                         3
                     ]
                 },
@@ -31955,19 +31979,7 @@
                     "armor_rating": 0,
                     "profession": "Elementalist",
                     "required_collectible": [
-                        "0",
-                        3
-                    ]
-                },
-                {
-                    "kind": "collectible_armor",
-                    "name": "",
-                    "item_type": "Unknown",
-                    "model_id": 0,
-                    "armor_rating": 0,
-                    "profession": "Dervish",
-                    "required_collectible": [
-                        "0",
+                        "1603",
                         3
                     ]
                 }

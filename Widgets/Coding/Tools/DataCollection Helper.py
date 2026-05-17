@@ -901,6 +901,8 @@ class TraderType(IntEnum):
     @staticmethod
     def get_type_from_name(name: str) -> 'TraderType':
         name = name.lower()
+        # name = name.replace('[', '').replace(']', '')
+        
         if 'rune trader' in name:
             return TraderType.Rune
         if 'dye trader' in name:
@@ -2640,9 +2642,10 @@ def _find_npc_match(container: Sequence[StationaryNpc], name: str, map_id: int, 
 
 def _classify_service_npc(name: str) -> type[AnyNpc]:
     lowered_name = name.lower()
+    lowered_name = lowered_name.replace('[', '').replace(']', '')
     if 'trader' in lowered_name:
         return Trader
-    if 'merchant' in lowered_name:
+    if lowered_name.endswith('merchant'):
         return Merchant
     return Ally
 
