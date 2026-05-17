@@ -1903,59 +1903,67 @@ def draw_window():
         PyImGui.table_setup_column('Collected', PyImGui.TableColumnFlags.WidthFixed, 70)
         PyImGui.table_headers_row()
 
+        row_height = 0
+        fallback_row_height = 25
         for crafter in sorted_by_map:
-            pos_collected = _is_position_collected(crafter)
-            if not pos_collected:
-                style.Text.push_color_direct((255, 100, 100, 255))
-            
-            map_name = Map.GetMapName(crafter.map_id)
-            is_unlocked = crafter.HasMapUnlocked()
-            is_outpost = crafter.map_id in out_posts
-            is_here = current_map_id == Map.GetBaseMapID(crafter.map_id)
-
-            PyImGui.table_next_row()
-
-            PyImGui.table_set_column_index(0)
-            PyImGui.text(crafter.service_label())
-
-            PyImGui.table_set_column_index(1)
-            PyImGui.text(crafter.name)
-
-            PyImGui.table_set_column_index(2)
-            PyImGui.text(f'{map_name} ({crafter.map_id})')
-
-            PyImGui.table_set_column_index(3)
-            PyImGui.text('Yes' if is_unlocked else 'No')
-
-            PyImGui.table_set_column_index(4)
-            PyImGui.text(crafter.GetCollectionSummary())
-
-            PyImGui.table_set_column_index(5)
-            button_label = 'Move' if (crafter.position != (0, 0) and is_here) else 'Here' if is_here else 'Travel' if is_outpost else 'Manual'
-            button_disabled = (crafter.position == (0, 0) and is_here) or not is_unlocked or (not is_outpost and not is_here)
-            if ImGui.button(f'{button_label}##crafter_move_{crafter.name}', width=-1, disabled=button_disabled):
-                crafter.MoveTo()
+            if PyImGui.is_rect_visible(10, row_height or fallback_row_height):
+                    
+                pos_collected = _is_position_collected(crafter)
+                if not pos_collected:
+                    style.Text.push_color_direct((255, 100, 100, 255))
                 
-            PyImGui.table_set_column_index(6)
-            copy_label = f'Copy'
-            if ImGui.button(f'{copy_label}##crafter_copy_{crafter.name}', width=-1):
-                crafter.CloseCrafter()  # Ensure the window is closed to avoid clipboard issues
-                target_id = Player.GetTargetID()
-                if target_id != 0:
-                    target = Agent.GetAgentByID(target_id)
-                    if target is not None:
-                        enc_name_bytes = bytes(Agent.GetEncNameByID(target_id))
-                        pos = Agent.GetXY(target_id)
-                        model_id = Agent.GetModelID(target_id)
-                        clipboard_text = _build_crafter_clipboard_text(crafter, pos, model_id, enc_name_bytes)
-                        PyImGui.set_clipboard_text(clipboard_text)
+                map_name = Map.GetMapName(crafter.map_id)
+                is_unlocked = crafter.HasMapUnlocked()
+                is_outpost = crafter.map_id in out_posts
+                is_here = current_map_id == Map.GetBaseMapID(crafter.map_id)
 
-            PyImGui.table_set_column_index(7)
-            PyImGui.text(str(crafter.GetCollectedCount()))
-            
-            if not pos_collected:
-                style.Text.pop_color()
-            
+                PyImGui.table_next_row()
+                row_height = int(max(row_height, PyImGui.get_content_region_avail()[1]))
+
+                PyImGui.table_set_column_index(0)
+                PyImGui.text(crafter.service_label())
+
+                PyImGui.table_set_column_index(1)
+                PyImGui.text(crafter.name)
+
+                PyImGui.table_set_column_index(2)
+                PyImGui.text(f'{map_name} ({crafter.map_id})')
+
+                PyImGui.table_set_column_index(3)
+                PyImGui.text('Yes' if is_unlocked else 'No')
+
+                PyImGui.table_set_column_index(4)
+                PyImGui.text(crafter.GetCollectionSummary())
+
+                PyImGui.table_set_column_index(5)
+                button_label = 'Move' if (crafter.position != (0, 0) and is_here) else 'Here' if is_here else 'Travel' if is_outpost else 'Manual'
+                button_disabled = (crafter.position == (0, 0) and is_here) or not is_unlocked or (not is_outpost and not is_here)
+                if ImGui.button(f'{button_label}##crafter_move_{crafter.name}', width=-1, disabled=button_disabled):
+                    crafter.MoveTo()
+                    
+                PyImGui.table_set_column_index(6)
+                copy_label = f'Copy'
+                if ImGui.button(f'{copy_label}##crafter_copy_{crafter.name}', width=-1):
+                    crafter.CloseCrafter()  # Ensure the window is closed to avoid clipboard issues
+                    target_id = Player.GetTargetID()
+                    if target_id != 0:
+                        target = Agent.GetAgentByID(target_id)
+                        if target is not None:
+                            enc_name_bytes = bytes(Agent.GetEncNameByID(target_id))
+                            pos = Agent.GetXY(target_id)
+                            model_id = Agent.GetModelID(target_id)
+                            clipboard_text = _build_crafter_clipboard_text(crafter, pos, model_id, enc_name_bytes)
+                            PyImGui.set_clipboard_text(clipboard_text)
+
+                PyImGui.table_set_column_index(7)
+                PyImGui.text(str(crafter.GetCollectedCount()))
+                
+                if not pos_collected:
+                    style.Text.pop_color()
+            else:
+                # Skip rendering this row but still advance the table row index
+                PyImGui.dummy(0, row_height or fallback_row_height)
+                
         PyImGui.end_table()
 
 def scan_for_crafters_with_missing_data():
