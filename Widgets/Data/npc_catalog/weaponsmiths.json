@@ -1,18 +1,18 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:21:35Z",
+    "saved_at": "2026-05-17T12:57:53Z",
     "category": "weaponsmiths",
     "entries": [
         {
             "name": "Keeper of Arms",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 503,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -58,7 +58,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -222,7 +222,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -242,7 +242,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -262,7 +262,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -462,7 +462,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "AirMagic",
                     "damage": [
@@ -542,7 +542,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -642,7 +642,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -682,7 +682,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Staff",
                     "item_type": "Staff",
-                    "model_id": 15240,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "damage": [
@@ -724,12 +724,12 @@
             "name": "Rahmdah",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 406,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -775,7 +775,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -939,7 +939,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -959,7 +959,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -979,7 +979,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -1179,7 +1179,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "AirMagic",
                     "damage": [
@@ -1259,7 +1259,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -1359,7 +1359,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -1399,7 +1399,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Staff",
                     "item_type": "Staff",
-                    "model_id": 15240,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "damage": [
@@ -1452,12 +1452,12 @@
                 0
             ],
             "model_id": 2162,
+            "allegiance": "Ally",
             "map_id": 20,
             "position": [
                 1903.0,
                 5690.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -1772,12 +1772,12 @@
             "name": "Pust Emberclaw",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 31,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -1795,12 +1795,12 @@
                 0
             ],
             "model_id": 2137,
+            "allegiance": "Ally",
             "map_id": 40,
             "position": [
                 21741.0,
                 7949.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -2088,12 +2088,12 @@
                 0
             ],
             "model_id": 2095,
+            "allegiance": "Ally",
             "map_id": 49,
             "position": [
                 5466.0,
                 -7978.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -2419,12 +2419,12 @@
                 0
             ],
             "model_id": 2018,
+            "allegiance": "Ally",
             "map_id": 57,
             "position": [
                 17372.0,
                 -17958.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -2442,13 +2442,13 @@
                 0
             ],
             "model_id": 3461,
+            "allegiance": "Ally",
+            "required_faction": "Kurzick",
             "map_id": 77,
             "position": [
                 6053.0,
                 -246.0
             ],
-            "allegiance": "Ally",
-            "required_faction": "Kurzick",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -2728,7 +2728,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wicked Staff",
                     "item_type": "Staff",
-                    "model_id": 11650,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -2808,7 +2808,7 @@
                     "kind": "craftable_weapon",
                     "name": "Fire Staff",
                     "item_type": "Staff",
-                    "model_id": 608,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "FireMagic",
                     "damage": [
@@ -2868,7 +2868,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -2941,12 +2941,12 @@
                 0
             ],
             "model_id": 2137,
+            "allegiance": "Ally",
             "map_id": 81,
             "position": [
                 2371.0,
                 6405.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -2964,12 +2964,12 @@
                 0
             ],
             "model_id": 2050,
+            "allegiance": "Ally",
             "map_id": 109,
             "position": [
                 4504.0,
                 2017.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -3295,13 +3295,13 @@
                 0
             ],
             "model_id": 3461,
+            "allegiance": "Ally",
+            "required_faction": "Kurzick",
             "map_id": 130,
             "position": [
                 23104.0,
                 4931.0
             ],
-            "allegiance": "Ally",
-            "required_faction": "Kurzick",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -3457,7 +3457,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -3493,7 +3493,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -3585,7 +3585,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -3689,7 +3689,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -3741,7 +3741,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -3761,7 +3761,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -3977,7 +3977,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -3993,7 +3993,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -4029,7 +4029,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -4082,12 +4082,12 @@
                 0
             ],
             "model_id": 2141,
+            "allegiance": "Ally",
             "map_id": 131,
             "position": [
                 -6673.0,
                 23930.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -4401,12 +4401,12 @@
                 0
             ],
             "model_id": 2065,
+            "allegiance": "Ally",
             "map_id": 134,
             "position": [
                 6792.0,
                 4545.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -4574,12 +4574,12 @@
                 0
             ],
             "model_id": 2137,
+            "allegiance": "Ally",
             "map_id": 135,
             "position": [
                 -18452.0,
                 5501.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -4597,24 +4597,24 @@
                 0
             ],
             "model_id": 2018,
+            "allegiance": "Ally",
             "map_id": 136,
             "position": [
                 20276.0,
                 -11678.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
             "name": "Arthur Ayala",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 148,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -4640,7 +4640,7 @@
                     "kind": "craftable_weapon",
                     "name": "Foehammer",
                     "item_type": "Hammer",
-                    "model_id": 201,
+                    "model_id": 0,
                     "requirement": 3,
                     "attribute": "HammerMastery",
                     "damage": [
@@ -4803,7 +4803,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 0,
                     "attribute": "None_",
                     "inherent": [],
@@ -4846,12 +4846,12 @@
                 0
             ],
             "model_id": 3675,
+            "allegiance": "Ally",
             "map_id": 193,
             "position": [
                 3371.0,
                 561.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -5444,24 +5444,24 @@
             "name": "Astrok",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 200,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
             "name": "Zingyao",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 211,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -5479,12 +5479,12 @@
                 0
             ],
             "model_id": 3460,
+            "allegiance": "Ally",
             "map_id": 222,
             "position": [
                 -4958.0,
                 12744.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -5502,48 +5502,48 @@
                 0
             ],
             "model_id": 3676,
+            "allegiance": "Ally",
             "map_id": 224,
             "position": [
                 -854.0,
                 23003.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
             "name": "Liu Gong",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 235,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
             "name": "Akin Broadcrest",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 236,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
             "name": "Nago",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 239,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -5699,7 +5699,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -5715,7 +5715,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -5827,7 +5827,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -5951,7 +5951,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -5983,7 +5983,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -6003,7 +6003,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -6187,7 +6187,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -6235,7 +6235,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -6291,7 +6291,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -6313,12 +6313,12 @@
             "name": "Sheco",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 240,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -6474,7 +6474,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -6490,7 +6490,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -6602,7 +6602,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -6706,7 +6706,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -6758,7 +6758,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -6778,7 +6778,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -6994,7 +6994,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -7010,7 +7010,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -7046,7 +7046,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -7088,12 +7088,12 @@
             "name": "Ziyi",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 241,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -7266,12 +7266,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 242,
             "position": [
                 -6519.0,
                 12335.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -7799,12 +7799,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 249,
             "position": [
                 -8803.0,
                 -15560.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -8334,12 +8334,12 @@
                 0
             ],
             "model_id": 3332,
+            "allegiance": "Ally",
             "map_id": 250,
             "position": [
                 19621.0,
                 9512.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -8877,12 +8877,12 @@
                 0
             ],
             "model_id": 3675,
+            "allegiance": "Ally",
             "map_id": 279,
             "position": [
                 12525.0,
                 -20735.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -9843,12 +9843,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 283,
             "position": [
                 -14464.0,
                 11734.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -10809,12 +10809,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 284,
             "position": [
                 13041.0,
                 -18621.0
             ],
-            "allegiance": "Ally",
             "weapons": []
         },
         {
@@ -10832,12 +10832,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 351,
             "position": [
                 15900.0,
                 -8883.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -10973,12 +10973,12 @@
             "name": "Hahbe",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 371,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -11024,7 +11024,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -11188,7 +11188,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -11208,7 +11208,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -11228,7 +11228,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -11268,7 +11268,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -11348,7 +11348,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -11368,7 +11368,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -11468,7 +11468,7 @@
                     "kind": "craftable_weapon",
                     "name": "Voltaic Wand",
                     "item_type": "Wand",
-                    "model_id": 1018,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "EnergyStorage",
                     "damage": [
@@ -11628,7 +11628,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -11768,7 +11768,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -11800,7 +11800,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SoulReaping",
                     "inherent": [],
@@ -11912,7 +11912,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -11944,7 +11944,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -11960,7 +11960,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -11992,7 +11992,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -12026,12 +12026,12 @@
             "name": "Shausha",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 373,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -12077,7 +12077,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -12241,7 +12241,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -12261,7 +12261,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -12281,7 +12281,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -12321,7 +12321,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -12401,7 +12401,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -12421,7 +12421,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -12521,7 +12521,7 @@
                     "kind": "craftable_weapon",
                     "name": "Voltaic Wand",
                     "item_type": "Wand",
-                    "model_id": 1018,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "EnergyStorage",
                     "damage": [
@@ -12681,7 +12681,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -12821,7 +12821,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -12853,7 +12853,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SoulReaping",
                     "inherent": [],
@@ -12965,7 +12965,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -12997,7 +12997,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -13013,7 +13013,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -13045,7 +13045,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -13079,12 +13079,12 @@
             "name": "Tehshan",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 375,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -13130,7 +13130,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -13294,7 +13294,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -13314,7 +13314,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -13334,7 +13334,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -13374,7 +13374,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -13454,7 +13454,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -13474,7 +13474,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -13574,7 +13574,7 @@
                     "kind": "craftable_weapon",
                     "name": "Voltaic Wand",
                     "item_type": "Wand",
-                    "model_id": 1018,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "EnergyStorage",
                     "damage": [
@@ -13734,7 +13734,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -13874,7 +13874,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -13906,7 +13906,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SoulReaping",
                     "inherent": [],
@@ -14018,7 +14018,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -14050,7 +14050,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -14066,7 +14066,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -14098,7 +14098,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -14145,12 +14145,12 @@
                 0
             ],
             "model_id": 5443,
+            "allegiance": "Ally",
             "map_id": 376,
             "position": [
                 -15741.0,
                 19535.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -14940,12 +14940,12 @@
             "name": "Grif Ebonmane",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 379,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -14991,7 +14991,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -15155,7 +15155,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -15175,7 +15175,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -15195,7 +15195,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -15235,7 +15235,7 @@
                     "kind": "craftable_weapon",
                     "name": "Gazing Scepter",
                     "item_type": "Wand",
-                    "model_id": 1830,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DominationMagic",
                     "damage": [
@@ -15315,7 +15315,7 @@
                     "kind": "craftable_weapon",
                     "name": "Pronged Rod",
                     "item_type": "Wand",
-                    "model_id": 1014,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "BloodMagic",
                     "damage": [
@@ -15335,7 +15335,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wailing Wand",
                     "item_type": "Wand",
-                    "model_id": 1017,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "damage": [
@@ -15435,7 +15435,7 @@
                     "kind": "craftable_weapon",
                     "name": "Voltaic Wand",
                     "item_type": "Wand",
-                    "model_id": 1018,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "EnergyStorage",
                     "damage": [
@@ -15595,7 +15595,7 @@
                     "kind": "craftable_weapon",
                     "name": "Ritualist Scepter",
                     "item_type": "Wand",
-                    "model_id": 19640,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SpawningPower",
                     "damage": [
@@ -15735,7 +15735,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Curses",
                     "inherent": [],
@@ -15767,7 +15767,7 @@
                     "kind": "craftable_weapon",
                     "name": "Bone Idol",
                     "item_type": "Offhand",
-                    "model_id": 1803,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SoulReaping",
                     "inherent": [],
@@ -15879,7 +15879,7 @@
                     "kind": "craftable_weapon",
                     "name": "Healing Ankh",
                     "item_type": "Offhand",
-                    "model_id": 1820,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "HealingPrayers",
                     "inherent": [],
@@ -15911,7 +15911,7 @@
                     "kind": "craftable_weapon",
                     "name": "Hallowed Idol",
                     "item_type": "Offhand",
-                    "model_id": 1010,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "SmitingPrayers",
                     "inherent": [],
@@ -15927,7 +15927,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Focus",
                     "item_type": "Offhand",
-                    "model_id": 19660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "inherent": [],
@@ -15959,7 +15959,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Focus",
                     "item_type": "Offhand",
-                    "model_id": 12064,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "inherent": [],
@@ -15993,12 +15993,12 @@
             "name": "Kol Swordshanks",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 379,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -16044,7 +16044,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -16208,7 +16208,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -16228,7 +16228,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -16248,7 +16248,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -16448,7 +16448,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "AirMagic",
                     "damage": [
@@ -16528,7 +16528,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -16628,7 +16628,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -16668,7 +16668,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Staff",
                     "item_type": "Staff",
-                    "model_id": 15240,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "damage": [
@@ -16710,12 +16710,12 @@
             "name": "Sende",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 386,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -16761,7 +16761,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -16925,7 +16925,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -16945,7 +16945,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -16965,7 +16965,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -17165,7 +17165,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "AirMagic",
                     "damage": [
@@ -17245,7 +17245,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -17345,7 +17345,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -17440,12 +17440,12 @@
                 0
             ],
             "model_id": 5722,
+            "allegiance": "Ally",
             "map_id": 398,
             "position": [
                 -975.0,
                 4081.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -18742,12 +18742,12 @@
                 0
             ],
             "model_id": 3331,
+            "allegiance": "Ally",
             "map_id": 194,
             "position": [
                 -1387.0,
                 -3910.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -19274,12 +19274,12 @@
             "name": "Asiri",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 404,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -19325,7 +19325,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -19489,7 +19489,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -19509,7 +19509,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -19529,7 +19529,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -19729,7 +19729,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "AirMagic",
                     "damage": [
@@ -19809,7 +19809,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -19909,7 +19909,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -19949,7 +19949,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Staff",
                     "item_type": "Staff",
-                    "model_id": 15240,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "damage": [
@@ -20004,12 +20004,12 @@
                 0
             ],
             "model_id": 5723,
+            "allegiance": "Ally",
             "map_id": 414,
             "position": [
                 -2429.0,
                 -4125.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -21308,12 +21308,12 @@
                 0
             ],
             "model_id": 5442,
+            "allegiance": "Ally",
             "map_id": 424,
             "position": [
                 -2295.0,
                 1460.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -22473,12 +22473,12 @@
                 0
             ],
             "model_id": 5722,
+            "allegiance": "Ally",
             "map_id": 433,
             "position": [
                 1822.0,
                 3730.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -23226,12 +23226,12 @@
             "name": "Ruricu",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 448,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -23277,7 +23277,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -23441,7 +23441,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -23461,7 +23461,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -23481,7 +23481,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -23681,7 +23681,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "AirMagic",
                     "damage": [
@@ -23761,7 +23761,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -23861,7 +23861,7 @@
                     "kind": "craftable_weapon",
                     "name": "Communing Staff",
                     "item_type": "Staff",
-                    "model_id": 11660,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "Communing",
                     "damage": [
@@ -23901,7 +23901,7 @@
                     "kind": "craftable_weapon",
                     "name": "Restoration Staff",
                     "item_type": "Staff",
-                    "model_id": 15240,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "RestorationMagic",
                     "damage": [
@@ -23956,12 +23956,12 @@
                 0
             ],
             "model_id": 4777,
+            "allegiance": "Ally",
             "map_id": 449,
             "position": [
                 -11270.0,
                 8785.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -24493,12 +24493,12 @@
             "name": "Fahri",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 483,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -24523,7 +24523,7 @@
                     "kind": "craftable_weapon",
                     "name": "Machete",
                     "item_type": "Sword",
-                    "model_id": 18902,
+                    "model_id": 0,
                     "requirement": 5,
                     "attribute": "Swordsmanship",
                     "damage": [
@@ -24618,7 +24618,7 @@
                     "kind": "craftable_weapon",
                     "name": "Stoneshard Hornbow",
                     "item_type": "Bow",
-                    "model_id": 1047,
+                    "model_id": 0,
                     "requirement": 5,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -24637,7 +24637,7 @@
                     "kind": "craftable_weapon",
                     "name": "Wooden Longbow",
                     "item_type": "Bow",
-                    "model_id": 1048,
+                    "model_id": 0,
                     "requirement": 5,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -24656,7 +24656,7 @@
                     "kind": "craftable_weapon",
                     "name": "Sturdy Recurve Bow",
                     "item_type": "Bow",
-                    "model_id": 1049,
+                    "model_id": 0,
                     "requirement": 5,
                     "attribute": "Marksmanship",
                     "damage": [
@@ -24849,7 +24849,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tempest Staff",
                     "item_type": "Staff",
-                    "model_id": 1403,
+                    "model_id": 0,
                     "requirement": 5,
                     "attribute": "AirMagic",
                     "damage": [
@@ -24906,7 +24906,7 @@
                     "kind": "craftable_weapon",
                     "name": "Tidal Staff",
                     "item_type": "Staff",
-                    "model_id": 1407,
+                    "model_id": 0,
                     "requirement": 5,
                     "attribute": "WaterMagic",
                     "damage": [
@@ -25016,12 +25016,12 @@
                 0
             ],
             "model_id": 4778,
+            "allegiance": "Ally",
             "map_id": 491,
             "position": [
                 4050.0,
                 2273.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -25566,12 +25566,12 @@
                 0
             ],
             "model_id": 4777,
+            "allegiance": "Ally",
             "map_id": 492,
             "position": [
                 1736.0,
                 2018.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -26120,12 +26120,12 @@
             "name": "Balthor Coalforge",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 577,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -27762,12 +27762,12 @@
                 0
             ],
             "model_id": 6116,
+            "allegiance": "Ally",
             "map_id": 638,
             "position": [
                 -8188.0,
                 -22541.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -29410,14 +29410,14 @@
                 0
             ],
             "model_id": 6814,
+            "allegiance": "Ally",
+            "required_title_id": "Asuran",
+            "required_title_rank": 4,
             "map_id": 640,
             "position": [
                 12923.0,
                 17584.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Asuran",
-            "required_title_rank": 4,
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -30976,12 +30976,12 @@
                 0
             ],
             "model_id": 6119,
+            "allegiance": "Ally",
             "map_id": 641,
             "position": [
                 24899.0,
                 -12525.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -32624,14 +32624,14 @@
                 0
             ],
             "model_id": 6098,
+            "allegiance": "Ally",
+            "required_title_id": "Ebon_Vanguard",
+            "required_title_rank": 4,
             "map_id": 642,
             "position": [
                 -964.0,
                 1007.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Ebon_Vanguard",
-            "required_title_rank": 4,
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -34459,12 +34459,12 @@
                 0
             ],
             "model_id": 6441,
+            "allegiance": "Ally",
             "map_id": 643,
             "position": [
                 12171.0,
                 25045.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -36107,14 +36107,14 @@
                 0
             ],
             "model_id": 6440,
+            "allegiance": "Ally",
+            "required_title_id": "Norn",
+            "required_title_rank": 4,
             "map_id": 644,
             "position": [
                 19164.0,
                 -3869.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Norn",
-            "required_title_rank": 4,
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -37757,14 +37757,14 @@
                 0
             ],
             "model_id": 6287,
+            "allegiance": "Ally",
+            "required_title_id": "Deldrimor",
+            "required_title_rank": 4,
             "map_id": 652,
             "position": [
                 -1627.0,
                 1826.0
             ],
-            "allegiance": "Ally",
-            "required_title_id": "Deldrimor",
-            "required_title_rank": 4,
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -38468,12 +38468,12 @@
             "name": "Grand Mason Stonecleaver",
             "encoded_name": [],
             "model_id": 0,
+            "allegiance": "Ally",
             "map_id": 783,
             "position": [
                 0.0,
                 0.0
             ],
-            "allegiance": "Ally",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -38539,7 +38539,7 @@
                     "kind": "craftable_weapon",
                     "name": "Deldrimor Daggers",
                     "item_type": "Daggers",
-                    "model_id": 30701,
+                    "model_id": 0,
                     "requirement": 9,
                     "attribute": "DaggerMastery",
                     "damage": [

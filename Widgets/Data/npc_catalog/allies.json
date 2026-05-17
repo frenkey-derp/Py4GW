@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T12:41:40Z",
+    "saved_at": "2026-05-17T13:08:55Z",
     "category": "allies",
     "entries": [
         {
@@ -22675,6 +22675,222 @@
             "position": [
                 -22028.0,
                 5390.0
+            ]
+        },
+        {
+            "name": "Training Yard",
+            "encoded_name": [
+                119,
+                33,
+                32,
+                179,
+                143,
+                198,
+                72,
+                19,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 20,
+            "position": [
+                6623.0,
+                7980.0
+            ]
+        },
+        {
+            "name": "Dwarven Sage",
+            "encoded_name": [
+                204,
+                15,
+                222,
+                199,
+                106,
+                241,
+                122,
+                41,
+                0,
+                0
+            ],
+            "model_id": 1568,
+            "allegiance": "Ally",
+            "map_id": 20,
+            "position": [
+                6999.0,
+                7580.0
+            ]
+        },
+        {
+            "name": "Bartoch [Skills]",
+            "encoded_name": [
+                137,
+                59,
+                100,
+                244,
+                58,
+                192,
+                56,
+                28,
+                0,
+                0
+            ],
+            "model_id": 1558,
+            "allegiance": "Ally",
+            "map_id": 20,
+            "position": [
+                6876.0,
+                8631.0
+            ]
+        },
+        {
+            "name": "Luxon Guard",
+            "encoded_name": [
+                1,
+                129,
+                109,
+                1,
+                128,
+                197,
+                52,
+                187,
+                59,
+                19,
+                0,
+                0
+            ],
+            "model_id": 3690,
+            "allegiance": "Ally",
+            "map_id": 77,
+            "position": [
+                13162.0,
+                1621.0
+            ]
+        },
+        {
+            "name": "Meghan [Arena Guard]",
+            "encoded_name": [
+                134,
+                56,
+                147,
+                195,
+                197,
+                234,
+                51,
+                105,
+                0,
+                0
+            ],
+            "model_id": 2111,
+            "allegiance": "Ally",
+            "map_id": 81,
+            "position": [
+                7517.0,
+                3009.0
+            ]
+        },
+        {
+            "name": "Ellie Rigby",
+            "encoded_name": [
+                144,
+                56,
+                108,
+                238,
+                226,
+                189,
+                231,
+                80,
+                0,
+                0
+            ],
+            "model_id": 2121,
+            "allegiance": "Ally",
+            "map_id": 81,
+            "position": [
+                8161.0,
+                5026.0
+            ]
+        },
+        {
+            "name": "Nolan [Guild Emblemer]",
+            "encoded_name": [
+                148,
+                45,
+                178,
+                144,
+                14,
+                240,
+                120,
+                114,
+                0,
+                0
+            ],
+            "model_id": 1464,
+            "allegiance": "Ally",
+            "map_id": 81,
+            "position": [
+                5497.0,
+                6606.0
+            ]
+        },
+        {
+            "name": "Ascalon Arena",
+            "encoded_name": [
+                115,
+                33,
+                101,
+                193,
+                27,
+                149,
+                79,
+                75,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 81,
+            "position": [
+                7657.0,
+                3284.0
+            ]
+        },
+        {
+            "name": "Prophet's Path",
+            "encoded_name": [
+                186,
+                41,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "allegiance": "Ally",
+            "map_id": 109,
+            "position": [
+                5670.0,
+                -5418.0
+            ]
+        },
+        {
+            "name": "Luxon Sentry",
+            "encoded_name": [
+                159,
+                93,
+                67,
+                202,
+                92,
+                250,
+                179,
+                46,
+                0,
+                0
+            ],
+            "model_id": 3660,
+            "allegiance": "Ally",
+            "map_id": 234,
+            "position": [
+                -1505.0,
+                4876.0
             ]
         }
     ]

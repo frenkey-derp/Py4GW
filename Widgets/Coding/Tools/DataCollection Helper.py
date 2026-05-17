@@ -490,6 +490,7 @@ class Npc:
     required_title_id: Optional[TitleID] = None
     required_title_rank: Optional[int] = None
     required_faction: Optional[FactionRequirement] = None
+    unreachable: Optional[bool] = None
 
     def _base_to_dict(self) -> dict:
         return {
@@ -500,6 +501,7 @@ class Npc:
             'required_title_id': self.required_title_id.name if self.required_title_id is not None else None,
             'required_title_rank': self.required_title_rank,
             'required_faction': self.required_faction.name if self.required_faction is not None else None,
+            'unreachable': self.unreachable,
         }
 
     @staticmethod
@@ -531,6 +533,7 @@ class Npc:
             'required_title_id': required_title_id,
             'required_title_rank': required_title_rank,
             'required_faction': required_faction,
+            'unreachable': data.get('unreachable', None),
         }
 
     def service_label(self) -> str:
@@ -566,11 +569,16 @@ class Npc:
     def MoveTo(self):
         return
 
-    def CanInteract(self) -> bool:
+    def CanInteract(self) -> bool:        
         if self.required_faction is not None and self.required_faction != FactionRequirement.None_ and not _meets_faction_requirement(self.required_faction):
             return False
+        
         if self.required_title_id is not None and self.required_title_rank is not None and self.required_title_rank > 0:
             return _get_title_rank(self.required_title_id) >= self.required_title_rank
+        
+        if self.unreachable is not None:
+            return not self.unreachable
+        
         return True
 
     def _service_window_is_open(self) -> bool:
@@ -1686,6 +1694,7 @@ def _build_craftable_item_from_snapshot(item: ItemSnapshot) -> CraftableItem | C
             item_type=item.item_type,
             model_id=item.model_id,
             profession=profession,
+            armor_rating=item.armor
         )
     return CraftableItem(
         name=item_name,
@@ -1729,13 +1738,12 @@ def _build_item_from_snapshot(item: ItemSnapshot) -> Item | Weapon | Armor:
         )
     if item.is_armor:
         profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
-        armor_rating = _get_armor_rating_for_profession(profession) if profession != Profession._None else 0
         return Armor(
             name=item_name,
             item_type=item.item_type,
             model_id=item.model_id,
             profession=profession,
-            armor_rating=armor_rating,
+            armor_rating=item.armor,
         )
     return Item(
         name=item_name,
@@ -1764,15 +1772,13 @@ def _build_collectible_item_from_snapshot(item: ItemSnapshot, required_collectib
         
     if item.is_armor:
         profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
-        armor_rating = 0
-        if profession not in (None, Profession._None):
-            armor_rating = _get_armor_rating_for_profession(profession)
+
         return CollectibleArmor(
             name=item_name,
             item_type=item.item_type,
             model_id=item.model_id,
             profession=profession,
-            armor_rating=armor_rating,
+            armor_rating=item.armor,
             required_collectible=required_collectible or tuple[int, int](),
         )
         
@@ -2267,7 +2273,7 @@ def _has_missing_collection_data(crafter: AnyNpc) -> bool:
         if profession == Profession._None or profession not in crafter.professions_armor_rating:
             return False
         armors = crafter.armors.get(profession, [])
-        return not armors or any(not armor.name or armor.name.startswith('Model') or armor.model_id == 0 for armor in armors)
+        return not armors or any(not armor.name or armor.name.startswith('Model') or armor.model_id == 0 or armor.armor_rating == 0 for armor in armors)
     
     if isinstance(crafter, Collector):
         profession =  _get_current_profession()
@@ -2275,7 +2281,7 @@ def _has_missing_collection_data(crafter: AnyNpc) -> bool:
         remaining_items = [item for item in crafter.items if not item in armor_items]       
         profession_armors = [item for item in armor_items if item.profession == profession]
         
-        incomplete_profession_armors = [item for item in profession_armors if item.model_id == 0 or not item.name]
+        incomplete_profession_armors = [item for item in profession_armors if item.model_id == 0 or not item.name or item.armor_rating == 0]
         
         needs_profession_armor = len(incomplete_profession_armors) > 0
         has_non_armor_items = len(remaining_items) > 0
@@ -2950,7 +2956,8 @@ def draw_window():
 
 def scan_for_crafters_with_missing_data():
     _scan_current_map_npcs()
-
+    
+    
 def main():
     _ensure_initialized()
 
@@ -2964,6 +2971,8 @@ def main():
     
     scan_for_crafters_with_missing_data()
     _flush_pending_auto_save()
+
+    
 
 if __name__ == "__main__":
     main()
