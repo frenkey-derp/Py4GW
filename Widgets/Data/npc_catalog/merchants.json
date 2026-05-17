@@ -4175,29 +4175,6 @@
             ]
         },
         {
-            "name": "Merchants' Row",
-            "encoded_name": [
-                101,
-                33,
-                243,
-                150,
-                120,
-                203,
-                203,
-                124,
-                0,
-                0
-            ],
-            "model_id": 0,
-            "allegiance": "Ally",
-            "map_id": 20,
-            "position": [
-                4618.0,
-                4838.0
-            ],
-            "items": []
-        },
-        {
             "name": "Saeunn [Merchant]",
             "encoded_name": [
                 188,
