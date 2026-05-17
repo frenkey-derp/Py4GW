@@ -1,0 +1,2981 @@
+{
+    "version": 3,
+    "saved_at": "2026-05-17T11:48:16Z",
+    "category": "artisans",
+    "entries": [
+        {
+            "name": "Artisan Sivan",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 17,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Linen",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 926,
+                    "required_materials": {
+                        "materials": {
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Crafter Magnor",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 26,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Deldrimor Steel Ingot",
+                    "item_type": "Salvage",
+                    "model_id": 22190,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "929": 5,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Artisan Daved",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 33,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Linen",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 926,
+                    "required_materials": {
+                        "materials": {
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Hadasha the Artisan",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 42,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Linen",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 926,
+                    "required_materials": {
+                        "materials": {
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Artisan Orpah",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 48,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Deldrimor Steel Ingot",
+                    "item_type": "Salvage",
+                    "model_id": 22190,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "929": 5,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Crafter Hagrem",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 96,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Deldrimor Steel Ingot",
+                    "item_type": "Salvage",
+                    "model_id": 22190,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "929": 5,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Crafter Torgil",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 100,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Artisan Kristan",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 101,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Linen",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 926,
+                    "required_materials": {
+                        "materials": {
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Artisan Rudger",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 103,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Linen",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 926,
+                    "required_materials": {
+                        "materials": {
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Nido Shabra",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 112,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Deldrimor Steel Ingot",
+                    "item_type": "Salvage",
+                    "model_id": 22190,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "929": 5,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Sennat Sen",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 114,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Linen",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 926,
+                    "required_materials": {
+                        "materials": {
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Dae Chung",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 235,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Takara Taji",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 237,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Kainu",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 239,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Tsungfa",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 239,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Yunndae",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 239,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Shinichiro",
+            "encoded_name": [
+                13,
+                87,
+                82,
+                206,
+                148,
+                143,
+                79,
+                101,
+                0,
+                0
+            ],
+            "model_id": 3320,
+            "map_id": 250,
+            "position": [
+                17172.0,
+                13208.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Enbe",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 369,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Lormeh",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 371,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Itenda",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 375,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Jormar",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 386,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Lilita",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 394,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Nerwar",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 394,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Pakasah",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 399,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Xue Yi",
+            "encoded_name": [
+                248,
+                109,
+                216,
+                180,
+                226,
+                221,
+                17,
+                41,
+                0,
+                0
+            ],
+            "model_id": 3320,
+            "map_id": 194,
+            "position": [
+                -816.0,
+                -1063.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Parchment",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 951,
+                    "required_materials": {
+                        "materials": {
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Larmor",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 404,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Khendi",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 448,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Shanda Ginkit",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 485,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Jakatu",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 486,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Steel Ingot",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 949,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Matunbo",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 488,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Elonian Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 943,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Roll of Vellum",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 952,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "946": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Spiritwood Plank",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 956,
+                    "required_materials": {
+                        "materials": {
+                            "929": 10,
+                            "946": 5
+                        },
+                        "gold": 100,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Tempered Glass Vial",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 939,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Vial of Ink",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 944,
+                    "required_materials": {
+                        "materials": {
+                            "934": 4,
+                            "939": 1
+                        },
+                        "gold": 20,
+                        "skill_points": null
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Shalgrim Stonehart",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 553,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Damask",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 927,
+                    "required_materials": {
+                        "materials": {
+                            "929": 5,
+                            "934": 5
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Bolt of Silk",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 928,
+                    "required_materials": {
+                        "materials": {
+                            "925": 10,
+                            "929": 10
+                        },
+                        "gold": 250,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Deldrimor Steel Ingot",
+                    "item_type": "Salvage",
+                    "model_id": 22190,
+                    "required_materials": {
+                        "materials": {
+                            "922": 1,
+                            "929": 5,
+                            "948": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Leather Square",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 942,
+                    "required_materials": {
+                        "materials": {
+                            "940": 5
+                        },
+                        "gold": 50,
+                        "skill_points": null
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Lump of Charcoal",
+                    "item_type": "Materials_Zcoins",
+                    "model_id": 922,
+                    "required_materials": {
+                        "materials": {
+                            "946": 10
+                        },
+                        "gold": 200,
+                        "skill_points": null
+                    }
+                }
+            ]
+        }
+    ]
+}

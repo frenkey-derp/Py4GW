@@ -1,0 +1,1469 @@
+{
+    "version": 3,
+    "saved_at": "2026-05-17T11:48:16Z",
+    "category": "merchants",
+    "entries": [
+        {
+            "name": "Ozem [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                172,
+                31,
+                139,
+                192,
+                228,
+                198,
+                113,
+                51,
+                0,
+                0
+            ],
+            "model_id": 2090,
+            "map_id": 857,
+            "position": [
+                2158.0,
+                -2006.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Natsuko [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                173,
+                31,
+                237,
+                205,
+                243,
+                155,
+                255,
+                87,
+                0,
+                0
+            ],
+            "model_id": 3330,
+            "map_id": 857,
+            "position": [
+                -2750.0,
+                731.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Shatam [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                174,
+                31,
+                171,
+                160,
+                102,
+                166,
+                149,
+                27,
+                0,
+                0
+            ],
+            "model_id": 4775,
+            "map_id": 857,
+            "position": [
+                2326.0,
+                3681.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Wulfgar [Merchant]",
+            "encoded_name": [
+                157,
+                109,
+                67,
+                150,
+                171,
+                205,
+                20,
+                29,
+                0,
+                0
+            ],
+            "model_id": 3456,
+            "map_id": 77,
+            "position": [
+                8481.0,
+                2005.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Kurzick Merchant",
+            "encoded_name": [
+                1,
+                129,
+                247,
+                6,
+                165,
+                193,
+                249,
+                184,
+                210,
+                54,
+                0,
+                0
+            ],
+            "model_id": 3459,
+            "map_id": 77,
+            "position": [
+                9171.0,
+                6750.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Arnaud [Merchant]",
+            "encoded_name": [
+                157,
+                45,
+                224,
+                206,
+                249,
+                133,
+                160,
+                14,
+                0,
+                0
+            ],
+            "model_id": 2065,
+            "map_id": 81,
+            "position": [
+                2328.0,
+                2439.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Laren [Merchant]",
+            "encoded_name": [
+                158,
+                45,
+                120,
+                248,
+                191,
+                189,
+                231,
+                18,
+                0,
+                0
+            ],
+            "model_id": 2065,
+            "map_id": 81,
+            "position": [
+                1050.0,
+                3310.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Merchants' Row",
+            "encoded_name": [
+                118,
+                33,
+                71,
+                239,
+                166,
+                144,
+                36,
+                32,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "map_id": 81,
+            "position": [
+                1846.0,
+                3229.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Nadina [Merchant]",
+            "encoded_name": [
+                148,
+                109,
+                99,
+                196,
+                230,
+                140,
+                97,
+                112,
+                0,
+                0
+            ],
+            "model_id": 3458,
+            "map_id": 130,
+            "position": [
+                22233.0,
+                9568.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Serina [Merchant]",
+            "encoded_name": [
+                146,
+                45,
+                232,
+                242,
+                148,
+                172,
+                23,
+                69,
+                0,
+                0
+            ],
+            "model_id": 2140,
+            "map_id": 131,
+            "position": [
+                -5886.0,
+                23247.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Karney [Merchant]",
+            "encoded_name": [
+                83,
+                45,
+                161,
+                210,
+                96,
+                164,
+                222,
+                42,
+                0,
+                0
+            ],
+            "model_id": 2043,
+            "map_id": 137,
+            "position": [
+                2288.0,
+                9297.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Norah [Merchant]",
+            "encoded_name": [
+                197,
+                109,
+                177,
+                140,
+                91,
+                152,
+                102,
+                72,
+                0,
+                0
+            ],
+            "model_id": 3673,
+            "map_id": 193,
+            "position": [
+                7823.0,
+                -2204.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Luxon Merchant",
+            "encoded_name": [
+                1,
+                129,
+                248,
+                6,
+                224,
+                200,
+                55,
+                133,
+                242,
+                53,
+                0,
+                0
+            ],
+            "model_id": 3674,
+            "map_id": 193,
+            "position": [
+                5842.0,
+                -897.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Natsuko [Merchant]",
+            "encoded_name": [
+                251,
+                109,
+                53,
+                142,
+                191,
+                157,
+                37,
+                77,
+                0,
+                0
+            ],
+            "model_id": 3330,
+            "map_id": 194,
+            "position": [
+                1448.0,
+                -2024.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Ryukichi [Merchant]",
+            "encoded_name": [
+                252,
+                109,
+                127,
+                244,
+                90,
+                181,
+                218,
+                96,
+                0,
+                0
+            ],
+            "model_id": 3327,
+            "map_id": 194,
+            "position": [
+                589.0,
+                -1768.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Suki [Merchant]",
+            "encoded_name": [
+                14,
+                125,
+                105,
+                181,
+                106,
+                231,
+                182,
+                120,
+                0,
+                0
+            ],
+            "model_id": 3330,
+            "map_id": 226,
+            "position": [
+                -10881.0,
+                -1866.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Ionessa [Merchant]",
+            "encoded_name": [
+                187,
+                109,
+                219,
+                144,
+                81,
+                165,
+                57,
+                85,
+                0,
+                0
+            ],
+            "model_id": 3673,
+            "map_id": 234,
+            "position": [
+                -2010.0,
+                6972.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Jichow [Merchant]",
+            "encoded_name": [
+                37,
+                87,
+                199,
+                211,
+                168,
+                207,
+                13,
+                108,
+                0,
+                0
+            ],
+            "model_id": 3330,
+            "map_id": 242,
+            "position": [
+                -11829.0,
+                11192.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Er Ming [Merchant]",
+            "encoded_name": [
+                38,
+                87,
+                192,
+                167,
+                155,
+                242,
+                246,
+                8,
+                0,
+                0
+            ],
+            "model_id": 3326,
+            "map_id": 242,
+            "position": [
+                -11866.0,
+                11444.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Masahiko [Merchant]",
+            "encoded_name": [
+                46,
+                87,
+                47,
+                230,
+                177,
+                179,
+                199,
+                48,
+                0,
+                0
+            ],
+            "model_id": 3326,
+            "map_id": 249,
+            "position": [
+                -6206.0,
+                -16962.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Aiko [Merchant]",
+            "encoded_name": [
+                17,
+                87,
+                126,
+                176,
+                154,
+                238,
+                51,
+                39,
+                0,
+                0
+            ],
+            "model_id": 3330,
+            "map_id": 250,
+            "position": [
+                17290.0,
+                12426.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Oles [Merchant]",
+            "encoded_name": [
+                143,
+                109,
+                108,
+                232,
+                146,
+                188,
+                44,
+                107,
+                0,
+                0
+            ],
+            "model_id": 3456,
+            "map_id": 272,
+            "position": [
+                2436.0,
+                3313.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Kurzick Merchant",
+            "encoded_name": [
+                1,
+                129,
+                247,
+                6,
+                165,
+                193,
+                249,
+                184,
+                210,
+                54,
+                0,
+                0
+            ],
+            "model_id": 3459,
+            "map_id": 272,
+            "position": [
+                -1124.0,
+                4243.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Phineus [Merchant]",
+            "encoded_name": [
+                185,
+                109,
+                236,
+                228,
+                218,
+                135,
+                14,
+                39,
+                0,
+                0
+            ],
+            "model_id": 3672,
+            "map_id": 273,
+            "position": [
+                1597.0,
+                5190.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Luxon Merchant",
+            "encoded_name": [
+                1,
+                129,
+                248,
+                6,
+                224,
+                200,
+                55,
+                133,
+                242,
+                53,
+                0,
+                0
+            ],
+            "model_id": 3674,
+            "map_id": 273,
+            "position": [
+                -1441.0,
+                2730.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Taryn [Merchant]",
+            "encoded_name": [
+                205,
+                109,
+                72,
+                239,
+                153,
+                232,
+                150,
+                69,
+                0,
+                0
+            ],
+            "model_id": 3672,
+            "map_id": 279,
+            "position": [
+                12363.0,
+                -20277.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Asako [Merchant]",
+            "encoded_name": [
+                215,
+                109,
+                118,
+                184,
+                0,
+                196,
+                194,
+                4,
+                0,
+                0
+            ],
+            "model_id": 3330,
+            "map_id": 283,
+            "position": [
+                -12851.0,
+                13654.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Bannan [Merchant]",
+            "encoded_name": [
+                139,
+                109,
+                161,
+                137,
+                138,
+                153,
+                172,
+                120,
+                0,
+                0
+            ],
+            "model_id": 3456,
+            "map_id": 286,
+            "position": [
+                16317.0,
+                2928.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Kurzick Merchant",
+            "encoded_name": [
+                1,
+                129,
+                247,
+                6,
+                165,
+                193,
+                249,
+                184,
+                210,
+                54,
+                0,
+                0
+            ],
+            "model_id": 3459,
+            "map_id": 286,
+            "position": [
+                15315.0,
+                -1655.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Kahdeh [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                179,
+                33,
+                34,
+                220,
+                7,
+                193,
+                3,
+                75,
+                0,
+                0
+            ],
+            "model_id": 5440,
+            "map_id": 376,
+            "position": [
+                -17174.0,
+                19188.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Papo [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                141,
+                33,
+                101,
+                189,
+                87,
+                150,
+                124,
+                37,
+                0,
+                0
+            ],
+            "model_id": 5720,
+            "map_id": 398,
+            "position": [
+                -1208.0,
+                3944.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Turissa [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                156,
+                33,
+                160,
+                207,
+                214,
+                234,
+                234,
+                104,
+                0,
+                0
+            ],
+            "model_id": 5721,
+            "map_id": 414,
+            "position": [
+                -2986.0,
+                735.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Ohapeh [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                155,
+                33,
+                240,
+                197,
+                94,
+                168,
+                196,
+                5,
+                0,
+                0
+            ],
+            "model_id": 5720,
+            "map_id": 414,
+            "position": [
+                -2722.0,
+                3159.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Koulaba [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                212,
+                63,
+                91,
+                228,
+                246,
+                164,
+                153,
+                118,
+                0,
+                0
+            ],
+            "model_id": 5441,
+            "map_id": 424,
+            "position": [
+                376.0,
+                -332.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Yedah [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                175,
+                45,
+                81,
+                170,
+                249,
+                186,
+                155,
+                22,
+                0,
+                0
+            ],
+            "model_id": 4776,
+            "map_id": 431,
+            "position": [
+                -4075.0,
+                4595.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Dahn [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                207,
+                45,
+                244,
+                221,
+                228,
+                197,
+                105,
+                9,
+                0,
+                0
+            ],
+            "model_id": 5669,
+            "map_id": 474,
+            "position": [
+                4754.0,
+                -12912.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Sahnbur [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                187,
+                63,
+                154,
+                194,
+                111,
+                239,
+                67,
+                42,
+                0,
+                0
+            ],
+            "model_id": 5440,
+            "map_id": 478,
+            "position": [
+                1487.0,
+                1645.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Lokai [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                198,
+                63,
+                103,
+                215,
+                156,
+                210,
+                48,
+                50,
+                0,
+                0
+            ],
+            "model_id": 4775,
+            "map_id": 491,
+            "position": [
+                3232.0,
+                2348.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Aink [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                147,
+                30,
+                192,
+                245,
+                47,
+                205,
+                11,
+                47,
+                0,
+                0
+            ],
+            "model_id": 6813,
+            "map_id": 624,
+            "position": [
+                14618.0,
+                15326.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Andolar [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                150,
+                30,
+                161,
+                232,
+                35,
+                240,
+                46,
+                78,
+                0,
+                0
+            ],
+            "model_id": 6115,
+            "map_id": 638,
+            "position": [
+                -8339.0,
+                -22433.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Gni Neproc [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                160,
+                30,
+                81,
+                245,
+                95,
+                148,
+                134,
+                70,
+                0,
+                0
+            ],
+            "model_id": 6812,
+            "map_id": 640,
+            "position": [
+                19575.0,
+                14751.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Qarg [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                159,
+                30,
+                109,
+                167,
+                211,
+                240,
+                229,
+                88,
+                0,
+                0
+            ],
+            "model_id": 6813,
+            "map_id": 640,
+            "position": [
+                18653.0,
+                13934.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Adriana [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                168,
+                30,
+                186,
+                208,
+                140,
+                169,
+                52,
+                21,
+                0,
+                0
+            ],
+            "model_id": 6118,
+            "map_id": 641,
+            "position": [
+                23948.0,
+                -12824.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Maryann [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                174,
+                30,
+                76,
+                243,
+                39,
+                168,
+                94,
+                124,
+                0,
+                0
+            ],
+            "model_id": 6102,
+            "map_id": 642,
+            "position": [
+                -2748.0,
+                1019.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Abjorn [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                182,
+                30,
+                106,
+                181,
+                11,
+                203,
+                35,
+                83,
+                0,
+                0
+            ],
+            "model_id": 6438,
+            "map_id": 643,
+            "position": [
+                11580.0,
+                21619.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Myrun [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                190,
+                30,
+                88,
+                185,
+                255,
+                255,
+                230,
+                28,
+                0,
+                0
+            ],
+            "model_id": 6439,
+            "map_id": 644,
+            "position": [
+                17664.0,
+                -7724.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Omund [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                191,
+                30,
+                87,
+                208,
+                21,
+                149,
+                199,
+                107,
+                0,
+                0
+            ],
+            "model_id": 6438,
+            "map_id": 644,
+            "position": [
+                15425.0,
+                -8617.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Crobok Rockfist [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                205,
+                30,
+                185,
+                177,
+                115,
+                142,
+                174,
+                103,
+                0,
+                0
+            ],
+            "model_id": 6286,
+            "map_id": 652,
+            "position": [
+                -1826.0,
+                674.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Borvorel [Merchant]",
+            "encoded_name": [
+                2,
+                129,
+                181,
+                30,
+                99,
+                162,
+                9,
+                142,
+                88,
+                37,
+                0,
+                0
+            ],
+            "model_id": 6245,
+            "map_id": 675,
+            "position": [
+                7319.0,
+                -24874.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Merchants' Row",
+            "encoded_name": [
+                101,
+                33,
+                243,
+                150,
+                120,
+                203,
+                203,
+                124,
+                0,
+                0
+            ],
+            "model_id": 0,
+            "map_id": 20,
+            "position": [
+                4618.0,
+                4838.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Saeunn [Merchant]",
+            "encoded_name": [
+                188,
+                45,
+                179,
+                194,
+                217,
+                139,
+                158,
+                100,
+                0,
+                0
+            ],
+            "model_id": 2161,
+            "map_id": 20,
+            "position": [
+                5475.0,
+                6525.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Rothgar [Merchant]",
+            "encoded_name": [
+                187,
+                45,
+                157,
+                154,
+                135,
+                231,
+                74,
+                21,
+                0,
+                0
+            ],
+            "model_id": 2161,
+            "map_id": 20,
+            "position": [
+                6402.0,
+                6169.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Vegard [Merchant]",
+            "encoded_name": [
+                107,
+                45,
+                106,
+                197,
+                140,
+                137,
+                237,
+                91,
+                0,
+                0
+            ],
+            "model_id": 2047,
+            "map_id": 109,
+            "position": [
+                3797.0,
+                2281.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        },
+        {
+            "name": "Fahsik [Merchant]",
+            "encoded_name": [
+                1,
+                129,
+                168,
+                94,
+                91,
+                211,
+                3,
+                204,
+                102,
+                61,
+                0,
+                0
+            ],
+            "model_id": 5044,
+            "map_id": 450,
+            "position": [
+                136.0,
+                13106.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "items": []
+        }
+    ]
+}

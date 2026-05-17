@@ -18,6 +18,18 @@ ITEMS_JSON_PATH = REPO_ROOT / 'Py4GWCoreLib' / 'item_data' / 'items.json'
 MAP_ENUMS_PATH = REPO_ROOT / 'Py4GWCoreLib' / 'enums_src' / 'Map_enums.py'
 LEGACY_ARMORERS_PATH = Path(__file__).resolve().with_name('armor_crafters.json')
 OUTPUT_PATH = Path(__file__).resolve().with_name('crafter_catalog.json')
+OUTPUT_DIRECTORY_PATH = Path(__file__).resolve().with_name('npc_catalog')
+CATEGORY_KEYS = [
+    'armorers',
+    'artisans',
+    'consumable_crafters',
+    'weaponsmiths',
+    'collectors',
+    'merchants',
+    'traders',
+    'allies',
+    'foes',
+]
 
 PROFESSIONS = [
     'Warrior',
@@ -1153,13 +1165,17 @@ def build_dataset() -> dict[str, Any]:
     legacy_armorers = load_legacy_armorer_index()
 
     dataset: dict[str, Any] = {
-        'version': 2,
+        'version': 3,
         'saved_at': datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),
         'armorers': [],
         'artisans': [],
         'consumable_crafters': [],
         'weaponsmiths': [],
         'collectors': [],
+        'merchants': [],
+        'traders': [],
+        'allies': [],
+        'foes': [],
     }
 
     targets = discover_target_pages()
@@ -1167,7 +1183,7 @@ def build_dataset() -> dict[str, Any]:
         for page_path in sorted(page_paths):
             dataset[service_key].append(parse_crafter_page(page_path, service_key, items_index, map_index, legacy_armorers))
 
-    for key in ['armorers', 'artisans', 'consumable_crafters', 'weaponsmiths', 'collectors']:
+    for key in CATEGORY_KEYS:
         dataset[key].sort(key=lambda entry: (entry.get('map_id', 0), entry.get('name', '')))
 
     return dataset
@@ -1248,9 +1264,26 @@ def discover_target_pages() -> dict[str, set[Path]]:
 def main():
     dataset = build_dataset()
     OUTPUT_PATH.write_text(json.dumps(dataset, indent=4, ensure_ascii=False), encoding='utf-8')
+    OUTPUT_DIRECTORY_PATH.mkdir(parents=True, exist_ok=True)
 
-    counts = {key: len(dataset[key]) for key in ['armorers', 'artisans', 'consumable_crafters', 'weaponsmiths', 'collectors']}
+    for key in CATEGORY_KEYS:
+        (OUTPUT_DIRECTORY_PATH / f'{key}.json').write_text(
+            json.dumps(
+                {
+                    'version': dataset['version'],
+                    'saved_at': dataset['saved_at'],
+                    'category': key,
+                    'entries': dataset[key],
+                },
+                indent=4,
+                ensure_ascii=False,
+            ),
+            encoding='utf-8',
+        )
+
+    counts = {key: len(dataset[key]) for key in CATEGORY_KEYS}
     print(f'Wrote {OUTPUT_PATH}')
+    print(f'Wrote split category files to {OUTPUT_DIRECTORY_PATH}')
     print(json.dumps(counts, indent=2))
 
 

@@ -1,0 +1,518 @@
+{
+    "version": 3,
+    "saved_at": "2026-05-17T11:48:16Z",
+    "category": "consumable_crafters",
+    "entries": [
+        {
+            "name": "Aiiane",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 266,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Amber Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 30961,
+                    "required_materials": {
+                        "materials": {
+                            "934": 25,
+                            "955": 10,
+                            "956": 2,
+                            "6532": 5
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Alaris",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 307,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Jadeite Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 30966,
+                    "required_materials": {
+                        "materials": {
+                            "931": 2,
+                            "953": 25,
+                            "955": 10,
+                            "6533": 5
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Kwat",
+            "encoded_name": [
+                2,
+                129,
+                158,
+                30,
+                34,
+                206,
+                68,
+                219,
+                113,
+                115,
+                0,
+                0
+            ],
+            "model_id": 6809,
+            "map_id": 640,
+            "position": [
+                13665.0,
+                17811.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "Asuran",
+            "required_title_rank": 3,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Perfect Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 25881,
+                    "required_materials": {
+                        "materials": {
+                            "946": 25,
+                            "948": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Essence of Celerity",
+                    "item_type": "Usable",
+                    "model_id": 24859,
+                    "required_materials": {
+                        "materials": {
+                            "929": 50,
+                            "933": 50
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Fossilized Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 30965,
+                    "required_materials": {
+                        "materials": {
+                            "921": 100,
+                            "923": 1,
+                            "955": 10
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Scroll of Resurrection",
+                    "item_type": "Usable",
+                    "model_id": 26501,
+                    "required_materials": {
+                        "materials": {
+                            "921": 25,
+                            "934": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Star of Transference",
+                    "item_type": "Usable",
+                    "model_id": 25896,
+                    "required_materials": {
+                        "materials": {
+                            "934": 25,
+                            "946": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Edwin",
+            "encoded_name": [
+                2,
+                129,
+                173,
+                30,
+                202,
+                202,
+                142,
+                245,
+                224,
+                116,
+                0,
+                0
+            ],
+            "model_id": 6100,
+            "map_id": 642,
+            "position": [
+                -764.0,
+                1111.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "Ebon_Vanguard",
+            "required_title_rank": 3,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Perfect Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 25881,
+                    "required_materials": {
+                        "materials": {
+                            "946": 25,
+                            "948": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Chitinous Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 30959,
+                    "required_materials": {
+                        "materials": {
+                            "931": 4,
+                            "954": 100,
+                            "955": 10
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Powerstone of Courage",
+                    "item_type": "Usable",
+                    "model_id": 24862,
+                    "required_materials": {
+                        "materials": {
+                            "929": 100,
+                            "955": 100
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Scroll of Resurrection",
+                    "item_type": "Usable",
+                    "model_id": 26501,
+                    "required_materials": {
+                        "materials": {
+                            "921": 25,
+                            "934": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Star of Transference",
+                    "item_type": "Usable",
+                    "model_id": 25896,
+                    "required_materials": {
+                        "materials": {
+                            "934": 25,
+                            "946": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Will Brockman",
+            "encoded_name": [],
+            "model_id": 0,
+            "map_id": 821,
+            "position": [
+                0.0,
+                0.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Frosty Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 31023,
+                    "required_materials": {
+                        "materials": {
+                            "922": 7,
+                            "929": 100,
+                            "955": 10
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Mischievous Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 31022,
+                    "required_materials": {
+                        "materials": {
+                            "922": 5,
+                            "929": 100,
+                            "931": 2,
+                            "955": 10
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Eyja",
+            "encoded_name": [
+                2,
+                129,
+                189,
+                30,
+                109,
+                194,
+                228,
+                252,
+                237,
+                46,
+                0,
+                0
+            ],
+            "model_id": 6435,
+            "map_id": 644,
+            "position": [
+                18605.0,
+                -3751.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "Norn",
+            "required_title_rank": 3,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Perfect Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 25881,
+                    "required_materials": {
+                        "materials": {
+                            "946": 25,
+                            "948": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Arctic Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 30962,
+                    "required_materials": {
+                        "materials": {
+                            "921": 100,
+                            "941": 4,
+                            "955": 10
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Grail of Might",
+                    "item_type": "Usable",
+                    "model_id": 24861,
+                    "required_materials": {
+                        "materials": {
+                            "929": 50,
+                            "948": 50
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Scroll of Resurrection",
+                    "item_type": "Usable",
+                    "model_id": 26501,
+                    "required_materials": {
+                        "materials": {
+                            "921": 25,
+                            "934": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Star of Transference",
+                    "item_type": "Usable",
+                    "model_id": 25896,
+                    "required_materials": {
+                        "materials": {
+                            "934": 25,
+                            "946": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Alcus Nailbiter",
+            "encoded_name": [
+                2,
+                129,
+                204,
+                30,
+                86,
+                145,
+                125,
+                216,
+                145,
+                67,
+                0,
+                0
+            ],
+            "model_id": 6285,
+            "map_id": 652,
+            "position": [
+                3327.0,
+                892.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "Deldrimor",
+            "required_title_rank": 3,
+            "required_faction": "None_",
+            "consumables": [
+                {
+                    "kind": "craftable_item",
+                    "name": "Perfect Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 25881,
+                    "required_materials": {
+                        "materials": {
+                            "946": 25,
+                            "948": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Armor of Salvation",
+                    "item_type": "Usable",
+                    "model_id": 24860,
+                    "required_materials": {
+                        "materials": {
+                            "921": 50,
+                            "948": 50
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Gelatinous Summoning Stone",
+                    "item_type": "Usable",
+                    "model_id": 30964,
+                    "required_materials": {
+                        "materials": {
+                            "929": 100,
+                            "935": 1,
+                            "955": 10
+                        },
+                        "gold": 1000,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Scroll of Resurrection",
+                    "item_type": "Usable",
+                    "model_id": 26501,
+                    "required_materials": {
+                        "materials": {
+                            "921": 25,
+                            "934": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                },
+                {
+                    "kind": "craftable_item",
+                    "name": "Star of Transference",
+                    "item_type": "Usable",
+                    "model_id": 25896,
+                    "required_materials": {
+                        "materials": {
+                            "934": 25,
+                            "946": 25
+                        },
+                        "gold": 250,
+                        "skill_points": 1
+                    }
+                }
+            ]
+        }
+    ]
+}

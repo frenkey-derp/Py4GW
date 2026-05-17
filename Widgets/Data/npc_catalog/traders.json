@@ -1,0 +1,2583 @@
+{
+    "version": 3,
+    "saved_at": "2026-05-17T11:48:16Z",
+    "category": "traders",
+    "entries": [
+        {
+            "name": "Angel [Rune Trader]",
+            "encoded_name": [
+                94,
+                45,
+                111,
+                230,
+                232,
+                194,
+                214,
+                12,
+                0,
+                0
+            ],
+            "model_id": 2035,
+            "map_id": 857,
+            "position": [
+                1598.0,
+                -1572.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Magi Ket [Rare Scroll Trader]",
+            "encoded_name": [
+                137,
+                45,
+                47,
+                165,
+                126,
+                187,
+                122,
+                40,
+                0,
+                0
+            ],
+            "model_id": 2100,
+            "map_id": 857,
+            "position": [
+                2556.0,
+                -2853.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Haddon [Dye Trader]",
+            "encoded_name": [
+                91,
+                45,
+                4,
+                209,
+                49,
+                230,
+                217,
+                31,
+                0,
+                0
+            ],
+            "model_id": 2070,
+            "map_id": 857,
+            "position": [
+                1280.0,
+                -1920.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Shad [Material Trader]",
+            "encoded_name": [
+                92,
+                45,
+                80,
+                202,
+                145,
+                215,
+                194,
+                67,
+                0,
+                0
+            ],
+            "model_id": 2071,
+            "map_id": 857,
+            "position": [
+                2997.0,
+                -2271.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Argus [Rare Material Trader]",
+            "encoded_name": [
+                93,
+                45,
+                63,
+                224,
+                133,
+                233,
+                124,
+                106,
+                0,
+                0
+            ],
+            "model_id": 2033,
+            "map_id": 857,
+            "position": [
+                2928.0,
+                -2452.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Zhou Pak [Rare Scroll Trader]",
+            "encoded_name": [
+                1,
+                110,
+                147,
+                146,
+                148,
+                160,
+                13,
+                98,
+                0,
+                0
+            ],
+            "model_id": 3344,
+            "map_id": 857,
+            "position": [
+                -2970.0,
+                8.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Yutake [Material Trader]",
+            "encoded_name": [
+                254,
+                109,
+                30,
+                235,
+                107,
+                191,
+                42,
+                41,
+                0,
+                0
+            ],
+            "model_id": 3340,
+            "map_id": 857,
+            "position": [
+                -2561.0,
+                259.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Jiazhen Li [Rare Material Trader]",
+            "encoded_name": [
+                255,
+                109,
+                135,
+                153,
+                184,
+                205,
+                30,
+                37,
+                0,
+                0
+            ],
+            "model_id": 3343,
+            "map_id": 857,
+            "position": [
+                -2692.0,
+                198.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Harfehla [Rare Scroll Trader]",
+            "encoded_name": [
+                1,
+                129,
+                219,
+                63,
+                48,
+                212,
+                52,
+                142,
+                112,
+                113,
+                0,
+                0
+            ],
+            "model_id": 5453,
+            "map_id": 857,
+            "position": [
+                1816.0,
+                3250.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Hesham [Rune Trader]",
+            "encoded_name": [
+                1,
+                129,
+                160,
+                33,
+                49,
+                157,
+                17,
+                141,
+                9,
+                99,
+                0,
+                0
+            ],
+            "model_id": 5732,
+            "map_id": 857,
+            "position": [
+                1755.0,
+                3822.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Duuja [Rare Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                199,
+                45,
+                144,
+                183,
+                23,
+                138,
+                240,
+                116,
+                0,
+                0
+            ],
+            "model_id": 4784,
+            "map_id": 857,
+            "position": [
+                2537.0,
+                4024.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Barlom [Dye Trader]",
+            "encoded_name": [
+                1,
+                129,
+                190,
+                31,
+                125,
+                217,
+                60,
+                141,
+                93,
+                9,
+                0,
+                0
+            ],
+            "model_id": 4780,
+            "map_id": 857,
+            "position": [
+                1973.0,
+                4406.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Kahlim [Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                88,
+                32,
+                99,
+                210,
+                77,
+                201,
+                205,
+                48,
+                0,
+                0
+            ],
+            "model_id": 4781,
+            "map_id": 857,
+            "position": [
+                2406.0,
+                4190.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Mahseh [Rune Trader]",
+            "encoded_name": [
+                2,
+                129,
+                124,
+                114,
+                238,
+                158,
+                123,
+                209,
+                57,
+                127,
+                0,
+                0
+            ],
+            "model_id": 5732,
+            "map_id": 857,
+            "position": [
+                -2755.0,
+                1110.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Xue Fang [Dye Trader]",
+            "encoded_name": [
+                253,
+                109,
+                226,
+                165,
+                129,
+                191,
+                234,
+                36,
+                0,
+                0
+            ],
+            "model_id": 3339,
+            "map_id": 857,
+            "position": [
+                -3172.0,
+                1133.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Aleksy [Dye Trader]",
+            "encoded_name": [
+                158,
+                109,
+                184,
+                162,
+                33,
+                146,
+                255,
+                33,
+                0,
+                0
+            ],
+            "model_id": 3462,
+            "map_id": 77,
+            "position": [
+                9800.0,
+                3437.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Gretchen [Material Trader]",
+            "encoded_name": [
+                159,
+                109,
+                196,
+                175,
+                28,
+                230,
+                75,
+                70,
+                0,
+                0
+            ],
+            "model_id": 3470,
+            "map_id": 77,
+            "position": [
+                9318.0,
+                1127.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Ryszard [Rare Material Trader]",
+            "encoded_name": [
+                160,
+                109,
+                50,
+                217,
+                184,
+                135,
+                44,
+                9,
+                0,
+                0
+            ],
+            "model_id": 3471,
+            "map_id": 77,
+            "position": [
+                9359.0,
+                840.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Skye [Rune Trader]",
+            "encoded_name": [
+                161,
+                109,
+                58,
+                252,
+                225,
+                136,
+                81,
+                101,
+                0,
+                0
+            ],
+            "model_id": 3476,
+            "map_id": 77,
+            "position": [
+                8709.0,
+                73.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Leopold [Rare Scroll Trader]",
+            "encoded_name": [
+                162,
+                109,
+                181,
+                211,
+                31,
+                186,
+                197,
+                51,
+                0,
+                0
+            ],
+            "model_id": 3473,
+            "map_id": 77,
+            "position": [
+                8674.0,
+                277.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Sheel [Rune Trader]",
+            "encoded_name": [
+                163,
+                45,
+                111,
+                144,
+                0,
+                129,
+                17,
+                52,
+                0,
+                0
+            ],
+            "model_id": 2145,
+            "map_id": 81,
+            "position": [
+                1852.0,
+                5250.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Varshall [Dye Trader]",
+            "encoded_name": [
+                160,
+                45,
+                182,
+                246,
+                53,
+                234,
+                108,
+                80,
+                0,
+                0
+            ],
+            "model_id": 2070,
+            "map_id": 81,
+            "position": [
+                1869.0,
+                2688.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Menth [Rare Material Trader]",
+            "encoded_name": [
+                162,
+                45,
+                36,
+                213,
+                41,
+                145,
+                144,
+                4,
+                0,
+                0
+            ],
+            "model_id": 2143,
+            "map_id": 81,
+            "position": [
+                2332.0,
+                2237.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Healy [Material Trader]",
+            "encoded_name": [
+                161,
+                45,
+                235,
+                134,
+                8,
+                168,
+                153,
+                82,
+                0,
+                0
+            ],
+            "model_id": 2071,
+            "map_id": 81,
+            "position": [
+                2357.0,
+                2071.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Zofie [Dye Trader]",
+            "encoded_name": [
+                198,
+                109,
+                61,
+                210,
+                248,
+                161,
+                203,
+                97,
+                0,
+                0
+            ],
+            "model_id": 3678,
+            "map_id": 193,
+            "position": [
+                8336.0,
+                -2157.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Gratian [Material Trader]",
+            "encoded_name": [
+                199,
+                109,
+                71,
+                196,
+                238,
+                242,
+                31,
+                111,
+                0,
+                0
+            ],
+            "model_id": 3679,
+            "map_id": 193,
+            "position": [
+                8662.0,
+                -825.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Dweia [Rare Material Trader]",
+            "encoded_name": [
+                200,
+                109,
+                133,
+                213,
+                184,
+                173,
+                192,
+                18,
+                0,
+                0
+            ],
+            "model_id": 3682,
+            "map_id": 193,
+            "position": [
+                8095.0,
+                -789.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Symeon [Rune Trader]",
+            "encoded_name": [
+                201,
+                109,
+                43,
+                253,
+                248,
+                146,
+                62,
+                15,
+                0,
+                0
+            ],
+            "model_id": 3685,
+            "map_id": 193,
+            "position": [
+                9064.0,
+                -2111.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Phoebe [Rare Scroll Trader]",
+            "encoded_name": [
+                202,
+                109,
+                84,
+                225,
+                250,
+                180,
+                127,
+                44,
+                0,
+                0
+            ],
+            "model_id": 3684,
+            "map_id": 193,
+            "position": [
+                7791.0,
+                -648.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Xue Fang [Dye Trader]",
+            "encoded_name": [
+                253,
+                109,
+                226,
+                165,
+                129,
+                191,
+                234,
+                36,
+                0,
+                0
+            ],
+            "model_id": 3339,
+            "map_id": 194,
+            "position": [
+                -583.0,
+                -1842.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Yutake [Material Trader]",
+            "encoded_name": [
+                254,
+                109,
+                30,
+                235,
+                107,
+                191,
+                42,
+                41,
+                0,
+                0
+            ],
+            "model_id": 3340,
+            "map_id": 194,
+            "position": [
+                1592.0,
+                -796.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Jiazhen Li [Rare Material Trader]",
+            "encoded_name": [
+                255,
+                109,
+                135,
+                153,
+                184,
+                205,
+                30,
+                37,
+                0,
+                0
+            ],
+            "model_id": 3343,
+            "map_id": 194,
+            "position": [
+                1495.0,
+                -1315.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Mitsunari [Rune Trader]",
+            "encoded_name": [
+                0,
+                110,
+                196,
+                150,
+                114,
+                167,
+                144,
+                74,
+                0,
+                0
+            ],
+            "model_id": 3346,
+            "map_id": 194,
+            "position": [
+                -2127.0,
+                -1224.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Zhou Pak [Rare Scroll Trader]",
+            "encoded_name": [
+                1,
+                110,
+                147,
+                146,
+                148,
+                160,
+                13,
+                98,
+                0,
+                0
+            ],
+            "model_id": 3344,
+            "map_id": 194,
+            "position": [
+                -2208.0,
+                -1719.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Yimou [Material Trader]",
+            "encoded_name": [
+                40,
+                87,
+                210,
+                130,
+                162,
+                176,
+                185,
+                105,
+                0,
+                0
+            ],
+            "model_id": 3340,
+            "map_id": 242,
+            "position": [
+                -10614.0,
+                10996.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Kyouko [Rare Material Trader]",
+            "encoded_name": [
+                41,
+                87,
+                121,
+                167,
+                161,
+                184,
+                201,
+                122,
+                0,
+                0
+            ],
+            "model_id": 3342,
+            "map_id": 242,
+            "position": [
+                -10582.0,
+                10833.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Okamoto [Rune Trader]",
+            "encoded_name": [
+                42,
+                87,
+                214,
+                182,
+                69,
+                225,
+                252,
+                72,
+                0,
+                0
+            ],
+            "model_id": 3346,
+            "map_id": 242,
+            "position": [
+                -10921.0,
+                11539.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Akina [Dye Trader]",
+            "encoded_name": [
+                39,
+                87,
+                120,
+                139,
+                208,
+                216,
+                128,
+                21,
+                0,
+                0
+            ],
+            "model_id": 3339,
+            "map_id": 242,
+            "position": [
+                -12204.0,
+                12177.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "San Ling [Material Trader]",
+            "encoded_name": [
+                19,
+                87,
+                102,
+                220,
+                44,
+                238,
+                146,
+                81,
+                0,
+                0
+            ],
+            "model_id": 3341,
+            "map_id": 250,
+            "position": [
+                17520.0,
+                13805.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Songlian [Rare Material Trader]",
+            "encoded_name": [
+                20,
+                87,
+                71,
+                144,
+                249,
+                212,
+                96,
+                55,
+                0,
+                0
+            ],
+            "model_id": 3343,
+            "map_id": 250,
+            "position": [
+                17709.0,
+                13868.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Yukito [Rune Trader]",
+            "encoded_name": [
+                21,
+                87,
+                131,
+                253,
+                233,
+                135,
+                68,
+                21,
+                0,
+                0
+            ],
+            "model_id": 3346,
+            "map_id": 250,
+            "position": [
+                16412.0,
+                12619.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Yumiko [Dye Trader]",
+            "encoded_name": [
+                18,
+                87,
+                101,
+                247,
+                105,
+                185,
+                199,
+                3,
+                0,
+                0
+            ],
+            "model_id": 3338,
+            "map_id": 250,
+            "position": [
+                20106.0,
+                9229.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Zefiryna [Dye Trader]",
+            "encoded_name": [
+                140,
+                109,
+                4,
+                242,
+                58,
+                177,
+                178,
+                104,
+                0,
+                0
+            ],
+            "model_id": 3463,
+            "map_id": 286,
+            "position": [
+                16117.0,
+                3258.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Yahtu [Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                180,
+                33,
+                212,
+                169,
+                34,
+                151,
+                34,
+                1,
+                0,
+                0
+            ],
+            "model_id": 5446,
+            "map_id": 376,
+            "position": [
+                -16351.0,
+                19412.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Ferii [Rare Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                181,
+                33,
+                236,
+                145,
+                219,
+                231,
+                31,
+                72,
+                0,
+                0
+            ],
+            "model_id": 5449,
+            "map_id": 376,
+            "position": [
+                -15463.0,
+                19246.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Bodahn [Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                55,
+                34,
+                29,
+                145,
+                52,
+                209,
+                20,
+                68,
+                0,
+                0
+            ],
+            "model_id": 5726,
+            "map_id": 398,
+            "position": [
+                -265.0,
+                4140.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Lurlai [Rare Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                56,
+                34,
+                212,
+                158,
+                232,
+                171,
+                65,
+                29,
+                0,
+                0
+            ],
+            "model_id": 5728,
+            "map_id": 398,
+            "position": [
+                -46.0,
+                4034.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Shahler [Dye Trader]",
+            "encoded_name": [
+                1,
+                129,
+                157,
+                33,
+                169,
+                244,
+                87,
+                182,
+                181,
+                127,
+                0,
+                0
+            ],
+            "model_id": 5725,
+            "map_id": 414,
+            "position": [
+                -2680.0,
+                1018.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Hesham [Rune Trader]",
+            "encoded_name": [
+                1,
+                129,
+                160,
+                33,
+                49,
+                157,
+                17,
+                141,
+                9,
+                99,
+                0,
+                0
+            ],
+            "model_id": 5732,
+            "map_id": 414,
+            "position": [
+                -2268.0,
+                1376.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Iresh [Rare Scroll Trader]",
+            "encoded_name": [
+                1,
+                129,
+                161,
+                33,
+                82,
+                221,
+                130,
+                172,
+                197,
+                102,
+                0,
+                0
+            ],
+            "model_id": 5730,
+            "map_id": 414,
+            "position": [
+                -1950.0,
+                1721.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Nehbusa [Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                213,
+                63,
+                0,
+                182,
+                106,
+                225,
+                45,
+                55,
+                0,
+                0
+            ],
+            "model_id": 5447,
+            "map_id": 424,
+            "position": [
+                1314.0,
+                1764.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Orram [Rare Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                214,
+                63,
+                2,
+                134,
+                173,
+                177,
+                72,
+                3,
+                0,
+                0
+            ],
+            "model_id": 5448,
+            "map_id": 424,
+            "position": [
+                1376.0,
+                1303.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Guul [Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                199,
+                63,
+                243,
+                201,
+                146,
+                243,
+                222,
+                35,
+                0,
+                0
+            ],
+            "model_id": 4781,
+            "map_id": 491,
+            "position": [
+                3839.0,
+                1618.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Nehgoyo [Rare Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                200,
+                63,
+                176,
+                139,
+                78,
+                232,
+                74,
+                58,
+                0,
+                0
+            ],
+            "model_id": 4784,
+            "map_id": 491,
+            "position": [
+                3674.0,
+                1578.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Beek [Rune Trader]",
+            "encoded_name": [
+                2,
+                129,
+                148,
+                30,
+                37,
+                174,
+                209,
+                147,
+                243,
+                14,
+                0,
+                0
+            ],
+            "model_id": 6825,
+            "map_id": 624,
+            "position": [
+                17629.0,
+                14670.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Crott [Rare Scroll Trader]",
+            "encoded_name": [
+                2,
+                129,
+                149,
+                30,
+                130,
+                165,
+                216,
+                228,
+                63,
+                3,
+                0,
+                0
+            ],
+            "model_id": 6822,
+            "map_id": 624,
+            "position": [
+                16285.0,
+                16846.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Julia [Rare Scroll Trader]",
+            "encoded_name": [
+                2,
+                129,
+                153,
+                30,
+                59,
+                203,
+                105,
+                183,
+                136,
+                28,
+                0,
+                0
+            ],
+            "model_id": 6117,
+            "map_id": 638,
+            "position": [
+                -8501.0,
+                -23115.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Elb [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                151,
+                30,
+                202,
+                194,
+                199,
+                198,
+                76,
+                69,
+                0,
+                0
+            ],
+            "model_id": 6818,
+            "map_id": 638,
+            "position": [
+                -9107.0,
+                -23428.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Gropp [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                152,
+                30,
+                223,
+                239,
+                55,
+                225,
+                178,
+                48,
+                0,
+                0
+            ],
+            "model_id": 6821,
+            "map_id": 638,
+            "position": [
+                -9194.0,
+                -23203.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Noot [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                162,
+                30,
+                138,
+                191,
+                169,
+                151,
+                67,
+                13,
+                0,
+                0
+            ],
+            "model_id": 6819,
+            "map_id": 640,
+            "position": [
+                12787.0,
+                16582.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Plovv [Dye Trader]",
+            "encoded_name": [
+                2,
+                129,
+                161,
+                30,
+                156,
+                164,
+                202,
+                160,
+                213,
+                93,
+                0,
+                0
+            ],
+            "model_id": 6817,
+            "map_id": 640,
+            "position": [
+                19043.0,
+                14084.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Pekka [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                163,
+                30,
+                239,
+                172,
+                28,
+                226,
+                176,
+                56,
+                0,
+                0
+            ],
+            "model_id": 6820,
+            "map_id": 640,
+            "position": [
+                12787.0,
+                16432.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Sull [Rare Scroll Trader]",
+            "encoded_name": [
+                2,
+                129,
+                165,
+                30,
+                30,
+                242,
+                234,
+                198,
+                65,
+                91,
+                0,
+                0
+            ],
+            "model_id": 6823,
+            "map_id": 640,
+            "position": [
+                19287.0,
+                14211.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Xogg [Rune Trader]",
+            "encoded_name": [
+                2,
+                129,
+                164,
+                30,
+                186,
+                253,
+                210,
+                145,
+                46,
+                32,
+                0,
+                0
+            ],
+            "model_id": 6824,
+            "map_id": 640,
+            "position": [
+                13904.0,
+                17101.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Anders [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                169,
+                30,
+                23,
+                235,
+                100,
+                134,
+                4,
+                116,
+                0,
+                0
+            ],
+            "model_id": 6120,
+            "map_id": 641,
+            "position": [
+                25658.0,
+                -11129.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Helena [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                170,
+                30,
+                160,
+                235,
+                64,
+                210,
+                12,
+                77,
+                0,
+                0
+            ],
+            "model_id": 6121,
+            "map_id": 641,
+            "position": [
+                25188.0,
+                -11513.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Ida [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                176,
+                30,
+                206,
+                207,
+                175,
+                180,
+                46,
+                22,
+                0,
+                0
+            ],
+            "model_id": 6105,
+            "map_id": 642,
+            "position": [
+                -1867.0,
+                803.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Amy [Dye Trader]",
+            "encoded_name": [
+                2,
+                129,
+                175,
+                30,
+                37,
+                196,
+                207,
+                213,
+                107,
+                66,
+                0,
+                0
+            ],
+            "model_id": 6104,
+            "map_id": 642,
+            "position": [
+                -1862.0,
+                1245.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Roland [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                177,
+                30,
+                121,
+                158,
+                107,
+                174,
+                125,
+                37,
+                0,
+                0
+            ],
+            "model_id": 6106,
+            "map_id": 642,
+            "position": [
+                -2079.0,
+                1046.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Staci Magicalsen [Rune Trader]",
+            "encoded_name": [
+                2,
+                129,
+                178,
+                30,
+                116,
+                191,
+                228,
+                243,
+                124,
+                35,
+                0,
+                0
+            ],
+            "model_id": 6107,
+            "map_id": 642,
+            "position": [
+                -3368.0,
+                2092.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Vathi [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                183,
+                30,
+                66,
+                135,
+                156,
+                218,
+                94,
+                9,
+                0,
+                0
+            ],
+            "model_id": 6444,
+            "map_id": 643,
+            "position": [
+                11489.0,
+                22240.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Birna [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                184,
+                30,
+                4,
+                141,
+                74,
+                238,
+                47,
+                64,
+                0,
+                0
+            ],
+            "model_id": 6447,
+            "map_id": 643,
+            "position": [
+                10875.0,
+                22596.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Saxi [Rare Scroll Trader]",
+            "encoded_name": [
+                2,
+                129,
+                186,
+                30,
+                56,
+                235,
+                220,
+                229,
+                97,
+                15,
+                0,
+                0
+            ],
+            "model_id": 6448,
+            "map_id": 643,
+            "position": [
+                15694.0,
+                20271.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Sker [Rune Trader]",
+            "encoded_name": [
+                2,
+                129,
+                185,
+                30,
+                105,
+                183,
+                189,
+                188,
+                7,
+                40,
+                0,
+                0
+            ],
+            "model_id": 6450,
+            "map_id": 643,
+            "position": [
+                11240.0,
+                22573.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Gisla [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                193,
+                30,
+                187,
+                153,
+                103,
+                152,
+                24,
+                118,
+                0,
+                0
+            ],
+            "model_id": 6445,
+            "map_id": 644,
+            "position": [
+                18695.0,
+                -7902.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Holma [Dye Trader]",
+            "encoded_name": [
+                2,
+                129,
+                192,
+                30,
+                44,
+                172,
+                10,
+                222,
+                2,
+                13,
+                0,
+                0
+            ],
+            "model_id": 6443,
+            "map_id": 644,
+            "position": [
+                19530.0,
+                -7327.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Reinard [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                194,
+                30,
+                134,
+                238,
+                107,
+                182,
+                75,
+                87,
+                0,
+                0
+            ],
+            "model_id": 6446,
+            "map_id": 644,
+            "position": [
+                18764.0,
+                -8031.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Simbi [Rare Scroll Trader]",
+            "encoded_name": [
+                2,
+                129,
+                196,
+                30,
+                202,
+                195,
+                22,
+                177,
+                232,
+                94,
+                0,
+                0
+            ],
+            "model_id": 6448,
+            "map_id": 644,
+            "position": [
+                17811.0,
+                -6071.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Gyra [Rune Trader]",
+            "encoded_name": [
+                2,
+                129,
+                195,
+                30,
+                85,
+                216,
+                250,
+                238,
+                23,
+                22,
+                0,
+                0
+            ],
+            "model_id": 6451,
+            "map_id": 644,
+            "position": [
+                18924.0,
+                -5828.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Bovald Steeltoe [Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                206,
+                30,
+                176,
+                237,
+                219,
+                151,
+                98,
+                86,
+                0,
+                0
+            ],
+            "model_id": 6288,
+            "map_id": 652,
+            "position": [
+                3223.0,
+                1915.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Erzol Furrowbrow [Rare Material Trader]",
+            "encoded_name": [
+                2,
+                129,
+                207,
+                30,
+                234,
+                200,
+                21,
+                173,
+                91,
+                63,
+                0,
+                0
+            ],
+            "model_id": 6289,
+            "map_id": 652,
+            "position": [
+                3225.0,
+                1589.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Vegeir [Dye Trader]",
+            "encoded_name": [
+                191,
+                45,
+                12,
+                205,
+                22,
+                233,
+                74,
+                75,
+                0,
+                0
+            ],
+            "model_id": 2167,
+            "map_id": 20,
+            "position": [
+                5198.0,
+                6576.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Machir [Material Trader]",
+            "encoded_name": [
+                192,
+                45,
+                162,
+                131,
+                80,
+                173,
+                171,
+                111,
+                0,
+                0
+            ],
+            "model_id": 2168,
+            "map_id": 20,
+            "position": [
+                5642.0,
+                5392.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Benato [Rare Material Trader]",
+            "encoded_name": [
+                193,
+                45,
+                27,
+                158,
+                26,
+                208,
+                160,
+                119,
+                0,
+                0
+            ],
+            "model_id": 2169,
+            "map_id": 20,
+            "position": [
+                5822.0,
+                5510.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Murgur [Rune Trader]",
+            "encoded_name": [
+                194,
+                45,
+                69,
+                238,
+                252,
+                180,
+                2,
+                7,
+                0,
+                0
+            ],
+            "model_id": 2171,
+            "map_id": 20,
+            "position": [
+                6256.0,
+                5804.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Goran [Dye Trader]",
+            "encoded_name": [
+                116,
+                45,
+                191,
+                202,
+                20,
+                192,
+                5,
+                71,
+                0,
+                0
+            ],
+            "model_id": 2070,
+            "map_id": 109,
+            "position": [
+                2770.0,
+                2298.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Dye",
+            "items": []
+        },
+        {
+            "name": "Kacey [Material Trader]",
+            "encoded_name": [
+                117,
+                45,
+                176,
+                207,
+                155,
+                229,
+                181,
+                107,
+                0,
+                0
+            ],
+            "model_id": 2071,
+            "map_id": 109,
+            "position": [
+                815.0,
+                873.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Galmith [Rare Material Trader]",
+            "encoded_name": [
+                118,
+                45,
+                221,
+                168,
+                150,
+                133,
+                141,
+                73,
+                0,
+                0
+            ],
+            "model_id": 2057,
+            "map_id": 109,
+            "position": [
+                1151.0,
+                1031.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        },
+        {
+            "name": "Lelu [Rune Trader]",
+            "encoded_name": [
+                119,
+                45,
+                2,
+                223,
+                204,
+                224,
+                194,
+                79,
+                0,
+                0
+            ],
+            "model_id": 2059,
+            "map_id": 109,
+            "position": [
+                6405.0,
+                -523.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Rune",
+            "items": []
+        },
+        {
+            "name": "Magi Ral [Rare Scroll Trader]",
+            "encoded_name": [
+                120,
+                45,
+                252,
+                161,
+                155,
+                178,
+                123,
+                87,
+                0,
+                0
+            ],
+            "model_id": 2058,
+            "map_id": 109,
+            "position": [
+                3250.0,
+                -2677.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareScroll",
+            "items": []
+        },
+        {
+            "name": "Urij [Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                158,
+                33,
+                38,
+                134,
+                253,
+                230,
+                191,
+                13,
+                0,
+                0
+            ],
+            "model_id": 5726,
+            "map_id": 414,
+            "position": [
+                -3368.0,
+                2681.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "Material",
+            "items": []
+        },
+        {
+            "name": "Zatah [Rare Material Trader]",
+            "encoded_name": [
+                1,
+                129,
+                159,
+                33,
+                74,
+                234,
+                93,
+                244,
+                12,
+                44,
+                0,
+                0
+            ],
+            "model_id": 5729,
+            "map_id": 414,
+            "position": [
+                -3708.0,
+                2366.0
+            ],
+            "allegiance": "Ally",
+            "required_title_id": "_None",
+            "required_title_rank": 0,
+            "required_faction": "None_",
+            "trader_type": "RareMaterial",
+            "items": []
+        }
+    ]
+}
