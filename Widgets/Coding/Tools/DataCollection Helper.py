@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from dataclasses import field
 from datetime import datetime, timedelta
+from enum import IntEnum, auto
 import json
 import os
 from typing import Any, Optional, TypeVar, cast
@@ -10,7 +11,8 @@ import PyImGui
 import PyUIManager
 
 
-from Py4GWCoreLib import ImGui, Merchant
+from Py4GWCoreLib import ImGui
+from Py4GWCoreLib import Merchant as MerchantTrading
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
@@ -20,7 +22,7 @@ from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.Py4GWcorelib import Utils
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.UIManager import CollectorWindow, CrafterWindow, FrameInfo, UIManager, WindowFrame
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
+from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
@@ -412,6 +414,7 @@ class Npc:
     position: tuple[float, float] = (0.0, 0.0)
     model_id: int = 0
     encoded_name: bytes = b''
+    allegiance : Allegiance = Allegiance.Neutral
 
     def _base_to_dict(self) -> dict:
         return {
@@ -482,7 +485,7 @@ class Npc:
         CrafterWindow.Close()
 
     def _get_offered_items(self) -> list[int]:
-        offered_items = Merchant.Trading.Crafter.GetOfferedItems()
+        offered_items = MerchantTrading.Trading.Crafter.GetOfferedItems()
         return list(offered_items or [])
 
     def IsCrafterOpen(self) -> bool:
@@ -514,11 +517,67 @@ class Npc:
     def GetCollectionSummary(self) -> str:
         return 'N/A'
 
-
 @dataclass
-class Artisan(Npc):
-    items: list[CraftableItem] = field(default_factory=list)
+class Foe(Npc):
+    def __post_init__(self):
+        self.allegiance = Allegiance.Enemy
+        
+@dataclass
+class Ally(Npc):
+    def __post_init__(self):
+        self.allegiance = Allegiance.Ally
+        
+@dataclass
+class Merchant(Ally):
+    items: list[Item] = field(default_factory=list)
 
+class TraderType(IntEnum):
+    Unknown = auto() 
+    Rune = auto() 
+    Dye = auto() 
+    Material = auto() 
+    RareMaterial = auto()
+    RareScroll = auto()
+    Sigil = auto()
+    
+    @staticmethod
+    def get_type_from_name(name: str) -> 'TraderType':
+        name = name.lower()
+        if 'rune trader' in name:
+            return TraderType.Rune
+        if 'dye trader' in name:
+            return TraderType.Dye
+        if 'rare material trader' in name:
+            return TraderType.RareMaterial
+        if 'rare scroll trader' in name:
+            return TraderType.RareScroll
+        if 'sigil trader' in name:
+            return TraderType.Sigil
+        if 'material trader' in name:
+            return TraderType.Material
+        return TraderType.Unknown
+    
+@dataclass
+class Trader(Ally):
+    items: list[Item] = field(default_factory=list)
+    _trader_type: TraderType = field(default=TraderType.Unknown, repr=False)
+        
+    @property
+    def trader_type(self) -> TraderType:
+        return self._trader_type
+    
+    @trader_type.setter
+    def trader_type(self, value: TraderType):
+        self._trader_type = value
+        self.items = self._get_trader_items_by_type(value)
+        
+    def _get_trader_items_by_type(self, trader_type: TraderType) -> list[Item]:
+        return []  # Placeholder for actual implementation to return items based on trader type, traders have a fixed set of items we don't need to ingame collect them
+        
+@dataclass
+class Artisan(Ally):
+    items: list[CraftableItem] = field(default_factory=list)
+    
     def to_dict(self) -> dict:
         payload = self._base_to_dict()
         payload['items'] = [item.to_dict() for item in self.items]
@@ -542,9 +601,9 @@ class Artisan(Npc):
 
 
 @dataclass
-class ConsumableCrafter(Npc):
+class ConsumableCrafter(Ally):
     consumables: list[CraftableItem] = field(default_factory=list)
-
+            
     def to_dict(self) -> dict:
         payload = self._base_to_dict()
         payload['consumables'] = [item.to_dict() for item in self.consumables]
@@ -568,7 +627,7 @@ class ConsumableCrafter(Npc):
 
 
 @dataclass
-class Weaponsmith(Npc):
+class Weaponsmith(Ally):
     weapons: list[CraftableWeapon] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -607,7 +666,7 @@ class Weaponsmith(Npc):
 
         _log_collection_result(self.name, collected_count, 'weapon')
         if pending_name_update:
-            Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
         return not pending_name_update and collected_count > 0
 
     def GetCollectedCount(self) -> int:
@@ -618,7 +677,7 @@ class Weaponsmith(Npc):
 
 
 @dataclass
-class Collector(Npc):
+class Collector(Ally):
     items: list[Item] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -640,7 +699,7 @@ class Collector(Npc):
         CollectorWindow.Close()
 
     def _get_offered_items(self) -> list[int]:
-        offered_items = Merchant.Trading.Collector.GetOfferedItems()
+        offered_items = MerchantTrading.Trading.Collector.GetOfferedItems()
         return list(offered_items or [])
 
     def CollectData(self) -> bool:
@@ -651,14 +710,21 @@ class Collector(Npc):
         items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
         collected_count = 0
         pending_name_update = False
-        
-        exchange_item = next(item.required_collectible for item in self.items if isinstance(item, Collectible) and item.required_collectible)
+
+        exchange_item = next(
+            (
+                entry.required_collectible
+                for entry in self.items
+                if isinstance(entry, Collectible) and entry.required_collectible
+            ),
+            None,
+        )
 
         for item in items:
             if item is None or not item.is_valid:
                 continue
-            
-            if item.model_id == exchange_item[0]:
+
+            if exchange_item is not None and item.model_id == exchange_item[0]:
                 continue
 
             item_name = _get_snapshot_name(item)
@@ -674,7 +740,7 @@ class Collector(Npc):
 
         _log_collection_result(self.name, collected_count, 'collector')
         if pending_name_update:
-            Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
         return not pending_name_update and collected_count > 0
 
     def GetCollectedCount(self) -> int:
@@ -692,7 +758,7 @@ class Collector(Npc):
 
 
 @dataclass
-class Armorer(Npc):
+class Armorer(Ally):
     professions_armor_rating: dict[Profession, int] = field(default_factory=dict)
     armors: dict[Profession, list[CraftableArmor]] = field(default_factory=dict)
 
@@ -760,22 +826,36 @@ class Armorer(Npc):
                 same_profession = getattr(existing, 'profession', None) == getattr(candidate, 'profession', None)
 
                 return same_profession and same_type
-        
+
             existing = next(
-                existing_armor
-                for entries in self.armors.values()
-                for existing_armor in entries
-                if _same_armor_item_identity(existing_armor, item)
+                (
+                    existing_armor
+                    for entries in self.armors.values()
+                    for existing_armor in entries
+                    if _same_armor_item_identity(existing_armor, item)
+                ),
+                None,
             )
-            
-            existing.name = armor_name  # Update name even if other fields are not merged to ensure future identity matches
-            existing.model_id = item.model_id  # Update model_id as well for better future matching
-            
-            collected_count += 1
+
+            if existing is not None:
+                existing.name = armor_name  # Update name even if other fields are not merged to ensure future identity matches
+                existing.model_id = item.model_id  # Update model_id as well for better future matching
+                collected_count += 1
+                continue
+
+            armor = CraftableArmor(
+                name=armor_name,
+                armor_rating=int(self.professions_armor_rating.get(profession, 0) or 0),
+                item_type=item.item_type,
+                model_id=item.model_id,
+                profession=profession,
+            )
+            if self._upsert_craftable_armor(armor):
+                collected_count += 1
 
         _log_collection_result(self.name, collected_count, 'armor')
         if pending_name_update:
-            Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
             
         return not pending_name_update and collected_count > 0
 
@@ -1102,8 +1182,7 @@ def _iter_all_crafters() -> list[AnyCrafter]:
 
 
 def _get_snapshot_name(item: ItemSnapshot) -> str:
-    return item.names.__plain_singular
-
+    return item.names.plain_singular if item.names.plain_singular != 'Unknown Item' else ''
 
 def _build_craftable_item_from_snapshot(item: ItemSnapshot) -> CraftableItem | CraftableWeapon | CraftableArmor:
     item_name = _get_snapshot_name(item)
@@ -1333,7 +1412,7 @@ def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> b
 
     _log_collection_result(crafter.name, collected_count, 'craftable item')
     if pending_name_update:
-        Py4GW.Console.Log(MODULE_NAME, f"Some collected armors from '{crafter.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
+        Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{crafter.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
     return not pending_name_update and collected_count > 0
 
 
@@ -1649,8 +1728,16 @@ def _run_crafter_sweep(crafters: list[AnyCrafter]):
             continue
 
         _set_sweep_status(f"Collecting visible {crafter.service_label().lower()} data...", crafter.name, index, total)
-        crafter.CollectData()
-        save_crafters_to_json()
+        try:
+            crafter.CollectData()
+            save_crafters_to_json()
+        except Exception as exc:
+            Py4GW.Console.Log(
+                MODULE_NAME,
+                f"Skipping '{crafter.name}' because data collection failed: {exc}",
+                Py4GW.Console.MessageType.Warning,
+            )
+            continue
 
         _set_sweep_status('Service window open, waiting 2 seconds...', crafter.name, index, total)
         yield from Routines.Yield.wait(2000)
