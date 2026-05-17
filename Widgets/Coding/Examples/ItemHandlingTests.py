@@ -950,17 +950,18 @@ def main():
                         PyImGui.end_table()
 
                 ImGui.separator()
-                ImGui.text("Storage Slot Frames", 16)
-                _draw_inventory_slots_table(
-                    "XunlaiStorageWindow Slots",
-                    STORAGE_BAGS,
-                    lambda bag: XunlaiStorageWindow.GetTabSlotFrames(bag),
-                )
-                _draw_inventory_slots_table(
-                    "Material Storage Slots",
-                    [Bags.MaterialStorage],
-                    lambda bag: XunlaiStorageWindow.GetMaterialSlotFrames() if bag == Bags.MaterialStorage else [],
-                )
+                
+                if ImGui.collapsing_header("Storage Slot Frames"):
+                    _draw_inventory_slots_table(
+                        "XunlaiStorageWindow Slots",
+                        STORAGE_BAGS,
+                        lambda bag: XunlaiStorageWindow.GetTabSlotFrames(bag),
+                    )
+                    _draw_inventory_slots_table(
+                        "Material Storage Slots",
+                        [Bags.MaterialStorage],
+                        lambda bag: XunlaiStorageWindow.GetMaterialSlotFrames() if bag == Bags.MaterialStorage else [],
+                    )
 
                 ImGui.separator()
                 if ImGui.collapsing_header("Other Windows"):
@@ -977,7 +978,7 @@ def main():
 
                         _draw_frame_info_row("SkillTrainerWindow", WindowFrame.SkillTrainerWindowFrame, allow_highlight=True)
                         _draw_frame_info_row("MerchantWindow", WindowFrame.MerchantWindowFrame, allow_highlight=True)
-                        _draw_frame_info_row("CollectorWindow", WindowFrame.CollectorWindowFrame, allow_highlight=True)
+                        _draw_frame_info_row("CollectorWindow", WindowFrame.CollectorExchangeButton, allow_highlight=True)
                         _draw_frame_info_row("CrafterWindow", WindowFrame.CrafterWindowFrame, allow_highlight=True)
                         _draw_frame_info_row("UpgradeWindow", WindowFrame.UpgradeWindowFrame, allow_highlight=True)
                         _draw_frame_info_row("UpgradeWindow.Cancel", WindowFrame.UpgradeWindowCancelButton, allow_highlight=True, allow_click=True)
@@ -991,10 +992,10 @@ def main():
                         PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 140)
                         PyImGui.table_headers_row()
 
-                        _draw_simple_state_row("SkillTrainerWindow", SkillTrainerWindow.IsOpen())
-                        _draw_simple_state_row("MerchantWindow", MerchantWindow.IsOpen())
-                        _draw_simple_state_row("CollectorWindow", CollectorWindow.IsOpen())
-                        _draw_simple_state_row("CrafterWindow", CrafterWindow.IsOpen())
+                        _draw_simple_state_row("SkillTrainerWindow", SkillTrainerWindow.IsOpen(), "Close", SkillTrainerWindow.Close)
+                        _draw_simple_state_row("MerchantWindow", MerchantWindow.IsOpen(), "Close", MerchantWindow.Close)
+                        _draw_simple_state_row("CollectorWindow", CollectorWindow.IsOpen(), "Close", CollectorWindow.Close)
+                        _draw_simple_state_row("CrafterWindow", CrafterWindow.IsOpen(), "Close", CrafterWindow.Close)
                         _draw_simple_state_row("UpgradeWindow", UpgradeWindow.IsOpen(), "Cancel", UpgradeWindow.Cancel)
                         _draw_simple_state_row("UpgradeWindow Confirm", UpgradeWindow.IsOpen(), "Confirm", UpgradeWindow.Confirm)
 
