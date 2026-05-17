@@ -1591,10 +1591,16 @@ class WindowFrame():
         ChildOffsets=[0, 0, 1]
     )
 
-    CollectorWindowFrame = FrameInfo(
-        WindowName="CollectorWindowFrame",
+    CollectorExchangeButton = FrameInfo(
+        WindowName="CollectorExchangeButton",
         ParentFrameHash=3613855137,
         ChildOffsets=[0, 0, 6]
+    )
+
+    CollectorGoodbyeButton = FrameInfo(
+        WindowName="CollectorGoodbyeButton",
+        ParentFrameHash=3613855137,
+        ChildOffsets=[0, 0, 7]
     )
 
     SkillTrainerWindowFrame = FrameInfo(
@@ -1967,14 +1973,26 @@ class CollectorWindow:
     @staticmethod
     @frame_cache(category="CollectorWindow", source_lib="IsOpen")
     def IsOpen() -> bool:
-        return WindowFrame.CollectorWindowFrame.FrameExists()
+        return WindowFrame.CollectorExchangeButton.FrameExists()
+    
+    @staticmethod
+    def Confirm() -> bool:
+        if not CollectorWindow.IsOpen():
+            return False
+        
+        frame = WindowFrame.CollectorExchangeButton
+        if not frame.FrameExists():
+            return False
+                
+        frame.FrameClick()
+        return True
     
     @staticmethod
     def Close() -> bool:
         if not CollectorWindow.IsOpen():
             return False
         
-        frame = WindowFrame.MerchantWindowCloseButton
+        frame = WindowFrame.CollectorGoodbyeButton
         if not frame.FrameExists():
             return False
                 

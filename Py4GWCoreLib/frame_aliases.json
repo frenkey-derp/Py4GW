@@ -1199,5 +1199,9 @@
     "2874675009,4,3": "Inventory.EquipmentPack.Slot_2",
     "2874675009,4,16": "Inventory.EquipmentPack.Slot_15",
     "2874675009,4,21": "Inventory.EquipmentPack.Slot_20",
-    "2874675009,1,11": "Inventory.BeltPouch.Slot_10"
+    "2874675009,1,11": "Inventory.BeltPouch.Slot_10",
+    "3613855137,0,0,7": "Collector.Goodbye",
+    "3613855137,0,0,4,0,0": "Collector.ItemContainer",
+    "3613855137,0,0,4,0,0,489": "Collector.ItemContainer.Item1",
+    "3613855137,0,0,4,0,0,490": "Collector.ItemContainer.Item2"
 }

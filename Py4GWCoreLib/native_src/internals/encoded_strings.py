@@ -20,6 +20,7 @@ class GWStringEncoded:
         self.placeholder_bytes = placeholder_bytes
         self.placeholder_replacement = placeholder_replacement
         self.__plain = ""
+        self.__plain_singular = ""
         self.__bonuses_only = ""
         self.__full = ""
         self.__singular = ""
@@ -127,6 +128,25 @@ class GWStringEncoded:
             self.__singular = self.remove_placeholder(decoded)
             
         return self.__singular
+    
+    @property
+    def plain_singular(self) -> str:
+        ''' Returns the singular form of the decoded string, if applicable. This is useful for item names that may have a plural form in the encoded string but need to be displayed in singular form (e.g., "Birthday Cupcake" instead of "137 Birthday Cupcakes").
+        \nThe method checks for specific patterns in the decoded string to determine if it should attempt to convert it to singular form. The result is cached after the first decoding for performance. If the encoded string cannot be decoded, the fallback value is returned. '''
+        if not self.__plain_singular:
+            decoded = self.decode()
+            
+            if not decoded:
+                return self.fallback
+            
+            if '[f:' not in decoded and GWStringEncoded.__has_bracket_pair(decoded):
+                decoded = self.decode_with_amount(1)
+            
+            plain = self.remove_placeholder(decoded)
+            plain = self.remove_placeholder(self.COLOR_TAG_RE.sub(r"\1", decoded))
+            self.__plain_singular = plain
+            
+        return self.__plain_singular
     
     def with_amount(self, amount: int = 1) -> str:
         ''' Returns the decoded string with the specified amount inserted, if the encoded string is designed to include an amount. This is useful for item names that include a quantity (e.g., "137 Birthday Cupcakes") and allows you to get the correctly formatted string for any given amount.
