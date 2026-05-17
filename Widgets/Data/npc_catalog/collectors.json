@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T11:53:26Z",
+    "saved_at": "2026-05-17T12:04:16Z",
     "category": "collectors",
     "entries": [
         {
@@ -13,9 +13,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -28,9 +25,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -43,9 +37,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -69,9 +60,6 @@
                 -22574.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -217,9 +205,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -232,9 +217,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -329,9 +311,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -344,9 +323,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -359,9 +335,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -374,9 +347,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -553,9 +523,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -568,9 +535,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -583,9 +547,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -619,9 +580,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -647,9 +605,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -662,9 +617,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -738,9 +690,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -764,9 +713,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -866,9 +812,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -980,9 +923,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1068,9 +1008,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1156,9 +1093,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1244,9 +1178,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1332,9 +1263,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1446,9 +1374,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1472,9 +1397,6 @@
                 4114.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1544,9 +1466,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1607,9 +1526,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -1695,9 +1611,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1754,9 +1667,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1864,9 +1774,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -1974,9 +1881,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1989,9 +1893,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2029,9 +1930,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2117,9 +2015,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2227,9 +2122,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2344,9 +2236,6 @@
                 13167.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2443,9 +2332,6 @@
                 9902.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2547,9 +2433,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -2562,9 +2445,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -2650,9 +2530,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2752,9 +2629,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2841,9 +2715,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -2934,9 +2805,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3027,9 +2895,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3115,9 +2980,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3203,9 +3065,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3291,9 +3150,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3379,9 +3235,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3467,9 +3320,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3555,9 +3405,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3643,9 +3490,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -3731,9 +3575,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3824,9 +3665,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -3909,9 +3747,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4013,9 +3848,6 @@
                 -7069.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4122,9 +3954,6 @@
                 -7346.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4213,9 +4042,6 @@
                 -6606.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4322,9 +4148,6 @@
                 -13715.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4442,9 +4265,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4552,9 +4372,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4673,9 +4490,6 @@
                 -17611.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4785,9 +4599,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4886,9 +4697,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -4971,9 +4779,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5077,9 +4882,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5187,9 +4989,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5284,9 +5083,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5372,9 +5168,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5460,9 +5253,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -5486,9 +5276,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5574,9 +5361,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5662,9 +5446,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5750,9 +5531,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -5838,9 +5616,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -5935,9 +5710,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6033,9 +5805,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6137,9 +5906,6 @@
                 -352.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6266,9 +6032,6 @@
                 4181.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6401,9 +6164,6 @@
                 1465.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -6478,9 +6238,6 @@
                 4272.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -6605,9 +6362,6 @@
                 3744.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -6662,9 +6416,6 @@
                 3571.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -6704,9 +6455,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -6792,9 +6540,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -6880,9 +6625,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -6968,9 +6710,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7069,9 +6808,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7158,9 +6894,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7242,9 +6975,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7326,9 +7056,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7423,9 +7150,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7452,9 +7176,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7540,9 +7261,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7620,9 +7338,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -7708,9 +7423,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7797,9 +7509,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7869,9 +7578,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -7945,9 +7651,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -8033,9 +7736,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -8121,9 +7821,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -8209,9 +7906,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -8273,9 +7967,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -8361,9 +8052,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8471,9 +8159,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -8497,9 +8182,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8603,9 +8285,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8709,9 +8388,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -8735,9 +8411,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8845,9 +8518,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -8959,9 +8629,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9061,9 +8728,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -9087,9 +8751,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -9163,9 +8824,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9277,9 +8935,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9391,9 +9046,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9501,9 +9153,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9589,9 +9238,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9677,9 +9323,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -9781,9 +9424,6 @@
                 2739.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9880,9 +9520,6 @@
                 369.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -9968,9 +9605,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10057,9 +9691,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10175,9 +9806,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -10190,9 +9818,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10304,9 +9929,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10389,9 +10011,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -10455,9 +10074,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10543,9 +10159,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -10649,9 +10262,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10737,9 +10347,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10825,9 +10432,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -10913,9 +10517,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11001,9 +10602,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11089,9 +10687,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -11177,9 +10772,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11253,9 +10845,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11350,9 +10939,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11443,9 +11029,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11519,9 +11102,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -11545,9 +11125,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -11571,9 +11148,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -11597,9 +11171,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11752,9 +11323,6 @@
                 8368.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -11933,9 +11501,6 @@
                 5625.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12032,9 +11597,6 @@
                 8392.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12131,9 +11693,6 @@
                 937.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12230,9 +11789,6 @@
                 -11252.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12329,9 +11885,6 @@
                 -9762.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -12438,9 +11991,6 @@
                 -3171.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -12544,9 +12094,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12620,9 +12167,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12676,9 +12220,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -12764,9 +12305,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12800,9 +12338,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12876,9 +12411,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -12922,9 +12454,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13009,9 +12538,6 @@
                 16094.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -13097,9 +12623,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13153,9 +12676,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -13241,9 +12761,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13317,9 +12834,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -13405,9 +12919,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13442,9 +12953,6 @@
                 -3962.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -13571,9 +13079,6 @@
                 -6893.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13648,9 +13153,6 @@
                 -5201.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13725,9 +13227,6 @@
                 -1982.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13814,9 +13313,6 @@
                 -1542.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13903,9 +13399,6 @@
                 -1062.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -13959,9 +13452,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -14071,9 +13561,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -14183,9 +13670,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -14295,9 +13779,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14401,9 +13882,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14507,9 +13985,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14613,9 +14088,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14723,9 +14195,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14829,9 +14298,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -14943,9 +14409,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15061,9 +14524,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -15137,9 +14597,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15239,9 +14696,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -15315,9 +14769,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15459,9 +14910,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -15555,9 +15003,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15657,9 +15102,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15778,9 +15220,6 @@
                 1496.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -15906,9 +15345,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -16023,9 +15459,6 @@
                 3808.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -16157,9 +15590,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16269,9 +15699,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -16401,9 +15828,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -16533,9 +15957,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16645,9 +16066,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16757,9 +16175,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16869,9 +16284,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -16981,9 +16393,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17093,9 +16502,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17205,9 +16611,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17317,9 +16720,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17429,9 +16829,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17541,9 +16938,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -17653,9 +17047,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -17785,9 +17176,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -17831,9 +17219,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -17877,9 +17262,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18009,9 +17391,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -18055,9 +17434,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18167,9 +17543,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18277,9 +17650,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18389,9 +17759,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18501,9 +17868,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18613,9 +17977,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -18725,9 +18086,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -18850,9 +18208,6 @@
                 8508.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -18909,9 +18264,6 @@
                 8710.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -18958,9 +18310,6 @@
                 9030.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -19044,9 +18393,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19169,9 +18515,6 @@
                 -14839.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19339,9 +18682,6 @@
                 10618.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -19462,9 +18802,6 @@
                 3602.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19625,9 +18962,6 @@
                 6568.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19811,9 +19145,6 @@
                 4831.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -19953,9 +19284,6 @@
                 4174.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20103,9 +19431,6 @@
                 -3581.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20226,9 +19551,6 @@
                 14196.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20361,9 +19683,6 @@
                 -18505.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20488,9 +19807,6 @@
                 -18193.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20611,9 +19927,6 @@
                 2201.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20798,9 +20111,6 @@
                 3793.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -20979,9 +20289,6 @@
                 6321.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21102,9 +20409,6 @@
                 14767.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21233,9 +20537,6 @@
                 -20735.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21356,9 +20657,6 @@
                 15999.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21519,9 +20817,6 @@
                 -20910.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21664,9 +20959,6 @@
                 -10199.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21819,9 +21111,6 @@
                 -10375.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -21974,9 +21263,6 @@
                 -10112.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22129,9 +21415,6 @@
                 -11332.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22194,9 +21477,6 @@
                 -11244.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22238,9 +21518,6 @@
                 -11426.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22303,9 +21580,6 @@
                 -10459.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22376,9 +21650,6 @@
                 -10289.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22531,9 +21802,6 @@
                 -11518.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22640,9 +21908,6 @@
                 -11600.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22816,9 +22081,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -22882,9 +22144,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -22975,9 +22234,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23068,9 +22324,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -23114,9 +22367,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -23150,9 +22400,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23239,9 +22486,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23328,9 +22572,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23425,9 +22666,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23522,9 +22760,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23632,9 +22867,6 @@
                 -2492.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -23671,9 +22903,6 @@
                 -3624.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -23697,9 +22926,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23790,9 +23016,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23883,9 +23106,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -23972,9 +23192,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24065,9 +23282,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -24080,9 +23294,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -24095,9 +23306,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -24110,9 +23318,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24203,9 +23408,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24296,9 +23498,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24393,9 +23592,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24490,9 +23686,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24583,9 +23776,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24689,9 +23879,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24782,9 +23969,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24875,9 +24059,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -24968,9 +24149,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -24994,9 +24172,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25100,9 +24275,6 @@
                 1147.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25159,9 +24331,6 @@
                 941.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25228,9 +24397,6 @@
                 1585.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25317,9 +24483,6 @@
                 3011.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25383,9 +24546,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25480,9 +24640,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25577,9 +24734,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25683,9 +24837,6 @@
                 1608.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25785,9 +24936,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -25821,9 +24969,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -25969,9 +25114,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26130,9 +25272,6 @@
                 7805.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26189,9 +25328,6 @@
                 5570.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26238,9 +25374,6 @@
                 4603.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26324,9 +25457,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -26436,9 +25566,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -26548,9 +25675,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26644,9 +25768,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26710,9 +25831,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26786,9 +25904,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -26842,9 +25957,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -26994,9 +26106,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27142,9 +26251,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27290,9 +26396,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27434,9 +26537,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27574,9 +26674,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27694,9 +26791,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27838,9 +26932,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -27986,9 +27077,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -28147,9 +27235,6 @@
                 15220.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -28186,9 +27271,6 @@
                 7221.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -28214,9 +27296,6 @@
                 7131.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -28337,9 +27416,6 @@
                 4756.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -28416,9 +27492,6 @@
                 4820.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -28505,9 +27578,6 @@
                 5612.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -28584,9 +27654,6 @@
                 1959.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -28695,9 +27762,6 @@
                 -14246.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30190,9 +29254,6 @@
                 -14830.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30297,9 +29358,6 @@
                 611.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30376,9 +29434,6 @@
                 -1671.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30465,9 +29520,6 @@
                 -1256.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30534,9 +29586,6 @@
                 11549.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -30560,9 +29609,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30708,9 +29754,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -30839,9 +29882,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31008,9 +30048,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -31120,9 +30157,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31216,9 +30250,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -31328,9 +30359,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31424,9 +30452,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31520,9 +30545,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -31616,9 +30638,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31785,9 +30804,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -31916,9 +30932,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32047,9 +31060,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32178,9 +31188,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32326,9 +31333,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -32385,9 +31389,6 @@
                 2073.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -32431,9 +31432,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32576,9 +31574,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -32750,9 +31745,6 @@
                 3961.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -32789,9 +31781,6 @@
                 3875.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -32901,9 +31890,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33053,9 +32039,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33205,9 +32188,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33357,9 +32337,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33458,9 +32435,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33525,9 +32499,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33677,9 +32648,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33770,9 +32738,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -33956,9 +32921,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34023,9 +32985,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34116,9 +33075,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34281,9 +33237,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34446,9 +33399,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34587,9 +33537,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -34615,9 +33562,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34760,9 +33704,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -34921,9 +33862,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -35086,9 +34024,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35192,9 +34127,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35371,9 +34303,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -35399,9 +34328,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -35427,9 +34353,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -35588,9 +34511,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35694,9 +34614,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -35869,9 +34786,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -36014,9 +34928,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36130,9 +35041,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36285,9 +35193,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36401,9 +35306,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36517,9 +35419,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -36675,9 +35574,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36791,9 +35687,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -36907,9 +35800,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37036,9 +35926,6 @@
                 18524.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -37242,9 +36129,6 @@
                 19363.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -37439,9 +36323,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37555,9 +36436,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37671,9 +36549,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37787,9 +36662,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -37903,9 +36775,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -38091,9 +36960,6 @@
                 11856.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -38130,9 +36996,6 @@
                 14103.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -38340,9 +37203,6 @@
                 -11485.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -38386,9 +37246,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -38492,9 +37349,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -38611,9 +37465,6 @@
                 14547.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -38789,9 +37640,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -38895,9 +37743,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -38934,9 +37779,6 @@
                 800.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_armor",
@@ -38983,9 +37825,6 @@
                 -27069.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39443,9 +38282,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39647,9 +38483,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -39898,9 +38731,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40102,9 +38932,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40306,9 +39133,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40407,9 +39231,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40474,9 +39295,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40541,9 +39359,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40634,9 +39449,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40838,9 +39650,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -40931,9 +39740,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -41020,9 +39826,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collector_item",
@@ -41136,9 +39939,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",
@@ -41250,9 +40050,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": [
                 {
                     "kind": "collectible_weapon",

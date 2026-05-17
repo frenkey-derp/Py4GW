@@ -491,9 +491,9 @@ class Npc:
     model_id: int = 0
     encoded_name: bytes = b''
     allegiance : Allegiance = Allegiance.Neutral
-    required_title_id: TitleID = TitleID._None
-    required_title_rank: int = 0
-    required_faction: FactionRequirement = FactionRequirement.None_
+    required_title_id: Optional[TitleID] = None
+    required_title_rank: Optional[int] = None
+    required_faction: Optional[FactionRequirement] = None
 
     def _base_to_dict(self) -> dict:
         return {
@@ -503,17 +503,33 @@ class Npc:
             'map_id': self.map_id,
             'position': [self.position[0], self.position[1]],
             'allegiance': self.allegiance.name,
-            'required_title_id': self.required_title_id.name,
+            'required_title_id': self.required_title_id.name if self.required_title_id is not None else None,
             'required_title_rank': self.required_title_rank,
-            'required_faction': self.required_faction.name,
+            'required_faction': self.required_faction.name if self.required_faction is not None else None,
         }
 
     @staticmethod
     def _base_from_dict(data: dict) -> dict:
         position_data = list(data.get('position', [0.0, 0.0]))
         allegiance_name = str(data.get('allegiance', Allegiance.Neutral.name))
-        title_name = str(data.get('required_title_id', TitleID._None.name))
-        faction_name = str(data.get('required_faction', FactionRequirement.None_.name))
+        raw_title_name = data.get('required_title_id', None)
+        raw_faction_name = data.get('required_faction', None)
+        title_name = str(raw_title_name) if raw_title_name is not None else ''
+        faction_name = str(raw_faction_name) if raw_faction_name is not None else ''
+
+        required_title_id: Optional[TitleID] = None
+        if title_name and title_name != TitleID._None.name and title_name in TitleID.__members__:
+            required_title_id = TitleID[title_name]
+
+        required_faction: Optional[FactionRequirement] = None
+        if faction_name and faction_name != FactionRequirement.None_.name and faction_name in FactionRequirement.__members__:
+            required_faction = FactionRequirement[faction_name]
+
+        required_title_rank_raw = data.get('required_title_rank', None)
+        required_title_rank = None if required_title_rank_raw is None else int(required_title_rank_raw or 0)
+        if required_title_id is None or required_title_rank == 0:
+            required_title_rank = None
+
         return {
             'name': str(data.get('name', '')),
             'encoded_name': bytes(data.get('encoded_name', [])),
@@ -524,9 +540,9 @@ class Npc:
                 float(position_data[1]) if len(position_data) > 1 else 0.0,
             ),
             'allegiance': Allegiance[allegiance_name] if allegiance_name in Allegiance.__members__ else Allegiance.Neutral,
-            'required_title_id': TitleID[title_name] if title_name in TitleID.__members__ else TitleID._None,
-            'required_title_rank': int(data.get('required_title_rank', 0) or 0),
-            'required_faction': FactionRequirement[faction_name] if faction_name in FactionRequirement.__members__ else FactionRequirement.None_,
+            'required_title_id': required_title_id,
+            'required_title_rank': required_title_rank,
+            'required_faction': required_faction,
         }
 
     def service_label(self) -> str:
@@ -534,9 +550,9 @@ class Npc:
 
     def interaction_label(self) -> str:
         restrictions: list[str] = []
-        if self.required_title_id != TitleID._None and self.required_title_rank > 0:
+        if self.required_title_id is not None and self.required_title_rank is not None and self.required_title_rank > 0:
             restrictions.append(f'{TITLE_NAME.get(int(self.required_title_id), self.required_title_id.name)} r{self.required_title_rank}')
-        if self.required_faction != FactionRequirement.None_:
+        if self.required_faction is not None and self.required_faction != FactionRequirement.None_:
             restrictions.append(self.required_faction.name)
         return ', '.join(restrictions) if restrictions else 'Open'
 
@@ -544,9 +560,9 @@ class Npc:
         return Map.IsMapUnlocked(self.map_id)
 
     def CanInteract(self) -> bool:
-        if self.required_faction != FactionRequirement.None_ and not _meets_faction_requirement(self.required_faction):
+        if self.required_faction is not None and self.required_faction != FactionRequirement.None_ and not _meets_faction_requirement(self.required_faction):
             return False
-        if self.required_title_id != TitleID._None and self.required_title_rank > 0:
+        if self.required_title_id is not None and self.required_title_rank is not None and self.required_title_rank > 0:
             return _get_title_rank(self.required_title_id) >= self.required_title_rank
         return True
 
@@ -1402,7 +1418,7 @@ _last_scan_map_id = 0
 _pending_auto_save = False
 _last_auto_save_at: datetime | None = None
 
-AnyCrafter = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector
+AnyCrafter = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant
 AnyNpc = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant | Trader | Ally | Foe
 
 
@@ -1461,11 +1477,11 @@ def _get_armor_rating_for_profession(profession: Profession) -> int:
 
 
 def _iter_all_crafters() -> list[AnyCrafter]:
-    return [*CRAFTERS, *ARTISANS, *CONSUMABLE_CRAFTERS, *WEAPONSMITHS, *COLLECTORS]
+    return [*CRAFTERS, *ARTISANS, *CONSUMABLE_CRAFTERS, *WEAPONSMITHS, *COLLECTORS, *MERCHANTS]
 
 
 def _iter_all_npcs() -> list[AnyNpc]:
-    return [*_iter_all_crafters(), *MERCHANTS, *TRADERS, *ALLIES, *FOES]
+    return [*_iter_all_crafters(), *TRADERS, *ALLIES, *FOES]
 
 
 def _get_snapshot_name(item: ItemSnapshot) -> str:

@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T11:53:26Z",
+    "saved_at": "2026-05-17T12:04:16Z",
     "category": "armorers",
     "entries": [
         {
@@ -13,9 +13,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -51,9 +48,6 @@
                 4651.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -1178,9 +1172,6 @@
                 5162.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -2200,9 +2191,6 @@
                 10033.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -2961,9 +2949,6 @@
                 -8406.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -4772,9 +4757,6 @@
                 -18033.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 59,
                 "Ranger": 49,
@@ -5704,9 +5686,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 71,
                 "Ranger": 61,
@@ -7585,8 +7564,6 @@
                 -1537.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
             "required_faction": "Kurzick",
             "professions_armor_rating": {
                 "Warrior": 80,
@@ -8245,9 +8222,6 @@
                 5585.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -9006,9 +8980,6 @@
                 6218.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -9781,9 +9752,6 @@
                 1637.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 71,
                 "Ranger": 61,
@@ -11592,8 +11560,6 @@
                 11879.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
             "required_faction": "Kurzick",
             "professions_armor_rating": {
                 "Warrior": 80,
@@ -12253,9 +12219,6 @@
                 5157.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -13364,9 +13327,6 @@
                 -10959.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 59,
                 "Ranger": 49,
@@ -14293,9 +14253,6 @@
                 2275.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -16104,9 +16061,6 @@
                 18003.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -16839,9 +16793,6 @@
                 -14389.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -17726,9 +17677,6 @@
                 798.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -18375,9 +18323,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -18957,9 +18902,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -19565,9 +19507,6 @@
                 12622.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -20150,9 +20089,6 @@
                 12636.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -20735,9 +20671,6 @@
                 12465.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Ranger": 25,
@@ -21292,9 +21225,6 @@
                 9576.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -21849,9 +21779,6 @@
                 9497.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -22434,9 +22361,6 @@
                 9444.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Ranger": 55,
@@ -23019,9 +22943,6 @@
                 16881.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -23576,9 +23497,6 @@
                 17055.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -24161,9 +24079,6 @@
                 17446.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Assassin": 40,
                 "Elementalist": 30,
@@ -24746,9 +24661,6 @@
                 -21167.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -25407,9 +25319,6 @@
                 -8821.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26038,9 +25947,6 @@
                 -8983.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Assassin": 70,
                 "Ritualist": 60
@@ -26223,9 +26129,6 @@
                 -8815.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Assassin": 70,
                 "Ritualist": 60
@@ -26397,9 +26300,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -26422,9 +26322,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Ranger": 40,
@@ -26456,9 +26353,6 @@
                 -5156.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26555,9 +26449,6 @@
                 -3970.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26654,9 +26545,6 @@
                 -5382.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -26755,9 +26643,6 @@
                 -4050.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -27564,9 +27449,6 @@
                 8985.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -28729,9 +28611,6 @@
                 8632.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -29454,9 +29333,6 @@
                 9346.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 35,
                 "Paragon": 35,
@@ -29492,9 +29368,6 @@
                 2378.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 50,
                 "Paragon": 50,
@@ -29530,9 +29403,6 @@
                 2710.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 65,
                 "Paragon": 65,
@@ -29568,9 +29438,6 @@
                 16472.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -29593,9 +29460,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Ranger": 70,
@@ -30164,7 +30028,6 @@
             "allegiance": "Ally",
             "required_title_id": "Asuran",
             "required_title_rank": 5,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -30889,7 +30752,6 @@
             "allegiance": "Ally",
             "required_title_id": "Ebon_Vanguard",
             "required_title_rank": 5,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -30992,7 +30854,6 @@
             "allegiance": "Ally",
             "required_title_id": "Norn",
             "required_title_rank": 5,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -31722,7 +31583,6 @@
             "allegiance": "Ally",
             "required_title_id": "Deldrimor",
             "required_title_rank": 5,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,
@@ -32991,9 +32851,6 @@
                 -27343.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "professions_armor_rating": {
                 "Warrior": 80,
                 "Paragon": 80,

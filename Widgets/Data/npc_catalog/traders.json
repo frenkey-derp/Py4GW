@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T11:53:26Z",
+    "saved_at": "2026-05-17T12:04:16Z",
     "category": "traders",
     "entries": [
         {
@@ -24,9 +24,6 @@
                 -1572.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -51,9 +48,6 @@
                 -2853.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -78,9 +72,6 @@
                 -1920.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -105,9 +96,6 @@
                 -2271.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -132,9 +120,6 @@
                 -2452.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -159,9 +144,6 @@
                 8.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -186,9 +168,6 @@
                 259.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -213,9 +192,6 @@
                 198.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -242,9 +218,6 @@
                 3250.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -271,9 +244,6 @@
                 3822.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -300,9 +270,6 @@
                 4024.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -329,9 +296,6 @@
                 4406.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -358,9 +322,6 @@
                 4190.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -387,9 +348,6 @@
                 1110.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -414,9 +372,6 @@
                 1133.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -441,9 +396,6 @@
                 3437.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -468,9 +420,6 @@
                 1127.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -495,9 +444,6 @@
                 840.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -522,9 +468,6 @@
                 73.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -549,9 +492,6 @@
                 277.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -576,9 +516,6 @@
                 5250.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -603,9 +540,6 @@
                 2688.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -630,9 +564,6 @@
                 2237.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -657,9 +588,6 @@
                 2071.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -684,9 +612,6 @@
                 -2157.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -711,9 +636,6 @@
                 -825.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -738,9 +660,6 @@
                 -789.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -765,9 +684,6 @@
                 -2111.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -792,9 +708,6 @@
                 -648.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -819,9 +732,6 @@
                 -1842.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -846,9 +756,6 @@
                 -796.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -873,9 +780,6 @@
                 -1315.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -900,9 +804,6 @@
                 -1224.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -927,9 +828,6 @@
                 -1719.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -954,9 +852,6 @@
                 10996.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -981,9 +876,6 @@
                 10833.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1008,9 +900,6 @@
                 11539.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -1035,9 +924,6 @@
                 12177.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -1062,9 +948,6 @@
                 13805.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1089,9 +972,6 @@
                 13868.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1116,9 +996,6 @@
                 12619.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -1143,9 +1020,6 @@
                 9229.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -1170,9 +1044,6 @@
                 3258.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -1199,9 +1070,6 @@
                 19412.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1228,9 +1096,6 @@
                 19246.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1257,9 +1122,6 @@
                 4140.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1286,9 +1148,6 @@
                 4034.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1315,9 +1174,6 @@
                 1018.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -1344,9 +1200,6 @@
                 1376.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -1373,9 +1226,6 @@
                 1721.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -1402,9 +1252,6 @@
                 1764.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1431,9 +1278,6 @@
                 1303.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1460,9 +1304,6 @@
                 1618.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1489,9 +1330,6 @@
                 1578.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1518,9 +1356,6 @@
                 14670.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -1547,9 +1382,6 @@
                 16846.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -1576,9 +1408,6 @@
                 -23115.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -1605,9 +1434,6 @@
                 -23428.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1634,9 +1460,6 @@
                 -23203.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1663,9 +1486,6 @@
                 16582.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1692,9 +1512,6 @@
                 14084.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -1721,9 +1538,6 @@
                 16432.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1750,9 +1564,6 @@
                 14211.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -1779,9 +1590,6 @@
                 17101.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -1808,9 +1616,6 @@
                 -11129.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1837,9 +1642,6 @@
                 -11513.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1866,9 +1668,6 @@
                 803.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -1895,9 +1694,6 @@
                 1245.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -1924,9 +1720,6 @@
                 1046.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -1953,9 +1746,6 @@
                 2092.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -1982,9 +1772,6 @@
                 22240.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -2011,9 +1798,6 @@
                 22596.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -2040,9 +1824,6 @@
                 20271.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -2069,9 +1850,6 @@
                 22573.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -2098,9 +1876,6 @@
                 -7902.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -2127,9 +1902,6 @@
                 -7327.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -2156,9 +1928,6 @@
                 -8031.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -2185,9 +1954,6 @@
                 -6071.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -2214,9 +1980,6 @@
                 -5828.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -2243,9 +2006,6 @@
                 1915.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -2272,9 +2032,6 @@
                 1589.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -2299,9 +2056,6 @@
                 6576.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -2326,9 +2080,6 @@
                 5392.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -2353,9 +2104,6 @@
                 5510.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -2380,9 +2128,6 @@
                 5804.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -2407,9 +2152,6 @@
                 2298.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Dye",
             "items": []
         },
@@ -2434,9 +2176,6 @@
                 873.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -2461,9 +2200,6 @@
                 1031.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         },
@@ -2488,9 +2224,6 @@
                 -523.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Rune",
             "items": []
         },
@@ -2515,9 +2248,6 @@
                 -2677.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareScroll",
             "items": []
         },
@@ -2544,9 +2274,6 @@
                 2681.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "Material",
             "items": []
         },
@@ -2573,9 +2300,6 @@
                 2366.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "trader_type": "RareMaterial",
             "items": []
         }

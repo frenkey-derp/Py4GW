@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T11:53:26Z",
+    "saved_at": "2026-05-17T12:04:16Z",
     "category": "consumable_crafters",
     "entries": [
         {
@@ -13,9 +13,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",
@@ -45,9 +42,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",
@@ -92,7 +86,6 @@
             "allegiance": "Ally",
             "required_title_id": "Asuran",
             "required_title_rank": 3,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",
@@ -192,7 +185,6 @@
             "allegiance": "Ally",
             "required_title_id": "Ebon_Vanguard",
             "required_title_rank": 3,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",
@@ -277,9 +269,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",
@@ -339,7 +328,6 @@
             "allegiance": "Ally",
             "required_title_id": "Norn",
             "required_title_rank": 3,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",
@@ -439,7 +427,6 @@
             "allegiance": "Ally",
             "required_title_id": "Deldrimor",
             "required_title_rank": 3,
-            "required_faction": "None_",
             "consumables": [
                 {
                     "kind": "craftable_item",

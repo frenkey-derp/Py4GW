@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T11:53:26Z",
+    "saved_at": "2026-05-17T12:04:16Z",
     "category": "weaponsmiths",
     "entries": [
         {
@@ -13,9 +13,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -733,9 +730,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -1464,9 +1458,6 @@
                 5690.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -1787,9 +1778,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -1813,9 +1801,6 @@
                 7949.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -2109,9 +2094,6 @@
                 -7978.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -2443,9 +2425,6 @@
                 -17958.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -2469,8 +2448,6 @@
                 -246.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
             "required_faction": "Kurzick",
             "weapons": [
                 {
@@ -2970,9 +2947,6 @@
                 6405.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -2996,9 +2970,6 @@
                 2017.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -3330,8 +3301,6 @@
                 4931.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
             "required_faction": "Kurzick",
             "weapons": [
                 {
@@ -4119,9 +4088,6 @@
                 23930.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -4441,9 +4407,6 @@
                 4545.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -4617,9 +4580,6 @@
                 5501.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -4643,9 +4603,6 @@
                 -11678.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -4658,9 +4615,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -4898,9 +4852,6 @@
                 561.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -5499,9 +5450,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -5514,9 +5462,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -5540,9 +5485,6 @@
                 12744.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -5566,9 +5508,6 @@
                 23003.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -5581,9 +5520,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -5596,9 +5532,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -5611,9 +5544,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -6389,9 +6319,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -7167,9 +7094,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -7348,9 +7272,6 @@
                 12335.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -7884,9 +7805,6 @@
                 -15560.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -8422,9 +8340,6 @@
                 9512.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -8968,9 +8883,6 @@
                 -20735.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -9937,9 +9849,6 @@
                 11734.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -10906,9 +10815,6 @@
                 -18621.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": []
         },
         {
@@ -10932,9 +10838,6 @@
                 -8883.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -11076,9 +10979,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -12132,9 +12032,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -13188,9 +13085,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -14257,9 +14151,6 @@
                 19535.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -15055,9 +14946,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -16111,9 +15999,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -16831,9 +16716,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -17564,9 +17446,6 @@
                 4081.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -18869,9 +18748,6 @@
                 -3910.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -19404,9 +19280,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -20137,9 +20010,6 @@
                 -4125.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -21444,9 +21314,6 @@
                 1460.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -22612,9 +22479,6 @@
                 3730.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -23368,9 +23232,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -24101,9 +23962,6 @@
                 8785.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -24641,9 +24499,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -25167,9 +25022,6 @@
                 2273.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -25720,9 +25572,6 @@
                 2018.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -26277,9 +26126,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -27922,9 +27768,6 @@
                 -22541.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -29575,7 +29418,6 @@
             "allegiance": "Ally",
             "required_title_id": "Asuran",
             "required_title_rank": 4,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -31140,9 +30982,6 @@
                 -12525.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -32793,7 +32632,6 @@
             "allegiance": "Ally",
             "required_title_id": "Ebon_Vanguard",
             "required_title_rank": 4,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -34627,9 +34465,6 @@
                 25045.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -36280,7 +36115,6 @@
             "allegiance": "Ally",
             "required_title_id": "Norn",
             "required_title_rank": 4,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -37931,7 +37765,6 @@
             "allegiance": "Ally",
             "required_title_id": "Deldrimor",
             "required_title_rank": 4,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",
@@ -38641,9 +38474,6 @@
                 0.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "weapons": [
                 {
                     "kind": "craftable_weapon",

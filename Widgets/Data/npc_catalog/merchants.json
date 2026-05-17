@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T11:53:26Z",
+    "saved_at": "2026-05-17T12:04:16Z",
     "category": "merchants",
     "entries": [
         {
@@ -26,9 +26,6 @@
                 -2006.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -54,9 +51,6 @@
                 731.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -82,9 +76,6 @@
                 3681.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -108,9 +99,6 @@
                 2005.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -136,9 +124,6 @@
                 6750.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -162,9 +147,6 @@
                 2439.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -188,9 +170,6 @@
                 3310.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -214,9 +193,6 @@
                 3229.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -240,9 +216,6 @@
                 9568.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -266,9 +239,6 @@
                 23247.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -292,9 +262,6 @@
                 9297.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -318,9 +285,6 @@
                 -2204.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -346,9 +310,6 @@
                 -897.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -372,9 +333,6 @@
                 -2024.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -398,9 +356,6 @@
                 -1768.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -424,9 +379,6 @@
                 -1866.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -450,9 +402,6 @@
                 6972.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -476,9 +425,6 @@
                 11192.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -502,9 +448,6 @@
                 11444.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -528,9 +471,6 @@
                 -16962.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -554,9 +494,6 @@
                 12426.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -580,9 +517,6 @@
                 3313.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -608,9 +542,6 @@
                 4243.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -634,9 +565,6 @@
                 5190.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -662,9 +590,6 @@
                 2730.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -688,9 +613,6 @@
                 -20277.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -714,9 +636,6 @@
                 13654.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -740,9 +659,6 @@
                 2928.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -768,9 +684,6 @@
                 -1655.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -796,9 +709,6 @@
                 19188.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -824,9 +734,6 @@
                 3944.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -852,9 +759,6 @@
                 735.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -880,9 +784,6 @@
                 3159.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -908,9 +809,6 @@
                 -332.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -936,9 +834,6 @@
                 4595.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -964,9 +859,6 @@
                 -12912.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -992,9 +884,6 @@
                 1645.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1020,9 +909,6 @@
                 2348.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1048,9 +934,6 @@
                 15326.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1076,9 +959,6 @@
                 -22433.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1104,9 +984,6 @@
                 14751.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1132,9 +1009,6 @@
                 13934.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1160,9 +1034,6 @@
                 -12824.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1188,9 +1059,6 @@
                 1019.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1216,9 +1084,6 @@
                 21619.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1244,9 +1109,6 @@
                 -7724.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1272,9 +1134,6 @@
                 -8617.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1300,9 +1159,6 @@
                 674.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1328,9 +1184,6 @@
                 -24874.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1354,9 +1207,6 @@
                 4838.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1380,9 +1230,6 @@
                 6525.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1406,9 +1253,6 @@
                 6169.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1432,9 +1276,6 @@
                 2281.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         },
         {
@@ -1460,9 +1301,6 @@
                 13106.0
             ],
             "allegiance": "Ally",
-            "required_title_id": "_None",
-            "required_title_rank": 0,
-            "required_faction": "None_",
             "items": []
         }
     ]
