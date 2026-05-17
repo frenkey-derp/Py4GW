@@ -1195,6 +1195,16 @@ class Armorer(Ally):
         
         items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
         collected_count = 0
+        offered_type_counts: dict[tuple[Profession, ItemType], int] = {}
+
+        for item in items:
+            if item is None or not item.is_valid or not item.is_armor:
+                continue
+            profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
+            if profession in (None, Profession._None):
+                continue
+            offer_key = (profession, item.item_type)
+            offered_type_counts[offer_key] = offered_type_counts.get(offer_key, 0) + 1
 
         pending_name_update = False
         for item in items:
@@ -1209,46 +1219,85 @@ class Armorer(Ally):
             if not armor_name:
                 pending_name_update = True
                 continue
-                    
-            def _same_armor_item_identity(existing: Any, candidate: Any) -> bool:
-                same_type = existing.item_type == candidate.item_type or _is_unknown_item_type(existing.item_type) or _is_unknown_item_type(candidate.item_type)
-                same_profession = getattr(existing, 'profession', None) == getattr(candidate, 'profession', None)
-                generic_armors =[
-                    "Crown",
-                    "Bandana",
-                    "Blindfold",
-                    "Dread Mask",
-                    "Highlander Woad",
-                    "Mask of the Mo Zing",
-                    "Norn Woad",
-                    "Slim Spectacles",
-                    "Spectacles",
-                    "Tinted Spectacles",
-                    "Chaos Gloves",
-                    "Destroyer Gauntlets",
-                    "Dragon Gauntlets",
-                    "Glacial Gauntlets",
-                    "Stone Gauntlets",
-                ]
-
-                existing_name = getattr(existing, 'name', '')
-                candidate_name = getattr(candidate, 'name', '')
-                return same_profession and same_type and candidate_name.lower() in existing_name.lower()
 
             armor = _build_craftable_armor_from_snapshot(item)
             armor.name = armor_name
             armor.armor_rating = int(self.professions_armor_rating.get(profession, 0) or 0)
             armor.profession = profession
+            generic_armors = {
+                'Crown',
+                'Bandana',
+                'Blindfold',
+                'Dread Mask',
+                'Highlander Woad',
+                'Mask of the Mo Zing',
+                'Norn Woad',
+                'Slim Spectacles',
+                'Spectacles',
+                'Tinted Spectacles',
+                'Chaos Gloves',
+                'Destroyer Gauntlets',
+                'Dragon Gauntlets',
+                'Glacial Gauntlets',
+                'Stone Gauntlets',
+            }
+            armor_key = (armor.profession, armor.item_type)
+            same_slot_entries = [
+                existing_armor
+                for entries in self.armors.values()
+                for existing_armor in entries
+                if (
+                    getattr(existing_armor, 'profession', None) == armor.profession
+                    and (
+                        existing_armor.item_type == armor.item_type
+                        or _is_unknown_item_type(existing_armor.item_type)
+                        or _is_unknown_item_type(armor.item_type)
+                    )
+                )
+            ]
+            unresolved_same_slot_entries = [
+                existing_armor
+                for existing_armor in same_slot_entries
+                if existing_armor.model_id == 0 or existing_armor.armor_rating == 0 or _is_missing_name(existing_armor.name)
+            ]
 
-            existing = next(
-                (
-                    existing_armor
-                    for entries in self.armors.values()
-                    for existing_armor in entries
-                    if _same_armor_item_identity(existing_armor, armor)
-                ),
-                None,
-            )
+            existing: CraftableArmor | None = None
+            if offered_type_counts.get(armor_key, 0) == 1:
+                if len(unresolved_same_slot_entries) == 1:
+                    existing = unresolved_same_slot_entries[0]
+                elif len(same_slot_entries) == 1:
+                    existing = same_slot_entries[0]
+
+            if existing is None:
+                candidate_words = _split_item_name_words(armor.name)
+                candidate_first_word = candidate_words[0] if candidate_words else ''
+
+                scored_matches: list[tuple[int, CraftableArmor]] = []
+                for existing_armor in same_slot_entries:
+                    if existing_armor.name in generic_armors:
+                        continue
+
+                    existing_words = _split_item_name_words(existing_armor.name)
+                    existing_first_word = existing_words[0] if existing_words else ''
+                    shared_words = set(candidate_words) & set(existing_words)
+                    score = 0
+
+                    if candidate_first_word and candidate_first_word == existing_first_word:
+                        score += 5
+                    if shared_words:
+                        score += len(shared_words) * 2
+                    if armor.name.lower() in existing_armor.name.lower() or existing_armor.name.lower() in armor.name.lower():
+                        score += 1
+
+                    if score > 0:
+                        scored_matches.append((score, existing_armor))
+
+                if scored_matches:
+                    scored_matches.sort(key=lambda entry: entry[0], reverse=True)
+                    best_score = scored_matches[0][0]
+                    best_matches = [match for score, match in scored_matches if score == best_score]
+                    if len(best_matches) == 1:
+                        existing = best_matches[0]
 
             if existing is not None:
                 if _merge_armor_fields(existing, armor):
@@ -1430,70 +1479,7 @@ NIGHTFALL_ARMOR_65 = {
     P.Dervish: 55,
 }
 
-CRAFTERS = [
-    
-    Armorer(name='Sol Pyrrhus', map_id=63, professions_armor_rating=PROPH_ARMOR_71.copy()),
-    
-    Armorer(name='Oroku', map_id=240, professions_armor_rating=FACTIONS_ARMOR_80.copy()),
-    Armorer(name='Voldo the Exotic', map_id=239, professions_armor_rating=FACTIONS_ARMOR_80.copy()),
-    Armorer(name='Koumei', map_id=351, professions_armor_rating=FACTIONS_ARMOR_80.copy()),
-    Armorer(name='Maiya', map_id=351, professions_armor_rating=FACTIONS_ARMOR_80.copy()),
-    Armorer(name='Wei Qi', map_id=351, professions_armor_rating=FACTIONS_ARMOR_80.copy()),
-    
-    Armorer(name='Eternal Forgemaster', map_id=34, professions_armor_rating=FULL_ARMOR_80.copy()),
-    Armorer(name='Keeper of Armor', map_id=503, professions_armor_rating=FULL_ARMOR_80.copy()),
-    
-    Armorer(name='Mehinu', map_id=449, professions_armor_rating=NIGHTFALL_ARMOR_35, position=(-11202.0, 9346.0), model_id=4774, encoded_name=bytes([0x1, 0x81, 0x54, 0x20, 0x38, 0x91, 0xB6, 0x9C, 0x44, 0x3E, 0x0, 0x0])),
-    Armorer(name='Pasu', map_id=491, professions_armor_rating=NIGHTFALL_ARMOR_50, position=(3944.0, 2378.0), model_id=4773, encoded_name=bytes([0x1, 0x81, 0xC5, 0x3F, 0x6F, 0xBC, 0xCB, 0xD4, 0x5B, 0x6D, 0x0, 0x0])),
-    Armorer(name='Sulee', map_id=492, professions_armor_rating=NIGHTFALL_ARMOR_65, position=(607.0, 2710.0), model_id=4774, encoded_name=bytes([0x1, 0x81, 0xBE, 0x3F, 0xB7, 0xB0, 0x2A, 0x98, 0x1F, 0x2, 0x0, 0x0])),
-    Armorer(name='Mateneh', map_id=414, professions_armor_rating=FULL_ARMOR_80, position=(-1805.0, -4050.0), model_id=5718, encoded_name=bytes([0x1, 0x81, 0x9A, 0x21, 0x2B, 0xFB, 0x48, 0xDA, 0x4D, 0x7B, 0x0, 0x0])),
-    Armorer(name='Burreh', map_id=436, professions_armor_rating=FULL_ARMOR_80, position=(-4916.0, 8985.0), model_id=5437, encoded_name=bytes([0x1, 0x81, 0xC6, 0x21, 0x2F, 0xE7, 0xF0, 0xC4, 0x6C, 0x7C, 0x0, 0x0])),
-    Armorer(name='Ahamid', map_id=436, professions_armor_rating=FULL_ARMOR_80, position=(-5870.0, 8255.0), model_id=4792, encoded_name=bytes([0x1, 0x81, 0x1, 0x57, 0xF0, 0xF4, 0xA9, 0x81, 0xA, 0x2A, 0x0, 0x0])),
-    Armorer(name='Palmod', map_id=438, professions_armor_rating=FULL_ARMOR_80, position=(-14036.0, 8632.0), model_id=5674, encoded_name=bytes([0x1, 0x81, 0x96, 0x2D, 0xA3, 0xE0, 0xD5, 0x9B, 0x23, 0x44, 0x0, 0x0])),
-    Armorer(name='Vatundo', map_id=493, professions_armor_rating=FULL_ARMOR_80, position=(-3164.0, 16472.0), model_id=4773, encoded_name=bytes([0x1, 0x81, 0x3A, 0x53, 0x95, 0x8B, 0xE7, 0xF1, 0x4A, 0x51, 0x0, 0x0])),
-    Armorer(name='Klub', map_id=640, professions_armor_rating=FULL_ARMOR_80, position=(12781.0, 16732.0), model_id=6810, encoded_name=bytes([0x2, 0x81, 0x9D, 0x1E, 0x36, 0x82, 0xCC, 0xBF, 0xD2, 0x7C, 0x0, 0x0])),
-    Armorer(name='Brett', map_id=642, professions_armor_rating=FULL_ARMOR_80, position=(-552.0, 1250.0), model_id=6101, encoded_name=bytes([0x2, 0x81, 0xAC, 0x1E, 0x4F, 0x8B, 0x7F, 0xFE, 0xDA, 0x14, 0x0, 0x0])),
-    Armorer(name='Radi', map_id=644, professions_armor_rating=FULL_ARMOR_80, position=(18894.0, -3806.0), model_id=6436, encoded_name=bytes([0x2, 0x81, 0xBC, 0x1E, 0xC1, 0xE2, 0x11, 0xA5, 0xBC, 0x65, 0x0, 0x0])),
-    Armorer(name='Gobrech Stonefoot', map_id=652, professions_armor_rating=FULL_ARMOR_80, position=(1860.0, 1681.0), model_id=6287, encoded_name=bytes([0x2, 0x81, 0xDB, 0x25, 0xA7, 0xE4, 0x25, 0xBB, 0x53, 0x5D, 0x0, 0x0])),
-    Armorer(name='Jolvor Stoneforge', map_id=675, professions_armor_rating=FULL_ARMOR_80, position=(5419.0, -27343.0), model_id=1553, encoded_name=bytes([0x2, 0x81, 0x42, 0x39, 0x6C, 0xCE, 0x9E, 0x95, 0x50, 0x65, 0x0, 0x0])),
-    
-    Armorer(name='Kambei', map_id=242, professions_armor_rating=FACTIONS_ARMOR_35, position=(-7260.0, 12622.0), model_id=3323, encoded_name=bytes([0x24, 0x57, 0x9A, 0x9F, 0x67, 0xBC, 0xA4, 0x3B, 0x0, 0x0])),
-    Armorer(name='Moon Ahn', map_id=242, professions_armor_rating=FACTIONS_ARMOR_35, position=(-7115.0, 12636.0), model_id=3324, encoded_name=bytes([0x23, 0x57, 0xB5, 0xB9, 0xA5, 0xE7, 0xB5, 0x18, 0x0, 0x0])),
-    Armorer(name='Nu Leng', map_id=242, professions_armor_rating=FACTIONS_ARMOR_35, position=(-6614.0, 12465.0), model_id=3323, encoded_name=bytes([0x22, 0x57, 0xC2, 0xCC, 0x6C, 0xB0, 0xCC, 0x8, 0x0, 0x0])),
-    Armorer(name='Maeko', map_id=251, professions_armor_rating=FACTIONS_ARMOR_50, position=(16647.0, 16881.0), model_id=3324, encoded_name=bytes([0x19, 0x57, 0x3B, 0x8D, 0x9, 0x8E, 0x27, 0x31, 0x0, 0x0])),
-    Armorer(name='Seiji', map_id=251, professions_armor_rating=FACTIONS_ARMOR_50, position=(16656.0, 17055.0), model_id=3323, encoded_name=bytes([0x1A, 0x57, 0x4B, 0xC7, 0xCC, 0x8F, 0x91, 0x21, 0x0, 0x0])),
-    Armorer(name='Taura', map_id=251, professions_armor_rating=FACTIONS_ARMOR_50, position=(16425.0, 17446.0), model_id=3332, encoded_name=bytes([0x1B, 0x57, 0x80, 0xD2, 0x9F, 0xDF, 0xE1, 0x7B, 0x0, 0x0])),
-    Armorer(name='Fugui Ge', map_id=250, professions_armor_rating=FACTIONS_ARMOR_65, position=(20381.0, 9576.0), model_id=3323, encoded_name=bytes([0xE, 0x57, 0x35, 0xB7, 0x51, 0x89, 0x8, 0x77, 0x0, 0x0])),
-    Armorer(name='Lain', map_id=250, professions_armor_rating=FACTIONS_ARMOR_65, position=(20508.0, 9497.0), model_id=3324, encoded_name=bytes([0xF, 0x57, 0x3A, 0xBC, 0xD2, 0x85, 0x8, 0x1F, 0x0, 0x0])),
-    Armorer(name='Tsukare', map_id=250, professions_armor_rating=FACTIONS_ARMOR_65, position=(19709.0, 9444.0), model_id=3331, encoded_name=bytes([0x10, 0x57, 0xE0, 0xFF, 0x2A, 0xBF, 0x5D, 0x48, 0x0, 0x0])),
-    Armorer(name='Morbach', map_id=77, professions_armor_rating=FACTIONS_ARMOR_80, position=(6961.0, -1537.0), model_id=3454, encoded_name=bytes([0x9C, 0x6D, 0xA7, 0x89, 0x9F, 0xEE, 0xF1, 0x67, 0x0, 0x0])),
-    Armorer(name='Giygas', map_id=130, professions_armor_rating=FACTIONS_ARMOR_80, position=(23180.0, 11879.0), model_id=3454, encoded_name=bytes([0x93, 0x6D, 0xB0, 0xB1, 0x8F, 0xEE, 0xC7, 0x31, 0x0, 0x0])),
-    Armorer(name='Tateos', map_id=193, professions_armor_rating=FACTIONS_ARMOR_80, position=(4785.0, 798.0), model_id=3670, encoded_name=bytes([0xC4, 0x6D, 0x8E, 0xEC, 0xFC, 0xF0, 0x8A, 0x3F, 0x0, 0x0])),
-    Armorer(name='Kakumei', map_id=194, professions_armor_rating=FACTIONS_ARMOR_80, position=(-700.0, -5156.0), model_id=3323, encoded_name=bytes([0xF5, 0x6D, 0xDC, 0xCE, 0xC8, 0xB1, 0x43, 0x4A, 0x0, 0x0])),
-    Armorer(name='Suki', map_id=194, professions_armor_rating=FACTIONS_ARMOR_80, position=(-891.0, -5382.0), model_id=3324, encoded_name=bytes([0xF6, 0x6D, 0x2, 0xE8, 0x35, 0x8D, 0x50, 0x22, 0x0, 0x0])),
-    Armorer(name='Ryoko', map_id=194, professions_armor_rating=FACTIONS_ARMOR_80, position=(-1682.0, -3970.0), model_id=3324, encoded_name=bytes([0xF7, 0x6D, 0x88, 0x9F, 0xC, 0xAE, 0x6A, 0x2B, 0x0, 0x0])),
-    Armorer(name='Mikolas', map_id=279, professions_armor_rating=FACTIONS_ARMOR_80, position=(13037.0, -21167.0), model_id=3670, encoded_name=bytes([0x1F, 0x7B, 0x85, 0x8A, 0xB5, 0xD8, 0x94, 0x61, 0x0, 0x0])),
-    
-    Armorer(name='Samuka', map_id=55, professions_armor_rating=PROPH_ARMOR_50, position=(2343.0, 6843.0), model_id=2008, encoded_name=bytes([0x56, 0x2D, 0x98, 0xC2, 0x8E, 0x9E, 0x8D, 0x55, 0x0, 0x0])),
-    Armorer(name='Shada', map_id=136, professions_armor_rating=PROPH_ARMOR_59, position=(20437.0, -10959.0), model_id=2008, encoded_name=bytes([0x4F, 0x2D, 0xC6, 0xB5, 0xA2, 0x86, 0x7C, 0x3A, 0x0, 0x0])),
-    Armorer(name='Hagen', map_id=156, professions_armor_rating=PROPH_ARMOR_80, position=(-12914.0, 18003.0), model_id=1559, encoded_name=bytes([0xB0, 0x2D, 0x1A, 0xB6, 0xAF, 0xA5, 0x5A, 0x7C, 0x0, 0x0])),
-    Armorer(name='Karl', map_id=157, professions_armor_rating=PROPH_ARMOR_80, position=(5184.0, -14389.0), model_id=1559, encoded_name=bytes([0xB3, 0x2D, 0x22, 0xA9, 0xBF, 0xD0, 0x53, 0x79, 0x0, 0x0])),
-    
-    Armorer(name='Banoit', map_id=81, professions_armor_rating=PROPH_ARMOR_35, position=(1545.0, 5585.0), model_id=2118, encoded_name=bytes([0x9B, 0x2D, 0x83, 0xEA, 0xD5, 0xAE, 0xAA, 0x18, 0x0, 0x0])),
-    Armorer(name='Corwen', map_id=81, professions_armor_rating=PROPH_ARMOR_50, position=(1905.0, 6218.0), model_id=2120, encoded_name=bytes([0x9C, 0x2D, 0x9D, 0xA4, 0xC8, 0x89, 0x27, 0x8, 0x0, 0x0])),
-    Armorer(name='Harlan', map_id=40, professions_armor_rating=PROPH_ARMOR_35, position=(22887.0, 10033.0), model_id=2118, encoded_name=bytes([0x8E, 0x2D, 0x56, 0xA0, 0x24, 0x8F, 0x6D, 0x2F, 0x0, 0x0])),
-    Armorer(name='Breyshaw', map_id=134, professions_armor_rating=PROPH_ARMOR_50, position=(6561.0, 5157.0), model_id=2118, encoded_name=bytes([0xC6, 0x2D, 0x19, 0xC0, 0x7E, 0xE7, 0x2, 0x6E, 0x0, 0x0])),
-    Armorer(name='Kathir', map_id=109, professions_armor_rating=PROPH_ARMOR_71, position=(1889.0, 1637.0), model_id=2046, encoded_name=bytes([0x6A, 0x2D, 0xA6, 0xFB, 0x33, 0xD5, 0xD2, 0x55, 0x0, 0x0])),
-    Armorer(name='Morgren', map_id=20, professions_armor_rating=PROPH_ARMOR_80, position=(814.0, 4651.0), model_id=1558, encoded_name=bytes([0xBA, 0x2D, 0x4D, 0x87, 0x1D, 0xE3, 0xD3, 0xD, 0x0, 0x0])),
-    Armorer(name='Seifred', map_id=20, professions_armor_rating=PROPH_ARMOR_80, position=(1742.0, 5162.0), model_id=1558, encoded_name=bytes([0xB9, 0x2D, 0xB8, 0xFE, 0xFE, 0xC8, 0x84, 0x51, 0x0, 0x0])),
-    Armorer(name='Alemeth', map_id=49, professions_armor_rating=PROPH_ARMOR_65, position=(6016.0, -8406.0), model_id=2089, encoded_name=bytes([0x82, 0x2D, 0x91, 0xA0, 0x1C, 0x8C, 0xB7, 0x3, 0x0, 0x0])),
-    Armorer(name='Kailan', map_id=57, professions_armor_rating=PROPH_ARMOR_59, position=(17558.0, -18033.0), model_id=2028, encoded_name=bytes([0x49, 0x2D, 0x55, 0xD1, 0x8, 0xE6, 0x23, 0x53, 0x0, 0x0])),
-    Armorer(name='Hanita', map_id=139, professions_armor_rating=PROPH_ARMOR_65, position=(-14449.0, 2275.0), model_id=2016, encoded_name=bytes([0x79, 0x2D, 0x55, 0xFA, 0xE0, 0x86, 0x4C, 0x62, 0x0, 0x0])),
-    Armorer(name='Saphir', map_id=142, professions_armor_rating=PROPH_ARMOR_59, position=(173.0, -4431.0), model_id=1544, encoded_name=bytes([0x7F, 0x2D, 0xEC, 0xB6, 0x23, 0xEC, 0xCA, 0x31, 0x0, 0x0])),
-    
-]
-
-RAW_CRAFTERS = CRAFTERS.copy()
+ARMORERS: list[Armorer] = []
 ARTISANS: list[Artisan] = []
 CONSUMABLE_CRAFTERS: list[ConsumableCrafter] = []
 WEAPONSMITHS: list[Weaponsmith] = []
@@ -1506,7 +1492,7 @@ _data_initialized = False
 
 
 CRAFTER_TYPE_MAP = {
-    'armorers': (CRAFTERS, Armorer),
+    'armorers': (ARMORERS, Armorer),
     'artisans': (ARTISANS, Artisan),
     'consumable_crafters': (CONSUMABLE_CRAFTERS, ConsumableCrafter),
     'weaponsmiths': (WEAPONSMITHS, Weaponsmith),
@@ -1665,7 +1651,7 @@ def _get_armor_rating_for_profession(profession: Profession) -> int:
 
 
 def _iter_all_crafters() -> list[AnyCrafter]:
-    return [*CRAFTERS, *ARTISANS, *CONSUMABLE_CRAFTERS, *WEAPONSMITHS, *COLLECTORS, *MERCHANTS]
+    return [*ARMORERS, *ARTISANS, *CONSUMABLE_CRAFTERS, *WEAPONSMITHS, *COLLECTORS, *MERCHANTS]
 
 
 def _iter_all_npcs() -> list[AnyNpc]:
@@ -1825,6 +1811,10 @@ def _normalize_item_name(name: str) -> str:
     return ''.join(character.lower() for character in name if character.isalnum())
 
 
+def _split_item_name_words(name: str) -> list[str]:
+    return [word for word in ''.join(character.lower() if character.isalnum() else ' ' for character in name).split() if word]
+
+
 def _is_missing_name(name: str) -> bool:
     return not name or name.startswith('Model')
 
@@ -1887,7 +1877,7 @@ def _same_item_identity(existing: Any, candidate: Any) -> bool:
 def _merge_base_item_fields(existing: Any, candidate: Any) -> bool:
     changed = False
 
-    if _is_missing_name(existing.name) and not _is_missing_name(candidate.name):
+    if not _is_missing_name(candidate.name) and existing.name != candidate.name:
         existing.name = candidate.name
         changed = True
 
@@ -2147,24 +2137,7 @@ def load_crafters_from_json():
         Py4GW.Console.MessageType.Success,
     )
     _dirty_category_keys.clear()
-    
-    updated = False
-    for crafter in CRAFTERS:
-        if not _is_position_collected(crafter) or not crafter.encoded_name:
-            #Check RAW_CRAFTERS for position data
-            raw_match = next((raw for raw in RAW_CRAFTERS if raw.name == crafter.name and raw.map_id == crafter.map_id), None)
-            if raw_match:
-                crafter.position = raw_match.position
-                crafter.model_id = raw_match.model_id
-                crafter.encoded_name = raw_match.encoded_name
-                updated = True
-                
-    if updated:
-        _mark_data_dirty('armorers')
-        save_crafters_to_json()
-    else:
-        _touch_data_revision()
-        
+            
     return True
 
 
@@ -2357,7 +2330,7 @@ def _get_dashboard_stats() -> dict[str, Any]:
         'unlocked_count': sum(1 for npc in all_npcs if npc.HasMapUnlocked()),
         'auto_reachable_count': len(_get_auto_reachable_crafters()),
         'total_collected_entries': sum(npc.GetCollectedCount() for npc in all_npcs),
-        'armorer_count': len(CRAFTERS),
+        'armorer_count': len(ARMORERS),
         'artisan_count': len(ARTISANS),
         'consumable_crafter_count': len(CONSUMABLE_CRAFTERS),
         'weaponsmith_count': len(WEAPONSMITHS),
@@ -2997,7 +2970,69 @@ def main():
     scan_for_crafters_with_missing_data()
     _flush_pending_auto_save()
 
-    
+
+def clean_data():
+    _ensure_initialized()
+
+    tyrian_map : dict[Profession, str] = {
+        Profession.Warrior: 'Chainmail',
+        Profession.Ranger: 'Leather',
+        Profession.Monk: 'Tyrian',
+        Profession.Necromancer: 'Tyrian',
+        Profession.Mesmer: 'Stylish',
+        Profession.Elementalist: 'Tyrian',
+    }
+    profession_names = {
+        profession.name: profession
+        for profession in Profession
+        if profession != Profession._None
+    }
+    changed_categories: set[str] = set()
+
+    for a in ARMORERS:
+        for prof, prof_armors in a.armors.items():
+            for armor in prof_armors:
+                if armor.name.startswith('Tyrian'):
+                    replacement = tyrian_map.get(prof, None)
+                    if replacement:
+                        updated_name = armor.name.replace('Tyrian', replacement, 1)
+                        if updated_name != armor.name:
+                            armor.name = updated_name
+                            changed_categories.add('armorers')
+
+    for c in COLLECTORS:
+        for index, item in enumerate(c.items):
+            if isinstance(item, CollectibleArmor) and item.name.startswith('Tyrian'):
+                replacement = tyrian_map.get(item.profession, None)
+                if replacement:
+                    updated_name = item.name.replace('Tyrian', replacement, 1)
+                    if updated_name != item.name:
+                        item.name = updated_name
+                        changed_categories.add('collectors')
+                        
+            profession = profession_names.get(item.name, None)
+            if profession is None:
+                continue
+
+            item_type = item.item_type if not _is_unknown_item_type(item.item_type) else ItemType.Unknown
+            model_id = item.model_id
+            required_collectible = item.required_collectible if isinstance(item, Collectible) else tuple[int, int]()
+            replacement_item = CollectibleArmor(
+                name='',
+                item_type=item_type,
+                model_id=model_id,
+                profession=profession,
+                armor_rating=_get_armor_rating_for_profession(profession),
+                required_collectible=required_collectible,
+            )
+            c.items[index] = replacement_item
+            changed_categories.add('collectors')
+
+        c.items.sort(key=_named_item_sort_key)
+
+    if changed_categories:
+        _mark_data_dirty(changed_categories)
+        save_crafters_to_json()
 
 if __name__ == "__main__":
     main()

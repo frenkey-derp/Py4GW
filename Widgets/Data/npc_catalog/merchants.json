@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T14:07:48Z",
+    "saved_at": "2026-05-17T14:50:32Z",
     "category": "merchants",
     "entries": [
         {
@@ -5701,7 +5701,86 @@
                 -88.0,
                 1567.0
             ],
-            "items": []
+            "items": [
+                {
+                    "kind": "item",
+                    "name": "Bag",
+                    "item_type": "Bag",
+                    "model_id": 35
+                },
+                {
+                    "kind": "item",
+                    "name": "Belt Pouch",
+                    "item_type": "Bag",
+                    "model_id": 34
+                },
+                {
+                    "kind": "item",
+                    "name": "Small Equipment Pack",
+                    "item_type": "Bag",
+                    "model_id": 31221
+                },
+                {
+                    "kind": "item",
+                    "name": "Vial of Dye",
+                    "item_type": "Dye",
+                    "model_id": 918
+                },
+                {
+                    "kind": "item",
+                    "name": "Istani Key",
+                    "item_type": "Key",
+                    "model_id": 15557
+                },
+                {
+                    "kind": "item",
+                    "name": "Lockpick",
+                    "item_type": "Key",
+                    "model_id": 22751
+                },
+                {
+                    "kind": "item",
+                    "name": "Expert Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2991
+                },
+                {
+                    "kind": "item",
+                    "name": "Identification Kit",
+                    "item_type": "Kit",
+                    "model_id": 2989
+                },
+                {
+                    "kind": "item",
+                    "name": "Rune of Holding",
+                    "item_type": "Kit",
+                    "model_id": 2988
+                },
+                {
+                    "kind": "item",
+                    "name": "Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2992
+                },
+                {
+                    "kind": "item",
+                    "name": "Scroll of Adventurer's Insight",
+                    "item_type": "Scroll",
+                    "model_id": 5853
+                },
+                {
+                    "kind": "item",
+                    "name": "Scroll of Hunter's Insight",
+                    "item_type": "Scroll",
+                    "model_id": 5976
+                },
+                {
+                    "kind": "item",
+                    "name": "Scroll of Rampager's Insight",
+                    "item_type": "Scroll",
+                    "model_id": 5975
+                }
+            ]
         },
         {
             "name": "Arissi [Merchant]",
@@ -5726,7 +5805,283 @@
                 1026.0,
                 4255.0
             ],
+            "items": [
+                {
+                    "kind": "item",
+                    "name": "Bag",
+                    "item_type": "Bag",
+                    "model_id": 35
+                },
+                {
+                    "kind": "item",
+                    "name": "Belt Pouch",
+                    "item_type": "Bag",
+                    "model_id": 34
+                },
+                {
+                    "kind": "item",
+                    "name": "Small Equipment Pack",
+                    "item_type": "Bag",
+                    "model_id": 31221
+                },
+                {
+                    "kind": "item",
+                    "name": "Vial of Dye",
+                    "item_type": "Dye",
+                    "model_id": 918
+                },
+                {
+                    "kind": "item",
+                    "name": "Istani Key",
+                    "item_type": "Key",
+                    "model_id": 15557
+                },
+                {
+                    "kind": "item",
+                    "name": "Lockpick",
+                    "item_type": "Key",
+                    "model_id": 22751
+                },
+                {
+                    "kind": "item",
+                    "name": "Expert Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2991
+                },
+                {
+                    "kind": "item",
+                    "name": "Identification Kit",
+                    "item_type": "Kit",
+                    "model_id": 2989
+                },
+                {
+                    "kind": "item",
+                    "name": "Rune of Holding",
+                    "item_type": "Kit",
+                    "model_id": 2988
+                },
+                {
+                    "kind": "item",
+                    "name": "Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2992
+                }
+            ]
+        },
+        {
+            "name": "Chios [Merchant]",
+            "encoded_name": [
+                80,
+                45,
+                120,
+                195,
+                232,
+                160,
+                252,
+                4,
+                0,
+                0
+            ],
+            "model_id": 2043,
+            "allegiance": "Ally",
+            "map_id": 136,
+            "position": [
+                20931.0,
+                -12144.0
+            ],
+            "items": [
+                {
+                    "kind": "item",
+                    "name": "Bag",
+                    "item_type": "Bag",
+                    "model_id": 35
+                },
+                {
+                    "kind": "item",
+                    "name": "Belt Pouch",
+                    "item_type": "Bag",
+                    "model_id": 34
+                },
+                {
+                    "kind": "item",
+                    "name": "Small Equipment Pack",
+                    "item_type": "Bag",
+                    "model_id": 31221
+                },
+                {
+                    "kind": "item",
+                    "name": "Vial of Dye",
+                    "item_type": "Dye",
+                    "model_id": 918
+                },
+                {
+                    "kind": "item",
+                    "name": "Lockpick",
+                    "item_type": "Key",
+                    "model_id": 22751
+                },
+                {
+                    "kind": "item",
+                    "name": "Expert Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2991
+                },
+                {
+                    "kind": "item",
+                    "name": "Identification Kit",
+                    "item_type": "Kit",
+                    "model_id": 2989
+                },
+                {
+                    "kind": "item",
+                    "name": "Rune of Holding",
+                    "item_type": "Kit",
+                    "model_id": 2988
+                },
+                {
+                    "kind": "item",
+                    "name": "Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2992
+                }
+            ]
+        },
+        {
+            "name": "Volsung [Merchant]",
+            "encoded_name": [
+                177,
+                45,
+                243,
+                199,
+                231,
+                244,
+                215,
+                98,
+                0,
+                0
+            ],
+            "model_id": 2161,
+            "allegiance": "Ally",
+            "map_id": 156,
+            "position": [
+                -11020.0,
+                16536.0
+            ],
             "items": []
+        },
+        {
+            "name": "Varik [Merchant]",
+            "encoded_name": [
+                180,
+                45,
+                70,
+                250,
+                185,
+                198,
+                232,
+                104,
+                0,
+                0
+            ],
+            "model_id": 2161,
+            "allegiance": "Ally",
+            "map_id": 157,
+            "position": [
+                4438.0,
+                -14933.0
+            ],
+            "items": [
+                {
+                    "kind": "item",
+                    "name": "Bag",
+                    "item_type": "Bag",
+                    "model_id": 35
+                },
+                {
+                    "kind": "item",
+                    "name": "Belt Pouch",
+                    "item_type": "Bag",
+                    "model_id": 34
+                },
+                {
+                    "kind": "item",
+                    "name": "Small Equipment Pack",
+                    "item_type": "Bag",
+                    "model_id": 31221
+                },
+                {
+                    "kind": "item",
+                    "name": "Vial of Dye",
+                    "item_type": "Dye",
+                    "model_id": 918
+                },
+                {
+                    "kind": "item",
+                    "name": "Lockpick",
+                    "item_type": "Key",
+                    "model_id": 22751
+                },
+                {
+                    "kind": "item",
+                    "name": "Expert Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2991
+                },
+                {
+                    "kind": "item",
+                    "name": "Identification Kit",
+                    "item_type": "Kit",
+                    "model_id": 2989
+                },
+                {
+                    "kind": "item",
+                    "name": "Rune of Holding",
+                    "item_type": "Kit",
+                    "model_id": 2988
+                },
+                {
+                    "kind": "item",
+                    "name": "Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 2992
+                },
+                {
+                    "kind": "item",
+                    "name": "Superior Identification Kit",
+                    "item_type": "Kit",
+                    "model_id": 5899
+                },
+                {
+                    "kind": "item",
+                    "name": "Superior Salvage Kit",
+                    "item_type": "Kit",
+                    "model_id": 5900
+                },
+                {
+                    "kind": "item",
+                    "name": "Scroll of Adventurer's Insight",
+                    "item_type": "Scroll",
+                    "model_id": 5853
+                },
+                {
+                    "kind": "item",
+                    "name": "Scroll of Hunter's Insight",
+                    "item_type": "Scroll",
+                    "model_id": 5976
+                },
+                {
+                    "kind": "item",
+                    "name": "Scroll of Rampager's Insight",
+                    "item_type": "Scroll",
+                    "model_id": 5975
+                },
+                {
+                    "kind": "item",
+                    "name": "Dwarven Ale",
+                    "item_type": "Usable",
+                    "model_id": 5585
+                }
+            ]
         }
     ]
 }
