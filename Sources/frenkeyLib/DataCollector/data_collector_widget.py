@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from enum import IntEnum, auto
 import json
 import os
-from typing import Any, Iterable, Optional, Sequence, TypeVar, cast
+from typing import Any, Generic, Iterable, Optional, Protocol, Sequence, TypeVar, cast, runtime_checkable
 
 import Py4GW
 import PyImGui
@@ -25,9 +25,11 @@ from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profess
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Title_enums import TITLE_NAME, TITLE_TIERS, TitleID
+from Py4GWCoreLib.item_data.ItemData import ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
+from Sources.frenkeyLib.DataCollector import CRAFTER_SWEEP_CONTROLLER
 
 
 project_path = Py4GW.Console.get_projects_path()
@@ -163,64 +165,6 @@ class Collectible:
         }
 
 
-def _serialize_upgrade(upgrade: Optional[Upgrade]) -> Optional[str]:
-    if upgrade is None:
-        return None
-    return json.dumps(upgrade.to_dict(), ensure_ascii=False, separators=(',', ':'))
-
-
-def _serialize_upgrades(upgrades: list[Upgrade]) -> list[str]:
-    serialized: list[str] = []
-    for upgrade in upgrades:
-        if upgrade is None:
-            continue
-        payload = _serialize_upgrade(upgrade)
-        if payload is not None:
-            serialized.append(payload)
-    return serialized
-
-def _deserialize_upgrade(data: Optional[str]) -> Optional[Upgrade]:
-    if data is None:
-        return None
-    try:
-        payload = json.loads(data)
-        if not isinstance(payload, dict):
-            return None
-        return Upgrade.from_dict(payload)
-    except Exception:
-        return None
-    
-def _deserialize_upgrades(data: Optional[list[str]]) -> list[Upgrade]:
-    if data is None:
-        return []
-    upgrades: list[Upgrade] = []
-    for entry in data:
-        try:
-            upgrade = _deserialize_upgrade(entry)
-            if upgrade is not None:
-                upgrades.append(upgrade)
-        except Exception:
-            continue
-    return upgrades
-
-
-def _deserialize_damage(data: dict[str, Any]) -> Optional[tuple[int, int]]:
-    raw_damage = data.get('damage')
-    if raw_damage is None:
-        return None
-
-    damage_entries = list(raw_damage)
-    if len(damage_entries) < 2:
-        return None
-
-    minimum = int(damage_entries[0] or 0)
-    maximum = int(damage_entries[1] or 0)
-    if minimum == 0 and maximum == 0:
-        return None
-
-    return minimum, maximum
-
-
 def _strip_none_for_json(value: Any) -> Any:
     if isinstance(value, dict):
         return {
@@ -258,31 +202,68 @@ class Weapon(Item):
                 'attribute': self.attribute.name,
                 'damage': [self.damage[0], self.damage[1]] if self.damage is not None and (self.damage[0] != 0 or self.damage[1] != 0) else None,
                 'energy': self.energy,
-                'prefix': _serialize_upgrade(self.prefix),
-                'suffix': _serialize_upgrade(self.suffix),
-                'inscription': _serialize_upgrade(self.inscription),
-                'inherent': _serialize_upgrades(self.inherent),
+                'prefix': Upgrade.to_dict(self.prefix) if self.prefix is not None else None,
+                'suffix': Upgrade.to_dict(self.suffix) if self.suffix is not None else None,
+                'inscription': Upgrade.to_dict(self.inscription) if self.inscription is not None else None,
+                'inherent': [Upgrade.to_dict(upg) for upg in self.inherent if upg is not None],
             }
         )
         return payload
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Weapon':
+    def _weapon_kwargs_from_dict(cls, data: dict) -> dict:
+        
+        def _deserialize_damage(data: dict[str, Any]) -> Optional[tuple[int, int]]:
+            raw_damage = data.get('damage')
+            if raw_damage is None:
+                return None
+
+            damage_entries = list(raw_damage)
+            if len(damage_entries) < 2:
+                return None
+
+            minimum = int(damage_entries[0] or 0)
+            maximum = int(damage_entries[1] or 0)
+            if minimum == 0 and maximum == 0:
+                return None
+
+            return minimum, maximum
+
+        def _get_upgrade(upgrade_data : dict) -> Optional[Upgrade]:
+            return Upgrade.from_dict(upgrade_data) if upgrade_data is not None else None
+        
+        def _get_upgrades(upgrades_data: list[dict]) -> list[Upgrade]:
+            upgrades = []
+            
+            for entry in upgrades_data:
+                if not isinstance(entry, dict):
+                    continue
+                
+                upgrade = _get_upgrade(entry)
+                if upgrade is not None:
+                    upgrades.append(upgrade)
+            
+            return upgrades
+        
         attribute_name = str(data.get('attribute', Attribute.None_.name))
         damage_data = _deserialize_damage(data)
         energy_data = data.get('energy', None)
         
-        return cls(
+        return {
             **Weapon._base_kwargs_from_dict(data),
-            requirement=int(data.get('requirement', 0) or 0),
-            attribute=Attribute[attribute_name] if attribute_name in Attribute.__members__ else Attribute.None_,
-            damage=damage_data,
-            energy=int(energy_data) if energy_data is not None else None,
-            prefix=_deserialize_upgrade(data.get('prefix', None)),
-            suffix=_deserialize_upgrade(data.get('suffix', None)),
-            inscription=_deserialize_upgrade(data.get('inscription', None)),
-            inherent=_deserialize_upgrades(data.get('inherent', [])),
-        )
+            'requirement': int(data.get('requirement', 0) or 0),
+            'attribute': Attribute[attribute_name] if attribute_name in Attribute.__members__ else Attribute.None_,
+            'damage': damage_data,
+            'energy': int(energy_data) if energy_data is not None else None,
+            'prefix': _get_upgrade(data.get('prefix', {})),
+            'suffix': _get_upgrade(data.get('suffix', {})),
+            'inscription': _get_upgrade(data.get('inscription', {})),
+            'inherent': _get_upgrades(data.get('inherent', [])),
+        }
+                
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Weapon':
+        return cls(**cls._weapon_kwargs_from_dict(data))
 
 @dataclass
 class Armor(Item):
@@ -323,17 +304,8 @@ class CraftableWeapon(Weapon, Craftable):
 
     @classmethod
     def from_dict(cls, data: dict) -> 'CraftableWeapon':
-        attribute_name = str(data.get('attribute', Attribute.None_.name))
         return cls(
-            **Weapon._base_kwargs_from_dict(data),
-            requirement=int(data.get('requirement', 0) or 0),
-            attribute=Attribute[attribute_name] if attribute_name in Attribute.__members__ else Attribute.None_,
-            damage=_deserialize_damage(data),
-            energy=int(data.get('energy', 0) or 0) if data.get('energy', None) is not None else None,
-            prefix=_deserialize_upgrade(data.get('prefix', None)),
-            suffix=_deserialize_upgrade(data.get('suffix', None)),
-            inscription=_deserialize_upgrade(data.get('inscription', None)),
-            inherent=_deserialize_upgrades(data.get('inherent', [])),
+            **cls._weapon_kwargs_from_dict(data),
             **Craftable._craftable_from_dict(data),
         )
 
@@ -360,7 +332,7 @@ class CraftableArmor(Armor, Craftable):
 @dataclass
 class CollectibleWeapon(Weapon, Collectible):
     SERIALIZATION_KIND = 'collectible_weapon'
-
+            
     def to_dict(self) -> dict:
         payload = Weapon.to_dict(self)
         payload.update(self._collectible_to_dict())
@@ -368,19 +340,11 @@ class CollectibleWeapon(Weapon, Collectible):
 
     @classmethod
     def from_dict(cls, data: dict) -> 'CollectibleWeapon':
-        attribute_name = str(data.get('attribute', Attribute.None_.name))
         return cls(
-            **Weapon._base_kwargs_from_dict(data),
-            requirement=int(data.get('requirement', 0) or 0),
-            attribute=Attribute[attribute_name] if attribute_name in Attribute.__members__ else Attribute.None_,
-            damage=_deserialize_damage(data),
-            energy=int(data.get('energy', 0) or 0) if data.get('energy', None) is not None else None,
-            prefix=_deserialize_upgrade(data.get('prefix', None)),
-            suffix=_deserialize_upgrade(data.get('suffix', None)),
-            inscription=_deserialize_upgrade(data.get('inscription', None)),
-            inherent=_deserialize_upgrades(data.get('inherent', [])),
+            **cls._weapon_kwargs_from_dict(data),
             **Collectible._collectible_from_dict(data),
         )
+
 
 
 @dataclass
@@ -478,8 +442,6 @@ def _deserialize_item(data: dict, default_cls: type[Item] = Item) -> Item:
         else:
             item_cls = default_cls
     return item_cls.from_dict(data)
-
-
 
 @dataclass
 class Npc:
@@ -1358,139 +1320,7 @@ class Armorer(Ally):
 
     def GetCollectionSummary(self) -> str:
         return _format_armor_ratings(self)
-        
-P = Profession
 
-PROPH_ARMOR_35 = {
-    P.Warrior: 35,
-    P.Ranger: 25,
-    P.Monk: 15,
-    P.Necromancer: 15,
-    P.Mesmer: 15,
-    P.Elementalist: 15,
-}
-PROPH_ARMOR_50 = {
-    P.Warrior: 50,
-    P.Ranger: 40,
-    P.Monk: 30,
-    P.Necromancer: 30,
-    P.Mesmer: 30,
-    P.Elementalist: 30,
-}
-PROPH_ARMOR_59 = {
-    P.Warrior: 59,
-    P.Ranger: 49,
-    P.Monk: 39,
-    P.Necromancer: 39,
-    P.Mesmer: 39,
-    P.Elementalist: 39,
-}
-PROPH_ARMOR_65 = {
-    P.Warrior: 65,
-    P.Ranger: 55,
-    P.Monk: 45,
-    P.Necromancer: 45,
-    P.Mesmer: 45,
-    P.Elementalist: 45,
-}
-PROPH_ARMOR_71 = {
-    P.Warrior: 71,
-    P.Ranger: 61,
-    P.Monk: 51,
-    P.Necromancer: 51,
-    P.Mesmer: 51,
-    P.Elementalist: 51,
-}
-PROPH_ARMOR_80 = {
-    P.Warrior: 80,
-    P.Ranger: 70,
-    P.Monk: 60,
-    P.Necromancer: 60,
-    P.Mesmer: 60,
-    P.Elementalist: 60,
-}
-FACTIONS_ARMOR_35 = {
-    P.Warrior: 35,
-    P.Ranger: 25,
-    P.Monk: 15,
-    P.Necromancer: 15,
-    P.Mesmer: 15,
-    P.Elementalist: 15,
-    P.Assassin: 25,
-    P.Ritualist: 15,
-}
-FACTIONS_ARMOR_50 = {
-    P.Warrior: 50,
-    P.Ranger: 40,
-    P.Monk: 30,
-    P.Necromancer: 30,
-    P.Mesmer: 30,
-    P.Elementalist: 30,
-    P.Assassin: 40,
-    P.Ritualist: 30,
-}
-FACTIONS_ARMOR_65 = {
-    P.Warrior: 65,
-    P.Ranger: 55,
-    P.Monk: 45,
-    P.Necromancer: 45,
-    P.Mesmer: 45,
-    P.Elementalist: 45,
-    P.Assassin: 55,
-    P.Ritualist: 45,
-}
-FACTIONS_ARMOR_80 = {
-    P.Warrior: 80,
-    P.Ranger: 70,
-    P.Monk: 60,
-    P.Necromancer: 60,
-    P.Mesmer: 60,
-    P.Elementalist: 60,
-    P.Assassin: 70,
-    P.Ritualist: 60,
-}
-FULL_ARMOR_80 = {
-    P.Warrior: 80,
-    P.Ranger: 70,
-    P.Monk: 60,
-    P.Necromancer: 60,
-    P.Mesmer: 60,
-    P.Elementalist: 60,
-    P.Assassin: 70,
-    P.Ritualist: 60,
-    P.Paragon: 80,
-    P.Dervish: 70,
-}
-NIGHTFALL_ARMOR_35 = {
-    P.Warrior: 35,
-    P.Ranger: 25,
-    P.Monk: 15,
-    P.Necromancer: 15,
-    P.Mesmer: 15,
-    P.Elementalist: 15,
-    P.Paragon: 35,
-    P.Dervish: 25,
-}
-NIGHTFALL_ARMOR_50 = {
-    P.Warrior: 50,
-    P.Ranger: 40,
-    P.Monk: 30,
-    P.Necromancer: 30,
-    P.Mesmer: 30,
-    P.Elementalist: 30,
-    P.Paragon: 50,
-    P.Dervish: 40,
-}
-NIGHTFALL_ARMOR_65 = {
-    P.Warrior: 65,
-    P.Ranger: 55,
-    P.Monk: 45,
-    P.Necromancer: 45,
-    P.Mesmer: 45,
-    P.Elementalist: 45,
-    P.Paragon: 65,
-    P.Dervish: 55,
-}
 
 ARMORERS: list[Armorer] = []
 ARTISANS: list[Artisan] = []
@@ -1554,12 +1384,6 @@ show_traders = True
 show_allies = False
 show_foes = False
 out_posts = Map.GetOutpostIDs()
-sweep_stop_requested = False
-sweep_is_running = False
-sweep_status = 'Idle'
-sweep_current_name = ''
-sweep_current_index = 0
-sweep_total = 0
 _data_revision = 0
 _visible_npcs_cache: list['AnyNpc'] = []
 _visible_npcs_cache_key: tuple[Any, ...] | None = None
@@ -1574,6 +1398,8 @@ _current_map_missing_stationary_npcs: list[StationaryNpc] = []
 _pending_auto_save = False
 _last_auto_save_at: datetime | None = None
 _dirty_category_keys: set[str] = set()
+
+CRAFTER_SWEEP_CONTROLLER.set_module_name(MODULE_NAME)
 
 AnyCrafter = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant
 AnyNpc = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant | Trader | Ally | Foe
@@ -2417,203 +2243,22 @@ def _get_dashboard_stats() -> dict[str, Any]:
     return dict(stats)
 
 
-def _set_sweep_status(status: str, crafter_name: str = '', current_index: int = 0, total: int = 0):
-    global sweep_status
-    global sweep_current_name
-    global sweep_current_index
-    global sweep_total
-
-    sweep_status = status
-    sweep_current_name = crafter_name
-    sweep_current_index = current_index
-    sweep_total = total
-
-
-def _finish_sweep(status: str):
-    global sweep_is_running
-    global sweep_stop_requested
-
-    sweep_is_running = False
-    sweep_stop_requested = False
-    _set_sweep_status(status)
-
-
 def _start_crafter_sweep():
-    global sweep_is_running
-    global sweep_stop_requested
-
-    if sweep_is_running:
-        return
-
     reachable_crafters = _get_auto_reachable_crafters()
-    if not reachable_crafters:
-        _set_sweep_status('No unlocked auto-reachable crafters found.')
-        return
-
-    sweep_is_running = True
-    sweep_stop_requested = False
-    _set_sweep_status('Starting crafter sweep...', total=len(reachable_crafters))
-    GLOBAL_CACHE.Coroutines.append(_run_crafter_sweep(reachable_crafters))
+    CRAFTER_SWEEP_CONTROLLER.start(
+        reachable_crafters,
+        append_coroutine=GLOBAL_CACHE.Coroutines.append,
+        on_collection_success=_on_sweep_collection_success,
+    )
 
 
 def _request_stop_crafter_sweep():
-    global sweep_stop_requested
-
-    GLOBAL_CACHE.Coroutines.clear()  # Clear any pending steps to expedite stopping
-    if not sweep_is_running:
-        return
-
-    sweep_stop_requested = True
-    _set_sweep_status('Stopping after current step...', sweep_current_name, sweep_current_index, sweep_total)
+    CRAFTER_SWEEP_CONTROLLER.request_stop(clear_coroutines=GLOBAL_CACHE.Coroutines.clear)
 
 
-def _run_crafter_sweep(crafters: list[AnyCrafter]):
-    total = len(crafters)
-    closed_count = 0
-
-    for index, crafter in enumerate(crafters, start=1):
-        if sweep_stop_requested:
-            _finish_sweep(f'Sweep stopped ({closed_count}/{total} completed).')
-            return
-
-        map_id = crafter.GetDisplayMapID()
-        position = crafter.GetDisplayPosition()
-        map_name = Map.GetMapName(map_id)
-        _set_sweep_status(f'Traveling to {map_name}...', crafter.name, index, total)
-
-        if Map.GetBaseMapID() != Map.GetBaseMapID(map_id):
-            travel_success = yield from Routines.Yield.Map.TravelToOutpost(map_id, timeout=20000, log=False)
-            if not travel_success:
-                Py4GW.Console.Log(
-                    MODULE_NAME,
-                    f"Skipping '{crafter.name}' because travel to '{map_name}' failed.",
-                    Py4GW.Console.MessageType.Warning,
-                )
-                continue
-
-            yield from Routines.Yield.wait(500, break_on_map_transition=True)
-
-        if sweep_stop_requested:
-            _finish_sweep(f'Sweep stopped ({closed_count}/{total} completed).')
-            return
-
-        _set_sweep_status('Walking to crafter...', crafter.name, index, total)
-        distance_to_crafter = Utils.Distance(Player.GetXY(), position)
-        timeout_ms = int(distance_to_crafter * 12)
-        Py4GW.Console.Log(
-            MODULE_NAME,
-            f"Distance to '{crafter.name}' is {distance_to_crafter:.1f}. Allowing up to {timeout_ms} ms for movement.",
-            Py4GW.Console.MessageType.Info,
-        )
-        
-        move_success = yield from Routines.Yield.Movement.FollowPath([position], tolerance=200, timeout=timeout_ms, log=False)
-        if not move_success:
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"Skipping '{crafter.name}' because movement to the stored position failed.",
-                Py4GW.Console.MessageType.Warning,
-            )
-            continue
-
-        _set_sweep_status(f"Opening {crafter.service_label().lower()} window...", crafter.name, index, total)
-        window_opened = yield from _open_crafter_window(crafter)
-        if not window_opened:
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"Skipping '{crafter.name}' because the service window did not open.",
-                Py4GW.Console.MessageType.Warning,
-            )
-            continue
-
-        _set_sweep_status('Waiting for window contents...', crafter.name, index, total)
-        yield from Routines.Yield.wait(500)
-
-        _set_sweep_status(f"Collecting visible {crafter.service_label().lower()} data...", crafter.name, index, total)
-        try:
-            collected = yield from _collect_crafter_data_with_retries(crafter)
-            if collected:
-                _mark_data_dirty(_get_category_key_for_npc(crafter))
-                save_crafters_to_json()
-        except Exception as exc:
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"Skipping '{crafter.name}' because data collection failed: {exc}",
-                Py4GW.Console.MessageType.Warning,
-            )
-            continue
-
-        _set_sweep_status('Service window open, waiting 2 seconds...', crafter.name, index, total)
-        yield from Routines.Yield.wait(2000)
-        crafter.CloseCrafter()
-        yield from Routines.Yield.wait(500)
-        closed_count += 1
-
-    _finish_sweep(f'Sweep complete ({closed_count}/{total} windows opened).')
-
-
-def _open_crafter_window(crafter: AnyCrafter, timeout_ms: int = 1500):
-    elapsed = 0
-    retry_interval = 250
-    reissue_interval = 1000
-    since_reissue = reissue_interval
-
-    while elapsed <= timeout_ms:
-        if sweep_stop_requested:
-            return False
-
-        if not crafter.CanInteract():
-            Py4GW.Console.Log(MODULE_NAME, f"Skipping '{crafter.name}' because your character does not currently meet {crafter.interaction_label()}.", Py4GW.Console.MessageType.Warning)
-            return False
-
-        if crafter._service_window_is_open():
-            return True
-
-        agent_id = crafter.GetAgentId()
-        if agent_id == 0:
-            yield from Routines.Yield.wait(retry_interval)
-            elapsed += retry_interval
-            since_reissue += retry_interval
-            continue
-
-        if since_reissue >= reissue_interval:
-            yield from Routines.Yield.Agents.ChangeTarget(agent_id)
-            yield from Routines.Yield.Agents.InteractAgent(agent_id)
-            since_reissue = 0
-
-        player_distance = Utils.Distance(Player.GetXY(), Agent.GetXY(agent_id))
-        if player_distance > 220.0:
-            yield from Routines.Yield.Movement.FollowPath([crafter.GetDisplayPosition()], tolerance=150, timeout=5000, log=False)
-        else:
-            yield from Routines.Yield.wait(retry_interval)
-
-        elapsed += retry_interval
-        since_reissue += retry_interval
-
-    return crafter._service_window_is_open()
-
-
-def _collect_crafter_data_with_retries(crafter: AnyCrafter, max_attempts: int = 3, retry_wait_ms: int = 500):
-    collected_any = False
-
-    for attempt in range(1, max_attempts + 1):
-        if sweep_stop_requested:
-            return False
-
-        collected = crafter.CollectData()
-        collected_any = collected_any or collected
-
-        if not crafter.last_collection_had_pending_names:
-            return collected_any
-
-        if attempt < max_attempts:
-            Py4GW.Console.Log(
-                MODULE_NAME,
-                f"Retrying '{crafter.name}' collection because some item names are not ready yet ({attempt}/{max_attempts - 1}).",
-                Py4GW.Console.MessageType.Info,
-            )
-            yield from Routines.Yield.wait(retry_wait_ms)
-
-    return collected_any
+def _on_sweep_collection_success(crafter: AnyCrafter):
+    _mark_data_dirty(_get_category_key_for_npc(crafter))
+    save_crafters_to_json()
 
 
 def get_armor_rating_as_constant_name(crafter: Armorer) -> str:
@@ -2912,7 +2557,8 @@ def draw_window():
     global show_traders
     global show_allies
     global show_foes
-    global sweep_is_running
+
+    sweep_state = CRAFTER_SWEEP_CONTROLLER.state
 
     current_map_id = Map.GetBaseMapID()
     current_map_name = Map.GetMapName(current_map_id)
@@ -2934,9 +2580,9 @@ def draw_window():
     PyImGui.text(f"Collected entries across all services: {stats['total_collected_entries']}")
     PyImGui.text(f'JSON dir: {DATA_DIRECTORY_PATH}')
     PyImGui.text('Collection note: map scans now passively record visible NPCs every map. Service item data still depends on the currently open window.')
-    PyImGui.text(f'Sweep status: {sweep_status}')
-    if sweep_current_name:
-        PyImGui.text(f'Current sweep target: {sweep_current_name} ({sweep_current_index}/{sweep_total})')
+    PyImGui.text(f'Sweep status: {sweep_state.status}')
+    if sweep_state.current_name:
+        PyImGui.text(f'Current sweep target: {sweep_state.current_name} ({sweep_state.current_index}/{sweep_state.total})')
     if ImGui.button('Collect open NPC##crafter_collect_open', width=150):
         _collect_current_open_crafter()
     PyImGui.same_line(0, 10)
@@ -2945,11 +2591,10 @@ def draw_window():
     PyImGui.same_line(0, 10)
     if ImGui.button('Load JSON##crafter_load_json', width=100):
         load_crafters_from_json()
-    if ImGui.button('Sweep + collect reachable##crafter_sweep_start', width=180, disabled=sweep_is_running):
+    if ImGui.button('Sweep + collect reachable##crafter_sweep_start', width=180, disabled=sweep_state.is_running):
         _start_crafter_sweep()
     PyImGui.same_line(0, 10)
-    if ImGui.button('Stop sweep##crafter_sweep_stop', width=100, disabled=not sweep_is_running):
-        sweep_is_running = False
+    if ImGui.button('Stop sweep##crafter_sweep_stop', width=100, disabled=not sweep_state.is_running):
         _request_stop_crafter_sweep()
     PyImGui.separator()
 
