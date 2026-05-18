@@ -239,7 +239,7 @@ class ItemData:
         return ", ".join(f"0x{byte:X}" for byte in value)
 
     @staticmethod    
-    def from_json(data: dict) -> 'ItemData':
+    def from_dict(data: dict) -> 'ItemData':
         profession_name = data.get("profession")
         english_name = data.get("name", "")
         
@@ -287,7 +287,7 @@ class ItemData:
             sub_category=json["SubCategory"] if "SubCategory" in json else "",
         )
 
-    def to_json(self) -> dict:
+    def to_dict(self) -> dict:
         data = {
             "model_id": self.model_id,
             "item_type": self.item_type.name,
@@ -310,25 +310,12 @@ class ItemData:
         return dict(sorted(data.items(), key=lambda item: item[0]))
 
 project_path = Console.get_projects_path()
-def get_local_item_json_path() -> str:
-    return os.path.join(project_path, "Settings", "Global", "Item & Inventory", "items.json")
-
-def get_item_json_source_path() -> str:
-    default_item_json_path = os.path.join(project_path, "Py4GWCoreLib", "item_data", "items.json")
-    item_json_path = get_local_item_json_path()
-    
-    if os.path.exists(item_json_path):
-        return item_json_path
-    
-    if os.path.exists(default_item_json_path):
-        return default_item_json_path
-    
-    return ""
 
 class ItemDataContainer():
     def __init__(self):
         self.data : dict[ItemType, dict[int, ItemData]] = {}
         self.requires_save = False
+        self.version = "1.0"
         
         
         self.Nick_Items: dict[int, ItemData] = {}
@@ -367,11 +354,26 @@ class ItemDataContainer():
     def queue_save(self):
         self.requires_save = True
 
+    def get_local_item_json_path(self) -> str:
+        return os.path.join(project_path, "Settings", "Global", "Item & Inventory", "items.json")
+
+    def get_item_json_source_path(self) -> str:
+        default_item_json_path = os.path.join(project_path, "Py4GWCoreLib", "item_data", "items.json")
+        item_json_path = self.get_local_item_json_path()
+        
+        if os.path.exists(item_json_path):
+            return item_json_path
+        
+        if os.path.exists(default_item_json_path):
+            return default_item_json_path
+        
+        return ""
+    
     def load_data(self):
         try:
             self.data.clear()
             
-            item_json_path = get_item_json_source_path()
+            item_json_path = self.get_item_json_source_path()
             if not item_json_path:
                 return
             
@@ -381,7 +383,7 @@ class ItemDataContainer():
                 for item_type_name, items in json_data.items():
                     for item_model_id, item_data_dict in items.items():
                         try:
-                            item_data = ItemData.from_json(item_data_dict)
+                            item_data = ItemData.from_dict(item_data_dict)
                         except Exception as item_error:
                             Console.Log(
                                 "ItemDataContainer",
@@ -413,14 +415,18 @@ class ItemDataContainer():
     
     def save_data(self):
         try:
-            item_json_path = get_local_item_json_path()
+            item_json_path = self.get_local_item_json_path()
             item_json_dir = os.path.dirname(item_json_path)
             
             if item_json_dir:
                 os.makedirs(item_json_dir, exist_ok=True)
                 
             with open(item_json_path, "w", encoding="utf-8") as f:
-                json_data = {item_type.name: {str(item_data.model_id): item_data.to_json() for item_data in items.values()} for item_type, items in self.data.items()}
+                json_data = {
+                    'version': self.version,
+                    'data': {item_type.name: {str(item_data.model_id): item_data.to_dict() for item_data in items.values()} for item_type, items in self.data.items()}
+                }
+                
                 json.dump(json_data, f, indent=4, ensure_ascii=False)
                 Console.Log("ItemDataContainer", f"Saved item data for {sum(len(items) for items in self.data.values())} items across {len(self.data)} item types.", Console.MessageType.Success)
                 self.requires_save = False

@@ -154,8 +154,8 @@ def _humanize_identifier(name: str) -> str:
     return re.sub(r"(?<!^)(?=[A-Z])", " ", name).strip()
 
 def _get_property_factory():
-    from Py4GWCoreLib.item_mods_src.upgrade_parser import get_property_factory
-    return get_property_factory()
+    from Py4GWCoreLib.item_mods_src.upgrade_parser import UpgradeParser
+    return UpgradeParser.get_property_factory()
 
 @dataclass(eq=False)
 class Upgrade:
