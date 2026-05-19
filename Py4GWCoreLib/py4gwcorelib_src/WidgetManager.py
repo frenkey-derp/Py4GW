@@ -331,7 +331,6 @@ class Py4GWLibrary:
         self.tags : list[str] = sorted(set(tag for widget in self.widget_manager.widgets.values() for tag in widget.tags if widget.tags))
         
         self._pending_disable_widget : "Widget | None" = None
-        self._request_disable_popup = False 
         self._one_button_dragged = False
         self._current_window_pos : Optional[tuple[float, float]] = None
         self._pending_window_pos : Optional[tuple[float, float]] = None
@@ -575,11 +574,11 @@ class Py4GWLibrary:
                 self.draw_minimalistic_view()
             case LayoutMode.SingleButton:
                 self.draw_one_button_view()
-
+        
         if self.first_run:    
             self.win_size = win_size                    
             self.first_run = False
-
+            
     @staticmethod
     def _normalize_search_text(text: str) -> str:
         return re.sub(r"[^a-z0-9]+", "", (text or "").lower())
@@ -943,7 +942,7 @@ class Py4GWLibrary:
                         ImGui.dummy(card_width, 30)
                         continue
                     
-                    clicked, hovered = self.draw_compact_widget_card(widget, card_width, style) or suggestion_hovered
+                    clicked, hovered = self.draw_compact_widget_card(widget, card_width, style)
                     suggestion_hovered = suggestion_hovered or hovered or clicked
                     if clicked:
                         self.queue_filter_widgets = True
@@ -979,12 +978,6 @@ class Py4GWLibrary:
                     
             ImGui.end()
             
-        if self._request_disable_popup:
-            PyImGui.open_popup(self.CONFIRMATION_MODAL_ID)
-            self._request_disable_popup = False
-            
-        self.draw_confirmation_modal()
-            
         return open
     
     def card_context_menu(self, popup_id: str, widget : "Widget"):   
@@ -1002,11 +995,7 @@ class Py4GWLibrary:
                 if not widget.enabled:
                     self.widget_manager.enable_widget(widget.plain_name)
                 else:
-                    if widget.category == "System":
-                        self._pending_disable_widget = widget
-                        self._request_disable_popup = True
-                    else:
-                        self.widget_manager.disable_widget(widget.plain_name)
+                    self.widget_manager._request_disable_widget(widget)
                     
             PyImGui.separator()
 
@@ -1572,69 +1561,6 @@ class Py4GWLibrary:
 
         
         ImGui.End(self.ini_key)
-        
-        if self._request_disable_popup:
-            PyImGui.open_popup(self.CONFIRMATION_MODAL_ID)
-            self._request_disable_popup = False
-            
-        self.draw_confirmation_modal()
-
-    def draw_confirmation_modal(self):
-        io = PyImGui.get_io()
-        center_x = (io.display_size_x / 2) - 250
-        center_y = (io.display_size_y / 2) - 100
-
-        PyImGui.set_next_window_pos(
-            (center_x, center_y),
-            PyImGui.ImGuiCond.Always,
-        )
-
-        PyImGui.set_next_window_size(
-            (500, 175),
-            PyImGui.ImGuiCond.Always,
-        )
-
-        if PyImGui.begin_popup_modal(
-            self.CONFIRMATION_MODAL_ID,
-            True,
-            PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoTitleBar
-            | PyImGui.WindowFlags.NoSavedSettings
-        ):
-            widget = self._pending_disable_widget
-
-            if widget:
-                ImGui.text_colored(
-                    "Warning - This widget is required for core functionality!",
-                    (1.0, 0.2, 0.2, 1.0),
-                    font_size=16
-                )
-                PyImGui.separator()
-
-                ImGui.text_wrapped(
-                    f"The widget '{widget.name}' is a SYSTEM widget.\n\n"
-                    "Disabling it may break core functionality.\n\n"
-                    "Are you sure you want to continue?"
-                )
-
-                PyImGui.spacing()
-                PyImGui.separator()
-                PyImGui.spacing()
-
-                PyImGui.columns(2, "confirmation_buttons", False)
-                
-                # ---- BUTTONS ----
-                if ImGui.button("Cancel", -1, 0):
-                    self._pending_disable_widget = None
-                    PyImGui.close_current_popup()
-
-                PyImGui.next_column()
-                if ImGui.button("Disable", -1, 0):
-                    self.widget_manager.disable_widget(widget.plain_name)
-                    self._pending_disable_widget = None
-                    PyImGui.close_current_popup()
-                PyImGui.end_columns()
-                
-            PyImGui.end_popup()
 
     def _push_card_style(self, style : Style, enabled : bool, compact : bool = False):
         self.active_card_style_pushed = enabled
@@ -1791,11 +1717,7 @@ class Py4GWLibrary:
                     if not widget.enabled:
                         self.widget_manager.enable_widget(widget.plain_name)
                     else:                        
-                        if widget.category == "System":
-                            self._pending_disable_widget = widget
-                            self._request_disable_popup = True
-                        else:
-                            self.widget_manager.disable_widget(widget.plain_name)
+                        self.widget_manager._request_disable_widget(widget)
                         
                 if not cog_hovered and PyImGui.is_item_hovered():
                         hovered = True
@@ -1833,6 +1755,8 @@ class Py4GWLibrary:
 
         if rect_visible:
             enabled = widget.enabled
+            io = PyImGui.get_io()
+            mouse_pos = (io.mouse_pos_x, io.mouse_pos_y)
             
             if enabled:
                 if not self.active_card_style_pushed:
@@ -1840,6 +1764,8 @@ class Py4GWLibrary:
             else:
                 if self.active_card_style_pushed:
                     self._pop_card_style(style, compact=True)
+
+            cx, cy = PyImGui.get_cursor_screen_pos()
         
             opened = PyImGui.begin_child(
                 f"##widget_card_{widget.folder_script_name}",
@@ -1875,35 +1801,32 @@ class Py4GWLibrary:
 
             PyImGui.end_child()
             
-            if PyImGui.is_item_clicked(0):
-                clicked = True
-                if not widget.enabled:
-                    self.widget_manager.enable_widget(widget.plain_name)
-                else:
-                    if widget.category == "System":
-                        self._pending_disable_widget = widget
-                        self._request_disable_popup = True
+            if ImGui.is_mouse_in_rect((cx, cy, cx + width, cy + height), mouse_pos):
+                if PyImGui.is_item_clicked(0):
+                    clicked = True
+                    if not widget.enabled:
+                        self.widget_manager.enable_widget(widget.plain_name)
                     else:
-                        self.widget_manager.disable_widget(widget.plain_name)
+                        self.widget_manager._request_disable_widget(widget)
                 
-            if not cog_hovered and PyImGui.is_item_hovered():
-                hovered = True
-                self._pop_card_style(style, compact=True)
-                
-                if widget.has_tooltip_property:
-                    try:
-                        if widget.tooltip:
-                            self._pop_card_style(style, compact=True)                        
-                            
-                            widget.tooltip()
-                            
-                    except Exception as e:
-                        Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                        Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-                else:
-                    PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+                if not cog_hovered and PyImGui.is_item_hovered():
+                    hovered = True
+                    self._pop_card_style(style, compact=True)
                     
-                self._push_card_style(style, enabled, compact=True)
+                    if widget.has_tooltip_property:
+                        try:
+                            if widget.tooltip:
+                                self._pop_card_style(style, compact=True)                        
+                                
+                                widget.tooltip()
+                                
+                        except Exception as e:
+                            Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                            Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+                    else:
+                        PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
+                        
+                    self._push_card_style(style, enabled, compact=True)
         else:
             ImGui.dummy(width, 30)
             
@@ -2303,6 +2226,7 @@ class WidgetConfigVars:
 class WidgetHandler:
     _instance = None
     _widgets_folder = "Widgets"
+    CONFIRMATION_MODAL_ID = "This is a critical widget!##ConfirmDisableSystemWidgetManager"
     
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -2340,6 +2264,7 @@ class WidgetHandler:
         self.widget_initialized = False
         self._initialized = True
         self.config_vars: list[WidgetConfigVars] = []
+        self._pending_disable_widget: Widget | None = None
         
         
         
@@ -2395,6 +2320,73 @@ class WidgetHandler:
             # Correct order: key, section, var_name, value
             IniManager().set(key=INI_KEY, section=cv.section, var_name=cv.var_name, value=state)
             IniManager().save_vars(INI_KEY)
+
+    def _request_disable_widget(self, widget: Widget):
+        if widget.category == "System":
+            self._pending_disable_widget = widget
+            return
+
+        self.disable_widget(widget.plain_name)
+
+    def _draw_pending_disable_confirmation(self):
+        if self._pending_disable_widget:
+            PyImGui.open_popup(self.CONFIRMATION_MODAL_ID)
+            self._draw_confirmation_modal()
+
+    def _draw_confirmation_modal(self):
+        io = PyImGui.get_io()
+        center_x = (io.display_size_x / 2) - 250
+        center_y = (io.display_size_y / 2) - 100
+
+        PyImGui.set_next_window_pos(
+            (center_x, center_y),
+            PyImGui.ImGuiCond.Always,
+        )
+
+        PyImGui.set_next_window_size(
+            (500, 175),
+            PyImGui.ImGuiCond.Always,
+        )
+
+        if PyImGui.begin_popup_modal(
+            self.CONFIRMATION_MODAL_ID,
+            True,
+            PyImGui.WindowFlags.NoMove | PyImGui.WindowFlags.NoResize | PyImGui.WindowFlags.NoTitleBar
+            | PyImGui.WindowFlags.NoSavedSettings
+        ):
+            widget = self._pending_disable_widget
+
+            if widget:
+                ImGui.text_colored(
+                    "Warning - This widget is required for core functionality!",
+                    (1.0, 0.2, 0.2, 1.0),
+                    font_size=16
+                )
+                PyImGui.separator()
+
+                ImGui.text_wrapped(
+                    f"The widget '{widget.name}' is a SYSTEM widget.\n\n"
+                    "Disabling it may break core functionality.\n\n"
+                    "Are you sure you want to continue?"
+                )
+
+                PyImGui.spacing()
+                PyImGui.separator()
+                PyImGui.spacing()
+
+                PyImGui.columns(2, "widget_manager_confirmation_buttons", False)
+                if ImGui.button("Cancel", -1, 0):
+                    self._pending_disable_widget = None
+                    PyImGui.close_current_popup()
+
+                PyImGui.next_column()
+                if ImGui.button("Disable", -1, 0):
+                    self.disable_widget(widget.plain_name)
+                    self._pending_disable_widget = None
+                    PyImGui.close_current_popup()
+                PyImGui.end_columns()
+
+            PyImGui.end_popup()
     #endregion        
 
         
@@ -2579,7 +2571,7 @@ class WidgetHandler:
                             if new_enabled:
                                 widget.enable()
                             else:
-                                widget.disable()
+                                self._request_disable_widget(widget)
                                 
                             IniManager().set(key=INI_KEY, var_name=v_enabled, value=widget.enabled, section=section_name)
                             IniManager().save_vars(INI_KEY)
