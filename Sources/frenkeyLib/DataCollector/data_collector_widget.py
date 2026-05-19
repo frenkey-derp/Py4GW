@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from enum import IntEnum, auto
 import json
 import os
-from typing import Any, Generic, Iterable, Optional, Protocol, Sequence, TypeVar, cast, runtime_checkable
+from typing import Any, Callable, Generic, Iterable, Optional, Protocol, Sequence, TypeVar, cast, runtime_checkable
 
 import Py4GW
 import PyImGui
@@ -128,20 +128,171 @@ class Item:
     def from_dict(cls, data: dict) -> 'Item':
         return cls(**cls._base_kwargs_from_dict(data))
 
+    @staticmethod
+    def normalize_name(name: str) -> str:
+        return ''.join(character.lower() for character in name if character.isalnum())
+
+    @staticmethod
+    def is_missing_name(name: str) -> bool:
+        return not name or name.startswith('Model')
+
+    @staticmethod
+    def snapshot_name(item: ItemSnapshot) -> str:
+        return item.names.plain_singular if item.names.plain_singular != 'Unknown Item' else ''
+
+    @staticmethod
+    def is_unknown_item_type(item_type: ItemType) -> bool:
+        return item_type == ItemType.Unknown
+
+    @property
+    def specificity_rank(self) -> int:
+        return 1
+
+    @property
+    def sort_key(self) -> tuple[str, str]:
+        return self.item_type.name, self.name
+
+    def has_specific_attribute(self) -> bool:
+        return False
+
+    def has_specific_profession(self) -> bool:
+        return False
+
+    def _matches_type(self, other: 'Item') -> bool:
+        return (
+            self.item_type == other.item_type
+            or self.is_unknown_item_type(self.item_type)
+            or self.is_unknown_item_type(other.item_type)
+        )
+
+    def _matches_attribute(self, other: 'Item') -> bool:
+        return True
+
+    def _matches_profession(self, other: 'Item') -> bool:
+        return True
+
+    def _matches_collectible(self, other: 'Item') -> bool:
+        same_collectible = getattr(self, 'required_collectible', None) == getattr(other, 'required_collectible', None)
+        collectible_placeholder_match = (
+            same_collectible
+            and same_collectible != tuple[int, int]()
+            and self._matches_type(other)
+            and self._matches_profession(other)
+            and (
+                self.is_missing_name(self.name)
+                or self.is_missing_name(other.name)
+                or int(self.model_id or 0) == 0
+                or int(other.model_id or 0) == 0
+            )
+        )
+        if collectible_placeholder_match:
+            return True
+
+        if same_collectible and same_collectible != tuple[int, int]():
+            return (
+                self.normalize_name(self.name) == self.normalize_name(other.name)
+                and self._matches_type(other)
+                and self._matches_attribute(other)
+                and self._matches_profession(other)
+            )
+
+        return False
+
+    def _matches_identity(self, other: 'Item') -> bool:
+        if self.model_id and other.model_id and not self.has_specific_attribute() and not other.has_specific_attribute():
+            return self.model_id == other.model_id and self._matches_type(other)
+
+        if self._matches_collectible(other):
+            return True
+
+        return (
+            self.normalize_name(self.name) == self.normalize_name(other.name)
+            and self._matches_type(other)
+            and self._matches_attribute(other)
+            and self._matches_profession(other)
+        )
+
+    def _merge_base_fields_from(self, other: 'Item') -> bool:
+        changed = False
+
+        if not self.is_missing_name(other.name) and self.name != other.name:
+            self.name = other.name
+            changed = True
+
+        if self.is_unknown_item_type(self.item_type) and not self.is_unknown_item_type(other.item_type):
+            self.item_type = other.item_type
+            changed = True
+
+        if int(self.model_id or 0) == 0 and int(other.model_id or 0) != 0:
+            self.model_id = other.model_id
+            changed = True
+
+        if hasattr(self, 'required_materials'):
+            existing_requirements = getattr(self, 'required_materials', None)
+            candidate_requirements = getattr(other, 'required_materials', None)
+            if isinstance(existing_requirements, CraftingRequirements) and isinstance(candidate_requirements, CraftingRequirements):
+                if existing_requirements == CraftingRequirements() and candidate_requirements != CraftingRequirements():
+                    self.required_materials = candidate_requirements
+                    changed = True
+
+        if hasattr(self, 'required_collectible'):
+            existing_collectible = getattr(self, 'required_collectible', None)
+            candidate_collectible = getattr(other, 'required_collectible', None)
+            if not existing_collectible and candidate_collectible:
+                self.required_collectible = candidate_collectible
+                changed = True
+
+        return changed
+
+    @classmethod
+    def upsert_into(cls, items: list['TItem'], candidate: 'TItem') -> bool:
+        existing_index = next((index for index, existing in enumerate(items) if existing.matches(candidate)), -1)
+        if existing_index >= 0:
+            existing = items[existing_index]
+            if candidate.specificity_rank > existing.specificity_rank:
+                replacement = candidate
+                replacement.update_from(existing)
+                items[existing_index] = replacement
+                changed = True
+            else:
+                changed = existing.update_from(candidate)
+            if not changed:
+                return False
+        else:
+            items.append(candidate)
+            changed = True
+
+        items.sort(key=lambda item: item.sort_key)
+        return changed
+
+    @classmethod
+    def merge_items(cls, items: list['TItem'], candidates: Iterable['TItem']) -> bool:
+        changed = False
+        for candidate in candidates:
+            if cls.upsert_into(items, candidate):
+                changed = True
+        return changed
+
+    @classmethod
+    def from_snapshot(cls, item: ItemSnapshot) -> 'Item':
+        item_name = cls.snapshot_name(item)
+        if item.is_weapon:
+            return Weapon.from_snapshot(item, item_name=item_name)
+        if item.is_armor:
+            return Armor.from_snapshot(item, item_name=item_name)
+        return cls(
+            name=item_name,
+            item_type=item.item_type,
+            model_id=item.model_id,
+        )
+
     def matches(self, other: object) -> bool:
-        return isinstance(other, Item) and _same_item_identity(self, other)
+        return isinstance(other, Item) and self._matches_identity(other)
 
     def update_from(self, other: object) -> bool:
         if not isinstance(other, Item):
             return False
-
-        if isinstance(self, Weapon) and isinstance(other, Weapon):
-            return _merge_weapon_fields(self, other)
-
-        if isinstance(self, Armor) and isinstance(other, Armor):
-            return _merge_armor_fields(self, other)
-
-        return _merge_base_item_fields(self, other)
+        return self._merge_base_fields_from(other)
 
 
 @dataclass
@@ -280,6 +431,71 @@ class Weapon(Item):
     def from_dict(cls, data: dict) -> 'Weapon':
         return cls(**cls._weapon_kwargs_from_dict(data))
 
+    @property
+    def specificity_rank(self) -> int:
+        return 3
+
+    def has_specific_attribute(self) -> bool:
+        return self.attribute != Attribute.None_
+
+    def _matches_attribute(self, other: 'Item') -> bool:
+        if not isinstance(other, Weapon):
+            return True
+        return (
+            not self.has_specific_attribute()
+            or not other.has_specific_attribute()
+            or self.attribute == other.attribute
+        )
+
+    def update_from(self, other: object) -> bool:
+        if not isinstance(other, Weapon):
+            return False
+
+        changed = super().update_from(other)
+
+        if self.requirement == 0 and other.requirement != 0:
+            self.requirement = other.requirement
+            changed = True
+        if self.attribute == Attribute.None_ and other.attribute != Attribute.None_:
+            self.attribute = other.attribute
+            changed = True
+        if (self.damage == (0, 0) or self.damage is None) and other.damage != (0, 0):
+            self.damage = other.damage
+            changed = True
+        if self.energy is None and other.energy is not None:
+            self.energy = other.energy
+            changed = True
+        if self.prefix is None and other.prefix is not None:
+            self.prefix = other.prefix
+            changed = True
+        if self.suffix is None and other.suffix is not None:
+            self.suffix = other.suffix
+            changed = True
+        if self.inscription is None and other.inscription is not None:
+            self.inscription = other.inscription
+            changed = True
+        if not self.inherent and other.inherent:
+            self.inherent = list(other.inherent)
+            changed = True
+
+        return changed
+
+    @classmethod
+    def from_snapshot(cls, item: ItemSnapshot, *, item_name: Optional[str] = None) -> 'Weapon':
+        return cls(
+            name=item_name if item_name is not None else cls.snapshot_name(item),
+            item_type=item.item_type,
+            model_id=item.model_id,
+            requirement=item.requirement,
+            attribute=item.attribute,
+            damage=(item.min_damage, item.max_damage),
+            energy=item.energy,
+            prefix=item.prefix,
+            suffix=item.suffix,
+            inscription=item.inscription,
+            inherent=list(item.inherents or []),
+        )
+
 @dataclass
 class Armor(Item):
     armor_rating: int = 0
@@ -306,6 +522,48 @@ class Armor(Item):
             profession=Profession[profession_name] if profession_name in Profession.__members__ else Profession._None,
         )
 
+    @property
+    def specificity_rank(self) -> int:
+        return 3
+
+    def has_specific_profession(self) -> bool:
+        return self.profession != Profession._None
+
+    def _matches_profession(self, other: 'Item') -> bool:
+        if not isinstance(other, Armor):
+            return True
+        return (
+            not self.has_specific_profession()
+            or not other.has_specific_profession()
+            or self.profession == other.profession
+        )
+
+    def update_from(self, other: object) -> bool:
+        if not isinstance(other, Armor):
+            return False
+
+        changed = super().update_from(other)
+
+        if self.armor_rating == 0 and other.armor_rating != 0:
+            self.armor_rating = other.armor_rating
+            changed = True
+        if self.profession == Profession._None and other.profession != Profession._None:
+            self.profession = other.profession
+            changed = True
+
+        return changed
+
+    @classmethod
+    def from_snapshot(cls, item: ItemSnapshot, *, item_name: Optional[str] = None) -> 'Armor':
+        profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
+        return cls(
+            name=item_name if item_name is not None else cls.snapshot_name(item),
+            item_type=item.item_type,
+            model_id=item.model_id,
+            profession=profession,
+            armor_rating=item.armor,
+        )
+
 
 
 @dataclass
@@ -322,6 +580,13 @@ class CraftableWeapon(Weapon, Craftable):
         return cls(
             **cls._weapon_kwargs_from_dict(data),
             **Craftable._craftable_from_dict(data),
+        )
+
+    @classmethod
+    def from_snapshot(cls, item: ItemSnapshot, *, item_name: Optional[str] = None) -> 'CraftableWeapon':
+        return cls(
+            **cls._weapon_kwargs_from_dict(Weapon.from_snapshot(item, item_name=item_name).to_dict()),
+            required_materials=CraftingRequirements(),
         )
 
 
@@ -344,6 +609,16 @@ class CraftableArmor(Armor, Craftable):
             **Craftable._craftable_from_dict(data),
         )
 
+    @classmethod
+    def from_snapshot(cls, item: ItemSnapshot, *, item_name: Optional[str] = None) -> 'CraftableArmor':
+        armor = Armor.from_snapshot(item, item_name=item_name)
+        return cls(
+            **Armor._base_kwargs_from_dict(armor.to_dict()),
+            armor_rating=armor.armor_rating,
+            profession=armor.profession,
+            required_materials=CraftingRequirements(),
+        )
+
 @dataclass
 class CollectibleWeapon(Weapon, Collectible):
     SERIALIZATION_KIND = 'collectible_weapon'
@@ -358,6 +633,23 @@ class CollectibleWeapon(Weapon, Collectible):
         return cls(
             **cls._weapon_kwargs_from_dict(data),
             **Collectible._collectible_from_dict(data),
+        )
+
+    @property
+    def specificity_rank(self) -> int:
+        return 4
+
+    @classmethod
+    def from_snapshot(
+        cls,
+        item: ItemSnapshot,
+        *,
+        required_collectible: tuple[int, int] | None = None,
+        item_name: Optional[str] = None,
+    ) -> 'CollectibleWeapon':
+        return cls(
+            **cls._weapon_kwargs_from_dict(Weapon.from_snapshot(item, item_name=item_name).to_dict()),
+            required_collectible=required_collectible or tuple[int, int](),
         )
 
 
@@ -381,10 +673,34 @@ class CollectibleArmor(Armor, Collectible):
             **Collectible._collectible_from_dict(data),
         )
 
+    @property
+    def specificity_rank(self) -> int:
+        return 4
+
+    @classmethod
+    def from_snapshot(
+        cls,
+        item: ItemSnapshot,
+        *,
+        required_collectible: tuple[int, int] | None = None,
+        item_name: Optional[str] = None,
+    ) -> 'CollectibleArmor':
+        armor = Armor.from_snapshot(item, item_name=item_name)
+        return cls(
+            **Armor._base_kwargs_from_dict(armor.to_dict()),
+            armor_rating=armor.armor_rating,
+            profession=armor.profession,
+            required_collectible=required_collectible or tuple[int, int](),
+        )
+
 
 @dataclass
 class CollectorItem(Item, Collectible):
     SERIALIZATION_KIND = 'collector_item'
+
+    @property
+    def specificity_rank(self) -> int:
+        return 2
 
     def to_dict(self) -> dict:
         payload = Item.to_dict(self)
@@ -396,6 +712,21 @@ class CollectorItem(Item, Collectible):
         return cls(
             **Item._base_kwargs_from_dict(data),
             **Collectible._collectible_from_dict(data),
+        )
+
+    @classmethod
+    def from_snapshot(
+        cls,
+        item: ItemSnapshot,
+        *,
+        required_collectible: tuple[int, int] | None = None,
+        item_name: Optional[str] = None,
+    ) -> 'CollectorItem':
+        return cls(
+            name=item_name if item_name is not None else cls.snapshot_name(item),
+            item_type=item.item_type,
+            model_id=item.model_id,
+            required_collectible=required_collectible or tuple[int, int](),
         )
 
 
@@ -413,6 +744,19 @@ class CraftableItem(Item, Craftable):
         return cls(
             **Item._base_kwargs_from_dict(data),
             **Craftable._craftable_from_dict(data),
+        )
+
+    @classmethod
+    def from_snapshot(cls, item: ItemSnapshot, *, item_name: Optional[str] = None) -> 'CraftableItem | CraftableWeapon | CraftableArmor':
+        item_name = item_name if item_name is not None else cls.snapshot_name(item)
+        if item.is_weapon:
+            return CraftableWeapon.from_snapshot(item, item_name=item_name)
+        if item.is_armor:
+            return CraftableArmor.from_snapshot(item, item_name=item_name)
+        return cls(
+            name=item_name,
+            item_type=item.item_type,
+            model_id=item.model_id,
         )
 
 
@@ -590,6 +934,54 @@ class AgentEntity:
         offered_items = MerchantTrading.Trading.Crafter.GetOfferedItems()
         return list(offered_items or [])
 
+    @staticmethod
+    def _normalize_name(name: str) -> str:
+        return ''.join(character.lower() for character in name if character.isalnum())
+
+    @staticmethod
+    def _log_collection_result(crafter_name: str, collected_count: int, item_label: str):
+        if collected_count > 0:
+            Py4GW.Console.Log(MODULE_NAME, f"Collected {collected_count} {item_label} entries from '{crafter_name}'.", Py4GW.Console.MessageType.Success)
+        else:
+            Py4GW.Console.Log(MODULE_NAME, f"No new {item_label} entries were found for '{crafter_name}'.", Py4GW.Console.MessageType.Warning)
+
+    def _merge_item_collection(self, items: list[TItem], candidates: Iterable[TItem]) -> bool:
+        return Item.merge_items(items, candidates)
+
+    def _collect_simple_items(
+        self,
+        items: list[TItem],
+        *,
+        builder: Callable[[ItemSnapshot, str], TItem],
+        item_label: str,
+    ) -> bool:
+        self.last_collection_had_pending_names = False
+        if not self.IsCrafterOpen():
+            Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
+            return False
+
+        snapshots = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
+        collected_count = 0
+        pending_name_update = False
+
+        for snapshot in snapshots:
+            if snapshot is None or not snapshot.is_valid:
+                continue
+
+            item_name = Item.snapshot_name(snapshot)
+            if not item_name:
+                pending_name_update = True
+                continue
+
+            if Item.upsert_into(items, builder(snapshot, item_name)):
+                collected_count += 1
+
+        self._log_collection_result(self.name, collected_count, item_label)
+        self.last_collection_had_pending_names = pending_name_update
+        if pending_name_update:
+            Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
+        return collected_count > 0
+
     def IsCrafterOpen(self) -> bool:
         return False
 
@@ -613,7 +1005,7 @@ class AgentEntity:
         if self.model_id != 0 and other.model_id != 0:
             return self.model_id == other.model_id and self.allegiance == other.allegiance
 
-        return _normalize_item_name(self.name) == _normalize_item_name(other.name) and self.allegiance == other.allegiance
+        return self._normalize_name(self.name) == self._normalize_name(other.name) and self.allegiance == other.allegiance
 
     def update_from(self, other: object) -> bool:
         if not isinstance(other, AgentEntity):
@@ -711,7 +1103,7 @@ class Foe(AgentEntity):
         if self.model_id != 0 and other.model_id != 0 and self.model_id != other.model_id:
             return False
 
-        same_name = _normalize_item_name(self.name) == _normalize_item_name(other.name)
+        same_name = self._normalize_name(self.name) == self._normalize_name(other.name)
         same_primary = self.primary_profession in (None, other.primary_profession) or other.primary_profession is None
         same_secondary = self.secondary_profession in (None, other.secondary_profession) or other.secondary_profession is None
         return same_name and same_primary and same_secondary
@@ -807,7 +1199,7 @@ class Chest(AgentEntity):
         if self.model_id != 0 and other.model_id != 0:
             return self.model_id == other.model_id
 
-        return _normalize_item_name(self.name) == _normalize_item_name(other.name)
+        return self._normalize_name(self.name) == self._normalize_name(other.name)
 
     def update_from(self, other: object) -> bool:
         if not isinstance(other, Chest):
@@ -953,7 +1345,7 @@ class StationaryNpc(AgentEntity):
         if self.model_id != 0 and other.model_id != 0:
             return self.model_id == other.model_id
 
-        return _normalize_item_name(self.name) == _normalize_item_name(other.name)
+        return self._normalize_name(self.name) == self._normalize_name(other.name)
 
     def update_from(self, other: object) -> bool:
         if not isinstance(other, StationaryNpc):
@@ -1012,29 +1404,11 @@ class Merchant(Ally):
         return list(MerchantTrading.Trading.Merchant.GetOfferedItems() or [])
 
     def CollectData(self) -> bool:
-        self.last_collection_had_pending_names = False
-        if not self.IsCrafterOpen():
-            Py4GW.Console.Log(MODULE_NAME, f"Merchant '{self.name}' is not open. Please open their merchant window before collecting data.", Py4GW.Console.MessageType.Warning)
-            return False
-
-        snapshots = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
-        collected_count = 0
-        pending_name_update = False
-        for item in snapshots:
-            if item is None or not item.is_valid:
-                continue
-            item_name = _get_snapshot_name(item)
-            if not item_name:
-                pending_name_update = True
-                continue
-            if _upsert_named_item(self.items, _build_item_from_snapshot(item)):
-                collected_count += 1
-
-        _log_collection_result(self.name, collected_count, 'merchant item')
-        self.last_collection_had_pending_names = pending_name_update
-        if pending_name_update:
-            Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this merchant again...", Py4GW.Console.MessageType.Warning)
-        return collected_count > 0
+        return self._collect_simple_items(
+            self.items,
+            builder=lambda snapshot, item_name: Item.from_snapshot(snapshot),
+            item_label='merchant item',
+        )
 
     def GetCollectedCount(self) -> int:
         return len(self.items)
@@ -1050,7 +1424,7 @@ class Merchant(Ally):
             return False
 
         changed = StationaryNpc.update_from(self, other)
-        if _merge_named_items(self.items, other.items):
+        if self._merge_item_collection(self.items, other.items):
             changed = True
         return changed
     
@@ -1144,7 +1518,7 @@ class Trader(Ally):
             self.trader_type = other.trader_type
             changed = True
 
-        if _merge_named_items(self.items, other.items):
+        if self._merge_item_collection(self.items, other.items):
             changed = True
 
         return changed
@@ -1166,7 +1540,11 @@ class Artisan(Ally):
         )
 
     def CollectData(self) -> bool:
-        return _collect_simple_crafter_items(self, self.items)
+        return self._collect_simple_items(
+            self.items,
+            builder=lambda snapshot, item_name: cast(CraftableItem, CraftableItem.from_snapshot(snapshot, item_name=item_name)),
+            item_label='craftable item',
+        )
 
     def GetCollectedCount(self) -> int:
         return len(self.items)
@@ -1182,7 +1560,7 @@ class Artisan(Ally):
             return False
 
         changed = StationaryNpc.update_from(self, other)
-        if _merge_named_items(self.items, other.items):
+        if self._merge_item_collection(self.items, other.items):
             changed = True
         return changed
 
@@ -1203,7 +1581,11 @@ class ConsumableCrafter(Ally):
         )
 
     def CollectData(self) -> bool:
-        return _collect_simple_crafter_items(self, self.consumables)
+        return self._collect_simple_items(
+            self.consumables,
+            builder=lambda snapshot, item_name: cast(CraftableItem, CraftableItem.from_snapshot(snapshot, item_name=item_name)),
+            item_label='craftable item',
+        )
 
     def GetCollectedCount(self) -> int:
         return len(self.consumables)
@@ -1219,7 +1601,7 @@ class ConsumableCrafter(Ally):
             return False
 
         changed = StationaryNpc.update_from(self, other)
-        if _merge_named_items(self.consumables, other.consumables):
+        if self._merge_item_collection(self.consumables, other.consumables):
             changed = True
         return changed
 
@@ -1253,16 +1635,16 @@ class Weaponsmith(Ally):
             if item is None or not item.is_valid or not item.is_weapon:
                 continue
 
-            weapon_name = _get_snapshot_name(item)
+            weapon_name = Item.snapshot_name(item)
             if not weapon_name:
                 pending_name_update = True
                 continue
 
-            weapon = _build_craftable_weapon_from_snapshot(item)
-            if _upsert_named_item(self.weapons, weapon):
+            weapon = cast(CraftableWeapon, CraftableItem.from_snapshot(item, item_name=weapon_name))
+            if Item.upsert_into(self.weapons, weapon):
                 collected_count += 1
 
-        _log_collection_result(self.name, collected_count, 'weapon')
+        self._log_collection_result(self.name, collected_count, 'weapon')
         self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
@@ -1282,7 +1664,7 @@ class Weaponsmith(Ally):
             return False
 
         changed = StationaryNpc.update_from(self, other)
-        if _merge_named_items(self.weapons, other.weapons):
+        if self._merge_item_collection(self.weapons, other.weapons):
             changed = True
         return changed
 
@@ -1312,6 +1694,32 @@ class Collector(Ally):
         offered_items = MerchantTrading.Trading.Collector.GetOfferedItems()
         return list(offered_items or [])
 
+    def _build_collectible_item_from_snapshot(
+        self,
+        item: ItemSnapshot,
+        required_collectible: tuple[int, int] | None,
+        *,
+        item_name: Optional[str] = None,
+    ) -> Item:
+        item_name = item_name if item_name is not None else Item.snapshot_name(item)
+        if item.is_weapon:
+            return CollectibleWeapon.from_snapshot(
+                item,
+                required_collectible=required_collectible,
+                item_name=item_name,
+            )
+        if item.is_armor:
+            return CollectibleArmor.from_snapshot(
+                item,
+                required_collectible=required_collectible,
+                item_name=item_name,
+            )
+        return CollectorItem.from_snapshot(
+            item,
+            required_collectible=required_collectible,
+            item_name=item_name,
+        )
+
     def CollectData(self) -> bool:
         self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
@@ -1338,17 +1746,19 @@ class Collector(Ally):
             if exchange_item is not None and item.model_id == exchange_item[0]:
                 continue
 
-            item_name = _get_snapshot_name(item)
+            item_name = Item.snapshot_name(item)
             if not item_name:
                 pending_name_update = True
                 continue
             
-            existing = next((existing_item for existing_item in self.items if _same_item_identity(existing_item, item)), None)
-            collectible_item = _build_collectible_item_typed_from_snapshot(item, exchange_item)
-            if _upsert_named_item(self.items, collectible_item):
+            collectible_item = cast(
+                CollectibleWeapon | CollectibleArmor | CollectorItem,
+                self._build_collectible_item_from_snapshot(item, exchange_item, item_name=item_name),
+            )
+            if Item.upsert_into(self.items, collectible_item):
                 collected_count += 1
 
-        _log_collection_result(self.name, collected_count, 'collector')
+        self._log_collection_result(self.name, collected_count, 'collector')
         self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
@@ -1388,7 +1798,7 @@ class Collector(Ally):
             return False
 
         changed = StationaryNpc.update_from(self, other)
-        if _merge_named_items(self.items, other.items):
+        if self._merge_item_collection(self.items, other.items):
             changed = True
         return changed
 
@@ -1436,7 +1846,7 @@ class Armorer(Ally):
     
 
     def _build_craftable_armor_from_snapshot(self, item: ItemSnapshot) -> CraftableArmor:
-        return cast(CraftableArmor, _build_craftable_item_from_snapshot(item))
+        return cast(CraftableArmor, CraftableItem.from_snapshot(item))
 
     def CollectData(self) -> bool:
         self.last_collection_had_pending_names = False
@@ -1466,7 +1876,7 @@ class Armorer(Ally):
             if profession in (None, Profession._None):
                 continue
 
-            armor_name = _get_snapshot_name(item)
+            armor_name = Item.snapshot_name(item)
             if not armor_name:
                 pending_name_update = True
                 continue
@@ -1501,15 +1911,15 @@ class Armorer(Ally):
                     getattr(existing_armor, 'profession', None) == armor.profession
                     and (
                         existing_armor.item_type == armor.item_type
-                        or _is_unknown_item_type(existing_armor.item_type)
-                        or _is_unknown_item_type(armor.item_type)
+                        or Item.is_unknown_item_type(existing_armor.item_type)
+                        or Item.is_unknown_item_type(armor.item_type)
                     )
                 )
             ]
             unresolved_same_slot_entries = [
                 existing_armor
                 for existing_armor in same_slot_entries
-                if existing_armor.model_id == 0 or existing_armor.armor_rating == 0 or _is_missing_name(existing_armor.name)
+                if existing_armor.model_id == 0 or existing_armor.armor_rating == 0 or Item.is_missing_name(existing_armor.name)
             ]
 
             existing: CraftableArmor | None = None
@@ -1520,8 +1930,8 @@ class Armorer(Ally):
                     existing = same_slot_entries[0]
 
             if existing is None:
-                candidate_words = _split_item_name_words(armor.name)
-                candidate_core_words = _strip_elite_prefix(candidate_words)
+                candidate_words = self._split_item_name_words(armor.name)
+                candidate_core_words = self._strip_elite_prefix(candidate_words)
                 candidate_first_word = candidate_core_words[0] if candidate_core_words else ''
 
                 scored_matches: list[tuple[int, CraftableArmor]] = []
@@ -1529,8 +1939,8 @@ class Armorer(Ally):
                     if existing_armor.name in generic_armors:
                         continue
 
-                    existing_words = _split_item_name_words(existing_armor.name)
-                    existing_core_words = _strip_elite_prefix(existing_words)
+                    existing_words = self._split_item_name_words(existing_armor.name)
+                    existing_core_words = self._strip_elite_prefix(existing_words)
                     existing_first_word = existing_core_words[0] if existing_core_words else ''
                     shared_words = set(candidate_core_words) & set(existing_core_words)
                     score = 0
@@ -1553,7 +1963,7 @@ class Armorer(Ally):
                         existing = best_matches[0]
 
             if existing is not None:
-                if _merge_armor_fields(existing, armor):
+                if existing.update_from(armor):
                     collected_count += 1
                 else:
                     # Keep these aligned even when nothing else changed so future identity matches stay stable.
@@ -1564,7 +1974,7 @@ class Armorer(Ally):
             if self._upsert_craftable_armor(armor):
                 collected_count += 1
 
-        _log_collection_result(self.name, collected_count, 'armor')
+        self._log_collection_result(self.name, collected_count, 'armor')
         self.last_collection_had_pending_names = pending_name_update
         if pending_name_update:
             Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{self.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
@@ -1576,20 +1986,30 @@ class Armorer(Ally):
         existing_index = next(
             (
                 index for index, existing in enumerate(entries)
-                if _same_item_identity(existing, armor)
+                if existing.matches(armor)
             ),
             -1,
         )
 
         if existing_index >= 0:
             existing = entries[existing_index]
-            if not _merge_armor_fields(existing, armor):
+            if not existing.update_from(armor):
                 return False
         else:
             entries.append(armor)
 
-        entries.sort(key=lambda entry: (entry.item_type.name, entry.name))
+        entries.sort(key=lambda entry: entry.sort_key)
         return True
+
+    @staticmethod
+    def _split_item_name_words(name: str) -> list[str]:
+        return [word for word in ''.join(character.lower() if character.isalnum() else ' ' for character in name).split() if word]
+
+    @staticmethod
+    def _strip_elite_prefix(words: list[str]) -> list[str]:
+        if words and words[0] == 'elite':
+            return words[1:]
+        return words
         
     def GetCollectedCount(self) -> int:
         return sum(len(entries) for entries in self.armors.values())
@@ -1621,396 +2041,10 @@ class Armorer(Ally):
                 changed = True
                 continue
 
-            if _merge_named_items(self.armors[profession], armors):
+            if self._merge_item_collection(self.armors[profession], armors):
                 changed = True
 
         return changed
-    
-
-ARMORERS: list[Armorer] = []
-ARTISANS: list[Artisan] = []
-CONSUMABLE_CRAFTERS: list[ConsumableCrafter] = []
-WEAPONSMITHS: list[Weaponsmith] = []
-COLLECTORS: list[Collector] = []
-MERCHANTS: list[Merchant] = []
-TRADERS: list[Trader] = []
-ALLIES: list[Ally] = []
-FOES: list[Foe] = []
-_data_initialized = False
-
-
-CRAFTER_TYPE_MAP = {
-    'armorers': (ARMORERS, Armorer),
-    'artisans': (ARTISANS, Artisan),
-    'consumable_crafters': (CONSUMABLE_CRAFTERS, ConsumableCrafter),
-    'weaponsmiths': (WEAPONSMITHS, Weaponsmith),
-    'collectors': (COLLECTORS, Collector),
-    'merchants': (MERCHANTS, Merchant),
-    'traders': (TRADERS, Trader),
-    'allies': (ALLIES, Ally),
-    'foes': (FOES, Foe),
-}
-
-PROFESSION_ORDER = [
-    Profession.Warrior,
-    Profession.Ranger,
-    Profession.Monk,
-    Profession.Necromancer,
-    Profession.Mesmer,
-    Profession.Elementalist,
-    Profession.Assassin,
-    Profession.Ritualist,
-    Profession.Paragon,
-    Profession.Dervish,
-]
-
-PROFESSION_LABELS = {
-    Profession.Warrior: 'W',
-    Profession.Ranger: 'R',
-    Profession.Monk: 'Mo',
-    Profession.Necromancer: 'N',
-    Profession.Mesmer: 'Me',
-    Profession.Elementalist: 'E',
-    Profession.Assassin: 'A',
-    Profession.Ritualist: 'Rt',
-    Profession.Paragon: 'P',
-    Profession.Dervish: 'D',
-}
-
-search_query = ''
-show_unlocked_only = False
-show_armorers = True
-show_artisans = True
-show_consumable_crafters = True
-show_weaponsmiths = True
-show_collectors = True
-show_merchants = True
-show_traders = True
-show_allies = False
-show_foes = False
-out_posts = Map.GetOutpostIDs()
-_data_revision = 0
-_visible_npcs_cache: list['AnyNpc'] = []
-_visible_npcs_cache_key: tuple[Any, ...] | None = None
-_stats_cache: dict[str, Any] = {}
-_stats_cache_revision = -1
-_last_passive_scan_at: datetime | None = None
-_last_scan_instance_key: tuple[int, int, int, int] | None = None
-_scanned_agent_ids_current_map: set[int] = set()
-_pending_agent_scan_attempts_current_map: dict[int, int] = {}
-_current_map_stationary_npcs: list[StationaryNpc] = []
-_current_map_missing_stationary_npcs: list[StationaryNpc] = []
-_pending_auto_save = False
-_last_auto_save_at: datetime | None = None
-_dirty_category_keys: set[str] = set()
-
-CRAFTER_SWEEP_CONTROLLER.set_module_name(MODULE_NAME)
-
-AnyCrafter = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant
-AnyNpc = Armorer | Artisan | ConsumableCrafter | Weaponsmith | Collector | Merchant | Trader | Ally | Foe
-
-
-def _same_item_identity(existing: Any, candidate: Any) -> bool:
-    same_name = _normalize_item_name(existing.name) == _normalize_item_name(candidate.name)
-    same_type = existing.item_type == candidate.item_type or _is_unknown_item_type(existing.item_type) or _is_unknown_item_type(candidate.item_type)
-    same_attribute = (
-        not _has_specific_attribute(existing)
-        or not _has_specific_attribute(candidate)
-        or getattr(existing, 'attribute', Attribute.None_) == getattr(candidate, 'attribute', Attribute.None_)
-    )
-    same_profession = (
-        not _has_specific_profession(existing)
-        or not _has_specific_profession(candidate)
-        or getattr(existing, 'profession', Profession._None) == getattr(candidate, 'profession', Profession._None)
-    )
-    same_collectible = getattr(existing, 'required_collectible', None) == getattr(candidate, 'required_collectible', None)
-    collectible_placeholder_match = (
-        same_collectible
-        and same_collectible != tuple[int, int]()
-        and same_type
-        and same_profession
-        and (
-            _is_missing_name(getattr(existing, 'name', ''))
-            or _is_missing_name(getattr(candidate, 'name', ''))
-            or int(getattr(existing, 'model_id', 0) or 0) == 0
-            or int(getattr(candidate, 'model_id', 0) or 0) == 0
-        )
-    )
-
-    if existing.model_id and candidate.model_id and not hasattr(existing, 'attribute'):
-        return existing.model_id == candidate.model_id and same_type
-
-    if collectible_placeholder_match:
-        return True
-
-    if same_collectible and same_collectible != tuple[int, int]():
-        return same_name and same_type and same_attribute and same_profession
-
-    return same_name and same_type and same_attribute and same_profession
-
-def _normalize_item_name(name: str) -> str:
-    return ''.join(character.lower() for character in name if character.isalnum())
-
-def _is_unknown_item_type(item_type: ItemType) -> bool:
-    return item_type == ItemType.Unknown
-
-
-def _has_specific_attribute(item: Any) -> bool:
-    return getattr(item, 'attribute', Attribute.None_) != Attribute.None_
-
-
-def _has_specific_profession(item: Any) -> bool:
-    return getattr(item, 'profession', Profession._None) != Profession._None
-
-def _is_missing_name(name: str) -> bool:
-    return not name or name.startswith('Model')
-
-def _merge_weapon_fields(existing: Weapon, candidate: Weapon) -> bool:
-    changed = _merge_base_item_fields(existing, candidate)
-
-    if existing.requirement == 0 and candidate.requirement != 0:
-        existing.requirement = candidate.requirement
-        changed = True
-    if existing.attribute == Attribute.None_ and candidate.attribute != Attribute.None_:
-        existing.attribute = candidate.attribute
-        changed = True
-    if existing.damage == (0, 0) or existing.damage is None and candidate.damage != (0, 0):
-        existing.damage = candidate.damage
-        changed = True
-    if existing.energy is None and candidate.energy is not None:
-        existing.energy = candidate.energy
-        changed = True
-    if existing.prefix is None and candidate.prefix is not None:
-        existing.prefix = candidate.prefix
-        changed = True
-    if existing.suffix is None and candidate.suffix is not None:
-        existing.suffix = candidate.suffix
-        changed = True
-    if existing.inscription is None and candidate.inscription is not None:
-        existing.inscription = candidate.inscription
-        changed = True
-    if not existing.inherent and candidate.inherent:
-        existing.inherent = list(candidate.inherent)
-        changed = True
-
-    return changed
-
-
-def _merge_armor_fields(existing: Armor, candidate: Armor) -> bool:
-    changed = _merge_base_item_fields(existing, candidate)
-
-    if existing.armor_rating == 0 and candidate.armor_rating != 0:
-        existing.armor_rating = candidate.armor_rating
-        changed = True
-    if existing.profession == Profession._None and candidate.profession != Profession._None:
-        existing.profession = candidate.profession
-        changed = True
-
-    return changed
-
-def _merge_base_item_fields(existing: Any, candidate: Any) -> bool:
-    changed = False
-
-    if not _is_missing_name(candidate.name) and existing.name != candidate.name:
-        existing.name = candidate.name
-        changed = True
-
-    if _is_unknown_item_type(existing.item_type) and not _is_unknown_item_type(candidate.item_type):
-        existing.item_type = candidate.item_type
-        changed = True
-
-    if int(existing.model_id or 0) == 0 and int(candidate.model_id or 0) != 0:
-        existing.model_id = candidate.model_id
-        changed = True
-
-    if hasattr(existing, 'required_materials'):
-        existing_requirements = getattr(existing, 'required_materials', None)
-        candidate_requirements = getattr(candidate, 'required_materials', None)
-        if isinstance(existing_requirements, CraftingRequirements) and isinstance(candidate_requirements, CraftingRequirements):
-            if existing_requirements == CraftingRequirements() and candidate_requirements != CraftingRequirements():
-                existing.required_materials = candidate_requirements
-                changed = True
-
-    if hasattr(existing, 'required_collectible'):
-        existing_collectible = getattr(existing, 'required_collectible', None)
-        candidate_collectible = getattr(candidate, 'required_collectible', None)
-        if not existing_collectible and candidate_collectible:
-            existing.required_collectible = candidate_collectible
-            changed = True
-
-    return changed
-
-
-def _get_snapshot_name(item: ItemSnapshot) -> str:
-    return item.names.plain_singular if item.names.plain_singular != 'Unknown Item' else ''
-
-
-def _item_specificity_rank(item: Any) -> int:
-    if isinstance(item, CollectibleWeapon):
-        return 4
-    if isinstance(item, CollectibleArmor):
-        return 4
-    if isinstance(item, Weapon):
-        return 3
-    if isinstance(item, Armor):
-        return 3
-    if isinstance(item, CollectorItem):
-        return 2
-    return 1
-
-def _named_item_sort_key(item: Any) -> tuple[str, str]:
-    item_type = item.item_type.name if hasattr(item.item_type, 'name') else str(item.item_type)
-    return item_type, item.name
-
-def _upsert_named_item(items: list[Any], candidate: Any) -> bool:
-    existing_index = next((index for index, existing in enumerate(items) if _same_item_identity(existing, candidate)), -1)
-    if existing_index >= 0:
-        existing = items[existing_index]
-        if _item_specificity_rank(candidate) > _item_specificity_rank(existing):
-            replacement = candidate
-            if isinstance(existing, Weapon) and isinstance(replacement, Weapon):
-                _merge_weapon_fields(replacement, existing)
-            elif isinstance(existing, Armor) and isinstance(replacement, Armor):
-                _merge_armor_fields(replacement, existing)
-            else:
-                _merge_base_item_fields(replacement, existing)
-            items[existing_index] = replacement
-            changed = True
-        elif isinstance(existing, Weapon) and isinstance(candidate, Weapon):
-            changed = _merge_weapon_fields(existing, candidate)
-        elif isinstance(existing, Armor) and isinstance(candidate, Armor):
-            changed = _merge_armor_fields(existing, candidate)
-        else:
-            changed = _merge_base_item_fields(existing, candidate)
-        if not changed:
-            return False
-    else:
-        items.append(candidate)
-        changed = True
-
-    items.sort(key=_named_item_sort_key)
-    return changed
-
-def _build_item_from_snapshot(item: ItemSnapshot) -> Item | Weapon | Armor:
-    item_name = _get_snapshot_name(item)
-    if item.is_weapon:
-        return Weapon(
-            name=item_name,
-            item_type=item.item_type,
-            model_id=item.model_id,
-            requirement=item.requirement,
-            attribute=item.attribute,
-            damage=(item.min_damage, item.max_damage),
-            energy=item.energy,
-            prefix=item.prefix,
-            suffix=item.suffix,
-            inscription=item.inscription,
-            inherent=list(item.inherents or []),
-        )
-    if item.is_armor:
-        profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
-        return Armor(
-            name=item_name,
-            item_type=item.item_type,
-            model_id=item.model_id,
-            profession=profession,
-            armor_rating=item.armor,
-        )
-    return Item(
-        name=item_name,
-        item_type=item.item_type,
-        model_id=item.model_id,
-    )
-    
-    
-def _log_collection_result(crafter_name: str, collected_count: int, item_label: str):
-    if collected_count > 0:
-        Py4GW.Console.Log(MODULE_NAME, f"Collected {collected_count} {item_label} entries from '{crafter_name}'.", Py4GW.Console.MessageType.Success)
-    else:
-        Py4GW.Console.Log(MODULE_NAME, f"No new {item_label} entries were found for '{crafter_name}'.", Py4GW.Console.MessageType.Warning)
-
-
-def _merge_named_items(items: list[Any], candidates: Iterable[Any]) -> bool:
-    changed = False
-
-    for candidate in candidates:
-        if _upsert_named_item(items, candidate):
-            changed = True
-
-    return changed
-
-
-def _collect_simple_crafter_items(crafter: AgentEntity, items: list[CraftableItem]) -> bool:
-    crafter.last_collection_had_pending_names = False
-    if not crafter.IsCrafterOpen():
-        Py4GW.Console.Log(MODULE_NAME, f"Crafter '{crafter.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
-        return False
-
-    snapshots = [ItemSnapshot.from_item_id(item_id) for item_id in crafter._get_offered_items()]
-    collected_count = 0
-    pending_name_update = False
-
-    for item in snapshots:
-        if item is None or not item.is_valid:
-            continue
-
-        item_name = _get_snapshot_name(item)
-        if not item_name:
-            pending_name_update = True
-            continue
-
-        craftable_item = _build_plain_craftable_item_from_snapshot(item)
-        if _upsert_named_item(items, craftable_item):
-            collected_count += 1
-
-    _log_collection_result(crafter.name, collected_count, 'craftable item')
-    crafter.last_collection_had_pending_names = pending_name_update
-    if pending_name_update:
-        Py4GW.Console.Log(MODULE_NAME, f"Some collected items from '{crafter.name}' are missing names and will be updated once the names are available. Please collect from this crafter again...", Py4GW.Console.MessageType.Warning)
-    return collected_count > 0
-
-def _build_plain_craftable_item_from_snapshot(item: ItemSnapshot) -> CraftableItem:
-    item_name = _get_snapshot_name(item)
-    return CraftableItem(
-        name=item_name,
-        item_type=item.item_type,
-        model_id=item.model_id,
-    )
-
-def _build_craftable_weapon_from_snapshot(item: ItemSnapshot) -> CraftableWeapon:
-    return cast(CraftableWeapon, _build_craftable_item_from_snapshot(item))
-
-
-def _build_craftable_item_from_snapshot(item: ItemSnapshot) -> CraftableItem | CraftableWeapon | CraftableArmor:
-    item_name = _get_snapshot_name(item)
-    if item.is_weapon:
-        return CraftableWeapon(
-            name=item_name,
-            item_type=item.item_type,
-            model_id=item.model_id,
-            requirement=item.requirement,
-            attribute=item.attribute,
-            damage=(item.min_damage, item.max_damage),
-            energy=item.energy,
-            prefix=item.prefix,
-            suffix=item.suffix,
-            inscription=item.inscription,
-            inherent=list(item.inherents or []),
-        )
-    if item.is_armor:
-        profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
-        return CraftableArmor(
-            name=item_name,
-            item_type=item.item_type,
-            model_id=item.model_id,
-            profession=profession,
-            armor_rating=item.armor
-        )
-    return CraftableItem(
-        name=item_name,
-        item_type=item.item_type,
-        model_id=item.model_id,
-    )
     
 def _get_current_profession() -> Profession:
     agent = Agent.GetAgentByID(Player.GetAgentID())
@@ -2024,54 +2058,3 @@ def _get_current_profession() -> Profession:
     except Exception:
         return Profession._None
 
-def _build_collectible_item_typed_from_snapshot(
-    item: ItemSnapshot,
-    required_collectible: tuple[int, int] | None,
-) -> CollectibleWeapon | CollectibleArmor | CollectorItem:
-    return cast(CollectibleWeapon | CollectibleArmor | CollectorItem, _build_collectible_item_from_snapshot(item, required_collectible))
-
-def _build_collectible_item_from_snapshot(item: ItemSnapshot, required_collectible: tuple[int, int] | None) -> Item:
-    item_name = _get_snapshot_name(item)
-    if item.is_weapon:
-        return CollectibleWeapon(
-            name=item_name,
-            item_type=item.item_type,
-            model_id=item.model_id,
-            requirement=item.requirement,
-            attribute=item.attribute,
-            damage=(item.min_damage, item.max_damage),
-            energy=item.energy,
-            prefix=item.prefix,
-            suffix=item.suffix,
-            inscription=item.inscription,
-            inherent=list(item.inherents or []),
-            required_collectible=required_collectible or tuple[int, int](),
-        )
-        
-    if item.is_armor:
-        profession = item.profession if item.profession not in (None, Profession._None) else _get_current_profession()
-
-        return CollectibleArmor(
-            name=item_name,
-            item_type=item.item_type,
-            model_id=item.model_id,
-            profession=profession,
-            armor_rating=item.armor,
-            required_collectible=required_collectible or tuple[int, int](),
-        )
-        
-    return CollectorItem(
-        name=item_name,
-        item_type=item.item_type,
-        model_id=item.model_id,
-        required_collectible=required_collectible or tuple[int, int](),
-    )
-    
-    
-def _split_item_name_words(name: str) -> list[str]:
-    return [word for word in ''.join(character.lower() if character.isalnum() else ' ' for character in name).split() if word]
-
-def _strip_elite_prefix(words: list[str]) -> list[str]:
-    if words and words[0] == 'elite':
-        return words[1:]
-    return words
