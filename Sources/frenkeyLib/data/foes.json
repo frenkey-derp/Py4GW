@@ -1,1 +1,4036 @@
-{}
+{
+    "version": "1.0",
+    "data": [
+        {
+            "name": "Stalking Nephila",
+            "encoded_name": [
+                1,
+                129,
+                235,
+                73,
+                111,
+                162,
+                72,
+                158,
+                179,
+                95,
+                0,
+                0
+            ],
+            "model_id": 4397,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -1531.602783203125,
+                            -2534.91064453125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -596.8123168945312,
+                            -2960.9443359375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3392.469482421875,
+                            -1407.9786376953125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2285.861328125,
+                            -3517.0
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4574.1611328125,
+                            974.5472412109375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2396.364990234375,
+                            -1154.2562255859375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5095.396484375,
+                            -1449.3348388671875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5580.662109375,
+                            1967.23046875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6798.595703125,
+                            1632.4595947265625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6158.39013671875,
+                            -3517.0
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6685.3193359375,
+                            -5574.1640625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6459.37255859375,
+                            666.673095703125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2611.050048828125,
+                            -2547.504638671875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5118.7470703125,
+                            -2464.405517578125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6697.92236328125,
+                            -4536.51904296875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6627.849609375,
+                            7757.05615234375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7313.751953125,
+                            12055.779296875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -10540.69921875,
+                            -633.0189208984375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -9885.1064453125,
+                            149.64422607421875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -10890.765625,
+                            362.2641906738281
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            791.455078125,
+                            -5854.73583984375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -691.3164672851562,
+                            -9792.8623046875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4009.522216796875,
+                            -9448.4736328125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6992.912109375,
+                            -8480.0458984375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6999.60546875,
+                            -9492.68359375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -835.0543212890625,
+                            -1784.484375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            11172.447265625,
+                            10634.6083984375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Fanged Iboga",
+            "encoded_name": [
+                1,
+                129,
+                86,
+                70,
+                34,
+                175,
+                53,
+                175,
+                193,
+                114,
+                0,
+                0
+            ],
+            "model_id": 4441,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -198.85545349121094,
+                            -1000.9318237304688
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -1856.457275390625,
+                            1384.346435546875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            764.6842651367188,
+                            754.6183471679688
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            808.926513671875,
+                            -1102.6455078125
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            1516.1649169921875,
+                            72.2259750366211
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2540.4326171875,
+                            127.98567199707031
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3587.544921875,
+                            11.057708740234375
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -16319.9912109375,
+                            15197.9287109375
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -3889.843017578125,
+                            -5283.20263671875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            492.6519470214844,
+                            -7634.431640625
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            126.6396255493164,
+                            -9937.46875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            1717.831787109375,
+                            -9892.7529296875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2169.8798828125,
+                            -8965.595703125
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "6": [
+                    76
+                ]
+            }
+        },
+        {
+            "name": "Stormseed Jacaranda",
+            "encoded_name": [
+                1,
+                129,
+                89,
+                70,
+                227,
+                187,
+                89,
+                228,
+                131,
+                17,
+                0,
+                0
+            ],
+            "model_id": 4438,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6794.0,
+                            -277.0
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7115.35693359375,
+                            -1845.9427490234375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            9987.1923828125,
+                            2358.162109375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            9476.59375,
+                            1480.9949951171875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            10624.21484375,
+                            1561.17724609375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            14180.2978515625,
+                            -2156.281982421875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            11734.66796875,
+                            3088.91357421875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            14614.697265625,
+                            -1224.17236328125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            11121.349609375,
+                            7199.3359375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            11997.736328125,
+                            4081.4423828125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            14966.8642578125,
+                            7756.7158203125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            12043.9365234375,
+                            7661.5595703125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5117.7373046875,
+                            -11356.5146484375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4256.4169921875,
+                            -11895.2919921875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            9793.107421875,
+                            -11059.7353515625
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            13912.2021484375,
+                            10764.189453125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            12993.4482421875,
+                            8072.86474609375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            14289.068359375,
+                            6986.3671875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Suneh Stormbringer",
+            "encoded_name": [
+                1,
+                129,
+                167,
+                71,
+                87,
+                132,
+                192,
+                238,
+                80,
+                94,
+                0,
+                0
+            ],
+            "model_id": 4389,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7204.0,
+                            -510.0
+                        ],
+                        "level": 5,
+                        "has_boss_aura": true
+                    }
+                ]
+            },
+            "skills": {
+                "5": [
+                    1369,
+                    222
+                ]
+            }
+        },
+        {
+            "name": "Stormseed Jacaranda",
+            "encoded_name": [
+                1,
+                129,
+                88,
+                70,
+                103,
+                221,
+                193,
+                157,
+                118,
+                116,
+                0,
+                0
+            ],
+            "model_id": 4440,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            8514.5615234375,
+                            1224.986083984375
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -3923.2216796875,
+                            18878.263671875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -7124.2041015625,
+                            15655.98046875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8340.32421875,
+                            12192.0
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -11394.6279296875,
+                            10246.609375
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -13699.7724609375,
+                            8339.4765625
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -6853.140625,
+                            -4229.98876953125
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -5933.19140625,
+                            -7319.23974609375
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Fanged Iboga",
+            "encoded_name": [
+                1,
+                129,
+                87,
+                70,
+                210,
+                199,
+                238,
+                140,
+                226,
+                9,
+                0,
+                0
+            ],
+            "model_id": 4439,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            9789.92578125,
+                            -3264.0
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            10995.4130859375,
+                            555.29638671875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            9591.3876953125,
+                            -2258.689697265625
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            15138.0185546875,
+                            802.7772216796875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            13575.21484375,
+                            4182.9736328125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            12586.224609375,
+                            1621.5362548828125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            13777.306640625,
+                            6894.0
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            14223.3486328125,
+                            3339.766357421875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            14979.3486328125,
+                            2611.85546875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            15729.748046875,
+                            1889.3380126953125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            10961.677734375,
+                            1637.9892578125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            10869.9560546875,
+                            2682.578125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4965.724609375,
+                            14109.19921875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7383.99072265625,
+                            14731.2353515625
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3750.364501953125,
+                            15436.986328125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4947.1298828125,
+                            -11891.173828125
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            11013.861328125,
+                            -6663.50927734375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            16367.7568359375,
+                            7558.4208984375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            13375.650390625,
+                            5962.45849609375
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            10747.9912109375,
+                            3694.310546875
+                        ],
+                        "level": 1,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Juvenile Bladed Termite",
+            "encoded_name": [
+                1,
+                129,
+                15,
+                33,
+                161,
+                213,
+                152,
+                181,
+                126,
+                87,
+                0,
+                0
+            ],
+            "model_id": 4431,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            8451.1142578125,
+                            4103.31884765625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7466.91943359375,
+                            3737.25537109375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6716.552734375,
+                            3007.25
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6278.52099609375,
+                            2025.10888671875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5666.6982421875,
+                            1144.9813232421875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4808.53466796875,
+                            533.89501953125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3926.679443359375,
+                            -96.10406494140625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3165.95556640625,
+                            -786.1704711914062
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6734.4775390625,
+                            8448.0
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7320.6875,
+                            9345.7880859375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            8050.77099609375,
+                            10132.7001953125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2463.015380859375,
+                            9408.341796875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5574.2421875,
+                            11980.67578125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            5246.18212890625,
+                            13140.3857421875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3518.44482421875,
+                            9200.599609375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            8892.09375,
+                            10695.373046875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            6557.7412109375,
+                            11549.279296875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            1648.607177734375,
+                            12986.7412109375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            9806.9169921875,
+                            11180.212890625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4573.96240234375,
+                            12157.3720703125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4305.13037109375,
+                            8536.884765625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            7608.79345703125,
+                            11323.5869140625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2543.3955078125,
+                            12478.9794921875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4019.989501953125,
+                            11274.4130859375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3812.17431640625,
+                            10249.8369140625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -2478.732177734375,
+                            15127.140625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3015.01220703125,
+                            11542.3798828125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -3293.0068359375,
+                            15744.8984375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -4789.072265625,
+                            16753.650390625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8660.0009765625,
+                            17988.5078125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -12200.4228515625,
+                            13678.1162109375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14085.8525390625,
+                            12132.0517578125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14027.810546875,
+                            11119.2373046875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -19012.84765625,
+                            9092.8330078125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18982.521484375,
+                            7837.16064453125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -19916.951171875,
+                            8268.1806640625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -15532.4404296875,
+                            2.498915672302246
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -12508.576171875,
+                            -2892.0
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8833.8759765625,
+                            -9791.77734375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -11247.5947265625,
+                            -10765.373046875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8601.9091796875,
+                            3554.665771484375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -955.5675048828125,
+                            -4531.2626953125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            105.41455078125,
+                            -4535.82861328125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            1151.7491455078125,
+                            -4615.04345703125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2674.5458984375,
+                            -8216.9287109375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -153.39468383789062,
+                            -9874.2734375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2133.95947265625,
+                            -4866.80224609375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2436.062255859375,
+                            -7214.73681640625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2950.419921875,
+                            -5476.85546875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            2194.399658203125,
+                            -6198.2333984375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            3685.0,
+                            -6199.0
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            4656.1357421875,
+                            -5847.56689453125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            10769.337890625,
+                            11608.8720703125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Preying Lance",
+            "encoded_name": [
+                1,
+                129,
+                82,
+                70,
+                65,
+                191,
+                116,
+                176,
+                118,
+                77,
+                0,
+                0
+            ],
+            "model_id": 4434,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -1966.67822265625,
+                            17922.28125
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -1333.939453125,
+                            17130.595703125
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8659.7470703125,
+                            14613.103515625
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8262.4990234375,
+                            -1624.5753173828125
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8188.9208984375,
+                            -612.333984375
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -7194.03955078125,
+                            -422.775390625
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Skale Blighter",
+            "encoded_name": [
+                1,
+                129,
+                92,
+                70,
+                38,
+                200,
+                233,
+                146,
+                43,
+                58,
+                0,
+                0
+            ],
+            "model_id": 4419,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8864.4072265625,
+                            12031.23828125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -9750.5166015625,
+                            12534.6015625
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -10654.38671875,
+                            13005.5439453125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -17747.150390625,
+                            6083.41064453125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -17097.30859375,
+                            6872.12548828125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -16293.5908203125,
+                            7520.56982421875
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18272.208984375,
+                            -6096.3544921875
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18069.541015625,
+                            -5080.67724609375
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -11978.392578125,
+                            -9670.197265625
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -6571.994140625,
+                            -5856.97216796875
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -12478.763671875,
+                            -8784.69140625
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -7507.2734375,
+                            -5439.54345703125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Ridgeback Skale",
+            "encoded_name": [
+                1,
+                129,
+                94,
+                70,
+                181,
+                197,
+                87,
+                230,
+                26,
+                41,
+                0,
+                0
+            ],
+            "model_id": 4420,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -8987.9111328125,
+                            12100.515625
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -9900.4560546875,
+                            12548.5556640625
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -10544.4794921875,
+                            13359.4521484375
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -17665.607421875,
+                            6089.0
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -16998.58984375,
+                            6867.46240234375
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18138.630859375,
+                            -6240.0
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18079.208984375,
+                            -5206.70703125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -12024.01953125,
+                            -9541.6123046875
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -6575.44384765625,
+                            -5829.2734375
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -12614.04296875,
+                            -8713.142578125
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -7520.28125,
+                            -5466.4677734375
+                        ],
+                        "level": 4,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Skale Lasher",
+            "encoded_name": [
+                1,
+                129,
+                99,
+                70,
+                191,
+                177,
+                164,
+                184,
+                202,
+                27,
+                0,
+                0
+            ],
+            "model_id": 4421,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14109.9619140625,
+                            14372.0
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -15088.1044921875,
+                            14640.3857421875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -20424.833984375,
+                            3991.306884765625
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18865.71484375,
+                            -4093.207763671875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -15352.07421875,
+                            -6434.228515625
+                        ],
+                        "level": 6,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Ridgeback Skale",
+            "encoded_name": [
+                1,
+                129,
+                95,
+                70,
+                20,
+                198,
+                196,
+                177,
+                100,
+                34,
+                0,
+                0
+            ],
+            "model_id": 4417,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14332.6953125,
+                            14605.9501953125
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -15595.1884765625,
+                            -6517.54443359375
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Irontooth Drake",
+            "encoded_name": [
+                1,
+                129,
+                185,
+                73,
+                71,
+                198,
+                219,
+                218,
+                26,
+                56,
+                0,
+                0
+            ],
+            "model_id": 4407,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14517.4609375,
+                            12723.646484375
+                        ],
+                        "level": 10,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -19756.78125,
+                            8729.5224609375
+                        ],
+                        "level": 10,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -10095.1943359375,
+                            -10251.8388671875
+                        ],
+                        "level": 10,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Mandragor Imp",
+            "encoded_name": [
+                1,
+                129,
+                63,
+                82,
+                159,
+                235,
+                243,
+                173,
+                253,
+                50,
+                0,
+                0
+            ],
+            "model_id": 4446,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14395.91796875,
+                            3141.739990234375
+                        ],
+                        "level": 3,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -13610.4013671875,
+                            3782.01220703125
+                        ],
+                        "level": 3,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -13506.810546875,
+                            2649.36962890625
+                        ],
+                        "level": 3,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Mandragor Slither",
+            "encoded_name": [
+                1,
+                129,
+                68,
+                82,
+                1,
+                236,
+                137,
+                233,
+                181,
+                8,
+                0,
+                0
+            ],
+            "model_id": 4447,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14328.728515625,
+                            3014.861572265625
+                        ],
+                        "level": 3,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -13414.5224609375,
+                            2576.394775390625
+                        ],
+                        "level": 3,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Tarom Rockbreaker",
+            "encoded_name": [
+                1,
+                129,
+                60,
+                82,
+                65,
+                213,
+                191,
+                255,
+                106,
+                59,
+                0,
+                0
+            ],
+            "model_id": 4381,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -14305.474609375,
+                            2992.157470703125
+                        ],
+                        "level": 7,
+                        "has_boss_aura": true
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -13715.939453125,
+                            3824.04541015625
+                        ],
+                        "level": 7,
+                        "has_boss_aura": true
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -13432.841796875,
+                            2458.091796875
+                        ],
+                        "level": 7,
+                        "has_boss_aura": true
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Skale Lasher",
+            "encoded_name": [
+                1,
+                129,
+                100,
+                70,
+                60,
+                226,
+                96,
+                222,
+                163,
+                44,
+                0,
+                0
+            ],
+            "model_id": 4418,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -20402.00390625,
+                            3658.785400390625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -18788.91015625,
+                            -4180.08935546875
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -15576.6484375,
+                            -6433.4775390625
+                        ],
+                        "level": 2,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Bladed Termite",
+            "encoded_name": [
+                1,
+                129,
+                165,
+                71,
+                172,
+                239,
+                33,
+                215,
+                3,
+                78,
+                0,
+                0
+            ],
+            "model_id": 4433,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -10197.9521484375,
+                            -1784.086181640625
+                        ],
+                        "level": 7,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -9042.0,
+                            -373.0
+                        ],
+                        "level": 7,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Hassin Softskin",
+            "encoded_name": [
+                1,
+                129,
+                79,
+                70,
+                180,
+                218,
+                198,
+                222,
+                54,
+                3,
+                0,
+                0
+            ],
+            "model_id": 4387,
+            "allegiance": "Enemy",
+            "spawns": {
+                "430": [
+                    {
+                        "map_id": 430,
+                        "position": [
+                            -232.85877990722656,
+                            -10197.32421875
+                        ],
+                        "level": 6,
+                        "has_boss_aura": true
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Stone Scale Kirin",
+            "encoded_name": [
+                220,
+                122,
+                112,
+                157,
+                97,
+                152,
+                251,
+                77,
+                0,
+                0
+            ],
+            "model_id": 3768,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -15734.1708984375,
+                            9376.3955078125
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17231.236328125,
+                            4226.5634765625
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -16440.748046875,
+                            8635.2109375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17179.423828125,
+                            7909.72607421875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -16894.583984375,
+                            3266.703125
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -8340.4033203125,
+                            2976.0
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -16322.580078125,
+                            2407.9375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -7365.0205078125,
+                            2589.881591796875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -15254.279296875,
+                            -359.58734130859375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -15860.2060546875,
+                            1482.5224609375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -6408.30615234375,
+                            2128.832275390625
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14903.4462890625,
+                            661.2320556640625
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14568.806640625,
+                            1634.9326171875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14560.6181640625,
+                            -1118.5322265625
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14363.361328125,
+                            2648.869873046875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14166.931640625,
+                            -2091.23046875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14034.162109375,
+                            3621.99755859375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -13656.3466796875,
+                            4571.7666015625
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -5439.9814453125,
+                            1808.5506591796875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Undergrowth",
+            "encoded_name": [
+                148,
+                63,
+                41,
+                218,
+                232,
+                213,
+                189,
+                70,
+                0,
+                0
+            ],
+            "model_id": 3774,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -16753.65625,
+                            7475.6904296875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14375.673828125,
+                            2929.531005859375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -15376.1240234375,
+                            3182.991455078125
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -13936.1728515625,
+                            -6679.11083984375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17645.0,
+                            -4351.0
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -16077.81640625,
+                            -9001.77734375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17850.15625,
+                            -3358.121826171875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -15086.5654296875,
+                            -8718.201171875
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -18743.056640625,
+                            -6100.02099609375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -12924.1787109375,
+                            -6728.55517578125
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -18146.005859375,
+                            -5276.06298828125
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14899.125,
+                            2061.1552734375
+                        ],
+                        "level": 23,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Jade Brotherhood Knight",
+            "encoded_name": [
+                25,
+                65,
+                8,
+                214,
+                89,
+                254,
+                252,
+                36,
+                0,
+                0
+            ],
+            "model_id": 4248,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -7712.0,
+                            6178.0
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -4826.0,
+                            4501.0
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -4212.0283203125,
+                            5856.046875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -4044.91015625,
+                            8184.3798828125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Island Guardian",
+            "encoded_name": [
+                216,
+                64,
+                110,
+                148,
+                105,
+                215,
+                67,
+                91,
+                0,
+                0
+            ],
+            "model_id": 4096,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -10233.0,
+                            -1198.0
+                        ],
+                        "level": 28,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            473.0,
+                            -582.0
+                        ],
+                        "level": 28,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            21683.0,
+                            4260.0
+                        ],
+                        "level": 28,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            18622.0,
+                            -2059.0
+                        ],
+                        "level": 28,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            19616.0,
+                            4944.0
+                        ],
+                        "level": 28,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Rot Wallow",
+            "encoded_name": [
+                164,
+                64,
+                76,
+                165,
+                135,
+                177,
+                89,
+                79,
+                0,
+                0
+            ],
+            "model_id": 4076,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -9841.8955078125,
+                            -1629.5672607421875
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -8964.919921875,
+                            -1088.8870849609375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            117.21769714355469,
+                            -298.6886291503906
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            21327.775390625,
+                            3939.710693359375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            19154.359375,
+                            4326.8095703125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            22323.775390625,
+                            6074.12841796875
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            17862.380859375,
+                            -2604.33056640625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            21974.181640625,
+                            3151.301025390625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            19515.359375,
+                            3364.40234375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            20241.240234375,
+                            4077.950927734375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "24": [
+                    822,
+                    841,
+                    1077,
+                    153
+                ]
+            }
+        },
+        {
+            "name": "Warden of the Leaf",
+            "encoded_name": [
+                216,
+                63,
+                84,
+                231,
+                39,
+                170,
+                74,
+                118,
+                0,
+                0
+            ],
+            "model_id": 3787,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -13527.345703125,
+                            -2358.198974609375
+                        ],
+                        "level": 19,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14053.4638671875,
+                            -1473.49853515625
+                        ],
+                        "level": 19,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14442.1591796875,
+                            -5939.96826171875
+                        ],
+                        "level": 19,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17954.248046875,
+                            -3141.76513671875
+                        ],
+                        "level": 19,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -13118.1259765625,
+                            -1013.8408203125
+                        ],
+                        "level": 19,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17957.0859375,
+                            -2107.078125
+                        ],
+                        "level": 19,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "19": [
+                    947,
+                    854,
+                    458
+                ]
+            }
+        },
+        {
+            "name": "Dragon Moss",
+            "encoded_name": [
+                184,
+                63,
+                67,
+                172,
+                201,
+                152,
+                226,
+                16,
+                0,
+                0
+            ],
+            "model_id": 3773,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -16739.07421875,
+                            1528.5228271484375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -13696.8955078125,
+                            -6806.25634765625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -15952.02734375,
+                            -8869.4345703125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -18580.96484375,
+                            -5947.8427734375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14938.568359375,
+                            -8753.3095703125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -18064.15234375,
+                            -5061.04736328125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17690.326171875,
+                            -4111.755859375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17906.42578125,
+                            -3117.27783203125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "24": [
+                    809,
+                    235,
+                    180,
+                    208,
+                    842
+                ]
+            }
+        },
+        {
+            "name": "Spirit of Brambles",
+            "encoded_name": [
+                98,
+                65,
+                217,
+                219,
+                83,
+                181,
+                118,
+                31,
+                0,
+                0
+            ],
+            "model_id": 4290,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -13527.345703125,
+                            -2358.198974609375
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -14442.1591796875,
+                            -5939.96826171875
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -17954.248046875,
+                            -3141.76513671875
+                        ],
+                        "level": 8,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Jade Brotherhood Mesmer",
+            "encoded_name": [
+                23,
+                65,
+                150,
+                238,
+                12,
+                195,
+                248,
+                14,
+                0,
+                0
+            ],
+            "model_id": 4246,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -4483.287109375,
+                            5856.0
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "20": [
+                    934
+                ]
+            }
+        },
+        {
+            "name": "Jade Brotherhood Mage",
+            "encoded_name": [
+                24,
+                65,
+                159,
+                215,
+                132,
+                211,
+                119,
+                30,
+                0,
+                0
+            ],
+            "model_id": 4247,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -2283.4296875,
+                            4739.43701171875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "20": [
+                    182
+                ]
+            }
+        },
+        {
+            "name": "Jade Brotherhood Ritualist",
+            "encoded_name": [
+                26,
+                65,
+                163,
+                182,
+                188,
+                170,
+                214,
+                120,
+                0,
+                0
+            ],
+            "model_id": 4249,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -2403.74365234375,
+                            4539.451171875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -4274.2421875,
+                            8011.3095703125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "20": [
+                    913,
+                    1225,
+                    793
+                ]
+            }
+        },
+        {
+            "name": "Xuekao, the Deceptive",
+            "encoded_name": [
+                74,
+                127,
+                147,
+                183,
+                188,
+                208,
+                74,
+                53,
+                0,
+                0
+            ],
+            "model_id": 4225,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            -582.2752685546875,
+                            8798.05859375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": true
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Assassin",
+            "encoded_name": [
+                46,
+                62,
+                90,
+                130,
+                223,
+                129,
+                238,
+                99,
+                0,
+                0
+            ],
+            "model_id": 4242,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            8960.0,
+                            6568.0
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            11169.0,
+                            6981.0
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7817.95263671875,
+                            10491.8916015625
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            9988.498046875,
+                            6599.65966796875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            8839.8623046875,
+                            10648.0546875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            8014.0,
+                            11780.0
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7905.47265625,
+                            13074.0517578125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7113.7607421875,
+                            12402.015625
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            9255.802734375,
+                            9694.412109375
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            5928.1123046875,
+                            13093.9248046875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            8348.7109375,
+                            9225.1689453125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            6014.94775390625,
+                            14468.73828125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7389.04931640625,
+                            9572.3203125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            6901.87353515625,
+                            13393.25390625
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7091.8515625,
+                            11357.2783203125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            6447.18115234375,
+                            9959.3779296875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Necromancer",
+            "encoded_name": [
+                55,
+                62,
+                181,
+                160,
+                213,
+                223,
+                203,
+                49,
+                0,
+                0
+            ],
+            "model_id": 4243,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7709.72265625,
+                            10706.4248046875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            8159.97607421875,
+                            12975.5576171875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            6443.5859375,
+                            10335.328125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7155.06494140625,
+                            12767.3408203125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7277.93896484375,
+                            11744.578125
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            7922.53564453125,
+                            9713.6796875
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            5848.61328125,
+                            14259.2958984375
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            6859.50048828125,
+                            14174.427734375
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            8724.82421875,
+                            10838.865234375
+                        ],
+                        "level": 20,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "20": [
+                    131,
+                    828
+                ]
+            }
+        },
+        {
+            "name": "Yeti",
+            "encoded_name": [
+                187,
+                64,
+                254,
+                156,
+                50,
+                179,
+                163,
+                40,
+                0,
+                0
+            ],
+            "model_id": 4075,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            13244.6171875,
+                            3898.2587890625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            14662.19921875,
+                            4799.8095703125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            14928.24609375,
+                            -517.6093139648438
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Yeti",
+            "encoded_name": [
+                186,
+                64,
+                30,
+                241,
+                158,
+                174,
+                24,
+                114,
+                0,
+                0
+            ],
+            "model_id": 4074,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            13267.82421875,
+                            3648.0
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            14520.4228515625,
+                            4657.36083984375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            15018.0771484375,
+                            -643.9911499023438
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "24": [
+                    513,
+                    946,
+                    1211
+                ]
+            }
+        },
+        {
+            "name": "Elder Crane",
+            "encoded_name": [
+                117,
+                61,
+                86,
+                239,
+                37,
+                145,
+                216,
+                6,
+                0,
+                0
+            ],
+            "model_id": 3020,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            13042.62109375,
+                            3656.360595703125
+                        ],
+                        "level": 15,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            14994.71875,
+                            -602.0482788085938
+                        ],
+                        "level": 15,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Elder Tiger",
+            "encoded_name": [
+                122,
+                61,
+                156,
+                136,
+                148,
+                243,
+                0,
+                13,
+                0,
+                0
+            ],
+            "model_id": 3025,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            14628.048828125,
+                            4746.7783203125
+                        ],
+                        "level": 15,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Warrior",
+            "encoded_name": [
+                2,
+                129,
+                0,
+                122,
+                42,
+                192,
+                120,
+                218,
+                181,
+                88,
+                0,
+                0
+            ],
+            "model_id": 8960,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12975.8466796875,
+                            12719.08984375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12245.3876953125,
+                            14736.38671875
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10267.4814453125,
+                            15192.2109375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Ranger",
+            "encoded_name": [
+                2,
+                129,
+                1,
+                122,
+                135,
+                237,
+                25,
+                170,
+                230,
+                50,
+                0,
+                0
+            ],
+            "model_id": 8961,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12946.5078125,
+                            12826.5390625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12241.0556640625,
+                            14865.7119140625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10328.734375,
+                            15203.5390625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Elementalist",
+            "encoded_name": [
+                2,
+                129,
+                3,
+                122,
+                85,
+                155,
+                208,
+                135,
+                189,
+                93,
+                0,
+                0
+            ],
+            "model_id": 8963,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            13116.826171875,
+                            12726.20703125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12496.306640625,
+                            14738.8291015625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10262.625,
+                            14988.4150390625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "24": [
+                    180
+                ]
+            }
+        },
+        {
+            "name": "Am Fah Ritualist",
+            "encoded_name": [
+                2,
+                129,
+                6,
+                122,
+                199,
+                186,
+                109,
+                177,
+                93,
+                123,
+                0,
+                0
+            ],
+            "model_id": 8966,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12807.1337890625,
+                            12887.669921875
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {
+                "24": [
+                    1251
+                ]
+            }
+        },
+        {
+            "name": "Spirit of Life",
+            "encoded_name": [
+                105,
+                65,
+                246,
+                164,
+                219,
+                144,
+                174,
+                5,
+                0,
+                0
+            ],
+            "model_id": 4269,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12807.1337890625,
+                            12887.669921875
+                        ],
+                        "level": 14,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Assassin",
+            "encoded_name": [
+                2,
+                129,
+                7,
+                122,
+                246,
+                152,
+                59,
+                185,
+                25,
+                126,
+                0,
+                0
+            ],
+            "model_id": 8967,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            13108.4453125,
+                            12987.8916015625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12465.005859375,
+                            15005.0
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10106.6748046875,
+                            15181.5546875
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Mesmer",
+            "encoded_name": [
+                2,
+                129,
+                2,
+                122,
+                130,
+                248,
+                19,
+                133,
+                59,
+                70,
+                0,
+                0
+            ],
+            "model_id": 8962,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            13046.90625,
+                            12972.837890625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12275.74609375,
+                            14479.87890625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    },
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10114.6943359375,
+                            15162.1083984375
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Meynsang the Sadistic",
+            "encoded_name": [
+                53,
+                62,
+                222,
+                224,
+                37,
+                250,
+                235,
+                40,
+                0,
+                0
+            ],
+            "model_id": 4232,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10591.5009765625,
+                            13596.2626953125
+                        ],
+                        "level": 24,
+                        "has_boss_aura": true
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Am Fah Monk",
+            "encoded_name": [
+                2,
+                129,
+                4,
+                122,
+                58,
+                168,
+                26,
+                191,
+                73,
+                50,
+                0,
+                0
+            ],
+            "model_id": 8964,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            12349.81640625,
+                            14629.1015625
+                        ],
+                        "level": 24,
+                        "has_boss_aura": false
+                    }
+                ]
+            },
+            "skills": {}
+        },
+        {
+            "name": "Uris Tong of Ash",
+            "encoded_name": [
+                2,
+                129,
+                247,
+                121,
+                51,
+                208,
+                220,
+                150,
+                111,
+                69,
+                0,
+                0
+            ],
+            "model_id": 8957,
+            "allegiance": "Enemy",
+            "spawns": {
+                "211": [
+                    {
+                        "map_id": 211,
+                        "position": [
+                            10484.3095703125,
+                            15166.265625
+                        ],
+                        "level": 26,
+                        "has_boss_aura": true
+                    }
+                ]
+            },
+            "skills": {}
+        }
+    ]
+}

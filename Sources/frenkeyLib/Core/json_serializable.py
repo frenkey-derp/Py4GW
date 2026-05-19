@@ -1,4 +1,7 @@
-from typing import Any, Callable, Generic, Mapping, Optional, Protocol, TypeVar, cast, get_args, runtime_checkable
+import time
+from typing import Any, Callable, Generic, Mapping, Optional, Protocol, TypeVar, cast, get_args, get_origin, runtime_checkable
+
+import Py4GW
 
 
 @runtime_checkable
@@ -43,6 +46,32 @@ def _merge_items(existing: object, candidate: object) -> bool:
     return False
 
 
+def _resolve_type_argument_from_bases(instance: object, target_base: type, arg_index: int) -> Optional[type[Any]]:
+    pending_classes = list(type(instance).__mro__)
+
+    while pending_classes:
+        current_class = pending_classes.pop(0)
+        orig_bases = getattr(current_class, '__orig_bases__', ())
+        for base in orig_bases:
+            origin = get_origin(base)
+            if origin is None:
+                continue
+
+            args = get_args(base)
+            if not args or arg_index >= len(args):
+                continue
+
+            if origin is target_base or (isinstance(origin, type) and issubclass(origin, target_base)):
+                resolved_arg = args[arg_index]
+                if isinstance(resolved_arg, type):
+                    return resolved_arg
+
+            if isinstance(origin, type):
+                pending_classes.append(origin)
+
+    return None
+
+
 class JsonSerializableList(list[JsonSerializableType]):
     def __init__(
         self,
@@ -65,12 +94,24 @@ class JsonSerializableList(list[JsonSerializableType]):
 
     def replace_from_dict(self, data: list[dict]):
         self.clear()
-        self.extend(self._deserialize_items(data))
+        
+        start = time.monotonic()
+        deserialized = self._deserialize_items(data)
+        end = time.monotonic()
+        Py4GW.Console.Log(self.__class__.__name__, f'Deserialized {len(deserialized)} items in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
+        
+        self.extend(deserialized)
 
     def merge_from_dict(self, data: list[dict]) -> bool:
         changed = False
-
-        for item in self._deserialize_items(data):
+        start = time.monotonic()
+        deserialized = self._deserialize_items(data)
+        end = time.monotonic()
+        if deserialized:
+            Py4GW.Console.Log(self.__class__.__name__, f'Deserialized {len(deserialized)} items in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
+        
+        start = time.monotonic()
+        for item in deserialized:
             existing_item = next((existing for existing in self if _items_match(existing, item)), None)
             if existing_item is None:
                 self.append(item)
@@ -79,7 +120,10 @@ class JsonSerializableList(list[JsonSerializableType]):
 
             if _merge_items(existing_item, item):
                 changed = True
-
+        
+        end = time.monotonic()
+        Py4GW.Console.Log(self.__class__.__name__, f'Merged items in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
+        
         return changed
 
     def merge_missing_from_dict(self, data: list[dict]) -> bool:
@@ -104,6 +148,11 @@ class JsonSerializableList(list[JsonSerializableType]):
                 if isinstance(item_type, type):
                     self.item_type = cast(type[JsonSerializableType], item_type)
                     return self.item_type
+
+        item_type = _resolve_type_argument_from_bases(self, JsonSerializableList, 0)
+        if item_type is not None:
+            self.item_type = cast(type[JsonSerializableType], item_type)
+            return self.item_type
 
         raise TypeError(
             'Could not resolve the list item type. '
@@ -189,6 +238,11 @@ class JsonSerializableDictionary(dict[T_DICT_KEY, T_SERIALIZABLE_VALUE]):
                 if isinstance(value_type, type):
                     self.value_type = cast(type[T_SERIALIZABLE_VALUE], value_type)
                     return self.value_type
+
+        value_type = _resolve_type_argument_from_bases(self, JsonSerializableDictionary, 1)
+        if value_type is not None:
+            self.value_type = cast(type[T_SERIALIZABLE_VALUE], value_type)
+            return self.value_type
 
         raise TypeError(
             'Could not resolve the dictionary value type. '

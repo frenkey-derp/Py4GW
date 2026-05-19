@@ -4,9 +4,12 @@ import os
 import re
 import tempfile
 import time
+from collections.abc import Mapping as MappingABC
 from dataclasses import dataclass
 from functools import total_ordering
 from typing import TYPE_CHECKING, Callable, IO, Mapping, Optional, cast
+
+import Py4GW
 
 from Sources.frenkeyLib.Core.json_serializable import JsonSerializableDictionary
 from Sources.frenkeyLib.Core.json_serializable import JsonSerializableList
@@ -96,6 +99,16 @@ class _WindowsFileLock:
             msvcrt.locking(lock_file.fileno(), msvcrt.LK_UNLCK, _LOCK_SIZE_BYTES)
         finally:
             lock_file.close()
+            self._cleanup_lock_file()
+
+    def _cleanup_lock_file(self) -> None:
+        try:
+            os.remove(self.lock_path)
+        except FileNotFoundError:
+            pass
+        except OSError:
+            # Another client may already be reopening/relocking this file.
+            pass
 
     def __enter__(self) -> '_WindowsFileLock':
         self.acquire()
@@ -109,7 +122,8 @@ class _DataFileMixin:
     get_local_path: Callable[..., str]
     get_default_path: Callable[..., str]
     version: FileVersion
-    requires_save: bool
+    _requires_save: bool
+    _known_local_mtime_ns: Optional[int]
 
     if TYPE_CHECKING:
         def clear(self) -> None:
@@ -160,6 +174,18 @@ class _DataFileMixin:
             lock.release()
             return True
 
+    @property
+    def requires_save(self) -> bool:
+        return getattr(self, '_requires_save', False)
+
+    @requires_save.setter
+    def requires_save(self, value: bool) -> None:
+        self._requires_save = bool(value)
+
+    def _initialize_save_state(self) -> None:
+        self._requires_save = False
+        self._known_local_mtime_ns = self._get_file_mtime_ns(self.resolve_local_path())
+
     def queue_save(self) -> None:
         self.requires_save = True
 
@@ -173,7 +199,7 @@ class _DataFileMixin:
         self,
         path: Optional[str] = None,
         *,
-        indent: Optional[int] = None,
+        indent: Optional[int] = 4,
         lock_timeout_seconds: float = _DEFAULT_LOCK_TIMEOUT_SECONDS,
         lock_poll_interval_seconds: float = _DEFAULT_LOCK_POLL_INTERVAL_SECONDS,
     ) -> None:
@@ -214,21 +240,52 @@ class _DataFileMixin:
         self.requires_save = False
         return True
 
-    def _save_locked(self, target_path: str, *, indent: Optional[int] = None) -> None:
+    def _save_locked(self, target_path: str, *, indent: Optional[int] = 4) -> None:
+        current_target_mtime_ns = self._get_file_mtime_ns(target_path)
+        if current_target_mtime_ns is not None and current_target_mtime_ns != self._known_local_mtime_ns:
+            start = time.monotonic()
+            Py4GW.Console.Log('DataDict', f'Warning: Detected external modification of {target_path} since last load. Attempting to merge changes.', Py4GW.Console.MessageType.Warning)
+            self._load_path(target_path, replace=False, merge_missing=True, update_version=False)
+            end = time.monotonic()
+            Py4GW.Console.Log(self.__class__.__name__, f'Merged external changes from {target_path} in {(end - start):.2f}s. Saving updated data.', Py4GW.Console.MessageType.Info)
+        
+        start = time.monotonic()
+        self._write_payload(target_path, self._to_file_payload(), indent=indent)
+        end = time.monotonic()
+        Py4GW.Console.Log(self.__class__.__name__, f'Saved data to {target_path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
+        
+    def _write_payload(self, target_path: str, payload_data: dict, *, indent: Optional[int] = 4) -> None:
         directory = os.path.dirname(target_path)
         if directory:
             os.makedirs(directory, exist_ok=True)
 
-        if os.path.exists(target_path):
-            self._load_path(target_path, replace=False, merge_missing=True, update_version=False)
-
+        sanitized_payload = self._remove_none_values(payload_data)
         payload = json.dumps(
-            self._to_file_payload(),
+            sanitized_payload,
             ensure_ascii=False,
             separators=(',', ':') if indent is None else None,
             indent=indent,
         ).encode('utf-8')
         self._atomic_write_bytes(target_path, payload)
+        self._known_local_mtime_ns = self._get_file_mtime_ns(target_path)
+
+    @classmethod
+    def _remove_none_values(cls, value: object) -> object:
+        if isinstance(value, dict):
+            return {
+                key: cls._remove_none_values(child_value)
+                for key, child_value in value.items()
+                if child_value is not None
+            }
+
+        if isinstance(value, list):
+            return [
+                cls._remove_none_values(item)
+                for item in value
+                if item is not None
+            ]
+
+        return value
 
     @staticmethod
     def _atomic_write_bytes(target_path: str, payload: bytes) -> None:
@@ -261,6 +318,13 @@ class _DataFileMixin:
             if temp_path and os.path.exists(temp_path):
                 os.remove(temp_path)
 
+    @staticmethod
+    def _get_file_mtime_ns(path: str) -> Optional[int]:
+        try:
+            return os.stat(path).st_mtime_ns
+        except OSError:
+            return None
+
     def load(self) -> None:
         self.clear()
 
@@ -280,6 +344,7 @@ class _DataFileMixin:
         else:
             self._load_path(default_path, replace=True)
 
+        self._known_local_mtime_ns = self._get_file_mtime_ns(local_path)
         self.requires_save = False
 
     def read_version(self, path: Optional[str] = None) -> Optional[FileVersion]:
@@ -333,30 +398,47 @@ class DataList(_DataFileMixin, JsonSerializableList[T_SERIALIZABLE_VALUE]):
         self.get_local_path = get_local_path
         self.get_default_path = get_default_path
         self.version = FileVersion(version)
-        self.requires_save = False
+        self._initialize_save_state()
 
     def _to_file_payload(self) -> dict:
         return {
             'version': str(self.version),
-            'data': JsonSerializableList.to_dict(self),
+            'data': [item.to_dict() for item in self],
         }
 
     def _load_path(self, path: str, *, replace: bool, merge_missing: bool = False, update_version: bool = True) -> None:
         if not path or not os.path.exists(path):
             return
 
+        start = time.monotonic()
         with open(path, 'r', encoding='utf-8') as file:
             payload = json.load(file)
 
+        end = time.monotonic()
+        Py4GW.Console.Log(self.__class__.__name__, f'Loaded data from {path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
+        
+        start = time.monotonic()
         file_version = payload.get('version', None)
         if update_version and file_version is not None:
             self.version = FileVersion(str(file_version))
+        end = time.monotonic()
+        Py4GW.Console.Log(self.__class__.__name__, f'Parsed version from {path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
+        
+        start = time.monotonic()
+        raw_data = payload.get('data', payload.get('entries', []))
+        if isinstance(raw_data, dict):
+            raw_data = raw_data.get('data', [])
+        end = time.monotonic()
+        Py4GW.Console.Log(self.__class__.__name__, f'Extracted raw data from {path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
 
-        raw_data = cast(list[dict], payload.get('data', []))
+        if not isinstance(raw_data, list):
+            raise TypeError(f'Expected list data in {path}, got {type(raw_data).__name__}')
+
+        typed_raw_data = cast(list[dict], raw_data)
         if replace:
-            self.replace_from_dict(raw_data)
+            self.replace_from_dict(typed_raw_data)
         elif merge_missing:
-            self.merge_missing_from_dict(raw_data)
+            self.merge_missing_from_dict(typed_raw_data)
 
 
 class DataDict(
@@ -378,7 +460,7 @@ class DataDict(
         self.get_local_path = get_local_path
         self.get_default_path = get_default_path
         self.version = FileVersion(version)
-        self.requires_save = False
+        self._initialize_save_state()
 
     def _to_file_payload(self) -> dict:
         return {
@@ -397,8 +479,12 @@ class DataDict(
         if update_version and file_version is not None:
             self.version = FileVersion(str(file_version))
 
-        raw_data = cast(Mapping[str, dict], payload.get('data', {}))
+        raw_data = payload.get('data', {})
+        if not isinstance(raw_data, MappingABC):
+            raise TypeError(f'Expected dictionary data in {path}, got {type(raw_data).__name__}')
+
+        typed_raw_data = cast(Mapping[str, dict], raw_data)
         if replace:
-            self.replace_from_dict(raw_data)
+            self.replace_from_dict(typed_raw_data)
         elif merge_missing:
-            self.merge_missing_from_dict(raw_data)
+            self.merge_missing_from_dict(typed_raw_data)

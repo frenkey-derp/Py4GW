@@ -9,6 +9,7 @@ from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseColl
 from Sources.frenkeyLib.DataCollector.collectors.allies_collector import ALLIES
 from Sources.frenkeyLib.DataCollector.collectors.armor_collector import ARMORERS
 from Sources.frenkeyLib.DataCollector.collectors.artisan_collector import ARTISANS
+from Sources.frenkeyLib.DataCollector.collectors.chest_collector import CHESTS
 from Sources.frenkeyLib.DataCollector.collectors.collectors_collector import COLLECTORS
 from Sources.frenkeyLib.DataCollector.collectors.consumable_crafters_collector import CONSUMABLE_CRAFTERS
 from Sources.frenkeyLib.DataCollector.collectors.foe_collector import FOES
@@ -45,12 +46,14 @@ class DataCollectorRuntime:
             'Traders': TRADERS,
             'Weaponsmiths': WEAPONSMITHS,
             'Items': ITEMS,
+            'Chests': CHESTS,
         }
         self.collector_enabled = True
         self._settings_loaded = False
 
     def ensure_state(self) -> bool:
         if not self.config.ensure_ini():
+            Py4GW.Console.Log(self.module_name, 'Failed to ensure configuration INI file.', Py4GW.Console.MessageType.Error)
             return False
 
         if not self._settings_loaded:

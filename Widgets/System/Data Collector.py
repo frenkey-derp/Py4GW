@@ -6,6 +6,11 @@ import PyImGui
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
+
+from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+
+Utils.ClearSubModules('data_collector')
+Utils.ClearSubModules('DataCollector')
 from Sources.frenkeyLib.DataCollector.data_collector import DataCollectorRuntime
 
 MODULE_NAME = 'Data Collector'

@@ -12,8 +12,8 @@ from Sources.frenkeyLib.DataCollector.data_collector_widget import Artisan
 class ArtisanCollector(ListCollector[Artisan]):
     def __init__(self, get_local_path, get_default_path, *, version = '1.0', value_type = None, key_decoder = None, key_encoder = None):
         super().__init__(get_local_path, get_default_path, version=version, value_type=value_type, key_decoder=key_decoder, key_encoder=key_encoder)
-        self.map_artisans : set[Artisan] = set()
-        self.unrevealed_map_artisans : set[Artisan] = set()
+        self.map_artisans : list[Artisan] = []
+        self.unrevealed_map_artisans : list[Artisan] = []
         
     def _collect(self):   
         if not self.map_artisans:
@@ -25,7 +25,7 @@ class ArtisanCollector(ListCollector[Artisan]):
                     self.requires_save = True
                 
         if self.unrevealed_map_artisans:            
-            agent_ids = AgentArray.GetAllyArray()
+            agent_ids = AgentArray.GetNPCMinipetArray()
             
             for agent_id in agent_ids:
                 if agent_id in self.checked_ids:
@@ -58,7 +58,9 @@ class ArtisanCollector(ListCollector[Artisan]):
                     break
                 
                 if updated_artisan:
-                    self.unrevealed_map_artisans.discard(updated_artisan)
+                    self.unrevealed_map_artisans.remove(updated_artisan)
+                    
+                self.mark_id_as_checked(agent_id)
                                 
             
     def _flush_cache(self):
@@ -68,8 +70,8 @@ class ArtisanCollector(ListCollector[Artisan]):
         self.current_map_id = Map.GetBaseMapID()
         
         map_artisans = [artisan for artisan in self if artisan.map_id == self.current_map_id and artisan.HasMissingData()]
-        self.map_artisans.update(map_artisans)
-        self.unrevealed_map_artisans.update([artisan for artisan in map_artisans if artisan.position == (0.0, 0.0) or artisan.map_id == 0 or artisan.model_id == 0])
+        self.map_artisans.extend(map_artisans)
+        self.unrevealed_map_artisans.extend([artisan for artisan in map_artisans if artisan.position == (0.0, 0.0) or artisan.map_id == 0 or artisan.model_id == 0])
         
         
 ARTISANS = ArtisanCollector(*BaseCollector.get_path_providers("artisans.json"))

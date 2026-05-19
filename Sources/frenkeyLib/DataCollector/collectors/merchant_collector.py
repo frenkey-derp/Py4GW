@@ -13,11 +13,11 @@ from Sources.frenkeyLib.DataCollector.data_collector_widget import Merchant
 class MerchantCollector(ListCollector[Merchant]):
     def __init__(self, get_local_path, get_default_path, *, version = '1.0', value_type = None, key_decoder = None, key_encoder = None):
         super().__init__(get_local_path, get_default_path, version=version, value_type=value_type, key_decoder=key_decoder, key_encoder=key_encoder)
-        self.map_merchants : set[Merchant] = set()
+        self.map_merchants : list[Merchant] = []
         
         
     def _collect(self):        
-        agent_ids = AgentArray.GetAllyArray()
+        agent_ids = AgentArray.GetNPCMinipetArray()
         map_id = Map.GetBaseMapID()
         
         for agent_id in agent_ids:
@@ -31,15 +31,21 @@ class MerchantCollector(ListCollector[Merchant]):
             if matching_merchants:
                 closest_merchant = min(matching_merchants, key=lambda merchant: Utils.Distance(merchant.position, pos))
                 if Utils.Distance(closest_merchant.position, pos) < Range.Earshot.value:  # Threshold for matching
+                    self.mark_id_as_checked(agent_id)
                     continue
             
             name = Agent.GetNameByID(agent_id) or ""
             if not name:
                 continue
             
+            if not name.replace("[", "").replace("]", "").lower().endswith("merchant"):
+                self.mark_id_as_checked(agent_id)
+                continue
+            
             enc_name = bytes(Agent.GetEncNameByID(agent_id))
             new_merchant = Merchant(name=name, model_id=model_id, encoded_name=enc_name, position=pos, map_id=map_id)
             self.add_merchant(new_merchant)
+            self.mark_id_as_checked(agent_id)
             
         if self.map_merchants:
             if MerchantWindow.IsOpen():
@@ -48,7 +54,7 @@ class MerchantCollector(ListCollector[Merchant]):
                         self.requires_save = True
                 
     def add_merchant(self, merchant: Merchant):
-        self.map_merchants.add(merchant)
+        self.map_merchants.append(merchant)
         self.append(merchant)
         self.requires_save = True
     
@@ -58,6 +64,6 @@ class MerchantCollector(ListCollector[Merchant]):
         self.current_map_id = Map.GetBaseMapID()
         
         map_merchants = [merchant for merchant in self if merchant.map_id == self.current_map_id]
-        self.map_merchants.update(map_merchants)
+        self.map_merchants.extend(map_merchants)
 
 MERCHANTS = MerchantCollector(*BaseCollector.get_path_providers("merchants.json"))

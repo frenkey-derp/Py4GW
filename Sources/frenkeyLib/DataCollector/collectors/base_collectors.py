@@ -18,7 +18,7 @@ class BaseCollector:
         self.run_throttle = ThrottledTimer(250)
         self.save_throttle = ThrottledTimer(1_000)
         self.current_context_key = ''
-        self.checked_ids: set[int] = set()
+        self.checked_ids: list[int] = []
 
     def _get_reload_type(self) -> ReloadType:
         for reload_type in ReloadType:
@@ -26,6 +26,9 @@ class BaseCollector:
                 return reload_type
         
         return ReloadType.Unknown
+    
+    def mark_id_as_checked(self, agent_id: int):
+        self.checked_ids.append(agent_id)
             
     def run(self):
         self._handle_context_change()
@@ -35,16 +38,13 @@ class BaseCollector:
         
         if self.run_throttle.IsExpired():
             self.run_throttle.Reset()
-            
             self._collect()
 
         if self.save_throttle.IsExpired():
             self.save_throttle.Reset()
-            
-            data = getattr(self, 'data', None)
-            
-            if isinstance(data, (DataDict, DataList)):
-                if data.try_save():
+
+            if isinstance(self, (DataDict, DataList)):
+                if self.try_save():
                     broadcast_save = False
                     
                     if broadcast_save:

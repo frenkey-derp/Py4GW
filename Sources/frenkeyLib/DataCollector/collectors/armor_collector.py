@@ -11,8 +11,8 @@ from Sources.frenkeyLib.DataCollector.data_collector_widget import Armorer
 class ArmorerCollector(ListCollector[Armorer]):
     def __init__(self, get_local_path, get_default_path, *, version = '1.0', value_type = None, key_decoder = None, key_encoder = None):
         super().__init__(get_local_path, get_default_path, version=version, value_type=value_type, key_decoder=key_decoder, key_encoder=key_encoder)
-        self.map_armorers : set[Armorer] = set()
-        self.unrevealed_map_armorers : set[Armorer] = set()
+        self.map_armorers : list[Armorer] = []
+        self.unrevealed_map_armorers : list[Armorer] = []
         
     def _collect(self):   
         if not self.map_armorers:
@@ -24,7 +24,7 @@ class ArmorerCollector(ListCollector[Armorer]):
                     self.requires_save = True
                 
         if self.unrevealed_map_armorers:            
-            agent_ids = AgentArray.GetAllyArray()
+            agent_ids = AgentArray.GetNPCMinipetArray()
             
             for agent_id in agent_ids:
                 if agent_id in self.checked_ids:
@@ -57,7 +57,9 @@ class ArmorerCollector(ListCollector[Armorer]):
                     break
                 
                 if updated_armorer:
-                    self.unrevealed_map_armorers.discard(updated_armorer)
+                    self.unrevealed_map_armorers.remove(updated_armorer)
+                    
+                self.mark_id_as_checked(agent_id)
                                 
             
     def _flush_cache(self):
@@ -67,7 +69,7 @@ class ArmorerCollector(ListCollector[Armorer]):
         self.current_map_id = Map.GetBaseMapID()
         
         map_armorers = [armorer for armorer in self if armorer.map_id == self.current_map_id and armorer.HasMissingData()]
-        self.map_armorers.update(map_armorers)
-        self.unrevealed_map_armorers.update([armorer for armorer in map_armorers if armorer.position == (0.0, 0.0) or armorer.map_id == 0 or armorer.model_id == 0])
+        self.map_armorers.extend(map_armorers)
+        self.unrevealed_map_armorers.extend([armorer for armorer in map_armorers if armorer.position == (0.0, 0.0) or armorer.map_id == 0 or armorer.model_id == 0])
         
 ARMORERS = ArmorerCollector(*BaseCollector.get_path_providers("armorers.json"))

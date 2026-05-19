@@ -1,8 +1,6 @@
 {
     "version": 3,
-    "saved_at": "2026-05-17T16:42:58Z",
-    "category": "collectors",
-    "entries": [
+    "data": [
         {
             "name": "Assassin's Chest",
             "encoded_name": [],

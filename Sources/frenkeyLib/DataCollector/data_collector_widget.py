@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from dataclasses import field
-from datetime import datetime, timedelta
 from enum import IntEnum, auto
 import json
 import os
-from typing import Any, Callable, Generic, Iterable, Optional, Protocol, Sequence, TypeVar, cast, runtime_checkable
+from typing import Any, Callable, Iterable, Optional, TypeVar, cast
 
 import Py4GW
 import PyImGui
@@ -14,22 +13,19 @@ from Py4GWCoreLib import ImGui
 from Py4GWCoreLib import Merchant as MerchantTrading
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
-from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Player import Player
-from Py4GWCoreLib.Py4GWcorelib import Utils
 from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.UIManager import CollectorWindow, CrafterWindow, MerchantWindow
-from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession
+from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Attribute, Profession, Range
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Title_enums import TITLE_NAME, TITLE_TIERS, TitleID
-from Py4GWCoreLib.item_data.ItemData import ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
-from Sources.frenkeyLib.DataCollector import CRAFTER_SWEEP_CONTROLLER
+from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 
 project_path = Py4GW.Console.get_projects_path()
@@ -395,8 +391,21 @@ class Weapon(Item):
 
             return minimum, maximum
 
-        def _get_upgrade(upgrade_data : dict) -> Optional[Upgrade]:
-            return Upgrade.from_dict(upgrade_data) if upgrade_data is not None else None
+        def _get_upgrade(upgrade_data: object) -> Optional[Upgrade]:
+            if upgrade_data is None:
+                return None
+
+            if isinstance(upgrade_data, str):
+                try:
+                    parsed_upgrade_data = json.loads(upgrade_data)
+                except json.JSONDecodeError:
+                    return None
+                upgrade_data = parsed_upgrade_data
+
+            if not isinstance(upgrade_data, dict):
+                return None
+
+            return Upgrade.from_dict(upgrade_data)
         
         def _get_upgrades(upgrades_data: list[dict]) -> list[Upgrade]:
             upgrades = []
@@ -802,6 +811,28 @@ def _deserialize_item(data: dict, default_cls: type[Item] = Item) -> Item:
             item_cls = default_cls
     return item_cls.from_dict(data)
 
+
+def _normalize_entry_list(value: object) -> list[dict]:
+    if isinstance(value, list):
+        return [entry for entry in value if isinstance(entry, dict)]
+
+    if isinstance(value, dict):
+        nested_data = value.get('data')
+        if isinstance(nested_data, list):
+            return [entry for entry in nested_data if isinstance(entry, dict)]
+
+        nested_entries = value.get('entries')
+        if isinstance(nested_entries, list):
+            return [entry for entry in nested_entries if isinstance(entry, dict)]
+
+        dict_values = list(value.values())
+        if dict_values and all(isinstance(entry, dict) for entry in dict_values):
+            return [cast(dict, entry) for entry in dict_values]
+
+        return [value]
+
+    return []
+
 @dataclass
 class AgentEntity:
     name: str = ''
@@ -942,8 +973,6 @@ class AgentEntity:
     def _log_collection_result(crafter_name: str, collected_count: int, item_label: str):
         if collected_count > 0:
             Py4GW.Console.Log(MODULE_NAME, f"Collected {collected_count} {item_label} entries from '{crafter_name}'.", Py4GW.Console.MessageType.Success)
-        else:
-            Py4GW.Console.Log(MODULE_NAME, f"No new {item_label} entries were found for '{crafter_name}'.", Py4GW.Console.MessageType.Warning)
 
     def _merge_item_collection(self, items: list[TItem], candidates: Iterable[TItem]) -> bool:
         return Item.merge_items(items, candidates)
@@ -957,7 +986,6 @@ class AgentEntity:
     ) -> bool:
         self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
-            Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
 
         snapshots = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
@@ -1048,11 +1076,45 @@ class AgentEntity:
         return changed
 
 @dataclass
+class FoeSpawn:
+    map_id: int
+    position: tuple[float, float]
+    level: int
+    has_boss_aura: bool
+    
+    def to_dict(self) -> dict:
+        return {
+            'map_id': self.map_id,
+            'position': [self.position[0], self.position[1]],
+            'level': self.level,
+            'has_boss_aura': self.has_boss_aura,
+        }
+        
+    @staticmethod
+    def from_dict(data: dict) -> 'FoeSpawn':
+        return FoeSpawn(
+            map_id=int(data.get('map_id', 0) or 0),
+            position=(
+                float(data.get('position', [0.0, 0.0])[0] or 0.0),
+                float(data.get('position', [0.0, 0.0])[1] or 0.0),
+            ),
+            level=int(data.get('level', 0) or 0),
+            has_boss_aura=bool(data.get('has_boss_aura', False)),
+        )
+    
+    def matches(self, other: object) -> bool:
+        if not isinstance(other, FoeSpawn):
+            return False
+        
+        return self.map_id == other.map_id and self.level == other.level and self.has_boss_aura == other.has_boss_aura and Utils.Distance(self.position, other.position) < Range.Earshot.value
+    
+@dataclass
 class Foe(AgentEntity):
     primary_profession: Optional[Profession] = None
     secondary_profession: Optional[Profession] = None
-    spawns: dict[int, list[tuple[float, float]]] = field(default_factory=dict)
-
+    spawns: dict[int, list[FoeSpawn]] = field(default_factory=dict)
+    skills: dict[int, list[int]] = field(default_factory=dict)
+    
     def __post_init__(self):
         self.allegiance = Allegiance.Enemy
 
@@ -1062,7 +1124,8 @@ class Foe(AgentEntity):
             {
                 'primary_profession': self.primary_profession.name if self.primary_profession is not None else None,
                 'secondary_profession': self.secondary_profession.name if self.secondary_profession is not None else None,
-                'spawns': self.spawns,
+                'spawns': {map_id: [spawn.to_dict() for spawn in spawns] for map_id, spawns in self.spawns.items()},
+                'skills': self.skills,
             }
         )
         return payload
@@ -1073,22 +1136,30 @@ class Foe(AgentEntity):
         raw_secondary_name = data.get('secondary_profession', None)
         primary_name = str(raw_primary_name) if raw_primary_name is not None else ''
         secondary_name = str(raw_secondary_name) if raw_secondary_name is not None else ''
-        spawns: dict[int, list[tuple[float, float]]] = data.get('spawns', {})
+        raw_spawns = data.get('spawns', {})
+        spawns: dict[int, list[FoeSpawn]] = {}
+        for map_id, spawn_data in raw_spawns.items():
+            parsed_map_id = int(map_id)
+            if isinstance(spawn_data, list):
+                spawns[parsed_map_id] = [FoeSpawn.from_dict(entry) for entry in spawn_data if isinstance(entry, dict)]
+            elif isinstance(spawn_data, dict):
+                spawns[parsed_map_id] = [FoeSpawn.from_dict(spawn_data)]
             
         return Foe(
             **AgentEntity._base_from_dict(data),
             primary_profession=Profession[primary_name] if primary_name and primary_name != Profession._None.name and primary_name in Profession.__members__ else None,
             secondary_profession=Profession[secondary_name] if secondary_name and secondary_name != Profession._None.name and secondary_name in Profession.__members__ else None,
             spawns=spawns,
+            skills=data.get('skills', {}),
         )
 
     def GetCollectedCount(self) -> int:
-        return len(self.spawns)
+        return sum(len(spawns) for spawns in self.spawns.values())
 
     def GetCollectionSummary(self) -> str:
         primary = self.primary_profession.name if self.primary_profession is not None else '?'
         secondary = self.secondary_profession.name if self.secondary_profession is not None else '?'
-        return f'{len(self.spawns)} spawn(s) / {primary}-{secondary}'
+        return f'{self.GetCollectedCount()} spawn(s) / {primary}-{secondary}'
 
     def GetMapIDs(self) -> list[int]:
         return list(self.spawns.keys())
@@ -1128,17 +1199,39 @@ class Foe(AgentEntity):
         return changed
     
     def _merge_spawn_positions(self,
-        existing_spawns: dict[int, list[tuple[float, float]]],
-        candidate_spawns: dict[int, list[tuple[float, float]]],
+        existing_spawns: dict[int, list[FoeSpawn]],
+        candidate_spawns: dict[int, list[FoeSpawn]],
     ) -> bool:
         changed = False
 
-        for map_id, positions in candidate_spawns.items():
-            existing_positions = existing_spawns.setdefault(int(map_id), [])
-            for position in positions:
-                normalized_position = (float(position[0]), float(position[1]))
-                if normalized_position not in existing_positions:
-                    existing_positions.append(normalized_position)
+        for map_id, candidate_spawn_entries in candidate_spawns.items():
+            existing_spawn_entries = existing_spawns.setdefault(int(map_id), [])
+
+            for candidate_spawn in candidate_spawn_entries:
+                existing_spawn = next(
+                    (
+                        spawn
+                        for spawn in existing_spawn_entries
+                        if spawn.matches(candidate_spawn)
+                    ),
+                    None,
+                )
+
+                if existing_spawn is None:
+                    existing_spawn_entries.append(candidate_spawn)
+                    changed = True
+                    continue
+
+                if existing_spawn.position == (0.0, 0.0) and candidate_spawn.position != (0.0, 0.0):
+                    existing_spawn.position = candidate_spawn.position
+                    changed = True
+
+                if existing_spawn.level == 0 and candidate_spawn.level != 0:
+                    existing_spawn.level = candidate_spawn.level
+                    changed = True
+
+                if not existing_spawn.has_boss_aura and candidate_spawn.has_boss_aura:
+                    existing_spawn.has_boss_aura = candidate_spawn.has_boss_aura
                     changed = True
 
         return changed
@@ -1339,7 +1432,7 @@ class StationaryNpc(AgentEntity):
         if not isinstance(other, StationaryNpc) or type(self) is not type(other):
             return False
 
-        if self.map_id != 0 and other.map_id != 0 and Map.GetBaseMapID(self.map_id) != Map.GetBaseMapID(other.map_id):
+        if self.map_id != 0 and other.map_id != 0 and self.map_id != other.map_id:
             return False
 
         if self.model_id != 0 and other.model_id != 0:
@@ -1391,7 +1484,7 @@ class Merchant(Ally):
     def from_dict(data: dict) -> 'Merchant':
         return Merchant(
             **StationaryNpc._base_from_dict(data),
-            items=[_deserialize_item(entry, Item) for entry in list(data.get('items', []))],
+            items=[_deserialize_item(entry, Item) for entry in _normalize_entry_list(data.get('items', []))],
         )
 
     def _service_window_is_open(self) -> bool:
@@ -1484,7 +1577,7 @@ class Trader(Ally):
         trader_type_name = str(data.get('trader_type', TraderType.Unknown.name))
         trader = Trader(
             **StationaryNpc._base_from_dict(data),
-            items=[_deserialize_item(entry, Item) for entry in list(data.get('items', []))],
+            items=[_deserialize_item(entry, Item) for entry in _normalize_entry_list(data.get('items', []))],
             _trader_type=TraderType[trader_type_name] if trader_type_name in TraderType.__members__ else TraderType.Unknown,
         )
         return trader
@@ -1536,7 +1629,7 @@ class Artisan(Ally):
     def from_dict(data: dict) -> 'Artisan':
         return Artisan(
             **StationaryNpc._base_from_dict(data),
-            items=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in list(data.get('items', []))],
+            items=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in _normalize_entry_list(data.get('items', []))],
         )
 
     def CollectData(self) -> bool:
@@ -1577,7 +1670,7 @@ class ConsumableCrafter(Ally):
     def from_dict(data: dict) -> 'ConsumableCrafter':
         return ConsumableCrafter(
             **StationaryNpc._base_from_dict(data),
-            consumables=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in list(data.get('consumables', []))],
+            consumables=[cast(CraftableItem, _deserialize_item(entry, CraftableItem)) for entry in _normalize_entry_list(data.get('consumables', []))],
         )
 
     def CollectData(self) -> bool:
@@ -1618,13 +1711,12 @@ class Weaponsmith(Ally):
     def from_dict(data: dict) -> 'Weaponsmith':
         return Weaponsmith(
             **StationaryNpc._base_from_dict(data),
-            weapons=[cast(CraftableWeapon, _deserialize_item(entry, CraftableWeapon)) for entry in list(data.get('weapons', []))],
+            weapons=[cast(CraftableWeapon, _deserialize_item(entry, CraftableWeapon)) for entry in _normalize_entry_list(data.get('weapons', []))],
         )
 
     def CollectData(self) -> bool:
         self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
-            Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
 
         items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
@@ -1681,7 +1773,7 @@ class Collector(Ally):
     def from_dict(data: dict) -> 'Collector':
         return Collector(
             **StationaryNpc._base_from_dict(data),
-            items=[cast(Item, _deserialize_item(entry, CollectorItem)) for entry in list(data.get('items', []))],
+            items=[cast(Item, _deserialize_item(entry, CollectorItem)) for entry in _normalize_entry_list(data.get('items', []))],
         )
 
     def _service_window_is_open(self) -> bool:
@@ -1723,7 +1815,6 @@ class Collector(Ally):
     def CollectData(self) -> bool:
         self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
-            Py4GW.Console.Log(MODULE_NAME, f"Collector '{self.name}' is not open. Please move to the collector and open their exchange window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
 
         items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]
@@ -1789,7 +1880,6 @@ class Collector(Ally):
         has_non_armor_items = len(remaining_items) > 0
         incomplete_items = [item for item in remaining_items if item.model_id == 0 or not item.name]
         
-        
         return needs_profession_armor or \
                (has_non_armor_items and bool(not self.items or len(incomplete_items) > 0))
 
@@ -1836,7 +1926,7 @@ class Armorer(Ally):
             if profession_name not in Profession.__members__:
                 continue
             profession = Profession[profession_name]
-            armors[profession] = [cast(CraftableArmor, _deserialize_item(entry, CraftableArmor)) for entry in list(entries or [])]
+            armors[profession] = [cast(CraftableArmor, _deserialize_item(entry, CraftableArmor)) for entry in _normalize_entry_list(entries)]
 
         return Armorer(
             **StationaryNpc._base_from_dict(data),
@@ -1851,7 +1941,6 @@ class Armorer(Ally):
     def CollectData(self) -> bool:
         self.last_collection_had_pending_names = False
         if not self.IsCrafterOpen():
-            Py4GW.Console.Log(MODULE_NAME, f"Crafter '{self.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
             return False
         
         items = [ItemSnapshot.from_item_id(item_id) for item_id in self._get_offered_items()]

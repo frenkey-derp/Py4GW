@@ -13,8 +13,8 @@ from Sources.frenkeyLib.DataCollector.data_collector_widget import ConsumableCra
 class ConsumableCraftersCollector(ListCollector[ConsumableCrafter]):
     def __init__(self, get_local_path, get_default_path, *, version = '1.0', value_type = None, key_decoder = None, key_encoder = None):
         super().__init__(get_local_path, get_default_path, version=version, value_type=value_type, key_decoder=key_decoder, key_encoder=key_encoder)
-        self.map_consumable_crafters : set[ConsumableCrafter] = set()
-        self.unrevealed_map_consumable_crafters : set[ConsumableCrafter] = set()
+        self.map_consumable_crafters : list[ConsumableCrafter] = []
+        self.unrevealed_map_consumable_crafters : list[ConsumableCrafter] = []
         
     def _collect(self):   
         if not self.map_consumable_crafters:
@@ -26,7 +26,7 @@ class ConsumableCraftersCollector(ListCollector[ConsumableCrafter]):
                     self.requires_save = True
                 
         if self.unrevealed_map_consumable_crafters:            
-            agent_ids = AgentArray.GetAllyArray()
+            agent_ids = AgentArray.GetNPCMinipetArray()
             
             for agent_id in agent_ids:
                 if agent_id in self.checked_ids:
@@ -59,8 +59,9 @@ class ConsumableCraftersCollector(ListCollector[ConsumableCrafter]):
                     break
                 
                 if updated_consumable_crafter:
-                    self.unrevealed_map_consumable_crafters.discard(updated_consumable_crafter)
-                                
+                    self.unrevealed_map_consumable_crafters.remove(updated_consumable_crafter)
+                
+                self.mark_id_as_checked(agent_id)
             
     def _flush_cache(self):
         super()._flush_cache()
@@ -69,7 +70,7 @@ class ConsumableCraftersCollector(ListCollector[ConsumableCrafter]):
         self.current_map_id = Map.GetBaseMapID()
         
         map_consumable_crafters = [consumable_crafter for consumable_crafter in self if consumable_crafter.map_id == self.current_map_id and consumable_crafter.HasMissingData()]
-        self.map_consumable_crafters.update(map_consumable_crafters)
-        self.unrevealed_map_consumable_crafters.update([consumable_crafter for consumable_crafter in map_consumable_crafters if consumable_crafter.position == (0.0, 0.0) or consumable_crafter.map_id == 0 or consumable_crafter.model_id == 0])
+        self.map_consumable_crafters.extend(map_consumable_crafters)
+        self.unrevealed_map_consumable_crafters.extend([consumable_crafter for consumable_crafter in map_consumable_crafters if consumable_crafter.position == (0.0, 0.0) or consumable_crafter.map_id == 0 or consumable_crafter.model_id == 0])
         
 CONSUMABLE_CRAFTERS = ConsumableCraftersCollector(*BaseCollector.get_path_providers("consumable_crafters.json"))

@@ -60,19 +60,21 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
         key_decoder: Optional[Callable[[str], T_DICT_KEY]] = None,
         key_encoder: Optional[Callable[[T_DICT_KEY], str]] = None,
     ):
+        resolved_key_decoder = key_decoder or (lambda key: ItemType[key] if key in ItemType.__members__ else ItemType.Unknown)
+        resolved_key_encoder = key_encoder or (lambda key: key.name if isinstance(key, ItemType) else str(key))
         super().__init__(
             get_local_path,
             get_default_path,
             version=version,
             value_type=value_type,
-            key_decoder=key_decoder,
-            key_encoder=key_encoder,
+            key_decoder=resolved_key_decoder,
+            key_encoder=resolved_key_encoder,
         )
         self.load()
         
         self.storage_checked_for_context = False
         self.force_scan = False
-        self.checked_model_keys: set[tuple[ItemType, int]] = set()
+        self.checked_model_keys: list[tuple[ItemType, int]] = []
     
     def _flush_cache(self):
         super()._flush_cache()
@@ -164,8 +166,8 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
             self.requires_save = True
 
         if not self._item_needs_more_data(item_data):
-            self.checked_ids.add(item.id)
-            self.checked_model_keys.add(model_key)
+            self.checked_ids.append(item.id)
+            self.checked_model_keys.append(model_key)
 
     def _item_needs_more_data(self, item_data: ItemData) -> bool:
         return (
