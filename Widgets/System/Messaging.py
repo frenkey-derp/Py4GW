@@ -2424,14 +2424,29 @@ def Reload(index: int, message: SharedMessageStruct):
         from Sources.frenkeyLib.DataCollector.collectors.weaponsmith_collector import WEAPONSMITHS
         from Sources.frenkeyLib.Core.data_dict import DataList, DataDict
         
-        config_type = ReloadType(message.Params[0]) if len(message.Params) > 0 else None
+        reload_type = ReloadType(message.Params[0]) if len(message.Params) > 0 else None
         profile_manager = GlobalConfigProfileManager()
         profile_manager.refresh(force=True)
+    
+        collectors : dict[ReloadType, object] = {
+            ReloadType.Allies: ALLIES,
+            ReloadType.Armorers: ARMORERS,
+            ReloadType.Artisans: ARTISANS,
+            ReloadType.Collectors: COLLECTORS,
+            ReloadType.ConsumableCrafters: CONSUMABLE_CRAFTERS,
+            ReloadType.Foes: FOES,
+            ReloadType.Items: ITEMS,
+            ReloadType.Merchants: MERCHANTS,
+            ReloadType.Traders: TRADERS,
+            ReloadType.Weaponsmiths: WEAPONSMITHS,            
+        }
         
-        match config_type:
-            case ReloadType.ItemData:
-                ITEM_DATA.load_data()
-                
+        if reload_type:
+            if collector := collectors.get(reload_type, None):
+                if isinstance(collector, (DataList, DataDict)):
+                    collector.load()
+                                
+        match reload_type:
             case ReloadType.Crafting:
                 config_path = profile_manager.get_active_config_file_path('CraftingConfig')
                 if os.path.isfile(config_path):
@@ -2459,27 +2474,6 @@ def Reload(index: int, message: SharedMessageStruct):
                     SortingConfig().load_dict(SortingConfig().Load(config_path).to_dict())
                 else:
                     SortingConfig().load_dict({})
-        if config_type:
-            project_path = Py4GW.Console.get_projects_path()
-            settings_dir = os.path.join(project_path, "Settings", "Global", "Item & Inventory", "Configs")
-            
-            collectors : dict[ReloadType, object] = {
-                ReloadType.Allies: ALLIES,
-                ReloadType.Armorers: ARMORERS,
-                ReloadType.Artisans: ARTISANS,
-                ReloadType.Collectors: COLLECTORS,
-                ReloadType.ConsumableCrafters: CONSUMABLE_CRAFTERS,
-                ReloadType.Foes: FOES,
-                ReloadType.Items: ITEMS,
-                ReloadType.Merchants: MERCHANTS,
-                ReloadType.Traders: TRADERS,
-                ReloadType.Weaponsmiths: WEAPONSMITHS,
-                
-                ReloadType.Crafting: None,  # Coming soon ....
-                ReloadType.Buying: None,    # Coming soon ....
-                ReloadType.Inventory: None, # Coming soon .... 
-                ReloadType.Looting: None,   # Coming soon ....
-            }
             
             case ReloadType.Looting:
                 config_path = profile_manager.get_active_config_file_path('LootConfig')
@@ -2487,9 +2481,6 @@ def Reload(index: int, message: SharedMessageStruct):
                     FrenkeyLootConfig().Load(config_path)
                 else:
                     FrenkeyLootConfig().clear()
-            if collector := collectors.get(config_type, None):
-                if isinstance(collector, (DataList, DataDict)):
-                    collector.load()
             
     except Exception as exc:
         ConsoleLog(MODULE_NAME, f"ReloadConfig message error: {exc}", Console.MessageType.Error, False)
