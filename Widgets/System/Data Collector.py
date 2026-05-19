@@ -7,6 +7,7 @@ from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 
+from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import ListCollector
 from Sources.frenkeyLib.DataCollector.collectors.items_collector import ItemCollector
 from Sources.frenkeyLib.DataCollector.data_collector import DataCollectorRuntime
@@ -14,12 +15,19 @@ from Sources.frenkeyLib.DataCollector.data_collector import DataCollectorRuntime
 MODULE_NAME = 'Data Collector'
 MODULE_ICON = os.path.join(Py4GW.Console.get_projects_path(), 'Textures', 'Module_Icons', 'Data Collector.png')
 DATA_COLLECTOR = DataCollectorRuntime(MODULE_NAME, MODULE_ICON)
+widget_handler = get_widget_handler()
 
 def on_enable():
+    if not widget_handler.discovered or not widget_handler.ini_applied:
+        return
+    
     DATA_COLLECTOR.set_collector_enabled(True)
 
 
 def on_disable():
+    if not widget_handler.discovered or not widget_handler.ini_applied:
+        return
+    
     DATA_COLLECTOR.set_collector_enabled(False)
 
 GRAY_COLOR = ColorPalette.Gray.color

@@ -8,7 +8,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 Utils.ClearSubModules("ItemHandling")
 Utils.ClearSubModules("ItemManager")
-Utils.ClearSubModules("frenkeyLib.Core")
+Utils.ClearSubModules("frenkeyLib")
 
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager
 from Sources.frenkeyLib.ItemManager.config import Config

@@ -2,6 +2,8 @@
 from dataclasses import dataclass
 from typing import Callable, Optional
 
+import Py4GW
+
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, NICK_CYCLE_COUNT, STORAGE_BAGS, Bags, ItemType
@@ -260,7 +262,7 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
         item_type = item.item_type if item else item_type
         model_id = item.model_id if item else model_id
         
-        if item is None or item_type is None or model_id is None:
+        if item_type is None or model_id is None:
             return None
         
         return self.get(item_type, {}).get(model_id, None)

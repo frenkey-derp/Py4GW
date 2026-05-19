@@ -5,6 +5,7 @@ import Py4GW
 
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
+from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector
 from Sources.frenkeyLib.DataCollector.collectors.allies_collector import ALLIES
 from Sources.frenkeyLib.DataCollector.collectors.armorers_collector import ARMORERS
@@ -52,15 +53,24 @@ class DataCollectorRuntime:
         self.collector_enabled = True
         self.collecting : dict[str, bool] = {name: False for name in self.collectors.keys()}
         self._settings_loaded = False
+        self.widget_handler = get_widget_handler()
 
-    def ensure_state(self) -> bool:
+    def _ensure_initialized(self) -> bool:
         if not self.config.ensure_ini():
-            Py4GW.Console.Log(self.module_name, 'Failed to ensure configuration INI file.', Py4GW.Console.MessageType.Error)
             return False
 
         if not self._settings_loaded:
             self._load_settings()
             self._settings_loaded = True
+
+        return True
+
+    def ensure_state(self) -> bool:
+        if not self._ensure_initialized():
+            return False
+
+        if not self.collector_enabled and self.widget_handler.discovered:
+            self.widget_handler.disable_widget(self.module_name)
 
         return True
 
@@ -78,7 +88,7 @@ class DataCollectorRuntime:
             enabled = bool(
                 IniManager().getBool(
                     self.config.main_ini_key,
-                    f"Collect{collector_name}",
+                    f"Collect{collector_name.replace(' ', '')}",
                     default=True,
                     section=self.config.settings_section,
                 )
@@ -89,7 +99,7 @@ class DataCollectorRuntime:
         ini = IniManager()
         ini.set(
             self.config.main_ini_key,
-            f"Collect{collector_name}",
+            f"Collect{collector_name.replace(' ', '')}",
             bool(enabled),
             section=self.config.settings_section,
         )
@@ -106,7 +116,7 @@ class DataCollectorRuntime:
         ini.save_vars(self.config.main_ini_key)
 
     def set_collector_enabled(self, enabled: bool):
-        if not self.ensure_state():
+        if not self._ensure_initialized():
             return
 
         enabled = bool(enabled)

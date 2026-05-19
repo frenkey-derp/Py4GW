@@ -2336,6 +2336,7 @@ class WidgetHandler:
         self.paused = False
         
         self.discovered = False
+        self.ini_applied = False
         self.widget_initialized = False
         self._initialized = True
         self.config_vars: list[WidgetConfigVars] = []
@@ -2488,30 +2489,36 @@ class WidgetHandler:
                 
     def _apply_ini_configuration(self):
         """Apply saved enabled states and enforce System widget activation"""
-        for wid, w in self.widgets.items():
-            vname = self._widget_var(wid, "enabled")
-            section = f"Widget:{wid}"
-            
-            # 1. Read the current state from IniManager (which just loaded from disk)
-            enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=section, var_name=vname, default=False))
-            
-            # 2. THE FORCE: Check if this is a System widget section
-            is_system = "Widget:System" in section
-            
-            if is_system:
-                # If it's system but the disk/ini said False, we override it right now
-                if not enabled:
-                    # Py4GW.Console.Log("WidgetManager", f"Forcing System Widget: {wid}", Py4GW.Console.MessageType.Info)
-                    enabled = True
-                    # Update IniManager memory so it stays synced
-                    IniManager().set(key=self.MANAGER_INI_KEY, section=section, var_name=vname, value=True)
-                    # Note: No need to save_vars here unless you want to fix the file immediately; 
-                    # the next global save will persist this.
-                    self._log_success(f"Enforcing System Widget Enabled: {wid}")
-            
-            # 3. Final Activation
-            if enabled:
-                w.enable()
+        try:
+            for wid, w in self.widgets.items():
+                vname = self._widget_var(wid, "enabled")
+                section = f"Widget:{wid}"
+                
+                # 1. Read the current state from IniManager (which just loaded from disk)
+                enabled = bool(IniManager().get(key=self.MANAGER_INI_KEY, section=section, var_name=vname, default=False))
+                
+                # 2. THE FORCE: Check if this is a System widget section
+                is_system = "Widget:System" in section
+                
+                if is_system:
+                    # If it's system but the disk/ini said False, we override it right now
+                    if not enabled:
+                        # Py4GW.Console.Log("WidgetManager", f"Forcing System Widget: {wid}", Py4GW.Console.MessageType.Info)
+                        enabled = True
+                        # Update IniManager memory so it stays synced
+                        IniManager().set(key=self.MANAGER_INI_KEY, section=section, var_name=vname, value=True)
+                        # Note: No need to save_vars here unless you want to fix the file immediately; 
+                        # the next global save will persist this.
+                        self._log_success(f"Enforcing System Widget Enabled: {wid}")
+                
+                # 3. Final Activation
+                if enabled:
+                    w.enable()
+        except Exception as e:
+            self._log_error(f"Failed to apply INI configuration: {e}")
+        
+        finally:
+            self.ini_applied = True
                 
     #endregion
     
@@ -2636,7 +2643,7 @@ class WidgetHandler:
             
             
             self.widget_initialized = False
-            self.discovered = False
+            self.prepare_discover()
             self.discover()
             self.widget_initialized = True    
                 
@@ -2700,6 +2707,11 @@ class WidgetHandler:
             node.setdefault("__widgets__", []).append(widget_id)
             
         self.draw_node(INI_KEY, tree)
+
+    def prepare_discover(self):
+        self.discovered = False
+        self.ini_applied = False
+        
     #endregion
         
     def execute_enabled_widgets_update(self):
@@ -2829,7 +2841,7 @@ class WidgetHandler:
 
     def reload_widgets(self):
         self.widget_initialized = False
-        self.discovered = False
+        self.prepare_discover()
         self.discover()
         self.widget_initialized = True
 
