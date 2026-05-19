@@ -76,6 +76,7 @@ class ReloadType(IntEnum):
     Looting = auto()
     Inventory = auto()
     Crafting = auto()
+    Sorting = auto()
     
     Items = auto()
     

@@ -256,7 +256,7 @@ class ItemData:
 
     @property
     def name(self) -> str:
-        return self._names.singular
+        return self._names.plain_singular
     
     @property
     def plural_name(self) -> str:

@@ -34,6 +34,14 @@ class LootConfig(RuleConfig):
         
         matched_rule = self.GetMatchedRule(item_id)
         return matched_rule is not None and matched_rule.action is ItemAction.PickUp
+    
+    def AddItemIDToBlacklist(self, item_id: int):
+        if not Agent.IsValid(item_id):
+            return
+        
+        if not item_id in self.blacklisted_items:
+            self.blacklisted_items.append(item_id)
+
 
     def GetfilteredLootArray(self, distance: float = Range.SafeCompass.value, multibox_loot: bool = False, allow_unasigned_loot=False) -> list[int]:        
         def IsValidItem(item_id):

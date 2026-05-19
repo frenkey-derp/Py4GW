@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias
 
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import NICK_CYCLE_COUNT, ItemType, Rarity, SalvageMode
+from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, NICK_CYCLE_COUNT, ItemType, Rarity, SalvageMode
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
@@ -580,8 +580,8 @@ class ModelFileIdsAndItemTypesCondition(Condition):
             self.model_file_ids_and_item_types.append(ModelFileIdAndItemType(model_file_id=model_file_id, item_type=ItemType[item_type_name]))
 
 
-class QuantityCondition(Condition):
-    """Matches items whose quantity falls inside the configured inclusive range."""
+class StackQuantityCondition(Condition):
+    """Matches items whose stack quantity falls inside the configured inclusive range."""
     def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
         self.min_quantity = max(0, min(250, int(min_quantity)))
         self.max_quantity = max(0, min(250, int(max_quantity)))
@@ -606,6 +606,38 @@ class QuantityCondition(Condition):
         max_quantity = data.get("max_quantity", 250)
         self.min_quantity = max(0, min(250, int(min_quantity if isinstance(min_quantity, int) else 0)))
         self.max_quantity = max(0, min(250, int(max_quantity if isinstance(max_quantity, int) else 250)))
+        if self.min_quantity > self.max_quantity:
+            self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+
+
+class FullStacksQuantityCondition(Condition):
+    """Matches items whose total quantity across all bags falls inside the configured inclusive range."""
+    def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
+        self.min_quantity = max(0, min(500, int(min_quantity)))
+        self.max_quantity = max(0, min(500, int(max_quantity)))
+        if self.min_quantity > self.max_quantity:
+            self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        total_quantity = ItemSnapshot.get_item_count(item_snapshot) if item_snapshot is not None else 0
+        
+        return self.min_quantity * MAX_STACK_SIZE <= total_quantity <= self.max_quantity * MAX_STACK_SIZE
+
+    def _comparison_data(self) -> Any:
+        return (self.min_quantity, self.max_quantity)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "min_quantity": self.min_quantity,
+            "max_quantity": self.max_quantity,
+        }
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        min_quantity = data.get("min_quantity", 0)
+        max_quantity = data.get("max_quantity", 250)
+        self.min_quantity = max(0, min(500, int(min_quantity if isinstance(min_quantity, int) else 0)))
+        self.max_quantity = max(0, min(500, int(max_quantity if isinstance(max_quantity, int) else 250)))
         if self.min_quantity > self.max_quantity:
             self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
 

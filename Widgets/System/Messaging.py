@@ -12,7 +12,6 @@ from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import Console
 from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import LootConfig
 import PyImGui
 from Py4GWCoreLib import Range, TitleID
 from Py4GWCoreLib import Routines
@@ -25,6 +24,12 @@ from Py4GWCoreLib.Py4GWcorelib import Keystroke
 from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig as FrenkeyLootConfig
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProfileManager import GlobalConfigProfileManager
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import SortingConfig
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
@@ -53,6 +58,10 @@ _merchant_busy: bool = False
 MERCHANT_RULES_WIDGET_NAME = "Merchant Rules"
 PYCONS_WIDGET_NAME = "Pycons"
 _pcon_last_exec_ms_by_signature: dict[tuple[str, tuple[int, int, int, int]], int] = {}
+
+def AddItemIDToBlacklist(self, item_id):
+    raise NotImplementedError
+
 PCON_EXEC_DEDUP_MS = 500
 
 def _extra_data(message: SharedMessageStruct) -> tuple[str, str, str, str]:
@@ -1422,9 +1431,8 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
 
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
 
-    loot_array = LootConfig().GetfilteredLootArray(Range.Earshot.value, multibox_loot=True)
+    loot_array = FrenkeyLootConfig().GetfilteredLootArray(Range.Earshot.value, multibox_loot=True)
     if len(loot_array) == 0:
-        RestoreHeroAISnapshot(message.ReceiverEmail)  # <-- missing before
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
 
@@ -1435,7 +1443,7 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
         DisableHeroAIOptions(message.ReceiverEmail)
         yield from Routines.Yield.wait(100)
         while True:
-            loot_array = LootConfig().GetfilteredLootArray(Range.Earshot.value, multibox_loot=True)
+            loot_array = FrenkeyLootConfig().GetfilteredLootArray(Range.Earshot.value, multibox_loot=True)
             if len(loot_array) == 0:
                 break
             item_id = loot_array.pop(0)
@@ -1444,7 +1452,8 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
 
             exit_reason = _get_loot_exit_reason()
             if exit_reason:
-                LootConfig().AddItemIDToBlacklist(item_id)
+                if item_id not in FrenkeyLootConfig().blacklisted_items:
+                    FrenkeyLootConfig().blacklisted_items.append(item_id)
                 if exit_reason == "map_invalid":
                     ConsoleLog("PickUp Loot", "Map is not valid, halting.", Console.MessageType.Warning)
                 elif exit_reason == "inventory_full":
@@ -1459,7 +1468,8 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
             pos = Agent.GetXY(item_id)
             follow_success = yield from Routines.Yield.Movement.FollowPath([pos], timeout=10000)
             if not follow_success:
-                LootConfig().AddItemIDToBlacklist(item_id)
+                if item_id not in FrenkeyLootConfig().blacklisted_items:
+                    FrenkeyLootConfig().blacklisted_items.append(item_id)
                 ConsoleLog(
                     "PickUp Loot",
                     "Failed to follow path to loot item, halting.",
@@ -1482,7 +1492,8 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
 
                 delta = current_time - start_time
                 if delta > timeout:
-                    LootConfig().AddItemIDToBlacklist(item_id)
+                    if item_id not in FrenkeyLootConfig().blacklisted_items:
+                        FrenkeyLootConfig().blacklisted_items.append(item_id)
                     ConsoleLog(
                         "PickUp Loot",
                         "Timeout reached while picking up loot, halting.",
@@ -1493,7 +1504,8 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
 
                 exit_reason = _get_loot_exit_reason()
                 if exit_reason:
-                    LootConfig().AddItemIDToBlacklist(item_id)
+                    if item_id not in FrenkeyLootConfig().blacklisted_items:
+                        FrenkeyLootConfig().blacklisted_items.append(item_id)
                     if exit_reason == "map_invalid":
                         ConsoleLog(
                             "PickUp Loot",
@@ -1509,7 +1521,7 @@ def PickUpLoot(index:int , message: SharedMessageStruct):
                     ActionQueueManager().ResetAllQueues()
                     return
 
-                loot_array = LootConfig().GetfilteredLootArray(Range.Earshot.value, multibox_loot=True)
+                loot_array = FrenkeyLootConfig().GetfilteredLootArray(Range.Earshot.value, multibox_loot=True)
                 if item_id not in loot_array or len(loot_array) == 0:
                     yield from Routines.Yield.wait(100)
                     break
@@ -2413,6 +2425,40 @@ def Reload(index: int, message: SharedMessageStruct):
         from Sources.frenkeyLib.Core.data_dict import DataList, DataDict
         
         config_type = ReloadType(message.Params[0]) if len(message.Params) > 0 else None
+        profile_manager = GlobalConfigProfileManager()
+        profile_manager.refresh(force=True)
+        
+        match config_type:
+            case ReloadType.ItemData:
+                ITEM_DATA.load_data()
+                
+            case ReloadType.Crafting:
+                config_path = profile_manager.get_active_config_file_path('CraftingConfig')
+                if os.path.isfile(config_path):
+                    CraftingConfig().load_dict(CraftingConfig().Load(config_path).to_dict())
+                else:
+                    CraftingConfig().load_dict({})
+            
+            case ReloadType.Buying:
+                config_path = profile_manager.get_active_config_file_path('BuyConfig')
+                if os.path.isfile(config_path):
+                    BuyConfig().load_dict(BuyConfig().Load(config_path).to_dict())
+                else:
+                    BuyConfig().load_dict({})
+            
+            case ReloadType.Inventory:
+                config_path = profile_manager.get_active_config_file_path('InventoryConfig')
+                if os.path.isfile(config_path):
+                    InventoryConfig().Load(config_path)
+                else:
+                    InventoryConfig().clear()
+
+            case ReloadType.Sorting:
+                config_path = profile_manager.get_active_config_file_path('SortingConfig')
+                if os.path.isfile(config_path):
+                    SortingConfig().load_dict(SortingConfig().Load(config_path).to_dict())
+                else:
+                    SortingConfig().load_dict({})
         if config_type:
             project_path = Py4GW.Console.get_projects_path()
             settings_dir = os.path.join(project_path, "Settings", "Global", "Item & Inventory", "Configs")
@@ -2435,6 +2481,12 @@ def Reload(index: int, message: SharedMessageStruct):
                 ReloadType.Looting: None,   # Coming soon ....
             }
             
+            case ReloadType.Looting:
+                config_path = profile_manager.get_active_config_file_path('LootConfig')
+                if os.path.isfile(config_path):
+                    FrenkeyLootConfig().Load(config_path)
+                else:
+                    FrenkeyLootConfig().clear()
             if collector := collectors.get(config_type, None):
                 if isinstance(collector, (DataList, DataDict)):
                     collector.load()

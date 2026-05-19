@@ -68,6 +68,16 @@ STORAGE_BAGS = [
     Bags.Storage7, Bags.Storage8, Bags.Storage9, Bags.Storage10, Bags.Storage11, Bags.Storage12,
     Bags.Storage13, Bags.Storage14
 ]
+
+BAG_ROW_SLOTS = 5
+MAX_BAG_SIZES = {
+    Bags.Backpack: 20,
+    Bags.BeltPouch: 10,
+    Bags.Bag1: 15,
+    Bags.Bag2: 15,
+    Bags.EquipmentPack: 20,
+} 
+MAX_BAG_SIZES.update({bag: 25 for bag in STORAGE_BAGS})
 # endregion
 # region ItemType
 class ItemType(IntEnum):

@@ -29,7 +29,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
-    QuantityCondition,
+    StackQuantityCondition,
     RangedUpgrade,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
@@ -170,6 +170,7 @@ class Rule:
             "rule_type": type(self).__name__,
             "name": self.name,
             "action": self.action.name,
+            "enabled": self.enabled,
             "result_interpretation": self.result_interpretation.name,
         }
         payload.update(self._serialize_data())
@@ -186,7 +187,8 @@ class Rule:
         rule.name = payload.get("name", "")
         action_name = payload.get("action", "NONE")
         rule.action = ItemAction[action_name] if isinstance(action_name, str) and action_name in ItemAction.__members__ else ItemAction.NONE
-
+        rule.enabled = bool(payload.get("enabled", True))
+        
         result_interpretation_name = payload.get("result_interpretation")
         if isinstance(result_interpretation_name, str) and result_interpretation_name in ResultInterpretation.__members__:
             rule.result_interpretation = ResultInterpretation[result_interpretation_name]
@@ -240,11 +242,11 @@ class ItemTypesRule(Rule):
 class QuantityRule(Rule):
     """Matches items whose quantity falls inside the configured inclusive range."""
     def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
-        super().__init__([QuantityCondition(min_quantity, max_quantity)])
+        super().__init__([StackQuantityCondition(min_quantity, max_quantity)])
 
     @property
-    def condition(self) -> QuantityCondition:
-        return cast(QuantityCondition, self.conditions[0])
+    def condition(self) -> StackQuantityCondition:
+        return cast(StackQuantityCondition, self.conditions[0])
 
     @property
     def min_quantity(self) -> int:

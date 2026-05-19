@@ -174,6 +174,19 @@ class InventoryBT:
                 action_node.blackboard = node.blackboard
                 return action_node.tick()
 
+            if cls._needs_inventory_sorting():
+                action_node = BTNodes.Bags.SortBags(INVENTORY_BAGS)
+                Py4GW.Console.Log(
+                    "InventoryBT",
+                    "Dispatching inventory sort maintenance after blocked item actions.",
+                    Py4GW.Console.MessageType.Info,
+                )
+                node.blackboard[cls._ACTIVE_NODE_KEY] = action_node
+                node.blackboard[cls._ACTIVE_ACTION_KEY] = "SortInventory"
+                node.blackboard[cls._ACTIVE_ITEM_IDS_KEY] = []
+                action_node.blackboard = node.blackboard
+                return action_node.tick()
+
             return BehaviorTree.NodeState.SUCCESS
 
         return BehaviorTree.ActionNode(name="InventoryBT.ProcessInventory", action_fn=_tick)
@@ -196,6 +209,13 @@ class InventoryBT:
 
             action = cls._get_action_for_item(config, item_id)
             if action in (None, ItemAction.NONE, ItemAction.Ignore, ItemAction.Hold):
+                continue
+
+            item = ItemSnapshot.from_item_id(item_id)
+            if item is None or not item.is_valid or not item.is_inventory_item:
+                continue
+
+            if action in (ItemAction.Salvage_Common_Materials, ItemAction.Salvage_Rare_Materials) and not item.is_salvageable:
                 continue
 
             if action == ItemAction.ExtractUpgrade:
@@ -245,6 +265,15 @@ class InventoryBT:
                     rule=rule,
                     note="Skipped because the full item quantity does not fit in storage or material storage.",
                     executable=False,
+            )
+
+        if action in (ItemAction.Salvage_Common_Materials, ItemAction.Salvage_Rare_Materials) and not item.is_salvageable:
+            return InventoryPreviewEntry(
+                item=item,
+                action=action,
+                rule=rule,
+                note="Skipped because the item is not salvageable.",
+                executable=False,
             )
 
         if action == ItemAction.ExtractUpgrade:

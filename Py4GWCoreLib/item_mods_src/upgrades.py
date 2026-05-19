@@ -435,18 +435,7 @@ class Upgrade:
     
     #region Encoded String Generation
     def get_text_color(self, name : bool = False) -> bytes:
-        match self.rarity:
-            case Rarity.Blue | Rarity.White:
-                return GWEncoded.ITEM_ENHANCE if name else GWEncoded.ITEM_BONUS
-            
-            case Rarity.Purple:
-                return GWEncoded.ITEM_UNCOMMON
-            
-            case Rarity.Gold:
-                return GWEncoded.ITEM_RARE
-            
-            case Rarity.Green:
-                return GWEncoded.ITEM_UNIQUE
+        return GWStringEncoded.get_rarity_bytes(self.rarity, name)
             
     def create_upgrade_name(self, item_type: ItemType) -> GWStringEncoded:
         encoded_name = self.create_encoded_name()

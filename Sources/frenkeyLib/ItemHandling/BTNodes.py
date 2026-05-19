@@ -68,6 +68,7 @@ from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.item_data.ItemData import MATERIAL_STORAGE_SLOTS
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import BagSortPlan, BagSortPreviewEntry, SlotGroupConfig, Sorter, SortingConfig
 from Sources.frenkeyLib.ItemHandling.utility import HasSpaceForItem
 
 SALVAGE_WINDOW_HASH = 684387150
@@ -1551,19 +1552,133 @@ class BTNodes:
                 return BTNodes._success_if(moved_any or succeed_if_already_filled)
 
             return BehaviorTree.ActionNode(name="Inventory.FillMaterialStorage", action_fn=_fill_material_storage, aftercast_ms=aftercast_ms)
-        
+                
         @staticmethod
-        def _get_default_sort_item_type_order() -> list[int]:
-            item_type_order = [
-                int(ItemType.Kit),
-                int(ItemType.Key),
-                int(ItemType.Usable),
-                int(ItemType.Trophy),
-                int(ItemType.Quest_Item),
-                int(ItemType.Materials_Zcoins),
+        def GetBagSortPlan(
+            bags: list[Bags] = INVENTORY_BAGS,
+        ) -> BagSortPlan:
+            snapshot = ItemSnapshot.get_bags_snapshot(bags)
+            sorting_config = SortingConfig()
+            plan = BagSortPlan()
+            remaining_items: list[ItemSnapshot] = [
+                item
+                for bag in bags
+                for _, item in sorted(snapshot.get(bag, {}).items())
+                if item is not None and item.is_valid
             ]
-            item_type_order += [int(item_type) for item_type in ItemType if int(item_type) not in item_type_order]
-            return item_type_order
+            occupied_slots: set[tuple[Bags, int]] = set()
+
+            for bag in bags:
+                plan.layout[bag] = {
+                    slot: None
+                    for slot in sorted(snapshot.get(bag, {}).keys())
+                }
+
+            explicit_groups: list[tuple[Bags, SlotGroupConfig, list[int]]] = []
+            for bag in bags:
+                bag_groups = sorted(
+                    sorting_config.get_groups_for_bag(bag),
+                    key=lambda group: min(group.normalized_slots_for_bag(bag)) if group.normalized_slots_for_bag(bag) else 9999,
+                )
+                for group in bag_groups:
+                    slots = [
+                        slot
+                        for slot in group.normalized_slots_for_bag(bag)
+                        if slot in plan.layout.get(bag, {}) and (bag, slot) not in occupied_slots
+                    ]
+                    if not slots:
+                        continue
+
+                    explicit_groups.append((bag, group, slots))
+                    occupied_slots.update((bag, slot) for slot in slots)
+
+            for bag, group, slots in explicit_groups:
+                matching_items = sorted(
+                    [item for item in remaining_items if group.matches(item)],
+                    key=lambda item: group.sorter.get_sort_key(item),
+                )
+
+                for slot_index, slot in enumerate(slots):
+                    planned_item = matching_items[slot_index] if slot_index < len(matching_items) else None
+                    if planned_item is not None:
+                        remaining_items.remove(planned_item)
+
+                    plan.layout[bag][slot] = planned_item
+                    plan.entries.append(
+                        BagSortPreviewEntry(
+                            bag=bag,
+                            slot=slot,
+                            item=planned_item,
+                            source_bag=planned_item.bag if planned_item is not None else None,
+                            source_slot=planned_item.slot if planned_item is not None else None,
+                            group_name=group.display_name(),
+                            group_summary=group.matcher.summary(),
+                            sorter=group.sorter,
+                            used_fallback=False,
+                        )
+                    )
+
+            default_slots = [
+                (bag, slot)
+                for bag in bags
+                for slot in sorted(plan.layout.get(bag, {}).keys())
+                if (bag, slot) not in occupied_slots
+            ]
+            default_sorted_items = sorted(
+                remaining_items,
+                key=lambda item: sorting_config.default_sorter.get_sort_key(item),
+            )
+
+            assigned_default_count = 0
+            for bag, slot in default_slots:
+                planned_item = default_sorted_items[assigned_default_count] if assigned_default_count < len(default_sorted_items) else None
+                if planned_item is not None:
+                    assigned_default_count += 1
+
+                plan.layout[bag][slot] = planned_item
+                plan.entries.append(
+                    BagSortPreviewEntry(
+                        bag=bag,
+                        slot=slot,
+                        item=planned_item,
+                        source_bag=planned_item.bag if planned_item is not None else None,
+                        source_slot=planned_item.slot if planned_item is not None else None,
+                        group_name='Default',
+                        group_summary='Any item',
+                        sorter=sorting_config.default_sorter,
+                        used_fallback=False,
+                    )
+                )
+
+            remaining_items = default_sorted_items[assigned_default_count:]
+            fallback_slots = [
+                entry
+                for entry in plan.entries
+                if entry.item is None and entry.group_name != 'Default'
+            ]
+
+            if remaining_items and fallback_slots:
+                plan.warnings.append(
+                    'Some items did not match any open/default slot and were placed into reserved slots as fallback.'
+                )
+                for fallback_entry in fallback_slots:
+                    if not remaining_items:
+                        break
+
+                    planned_item = remaining_items.pop(0)
+                    fallback_entry.item = planned_item
+                    fallback_entry.source_bag = planned_item.bag
+                    fallback_entry.source_slot = planned_item.slot
+                    fallback_entry.used_fallback = True
+                    plan.layout[fallback_entry.bag][fallback_entry.slot] = planned_item
+
+            if remaining_items:
+                plan.warnings.append(
+                    f'{len(remaining_items)} item(s) could not be assigned by the planner and will remain unsorted until more slots are available.'
+                )
+
+            plan.entries.sort(key=lambda entry: (entry.bag.value, entry.slot))
+            return plan
 
         @staticmethod
         def GetPlannedBagLayout(
@@ -1580,46 +1695,7 @@ class BTNodes:
               UserDescription: Use this when you want to inspect or compare the default planned bag arrangement before executing it.
               Notes: Returns a slot map using the current live snapshot and the same ordering rules as Sort Bags.
             """
-            snapshot = ItemSnapshot.get_bags_snapshot(bags)
-            item_type_order = BTNodes.Bags._get_default_sort_item_type_order()
-
-            ordered_slots: list[tuple[Bags, int]] = []
-            planned_layout: dict[Bags, dict[int, Optional[ItemSnapshot]]] = {}
-
-            for bag in bags:
-                planned_layout[bag] = {}
-                for slot in sorted(snapshot.get(bag, {}).keys()):
-                    ordered_slots.append((bag, slot))
-                    planned_layout[bag][slot] = None
-
-            items = [
-                item
-                for bag in bags
-                for _, item in sorted(snapshot.get(bag, {}).items())
-                if item is not None and item.is_valid
-            ]
-            sorted_items = sorted(
-                items,
-                key=lambda item: (
-                    item.item_type == ItemType.Unknown,
-                    item_type_order.index(item.item_type),
-                    item.model_id,
-                    -item.rarity.value,
-                    -item.quantity,
-                    -item.value,
-                    item.color.value,
-                    item.id,
-                ),
-            )
-
-            for index, item in enumerate(sorted_items):
-                if index >= len(ordered_slots):
-                    break
-
-                bag, slot = ordered_slots[index]
-                planned_layout[bag][slot] = item
-
-            return planned_layout
+            return BTNodes.Bags.GetBagSortPlan(bags).layout
 
         @staticmethod
         def CompactBags(
