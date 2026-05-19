@@ -1,6 +1,7 @@
 import os
 
 import Py4GW
+import PyImGui
 
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment

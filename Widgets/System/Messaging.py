@@ -58,10 +58,6 @@ _merchant_busy: bool = False
 MERCHANT_RULES_WIDGET_NAME = "Merchant Rules"
 PYCONS_WIDGET_NAME = "Pycons"
 _pcon_last_exec_ms_by_signature: dict[tuple[str, tuple[int, int, int, int]], int] = {}
-
-def AddItemIDToBlacklist(self, item_id):
-    raise NotImplementedError
-
 PCON_EXEC_DEDUP_MS = 500
 
 
@@ -2556,6 +2552,22 @@ def InventoryQuery(index: int, message: SharedMessageStruct):
        report_inventory_count: count Params[0..1] range, reply to sender.
        inventory_count_reply:  cache Params[2] under (sender, min, max).
     """
+    """Generic inventory count query.
+
+    Sub-commands (extra0):
+        report_inventory_count
+            Counts all items whose model ID falls in the inclusive range
+            [Params[0], Params[1]] and writes the total to an INI file.
+            extra1 = ini_path
+            extra2 = ini_section
+            extra3 = ini_key
+
+    Note: only contiguous model-ID ranges are currently supported via Params.
+    Non-contiguous ID sets would require a comma-separated encoding in ExtraData,
+    which is limited to 64 characters per slot (~12 IDs). Extend this handler
+    if a real non-contiguous use case arises.
+    """
+    
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
     extra0, _extra1, _extra2, _extra3 = _extra_data(message)
     mode = extra0.strip().lower()

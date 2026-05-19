@@ -1,4 +1,6 @@
 
+from enum import Enum
+
 import PyImGui
 import PyUIManager
 import time
@@ -6,7 +8,10 @@ from typing import Dict, List, Optional
 import json
 import PyOverlay
 from collections import deque, defaultdict
+
+from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
 from .Py4GWcorelib import ConsoleLog, Console
+from .enums_src.Item_enums import INVENTORY_BAGS, INVENTORY_WITH_EQUIPMENT_BAGS, STORAGE_BAGS, Bags, SalvageMode
 from .enums_src.UI_enums import WindowID
 from dataclasses import dataclass, field
 from .native_src.internals.types import Vec2f
@@ -566,6 +571,7 @@ class UIManager:
 
         if not UIManager.FrameExists(frame_id):
             return
+        
         PyUIManager.UIManager.button_click(frame_id)    
         
     @staticmethod
@@ -1228,6 +1234,7 @@ class FrameInfo:
         if self.FrameID_source != 0:
             self.FrameID = self.FrameID_source
             return
+        
         if self.WindowLabel:
             _hash = UIManager.GetHashByLabel(self.WindowLabel)
             self.FrameID = UIManager.GetFrameIDByHash(_hash)
@@ -1255,9 +1262,12 @@ class FrameInfo:
         if self.FrameExists():
             UIManager().DrawFrameOutline(self.FrameID, color, thickness)
             
-    def FrameClick(self):
+    def FrameClick(self, current_state: Optional[int] = None, wparam_value: Optional[int] = None, lparam_value: Optional[int] = None):
         if self.FrameExists():
             UIManager.FrameClick(self.FrameID)
+    
+            if current_state is not None:
+                UIManager.TestMouseAction(self.FrameID, current_state, wparam_value or 0, lparam_value or 0)
             
     def GetCoords(self):
         if self.FrameExists():
@@ -1290,37 +1300,75 @@ class FrameInfo:
         return []
             
 #region WindowFrames
+
 WindowFrames:dict[str, FrameInfo] = {}
 
-InventoryBags = FrameInfo(
-    WindowID = WindowID.WindowID_InventoryBags,
-    WindowName = "Inventory Bags",
-    WindowLabel = "InvAggregate",
-    FrameHash = 291586130
-)
+class WindowFrame():
+    CloseWindowButtonFrame = FrameInfo(
+        FrameHash=3738633661,
+        WindowLabel="Close Window button"
+    )
+    
+    #region Character Creation
+    CharacterDeleteButtonFrame = FrameInfo(
+        WindowName="DeleteCharacterButton",
+        FrameHash=3379687503
+    )
 
-MiniMapFrame = FrameInfo(
-                WindowName="MiniMap",
-                WindowLabel="compass",
-)
+    CharacterFinalDeleteButtonFrame = FrameInfo(
+        WindowName="FinalDeleteCharacterButton",
+        ParentFrameHash=140452905,
+        ChildOffsets=[5,1,15,2]
+    )
 
-PartyWindowFrame = FrameInfo(
-    WindowName="PartyWindow",
-    FrameHash=3332025202,
-    ChildOffsets=[1]
-)
+    CreateCharacterButtonFrame1 = FrameInfo(
+        WindowName="CreateCharacterButton1",
+        FrameHash=3372446797
+    )
 
-CancelEnterMissionButton = FrameInfo(
-    WindowName="CancelEnterMissionButton",
-    ParentFrameHash=2209443298,
-    ChildOffsets=[0,1,1]
-)
+    CreateCharacterButtonFrame2 = FrameInfo(
+        WindowName="CreateCharacterButton2",
+        FrameHash=3973689736,
+    )
 
-ConfirmEnterMissionButton = FrameInfo(
-    WindowName="ConfirmEnterMissionButton",
-    ParentFrameHash=3617868957,
-    ChildOffsets=[2, 6, 100, 2, 6]
-)
+    CreateCharacterTypeNextButtonFrame = FrameInfo(
+        WindowName="CreateCharacterTypeNextButton",
+        FrameHash=3110341991
+    )
+
+    CreateCharacterNextButtonGenericFrame = FrameInfo(
+        WindowName="CreateCharacterNextButtonGeneric",
+        FrameHash=1102119410
+    )
+
+    FinalCreateCharacterButtonFrame = FrameInfo(
+        WindowName="FinalCreateCharacterButton",
+        FrameHash=3856299307
+    )    
+    #endregion Character Creation
+       
+    MiniMapFrame = FrameInfo(
+                    WindowName="MiniMap",
+                    WindowLabel="compass",
+    )
+
+    PartyWindowFrame = FrameInfo(
+        WindowName="PartyWindow",
+        FrameHash=3332025202,
+        ChildOffsets=[1]
+    )
+
+    CancelEnterMissionButton = FrameInfo(
+        WindowName="CancelEnterMissionButton",
+        ParentFrameHash=2209443298,
+        ChildOffsets=[0,1,1]
+    )
+
+    ConfirmEnterMissionButton = FrameInfo(
+        WindowName="ConfirmEnterMissionButton",
+        ParentFrameHash=3617868957,
+        ChildOffsets=[2, 6, 100, 2, 6]
+    )
 
     #region Inventory
     InventoryIdentifyAllButton = FrameInfo(
@@ -1565,23 +1613,19 @@ ConfirmEnterMissionButton = FrameInfo(
         WindowName="CrafterWindowFrame",
         FrameHash=1517397806
     )
-    
-    
-
-
-   
-WindowFrames["Inventory Bags"] = InventoryBags
-WindowFrames["MiniMap"] = MiniMapFrame
-WindowFrames["PartyWindow"] = PartyWindowFrame
-WindowFrames["CancelEnterMissionButton"] = CancelEnterMissionButton
-WindowFrames["ConfirmEnterMissionButton"] = ConfirmEnterMissionButton
-WindowFrames["DeleteCharacterButton"] = CharacterDeleteButtonFrame
-WindowFrames["FinalDeleteCharacterButton"] = CharacterFinalDeleteButtonFrame
-WindowFrames["CreateCharacterButton1"] = CreateCharacterButtonFrame1
-WindowFrames["CreateCharacterButton2"] = CreateCharacterButtonFrame2
-WindowFrames["CreateCharacterTypeNextButton"] = CreateCharacterTypeNextButtonFrame
-WindowFrames["CreateCharacterNextButtonGeneric"] = CreateCharacterNextButtonGenericFrame
-WindowFrames["FinalCreateCharacterButton"] = FinalCreateCharacterButtonFrame
+       
+WindowFrames["Inventory Bags"] = WindowFrame.InventoryBags
+WindowFrames["MiniMap"] = WindowFrame.MiniMapFrame
+WindowFrames["PartyWindow"] = WindowFrame.PartyWindowFrame
+WindowFrames["CancelEnterMissionButton"] = WindowFrame.CancelEnterMissionButton
+WindowFrames["ConfirmEnterMissionButton"] = WindowFrame.ConfirmEnterMissionButton
+WindowFrames["DeleteCharacterButton"] = WindowFrame.CharacterDeleteButtonFrame
+WindowFrames["FinalDeleteCharacterButton"] = WindowFrame.CharacterFinalDeleteButtonFrame
+WindowFrames["CreateCharacterButton1"] = WindowFrame.CreateCharacterButtonFrame1
+WindowFrames["CreateCharacterButton2"] = WindowFrame.CreateCharacterButtonFrame2
+WindowFrames["CreateCharacterTypeNextButton"] = WindowFrame.CreateCharacterTypeNextButtonFrame
+WindowFrames["CreateCharacterNextButtonGeneric"] = WindowFrame.CreateCharacterNextButtonGenericFrame
+WindowFrames["FinalCreateCharacterButton"] = WindowFrame.FinalCreateCharacterButtonFrame
 
 
 #region Callbacks

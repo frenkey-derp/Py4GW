@@ -5,7 +5,6 @@ from typing import Optional, Sequence, cast
 
 import Py4GW
 
-from Py4GWCoreLib.Item import Bag
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.UIManager import MerchantWindow
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemAction, ItemType, SalvageMode
