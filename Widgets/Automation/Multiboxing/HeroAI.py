@@ -7,8 +7,6 @@ import Py4GW
 import PyImGui
 
 from Py4GWCoreLib.Builds.Any.HeroAI import HeroAI_Build
-from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree as InventoryBehaviorTree
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 
 MODULE_NAME = "HeroAI"
 MODULE_ICON = "Textures/Module_Icons/HeroAI.png"
@@ -29,10 +27,8 @@ from HeroAI.windows import (HeroAI_FloatingWindows ,HeroAI_Windows,)
 from HeroAI.ui_base import HeroAI_BaseUI
 from HeroAI.ui import (draw_configure_window, draw_skip_cutscene_overlay)
 from HeroAI import team_viewer_broadcast
-from Py4GWCoreLib import (GLOBAL_CACHE, Agent,
+from Py4GWCoreLib import (GLOBAL_CACHE, Agent, LootConfig,
                           Range, Routines, ThrottledTimer, SharedCommandType)
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
-from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 
 #region GLOBALS
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
@@ -41,90 +37,39 @@ cached_data = CacheData()
 heroai_build = HeroAI_Build(cached_data)
 map_quads : list[Map.Pathing.Quad] = []
 build_contract_map_signature: tuple[int, int, int, int] | None = None
-inventory_config = InventoryConfig()
-loot_config = LootConfig()
-inventory_bt = InventoryBT(inventory_config)
-inventory_service_throttle = ThrottledTimer(250)
-
-
-def _inventory_state_is_active(state: InventoryBehaviorTree.NodeState) -> bool:
-    return state in (InventoryBehaviorTree.NodeState.SUCCESS, InventoryBehaviorTree.NodeState.RUNNING)
-
-
-def TickInventoryProcessing(cached_data: CacheData) -> bool:
-    if cached_data.data.in_aggro:
-        return False
-
-    player_agent_id = Player.GetAgentID()
-    if cached_data.combat_handler.InCastingRoutine() or Agent.IsCasting(player_agent_id):
-        return False
-
-    active_node = inventory_bt.tree.blackboard.get(InventoryBT._ACTIVE_NODE_KEY)
-    has_pending_work = active_node is not None or InventoryBT.HasExecuteableInventoryActions(inventory_config)
-    if not has_pending_work:
-        return False
-
-    if active_node is None and not inventory_service_throttle.IsExpired():
-        return False
-
-    inventory_service_throttle.Reset()
-
-    state = inventory_bt.tick()
-    return state != InventoryBehaviorTree.NodeState.FAILURE
-
-
-def _has_active_pick_up_loot_message() -> bool:
-    account_email = Player.GetAccountEmail()
-    index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email)
-    return bool(index != -1 and message and message.Command == SharedCommandType.PickUpLoot)
-
-
 #region Looting
 def LootingNode(cached_data: CacheData)-> BehaviorTree.NodeState:
     options = cached_data.account_options
     if not options or not options.Looting:
-        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
 
     if is_follow_recovery_active(cached_data, follow_execution_state):
         return BehaviorTree.NodeState.FAILURE
     
     if cached_data.data.in_aggro:
-        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
     
-    if _has_active_pick_up_loot_message():
-        cached_data.in_looting_routine = True
-        if not Routines.Checks.Map.MapValid() or not Map.IsExplorable():
-            cached_data.in_looting_routine = False
-            return BehaviorTree.NodeState.FAILURE
-        if GLOBAL_CACHE.Inventory.GetFreeSlotCount() <= 1:
-            cached_data.in_looting_routine = False
-            return BehaviorTree.NodeState.FAILURE
+    
+    account_email = Player.GetAccountEmail()
+    index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email)
+
+    if index != -1 and message and message.Command == SharedCommandType.PickUpLoot:
         if LOOT_THROTTLE_CHECK.IsExpired():
-            cached_data.in_looting_routine = False
             return BehaviorTree.NodeState.FAILURE
         return BehaviorTree.NodeState.RUNNING
-
-    if not Routines.Checks.Map.MapValid() or not Map.IsExplorable():
-        cached_data.in_looting_routine = False
-        return BehaviorTree.NodeState.FAILURE
     
     if GLOBAL_CACHE.Inventory.GetFreeSlotCount() <= 1:
-        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
-
-    loot_array = loot_config.GetfilteredLootArray(
+    
+    loot_array = LootConfig().GetfilteredLootArray(
         Range.Earshot.value,
         multibox_loot=True,
         allow_unasigned_loot=False,
     )
 
     if len(loot_array) == 0:
-        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
 
-    account_email = Player.GetAccountEmail()
     self_account = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(account_email)
     if self_account:
         GLOBAL_CACHE.ShMem.SendMessage(
@@ -134,10 +79,9 @@ def LootingNode(cached_data: CacheData)-> BehaviorTree.NodeState:
             (0, 0, 0, 0),
         )
         LOOT_THROTTLE_CHECK.Reset()
-        cached_data.in_looting_routine = True
+        # Return RUNNING so the tree knows the task started
         return BehaviorTree.NodeState.RUNNING
 
-    cached_data.in_looting_routine = False
     return BehaviorTree.NodeState.FAILURE
 
 
@@ -145,6 +89,11 @@ def LootingNode(cached_data: CacheData)-> BehaviorTree.NodeState:
 
 #region Combat
 def HandleOutOfCombat(cached_data: CacheData):
+    options = cached_data.account_options
+    
+    if not options or not options.Combat:  # halt operation if combat is disabled
+        return False
+    
     if cached_data.data.in_aggro:
         return False
 
@@ -155,21 +104,9 @@ def HandleOutOfCombat(cached_data: CacheData):
     if cached_data.combat_handler.InCastingRoutine() or Agent.IsCasting(player_agent_id):
         return False
 
-    ooc_did_work = False
-    options = cached_data.account_options
-    if options and options.Combat:
-        heroai_build.set_cached_data(cached_data)
-        next(heroai_build.ProcessOOC(), None)
-        ooc_did_work = heroai_build.DidTickSucceed()
-
-    inventory_did_work = TickInventoryProcessing(cached_data)
-
-    follow_did_work = False
-    if not IsUserInterrupting() and not Agent.IsMoving(player_agent_id):
-        follow_state = Follow(cached_data)
-        follow_did_work = follow_state != BehaviorTree.NodeState.FAILURE
-
-    return ooc_did_work or inventory_did_work or follow_did_work
+    heroai_build.set_cached_data(cached_data)
+    next(heroai_build.ProcessOOC(), None)
+    return heroai_build.DidTickSucceed()
 
 def HandleCombat(cached_data: CacheData):
     options = cached_data.account_options
@@ -243,17 +180,14 @@ def initialize(cached_data: CacheData) -> bool:
     if not Routines.Checks.Map.MapValid():
         heroai_build.ClearBuildContract()
         build_contract_map_signature = None
-        inventory_bt.reset()
         return False
     
     if not GLOBAL_CACHE.Party.IsPartyLoaded():
-        inventory_bt.reset()
         return False
         
     if not Map.IsExplorable():  # halt operation if not in explorable area
         heroai_build.ClearBuildContract()
         build_contract_map_signature = None
-        inventory_bt.reset()
         return False
 
     if Map.IsInCinematic():  # halt operation during cinematic
@@ -271,7 +205,6 @@ def initialize(cached_data: CacheData) -> bool:
     if build_contract_map_signature != map_signature:
         heroai_build.EnsureBuildContract(cached_data)
         build_contract_map_signature = map_signature
-        inventory_bt.reset()
     cached_data.UpdateCombat()
     return True
 
@@ -386,6 +319,7 @@ def movement_interrupt() -> BehaviorTree.NodeState:
     if Agent.IsMoving(Player.GetAgentID()):
         return BehaviorTree.NodeState.SUCCESS   # block lower-priority automation for this tick
     return BehaviorTree.NodeState.FAILURE      # allow next branch
+
 
 def user_interrupt() -> BehaviorTree.NodeState:
     if IsUserInterrupting():
