@@ -1,7 +1,6 @@
 # singleton instance which contains all the item data of our `items.json` file. This is used to avoid having to read the file multiple times and to have a central place to access item data from
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, date
 import json
 import os
 import traceback
@@ -10,13 +9,11 @@ from typing import Optional
 from Py4GW import Console
 
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
-from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
-from Py4GWCoreLib.enums_src.Item_enums import ItemType, NICK_CYCLE_COUNT, NICK_CYCLE_START_DATE
-from Py4GWCoreLib.enums_src.Model_enums import ModelID
-from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType, SharedCommandType
+from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
-from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
+from Py4GWCoreLib.native_src.internals import string_table
+from Sources.frenkeyLib.ItemHandling.Items.types import MaterialType
 
 PERSISTENT = True
 
@@ -184,76 +181,6 @@ class ItemData:
     
     skin: Optional[str] = None
     
-    _names: GWStringEncoded = GWStringEncoded(b"", "Unknown Item")
-    
-    def __post_init__(self):
-        self._update_names()
-        self.nick_date = self.next_nick_week
-        
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-        
-        if name == "name_encoded" or name == "english_name":
-            self._update_names()
-            
-    def __hash__(self) -> int:
-        return hash((self.model_id, self.item_type))
-    
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, ItemData):
-            return NotImplemented
-
-        return self.model_id == other.model_id and self.item_type == other.item_type
-
-    def get_next_nick_cycle_start_date(self, start_date: Optional[datetime] = None) -> Optional[date]:
-        if self.nick_index is None:
-            return None
-
-        start_date = start_date or datetime.now()
-        nick_start_date = datetime.combine(NICK_CYCLE_START_DATE, datetime.min.time())
-
-        # Monday 00:00 of the week we want to evaluate from.
-        monday_of_current_week = start_date.date() - timedelta(days=start_date.weekday())
-        current_week_start = datetime.combine(monday_of_current_week, datetime.min.time())
-
-        first_matching_cycle = nick_start_date + timedelta(weeks=self.nick_index)
-        if first_matching_cycle >= current_week_start:
-            return first_matching_cycle.date()
-
-        weeks_since_first_match = (current_week_start - first_matching_cycle).days // 7
-        cycles_to_advance = (weeks_since_first_match + NICK_CYCLE_COUNT - 1) // NICK_CYCLE_COUNT
-        next_cycle = first_matching_cycle + timedelta(weeks=cycles_to_advance * NICK_CYCLE_COUNT)
-        return next_cycle.date()
-
-    def get_weeks_until_next_nick(self, start_date: Optional[datetime] = None) -> Optional[int]:
-        next_nick_week = self.get_next_nick_cycle_start_date(start_date)
-        if next_nick_week is None:
-            return None
-
-        start_date = start_date or datetime.now()
-        monday_of_current_week = start_date.date() - timedelta(days=start_date.weekday())
-        current_week_start = datetime.combine(monday_of_current_week, datetime.min.time()).date()
-        delta = next_nick_week - current_week_start
-        if delta.days < 0:
-            return None
-
-        return delta.days // 7
-
-    @property
-    def next_nick_week(self) -> Optional[date]:
-        return self.get_next_nick_cycle_start_date()
-
-    @property
-    def weeks_until_next_nick(self) -> Optional[int]:
-        return self.get_weeks_until_next_nick()
-    
-    def _update_names(self):
-        self._names = GWStringEncoded(self.name_encoded or bytes(), self.english_name or "Unknown Item")
-    
-    @property
-    def names(self) -> GWStringEncoded:
-        return self._names
-
     @property
     def name(self) -> str:
         return self._names.plain_singular
@@ -557,50 +484,3 @@ DAMAGE_RANGES : dict[ItemType, dict[int, tuple[int, int]]] = {
         9:  (11, 22),
     },
 }
-
-MATERIAL_STORAGE_SLOTS : dict[int, int] = {
-    ModelID.Bone: 0,   # Bone
-    ModelID.Lump_Of_Charcoal: 26,  # Lump of Charcoal
-    ModelID.Monstrous_Claw: 19,  # Monstrous Claw
-    ModelID.Bolt_Of_Cloth: 5,   # Bolt of Cloth
-    ModelID.Bolt_Of_Linen: 13,  # Bolt of Linen
-    ModelID.Bolt_Of_Damask: 14,  # Bolt of Damask
-    ModelID.Bolt_Of_Silk: 15,  # Bolt of Silk
-    ModelID.Pile_Of_Glittering_Dust: 9,   # Pile of Glittering Dust
-    ModelID.Glob_Of_Ectoplasm: 16,  # Glob of Ectoplasm
-    ModelID.Monstrous_Eye: 20,  # Monstrous Eye
-    ModelID.Monstrous_Fang: 21,  # Monstrous Fang
-    ModelID.Feather: 11,  # Feather
-    ModelID.Plant_Fiber: 10,  # Plant Fiber
-    ModelID.Diamond: 24,  # Diamond
-    ModelID.Onyx_Gemstone: 25,  # Onyx Gemstone
-    ModelID.Ruby: 22,  # Ruby
-    ModelID.Sapphire: 23,  # Sapphire
-    ModelID.Tempered_Glass_Vial: 29,  # Tempered Glass Vial
-    ModelID.Tanned_Hide_Square: 2,   # Tanned Hide Square
-    ModelID.Fur_Square: 12,  # Fur Square
-    ModelID.Leather_Square: 30,  # Leather Square
-    ModelID.Elonian_Leather_Square: 31,  # Elonian Leather Square
-    ModelID.Vial_Of_Ink: 32,  # Vial of Ink
-    ModelID.Obsidian_Shard: 27,  # Obsidian Shard
-    ModelID.Wood_Plank: 6,   # Wood Plank
-    ModelID.Iron_Ingot: 1,   # Iron Ingot
-    ModelID.Steel_Ingot: 17,  # Steel Ingot
-    ModelID.Deldrimor_Steel_Ingot: 18,  # Deldrimor Steel Ingot
-    ModelID.Roll_Of_Parchment: 33,  # Roll of Parchment
-    ModelID.Roll_Of_Vellum: 34,  # Roll of Vellum
-    ModelID.Scale: 3,   # Scale
-    ModelID.Chitin_Fragment: 4,   # Chitin Fragment
-    ModelID.Granite_Slab: 8,   # Granite Slab
-    ModelID.Spiritwood_Plank: 35,  # Spiritwood Plank
-    ModelID.Amber_Chunk: 36, # Amber Chunk
-    ModelID.Jadeite_Shard: 37, # Jadeite Shard
-}
-
-RARE_MATERIALS : list[int] = [
-    mat for mat, slot in MATERIAL_STORAGE_SLOTS.items() if slot > MATERIAL_STORAGE_SLOTS[ModelID.Feather]
-]
-
-COMMON_MATERIALS : list[int] = [
-    mat for mat, slot in MATERIAL_STORAGE_SLOTS.items() if slot <= MATERIAL_STORAGE_SLOTS[ModelID.Feather]
-]

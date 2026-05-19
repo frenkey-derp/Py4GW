@@ -8,12 +8,56 @@
       "Pet - Elder Crocodile"
     ],
     "enc:\\\\x0F95\\\\xF318\\\\x6CFE": [
-      "Spirit of Favorable Winds"
+      "Spirit of Favorable Winds",
+      "Agent 84"
     ],
     "enc:\\\\x1232\\\\xF535\\\\x05E0": [
       "Agent 160",
       "Agent 191",
       "Bone Minion"
+    ],
+    "enc:\\\\x14CE\\\\xA4C5\\\\x8BD5\\\\x0CD6": [
+      "Shadow Mesmer"
+    ],
+    "enc:\\\\x14CF\\\\xEC6F\\\\xE73F\\\\x49BD": [
+      "Shadow Elemental"
+    ],
+    "enc:\\\\x14D0\\\\x8168\\\\xA1A6\\\\x40C1": [
+      "Shadow Monk"
+    ],
+    "enc:\\\\x14D1\\\\xBDB0\\\\x7A68": [
+      "Shadow Warrior"
+    ],
+    "enc:\\\\x14D2\\\\x970D\\\\xD742\\\\x7F11": [
+      "Shadow Ranger"
+    ],
+    "enc:\\\\x14D5\\\\xD7A9\\\\xCF5D\\\\x1A7C": [
+      "Shadow Beast"
+    ],
+    "enc:\\\\x14D6\\\\xC88A\\\\xEAA4\\\\x3C28": [
+      "Abyssal"
+    ],
+    "enc:\\\\x14DB\\\\x873D\\\\xC69B\\\\x0875": [
+      "Skeletal Ether Breaker"
+    ],
+    "enc:\\\\x14DC\\\\xBC13\\\\x9392\\\\x5197": [
+      "Skeletal Icehand"
+    ],
+    "enc:\\\\x14DD\\\\x9664\\\\xE898\\\\x575D": [
+      "Skeletal Bond"
+    ],
+    "enc:\\\\x14DE\\\\x83D6\\\\x2C89": [
+      "Skeletal Berserker"
+    ],
+    "enc:\\\\x14DF\\\\x9EA7\\\\xD567\\\\x3343": [
+      "Skeletal Impaler",
+      "Agent 212"
+    ],
+    "enc:\\\\x1F81\\\\xC99C\\\\x8FA6\\\\x0605": [
+      "Agent 261",
+      "Shadow Lord Vogris",
+      "Agent 262",
+      "Agent 286"
     ],
     "enc:\\\\x3F30\\\\xF41F\\\\x88CC\\\\x5048": [
       "Kayali the Brave"
@@ -101,11 +145,44 @@
     "enc:\\\\x7D54\\\\xF46D\\\\xEC6C\\\\x721C": [
       "Kournan Phalanx"
     ],
+    "enc:\\\\x8101\\\\x04F4\\\\xC70B\\\\xF5EA\\\\x0534": [
+      "Ruby Djinn"
+    ],
+    "enc:\\\\x8101\\\\x05D9\\\\xF9DC\\\\x61C7": [
+      "Sapphire Djinn"
+    ],
+    "enc:\\\\x8101\\\\x05DA\\\\xCA83\\\\x978C\\\\x488A": [
+      "Blue Tongue Heket"
+    ],
+    "enc:\\\\x8101\\\\x0625\\\\xA3E5\\\\x8DB8\\\\x4F8E": [
+      "Blood Cowl Heket"
+    ],
+    "enc:\\\\x8101\\\\x0678\\\\x8EA8\\\\xAD51\\\\x78BA": [
+      "Diamond Djinn"
+    ],
     "enc:\\\\x8101\\\\x0752\\\\x8B99\\\\xF1D7\\\\x287F": [
       "Tormented Land"
     ],
     "enc:\\\\x8101\\\\x0753\\\\x8FD6\\\\x9344\\\\x3906": [
       "Earthen Abomination"
+    ],
+    "enc:\\\\x8101\\\\x0849\\\\xEF33\\\\x95FE\\\\x4CE1": [
+      "Stoneaxe Heket"
+    ],
+    "enc:\\\\x8101\\\\x0886\\\\xE7D1\\\\xC5F4\\\\x193F": [
+      "Beast Sworn Heket"
+    ],
+    "enc:\\\\x8101\\\\x08B6\\\\xC33A\\\\xCD9A\\\\x7727": [
+      "Mirage Iboga"
+    ],
+    "enc:\\\\x8101\\\\x08B7\\\\xC7C2\\\\xBC18\\\\x01F8": [
+      "Storm Jacaranda"
+    ],
+    "enc:\\\\x8101\\\\x08B8\\\\xF25C\\\\x98B1\\\\x0D32": [
+      "Enchanted Brambles"
+    ],
+    "enc:\\\\x8101\\\\x08B9\\\\xEA3C\\\\xCF2C\\\\x55E0": [
+      "Whistling Thornbrush"
     ],
     "enc:\\\\x8101\\\\x09C2\\\\x8FDA\\\\x911A\\\\x46E7": [
       "Skree Griffin"
@@ -127,6 +204,9 @@
     ],
     "enc:\\\\x8101\\\\x09C9\\\\xFDC3\\\\xD720\\\\x7612": [
       "Margonite Sorcerer"
+    ],
+    "enc:\\\\x8101\\\\x09CA\\\\xB515\\\\xC93D\\\\x1FD3": [
+      "Margonite Ascendant"
     ],
     "enc:\\\\x8101\\\\x09CB\\\\x9756\\\\xE318\\\\x3604": [
       "Margonite Cleric"
@@ -170,6 +250,9 @@
     "enc:\\\\x8101\\\\x1A94\\\\xAC7F\\\\xF190\\\\x7563": [
       "Beast Sworn Heket"
     ],
+    "enc:\\\\x8101\\\\x1CCF\\\\xA335\\\\xE8A0\\\\x6C92": [
+      "Kormab, Burning Heart"
+    ],
     "enc:\\\\x8101\\\\x1CE3\\\\xA10F\\\\x9001\\\\x49F3": [
       "Makdeh the Aggravating"
     ],
@@ -178,6 +261,10 @@
     ],
     "enc:\\\\x8101\\\\x4731\\\\x9857\\\\x863A\\\\x3B88": [
       "Spirit of Infuriating Heat"
+    ],
+    "enc:\\\\x8101\\\\x4735\\\\xAEF1\\\\x9C2E\\\\x28EF": [
+      "Agent 311",
+      "Jagged Horror"
     ],
     "enc:\\\\x8101\\\\x4C88\\\\xB01C\\\\xF31C\\\\x3879": [
       "Kournan Guard"
@@ -191,6 +278,15 @@
     "enc:\\\\x8101\\\\x4D97\\\\xC3B0\\\\xB479\\\\x5CE2": [
       "Sergeant Behnwa"
     ],
+    "enc:\\\\x8101\\\\x4E03\\\\x9EA3\\\\x0DD9": [
+      "Josinq the Whisperer"
+    ],
+    "enc:\\\\x8101\\\\x4E04\\\\xFC41\\\\xA546\\\\x637B": [
+      "Bansheh, Gatherer of Branches"
+    ],
+    "enc:\\\\x8101\\\\x4E05\\\\x9907\\\\xE210\\\\x3B37": [
+      "Roaring Ether"
+    ],
     "enc:\\\\x8101\\\\x4E0C\\\\xB42D\\\\x879D\\\\x53A9": [
       "Stone Shard Crag"
     ],
@@ -199,6 +295,9 @@
     ],
     "enc:\\\\x8101\\\\x5134\\\\x877B\\\\x8D12\\\\x7167": [
       "Behemoth Gravebane"
+    ],
+    "enc:\\\\x8101\\\\x5136\\\\xEADE\\\\x1A59": [
+      "Cobalt Mokele"
     ],
     "enc:\\\\x8101\\\\x5137\\\\x9E87\\\\xCE88\\\\x5E97": [
       "Rock Beetle"
@@ -209,8 +308,23 @@
     "enc:\\\\x8101\\\\x513A\\\\xBDA7\\\\x8CA7\\\\x6E92": [
       "Scytheclaw Behemoth"
     ],
+    "enc:\\\\x8101\\\\x513B\\\\xEC38\\\\xECCC\\\\x2A9F": [
+      "Cobalt Shrieker"
+    ],
     "enc:\\\\x8101\\\\x5150\\\\xA134\\\\xC3B2\\\\x5A26": [
       "Hajok Earthguardian"
+    ],
+    "enc:\\\\x8101\\\\x5156\\\\xEEE6\\\\xECDE\\\\x2EBC": [
+      "Yamesh Mindclouder"
+    ],
+    "enc:\\\\x8101\\\\x5158\\\\xA7ED\\\\x9813\\\\x15A2": [
+      "Jarimiya the Unmerciful"
+    ],
+    "enc:\\\\x8101\\\\x5159\\\\xCBE8\\\\xC09A\\\\x673B": [
+      "Chumab the Prideful"
+    ],
+    "enc:\\\\x8101\\\\x515B\\\\xBA7C\\\\xACA8\\\\x1A33": [
+      "Bohdalz the Furious"
     ],
     "enc:\\\\x8101\\\\x51F0\\\\xA80A\\\\xECC2\\\\x2B31": [
       "Tain the Corrupter"
