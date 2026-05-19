@@ -65,17 +65,45 @@ class SalvageInfo():
         
         return info 
     
-    @staticmethod
-    def from_dict_OLD(data: dict) -> 'SalvageInfo':
-        info = SalvageInfo()
-        info.amount = data.get("Amount", -1)
-        info.min_amount = data.get("MinAmount", -1)
-        info.max_amount = data.get("MaxAmount", -1)
-        info.model_id = data.get("MaterialModelID", -1)
-        info.name = data.get("MaterialName", "")
-        info.generate_summary()
+    def update_from(self, other: object) -> bool:
+        """
+        Update the current SalvageInfo with information from another SalvageInfo instance.
+        Only updates fields that are missing or empty in the current instance.
         
-        return info 
+        Args:
+            other (SalvageInfo): The other SalvageInfo instance to update from.
+        
+        Returns:
+            bool: True if any changes were made, False otherwise.
+        """
+        changed = False
+        if not isinstance(other, SalvageInfo):
+            return False
+        
+        if self.amount != other.amount and other.amount != -1:
+            self.amount = other.amount
+            changed = True
+            
+        if self.min_amount != other.min_amount and other.min_amount != -1:
+            self.min_amount = other.min_amount
+            changed = True
+            
+        if self.max_amount != other.max_amount and other.max_amount != -1:
+            self.max_amount = other.max_amount
+            changed = True
+            
+        if self.model_id != other.model_id and other.model_id != -1:
+            self.model_id = other.model_id
+            changed = True
+            
+        if self.name != other.name and other.name:
+            self.name = other.name
+            changed = True
+            
+        if changed:
+            self.generate_summary()
+            
+        return changed
 
 class SalvageInfoCollection(dict[str, 'SalvageInfo']):
     """
@@ -91,16 +119,6 @@ class SalvageInfoCollection(dict[str, 'SalvageInfo']):
     def to_dict(self) -> dict:
         return {material_name: salvage_info.to_dict() for material_name, salvage_info in self.items()}
     
-    @staticmethod
-    def from_dict_OLD(data: dict) -> 'SalvageInfoCollection':
-        collection = SalvageInfoCollection()
-        
-        for material_name, salvage_info_data in data.items():
-            collection[material_name] = SalvageInfo.from_dict_OLD(salvage_info_data)
-            
-        return collection
-
-
     @staticmethod
     def from_dict(data: dict) -> 'SalvageInfoCollection':
         """
@@ -118,6 +136,31 @@ class SalvageInfoCollection(dict[str, 'SalvageInfo']):
             collection[material_name] = SalvageInfo.from_dict(salvage_info_data)
             
         return collection
+
+    def update_from(self, other: object) -> bool:
+        """
+        Update the current SalvageInfoCollection with information from another SalvageInfoCollection instance.
+        Only updates fields that are missing or empty in the current instance.
+        
+        Args:
+            other (SalvageInfoCollection): The other SalvageInfoCollection instance to update from.
+        
+        Returns:
+            bool: True if any changes were made, False otherwise.
+        """
+        changed = False
+        if not isinstance(other, SalvageInfoCollection):
+            return False
+        
+        for material_name, other_info in other.items():
+            if material_name in self:
+                if self[material_name].update_from(other_info):
+                    changed = True
+            else:
+                self[material_name] = other_info
+                changed = True
+                
+        return changed
 
 @dataclass(eq=False)
 class ItemData:        
@@ -264,29 +307,6 @@ class ItemData:
         
         return item_data
 
-    @staticmethod
-    def from_jsonOLD(json: dict) -> 'ItemData':
-        names = {ServerLanguage[lang]: name for lang, name in json["Names"].items()} if "Names" in json else {}
-        
-        return ItemData(
-            model_id=json.get("ModelID", -1),
-            model_file_id=json.get("ModelFileID", -1),
-            name_encoded=bytes.fromhex(json["NameEncoded"]) if "NameEncoded" in json and json["NameEncoded"] else bytes(),
-            english_name=names.get(ServerLanguage.English, ""),
-            item_type=ItemType[json.get("ItemType", "Unknown")],
-            acquisition=json.get("Acquisition", ""),
-            description=json.get("Description", ""),
-            skin=json.get("InventoryIcon", None),
-            attributes=[Attribute[attr] for attr in json["Attributes"]] if "Attributes" in json and json["Attributes"] else [],
-            wiki_url=json.get("WikiURL", ""),
-            common_salvage=SalvageInfoCollection.from_dict_OLD(json.get("CommonSalvage", {})),
-            rare_salvage=SalvageInfoCollection.from_dict_OLD(json.get("RareSalvage", {})), 
-            nick_index=json["NickIndex"] if "NickIndex" in json else None,
-            profession=Profession[json["Profession"]] if "Profession" in json and json["Profession"] else None,
-            category=json["Category"] if "Category" in json else "",
-            sub_category=json["SubCategory"] if "SubCategory" in json else "",
-        )
-
     def to_dict(self) -> dict:
         data = {
             "model_id": self.model_id,
@@ -308,6 +328,90 @@ class ItemData:
         }
         
         return dict(sorted(data.items(), key=lambda item: item[0]))
+    
+    def update_from(self, other: object) -> bool:
+        """
+        Update the current ItemData with information from another ItemData instance.
+        Only updates fields that are missing or empty in the current instance.
+        
+        Args:
+            other (ItemData): The other ItemData instance to update from.
+        
+        Returns:
+            bool: True if any changes were made, False otherwise.
+        """
+        changed = False
+        if not isinstance(other, ItemData):
+            return False
+        
+        if self.model_id == -1 and other.model_id != -1:
+            self.model_id = other.model_id
+            changed = True
+            
+        if self.item_type == ItemType.Unknown and other.item_type != ItemType.Unknown:
+            self.item_type = other.item_type
+            changed = True
+        
+        if not self.english_name and other.english_name:
+            self.english_name = other.english_name
+            changed = True
+            
+        if not self.name_encoded and other.name_encoded:
+            self.name_encoded = other.name_encoded
+            changed = True
+
+        merged_attributes = sorted(set(self.attributes).union(other.attributes), key=lambda attr: attr.name)
+        if merged_attributes != self.attributes:
+            self.attributes = merged_attributes
+            changed = True
+
+        if self.common_salvage is None and other.common_salvage is not None:
+            self.common_salvage = other.common_salvage
+            changed = True
+        elif self.common_salvage is not None and other.common_salvage is not None:
+            if self.common_salvage.update_from(other.common_salvage):
+                changed = True
+            
+        if self.rare_salvage is None and other.rare_salvage is not None:
+            self.rare_salvage = other.rare_salvage
+            changed = True
+        elif self.rare_salvage is not None and other.rare_salvage is not None:
+            if self.rare_salvage.update_from(other.rare_salvage):
+                changed = True
+            
+        if self.nick_index is None and other.nick_index is not None:
+            self.nick_index = other.nick_index
+            changed = True
+            
+        if self.profession is None and other.profession is not None:
+            self.profession = other.profession
+            changed = True
+            
+        if not self.wiki_url and other.wiki_url:
+            self.wiki_url = other.wiki_url
+            changed = True
+            
+        if not self.acquisition and other.acquisition:
+            self.acquisition = other.acquisition
+            changed = True
+        
+        if not self.description and other.description:
+            self.description = other.description
+            changed = True
+            
+        if not self.category and other.category:
+            self.category = other.category
+            changed = True
+            
+        if not self.sub_category and other.sub_category:
+            self.sub_category = other.sub_category
+            changed = True
+            
+        if self.skin is None and other.skin:
+            self.skin = other.skin
+            changed = True    
+        
+        return changed
 
 project_path = Console.get_projects_path()
 

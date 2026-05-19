@@ -71,12 +71,24 @@ class SharedCommandType(IntEnum):
     #endregion
 
 class ReloadType(IntEnum):
+    Unknown = auto()
     Buying = auto()
     Looting = auto()
     Inventory = auto()
     Crafting = auto()
     
     ItemData = auto()
+    
+    Allies = auto()
+    Armorers = auto()
+    Artisans = auto()
+    Collectors = auto()
+    ConsumableCrafters = auto()
+    Foes = auto()
+    Items = auto()
+    Merchants = auto()
+    Traders = auto()
+    Weaponsmiths = auto()
 
 
 class CombatPrepSkillsType(IntEnum):
