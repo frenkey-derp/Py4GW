@@ -410,13 +410,13 @@ class UI:
                 lambda: self.profile_manager.get_active_config_folder('SortingConfig'),
                 on_save=self._handle_config_saved,
             ),
-            ConfigInfo(
-                CraftingConfig(),
-                "Crafting",
-                "Configure crafting settings",
-                lambda: self.profile_manager.get_active_config_folder('CraftingConfig'),
-                on_save=self._handle_config_saved,
-            ),
+            # ConfigInfo(
+            #     CraftingConfig(),
+            #     "Crafting",
+            #     "Configure crafting settings",
+            #     lambda: self.profile_manager.get_active_config_folder('CraftingConfig'),
+            #     on_save=self._handle_config_saved,
+            # ),
         ]
 
         for config_info in self.configs:
@@ -4140,6 +4140,8 @@ class UI:
                         
                         if clicked:
                             rule.conditions.remove(condition)
+                            ui._save_active_config()
+                            
                             return False
                         
                     ImGui.separator()
@@ -5846,7 +5848,7 @@ class UI:
                 return clamp(70 + (spacing / 2) + (max(1, len(condition.modelids_and_itemtypes)) * row_50))
 
             case ExactItemTypeCondition():
-                return clamp(control_height + 8)
+                return clamp(control_height + row_25 + 6)
 
             case FullStacksQuantityCondition():
                 return clamp(control_height + row_25 + 6)
