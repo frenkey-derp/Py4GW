@@ -5,28 +5,16 @@ from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector, ListCollector
-from Sources.frenkeyLib.DataCollector.data_collector_widget import Chest
+from Sources.frenkeyLib.DataCollector.models import Chest
 
 
 class ChestsCollector(ListCollector[Chest]):
     def __init__(self, get_local_path, get_default_path, *, version = '1.0', value_type = None, key_decoder = None, key_encoder = None):
         super().__init__(get_local_path, get_default_path, version=version, value_type=value_type, key_decoder=key_decoder, key_encoder=key_encoder)
-        self.map_chests : list[Chest] = []
-
-    @staticmethod
-    def _identity_key(*, model_id: int, encoded_name: bytes, name: str) -> tuple[str, object]:
-        if model_id != 0:
-            return ('model_id', model_id)
-
-        if encoded_name:
-            return ('encoded_name', encoded_name)
-
-        return ('name', name.strip().lower())
-        
+        self.map_chests : list[Chest] = []        
     def _collect(self):        
         agent_ids = AgentArray.GetGadgetArray()
         map_id = Map.GetBaseMapID()
-        collected_matching_chests : dict[tuple[str, object], list[Chest]] = {}
         
         for agent_id in agent_ids:
             if agent_id in self.checked_ids:
@@ -42,28 +30,21 @@ class ChestsCollector(ListCollector[Chest]):
 
             model_id = Agent.GetModelID(agent_id)
             enc_name = bytes(Agent.GetEncNameByID(agent_id))
-            identity_key = self._identity_key(model_id=model_id, encoded_name=enc_name, name=name)
-
-            if identity_key not in collected_matching_chests:
-                collected_matching_chests[identity_key] = [
-                    chest
-                    for chest in self.map_chests
-                    if self._identity_key(model_id=chest.model_id, encoded_name=chest.encoded_name, name=chest.name) == identity_key
-                ]
-
-            matching_chests = collected_matching_chests.get(identity_key, [])
+            matching_chest = next((chest for chest in self.map_chests if chest.encoded_name == enc_name), None)            
             pos = Agent.GetXY(agent_id)
             
-            if matching_chests:
-                closest_chest = min(matching_chests, key=lambda chest: min(Utils.Distance(spawn, pos) for spawns in chest.spawns.values() for spawn in spawns))                
-                if min(Utils.Distance(spawn, pos) for spawns in closest_chest.spawns.values() for spawn in spawns) < Range.Earshot.value:  # Threshold for matching
+            if matching_chest:
+                spawns = matching_chest.spawns.get(map_id, []) 
+                
+                if min(Utils.Distance(spawn, pos) for spawn in spawns) < Range.Touch.value:  # Threshold for matching
                     self.mark_id_as_checked(agent_id)
                     continue
+                
                 else:
-                    if map_id not in closest_chest.spawns:
-                        closest_chest.spawns[map_id] = []
-                    
-                    closest_chest.spawns[map_id].append(pos)
+                    if map_id not in matching_chest.spawns:
+                        matching_chest.spawns[map_id] = []
+                        
+                    matching_chest.spawns[map_id].append(pos)
                     self.requires_save = True
                 
                 self.mark_id_as_checked(agent_id)
@@ -71,7 +52,6 @@ class ChestsCollector(ListCollector[Chest]):
 
             new_chest = Chest(name=name, model_id=model_id, encoded_name=enc_name, spawns={map_id: [pos]}) 
             self.add_chest(new_chest)
-            collected_matching_chests.setdefault(identity_key, []).append(new_chest)
             self.mark_id_as_checked(agent_id)
             
     def add_chest(self, chest: Chest):

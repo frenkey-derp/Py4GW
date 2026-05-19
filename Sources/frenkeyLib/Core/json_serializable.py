@@ -1,8 +1,4 @@
-import time
-from typing import Any, Callable, Generic, Mapping, Optional, Protocol, TypeVar, cast, get_args, get_origin, runtime_checkable
-
-import Py4GW
-
+from typing import Any, Callable, Mapping, Optional, Protocol, TypeVar, cast, get_args, get_origin, runtime_checkable
 
 @runtime_checkable
 class JsonSerializable(Protocol):
@@ -94,23 +90,12 @@ class JsonSerializableList(list[JsonSerializableType]):
 
     def replace_from_dict(self, data: list[dict]):
         self.clear()
-        
-        start = time.monotonic()
         deserialized = self._deserialize_items(data)
-        end = time.monotonic()
-        Py4GW.Console.Log(self.__class__.__name__, f'Deserialized {len(deserialized)} items in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
-        
         self.extend(deserialized)
 
     def merge_from_dict(self, data: list[dict]) -> bool:
         changed = False
-        start = time.monotonic()
         deserialized = self._deserialize_items(data)
-        end = time.monotonic()
-        if deserialized:
-            Py4GW.Console.Log(self.__class__.__name__, f'Deserialized {len(deserialized)} items in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
-        
-        start = time.monotonic()
         for item in deserialized:
             existing_item = next((existing for existing in self if _items_match(existing, item)), None)
             if existing_item is None:
@@ -120,9 +105,6 @@ class JsonSerializableList(list[JsonSerializableType]):
 
             if _merge_items(existing_item, item):
                 changed = True
-        
-        end = time.monotonic()
-        Py4GW.Console.Log(self.__class__.__name__, f'Merged items in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
         
         return changed
 

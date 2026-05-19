@@ -5,7 +5,7 @@ from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector, ListCollector
-from Sources.frenkeyLib.DataCollector.data_collector_widget import Trader, TraderType
+from Sources.frenkeyLib.DataCollector.models import Trader, TraderType
 
 
 class TraderCollector(ListCollector[Trader]):

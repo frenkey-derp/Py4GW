@@ -77,7 +77,7 @@ class ReloadType(IntEnum):
     Inventory = auto()
     Crafting = auto()
     
-    ItemData = auto()
+    Items = auto()
     
     Allies = auto()
     Armorers = auto()
@@ -85,7 +85,6 @@ class ReloadType(IntEnum):
     Collectors = auto()
     ConsumableCrafters = auto()
     Foes = auto()
-    Items = auto()
     Merchants = auto()
     Traders = auto()
     Weaponsmiths = auto()

@@ -7,13 +7,13 @@ from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector
 from Sources.frenkeyLib.DataCollector.collectors.allies_collector import ALLIES
-from Sources.frenkeyLib.DataCollector.collectors.armor_collector import ARMORERS
-from Sources.frenkeyLib.DataCollector.collectors.artisan_collector import ARTISANS
+from Sources.frenkeyLib.DataCollector.collectors.armorers_collector import ARMORERS
+from Sources.frenkeyLib.DataCollector.collectors.artisans_collector import ARTISANS
 from Sources.frenkeyLib.DataCollector.collectors.chest_collector import CHESTS
 from Sources.frenkeyLib.DataCollector.collectors.collectors_collector import COLLECTORS
 from Sources.frenkeyLib.DataCollector.collectors.consumable_crafters_collector import CONSUMABLE_CRAFTERS
-from Sources.frenkeyLib.DataCollector.collectors.foe_collector import FOES
-from Sources.frenkeyLib.DataCollector.collectors.item_collector import ITEMS
+from Sources.frenkeyLib.DataCollector.collectors.foes_collector import FOES
+from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
 from Sources.frenkeyLib.DataCollector.collectors.merchant_collector import MERCHANTS
 from Sources.frenkeyLib.DataCollector.collectors.trader_collector import TRADERS
 from Sources.frenkeyLib.DataCollector.collectors.weaponsmith_collector import WEAPONSMITHS
@@ -48,7 +48,9 @@ class DataCollectorRuntime:
             'Items': ITEMS,
             'Chests': CHESTS,
         }
+        
         self.collector_enabled = True
+        self.collecting : dict[str, bool] = {name: False for name in self.collectors.keys()}
         self._settings_loaded = False
 
     def ensure_state(self) -> bool:
@@ -71,6 +73,27 @@ class DataCollectorRuntime:
                 section=self.config.settings_section,
             )
         )
+        
+        for collector_name, _ in self.collectors.items():
+            enabled = bool(
+                IniManager().getBool(
+                    self.config.main_ini_key,
+                    f"Collect{collector_name}",
+                    default=True,
+                    section=self.config.settings_section,
+                )
+            )
+            self.collecting[collector_name] = enabled
+
+    def _save_collector_setting(self, collector_name: str, enabled: bool):
+        ini = IniManager()
+        ini.set(
+            self.config.main_ini_key,
+            f"Collect{collector_name}",
+            bool(enabled),
+            section=self.config.settings_section,
+        )
+        ini.save_vars(self.config.main_ini_key)
 
     def _save_settings(self):
         ini = IniManager()
@@ -107,5 +130,6 @@ class DataCollectorRuntime:
         if not self.ensure_state():
             return
 
-        for collector in self.collectors.values():
-            collector.run()
+        for collector_name, collector in self.collectors.items():
+            if self.collecting[collector_name]:
+                collector.run()

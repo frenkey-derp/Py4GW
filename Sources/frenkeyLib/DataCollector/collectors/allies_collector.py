@@ -1,13 +1,10 @@
-
-import Py4GW
-
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.AgentArray import AgentArray
 from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.enums_src.GameData_enums import Allegiance, Range
+from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector, ListCollector
-from Sources.frenkeyLib.DataCollector.data_collector_widget import Ally
+from Sources.frenkeyLib.DataCollector.models import Ally
 
 
 class AlliesCollector(ListCollector[Ally]):
@@ -37,8 +34,6 @@ class AlliesCollector(ListCollector[Ally]):
             if not name:
                 continue
                         
-            Py4GW.Console.Log(self.__class__.__name__, f"Found ally: {name} (Model ID: {model_id}) at position {pos} on map {map_id}")
-            
             enc_name = bytes(Agent.GetEncNameByID(agent_id))
             new_ally = Ally(name=name, model_id=model_id, encoded_name=enc_name, position=pos, map_id=map_id)
             self.add_ally(new_ally)

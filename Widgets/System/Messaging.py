@@ -25,7 +25,6 @@ from Py4GWCoreLib.Py4GWcorelib import Keystroke
 from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
-from Py4GWCoreLib.item_data.ItemData import ITEM_DATA
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
@@ -2400,30 +2399,45 @@ def EquipItem(index: int, message: SharedMessageStruct):
 #region Reload
 def Reload(index: int, message: SharedMessageStruct):
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
-    try:
-        config_type = ReloadType(message.Params[0]) if len(message.Params) > 0 else None
-        project_path = Py4GW.Console.get_projects_path()
-        settings_dir = os.path.join(project_path, "Settings", "Global", "Item & Inventory", "Configs")
+    try:        
+        from Sources.frenkeyLib.DataCollector.collectors.allies_collector import ALLIES
+        from Sources.frenkeyLib.DataCollector.collectors.armorers_collector import ARMORERS
+        from Sources.frenkeyLib.DataCollector.collectors.artisans_collector import ARTISANS
+        from Sources.frenkeyLib.DataCollector.collectors.collectors_collector import COLLECTORS
+        from Sources.frenkeyLib.DataCollector.collectors.consumable_crafters_collector import CONSUMABLE_CRAFTERS
+        from Sources.frenkeyLib.DataCollector.collectors.foes_collector import FOES
+        from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
+        from Sources.frenkeyLib.DataCollector.collectors.merchant_collector import MERCHANTS
+        from Sources.frenkeyLib.DataCollector.collectors.trader_collector import TRADERS
+        from Sources.frenkeyLib.DataCollector.collectors.weaponsmith_collector import WEAPONSMITHS
+        from Sources.frenkeyLib.Core.data_dict import DataList, DataDict
         
-        match config_type:
-            case ReloadType.ItemData:
-                ITEM_DATA.load_data()
+        config_type = ReloadType(message.Params[0]) if len(message.Params) > 0 else None
+        if config_type:
+            project_path = Py4GW.Console.get_projects_path()
+            settings_dir = os.path.join(project_path, "Settings", "Global", "Item & Inventory", "Configs")
+            
+            collectors : dict[ReloadType, object] = {
+                ReloadType.Allies: ALLIES,
+                ReloadType.Armorers: ARMORERS,
+                ReloadType.Artisans: ARTISANS,
+                ReloadType.Collectors: COLLECTORS,
+                ReloadType.ConsumableCrafters: CONSUMABLE_CRAFTERS,
+                ReloadType.Foes: FOES,
+                ReloadType.Items: ITEMS,
+                ReloadType.Merchants: MERCHANTS,
+                ReloadType.Traders: TRADERS,
+                ReloadType.Weaponsmiths: WEAPONSMITHS,
                 
-            case ReloadType.Crafting:
-                # Coming soon ....
-                pass
+                ReloadType.Crafting: None,  # Coming soon ....
+                ReloadType.Buying: None,    # Coming soon ....
+                ReloadType.Inventory: None, # Coming soon .... 
+                ReloadType.Looting: None,   # Coming soon ....
+            }
             
-            case ReloadType.Buying:
-                # Coming soon ....
-                pass
-            
-            case ReloadType.Inventory:
-                # Coming soon ....
-                pass
-            
-            case ReloadType.Looting:
-                # Coming soon ....
-                pass
+            if collector := collectors.get(config_type, None):
+                if isinstance(collector, (DataList, DataDict)):
+                    collector.load()
             
     except Exception as exc:
         ConsoleLog(MODULE_NAME, f"ReloadConfig message error: {exc}", Console.MessageType.Error, False)

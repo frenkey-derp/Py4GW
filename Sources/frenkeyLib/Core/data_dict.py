@@ -3,13 +3,11 @@ import msvcrt
 import os
 import re
 import tempfile
-import time
 from collections.abc import Mapping as MappingABC
 from dataclasses import dataclass
 from functools import total_ordering
+import time
 from typing import TYPE_CHECKING, Callable, IO, Mapping, Optional, cast
-
-import Py4GW
 
 from Sources.frenkeyLib.Core.json_serializable import JsonSerializableDictionary
 from Sources.frenkeyLib.Core.json_serializable import JsonSerializableList
@@ -123,7 +121,8 @@ class _DataFileMixin:
     get_default_path: Callable[..., str]
     version: FileVersion
     _requires_save: bool
-    _known_local_mtime_ns: Optional[int]
+    _known_active_path: Optional[str]
+    _known_active_mtime_ns: Optional[int]
 
     if TYPE_CHECKING:
         def clear(self) -> None:
@@ -184,7 +183,8 @@ class _DataFileMixin:
 
     def _initialize_save_state(self) -> None:
         self._requires_save = False
-        self._known_local_mtime_ns = self._get_file_mtime_ns(self.resolve_local_path())
+        self._known_active_path = None
+        self._known_active_mtime_ns = None
 
     def queue_save(self) -> None:
         self.requires_save = True
@@ -194,6 +194,21 @@ class _DataFileMixin:
 
     def _load_path(self, path: str, *, replace: bool, merge_missing: bool = False, update_version: bool = True) -> None:
         raise NotImplementedError
+
+    def refresh_from_disk_if_changed(self) -> bool:
+        active_path = self.resolve_active_path()
+        if not active_path or not os.path.exists(active_path):
+            if self._known_active_path is None and self._known_active_mtime_ns is None:
+                return False
+            self.load()
+            return True
+
+        active_mtime_ns = self._get_file_mtime_ns(active_path)
+        if active_path == self._known_active_path and active_mtime_ns == self._known_active_mtime_ns:
+            return False
+
+        self.load()
+        return True
 
     def save(
         self,
@@ -211,6 +226,8 @@ class _DataFileMixin:
         )
         try:
             self._save_locked(target_path, indent=indent)
+        except FileLockTimeoutError:
+            return
         finally:
             lock.release()
 
@@ -220,7 +237,7 @@ class _DataFileMixin:
         self,
         path: Optional[str] = None,
         *,
-        indent: Optional[int] = None,
+        indent: Optional[int] = 4,
     ) -> bool:
         if not self.requires_save:
             return False
@@ -234,6 +251,8 @@ class _DataFileMixin:
 
         try:
             self._save_locked(target_path, indent=indent)
+        except FileLockTimeoutError:
+            return False
         finally:
             lock.release()
 
@@ -242,17 +261,11 @@ class _DataFileMixin:
 
     def _save_locked(self, target_path: str, *, indent: Optional[int] = 4) -> None:
         current_target_mtime_ns = self._get_file_mtime_ns(target_path)
-        if current_target_mtime_ns is not None and current_target_mtime_ns != self._known_local_mtime_ns:
-            start = time.monotonic()
-            Py4GW.Console.Log('DataDict', f'Warning: Detected external modification of {target_path} since last load. Attempting to merge changes.', Py4GW.Console.MessageType.Warning)
-            self._load_path(target_path, replace=False, merge_missing=True, update_version=False)
-            end = time.monotonic()
-            Py4GW.Console.Log(self.__class__.__name__, f'Merged external changes from {target_path} in {(end - start):.2f}s. Saving updated data.', Py4GW.Console.MessageType.Info)
-        
-        start = time.monotonic()
+        expected_target_mtime_ns = self._known_active_mtime_ns if self._known_active_path == target_path else None
+        if current_target_mtime_ns != expected_target_mtime_ns:
+            raise FileLockTimeoutError(target_path, 0.0)
+
         self._write_payload(target_path, self._to_file_payload(), indent=indent)
-        end = time.monotonic()
-        Py4GW.Console.Log(self.__class__.__name__, f'Saved data to {target_path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
         
     def _write_payload(self, target_path: str, payload_data: dict, *, indent: Optional[int] = 4) -> None:
         directory = os.path.dirname(target_path)
@@ -267,7 +280,7 @@ class _DataFileMixin:
             indent=indent,
         ).encode('utf-8')
         self._atomic_write_bytes(target_path, payload)
-        self._known_local_mtime_ns = self._get_file_mtime_ns(target_path)
+        self._record_known_file_state(target_path)
 
     @classmethod
     def _remove_none_values(cls, value: object) -> object:
@@ -325,6 +338,10 @@ class _DataFileMixin:
         except OSError:
             return None
 
+    def _record_known_file_state(self, path: Optional[str]) -> None:
+        self._known_active_path = path
+        self._known_active_mtime_ns = self._get_file_mtime_ns(path) if path else None
+
     def load(self) -> None:
         self.clear()
 
@@ -344,7 +361,7 @@ class _DataFileMixin:
         else:
             self._load_path(default_path, replace=True)
 
-        self._known_local_mtime_ns = self._get_file_mtime_ns(local_path)
+        self._record_known_file_state(self.resolve_active_path())
         self.requires_save = False
 
     def read_version(self, path: Optional[str] = None) -> Optional[FileVersion]:
@@ -410,26 +427,16 @@ class DataList(_DataFileMixin, JsonSerializableList[T_SERIALIZABLE_VALUE]):
         if not path or not os.path.exists(path):
             return
 
-        start = time.monotonic()
         with open(path, 'r', encoding='utf-8') as file:
             payload = json.load(file)
 
-        end = time.monotonic()
-        Py4GW.Console.Log(self.__class__.__name__, f'Loaded data from {path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
-        
-        start = time.monotonic()
         file_version = payload.get('version', None)
         if update_version and file_version is not None:
             self.version = FileVersion(str(file_version))
-        end = time.monotonic()
-        Py4GW.Console.Log(self.__class__.__name__, f'Parsed version from {path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
-        
-        start = time.monotonic()
+
         raw_data = payload.get('data', payload.get('entries', []))
         if isinstance(raw_data, dict):
             raw_data = raw_data.get('data', [])
-        end = time.monotonic()
-        Py4GW.Console.Log(self.__class__.__name__, f'Extracted raw data from {path} in {(end - start):.2f}s.', Py4GW.Console.MessageType.Info)
 
         if not isinstance(raw_data, list):
             raise TypeError(f'Expected list data in {path}, got {type(raw_data).__name__}')

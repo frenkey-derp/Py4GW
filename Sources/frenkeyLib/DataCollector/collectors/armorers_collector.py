@@ -6,7 +6,7 @@ from Py4GWCoreLib.UIManager import CrafterWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector, ListCollector
-from Sources.frenkeyLib.DataCollector.data_collector_widget import Armorer
+from Sources.frenkeyLib.DataCollector.models import Armorer
 
 class ArmorerCollector(ListCollector[Armorer]):
     def __init__(self, get_local_path, get_default_path, *, version = '1.0', value_type = None, key_decoder = None, key_encoder = None):

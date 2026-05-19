@@ -7,7 +7,7 @@ from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector, ListCollector
-from Sources.frenkeyLib.DataCollector.data_collector_widget import Foe, FoeSpawn
+from Sources.frenkeyLib.DataCollector.models import Foe, FoeSpawn
 
 
 class FoesCollector(ListCollector[Foe]):
@@ -45,7 +45,11 @@ class FoesCollector(ListCollector[Foe]):
                     has_boss_aura=Agent.HasBossGlow(agent_id),
                 )        
                 
-                if matching_model_id_foe:                    
+                if matching_model_id_foe:
+                    existing_spawns = matching_model_id_foe.spawns.get(map_id, [])
+                    if any(existing_spawn.matches(candidate_spawn) for existing_spawn in existing_spawns):
+                        continue
+
                     if not matching_model_id_foe.spawns.get(map_id):
                         matching_model_id_foe.spawns[map_id] = []
 
@@ -59,7 +63,6 @@ class FoesCollector(ListCollector[Foe]):
                     
                     new_foe = Foe(name=name, model_id=model_id, encoded_name=bytes(Agent.GetEncNameByID(agent_id)), spawns={map_id: [candidate_spawn]}, skills={})
                     self.add_foe(new_foe)
-                    continue
             
     def add_foe(self, foe: Foe):
         self.map_foes.append(foe)

@@ -9,12 +9,13 @@ from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, DyeColo
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
-from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
+from Py4GWCoreLib.item_data.ItemData import ItemData
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.item_modifier_parser import ItemModifierParser
 from Py4GWCoreLib.item_mods_src.properties import ArmorProperty, AttributeRequirement, DamageProperty, EnergyProperty, TargetItemTypeProperty
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
+from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
 
 
 class _UnsetType:
@@ -357,7 +358,7 @@ class ItemSnapshot:
     @property
     def data(self) -> Optional[ItemData]:
         if self._data is _UNSET:
-            self._data = ITEM_DATA.get_item_data(model_id=self.model_id, item_type=self.item_type) if self.model_id != -1 else None
+            self._data = ITEMS.get_item_data(model_id=self.model_id, item_type=self.item_type) if self.model_id != -1 else None
 
         return cast(Optional[ItemData], self._data)
 

@@ -32,6 +32,9 @@ class BaseCollector:
             
     def run(self):
         self._handle_context_change()
+
+        if isinstance(self, (DataDict, DataList)) and self.refresh_from_disk_if_changed():
+            self._flush_cache()
         
         if not self._is_ready():
             return

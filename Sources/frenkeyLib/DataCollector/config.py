@@ -9,8 +9,8 @@ class DataCollectorConfig:
     main_ini_filename: str = 'DataCollector.ini'
     floating_ini_filename: str = 'DataCollectorFloating.ini'
     settings_section: str = 'Settings'
-    enabled_var_name: str = 'collector_enabled'
-    enabled_key_name: str = 'collector_enabled'
+    
+    enabled_var_name: str = 'collector_enabled'    
 
     main_ini_key: str = ''
     floating_ini_key: str = ''
@@ -36,9 +36,98 @@ class DataCollectorConfig:
             self.main_ini_key,
             self.enabled_var_name,
             self.settings_section,
-            self.enabled_key_name,
+            self.enabled_var_name,
             True,
         )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectAllies",
+            self.settings_section,
+            "CollectAllies",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectArmorer",
+            self.settings_section,
+            "CollectArmorer",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectArtisans",
+            self.settings_section,
+            "CollectArtisans",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectCollectors",
+            self.settings_section,
+            "CollectCollectors",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectConsumableCrafters",
+            self.settings_section,
+            "CollectConsumableCrafters",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectFoes",
+            self.settings_section,
+            "CollectFoes",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectMerchants",
+            self.settings_section,
+            "CollectMerchants",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectTraders",
+            self.settings_section,
+            "CollectTraders",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectWeaponsmiths",
+            self.settings_section,
+            "CollectWeaponsmiths",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectItems",
+            self.settings_section,
+            "CollectItems",
+            True,
+        )
+        
+        ini.add_bool(
+            self.main_ini_key,
+            "CollectChests",
+            self.settings_section,
+            "CollectChests",
+            True,
+        )
+        
         ini.load_once(self.main_ini_key)
         ini.load_once(self.floating_ini_key)
 

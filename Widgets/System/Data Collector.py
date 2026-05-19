@@ -5,12 +5,10 @@ import PyImGui
 
 from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
-from Py4GWCoreLib.py4gwcorelib_src.Color import Color
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 
-from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-
-Utils.ClearSubModules('data_collector')
-Utils.ClearSubModules('DataCollector')
+from Sources.frenkeyLib.DataCollector.collectors.base_collectors import ListCollector
+from Sources.frenkeyLib.DataCollector.collectors.items_collector import ItemCollector
 from Sources.frenkeyLib.DataCollector.data_collector import DataCollectorRuntime
 
 MODULE_NAME = 'Data Collector'
@@ -24,6 +22,34 @@ def on_enable():
 def on_disable():
     DATA_COLLECTOR.set_collector_enabled(False)
 
+GRAY_COLOR = ColorPalette.Gray.color
+def configure():
+    if not DATA_COLLECTOR.ensure_state():
+        return
+    
+    PyImGui.set_next_window_size((400, 0))
+    if PyImGui.begin("Data Collector Settings"):
+        for collector_name, collector in DATA_COLLECTOR.collectors.items():
+            is_enabled = DATA_COLLECTOR.collecting[collector_name]
+            enabled = PyImGui.checkbox(f"Collect {collector_name}", is_enabled)            
+            if enabled != is_enabled:
+                DATA_COLLECTOR.collecting[collector_name] = enabled
+                DATA_COLLECTOR._save_collector_setting(collector_name, enabled)
+                
+            PyImGui.same_line(0, 5)
+            
+            collected = 0
+            if (isinstance(collector, ListCollector)):
+                collected = len(collector)
+                
+            elif (isinstance(collector, ItemCollector)):
+                collected = len(collector.all_items)
+                
+            ImGui.text_colored(f"({collected} {collector_name} collected)", GRAY_COLOR.color_tuple)
+    
+    PyImGui.end()
+    
+    pass
 
 def tooltip():
     PyImGui.set_next_window_size((400, 0))
@@ -53,16 +79,13 @@ def tooltip():
 
     PyImGui.end_tooltip()
 
-
 def main():
     if not DATA_COLLECTOR.ensure_state():
         return
     
     DATA_COLLECTOR.run()
 
-
 __all__ = ['main']
-
 
 if __name__ == '__main__':
     main()

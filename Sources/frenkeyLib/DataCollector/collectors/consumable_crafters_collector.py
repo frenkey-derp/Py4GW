@@ -7,7 +7,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 
 from Sources.frenkeyLib.DataCollector.collectors.base_collectors import BaseCollector, ListCollector
-from Sources.frenkeyLib.DataCollector.data_collector_widget import ConsumableCrafter
+from Sources.frenkeyLib.DataCollector.models import ConsumableCrafter
 
 
 class ConsumableCraftersCollector(ListCollector[ConsumableCrafter]):
