@@ -23,6 +23,7 @@ from Py4GWCoreLib.BuildMgr import BuildMgr
 from Py4GWCoreLib.Builds.Assassin.A_Me.SF_Ass_vaettir import SF_Ass_vaettir
 from Py4GWCoreLib.Builds.Mesmer.Me_A.SF_Mes_vaettir import SF_Mes_vaettir
 from Py4GWCoreLib.Inventory import Inventory
+from Py4GWCoreLib.UIManager import MerchantWindow, UIManager
 from Py4GWCoreLib.enums import ModelID, Range, TitleID
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, ItemAction, ItemType
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
@@ -31,7 +32,6 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
 from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
 from typing import Generator, List, Tuple
 
@@ -416,7 +416,7 @@ def _open_merchant_window(timeout_ms: int = 8000):
     yield from Routines.Yield.Movement.FollowPath([MERCHANT_XY], timeout=15000)
 
     start_time = Utils.GetBaseTimestamp()
-    while not UIManagerExtensions.MerchantWindow.IsOpen():
+    while not MerchantWindow.IsOpen():
         yield from Routines.Yield.Agents.TargetNearestNPCXY(MERCHANT_XY[0], MERCHANT_XY[1], 300)
         if Player.GetTargetID() != 0:
             yield from Routines.Yield.Player.InteractTarget()
@@ -455,7 +455,7 @@ def _run_inventory_pass(*, tolerate_failure: bool = True, max_ticks: int = 80, s
 
 
 def _restock_buy_config():
-    if not UIManagerExtensions.MerchantWindow.IsOpen():
+    if not MerchantWindow.IsOpen():
         return False
 
     purchased_any = False
@@ -852,7 +852,7 @@ def HandleSharedInventory(bot: Botting):
         if _needs_merchant_visit():
             yield from _open_merchant_window()
             
-            if UIManagerExtensions.MerchantWindow.IsOpen():
+            if MerchantWindow.IsOpen():
                 if _needs_buy_restock():
                     yield from _restock_buy_config()
 

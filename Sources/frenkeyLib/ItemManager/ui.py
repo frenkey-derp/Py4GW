@@ -36,6 +36,7 @@ from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
+from Py4GWCoreLib.UIManager import MerchantWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
 from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, Bags, ItemAction, ItemType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
@@ -96,9 +97,8 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
-from Py4GWCoreLib.item_data.ItemData import ITEM_DATA, ItemData
+from Py4GWCoreLib.item_data.ItemData import ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 from Sources.frenkeyLib.ItemManager.btrees import TraderPriceCheckManager, TraderQuote
 from Sources.frenkeyLib.ItemManager.config import Config
 
@@ -642,7 +642,8 @@ class UI:
         return selected_recipes
 
     def _get_item_label(self, model_id: int, item_type: ItemType, fallback: str | None = None, plain : bool = True) -> str:
-        item_data = ITEM_DATA.get_item_data(item_type=item_type, model_id=model_id)
+        from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
+        item_data = ITEMS.get_item_data(item_type=item_type, model_id=model_id)
         if item_data is not None:
             return (item_data.names.plain_singular if plain else item_data.names.singular) or (fallback or f"Model {model_id}")
 
@@ -868,7 +869,8 @@ class UI:
 
     @staticmethod
     def _get_all_item_data() -> list[ItemData]:
-        return [item for sublist in ITEM_DATA.data.values() for item in sublist.values()]
+        from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
+        return [item for sublist in ITEMS.values() for item in sublist.values()]
 
     @staticmethod
     def _get_item_display_name(item: Any) -> str:
@@ -890,6 +892,8 @@ class UI:
         UI._draw_texture_or_dummy(texture, size)
 
     def _rebuild_item_ui_caches(self) -> None:
+        from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
+        
         all_items = self._get_all_item_data()
         self._all_item_data_cache = all_items
 
@@ -931,7 +935,7 @@ class UI:
         self._unique_encoded_name_items = sorted(encoded_name_items.values(), key=sort_key)
         self._unique_model_file_id_items = sorted(model_file_id_items.values(), key=sort_key)
         self._nick_cycle_items = sorted(
-            [item for item in ITEM_DATA.Nick_Cycle if item.weeks_until_next_nick is not None],
+            [item for item in ITEMS.Nick_Cycle if item.weeks_until_next_nick is not None],
             key=lambda item: (cast(int, item.weeks_until_next_nick), self._get_item_display_name(item), item.model_id),
         )
         self._salvage_material_options = sorted(salvage_materials, key=lambda material: material.name)
@@ -3351,6 +3355,7 @@ class UI:
             ImGui.end_table()
 
     def draw_buy_config(self, config_info: ConfigInfo[BuyConfig]) -> None:
+        from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
         changed = False
         entries = config_info.config.get_entries()
 
@@ -3361,7 +3366,7 @@ class UI:
             item_data = None
             if entry.model_id is not None and entry.item_type is not None:
                 model_id_value = int(entry.model_id.value) if isinstance(entry.model_id, ModelID) else int(entry.model_id)
-                item_data = ITEM_DATA.get_item_data(item_type=entry.item_type, model_id=model_id_value)
+                item_data = ITEMS.get_item_data(item_type=entry.item_type, model_id=model_id_value)
 
             unique_id = f"buy_config_{entry.key}_{index}"
             if ImGui.begin_child(f"##{unique_id}", (0, 64), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
@@ -5318,7 +5323,7 @@ class UI:
         def ForArmorUpgradesCondition(ui: "UI", rule: Rule, condition: ArmorUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##armor_upgrade_price_popup_{id(condition)}"
-            trader_open = UIManagerExtensions.MerchantWindow.IsOpen()
+            trader_open = MerchantWindow.IsOpen()
             kind = TraderPriceCheckManager.get_kind()
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):

@@ -15,7 +15,6 @@ from Py4GWCoreLib.item_mods_src.item_modifier_parser import ItemModifierParser
 from Py4GWCoreLib.item_mods_src.properties import ArmorProperty, AttributeRequirement, DamageProperty, EnergyProperty, TargetItemTypeProperty
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Py4GWCoreLib.native_src.internals.encoded_strings import GWStringEncoded
-from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
 
 
 class _UnsetType:
@@ -357,6 +356,8 @@ class ItemSnapshot:
 
     @property
     def data(self) -> Optional[ItemData]:
+        from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
+        
         if self._data is _UNSET:
             self._data = ITEMS.get_item_data(model_id=self.model_id, item_type=self.item_type) if self.model_id != -1 else None
 

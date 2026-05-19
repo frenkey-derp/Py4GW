@@ -5,11 +5,11 @@ from dataclasses import dataclass, field
 from typing import Callable, Optional, cast
 
 from Py4GWCoreLib.Merchant import Trading
+from Py4GWCoreLib.UIManager import MerchantWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.UIManagerExtensions import UIManagerExtensions
 
 
 @dataclass(slots=True)
@@ -119,7 +119,7 @@ class BTrees:
             def _check_prices(node: BehaviorTree.Node):
                 now = time.monotonic()
 
-                if not UIManagerExtensions.MerchantWindow.IsOpen():
+                if not MerchantWindow.IsOpen():
                     return BehaviorTree.NodeState.FAILURE
 
                 state = cast(_TraderPriceCheckState | None, node.blackboard.get(blackboard_key))
@@ -400,7 +400,7 @@ class TraderPriceCheckManager:
 
     @classmethod
     def tick(cls) -> BehaviorTree.NodeState | None:
-        if not UIManagerExtensions.MerchantWindow.IsOpen():
+        if not MerchantWindow.IsOpen():
             if cls._tree is not None or cls._kind is not None:
                 cls.reset()
             return None
