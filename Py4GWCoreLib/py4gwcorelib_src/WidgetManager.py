@@ -935,6 +935,7 @@ class Py4GWLibrary:
                 
                 self._push_card_style(style, enabled=False, compact=True)
                 
+                compact_tooltip_widget: Widget | None = None
                 first_visible = False
                 last_visible = False
                 for widget in self.filtered_widgets:
@@ -942,7 +943,9 @@ class Py4GWLibrary:
                         ImGui.dummy(card_width, 30)
                         continue
                     
-                    clicked, hovered = self.draw_compact_widget_card(widget, card_width, style)
+                    clicked, hovered, tooltip_requested = self.draw_compact_widget_card(widget, card_width, style)
+                    if tooltip_requested:
+                        compact_tooltip_widget = widget
                     suggestion_hovered = suggestion_hovered or hovered or clicked
                     if clicked:
                         self.queue_filter_widgets = True
@@ -959,6 +962,17 @@ class Py4GWLibrary:
                     self._pop_card_style(style, compact=True)
                 
                 self._pop_card_style(style, compact=True)
+
+                if compact_tooltip_widget is not None:
+                    if compact_tooltip_widget.has_tooltip_property:
+                        try:
+                            if compact_tooltip_widget.tooltip:
+                                compact_tooltip_widget.tooltip()
+                        except Exception as e:
+                            Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {compact_tooltip_widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
+                            Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
+                    else:
+                        PyImGui.show_tooltip(f"Enable/Disable {compact_tooltip_widget.name} widget")
                 
                 if self.context_menu_id and self.context_menu_widget:
                     self.card_context_menu(self.context_menu_id, self.context_menu_widget)
@@ -1741,7 +1755,7 @@ class Py4GWLibrary:
             
         return clicked, (hovered or cog_hovered)
         
-    def draw_compact_widget_card(self, widget : "Widget", width : float, style : Style) -> tuple[bool, bool]:
+    def draw_compact_widget_card(self, widget : "Widget", width : float, style : Style) -> tuple[bool, bool, bool]:
         """
         Draws a single widget card.
         Must be called inside a grid / SameLine layout.
@@ -1752,6 +1766,7 @@ class Py4GWLibrary:
         clicked = False
         hovered = False
         cog_hovered = False
+        tooltip_requested = False
 
         if rect_visible:
             enabled = widget.enabled
@@ -1811,26 +1826,11 @@ class Py4GWLibrary:
                 
                 if not cog_hovered and PyImGui.is_item_hovered():
                     hovered = True
-                    self._pop_card_style(style, compact=True)
-                    
-                    if widget.has_tooltip_property:
-                        try:
-                            if widget.tooltip:
-                                self._pop_card_style(style, compact=True)                        
-                                
-                                widget.tooltip()
-                                
-                        except Exception as e:
-                            Py4GW.Console.Log("WidgetHandler", f"Error during tooltip of widget {widget.folder_script_name}: {str(e)}", Py4GW.Console.MessageType.Error)
-                            Py4GW.Console.Log("WidgetHandler", f"Stack trace: {traceback.format_exc()}", Py4GW.Console.MessageType.Error)
-                    else:
-                        PyImGui.show_tooltip(f"Enable/Disable {widget.name} widget")
-                        
-                    self._push_card_style(style, enabled, compact=True)
+                    tooltip_requested = True
         else:
             ImGui.dummy(width, 30)
             
-        return clicked, (hovered or cog_hovered)     
+        return clicked, (hovered or cog_hovered), tooltip_requested
 
     def draw_one_button_view(self): 
         if self.win_size:       
