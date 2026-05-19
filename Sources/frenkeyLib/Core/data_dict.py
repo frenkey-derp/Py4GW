@@ -9,6 +9,8 @@ from functools import total_ordering
 import time
 from typing import TYPE_CHECKING, Callable, IO, Mapping, Optional, cast
 
+import Py4GW
+
 from Sources.frenkeyLib.Core.json_serializable import JsonSerializableDictionary
 from Sources.frenkeyLib.Core.json_serializable import JsonSerializableList
 from Sources.frenkeyLib.Core.json_serializable import T_DICT_KEY
@@ -195,6 +197,64 @@ class _DataFileMixin:
     def _load_path(self, path: str, *, replace: bool, merge_missing: bool = False, update_version: bool = True) -> None:
         raise NotImplementedError
 
+    def _log_load_error(self, message: str) -> None:
+        Py4GW.Console.Log(self.__class__.__name__, message, Py4GW.Console.MessageType.Error)
+
+    def _corrupted_path_for(self, path: str) -> str:
+        timestamp = time.strftime('%Y%m%d-%H%M%S')
+        return f'{path}.corrupted.{timestamp}'
+
+    def _quarantine_corrupted_file(self, path: str) -> Optional[str]:
+        if not path or not os.path.exists(path):
+            return None
+
+        corrupted_path = self._corrupted_path_for(path)
+        suffix = 1
+        while os.path.exists(corrupted_path):
+            corrupted_path = f'{self._corrupted_path_for(path)}.{suffix}'
+            suffix += 1
+
+        os.replace(path, corrupted_path)
+        return corrupted_path
+
+    def _safe_load_path(
+        self,
+        path: str,
+        *,
+        replace: bool,
+        merge_missing: bool = False,
+        update_version: bool = True,
+        quarantine_on_failure: bool,
+        source_label: str,
+    ) -> bool:
+        if not path or not os.path.exists(path):
+            return False
+
+        try:
+            self._load_path(
+                path,
+                replace=replace,
+                merge_missing=merge_missing,
+                update_version=update_version,
+            )
+            return True
+        except Exception as exc:
+            if quarantine_on_failure:
+                corrupted_path = self._quarantine_corrupted_file(path)
+                if corrupted_path is not None:
+                    self._log_load_error(
+                        f'Failed to load {source_label} file "{path}": {exc}. '
+                        f'Renamed it to "{corrupted_path}".'
+                    )
+                else:
+                    self._log_load_error(f'Failed to load {source_label} file "{path}": {exc}.')
+            else:
+                self._log_load_error(
+                    f'Failed to load {source_label} file "{path}": {exc}. '
+                    'Continuing with empty data.'
+                )
+            return False
+
     def refresh_from_disk_if_changed(self) -> bool:
         active_path = self.resolve_active_path()
         if not active_path or not os.path.exists(active_path):
@@ -351,15 +411,54 @@ class _DataFileMixin:
         local_version = self.read_version(local_path)
 
         if default_version is not None and (local_version is None or default_version > local_version):
-            self._load_path(default_path, replace=True)
-            self._load_path(local_path, replace=False, merge_missing=True, update_version=False)
-            self.version = default_version
+            default_loaded = self._safe_load_path(
+                default_path,
+                replace=True,
+                update_version=True,
+                quarantine_on_failure=False,
+                source_label='default',
+            )
+            if default_loaded:
+                self._safe_load_path(
+                    local_path,
+                    replace=False,
+                    merge_missing=True,
+                    update_version=False,
+                    quarantine_on_failure=True,
+                    source_label='local',
+                )
+                self.version = default_version
 
         elif os.path.exists(local_path):
-            self._load_path(local_path, replace=True)
+            local_loaded = self._safe_load_path(
+                local_path,
+                replace=True,
+                update_version=True,
+                quarantine_on_failure=True,
+                source_label='local',
+            )
+            if not local_loaded:
+                self.clear()
+                default_loaded = self._safe_load_path(
+                    default_path,
+                    replace=True,
+                    update_version=True,
+                    quarantine_on_failure=False,
+                    source_label='default',
+                )
+                if default_loaded and default_version is not None:
+                    self.version = default_version
 
         else:
-            self._load_path(default_path, replace=True)
+            default_loaded = self._safe_load_path(
+                default_path,
+                replace=True,
+                update_version=True,
+                quarantine_on_failure=False,
+                source_label='default',
+            )
+            if default_loaded and default_version is not None:
+                self.version = default_version
 
         self._record_known_file_state(self.resolve_active_path())
         self.requires_save = False
