@@ -73,7 +73,7 @@ class DataList(JsonSerializableList[T_SERIALIZABLE_VALUE]):
         
     def queue_save(self):
         self.requires_save = True
-
+        
     def save(self, path: Optional[str] = None, *, indent: Optional[int] = None):
         target_path = path or self.resolve_local_path()
         directory = os.path.dirname(target_path)

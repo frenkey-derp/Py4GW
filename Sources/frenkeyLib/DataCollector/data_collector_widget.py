@@ -444,7 +444,7 @@ def _deserialize_item(data: dict, default_cls: type[Item] = Item) -> Item:
     return item_cls.from_dict(data)
 
 @dataclass
-class Npc:
+class AgentEntity:
     name: str = ''
     model_id: int = 0
     encoded_name: bytes = b''
@@ -571,38 +571,11 @@ class Npc:
     def GetCollectionSummary(self) -> str:
         return 'N/A'
 
-
 @dataclass
-class FoeSpawn:
-    map_id: int = 0
-    position: tuple[float, float] = (0.0, 0.0)
-
-    def to_dict(self) -> dict:
-        return {
-            'map_id': self.map_id,
-            'position': [self.position[0], self.position[1]],
-        }
-
-    @staticmethod
-    def from_dict(data: dict) -> 'FoeSpawn':
-        position_data = list(data.get('position', [0.0, 0.0]))
-        return FoeSpawn(
-            map_id=int(data.get('map_id', 0) or 0),
-            position=(
-                float(position_data[0]) if len(position_data) > 0 else 0.0,
-                float(position_data[1]) if len(position_data) > 1 else 0.0,
-            ),
-        )
-
-    def HasMapUnlocked(self) -> bool:
-        return Map.IsMapUnlocked(self.map_id)
-
-
-@dataclass
-class Foe(Npc):
+class Foe(AgentEntity):
     primary_profession: Optional[Profession] = None
     secondary_profession: Optional[Profession] = None
-    spawns: list[FoeSpawn] = field(default_factory=list)
+    spawns: dict[int, list[tuple[float, float]]] = field(default_factory=dict)
 
     def __post_init__(self):
         self.allegiance = Allegiance.Enemy
@@ -613,7 +586,7 @@ class Foe(Npc):
             {
                 'primary_profession': self.primary_profession.name if self.primary_profession is not None else None,
                 'secondary_profession': self.secondary_profession.name if self.secondary_profession is not None else None,
-                'spawns': [spawn.to_dict() for spawn in self.spawns],
+                'spawns': self.spawns,
             }
         )
         return payload
@@ -624,24 +597,10 @@ class Foe(Npc):
         raw_secondary_name = data.get('secondary_profession', None)
         primary_name = str(raw_primary_name) if raw_primary_name is not None else ''
         secondary_name = str(raw_secondary_name) if raw_secondary_name is not None else ''
-        legacy_map_id = int(data.get('map_id', 0) or 0)
-        spawns: list[FoeSpawn] = []
-        for spawn in list(data.get('spawns', [])):
-            if isinstance(spawn, dict):
-                spawns.append(FoeSpawn.from_dict(spawn))
-            else:
-                spawn_values = list(spawn)
-                spawns.append(
-                    FoeSpawn(
-                        map_id=legacy_map_id,
-                        position=(
-                            float(spawn_values[0]) if len(spawn_values) > 0 else 0.0,
-                            float(spawn_values[1]) if len(spawn_values) > 1 else 0.0,
-                        ),
-                    )
-                )
+        spawns: dict[int, list[tuple[float, float]]] = data.get('spawns', {})
+            
         return Foe(
-            **Npc._base_from_dict(data),
+            **AgentEntity._base_from_dict(data),
             primary_profession=Profession[primary_name] if primary_name and primary_name != Profession._None.name and primary_name in Profession.__members__ else None,
             secondary_profession=Profession[secondary_name] if secondary_name and secondary_name != Profession._None.name and secondary_name in Profession.__members__ else None,
             spawns=spawns,
@@ -655,35 +614,63 @@ class Foe(Npc):
         secondary = self.secondary_profession.name if self.secondary_profession is not None else '?'
         return f'{len(self.spawns)} spawn(s) / {primary}-{secondary}'
 
-    def HasMapUnlocked(self) -> bool:
-        return any(spawn.HasMapUnlocked() for spawn in self.spawns) if self.spawns else False
-
     def GetMapIDs(self) -> list[int]:
-        return list(dict.fromkeys(spawn.map_id for spawn in self.spawns if spawn.map_id != 0))
-
-    def GetDisplayMapID(self) -> int:
-        if not self.spawns:
-            return 0
-        current_base_map_id = Map.GetBaseMapID()
-        current_spawn = next((spawn for spawn in self.spawns if Map.GetBaseMapID(spawn.map_id) == current_base_map_id), None)
-        if current_spawn is not None:
-            return current_spawn.map_id
-        return self.spawns[0].map_id
-
-    def GetDisplayPosition(self) -> tuple[float, float]:
-        if not self.spawns:
-            return (0.0, 0.0)
-        current_base_map_id = Map.GetBaseMapID()
-        current_spawn = next((spawn for spawn in self.spawns if Map.GetBaseMapID(spawn.map_id) == current_base_map_id), None)
-        if current_spawn is not None:
-            return current_spawn.position
-        return self.spawns[0].position
+        return list(self.spawns.keys())
 
     def HasStationaryData(self) -> bool:
         return bool(self.spawns)
 
 @dataclass
-class StationaryNpc(Npc):
+class Chest(AgentEntity):
+    primary_profession: Optional[Profession] = None
+    secondary_profession: Optional[Profession] = None
+    spawns: dict[int, list[tuple[float, float]]] = field(default_factory=dict)
+
+    def __post_init__(self):
+        self.allegiance = Allegiance.Neutral
+
+    def to_dict(self) -> dict:
+        payload = self._base_to_dict()
+        payload.update(
+            {
+                'primary_profession': self.primary_profession.name if self.primary_profession is not None else None,
+                'secondary_profession': self.secondary_profession.name if self.secondary_profession is not None else None,
+                'spawns': self.spawns,
+            }
+        )
+        return payload
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Chest':
+        raw_primary_name = data.get('primary_profession', None)
+        raw_secondary_name = data.get('secondary_profession', None)
+        primary_name = str(raw_primary_name) if raw_primary_name is not None else ''
+        secondary_name = str(raw_secondary_name) if raw_secondary_name is not None else ''
+        spawns: dict[int, list[tuple[float, float]]] = data.get('spawns', {})
+                
+        return Chest(
+            **AgentEntity._base_from_dict(data),
+            primary_profession=Profession[primary_name] if primary_name and primary_name != Profession._None.name and primary_name in Profession.__members__ else None,
+            secondary_profession=Profession[secondary_name] if secondary_name and secondary_name != Profession._None.name and secondary_name in Profession.__members__ else None,
+            spawns=spawns,
+        )
+
+    def GetCollectedCount(self) -> int:
+        return len(self.spawns)
+
+    def GetCollectionSummary(self) -> str:
+        primary = self.primary_profession.name if self.primary_profession is not None else '?'
+        secondary = self.secondary_profession.name if self.secondary_profession is not None else '?'
+        return f'{len(self.spawns)} spawn(s) / {primary}-{secondary}'
+
+    def GetMapIDs(self) -> list[int]:
+        return list(self.spawns.keys())
+
+    def HasStationaryData(self) -> bool:
+        return bool(self.spawns)
+
+@dataclass
+class StationaryNpc(AgentEntity):
     map_id: int = 0
     position: tuple[float, float] = (0.0, 0.0)
 
@@ -699,7 +686,7 @@ class StationaryNpc(Npc):
 
     @staticmethod
     def _base_from_dict(data: dict) -> dict:
-        payload = Npc._base_from_dict(data)
+        payload = AgentEntity._base_from_dict(data)
         position_data = list(data.get('position', [0.0, 0.0]))
         payload.update(
             {
@@ -851,6 +838,9 @@ class Merchant(Ally):
     def GetCollectionSummary(self) -> str:
         return f'{len(self.items)} items / {self.interaction_label()}'
 
+    def HasMissingData(self) -> bool:
+        return not self.items or any(item.model_id == 0 or not item.name for item in self.items)
+    
 class TraderType(IntEnum):
     Unknown = auto() 
     Rune = auto() 
@@ -956,6 +946,8 @@ class Artisan(Ally):
     def GetCollectionSummary(self) -> str:
         return f'{len(self.items)} items'
 
+    def HasMissingData(self) -> bool:
+        return not self.items or any(item.model_id == 0 or not item.name for item in self.items)
 
 @dataclass
 class ConsumableCrafter(Ally):
@@ -982,6 +974,8 @@ class ConsumableCrafter(Ally):
     def GetCollectionSummary(self) -> str:
         return f'{len(self.consumables)} consumables'
 
+    def HasMissingData(self) -> bool:
+        return not self.consumables or any(item.model_id == 0 or not item.name for item in self.consumables)
 
 @dataclass
 class Weaponsmith(Ally):
@@ -1034,6 +1028,8 @@ class Weaponsmith(Ally):
     def GetCollectionSummary(self) -> str:
         return f'{len(self.weapons)} weapons'
 
+    def HasMissingData(self) -> bool:
+        return (len(self.weapons) > 0 and any(weapon.model_id == 0 or not weapon.name for weapon in self.weapons))
 
 @dataclass
 class Collector(Ally):
@@ -1116,6 +1112,21 @@ class Collector(Ally):
         )
         return f'{len(self.items)} items / {unresolved} unresolved'
 
+    def HasMissingData(self) -> bool:
+        profession =  _get_current_profession()
+        armor_items = [item for item in self.items if isinstance(item, CollectibleArmor)]
+        remaining_items = [item for item in self.items if not item in armor_items]       
+        profession_armors = [item for item in armor_items if item.profession == profession]
+        
+        incomplete_profession_armors = [item for item in profession_armors if item.model_id == 0 or not item.name or item.armor_rating == 0]
+        
+        needs_profession_armor = len(incomplete_profession_armors) > 0
+        has_non_armor_items = len(remaining_items) > 0
+        incomplete_items = [item for item in remaining_items if item.model_id == 0 or not item.name]
+        
+        
+        return needs_profession_armor or \
+               (has_non_armor_items and bool(not self.items or len(incomplete_items) > 0))
 
 @dataclass
 class Armorer(Ally):
@@ -1321,6 +1332,16 @@ class Armorer(Ally):
     def GetCollectionSummary(self) -> str:
         return _format_armor_ratings(self)
 
+    def HasMissingData(self) -> bool:        
+        if self.position == (0.0, 0.0) or self.map_id == 0 or self.model_id == 0:
+            return True
+        
+        profession = _get_current_profession()
+        if profession == Profession._None or profession not in self.professions_armor_rating:
+            return False
+        armors = self.armors.get(profession, [])
+        return not armors or any(not armor.name or armor.name.startswith('Model') or armor.model_id == 0 or armor.armor_rating == 0 for armor in armors)
+    
 
 ARMORERS: list[Armorer] = []
 ARTISANS: list[Artisan] = []
@@ -1497,7 +1518,7 @@ def _iter_all_npcs() -> list[AnyNpc]:
     return [*_iter_all_crafters(), *TRADERS, *ALLIES, *FOES]
 
 
-def _get_category_key_for_npc(npc: Npc) -> str:
+def _get_category_key_for_npc(npc: AgentEntity) -> str:
     if isinstance(npc, Armorer):
         return 'armorers'
     if isinstance(npc, Artisan):
@@ -1887,7 +1908,7 @@ def _flush_pending_auto_save():
     _last_auto_save_at = now
 
 
-def _collect_simple_crafter_items(crafter: Npc, items: list[CraftableItem]) -> bool:
+def _collect_simple_crafter_items(crafter: AgentEntity, items: list[CraftableItem]) -> bool:
     crafter.last_collection_had_pending_names = False
     if not crafter.IsCrafterOpen():
         Py4GW.Console.Log(MODULE_NAME, f"Crafter '{crafter.name}' is not open. Please move to the crafter and open their crafting window before collecting data.", Py4GW.Console.MessageType.Warning)
@@ -2288,7 +2309,7 @@ def _build_crafter_clipboard_text(crafter: AnyCrafter, position: tuple[float, fl
     return f'{crafter.__class__.__name__}({base_args}),'
 
 
-def _update_npc_metadata(npc: Npc, position: tuple[float, float], model_id: int, encoded_name: bytes) -> bool:
+def _update_npc_metadata(npc: AgentEntity, position: tuple[float, float], model_id: int, encoded_name: bytes) -> bool:
     changed = False
     if npc.model_id == 0 and model_id != 0:
         npc.model_id = model_id
@@ -2354,43 +2375,7 @@ def _find_foe_match(name: str, model_id: int, encoded_name: bytes, primary: Opti
 
 
 def _upsert_foe_spawn(agent_id: int, map_id: int, updated: bool) -> bool:
-    name = Agent.GetNameByID(agent_id)
-    if not name:
-        return updated
-
-    model_id = int(Agent.GetModelID(agent_id) or 0)
-    position = Agent.GetXY(agent_id)
-    encoded_name = bytes(Agent.GetEncNameByID(agent_id))
-    primary_name, secondary_name = Agent.GetProfessionNames(agent_id)
-    primary = _resolve_profession_name(primary_name)
-    secondary = _resolve_profession_name(secondary_name)
-    existing = _find_foe_match(name, model_id, encoded_name, primary, secondary)
-
-    if existing is None:
-        FOES.append(
-            Foe(
-                name=name,
-                model_id=model_id,
-                encoded_name=encoded_name,
-                primary_profession=primary,
-                secondary_profession=secondary,
-                spawns=[FoeSpawn(map_id=map_id, position=position)] if position != (0.0, 0.0) else [],
-            )
-        )
-        return True
-
-    if _update_npc_metadata(existing, position, model_id, encoded_name):
-        updated = True
-
-    if position != (0.0, 0.0) and all(
-        Map.GetBaseMapID(spawn.map_id) != Map.GetBaseMapID(map_id)
-        or Utils.Distance(position, spawn.position) >= 2500.0
-        for spawn in existing.spawns
-    ):
-        existing.spawns.append(FoeSpawn(map_id=map_id, position=position))
-        updated = True
-
-    return updated
+    return False
 
 
 def _scan_current_map_npcs():
