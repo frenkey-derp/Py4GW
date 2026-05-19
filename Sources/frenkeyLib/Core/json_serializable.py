@@ -11,7 +11,36 @@ class JsonSerializable(Protocol):
         ...
 
 
+@runtime_checkable
+class JsonMatchable(Protocol):
+    def matches(self, other: object) -> bool:
+        ...
+
+
+@runtime_checkable
+class JsonUpdatable(Protocol):
+    def update_from(self, other: object) -> bool:
+        ...
+
+
 JsonSerializableType = TypeVar('JsonSerializableType', bound=JsonSerializable)
+
+
+def _items_match(existing: object, candidate: object) -> bool:
+    if isinstance(existing, JsonMatchable):
+        return existing.matches(candidate)
+
+    if isinstance(candidate, JsonMatchable):
+        return candidate.matches(existing)
+
+    return existing == candidate
+
+
+def _merge_items(existing: object, candidate: object) -> bool:
+    if isinstance(existing, JsonUpdatable):
+        return existing.update_from(candidate)
+
+    return False
 
 
 class JsonSerializableList(list[JsonSerializableType]):
@@ -38,12 +67,23 @@ class JsonSerializableList(list[JsonSerializableType]):
         self.clear()
         self.extend(self._deserialize_items(data))
 
-    def merge_missing_from_dict(self, data: list[dict]):
-        existing_data = {id(item): item for item in self}
-        
+    def merge_from_dict(self, data: list[dict]) -> bool:
+        changed = False
+
         for item in self._deserialize_items(data):
-            if id(item) not in existing_data:
+            existing_item = next((existing for existing in self if _items_match(existing, item)), None)
+            if existing_item is None:
                 self.append(item)
+                changed = True
+                continue
+
+            if _merge_items(existing_item, item):
+                changed = True
+
+        return changed
+
+    def merge_missing_from_dict(self, data: list[dict]) -> bool:
+        return self.merge_from_dict(data)
 
     def _deserialize_items(self, data: list[dict]) -> list[JsonSerializableType]:
         item_type = self._resolve_item_type()
@@ -113,10 +153,22 @@ class JsonSerializableDictionary(dict[T_DICT_KEY, T_SERIALIZABLE_VALUE]):
         self.clear()
         self.update(self._deserialize_items(data))
 
-    def merge_missing_from_dict(self, data: Mapping[str, dict]):
+    def merge_from_dict(self, data: Mapping[str, dict]) -> bool:
+        changed = False
+
         for key, value in self._deserialize_items(data).items():
             if key not in self:
                 self[key] = value
+                changed = True
+                continue
+
+            if _merge_items(self[key], value):
+                changed = True
+
+        return changed
+
+    def merge_missing_from_dict(self, data: Mapping[str, dict]) -> bool:
+        return self.merge_from_dict(data)
 
     def _deserialize_items(self, data: Mapping[str, dict]) -> dict[T_DICT_KEY, T_SERIALIZABLE_VALUE]:
         value_type = self._resolve_value_type()

@@ -1,17 +1,14 @@
-from dataclasses import dataclass
 import os
-from typing import Callable, Generic, Optional
+from typing import Callable, Optional
 
 import Py4GW
 
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Player import Player
-from Py4GWCoreLib.enums_src.Item_enums import ItemType
-from Py4GWCoreLib.item_data.ItemData import ItemData
+from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType, SharedCommandType
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Sources.frenkeyLib.Core.data_dict import DataDict, DataList
-from Sources.frenkeyLib.DataCollector.data_collector import get_path_providers
-from Sources.frenkeyLib.DataCollector.data_collector_widget import Ally, Armorer, Artisan, ConsumableCrafter, Foe, Merchant, Trader, Weaponsmith
 from Sources.frenkeyLib.Core.json_serializable import T_DICT_KEY, T_SERIALIZABLE_VALUE
 
 class BaseCollector:
@@ -23,6 +20,13 @@ class BaseCollector:
         self.current_context_key = ''
         self.checked_ids: set[int] = set()
 
+    def _get_reload_type(self) -> ReloadType:
+        for reload_type in ReloadType:
+            if reload_type.name.lower().startswith(self.__class__.__name__.replace("Collector", "").lower()):
+                return reload_type
+        
+        return ReloadType.Unknown
+            
     def run(self):
         self._handle_context_change()
         
@@ -39,8 +43,15 @@ class BaseCollector:
             
             data = getattr(self, 'data', None)
             
-            if isinstance(data, (DataDict, DataList)) and data.requires_save:
-                data.save()
+            if isinstance(data, (DataDict, DataList)):
+                if data.try_save():
+                    broadcast_save = False
+                    
+                    if broadcast_save:
+                        own_mail = Player.GetAccountEmail()
+                        for acc in GLOBAL_CACHE.ShMem.GetAllAccountData():
+                            if acc.IsAccount:
+                                GLOBAL_CACHE.ShMem.SendMessage(acc.AccountEmail, own_mail, SharedCommandType.Reload, (self._get_reload_type(),))
 
     def _is_ready(self) -> bool:
         return Map.IsMapReady() and Player.IsPlayerLoaded()

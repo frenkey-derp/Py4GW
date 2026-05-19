@@ -7,8 +7,6 @@ from Py4GWCoreLib import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Sources.frenkeyLib.DataCollector.data_collector import DataCollectorRuntime
-from Sources.frenkeyLib.DataCollector.data_collector_widget import main as merged_main
-from Sources.frenkeyLib.DataCollector.data_collector_widget import tooltip as merged_tooltip
 
 MODULE_NAME = 'Data Collector'
 MODULE_ICON = os.path.join(Py4GW.Console.get_projects_path(), 'Textures', 'Module_Icons', 'Data Collector.png')

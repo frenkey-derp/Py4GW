@@ -32,6 +32,23 @@ class ModelIdDict(dict[int, ItemData]):
             instance[int(key)] = ItemData.from_dict(value)
         
         return instance
+
+    def update_from(self, other: object) -> bool:
+        if not isinstance(other, ModelIdDict):
+            return False
+
+        changed = False
+
+        for model_id, candidate in other.items():
+            existing = self.get(model_id)
+            if existing is None:
+                self[model_id] = candidate
+                changed = True
+                continue
+            
+            changed = existing.update_from(candidate) or changed
+            
+        return changed
     
 class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
     def __init__(self,
