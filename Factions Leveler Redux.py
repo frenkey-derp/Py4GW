@@ -1136,9 +1136,9 @@ def _build_monastery_armor_routine(
         name="Buy And Craft Profession Armor",
         children=[
             BT.MoveAndInteract(material_merchant_coords),
-            BT.BuyMaterialsFromList(_build_early_armor_materials(profession, armor_data), rare_trader=False),
+            BT.BuyMaterials(_build_early_armor_materials(profession, armor_data)),
             BT.MoveAndInteract(rare_material_merchant_coords),
-            BT.BuyMaterialsFromList(_build_tsumei_rare_materials(profession), rare_trader=True),
+            BT.BuyMaterials(_build_tsumei_rare_materials(profession)),
             BT.MoveAndInteract(armor_crafter_coords),
             *craft_and_equip_steps,
         ],
@@ -1225,7 +1225,7 @@ def BuyAndCraftMonasteryArmor() -> BehaviorTree:
             map_id_or_name=SHING_JEA_MONASTERY,
             map_prep=PrepareForBattle(),
             children=[
-                BT.EqualizeGold(target_gold=1600),
+                BT.BalanceGold(target_gold=1600),
                 BT.GetNodeByProfession(
                     **_build_monastery_armor_nodes(
                         MATERIAL_MERCHANT_COORDS,

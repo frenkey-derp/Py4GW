@@ -902,19 +902,22 @@ class BTUpkeepers:
             effective_exclude_list.append(imp_model_id)
 
         children: list[BehaviorTree | BehaviorTree.Node] = [
-            BTItems.SpawnBonusItems(log=log, aftercast_ms=spawn_settle_ms),
-            BTItems.DestroyBonusItems(exclude_list=effective_exclude_list, log=log, aftercast_ms=35),
+            BTItems.BonusItems.SpawnBonusItems(log=log, aftercast_ms=spawn_settle_ms),
+            BTItems.BonusItems.DestroyBonusItems(exclude_list=effective_exclude_list, log=log, aftercast_ms=35),
         ]
 
         if move_to_slot:
             children.append(
-                BTItems.MoveModelToBagSlot(
-                    modelID_or_encStr=imp_model_id,
-                    target_bag=target_bag,
-                    slot=slot,
-                    log=log,
-                    required=True,
-                    aftercast_ms=spawn_settle_ms,
+                BTItems.Utility.ResolveItemIDThen(
+                    identifier=imp_model_id,
+                    next_node_fn=lambda resolved_item_id: BTItems.Bags.MoveTo(
+                        item_id=resolved_item_id,
+                        target_bag=target_bag,
+                        slot=slot,
+                        log=log,
+                        required=True,
+                        aftercast_ms=spawn_settle_ms,
+                    )
                 )
             )
 

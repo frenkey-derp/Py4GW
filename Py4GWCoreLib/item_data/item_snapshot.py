@@ -191,11 +191,11 @@ class ItemSnapshot:
 
     @classmethod
     @frame_cache(category="LazyItemSnapshot", source_lib="from_item_id")
-    def from_item_id(cls, item_id: int, item_instance: Optional[PyItem] = None) -> Optional['ItemSnapshot']:
+    def from_item_id(cls, item_id: int, item_instance: Optional[PyItem] = None, bag: Optional[Bags] = None) -> Optional['ItemSnapshot']:
         item = item_instance if item_instance and item_id == item_instance.item_id else Item.item_instance(item_id) if item_id > 0 else None
         is_valid = item.IsItemValid(item.item_id) if item else False
 
-        return cls(item.item_id, item) if item and is_valid else None
+        return cls(item.item_id, item, bag) if item and is_valid else None
 
     @classmethod
     def create(cls, item_id: int, item_instance: Optional[PyItem] = None, bag: Optional[Bags] = None) -> Optional['ItemSnapshot']:
@@ -419,19 +419,22 @@ class ItemSnapshot:
         bag_snapshot: dict[int, Optional[ItemSnapshot]] = {}
 
         bag_size = inventory_bag.GetSize()
-
+        if bag_size <= 0:
+            return bag_snapshot
+        
         for slot in range(bag_size):
             bag_snapshot[slot] = None
 
         for item in inventory_bag.GetItems():
             slot = item.slot  # real slot of the item
-            bag_snapshot[slot] = ItemSnapshot.from_item_id(item.item_id, item) if item else None
+            bag_snapshot[slot] = ItemSnapshot.from_item_id(item.item_id, item, bag) if item else None
+            
 
         return bag_snapshot
     
     @staticmethod
     @frame_cache(category="ItemSnapshot", source_lib="get_inventory_snapshot")
-    def get_inventory_snapshot(start_bag: Bags, end_bag: Bags) -> dict[Bags, dict[int, Optional['ItemSnapshot']]]:
+    def get_inventory_snapshot(start_bag: Bags = Bags.Backpack, end_bag: Bags = Bags.Bag2) -> dict[Bags, dict[int, Optional['ItemSnapshot']]]:
         bags = [Bags(bag_id) for bag_id in range(start_bag.value, end_bag.value + 1)]
         return ItemSnapshot.get_bags_snapshot(bags)
     
@@ -441,13 +444,16 @@ class ItemSnapshot:
         snapshot = {}
 
         for bag in bags:
-            snapshot[bag] = ItemSnapshot.get_bag_snapshot(bag)
-
+            bag_snapshot = ItemSnapshot.get_bag_snapshot(bag)
+            
+            if len(bag_snapshot) > 0:
+                snapshot[bag] = bag_snapshot
+                
         return snapshot
     
     @staticmethod
     @frame_cache(category="ItemSnapshot", source_lib="get_items")
-    def get_items(bags: list[Bags]) -> list['ItemSnapshot']:
+    def get_bags_items(bags: list[Bags]) -> list['ItemSnapshot']:
         snapshot = ItemSnapshot.get_bags_snapshot(bags)
         items: list[ItemSnapshot] = []
 
@@ -459,8 +465,19 @@ class ItemSnapshot:
         return items
     
     @staticmethod
+    @frame_cache(category="ItemSnapshot", source_lib="get_items")
+    def get_bag_items(bag: Bags) -> list['ItemSnapshot']:
+        snapshot = ItemSnapshot.get_bag_snapshot(bag)
+        return [item for item in snapshot.values() if item is not None and item.is_valid]
+    
+    @staticmethod    
+    @frame_cache(category="ItemSnapshot", source_lib="get_items")
+    def get_items(item_ids : list[int]) -> list['ItemSnapshot']:
+        return [item for item in (ItemSnapshot.from_item_id(item_id) for item_id in item_ids) if item is not None and item.is_valid]
+    
+    @staticmethod
     @frame_cache(category="ItemSnapshot", source_lib="get_item_count")
     def get_item_count(item : "ItemSnapshot", bags: list[Bags] = [*INVENTORY_BAGS, *STORAGE_BAGS, Bags.MaterialStorage]) -> int:
-        items = ItemSnapshot.get_items(bags)
+        items = ItemSnapshot.get_bags_items(bags)
 
         return sum(i.quantity for i in items if i.is_valid and i.same_kind_as(item))

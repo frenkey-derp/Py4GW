@@ -1,9 +1,11 @@
 import datetime
-from enum import Enum, auto
+from enum import Enum, Flag, auto
 from enum import IntEnum
 from .Model_enums import ModelID
 
 MAX_STACK_SIZE = 250
+MAX_GOLD_STORAGE = 1_000_000
+MAX_GOLD_CHARACTER = 100_000
 
 # region Rarity
 class Rarity(IntEnum):
@@ -217,6 +219,20 @@ ITEM_TYPE_META_TYPES: dict[ItemType, list[ItemType]] = {
 }
 
 # endregion
+
+class TradingNPCType(IntEnum):
+    Unknown = auto()
+    Merchant = auto()
+    Crafter = auto()
+    Collector = auto()
+    Trader = auto()
+    
+class TraderType(IntEnum):
+    Dye = auto()
+    Rune = auto()
+    Scroll = auto()
+    Material = auto()
+    RareMaterial = auto()
 
 NICK_CYCLE_START_DATE = datetime.datetime(2009, 4, 20)
 NICK_CYCLE_COUNT = 137

@@ -337,14 +337,14 @@ class AutoInventoryHandler():
 
     def IdentifyItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False, item_ids=None, rarities=None):
         from .BehaviorTree import BehaviorTree
-        from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
+        from Py4GWCoreLib.Routines import BT
 
         target_item_ids = list(dict.fromkeys(item_ids if item_ids is not None else self._get_identify_item_ids(rarities)))
         identified_items = 0
         total_items = len(target_item_ids)
 
         for index, item_id in enumerate(target_item_ids, start=1):
-            node = BTNodes.Items.IdentifyItems([item_id], fail_if_no_kit=True, succeed_if_already_identified=True)
+            node = BT.Items.Items.IdentifyItems([item_id], fail_if_no_kit=True, succeed_if_already_identified=True)
             state = yield from self._tick_bt_node(node)
             if state == BehaviorTree.NodeState.SUCCESS:
                 identified_items += 1
@@ -360,7 +360,7 @@ class AutoInventoryHandler():
 
     def SalvageItems(self, progress_callback: Optional[Callable[[float], None]] = None, log: bool = False, item_ids=None, rarities=None, preferred_kit_id: Optional[int] = None, allow_unidentified_nonwhite: bool = False, respect_settings: bool = True, timeout_ms_per_item: int = 5000):
         from .BehaviorTree import BehaviorTree
-        from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
+        from Py4GWCoreLib.Routines import BT
 
         rarity_filter = self._normalize_rarity_names(rarities)
         strategy = self._normalize_salvage_strategy()
@@ -409,7 +409,7 @@ class AutoInventoryHandler():
                 if item is None:
                     Console.Log("AutoSalvage", f"Item with id={item_id} not found in inventory during salvage. Skipping.", Console.MessageType.Warning)
                     break
-                node = BTNodes.Items.SalvageItem(
+                node = BT.Items.Items.SalvageItem(
                     item.id,
                     salvage_mode=mode,
                     preferred_kit_id=preferred_kit_id,

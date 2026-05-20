@@ -7,6 +7,7 @@ from Py4GWCoreLib.Routines import Routines
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 
 from Py4GWCoreLib.enums_src.Item_enums import ItemAction
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 
 class LootConfig(RuleConfig):
@@ -26,11 +27,22 @@ class LootConfig(RuleConfig):
             return
 
         self._initialized = True
+        self.blacklisted_models: list[int] = []
+        self.whitelisted_models: list[int] = []
+        
         super().__init__()
         
     def EvaluateItem(self, item_id):
         if not super().EvaluateItem(item_id):
             return False
+        
+        item = ItemSnapshot.from_item_id(item_id)
+        if item:
+            if item.model_id in self.blacklisted_models:
+                return False
+                
+            if item.model_id in self.whitelisted_models:
+                return True
         
         matched_rule = self.GetMatchedRule(item_id)
         return matched_rule is not None and matched_rule.action is ItemAction.PickUp
@@ -41,6 +53,21 @@ class LootConfig(RuleConfig):
         
         if not item_id in self.blacklisted_items:
             self.blacklisted_items.append(item_id)
+
+    def AddItemIDToWhitelist(self, item_id: int):
+        if not Agent.IsValid(item_id):
+            return
+        
+        if not item_id in self.whitelisted_items:
+            self.whitelisted_items.append(item_id)
+            
+    def AddModelIDToBlacklist(self, model_id: int):
+        if not model_id in self.blacklisted_models:
+            self.blacklisted_models.append(model_id)
+            
+    def AddModelIDToWhitelist(self, model_id: int):
+        if not model_id in self.whitelisted_models:
+            self.whitelisted_models.append(model_id)
 
 
     def GetfilteredLootArray(self, distance: float = Range.SafeCompass.value, multibox_loot: bool = False, allow_unasigned_loot=False) -> list[int]:        

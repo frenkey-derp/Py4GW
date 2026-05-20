@@ -1586,32 +1586,68 @@ class WindowFrame():
     )
     
     MerchantWindowCloseButton = FrameInfo(
-        WindowName="CrafterWindow Close Button",
         ParentFrameHash=MerchantWindowFrame.FrameHash,
         ChildOffsets=[0, 0, 1]
     )
+    
+    TraderWindowCloseButton = FrameInfo(
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
+        ChildOffsets=[0, 0, 2]
+    )
 
     CollectorExchangeButton = FrameInfo(
-        WindowName="CollectorExchangeButton",
-        ParentFrameHash=3613855137,
-        ChildOffsets=[0, 0, 6]
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
+        ChildOffsets=[0, 0, 6],
+        BlackBoard= {
+            'hash' : 0,
+            'template_type' : 7, 
+            },
     )
 
     CollectorGoodbyeButton = FrameInfo(
-        WindowName="CollectorGoodbyeButton",
-        ParentFrameHash=3613855137,
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
         ChildOffsets=[0, 0, 7]
     )
 
     SkillTrainerWindowFrame = FrameInfo(
-        WindowName="SkillTrainerWindowFrame",
+        FrameHash=1746895597,
+    )
+
+    SkillTrainerDisplayModeButtonFrame = FrameInfo(
         ParentFrameHash=1746895597,
         ChildOffsets=[3]
     )
 
-    CrafterWindowFrame = FrameInfo(
-        WindowName="CrafterWindowFrame",
-        FrameHash=1517397806
+    BuyMerchantButtonFrame = FrameInfo(
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
+        ChildOffsets=[0, 0, 0],
+        BlackBoard= {
+            'hash' : 1532320307
+            },
+    )
+
+    RequestQuoteButtonFrame = FrameInfo(
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
+        ChildOffsets=[0, 0, 14],
+        BlackBoard= {
+            'hash' : 1926171428
+            },
+    )
+    
+    CrafterCraftButtonFrame = FrameInfo(
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
+        ChildOffsets=[0, 0, 0],
+        BlackBoard= {
+            'hash' : 1517397806
+            },
+    )
+    
+    CrafterCustomizeButtonFrame = FrameInfo(
+        ParentFrameHash=MerchantWindowFrame.FrameHash,
+        ChildOffsets=[0, 1, 1],
+        BlackBoard= {
+            'hash' : 731118013
+            },
     )
        
 WindowFrames["Inventory Bags"] = WindowFrame.InventoryBags
@@ -1947,12 +1983,33 @@ class SkillTrainerWindow:
         frame.FrameClick()
         return True
 
+class TraderWindow:
+    @staticmethod
+    @frame_cache(category="TraderWindow", source_lib="IsOpen")
+    def IsOpen() -> bool:          
+        return WindowFrame.MerchantWindowFrame.FrameExists() and \
+            UIManager.GetFrameByID(WindowFrame.RequestQuoteButtonFrame.GetFrameID()).frame_hash == WindowFrame.RequestQuoteButtonFrame.BlackBoard.get('hash', -1)
+            
+    @staticmethod
+    def Close() -> bool:
+        if not TraderWindow.IsOpen():
+            return False
+        
+        frame = WindowFrame.TraderWindowCloseButton
+        if not frame.FrameExists():
+            return False
+                
+        frame.FrameClick()
+        return True
+    
 class MerchantWindow:
     @staticmethod
     @frame_cache(category="MerchantWindow", source_lib="IsOpen")
-    def IsOpen() -> bool:
-        return WindowFrame.MerchantWindowFrame.FrameExists()
+    def IsOpen() -> bool:        
+        return WindowFrame.MerchantWindowFrame.FrameExists() and \
+            UIManager.GetFrameByID(WindowFrame.BuyMerchantButtonFrame.FrameID).frame_hash == WindowFrame.BuyMerchantButtonFrame.BlackBoard.get('hash', -1)
     
+            
     @staticmethod
     def Close() -> bool:
         if not MerchantWindow.IsOpen():
@@ -1969,7 +2026,11 @@ class CollectorWindow:
     @staticmethod
     @frame_cache(category="CollectorWindow", source_lib="IsOpen")
     def IsOpen() -> bool:
-        return WindowFrame.CollectorExchangeButton.FrameExists()
+        return WindowFrame.MerchantWindowFrame.FrameExists() \
+            and UIManager.GetFrameByID(WindowFrame.CollectorExchangeButton.GetFrameID()).frame_hash == WindowFrame.CollectorExchangeButton.BlackBoard.get('hash', -1) \
+            and SkillTrainerWindow.IsOpen() == False \
+            and TraderWindow.IsOpen() == False \
+            and CrafterWindow.IsOpen() == False
     
     @staticmethod
     def Confirm() -> bool:
@@ -1998,8 +2059,9 @@ class CollectorWindow:
 class CrafterWindow:
     @staticmethod
     @frame_cache(category="CrafterWindow", source_lib="IsOpen")
-    def IsOpen() -> bool:
-        return WindowFrame.CrafterWindowFrame.FrameExists()
+    def IsOpen() -> bool:        
+        return WindowFrame.CrafterCraftButtonFrame.FrameExists() and \
+            UIManager.GetFrameByID(WindowFrame.CrafterCraftButtonFrame.FrameID).frame_hash == WindowFrame.CrafterCraftButtonFrame.BlackBoard.get('hash', -1)
 
     @staticmethod
     def Close() -> bool:
@@ -2013,6 +2075,24 @@ class CrafterWindow:
         frame.FrameClick()
         return True
 
+    @staticmethod
+    @frame_cache(category="CrafterWindow", source_lib="IsCustomizeTabOpen")
+    def IsCustomizeTabOpen() -> bool:
+        if not CrafterWindow.IsOpen():
+            return False
+        
+        frame = WindowFrame.CrafterCustomizeButtonFrame        
+        return frame.FrameExists() and UIManager.GetFrameByID(frame.FrameID).frame_hash == frame.BlackBoard.get('hash', -1)
+
+    @staticmethod
+    def CustomizeWeapon() -> bool:
+        if not CrafterWindow.IsCustomizeTabOpen():
+            return False
+                
+        frame = WindowFrame.CrafterCustomizeButtonFrame
+        frame.FrameClick()
+        return True
+    
 class UpgradeWindow:
     '''
     Utility class to check for and interact with the Upgrade Window that appears when using an upgrade extract on items with multiple upgrade options.

@@ -1,7 +1,9 @@
 from collections.abc import Callable
 from collections.abc import Mapping
 from collections.abc import Sequence as SequenceABC
-from typing import cast
+from typing import Optional, cast
+
+from Py4GWCoreLib.enums_src.Item_enums import TradingNPCType
 
 from .helpers import _capture_current_target
 from .helpers import _coerce_vanquish_step
@@ -1322,20 +1324,24 @@ def FollowModel(
         )
     )
     
-def MoveAndCraftItem(pos: PointOrPath, output_model_id: int,cost: int,trade_model_ids: list[int],quantity_list: list[int]) -> BehaviorTree:
+def MoveAndCraftItem(pos: PointOrPath, output_model_id: int,cost: int,trade_model_ids: list[int],quantity_list: list[int], aftercast_ms: int = 250) -> BehaviorTree:
     return RoutinesBT.Composite.Sequence(
         MoveAndInteract(pos=pos),
         _pause_heroai_for_action(
-            RoutinesBT.Items.CraftItem(output_model_id=output_model_id,cost=cost,trade_model_ids=trade_model_ids,quantity_list=quantity_list,)
+            RoutinesBT.Items.Crafting.CraftItemModelID(output_model_id=output_model_id, cost=cost, material_model_ids=trade_model_ids, material_quantities=quantity_list,aftercast_ms=aftercast_ms)
          ),
         name="MoveAndCraftItem",
      )
     
-def MoveAndBuyMaterials(pos: PointOrPath, model_id: int, batches:int = 1, log: bool = False, aftercast_ms: int = 350) -> BehaviorTree:
+def MoveAndBuyMaterials(pos: PointOrPath, model_id: int, quantity:int = 1, log: bool = False, aftercast_ms: int = 350) -> BehaviorTree:
     return RoutinesBT.Composite.Sequence(
         MoveAndInteract(pos=pos),
         _pause_heroai_for_action(
-            RoutinesBT.Items.BuyMaterials(model_id=model_id, batches=batches, log=log, aftercast_ms=aftercast_ms)
+            RoutinesBT.Items.Utility.ResolveItemIDFromNPCThen(
+                identifier=model_id,
+                npc_type=TradingNPCType.Trader,
+                next_node_fn=lambda resolved_id: RoutinesBT.Items.Trader.BuyItem(item_id=resolved_id, quantity=quantity, allow_withdraw_gold=True, log=log, aftercast_ms=aftercast_ms),
+            )
         ),
         name="MoveAndBuyMaterials",
     )
@@ -1344,7 +1350,11 @@ def MoveAndBuyMerchantItem(pos: PointOrPath, model_id: int, quantity: int = 1, l
     return RoutinesBT.Composite.Sequence(
         MoveAndInteract(pos=pos),
         _pause_heroai_for_action(
-            RoutinesBT.Items.BuyMerchantItem(model_id=model_id, quantity=quantity, log=log, aftercast_ms=aftercast_ms)
+            RoutinesBT.Items.Utility.ResolveItemIDFromNPCThen(
+                identifier=model_id,
+                npc_type=TradingNPCType.Merchant,
+                next_node_fn=lambda resolved_id: RoutinesBT.Items.Merchant.BuyItem(item_id=resolved_id, quantity=quantity, allow_withdraw_gold=True, log=log, aftercast_ms=aftercast_ms),
+            )
         ),
         name="MoveAndBuyMerchantItem",
     )
@@ -1361,10 +1371,10 @@ def WaitForClearEnemiesInArea(pos: PointOrPath, radius: float = Range.Spirit.val
      
 #region Items
 def IsItemInInventoryBags(modelID_or_encStr: int | str) -> BehaviorTree:
-    return RoutinesBT.Items.IsItemInInventoryBags(modelID_or_encStr=modelID_or_encStr)
+    return RoutinesBT.Items.Inventory.IsItemInBags(identifier=modelID_or_encStr)
 
 def IsItemEquipped(modelID_or_encStr: int | str) -> BehaviorTree:
-    return RoutinesBT.Items.IsItemEquipped(modelID_or_encStr=modelID_or_encStr)
+    return RoutinesBT.Items.Inventory.IsItemEquipped(identifier=modelID_or_encStr)
 
 def EquipItemByModelID(modelID_or_encStr: int | str, aftercast_ms: int = 250, log: bool = False) -> BehaviorTree:
     from Py4GWCoreLib.Agent import Agent
@@ -1401,21 +1411,24 @@ def EquipItemByModelID(modelID_or_encStr: int | str, aftercast_ms: int = 250, lo
             name=f"Equip Weapon {modelID_or_encStr}",
             children=[
                 IsItemEquipped(modelID_or_encStr),
-                BehaviorTree.SequenceNode(
-                    name=f"EquipAndVerify {modelID_or_encStr}",
-                    children=[
-                        RoutinesBT.Items.EquipItemByModelID(
-                            modelID_or_encStr=modelID_or_encStr,
-                            aftercast_ms=aftercast_ms,
-                            log=log,
-                        ),
-                        BehaviorTree.WaitUntilNode(
-                            name=f"WaitUntilEquipped({modelID_or_encStr})",
-                            condition_fn=_is_item_equipped,
-                            throttle_interval_ms=100,
-                            timeout_ms=verify_aftercast_ms + 1250,
-                        ),
-                    ],
+                RoutinesBT.Items.Utility.ResolveItemIDThen(
+                    identifier=modelID_or_encStr,
+                    next_node_fn=lambda resolved_id: BehaviorTree.SequenceNode(
+                        name=f"EquipAndVerify {modelID_or_encStr}",
+                        children=[
+                            RoutinesBT.Items.Inventory.EquipItemID(
+                                resolved_id,
+                                log=log,
+                                aftercast_ms=aftercast_ms,
+                            ),
+                            BehaviorTree.WaitUntilNode(
+                                name=f"WaitUntilEquipped({modelID_or_encStr})",
+                                condition_fn=_is_item_equipped,
+                                throttle_interval_ms=100,
+                                timeout_ms=verify_aftercast_ms + 1250,
+                            ),
+                        ],
+                    ),
                 ),
             ],
         )
@@ -1425,113 +1438,100 @@ def EquipInventoryBag(modelID_or_encStr: int | str,target_bag: int,timeout_ms: i
     return RoutinesBT.Items.EquipInventoryBag(modelID_or_encStr=modelID_or_encStr,target_bag=target_bag,timeout_ms=timeout_ms,poll_interval_ms=poll_interval_ms,log=log,)
 
 def DestroyItems(model_ids: list[int], log: bool = False, aftercast_ms: int = 75) -> BehaviorTree:
-    return RoutinesBT.Items.DestroyItems(model_ids=model_ids,log=log,aftercast_ms=aftercast_ms,)
+    return RoutinesBT.Items.Utility.ResolveItemIdsThen(list(model_ids),
+                                                       next_node_fn=lambda resolved_ids: RoutinesBT.Items.Items.DestroyItems(item_ids=resolved_ids,log=log,aftercast_ms=aftercast_ms,))
     
-def DestroyBonusItems(exclude_list: list[int] = [], log: bool = False, aftercast_ms: int = 75) -> BehaviorTree:
-    return RoutinesBT.Items.DestroyBonusItems(exclude_list=exclude_list,log=log,aftercast_ms=aftercast_ms,)
+def DestroyBonusItems(exclude_list: Optional[list[int]] = [], log: bool = False, aftercast_ms: int = 75) -> BehaviorTree:
+    return RoutinesBT.Items.BonusItems.DestroyBonusItems(exclude_list=exclude_list,log=log,aftercast_ms=aftercast_ms,)
     
 def SpawnBonusItems(log: bool = False, spawn_settle_ms: int = 50) -> BehaviorTree:
-    return RoutinesBT.Items.SpawnBonusItems(log=log, aftercast_ms=spawn_settle_ms)
+    return RoutinesBT.Items.BonusItems.SpawnBonusItems(log=log, aftercast_ms=spawn_settle_ms)
 
 def SpawnAndDestroyBonusItems(exclude_list: list[int] = [], log: bool = False) -> BehaviorTree:
-    return RoutinesBT.Items.SpawnAndDestroyBonusItems(exclude_list=exclude_list,log=log,)
+    return RoutinesBT.Items.BonusItems.SpawnAndDestroyBonusItems(exclude_list=exclude_list,log=log,)
 
 def AddModelToLootWhitelist(model_id: int) -> BehaviorTree:
-    return RoutinesBT.Items.AddModelToLootWhitelist(model_id=model_id,)
+    return RoutinesBT.Items.Loot.AddModelToLootWhitelist(model_id=model_id,)
 
 def LootItems(distance: float = Range.Earshot.value, timeout_ms: int = 10000) -> BehaviorTree:
-    return RoutinesBT.Items.LootItems(distance=distance,timeout_ms=timeout_ms,)
+    return RoutinesBT.Items.Loot.LootItems(distance=distance,timeout_ms=timeout_ms,)
 
 def RestockItems(model_id: int, desired_quantity: int, allow_missing: bool = False) -> BehaviorTree:
-    return RoutinesBT.Items.RestockItems(
-        model_id=model_id,
-        desired_quantity=desired_quantity,
-        allow_missing=allow_missing,
+    return RoutinesBT.Items.Inventory.Restock(
+        identifier=model_id,
+        quantity=desired_quantity,
+        allow_partial=allow_missing,
     )
 
 def RestockItemsFromList(items: SequenceABC[tuple[int, int]], allow_missing: bool = False) -> BehaviorTree:
-    return RoutinesBT.Items.RestockItemsFromList(
-        items=items,
-        allow_missing=allow_missing,
+    return RoutinesBT.Items.Inventory.RestockItems(
+        identifiers_and_quantities=items,
+        allow_partial=allow_missing,
     )
 
 def HasItemQuantity(model_id: int, quantity: int) -> BehaviorTree:
-    return RoutinesBT.Items.HasItemQuantity(model_id=model_id, quantity=quantity)
+    return RoutinesBT.Items.Inventory.HasItemQuantity(identifier=model_id, quantity=quantity)
 
 def DepositModelToStorage(model_id: int, aftercast_ms: int = 150) -> BehaviorTree:
-    return RoutinesBT.Items.DepositModelToStorage(model_id=model_id,aftercast_ms=aftercast_ms,)
+    return RoutinesBT.Items.Utility.ResolveItemIDThen(
+        identifier=model_id,
+        next_node_fn=lambda resolved_id: RoutinesBT.Items.Items.DepositItems(item_ids=[resolved_id], aftercast_ms=aftercast_ms,)
+        )
 
 def DepositGoldKeep(gold_amount_to_leave_on_character: int = 0, aftercast_ms: int = 150) -> BehaviorTree:
-    return RoutinesBT.Items.DepositGoldKeep(gold_amount_to_leave_on_character=gold_amount_to_leave_on_character,aftercast_ms=aftercast_ms,)
+    return RoutinesBT.Items.Inventory.DepositGold(amount_to_leave_on_character=gold_amount_to_leave_on_character, aftercast_ms=aftercast_ms,)
 
-def EqualizeGold(target_gold: int, deposit_all: bool = True, log: bool = False, aftercast_ms: int = 150) -> BehaviorTree:
-    return RoutinesBT.Items.EqualizeGold(
-        target_gold=target_gold,
-        deposit_all=deposit_all,
+def BalanceGold(target_gold: int, allow_partial: bool = True, log: bool = False, aftercast_ms: int = 150) -> BehaviorTree:
+    return RoutinesBT.Items.Inventory.BalanceGold(
+        amount=target_gold,
+        allow_partial=allow_partial,
         log=log,
         aftercast_ms=aftercast_ms,
     )
 
-def BuyMaterial(model_id: int, rare_trader: bool = False, log: bool = False, aftercast_ms: int = 125) -> BehaviorTree:
+def BuyMaterial(model_id: int, quantity: int = 1, allow_withdraw_gold: bool = True, log: bool = False, aftercast_ms: int = 125) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.BuyMaterial(
-            model_id=model_id,
-            rare_trader=rare_trader,
-            log=log,
-            aftercast_ms=aftercast_ms,
+        RoutinesBT.Items.Utility.ResolveItemIDFromNPCThen(
+            identifier=model_id,
+            npc_type=TradingNPCType.Trader,
+            next_node_fn=lambda resolved_id: RoutinesBT.Items.Trader.BuyItem(item_id=resolved_id, quantity=quantity, allow_withdraw_gold=allow_withdraw_gold, log=log, aftercast_ms=aftercast_ms),
         )
     )
 
 def BuyMaterials(
-    model_id: int,
-    batches: int = 1,
-    rare_trader: bool = False,
-    log: bool = False,
-    aftercast_ms: int = 125,
-) -> BehaviorTree:
-    return _pause_heroai_for_action(
-        RoutinesBT.Items.BuyMaterials(
-            model_id=model_id,
-            batches=batches,
-            rare_trader=rare_trader,
-            log=log,
-            aftercast_ms=aftercast_ms,
-        )
-    )
-
-def BuyMaterialsFromList(
     materials: list[tuple[int, int]],
-    rare_trader: bool = False,
     log: bool = False,
     aftercast_ms: int = 125,
 ) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.BuyMaterialsFromList(
-            materials=materials,
-            rare_trader=rare_trader,
-            log=log,
-            aftercast_ms=aftercast_ms,
+        RoutinesBT.Items.Utility.ResolveItemIDsFromNPCThen(
+            identifiers=[model_id for model_id, _ in materials],
+            npc_type=TradingNPCType.Trader,
+            next_node_fn=lambda resolved_ids: RoutinesBT.Items.Trader.BuyItems(
+                item_ids_quantities=[(resolved_id, quantity) for resolved_id, (_, quantity) in zip(resolved_ids, materials)],
+                log=log,
+                aftercast_ms=aftercast_ms,
+            )
         )
     )
 
 def BuyMerchantItem(model_id: int, quantity: int = 1, log: bool = False, aftercast_ms: int = 350) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.BuyMerchantItem(
-            model_id=model_id,
-            quantity=quantity,
-            log=log,
-            aftercast_ms=aftercast_ms,
+        RoutinesBT.Items.Utility.ResolveItemIDFromNPCThen(
+            identifier=model_id,
+            npc_type=TradingNPCType.Merchant,
+            next_node_fn=lambda resolved_id: RoutinesBT.Items.Merchant.BuyItem(item_id=resolved_id, quantity=quantity, allow_withdraw_gold=True, log=log, aftercast_ms=aftercast_ms),
         )
     )
 
 def ExchangeCollectorItem(output_model_id: int,trade_model_ids: list[int],quantity_list: list[int],cost: int = 0,aftercast_ms: int = 150,) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.ExchangeCollectorItem(output_model_id=output_model_id,trade_model_ids=trade_model_ids,quantity_list=quantity_list,cost=cost,aftercast_ms=aftercast_ms,)    
+        RoutinesBT.Items.Collector.ExchangeItemModelID(output_model_id=output_model_id,trade_model_ids=trade_model_ids,quantity_list=quantity_list,cost=cost,aftercast_ms=aftercast_ms,)    
     )
 
 def CraftItem(output_model_id: int,cost: int,trade_model_ids: list[int],quantity_list: list[int],aftercast_ms: int = 350,) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.CraftItem(output_model_id=output_model_id,cost=cost,trade_model_ids=trade_model_ids,quantity_list=quantity_list,aftercast_ms=aftercast_ms,)
+        RoutinesBT.Items.Crafting.CraftItemModelID(output_model_id=output_model_id, cost=cost, material_model_ids=trade_model_ids, material_quantities=quantity_list,aftercast_ms=aftercast_ms,)
     )
      
 def NeedsInventoryCleanup(exclude_models: list[int] | None = None) -> BehaviorTree:
@@ -1546,11 +1546,10 @@ def DestroyZeroValueItems(exclude_models: list[int] | None = None,log: bool = Fa
     return RoutinesBT.Items.DestroyZeroValueItems(exclude_models=exclude_models,log=log,aftercast_ms=aftercast_ms,)
 
 def CustomizeWeapon(
-        frame_label: str = "Merchant.CustomizeWeaponButton",
         aftercast_ms: int = 500,
     ) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.CustomizeWeapon(frame_label=frame_label,aftercast_ms=aftercast_ms,)
+        RoutinesBT.Items.Crafting.CustomizeWeapon(aftercast_ms=aftercast_ms,)
     )
 
 #region skills

@@ -1,7 +1,7 @@
 import json
 import os
 import struct
-from typing import NamedTuple, Optional
+from typing import Callable, NamedTuple, Optional, Sequence, cast
 
 import Py4GW
 import PyImGui
@@ -14,7 +14,24 @@ from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.Routines import Routines
+from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, INVENTORY_WITH_EQUIPMENT_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity, SalvageMode
+from Py4GWCoreLib.enums_src.Model_enums import ModelID
+from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
+from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
+from Py4GWCoreLib.py4gwcorelib_src.Color import Color
+from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.native_src.internals import string_table
+from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
+
+Utils.ClearSubModules("Sources.frenkeyLib.ItemHandling")
+Utils.ClearSubModules("Sources.frenkeyLib.Core")
+
+from Py4GWCoreLib.routines_src.behaviourtrees_src.items import BTItems
+from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
+from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Py4GWCoreLib.UIManager import (
     AnySalvageWindow,
     ExpertSalvageUnidentifiedWindow,
@@ -27,44 +44,12 @@ from Py4GWCoreLib.UIManager import (
     SalvageConfirmationPopup,
     SalvageOptionsWindow,
     SkillTrainerWindow,
+    TraderWindow,
     UIManager,
     WindowFrame,
     UpgradeWindow,
     XunlaiStorageWindow,
 )
-from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
-from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, INVENTORY_WITH_EQUIPMENT_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity, SalvageMode
-from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
-from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
-from Py4GWCoreLib.py4gwcorelib_src.Color import Color
-from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
-from Py4GWCoreLib.native_src.internals import string_table
-from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
-Utils.ClearSubModules("Sources.frenkeyLib.ItemHandling")
-Utils.ClearSubModules("Sources.frenkeyLib.Core")
-from Sources.frenkeyLib.ItemHandling.BTNodes import STORAGE_BAGS, BTNodes
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
-from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
-
-
-@staticmethod
-def ClickDepositAllMaterials() -> bool:
-    if not XunlaiStorageWindow.IsOpen():
-        return False
-    
-    frame = WindowFrame.Xunlai_DepositAllMaterialsButton
-    if not frame.FrameExists():
-        Py4GW.Console.Log(MODULE_NAME, "Deposit All Materials button frame not found in Xunlai Storage", Py4GW.Console.MessageType.Error)
-        return False
-    
-    Py4GW.Console.Log(MODULE_NAME, "Clicking Xunlai Storage 'Deposit All Materials' button")
-    Py4GW.Console.Log(MODULE_NAME, f"Button Frame Info - ID: {frame.GetFrameID()}, Offsets: {frame.ChildOffsets}, Coords: {frame.GetCoords()}")
-    
-    frame.FrameClick()
-
-    return True
-
-XunlaiStorageWindow.ClickDepositAllMaterials = ClickDepositAllMaterials
 
 MODULE_NAME = "Item Handling Tests"
 MODULE_ICON = "Textures/Module_Icons/Coding.png"
@@ -116,14 +101,13 @@ show_loot_config_view = False
 inventory_bt_enabled = False
 inventory_bt_runner: InventoryBT | None = None
 
-   
-def _draw_frame_info_row(label: str, frame, allow_click: bool = False, allow_highlight: bool = False) -> None:
+def _draw_frame_info_row(label: str, frame, allow_click: bool = False, allow_highlight: bool = False, get_state : Optional[Callable[..., bool]] = None) -> None:
     PyImGui.table_next_row()
     PyImGui.table_set_column_index(0)
     ImGui.text(label)
     PyImGui.table_set_column_index(1)
 
-    frame_exists = frame.FrameExists() if frame else False
+    frame_exists = get_state() if get_state else frame.FrameExists() if frame else False
     ImGui.text_colored("Open" if frame_exists else "Closed", GREEN.color_tuple if frame_exists else RED.color_tuple)
 
     PyImGui.table_set_column_index(2)
@@ -139,6 +123,10 @@ def _draw_frame_info_row(label: str, frame, allow_click: bool = False, allow_hig
     ImGui.text(f"{left}, {top}, {right}, {bottom}")
 
     PyImGui.table_set_column_index(5)
+    blackboard_info = getattr(frame, "BlackBoard", None)
+    ImGui.text(str(blackboard_info))
+        
+    PyImGui.table_set_column_index(6)
     if allow_highlight:
         PyImGui.begin_disabled(not frame_exists)
         if ImGui.button(f"Highlight##{label}", -1):
@@ -147,7 +135,7 @@ def _draw_frame_info_row(label: str, frame, allow_click: bool = False, allow_hig
     else:
         ImGui.text("-")
 
-    PyImGui.table_set_column_index(6)
+    PyImGui.table_set_column_index(7)
     if allow_click:
         PyImGui.begin_disabled(not frame_exists)
         if ImGui.button(f"Click##{label}", -1):
@@ -510,13 +498,13 @@ def main():
                 if item and item.is_valid:
                     # PyImGui.begin_disabled(not item.is_usable)
                     if ImGui.button(f"Use {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.UseItems([item.id]))
+                        tree = BTItems.Items.UseItems([item.id])
                         pass
                     # PyImGui.end_disabled()
                     
                     PyImGui.begin_disabled(not Map.IsExplorable())
                     if ImGui.button(f"Drop {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.DropItems([item.id]))
+                        tree = BTItems.Items.DropItems([item.id])
                         pass
                     ImGui.show_tooltip("Will only drop a single item on the ground at your current location.")
                     PyImGui.end_disabled()
@@ -525,48 +513,48 @@ def main():
                     
                     PyImGui.begin_disabled(item.is_identified or not item.is_inventory_item)
                     if ImGui.button(f"Identify {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.IdentifyItems([item.id]))
+                        tree = BTItems.Items.IdentifyItems([item.id])
                     PyImGui.end_disabled()
                     PyImGui.separator()
                     
                     PyImGui.begin_disabled(not item.is_salvageable or not item.is_inventory_item)
                     PyImGui.begin_disabled(not item.prefix)
                     if ImGui.button(f"Extract {item.prefix.name if item.prefix else 'Prefix'} from {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.SalvageItem(item.id, salvage_mode=SalvageMode.Prefix))
+                        tree = BTItems.Items.SalvageItem(item.id, salvage_mode=SalvageMode.Prefix)
                     PyImGui.end_disabled()
                     
                     PyImGui.begin_disabled(not item.suffix)
                     if ImGui.button(f"Extract {item.suffix.name if item.suffix else 'Suffix'} from {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.SalvageItem(item.id, salvage_mode=SalvageMode.Suffix))
+                        tree = BTItems.Items.SalvageItem(item.id, salvage_mode=SalvageMode.Suffix)
                     PyImGui.end_disabled()
                     
                     PyImGui.begin_disabled(not item.inscription)
                     if ImGui.button(f"Extract {item.inscription.name if item.inscription else 'Inscription'} from {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.SalvageItem(item.id, salvage_mode=SalvageMode.Inscription))
+                        tree = BTItems.Items.SalvageItem(item.id, salvage_mode=SalvageMode.Inscription)
                     PyImGui.end_disabled()
                     
                     if ImGui.button(f"Salvage {item_name} for common materials", -1):
-                        tree = BehaviorTree(BTNodes.Items.SalvageItem(item.id, salvage_mode=SalvageMode.LesserCraftingMaterials))
+                        tree = BTItems.Items.SalvageItem(item.id, salvage_mode=SalvageMode.LesserCraftingMaterials, restock_salvage_kits=True, allow_withdraw_gold=True)
                     
                     if ImGui.button(f"Salvage {item_name} for rare materials", -1):
-                        tree = BehaviorTree(BTNodes.Items.SalvageItem(item.id, salvage_mode=SalvageMode.RareCraftingMaterials))
+                        tree = BTItems.Items.SalvageItem(item.id, salvage_mode=SalvageMode.RareCraftingMaterials, restock_salvage_kits=True, allow_withdraw_gold=True)
                     PyImGui.end_disabled()
                     PyImGui.separator()
                     
                     PyImGui.begin_disabled(not item.is_inventory_item)
                     if ImGui.button(f"Destroy {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Items.DestroyItems([item.id]))
+                        tree = BTItems.Items.DestroyItems([item.id])
                     PyImGui.end_disabled()
                     
                     PyImGui.separator()
                     PyImGui.begin_disabled(not item.is_inventory_item)
                     if ImGui.button(f"Deposit {item_name} into Storage", -1):
-                        tree = BehaviorTree(BTNodes.Items.DepositItems([item.id]))
+                        tree = BTItems.Items.DepositItems([item.id])
                     PyImGui.end_disabled()
                     
                     PyImGui.begin_disabled(not item.is_storage_item)
                     if ImGui.button(f"Withdraw {item_name} from Storage", -1):
-                        tree = BehaviorTree(BTNodes.Items.WithdrawItems([item.id]))
+                        tree = BTItems.Items.WithdrawItems([item.id])
                     PyImGui.end_disabled()
                                 
                 ImGui.end_tab_item()
@@ -575,12 +563,12 @@ def main():
                 if item and item.is_valid:
                     PyImGui.begin_disabled(not item or not item.is_valid or not item.is_inventory_item)
                     if ImGui.button(f"Sell {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Merchant.SellItems([item.id]))
+                        tree = BTItems.Merchant.SellItems([item.id])
                     PyImGui.end_disabled()
                     
                     PyImGui.begin_disabled(not item or not item.is_valid or item.is_inventory_item)
                     if ImGui.button(f"Buy {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Merchant.BuyItems([(item.id, 1)]))
+                        tree = BTItems.Merchant.BuyItems([(item.id, 1)])
                     PyImGui.end_disabled()
                     
                 ImGui.end_tab_item()
@@ -589,21 +577,27 @@ def main():
                 if item and item.is_valid:
                     PyImGui.begin_disabled(not item or not item.is_valid or not item.is_inventory_item)
                     if ImGui.button(f"Sell {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Trader.SellItem(item.id))
+                        tree = BTItems.Trader.SellItem(item.id)
+                        
+                    if ImGui.button(f"Sell 5x {item_name}", -1):
+                        tree = BTItems.Trader.SellItem(item.id, 5)
                     PyImGui.end_disabled()
                     
                     PyImGui.begin_disabled(not item or not item.is_valid or item.is_inventory_item)
                     if ImGui.button(f"Buy {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Trader.BuyItem(item.id, 1))
+                        tree = BTItems.Trader.BuyItem(item.id, 1)
+                    
+                    if ImGui.button(f"Buy 5x {item_name}", -1):
+                        tree = BTItems.Trader.BuyItem(item.id, 5)
                     PyImGui.end_disabled()
                 ImGui.end_tab_item()
                                 
             if ImGui.begin_tab_item("Bags"):                
                 if ImGui.button("Compact Inventory", -1):
-                    tree = BehaviorTree(BTNodes.Bags.CompactBags())
+                    tree = BTItems.Bags.CompactBags()
                 
                 if ImGui.button("Sort Inventory", -1):
-                    tree = BehaviorTree(BTNodes.Bags.SortBags())
+                    tree = BTItems.Bags.SortBags()
                 
                 PyImGui.new_line()
                 PyImGui.separator()
@@ -614,10 +608,10 @@ def main():
                 PyImGui.end_disabled()
                 
                 if ImGui.button("Compact Storage", -1):
-                    tree = BehaviorTree(BTNodes.Bags.CompactBags(bags=STORAGE_BAGS))
+                    tree = BTItems.Bags.CompactBags(bags=STORAGE_BAGS)
                 
                 if ImGui.button("Sort Storage", -1):
-                    tree = BehaviorTree(BTNodes.Bags.SortBags(bags=STORAGE_BAGS))
+                    tree = BTItems.Bags.SortBags(bags=STORAGE_BAGS)
                 
                 ImGui.end_tab_item()
                 
@@ -628,14 +622,11 @@ def main():
                 style.Text.pop_color_direct()
                 
                 crafting_disabled = True
-                price = 0
-                material_item_ids = []
-                material_amounts = []
-                
+
                 if item and item.is_valid:
                     PyImGui.begin_disabled(crafting_disabled or item.is_inventory_item)
                     if ImGui.button(f"Craft {item_name}", -1):
-                        tree = BehaviorTree(BTNodes.Crafting.CraftItem(item.id, cost=price, material_item_ids=material_item_ids, material_quantities=material_amounts))
+                        pass
                     PyImGui.end_disabled()
                 
                 ImGui.end_tab_item()
@@ -966,23 +957,26 @@ def main():
                 ImGui.separator()
                 if ImGui.collapsing_header("Other Windows"):
                     
-                    if ImGui.begin_table("Other UI Windows", 7, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.RowBg):
+                    if ImGui.begin_table("Other UI Windows", 8, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.RowBg):
                         PyImGui.table_setup_column("Property", PyImGui.TableColumnFlags.WidthFixed, 180)
                         PyImGui.table_setup_column("State", PyImGui.TableColumnFlags.WidthFixed, 60)
                         PyImGui.table_setup_column("Frame ID", PyImGui.TableColumnFlags.WidthFixed, 80)
                         PyImGui.table_setup_column("Offsets", PyImGui.TableColumnFlags.WidthStretch)
                         PyImGui.table_setup_column("Coords", PyImGui.TableColumnFlags.WidthStretch)
+                        PyImGui.table_setup_column("Blackboard", PyImGui.TableColumnFlags.WidthStretch)
                         PyImGui.table_setup_column("Highlight", PyImGui.TableColumnFlags.WidthFixed, 90)
                         PyImGui.table_setup_column("Click", PyImGui.TableColumnFlags.WidthFixed, 90)
                         PyImGui.table_headers_row()
 
                         _draw_frame_info_row("SkillTrainerWindow", WindowFrame.SkillTrainerWindowFrame, allow_highlight=True)
-                        _draw_frame_info_row("MerchantWindow", WindowFrame.MerchantWindowFrame, allow_highlight=True)
-                        _draw_frame_info_row("CollectorWindow", WindowFrame.CollectorExchangeButton, allow_highlight=True)
-                        _draw_frame_info_row("CrafterWindow", WindowFrame.CrafterWindowFrame, allow_highlight=True)
+                        _draw_frame_info_row("MerchantWindow", WindowFrame.BuyMerchantButtonFrame, allow_highlight=True, get_state=lambda: MerchantWindow.IsOpen())
+                        _draw_frame_info_row("CollectorWindow", WindowFrame.CollectorExchangeButton, allow_highlight=True, get_state=lambda: CollectorWindow.IsOpen())
+                        _draw_frame_info_row("CrafterWindow", WindowFrame.CrafterCraftButtonFrame, allow_highlight=True, get_state=lambda: CrafterWindow.IsOpen())
+                        _draw_frame_info_row("TraderWindow", WindowFrame.RequestQuoteButtonFrame, allow_highlight=True, get_state=lambda: TraderWindow.IsOpen())
                         _draw_frame_info_row("UpgradeWindow", WindowFrame.UpgradeWindowFrame, allow_highlight=True)
                         _draw_frame_info_row("UpgradeWindow.Cancel", WindowFrame.UpgradeWindowCancelButton, allow_highlight=True, allow_click=True)
                         _draw_frame_info_row("UpgradeWindow.Confirm", WindowFrame.UpgradeWindowConfirmButton, allow_highlight=True, allow_click=True)
+                        _draw_frame_info_row("CrafterWindow.Customize", WindowFrame.CrafterCustomizeButtonFrame, allow_highlight=True, allow_click=True, get_state=lambda: CrafterWindow.IsCustomizeTabOpen())
 
                         PyImGui.end_table()
 
@@ -996,8 +990,10 @@ def main():
                         _draw_simple_state_row("MerchantWindow", MerchantWindow.IsOpen(), "Close", MerchantWindow.Close)
                         _draw_simple_state_row("CollectorWindow", CollectorWindow.IsOpen(), "Close", CollectorWindow.Close)
                         _draw_simple_state_row("CrafterWindow", CrafterWindow.IsOpen(), "Close", CrafterWindow.Close)
+                        _draw_simple_state_row("TraderWindow", TraderWindow.IsOpen(), "Close", TraderWindow.Close)
                         _draw_simple_state_row("UpgradeWindow", UpgradeWindow.IsOpen(), "Cancel", UpgradeWindow.Cancel)
                         _draw_simple_state_row("UpgradeWindow Confirm", UpgradeWindow.IsOpen(), "Confirm", UpgradeWindow.Confirm)
+                        _draw_simple_state_row("CrafterWindow Customize Weapon", CrafterWindow.IsCustomizeTabOpen(), "Customize", CrafterWindow.CustomizeWeapon)
 
                         PyImGui.end_table()
                 ImGui.end_tab_item()

@@ -415,7 +415,7 @@ class Crafting:
     def get_available_ingredients(self) -> list[Ingredient]:
         if self.available_ingredients is None:
             bags = self.bags if self.bags is not None else [*INVENTORY_BAGS, *STORAGE_BAGS, Bags.MaterialStorage]
-            items = ItemSnapshot.get_items(bags=bags)
+            items = ItemSnapshot.get_bags_items(bags=bags)
                 
             ingredient_map: dict[tuple[int, ItemType], Ingredient] = {}
             def count_item(model_id : int, item_type: ItemType) -> None:

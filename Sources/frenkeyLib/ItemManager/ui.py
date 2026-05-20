@@ -60,6 +60,7 @@ from Py4GWCoreLib.native_src.internals.encoded_strings import GWEncoded
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
+from Py4GWCoreLib.routines_src.BehaviourTrees import BT
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
@@ -95,7 +96,6 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     WeaponRequirementCondition,
 )
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
-from Sources.frenkeyLib.ItemHandling.BTNodes import BTNodes
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
 from Py4GWCoreLib.item_data.ItemData import ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
@@ -2646,7 +2646,7 @@ class UI:
         return changed
 
     def _execute_bag_sort(self, bags: list[Bags]) -> None:
-        action_node = BTNodes.Bags.SortBags(bags)
+        action_node = BT.Items.Bags.SortBags(bags)
         action_node.tick()
         self.preview_throttle.Reset()
 
@@ -3308,7 +3308,7 @@ class UI:
 
         cache_key = self._build_sorting_preview_cache_key(config, self.sorting_preview_selected_bags)
         if self.sorting_preview_plan is None or self._sorting_preview_cache_key != cache_key or self.sorting_preview_throttle.IsExpired():
-            self.sorting_preview_plan = BTNodes.Bags.GetBagSortPlan(self.sorting_preview_selected_bags)
+            self.sorting_preview_plan = BT.Items.Bags.GetBagSortPlan(self.sorting_preview_selected_bags)
             self._sorting_preview_cache_key = cache_key
             self.sorting_preview_throttle.Reset()
 
