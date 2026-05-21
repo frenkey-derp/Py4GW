@@ -40,6 +40,10 @@ class SharedCommandType(IntEnum):
     ResumeWidgets = auto()
     SwitchCharacter = auto()
     LoadSkillTemplate = auto()
+    LoadSkillTemplateOnHero = auto()
+    AddHero = auto()
+    KickHero = auto()
+    
     SkipCutscene = auto()
     SendDialog = auto()
     SendManualDialog = auto()

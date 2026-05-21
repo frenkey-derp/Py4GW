@@ -962,7 +962,7 @@ class BTItems:
 
         @staticmethod
         def DestroyBonusItems(
-            exclude_list: Optional[list[int]] = [ModelID.Igneous_Summoning_Stone],
+            exclude_list: Optional[list[int]] = None,
             log: bool = False,
             aftercast_ms: int = 250,
         ) -> BehaviorTree:
@@ -977,26 +977,47 @@ class BTItems:
             UserDescription: Use this after spawning bonus items when you only want to keep selected bonus models.
             Notes: Runs a composed destroy pass over the known bonus item model list.
             """
+            
             bonus_models_to_destroy = [
-                (model_id, item_type)
-                for model_id, item_type in BTItems.BONUS_ITEM_MODELS
-                if exclude_list is None or model_id not in exclude_list
+                model_identifier
+                for model_identifier in BTItems.BONUS_ITEM_MODELS
+                if exclude_list is None or model_identifier[0] not in exclude_list
             ]
 
-            item_ids = [BTItems.Utility.GetItemID(model, bags=INVENTORY_BAGS) for model in bonus_models_to_destroy]
+            def _build_destroy_bonus_items_subtree(_: BehaviorTree.Node) -> BehaviorTree:
+                item_ids = [
+                    BTItems.Utility.GetItemID(model_identifier, bags=INVENTORY_BAGS)
+                    for model_identifier in bonus_models_to_destroy
+                ]
+                resolved_item_ids = [item_id for item_id in item_ids if item_id > 0]
 
-            return BTComposite.Sequence(
-                BTPlayer.PrintMessageToConsole(
-                    source="DestroyBonusItems",
-                    message=f"Destroying {len(item_ids)} Bonus items. Destroying models: {bonus_models_to_destroy}",
-                ),
-                BTItems.Items.DestroyItems(item_ids=item_ids, log=log, aftercast_ms=aftercast_ms),
-                name="DestroyBonusItems",
+                return BTComposite.Sequence(
+                    BTPlayer.PrintMessageToConsole(
+                        source="DestroyBonusItems",
+                        message=(
+                            f"Resolved {len(resolved_item_ids)}/{len(bonus_models_to_destroy)} bonus items for destruction. "
+                            f"Target models: {bonus_models_to_destroy}"
+                        ),
+                    ),
+                    BTItems.Items.DestroyItems(
+                        item_ids=resolved_item_ids,
+                        succeed_always=False,
+                        log=log,
+                        aftercast_ms=aftercast_ms,
+                    ),
+                    name="DestroyBonusItemsResolved",
+                )
+
+            return BehaviorTree(
+                BehaviorTree.SubtreeNode(
+                    name="DestroyBonusItems",
+                    subtree_fn=_build_destroy_bonus_items_subtree,
+                )
             )
 
         @staticmethod
         def SpawnAndDestroyBonusItems(
-            exclude_list: Optional[list[int]] = [ModelID.Igneous_Summoning_Stone],
+            exclude_list: Optional[list[int]] = None,
             log: bool = False,
             aftercast_ms: int = 250,
         ) -> BehaviorTree:
@@ -1011,8 +1032,11 @@ class BTItems:
             UserDescription: Use this when you want to spawn bonus items and then remove unwanted ones.
             Notes: Runs a composed spawn and destroy pass over the known bonus item model list.
             """
+            exclude_list = exclude_list or [ModelID.Igneous_Summoning_Stone]
+            
             return BTComposite.Sequence(
                 BTItems.BonusItems.SpawnBonusItems(log=log, aftercast_ms=aftercast_ms),
+                BTPlayer.Wait(250),
                 BTItems.BonusItems.DestroyBonusItems(exclude_list=exclude_list, log=log, aftercast_ms=aftercast_ms),
                 name="SpawnAndDestroyBonusItems",
             )

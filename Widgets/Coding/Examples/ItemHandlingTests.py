@@ -15,7 +15,9 @@ from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Merchant import Trading
+from Py4GWCoreLib.Party import Party
 from Py4GWCoreLib.Routines import Routines
+from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, INVENTORY_WITH_EQUIPMENT_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity, SalvageMode
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
@@ -25,10 +27,14 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
+from Py4GWCoreLib.routines_src.behaviourtrees_src.player import BTPlayer
 
 Utils.ClearSubModules("Sources.frenkeyLib.ItemHandling")
 Utils.ClearSubModules("Sources.frenkeyLib.Core")
+Utils.ClearSubModules("Sources.frenkeyLib.BTDev")
 
+from Sources.frenkeyLib.BTDev.party import SetupParty, SetupPartyFormation
+from Py4GWCoreLib.routines_src.behaviourtrees_src.composite import BTComposite
 from Py4GWCoreLib.routines_src.behaviourtrees_src.items import BTItems
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
@@ -998,11 +1004,18 @@ def main():
                         PyImGui.end_table()
                 ImGui.end_tab_item()
             
-            if ImGui.begin_tab_item("Rule Testing"):
-                ImGui.text_wrapped("Here we present the rule system like it would be used in the loot config or other item handling related systems. This is just a demonstration of how the rules can be created, edited and tested in a simple way.")
-                ImGui.text_wrapped(f"InventoryBT is currently {'enabled' if inventory_bt_enabled else 'disabled'} and uses the shared InventoryConfig singleton with {len(InventoryConfig())} rule(s).")
+            if ImGui.begin_tab_item("Testing"):
+                if ImGui.button("Spawn And Destroy Bonus Items", -1):
+                    # tree = SetupParty(henchman_ids=[2, 3, 4], hero_ids=[HeroType.Gwen, HeroType.GeneralMorgahn, HeroType.MasterOfWhispers, HeroType.Livia])
+                    tree = SetupPartyFormation(party_formation=[
+                        2, 3, 4, # henchmen
+                        HeroType.Gwen, HeroType.GeneralMorgahn, HeroType.MasterOfWhispers, # Heroes from own account 
+                        ("frenkey 1", "OQBCAswEb5JwuIcppzBYRQOA"), # Player with desired template, can pass "" as template to not alter it
+                        (("frenkey 2", "OQBCAswEb5JwuIcppzBYRQOA"), [(HeroType.GeneralMorgahn, "OQBCAswEb5JwuIcppzBYRQOA")])]) # Player with desired template and 1 hero with desired template, can pass "" as template to not alter it
+                    
+                    
+                    pass
                 
-                show_loot_config_view = ImGui.toggle_button("Show Loot Config View", show_loot_config_view, -1)
                 ImGui.end_tab_item()
                 
             ImGui.end_tab_bar()

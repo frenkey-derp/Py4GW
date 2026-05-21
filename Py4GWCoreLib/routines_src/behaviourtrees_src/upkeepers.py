@@ -1039,7 +1039,7 @@ class BTUpkeepers:
                     slot=slot,
                     exclude_list=effective_exclude_list,
                     log=log,
-                    move_to_slot=False,
+                    move_to_slot=True,
                 )
 
             state["spawn_tree"].blackboard = node.blackboard
