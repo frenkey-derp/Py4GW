@@ -283,7 +283,7 @@ def SetupPartyFormation(
                     skillbar.LoadHeroSkillTemplate(hero_id, template)
                 else:
                     acc = _get_owner_account(hero_owner)
-                    GLOBAL_CACHE.ShMem.SendMessage(own_acc.AgentData.CharacterName, hero_owner, SharedCommandType.LoadSkillTemplateOnHero, (0.0, 0.0, 0.0, 0.0), (hero_id, template, "", ""))
+                    GLOBAL_CACHE.ShMem.SendMessage(own_mail, hero_owner, SharedCommandType.LoadSkillTemplateOnHero, (0.0, 0.0, 0.0, 0.0), (hero_id, template, "", ""))
                                         
         for player_name, template in desired_players:
             if template:
@@ -297,20 +297,25 @@ def SetupPartyFormation(
         
         return RoutinesBT.Composite.Sequence(*children, name="ApplyTemplates")
     
+    """
+    Get the current comp, check it against the desired comp.
+    If we are in the desired comp, apply templates if specified and then do nothing more.
     
-    Py4GW.Console.Log("Test", "Composing current party formation...")
-    current_formation = _get_current_formation()
-    current_henchmen, current_heroes, current_players = current_formation
-    Py4GW.Console.Log("Test", f"Current henchmen: {current_henchmen}, heroes: {current_heroes}, players: {current_players}")
-        
-    Py4GW.Console.Log("Test", "Parsing desired party formation...")    
-    desired_formation = _parse_party_formation(own_acc.AgentData.CharacterName, party_formation)
-    desired_henchmen, desired_heroes, desired_players = desired_formation
-    Py4GW.Console.Log("Test", f"Desired henchmen: {desired_henchmen}, heroes: {desired_heroes}, players: {desired_players}")
-        
-    # _kick_tree = _kick_unwanted(current_formation, desired_formation)
+    If we have unwanted players, kick them.
+    If we have unwanted henchmen, kick them.
+    If we have unwanted heroes, kick them if they are our own, else send a message (GLOBAL_CACHE.ShMem.SendMessage(own_mail, hero_owner, SharedCommandType.KickHero, (hero_id))) to kick them to the account owner, if they exist in our party and are desired players of our party. Else fail since we can not continue.
     
-    Py4GW.Console.Log("Test", "Applying desired party formation...")
+    We need to poll until the kicking happened. After some timeout, we can leave the party and try again. If it is still not correct after retrying, we can fail since something is wrong.
+    
+    Once our party is free from unwanted members, we can start invite the desired members.
+    Add henchmen if needed.
+    Add own heroes if needed, and load skill template if needed.
+    Summon player accounts if they are not in the same map yet, else invite them. -> wrappers.SummonAccountByEmail and then let them load the skill template
+    
+    Once the henchmen, own heroes and players are added, we want the players members to add their heroes in
+    Add heroes of other players and load their skill templates if specified -> GLOBAL_CACHE.ShMem.SendMessage(own_mail, hero_owner, SharedCommandType.AddHero, (hero_id)) -> GLOBAL_CACHE.ShMem.SendMessage(own_mail, hero_owner, SharedCommandType.LoadSkillTemplateOnHero, (0.0, 0.0, 0.0, 0.0), (hero_id, template, "", ""))
+    """
+    
     
     return BehaviorTree(
         BehaviorTree.SubtreeNode(
