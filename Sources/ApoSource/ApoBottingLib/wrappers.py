@@ -3,6 +3,11 @@ from collections.abc import Mapping
 from collections.abc import Sequence as SequenceABC
 from typing import Optional, cast
 
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.Agent import Agent
+from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Party import Party
+from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.enums_src.Item_enums import TradingNPCType
 
 from .helpers import _capture_current_target
@@ -1772,6 +1777,378 @@ def CreateParty(
     return RoutinesBT.Composite.Sequence(
         *children,
         name="CreateParty",
+    )
+
+
+def SetupParty(
+    hero_ids: list[int] | None = None,
+    henchman_ids: list[int] | None = None,
+    player_names: list[str] | None = None,
+    hero_templates: Mapping[int, str] | SequenceABC[str] | None = None,
+    player_templates: Mapping[str, str] | None = None,
+    multibox_invite: bool = False,
+    timeout_ms: int = 15000,
+    poll_interval_ms: int = 100,
+    aftercast_ms: int = 250,
+    log: bool = False,
+) -> BehaviorTree:
+    desired_hero_ids = [int(hero_id) for hero_id in (hero_ids or []) if int(hero_id) > 0]
+    desired_henchman_ids = [int(henchman_id) for henchman_id in (henchman_ids or []) if int(henchman_id) > 0]
+    desired_player_specs = [str(player_name or "").strip() for player_name in (player_names or []) if str(player_name or "").strip()]
+
+    normalized_hero_templates: dict[int, str] = {}
+    if isinstance(hero_templates, Mapping):
+        for hero_id, template_code in hero_templates.items():
+            resolved_hero_id = int(hero_id)
+            resolved_template = str(template_code or "").strip()
+            if resolved_hero_id > 0 and resolved_template:
+                normalized_hero_templates[resolved_hero_id] = resolved_template
+    elif hero_templates is not None:
+        for hero_id, template_code in zip(desired_hero_ids, hero_templates):
+            resolved_template = str(template_code or "").strip()
+            if resolved_template:
+                normalized_hero_templates[int(hero_id)] = resolved_template
+
+    normalized_player_templates = {
+        str(key or "").strip().lower(): str(value or "").strip()
+        for key, value in (player_templates or {}).items()
+        if str(key or "").strip() and str(value or "").strip()
+    }
+
+    def _normalized(value: object) -> str:
+        return str(value or "").strip().lower()
+
+    def _shared_accounts() -> list[object]:
+        return [
+            account
+            for account in (GLOBAL_CACHE.ShMem.GetAllAccountData() or [])
+            if bool(getattr(account, "IsSlotActive", True)) and bool(getattr(account, "IsAccount", True))
+        ]
+
+    def _account_email(account: object) -> str:
+        return str(getattr(account, "AccountEmail", "") or "").strip()
+
+    def _account_character_name(account: object) -> str:
+        return str(
+            getattr(account, "CharacterName", "")
+            or getattr(getattr(account, "AgentData", None), "CharacterName", "")
+            or ""
+        ).strip()
+
+    def _account_is_in_local_party(account: object) -> bool:
+        if not Party.IsPartyLoaded():
+            return False
+        local_party_id = int(Party.GetPartyID() or 0)
+        if local_party_id <= 0:
+            return False
+        return int(getattr(getattr(account, "AgentPartyData", None), "PartyID", 0) or 0) == local_party_id
+
+    def _resolve_shared_account(player_spec: str) -> object | None:
+        wanted = _normalized(player_spec)
+        if not wanted:
+            return None
+        for account in _shared_accounts():
+            if wanted in {_normalized(_account_email(account)), _normalized(_account_character_name(account))}:
+                return account
+        return None
+
+    def _resolve_player_template(raw_spec: str, shared_account: object | None, character_name: str) -> str:
+        lookup_keys = [_normalized(raw_spec), _normalized(character_name)]
+        if shared_account is not None:
+            lookup_keys.insert(1, _normalized(_account_email(shared_account)))
+        for lookup_key in lookup_keys:
+            if lookup_key and lookup_key in normalized_player_templates:
+                return normalized_player_templates[lookup_key]
+        return ""
+
+    local_email = str(Player.GetAccountEmail() or "").strip()
+    local_name = str(Player.GetName() or "").strip()
+    local_name_key = _normalized(local_name)
+    local_email_key = _normalized(local_email)
+
+    desired_party_players: list[dict[str, object]] = []
+    local_player_template = ""
+    seen_player_keys: set[str] = set()
+    source_player_specs = desired_player_specs or (
+        [_account_email(account) for account in _shared_accounts() if _normalized(_account_email(account)) != local_email_key]
+        if multibox_invite else
+        []
+    )
+
+    for raw_spec in source_player_specs:
+        shared_account = _resolve_shared_account(raw_spec)
+        resolved_name = _account_character_name(shared_account) if shared_account is not None else str(raw_spec).strip()
+        resolved_email = _account_email(shared_account) if shared_account is not None else ""
+        template_code = _resolve_player_template(raw_spec, shared_account, resolved_name)
+
+        if (shared_account is not None and _normalized(resolved_email) == local_email_key) or _normalized(resolved_name) == local_name_key:
+            if template_code:
+                local_player_template = template_code
+            continue
+
+        dedupe_key = _normalized(resolved_email or resolved_name)
+        if not dedupe_key or dedupe_key in seen_player_keys:
+            continue
+        seen_player_keys.add(dedupe_key)
+        desired_party_players.append({
+            "spec": str(raw_spec),
+            "shared_account": shared_account,
+            "email": resolved_email,
+            "character_name": resolved_name,
+            "template": template_code,
+        })
+
+    def _current_other_player_names() -> list[str]:
+        local_login_number = int(Player.GetLoginNumber() or 0)
+        names: list[str] = []
+        for player in (Party.GetPlayers() or []):
+            login_number = int(getattr(player, "login_number", 0) or 0)
+            if login_number <= 0 or login_number == local_login_number:
+                continue
+            name = str(Party.Players.GetPlayerNameByLoginNumber(login_number) or "").strip()
+            if name:
+                names.append(name)
+        return names
+
+    def _desired_other_player_names() -> list[str]:
+        return [str(entry["character_name"] or "").strip() for entry in desired_party_players if str(entry["character_name"] or "").strip()]
+
+    def _current_hero_ids() -> list[int]:
+        return [int(hero.hero_id.GetID()) for hero in (Party.GetHeroes() or [])]
+
+    def _resolve_current_henchman_id(henchman: object) -> int:
+        for attr_name in ('henchman_id', 'id'):
+            resolved_id = int(getattr(henchman, attr_name, 0) or 0)
+            if resolved_id > 0:
+                return resolved_id
+
+        agent_id = int(getattr(henchman, 'agent_id', 0) or 0)
+        if agent_id <= 0:
+            return 0
+        return int(Agent.GetPlayerNumber(agent_id) or 0)
+
+    def _current_henchman_ids() -> list[int]:
+        return [_resolve_current_henchman_id(henchman) for henchman in (Party.GetHenchmen() or [])]
+
+    def _party_matches_target() -> bool:
+        if not (Map.IsMapReady() and Map.IsOutpost() and Party.IsPartyLoaded()):
+            return False
+        return (
+            _current_hero_ids() == desired_hero_ids
+            and _current_henchman_ids() == desired_henchman_ids
+            and sorted(_normalized(name) for name in _current_other_player_names()) == sorted(_normalized(name) for name in _desired_other_player_names())
+        )
+
+    def _kick_player_by_name(player_name: str) -> BehaviorTree:
+        return BehaviorTree(
+            BehaviorTree.ActionNode(
+                name=f"KickPlayer({player_name})",
+                action_fn=lambda: (GLOBAL_CACHE.Party.Players.KickPlayer(str(player_name)), BehaviorTree.NodeState.SUCCESS)[1],
+                aftercast_ms=aftercast_ms,
+            )
+        )
+
+    def _invite_player_by_name(player_name: str) -> BehaviorTree:
+        normalized_name = _normalized(player_name)
+        return BehaviorTree(
+            BehaviorTree.SequenceNode(
+                name=f"InvitePlayer({player_name})",
+                children=[
+                    BehaviorTree.ActionNode(
+                        name=f"DispatchInvitePlayer({player_name})",
+                        action_fn=lambda: (GLOBAL_CACHE.Party.Players.InvitePlayer(str(player_name)), BehaviorTree.NodeState.SUCCESS)[1],
+                        aftercast_ms=aftercast_ms,
+                    ),
+                    BehaviorTree.WaitUntilNode(
+                        name=f"WaitForInvitedPlayer({player_name})",
+                        condition_fn=lambda: normalized_name in {_normalized(name) for name in _current_other_player_names()},
+                        throttle_interval_ms=poll_interval_ms,
+                        timeout_ms=timeout_ms,
+                    ),
+                ],
+            )
+        )
+
+    def _send_skill_template_to_account(account_email: str, template_code: str) -> BehaviorTree:
+        def _send() -> BehaviorTree.NodeState:
+            sender_email = str(Player.GetAccountEmail() or "").strip()
+            if not sender_email or not account_email or not template_code:
+                return BehaviorTree.NodeState.FAILURE
+            GLOBAL_CACHE.ShMem.SendMessage(
+                sender_email,
+                str(account_email),
+                SharedCommandType.LoadSkillTemplate,
+                (0.0, 0.0, 0.0, 0.0),
+                (str(template_code), "", "", ""),
+            )
+            return BehaviorTree.NodeState.SUCCESS
+
+        return BehaviorTree(
+            BehaviorTree.ActionNode(
+                name=f"LoadAccountSkillTemplate({account_email})",
+                action_fn=_send,
+                aftercast_ms=max(250, int(aftercast_ms)),
+            )
+        )
+
+    def _template_actions() -> list[BehaviorTree | BehaviorTree.Node]:
+        actions: list[BehaviorTree | BehaviorTree.Node] = []
+        if local_player_template:
+            actions.append(LoadSkillbar(local_player_template, log=log))
+        for hero_index, hero_id in enumerate(desired_hero_ids, start=1):
+            template_code = normalized_hero_templates.get(int(hero_id), "")
+            if template_code:
+                actions.append(RoutinesBT.Skills.LoadHeroSkillbar(hero_index=hero_index, template=template_code, log=log))
+        for entry in desired_party_players:
+            shared_account = entry["shared_account"]
+            template_code = str(entry["template"] or "").strip()
+            account_email = str(entry["email"] or "").strip()
+            if shared_account is None or not template_code or not account_email or _normalized(account_email) == local_email_key:
+                continue
+            actions.append(_send_skill_template_to_account(account_email, template_code))
+        return actions
+
+    def _build_setup_party_subtree(_: BehaviorTree.Node) -> BehaviorTree | BehaviorTree.Node:
+        if _party_matches_target():
+            template_children = _template_actions()
+            if not template_children:
+                return BehaviorTree.SucceederNode(name="SetupPartyAlreadyMatches")
+            return RoutinesBT.Composite.Sequence(*template_children, name="SetupPartyApplyTemplates")
+
+        current_other_names = _current_other_player_names()
+        if not Party.IsPartyLeader():
+            if not desired_party_players and current_other_names:
+                return BehaviorTree.SequenceNode(
+                    name="SetupPartyLeaveUnexpectedPlayers",
+                    children=[
+                        LeaveParty().root,
+                        BehaviorTree.SubtreeNode(
+                            name="RetrySetupPartyAfterLeave",
+                            subtree_fn=_build_setup_party_subtree,
+                        ),
+                    ],
+                )
+            return BehaviorTree.FailerNode(name="SetupPartyNotLeader")
+
+        children: list[BehaviorTree | BehaviorTree.Node] = []
+
+        desired_name_keys = {_normalized(name) for name in _desired_other_player_names() if _normalized(name)}
+        for current_name in current_other_names:
+            if _normalized(current_name) not in desired_name_keys:
+                children.append(_kick_player_by_name(current_name))
+
+        current_hero_ids = _current_hero_ids()
+        for hero_id in current_hero_ids:
+            if hero_id not in desired_hero_ids:
+                def _make_kick_hero_action(resolved_hero_id: int):
+                    def _kick_hero_action() -> BehaviorTree.NodeState:
+                        Party.Heroes.KickHero(resolved_hero_id)
+                        return BehaviorTree.NodeState.SUCCESS
+                    return _kick_hero_action
+
+                children.append(
+                    BehaviorTree.ActionNode(
+                        name=f"KickHero({hero_id})",
+                        action_fn=_make_kick_hero_action(hero_id),
+                        aftercast_ms=aftercast_ms,
+                    )
+                )
+
+        current_henchman_ids = _current_henchman_ids()
+        if current_henchman_ids != desired_henchman_ids:
+            if len(current_henchman_ids) != len(Party.GetHenchmen() or []):
+                return BehaviorTree.FailerNode(name='SetupPartyUnresolvedHenchmen')
+
+            for current_henchman_id in reversed(current_henchman_ids):
+                if current_henchman_id <= 0:
+                    continue
+
+                def _make_kick_henchman_action(resolved_henchman_id: int):
+                    def _kick_henchman_action() -> BehaviorTree.NodeState:
+                        Party.Henchmen.KickHenchman(resolved_henchman_id)
+                        return BehaviorTree.NodeState.SUCCESS
+
+                    return _kick_henchman_action
+
+                children.append(
+                    BehaviorTree.ActionNode(
+                        name=f"KickHenchman({current_henchman_id})",
+                        action_fn=_make_kick_henchman_action(current_henchman_id),
+                        aftercast_ms=aftercast_ms,
+                    )
+                )
+
+            for henchman_id in desired_henchman_ids:
+                def _make_add_henchman_action(resolved_henchman_id: int):
+                    def _add_henchman_action() -> BehaviorTree.NodeState:
+                        Party.Henchmen.AddHenchman(resolved_henchman_id)
+                        return BehaviorTree.NodeState.SUCCESS
+
+                    return _add_henchman_action
+
+                children.append(
+                    BehaviorTree.ActionNode(
+                        name=f"AddHenchman({henchman_id})",
+                        action_fn=_make_add_henchman_action(henchman_id),
+                        aftercast_ms=aftercast_ms,
+                    )
+                )
+
+        current_hero_set = set(current_hero_ids)
+        for hero_id in desired_hero_ids:
+            if hero_id in current_hero_set:
+                continue
+            def _make_add_hero_action(resolved_hero_id: int):
+                def _add_hero_action() -> BehaviorTree.NodeState:
+                    Party.Heroes.AddHero(resolved_hero_id)
+                    return BehaviorTree.NodeState.SUCCESS
+                return _add_hero_action
+
+            children.append(
+                BehaviorTree.ActionNode(
+                    name=f"AddHero({hero_id})",
+                    action_fn=_make_add_hero_action(hero_id),
+                    aftercast_ms=aftercast_ms,
+                )
+            )
+
+        current_name_keys = {_normalized(name) for name in current_other_names if _normalized(name)}
+        for entry in desired_party_players:
+            character_name = str(entry["character_name"] or "").strip()
+            shared_account = entry["shared_account"]
+            account_email = str(entry["email"] or "").strip()
+            if _normalized(character_name) in current_name_keys:
+                continue
+            if shared_account is not None and multibox_invite and account_email:
+                children.append(SummonAccountByEmail(account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
+                children.append(InviteAccountByEmail(account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
+            elif shared_account is not None and account_email:
+                children.append(InviteAccountByEmail(account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
+            else:
+                children.append(_invite_player_by_name(character_name))
+
+        if children:
+            children.append(
+                BehaviorTree.WaitUntilNode(
+                    name="WaitForSetupPartyMatch",
+                    condition_fn=_party_matches_target,
+                    throttle_interval_ms=poll_interval_ms,
+                    timeout_ms=timeout_ms,
+                )
+            )
+
+        children.extend(_template_actions())
+
+        if not children:
+            return BehaviorTree.SucceederNode(name="SetupPartyEmpty")
+
+        return RoutinesBT.Composite.Sequence(*children, name="SetupPartyReconcile")
+
+    return BehaviorTree(
+        BehaviorTree.SubtreeNode(
+            name="SetupParty",
+            subtree_fn=_build_setup_party_subtree,
+        )
     )
 
     

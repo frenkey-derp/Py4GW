@@ -6,7 +6,9 @@ from typing import Callable, NamedTuple, Optional, Sequence, cast
 import Py4GW
 import PyImGui
 from PyItem import PyItem
+import PySkillbar
 
+from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
@@ -17,10 +19,12 @@ from Py4GWCoreLib.Map import Map
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.Party import Party
 from Py4GWCoreLib.Routines import Routines
+from Py4GWCoreLib.Skillbar import SkillBar
 from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.IO_enums import Key, ModifierKey
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, INVENTORY_WITH_EQUIPMENT_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity, SalvageMode
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
+from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Color import Color
@@ -33,7 +37,7 @@ Utils.ClearSubModules("Sources.frenkeyLib.ItemHandling")
 Utils.ClearSubModules("Sources.frenkeyLib.Core")
 Utils.ClearSubModules("Sources.frenkeyLib.BTDev")
 
-from Sources.frenkeyLib.BTDev.party import SetupParty, SetupPartyFormation
+from Sources.frenkeyLib.BTDev.party import SetupPartyFormation
 from Py4GWCoreLib.routines_src.behaviourtrees_src.composite import BTComposite
 from Py4GWCoreLib.routines_src.behaviourtrees_src.items import BTItems
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
@@ -1007,13 +1011,19 @@ def main():
             if ImGui.begin_tab_item("Testing"):
                 if ImGui.button("Spawn And Destroy Bonus Items", -1):
                     # tree = SetupParty(henchman_ids=[2, 3, 4], hero_ids=[HeroType.Gwen, HeroType.GeneralMorgahn, HeroType.MasterOfWhispers, HeroType.Livia])
+                    template = "OQBDAqwDO/gcQRAna6GCZAiA"
                     tree = SetupPartyFormation(party_formation=[
-                        2, 3, 4, # henchmen
-                        HeroType.Gwen, HeroType.GeneralMorgahn, HeroType.MasterOfWhispers, # Heroes from own account 
-                        ("frenkey 1", "OQBCAswEb5JwuIcppzBYRQOA"), # Player with desired template, can pass "" as template to not alter it
-                        (("frenkey 2", "OQBCAswEb5JwuIcppzBYRQOA"), [(HeroType.GeneralMorgahn, "OQBCAswEb5JwuIcppzBYRQOA")])]) # Player with desired template and 1 hero with desired template, can pass "" as template to not alter it
+                        2, 3, # henchmen
+                        HeroType.Koss, # Heroes from own account without template, can pass 0 as template to not alter it
+                        (HeroType.Gwen, template), # Hero from own account with template
+                        # ("Kenedia Bentone", "OQBCAswEb5JwuIcppzBYRQOA"), # Player with desired template, can pass "" as template to not alter it
+                        (("Kenedia Bentone", "OQBCAswEb5JwuIcppzBYRQOA"), [(HeroType.Gwen, template)])]) # Player with desired template and 1 hero with desired template, can pass "" as template to not alter it
                     
                     
+                    # skillbar = SkillBar()
+                    # skillbar.LoadHeroSkillTemplate(HeroType.Gwen.value, template)
+                    
+                    # GLOBAL_CACHE.ShMem.SendMessage("games.lasse.93+GWAlt5@gmail.com", "games.lasse.93+GWAlt4@gmail.com", SharedCommandType.AddHero, (HeroType.Gwen.value, 0, 0, 0), (template, '', '', ''))
                     pass
                 
                 ImGui.end_tab_item()

@@ -362,7 +362,7 @@ def _get_henchmen_for_current_map() -> list[int]:
 
 
 def _add_henchmen_from_blackboard(node: BehaviorTree.Node) -> BehaviorTree:
-    return BT.CreateParty(henchman_ids=node.blackboard["current_map_henchmen"])
+    return BT.SetupParty(henchman_ids=node.blackboard["current_map_henchmen"])
 
 
 def PrepareForBattle() -> BehaviorTree:
@@ -381,7 +381,6 @@ def PrepareForBattle() -> BehaviorTree:
             children=[
                 bot.Config.Aggressive(),
                 BT.LoadSkillbarFromMap(LEVELING_SKILLBAR_MAP),
-                BT.LeaveParty(),
                 BT.SaveBlackboardValue("current_map_henchmen", _get_henchmen_for_current_map),
                 BehaviorTree.SubtreeNode(
                     name="AddHenchmenForCurrentMap",
@@ -1757,7 +1756,7 @@ def ensure_botting_tree() -> BottingTree:
             reset=False,
             pause_on_combat=True,
             multi_account=False,
-            configure_fn=lambda tree: tree.Config.ConfigureUpkeepTrees(
+            configure_fn=lambda tree: tree.Config.ConfigureUpkeep(
                 disable_looting=True,
                 restore_isolation_on_stop=True,
                 enable_outpost_imp_service=True,
@@ -1767,9 +1766,9 @@ def ensure_botting_tree() -> BottingTree:
                 imp_slot=0,
                 imp_log=False,
                 consumable_upkeeps=[
-                    'candy_apple',
-                    'war_supplies',
-                    'honeycomb',
+                    ModelID.Candy_Apple.value,
+                    ModelID.War_Supplies.value,
+                    ModelID.Honeycomb.value,
                 ],
                 enable_party_wipe_recovery=True,
             ),
