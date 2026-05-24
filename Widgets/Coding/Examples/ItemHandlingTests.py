@@ -37,7 +37,7 @@ Utils.ClearSubModules("Sources.frenkeyLib.ItemHandling")
 Utils.ClearSubModules("Sources.frenkeyLib.Core")
 Utils.ClearSubModules("Sources.frenkeyLib.BTDev")
 
-from Sources.frenkeyLib.BTDev.party import SetupPartyFormation
+from Sources.frenkeyLib.BTDev.party import InviteHenchmen, InviteHeroes, InviteHeroesAndLoadTemplates, SetupHeroes, SetupPartyFormation, SetupPartyFormation_NEW
 from Py4GWCoreLib.routines_src.behaviourtrees_src.composite import BTComposite
 from Py4GWCoreLib.routines_src.behaviourtrees_src.items import BTItems
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
@@ -1018,7 +1018,12 @@ def main():
                         (HeroType.Gwen, template), # Hero from own account with template
                         # ("Kenedia Bentone", "OQBCAswEb5JwuIcppzBYRQOA"), # Player with desired template, can pass "" as template to not alter it
                         (("Kenedia Bentone", "OQBCAswEb5JwuIcppzBYRQOA"), [(HeroType.Gwen, template)])]) # Player with desired template and 1 hero with desired template, can pass "" as template to not alter it
-                    
+                                    
+                    henchmen = ["Cynn", "Eve", 4]
+                    heroes = [HeroType.Koss, ("Gwen", template)]
+                    players = [("Kenedia Bentone", "OQBCAswEb5JwuIcppzBYRQOA")]
+                    account_heroes = [("games.lasse.93+GWAlt4@gmail.com", [("Gwen", template)])]
+                    tree = SetupPartyFormation_NEW(henchmen, heroes, players, account_heroes, log=True)
                     
                     # skillbar = SkillBar()
                     # skillbar.LoadHeroSkillTemplate(HeroType.Gwen.value, template)
