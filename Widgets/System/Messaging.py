@@ -2417,7 +2417,7 @@ def AddHero(index: int, message: SharedMessageStruct):
         GLOBAL_CACHE.Party.Heroes.AddHero(hero_id)
         
         if hero_build_template:
-            ConsoleLog(MODULE_NAME, f"Waiting to apply build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) after adding to party.", Console.MessageType.Info, False)    )
+            ConsoleLog(MODULE_NAME, f"Waiting to apply build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) after adding to party.", Console.MessageType.Info, False)
             yield from Routines.Yield.wait(100)  # wait for hero to be added before applying build
             hero_index = Party.GetHeroIndex(hero_id)
             

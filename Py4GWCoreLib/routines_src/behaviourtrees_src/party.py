@@ -42,14 +42,6 @@ def _fail_log(source: str, message: str, message_type=Console.MessageType.Warnin
 def _normalized(name : str) -> str:
     return str(name or '').strip().lower().split('[')[0].strip()
 
-HenchmanEntry = NamedTuple("HenchmanEntry", [
-    ("agent_id", int),
-    ("primary", int),
-    ("level", int),
-    ("name", str),
-    ("name_normalized", str),
-]) 
-
 HeroeEntry = NamedTuple("HeroEntry", [
     ("hero_id", HeroType),
     ("template", str),
@@ -293,7 +285,7 @@ class BTParty:
 
     @staticmethod
     def SetupParty(
-        henchmen : Optional[Sequence[int | str]] = None,
+        henchmen : Optional[Sequence[int]] = None,
         heroes : Optional[Sequence[int | HeroType | str | tuple[int | HeroType | str, Optional[str]]]] = None,
         players : Optional[Sequence[str | int | tuple[str | int, Optional[str]]]] = None,
         account_heroes : Optional[Sequence[tuple[str, Sequence[tuple[int | HeroType | str, Optional[str]]]]]] = None,
@@ -704,66 +696,20 @@ class BTParty:
         )
 
     
-    class Henchmen:
+    class Henchmen:                                 
         @staticmethod
-        def _get_henchman_entry(agent_or_henchman : AgentLivingStruct | HenchmanPartyMember) -> Optional[HenchmanEntry]:
-            name = Agent.GetNameByID(agent_or_henchman.agent_id) or ''
-            
-            return HenchmanEntry(
-                agent_id=agent_or_henchman.agent_id,
-                primary=agent_or_henchman.primary if isinstance(agent_or_henchman, AgentLivingStruct) else agent_or_henchman.profession.ToInt(),
-                level=agent_or_henchman.level,
-                name=name,
-                name_normalized=_normalized(name),
-            ) if name else None
-                
-        @staticmethod
-        def _get_available_henchmen() -> list[HenchmanEntry]:
-            henchmen: list[HenchmanEntry] = []
-            for henchman_id in AgentArray.GetAllyArray():
-                if Agent.CanBeViewedInPartyWindow(henchman_id) and not Agent.IsPlayer(henchman_id):
-                    if (agent := Agent.GetAgentByID(henchman_id)) and (living_agent := agent.GetAsAgentLiving()) and living_agent is not None:
-                        if entry := BTParty.Henchmen._get_henchman_entry(living_agent):
-                            henchmen.append(entry)
-            return henchmen
-
-        @staticmethod
-        def _get_henchman(identifier : int | str | Sequence[int], available_henchmen: Sequence[HenchmanEntry]) -> Optional[HenchmanEntry]:        
-            if isinstance(identifier, str):
-                for henchman in available_henchmen:
-                    if henchman.name_normalized == _normalized(identifier):
-                        return henchman
-            
-            if isinstance(identifier, int):
-                if (agent := Agent.GetAgentByID(identifier)) and (living_agent := agent.GetAsAgentLiving()) and living_agent is not None:
-                    return BTParty.Henchmen._get_henchman_entry(living_agent) 
-            
-            return None
-            
-        @staticmethod
-        def InviteHenchmen(henchman_ids: Sequence[int | str], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+        def InviteHenchmen(henchman_ids: Sequence[int], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
             def _invite() -> BehaviorTree.NodeState:
-                available_henchmen = BTParty.Henchmen._get_available_henchmen()
-                in_party_henchmen = [henchman for party_henchman in (Party.GetHenchmen() or []) if (henchman := BTParty.Henchmen._get_henchman_entry(party_henchman)) is not None]
-                desired_henchmen: list[HenchmanEntry] = [henchman for identifier in henchman_ids if (henchman := BTParty.Henchmen._get_henchman(identifier, available_henchmen)) is not None]
+                in_party_henchmen = Party.GetHenchmen() or []
                 
-                if len(desired_henchmen) != len(henchman_ids):
-                    missing_identifiers = [id for id in henchman_ids if not any((henchman.agent_id == id if isinstance(id, int) else henchman.name_normalized == _normalized(id)) for henchman in desired_henchmen)]
-                    ConsoleLog("InviteHenchmen", f'Missing henchmen for identifiers: {missing_identifiers}', log=log)
-                    return BehaviorTree.NodeState.FAILURE
-                
-                for henchman in desired_henchmen:
-                    if not any(available.agent_id == henchman.agent_id for available in available_henchmen):
-                        ConsoleLog("InviteHenchmen", f'Henchman not available to invite, skipping: {henchman.name} (ID: {henchman.agent_id})', log=log)
-                        return BehaviorTree.NodeState.FAILURE
-                    
-                    if any(henchman.agent_id == party_henchman.agent_id for party_henchman in in_party_henchmen or []):
-                        ConsoleLog("InviteHenchmen", f'Henchman already in party, skipping: {henchman.name} (ID: {henchman.agent_id})', log=log)
+                for henchman_id in henchman_ids:
+                    if any(henchman_id == party_henchman.agent_id for party_henchman in in_party_henchmen or []):
+                        ConsoleLog("InviteHenchmen", f'Henchman already in party, skipping: {henchman_id}', log=log)
                         continue
                     
                     else:
-                        ConsoleLog("InviteHenchmen", f'Inviting henchman: {henchman.name} (ID: {henchman.agent_id})', log=log)
-                        Party.Henchmen.AddHenchman(henchman.agent_id)
+                        ConsoleLog("InviteHenchmen", f'Inviting henchman: {henchman_id}', log=log)
+                        Party.Henchmen.AddHenchman(henchman_id)
                 
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -776,23 +722,18 @@ class BTParty:
             )
 
         @staticmethod
-        def KickHenchmen(henchman_ids: Sequence[int | str], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+        def KickHenchmen(henchman_ids: Sequence[int], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
             def _kick() -> BehaviorTree.NodeState:
                 if len(henchman_ids) == 0:
                     ConsoleLog("KickHenchmen", 'No henchmen specified to kick.', log=log)
                     return BehaviorTree.NodeState.SUCCESS
                 
-                in_party_henchmen = [henchman for party_henchman in (Party.GetHenchmen() or []) if (henchman := BTParty.Henchmen._get_henchman_entry(party_henchman)) is not None]
-                desired_kick_henchmen: list[HenchmanEntry] = [henchman for identifier in henchman_ids if (henchman := BTParty.Henchmen._get_henchman(identifier, in_party_henchmen)) is not None]
+                in_party_henchmen = Party.GetHenchmen() or []
+                desired_kick_henchmen: list[int] = [henchman_id for henchman_id in henchman_ids if any(henchman_id == party_henchman.agent_id for party_henchman in in_party_henchmen)]
                 
-                if len(desired_kick_henchmen) != len(henchman_ids):
-                    missing_identifiers = [id for id in henchman_ids if not any((henchman.agent_id == id if isinstance(id, int) else henchman.name_normalized == _normalized(id)) for henchman in desired_kick_henchmen)]
-                    ConsoleLog("KickHenchmen", f'Missing henchmen for identifiers: {missing_identifiers}', log=log)
-                    return BehaviorTree.NodeState.FAILURE
-                
-                for henchman in desired_kick_henchmen:
-                    ConsoleLog("KickHenchmen", f'Kicking henchman: {henchman.name} (ID: {henchman.agent_id})', log=log)
-                    Party.Henchmen.KickHenchman(henchman.agent_id)
+                for henchman_id in desired_kick_henchmen:
+                    ConsoleLog("KickHenchmen", f'Kicking henchman: {henchman_id}', log=log)
+                    Party.Henchmen.KickHenchman(henchman_id)
                 
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -805,24 +746,10 @@ class BTParty:
             )
 
         @staticmethod
-        def SetupHenchmen(henchmen : Sequence[int | str], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
-            available_henchmen = BTParty.Henchmen._get_available_henchmen()
-            desired_henchmen: list[HenchmanEntry] = [henchman for identifier in henchmen if (henchman := BTParty.Henchmen._get_henchman(identifier, available_henchmen)) is not None]
-            
-            if len(desired_henchmen) != len(henchmen):
-                missing_identifiers = [id for id in henchmen if not any((henchman.agent_id == id if isinstance(id, int) else henchman.name_normalized == _normalized(id)) for henchman in desired_henchmen)]
-                ConsoleLog("SetupHenchmen", f'Missing henchmen for identifiers: {missing_identifiers}', log=log)
-                return BehaviorTree(
-                    BehaviorTree.ActionNode(
-                        name="SetupHenchmen",
-                        action_fn=lambda _node=None: BehaviorTree.NodeState.FAILURE,
-                        aftercast_ms=aftercast_ms,
-                    )
-                )
-            
-            in_party_henchmen = [henchman for party_henchman in (Party.GetHenchmen() or []) if (henchman := BTParty.Henchmen._get_henchman_entry(party_henchman)) is not None]
-            henchmen_to_kick: list[int | str] = [henchman.agent_id for henchman in in_party_henchmen if not any(henchman.agent_id == desired.agent_id for desired in desired_henchmen)]
-            henchmen_to_add: list[int | str] = [henchman.agent_id for henchman in desired_henchmen if not any(henchman.agent_id == party.agent_id for party in in_party_henchmen)]
+        def SetupHenchmen(henchmen : Sequence[int], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+            in_party_henchmen = Party.GetHenchmen() or []
+            henchmen_to_kick: list[int] = [henchman.agent_id for henchman in in_party_henchmen if not any(henchman.agent_id == int(desired) for desired in henchmen)]
+            henchmen_to_add: list[int] = [desired for desired in henchmen if not any(int(desired) == henchman.agent_id for henchman in in_party_henchmen)]
             
             
             children: list[BehaviorTree | BehaviorTree.Node] = []

@@ -1782,7 +1782,7 @@ def CreateParty(
 
 
 def SetupParty(
-    henchmen : Optional[SequenceABC[int | str]] = None,
+    henchmen : Optional[SequenceABC[int]] = None,
     heroes : Optional[SequenceABC[int | HeroType | str | tuple[int | HeroType | str, Optional[str]]]] = None,
     players : Optional[SequenceABC[str | int | tuple[str | int, Optional[str]]]] = None,
     account_heroes : Optional[SequenceABC[tuple[str, SequenceABC[tuple[int | HeroType | str, Optional[str]]]]]] = None,
