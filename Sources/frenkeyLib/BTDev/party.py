@@ -18,10 +18,6 @@ from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Sources.ApoSource.ApoBottingLib.wrappers import InviteAccountByEmail, SummonAccountByEmail, Wait
 
-##TODO: move this stuff to Py4GWCoreLib\routines_src\behaviourtrees_src\party.py and make it available. These new methods should be used instead if we have existing ones.
-
-
-
 def _normalized(name : str) -> str:
     return str(name or '').strip().lower().split('[')[0].strip()
 
@@ -163,7 +159,7 @@ class Henchmen:
         
         if henchmen_to_add:
             ConsoleLog("SetupHenchmen", f'Henchmen to add: {henchmen_to_add}', log=log)
-            children.append(InviteHenchmen(henchmen_to_add, aftercast_ms=aftercast_ms, log=log))
+            children.append(Henchmen.InviteHenchmen(henchmen_to_add, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupHenchmen", 'No henchmen to add.', log=log)
 
@@ -204,9 +200,9 @@ class Heroes:
     def _get_hero_map(heroes : SequenceABC[int | HeroType | str], log: bool = False) -> list[HeroeEntry]:
         mapped_heroes: list[HeroeEntry] = []
         for hero_identifier in heroes:
-            hero_type = _get_hero_type(hero_identifier)
+            hero_type = Heroes._get_hero_type(hero_identifier)
             
-            if hero_type is not None and _is_hero_available(hero_type):
+            if hero_type is not None and Heroes._is_hero_available(hero_type):
                 mapped_heroes.append(HeroeEntry(
                     hero_id=hero_type,
                     template='',
@@ -240,7 +236,7 @@ class Heroes:
         party_heroes: list[HeroeEntry] = []
         for party_hero in Party.GetHeroes() or []:
             if party_hero.owner_player_id == login_number:
-                if (hero_entry := _get_hero_entry(party_hero)) is not None:
+                if (hero_entry := Heroes._get_hero_entry(party_hero)) is not None:
                     party_heroes.append(hero_entry)
 
         return party_heroes
@@ -248,11 +244,11 @@ class Heroes:
     @staticmethod
     def InviteHeroes(heroes : SequenceABC[int | HeroType | str], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
         def _invite() -> BehaviorTree.NodeState:
-            mapped_heroes = _get_hero_map(heroes, log=log)
+            mapped_heroes = Heroes._get_hero_map(heroes, log=log)
             if not mapped_heroes:
                 return BehaviorTree.NodeState.FAILURE
                     
-            in_party_heroes =  _get_party_heroes(Player.GetLoginNumber())
+            in_party_heroes =  Heroes._get_party_heroes(Player.GetLoginNumber())
             for hero_entry in mapped_heroes:
                 if any(hero_entry.hero_id == party_hero.hero_id for party_hero in in_party_heroes):
                     ConsoleLog("InviteHeroes", f'Hero already in party, skipping: {hero_entry.name} (ID: {hero_entry.hero_id})', log=log)
@@ -275,13 +271,13 @@ class Heroes:
     def LoadHeroTemplates(heroes : SequenceABC[tuple[int | HeroType | str, str]], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
         def _load_templates() -> BehaviorTree.NodeState:
             for hero_identifier, template in heroes:
-                hero_type = _get_hero_type(hero_identifier)
+                hero_type = Heroes._get_hero_type(hero_identifier)
                 
                 if hero_type is None:
                     ConsoleLog("LoadHeroTemplates", f'Could not resolve hero identifier: {hero_identifier}', log=log)
                     return BehaviorTree.NodeState.FAILURE
                 
-                in_party_heroes =  _get_party_heroes(Player.GetLoginNumber())
+                in_party_heroes =  Heroes._get_party_heroes(Player.GetLoginNumber())
                 if not any(hero_type == party_hero.hero_id for party_hero in in_party_heroes):
                     ConsoleLog("LoadHeroTemplates", f'Hero not in party, skipping template load: {hero_type.name} (ID: {hero_type})', log=log)
                     continue
@@ -321,8 +317,8 @@ class Heroes:
             BehaviorTree.SequenceNode(
                 name="InviteHeroesAndLoadTemplates",
                 children=[
-                    InviteHeroes(heroes_to_invite, aftercast_ms=aftercast_ms, log=log),
-                    LoadHeroTemplates(heroes_to_load_templates, aftercast_ms=aftercast_ms, log=log),
+                    Heroes.InviteHeroes(heroes_to_invite, aftercast_ms=aftercast_ms, log=log),
+                    Heroes.LoadHeroTemplates(heroes_to_load_templates, aftercast_ms=aftercast_ms, log=log),
                 ]
             )
         )
@@ -334,11 +330,11 @@ class Heroes:
                 ConsoleLog("KickHeroes", 'No heroes specified to kick.', log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
-            mapped_heroes = _get_hero_map(heroes, log=log)
+            mapped_heroes = Heroes._get_hero_map(heroes, log=log)
             if not mapped_heroes:
                 return BehaviorTree.NodeState.FAILURE
                     
-            in_party_heroes =  _get_party_heroes(Player.GetLoginNumber())
+            in_party_heroes =  Heroes._get_party_heroes(Player.GetLoginNumber())
             for hero_entry in mapped_heroes:
                 if any(hero_entry.hero_id == party_hero.hero_id for party_hero in in_party_heroes):
                     ConsoleLog("KickHeroes", f'Kicking hero: {hero_entry.name} (ID: {hero_entry.hero_id})', log=log)
@@ -372,10 +368,10 @@ class Heroes:
             else:
                 heroes_to_invite.append(hero)
         
-        party_heroes = _get_party_heroes(Player.GetLoginNumber())
+        party_heroes = Heroes._get_party_heroes(Player.GetLoginNumber())
         for party_hero in party_heroes:
             if not any(
-                (party_hero.hero_id == _get_hero_type(hero) if not isinstance(hero, tuple) else party_hero.hero_id == _get_hero_type(hero[0]))
+                (party_hero.hero_id == Heroes._get_hero_type(hero) if not isinstance(hero, tuple) else party_hero.hero_id == Heroes._get_hero_type(hero[0]))
                 for hero in heroes
             ):
                 heroes_to_kick.append(party_hero.hero_id)
@@ -383,20 +379,20 @@ class Heroes:
         children: list[BehaviorTree | BehaviorTree.Node] = []
         if heroes_to_kick:
             ConsoleLog("SetupHeroes", f'Heroes to kick: {heroes_to_kick}', log=log)
-            children.append(KickHeroes(heroes_to_kick, aftercast_ms=aftercast_ms, log=log))
+            children.append(Heroes.KickHeroes(heroes_to_kick, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupHeroes", 'No heroes to kick.', log=log)
             
         
         if heroes_to_invite:
             ConsoleLog("SetupHeroes", f'Heroes to invite: {heroes_to_invite}', log=log)
-            children.append(InviteHeroes(heroes_to_invite, aftercast_ms=aftercast_ms, log=log))
+            children.append(Heroes.InviteHeroes(heroes_to_invite, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupHeroes", 'No heroes to invite.', log=log)
             
         if heroes_to_load_templates:
             ConsoleLog("SetupHeroes", f'Heroes to load templates for: {heroes_to_load_templates}', log=log)
-            children.append(LoadHeroTemplates(heroes_to_load_templates, aftercast_ms=aftercast_ms, log=log))
+            children.append(Heroes.LoadHeroTemplates(heroes_to_load_templates, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupHeroes", 'No heroes to load templates for.', log=log)
         
@@ -417,7 +413,7 @@ PlayerEntry = NamedTuple("PlayerEntry", [
     ("login_number", Optional[int]),
 ])
 
-class Players:
+class Multiboxing:
     @staticmethod
     def _get_player_entry(identifier : str | int) -> Optional[PlayerEntry]:
         shared_accounts = GLOBAL_CACHE.ShMem.GetAllAccountData() or []
@@ -493,7 +489,7 @@ class Players:
         for member in Party.GetPlayers():
             agent = next((agent for agent in players if Agent.GetLoginNumber(agent.agent_id) == member.login_number), None)
             
-            if agent and (entry := _get_player_entry(agent.agent_id)) is not None:
+            if agent and (entry := Multiboxing._get_player_entry(agent.agent_id)) is not None:
                 player_entries.append(entry)
                 
         return player_entries
@@ -510,7 +506,7 @@ class Players:
             childs: list[BehaviorTree | BehaviorTree.Node] = []
 
             for identifier in players:
-                entry = _get_player_entry(identifier)
+                entry = Multiboxing._get_player_entry(identifier)
                 if entry is None:
                     ConsoleLog("InvitePlayers", f'Could not resolve player entry for identifier: {identifier}', log=log)
                     return BehaviorTree(
@@ -542,7 +538,7 @@ class Players:
                                 name=f'WaitForInvitedPlayer({entry.character_name})',
                                 condition_fn=lambda player_name=entry.character_name: any(
                                     _normalized(player.character_name) == _normalized(player_name)
-                                    for player in _get_current_player_entries()
+                                    for player in Multiboxing._get_current_player_entries()
                                 ),
                                 throttle_interval_ms=poll_interval_ms,
                                 timeout_ms=timeout_ms,
@@ -589,7 +585,7 @@ class Players:
                 if not template:
                     continue 
                 
-                entry = _get_player_entry(identifier)
+                entry = Multiboxing._get_player_entry(identifier)
                 
                 if entry is None:
                     ConsoleLog("SendTemplateRequestToPlayers", f'Could not resolve player entry for identifier: {identifier}', log=log)
@@ -625,8 +621,8 @@ class Players:
             BehaviorTree.SequenceNode(
                 name="InvitePlayersAndSendTemplateRequest",
                 children=[
-                    InvitePlayers(players, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
-                    SendTemplateRequestToPlayers(templates, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
+                    Multiboxing.InvitePlayers(players, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
+                    Multiboxing.SendTemplateRequestToPlayers(templates, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
                 ]
             )
         )
@@ -634,9 +630,9 @@ class Players:
     @staticmethod
     def KickPlayers(players : SequenceABC[str | int], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
         def _kick() -> BehaviorTree.NodeState:
-            current_party = _get_current_player_entries()
+            current_party = Multiboxing._get_current_player_entries()
             for identifier in players:
-                entry = _get_player_entry(identifier)
+                entry = Multiboxing._get_player_entry(identifier)
                 
                 if entry is None:
                     continue
@@ -664,7 +660,7 @@ class Players:
         players_to_send_template: list[tuple[str | int, str]] = []
         players_to_kick: list[str | int] = []
         
-        current_party = _get_current_player_entries()
+        current_party = Multiboxing._get_current_player_entries()
         
         for player in players:
             if isinstance(player, tuple) and len(player) == 2:
@@ -676,7 +672,7 @@ class Players:
             else:
                 players_to_invite.append(player)
 
-        desired_entries = [player for identifier in players_to_invite if (player := _get_player_entry(identifier)) is not None]
+        desired_entries = [player for identifier in players_to_invite if (player := Multiboxing._get_player_entry(identifier)) is not None]
                 
         for party_member in current_party:
             if not any(party_member.character_name_normalized == entry.character_name_normalized for entry in desired_entries):
@@ -686,19 +682,19 @@ class Players:
         children: list[BehaviorTree | BehaviorTree.Node] = []
         if players_to_kick:
             ConsoleLog("SetupPlayers", f'Players to kick: {players_to_kick}', log=log)
-            children.append(KickPlayers(players_to_kick, aftercast_ms=aftercast_ms, log=log))
+            children.append(Multiboxing.KickPlayers(players_to_kick, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupPlayers", 'No players to kick.', log=log)
             
         if players_to_invite:
             ConsoleLog("SetupPlayers", f'Players to invite: {players_to_invite}', log=log)
-            children.append(InvitePlayers(players_to_invite, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
+            children.append(Multiboxing.InvitePlayers(players_to_invite, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupPlayers", 'No players to invite.', log=log)
             
         if players_to_send_template:
             ConsoleLog("SetupPlayers", f'Players to send template request to: {players_to_send_template}', log=log)
-            children.append(SendTemplateRequestToPlayers(players_to_send_template, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
+            children.append(Multiboxing.SendTemplateRequestToPlayers(players_to_send_template, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
         else:
             ConsoleLog("SetupPlayers", 'No players to send template request to.', log=log)
         
@@ -719,19 +715,19 @@ class Players:
                 ConsoleLog("RequestHeroFromAccount", f'No available account found with email: {account_email}', log=log)
                 return BehaviorTree.NodeState.FAILURE
             
-            current_party_players = _get_current_player_entries()
+            current_party_players = Multiboxing._get_current_player_entries()
             if not any(player.account_email == account_email for player in current_party_players):
                 ConsoleLog("RequestHeroFromAccount", f'Account with email {account_email} is not currently in the party, cannot request hero.', log=log)
                 return BehaviorTree.NodeState.FAILURE
             
-            current_heroes = _get_party_heroes(account.AgentData.LoginNumber)
-            heroes_to_add = [hero_identifier for hero_identifier in heroes if not any(hero.hero_id == _get_hero_type(hero_identifier) for hero in current_heroes)]
+            current_heroes = Heroes._get_party_heroes(account.AgentData.LoginNumber)
+            heroes_to_add = [hero_identifier for hero_identifier in heroes if not any(hero.hero_id == Heroes._get_hero_type(hero_identifier) for hero in current_heroes)]
             if not heroes_to_add:
                 ConsoleLog("RequestHeroFromAccount", f'All requested heroes are already in the party for account {account_email}.', log=log)
                 return BehaviorTree.NodeState.SUCCESS
             
             for hero_identifier in heroes:
-                hero_type = _get_hero_type(hero_identifier)
+                hero_type = Heroes._get_hero_type(hero_identifier)
                 
                 if hero_type is None:
                     ConsoleLog("RequestHero", f'Could not resolve hero identifier: {hero_identifier}', log=log)
@@ -754,19 +750,19 @@ class Players:
                 ConsoleLog("RequestHeroFromAccount", f'No available account found with email: {account_email}', log=log)
                 return True
             
-            current_party_players = _get_current_player_entries()
+            current_party_players = Multiboxing._get_current_player_entries()
             if not any(player.account_email == account_email for player in current_party_players):
                 ConsoleLog("RequestHeroFromAccount", f'Account with email {account_email} is not currently in the party, cannot request hero.', log=log)
                 return True
             
-            current_heroes = _get_party_heroes(account.AgentData.LoginNumber)
-            heroes_to_add = [hero_identifier for hero_identifier in heroes if not any(hero.hero_id == _get_hero_type(hero_identifier) for hero in current_heroes)]
+            current_heroes = Heroes._get_party_heroes(account.AgentData.LoginNumber)
+            heroes_to_add = [hero_identifier for hero_identifier in heroes if not any(hero.hero_id == Heroes._get_hero_type(hero_identifier) for hero in current_heroes)]
             if not heroes_to_add:
                 ConsoleLog("RequestHeroFromAccount", f'All requested heroes are already in the party for account {account_email}.', log=log)
                 return True
             
             for hero_identifier in heroes:
-                hero_type = _get_hero_type(hero_identifier)
+                hero_type = Heroes._get_hero_type(hero_identifier)
                 
                 if hero_type is None:
                     ConsoleLog("RequestHero", f'Could not resolve hero identifier: {hero_identifier}', log=log)
@@ -803,7 +799,7 @@ class Players:
     def RequestLoadHeroTemplate(account_email : str, heroes : SequenceABC[tuple[int | HeroType | str, str]], template: str, timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
         def _request() -> BehaviorTree.NodeState:        
             for hero_identifier, template in heroes:
-                hero_type = _get_hero_type(hero_identifier)
+                hero_type = Heroes._get_hero_type(hero_identifier)
                 
                 if hero_type is None:
                     ConsoleLog("RequestLoadHeroTemplate", f'Could not resolve hero identifier: {hero_identifier}', log=log)
@@ -843,14 +839,14 @@ class Players:
                 ConsoleLog("RequestHeroFromAccount", f'No available account found with email: {account_email}', log=log)
                 return BehaviorTree.NodeState.FAILURE
             
-            current_party_players = _get_current_player_entries()
+            current_party_players = Multiboxing._get_current_player_entries()
             if not any(player.account_email == account_email for player in current_party_players):
                 ConsoleLog("RequestHeroFromAccount", f'Account with email {account_email} is not currently in the party, cannot request hero.', log=log)
                 return BehaviorTree.NodeState.FAILURE
             
-            current_heroes = _get_party_heroes(account.AgentData.LoginNumber)      
+            current_heroes = Heroes._get_party_heroes(account.AgentData.LoginNumber)      
             for hero_identifier in heroes:
-                hero_type = _get_hero_type(hero_identifier)
+                hero_type = Heroes._get_hero_type(hero_identifier)
                 
                 if hero_type is None:
                     ConsoleLog("RequestKickHero", f'Could not resolve hero identifier: {hero_identifier}', log=log)
@@ -877,14 +873,14 @@ class Players:
                 ConsoleLog("RequestHeroFromAccount", f'No available account found with email: {account_email}', log=log)
                 return True
             
-            current_party_players = _get_current_player_entries()
+            current_party_players = Multiboxing._get_current_player_entries()
             if not any(player.account_email == account_email for player in current_party_players):
                 ConsoleLog("RequestHeroFromAccount", f'Account with email {account_email} is not currently in the party, cannot request hero.', log=log)
                 return True
             
-            current_heroes = _get_party_heroes(account.AgentData.LoginNumber)      
+            current_heroes = Heroes._get_party_heroes(account.AgentData.LoginNumber)      
             for hero_identifier in heroes:
-                hero_type = _get_hero_type(hero_identifier)
+                hero_type = Heroes._get_hero_type(hero_identifier)
                 
                 if hero_type is None:
                     ConsoleLog("RequestKickHero", f'Could not resolve hero identifier: {hero_identifier}', log=log)
@@ -938,7 +934,7 @@ class Players:
                     )
                 )
 
-            current_party_players = _get_current_player_entries()
+            current_party_players = Multiboxing._get_current_player_entries()
             if not any(player.account_email == account_email for player in current_party_players):
                 ConsoleLog("RequestHeroFromAccount", f'Account with email {account_email} is not currently in the party, cannot request hero.', log=log)
                 return BehaviorTree(
@@ -947,30 +943,30 @@ class Players:
                     )
                 )
 
-            current_heroes = _get_party_heroes(account.AgentData.LoginNumber)
-            heroes_to_kick = [hero for hero in current_heroes if not any(hero.hero_id == _get_hero_type(hero_identifier) for hero_identifier, _ in heroes)]
-            heroes_to_add = [hero_identifier for hero_identifier, _ in heroes if not any(hero.hero_id == _get_hero_type(hero_identifier) for hero in current_heroes)]
+            current_heroes = Heroes._get_party_heroes(account.AgentData.LoginNumber)
+            heroes_to_kick = [hero for hero in current_heroes if not any(hero.hero_id == Heroes._get_hero_type(hero_identifier) for hero_identifier, _ in heroes)]
+            heroes_to_add = [hero_identifier for hero_identifier, _ in heroes if not any(hero.hero_id == Heroes._get_hero_type(hero_identifier) for hero in current_heroes)]
 
             children: list[BehaviorTree | BehaviorTree.Node] = []
             if heroes_to_kick:
                 ConsoleLog("RequestHeroFromAccount", f'Heroes to kick from account {account_email}: {[hero.name for hero in heroes_to_kick]}', log=log)
                 for hero in heroes_to_kick:
-                    children.append(RequestKickHero(account_email, [hero.hero_id], timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
+                    children.append(Multiboxing.RequestKickHero(account_email, [hero.hero_id], timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
             else:
                 ConsoleLog("RequestHeroFromAccount", f'No heroes to kick from account {account_email}.', log=log)
 
             if heroes_to_add:
                 ConsoleLog("RequestHeroFromAccount", f'Heroes to add from account {account_email}: {heroes_to_add}', log=log)
-                children.append(RequestAddHero(account_email, heroes_to_add, template='', timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
+                children.append(Multiboxing.RequestAddHero(account_email, heroes_to_add, template='', timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
             else:
                 ConsoleLog("RequestHeroFromAccount", f'No heroes to add from account {account_email}.', log=log)
                 
             for hero_identifier, template in heroes:
                 if template:
-                    hero_type = _get_hero_type(hero_identifier)
+                    hero_type = Heroes._get_hero_type(hero_identifier)
                     if hero_type is not None:
                         ConsoleLog("RequestHeroFromAccount", f'Will request to load template for hero {hero_type.name} (ID: {hero_type}) on account {account_email}.', log=log)
-                        children.append(RequestLoadHeroTemplate(account_email, [(hero_identifier, template)], template, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
+                        children.append(Multiboxing.RequestLoadHeroTemplate(account_email, [(hero_identifier, template)], template, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
                     else:
                         ConsoleLog("RequestHeroFromAccount", f'Could not resolve hero identifier for template loading: {hero_identifier}', log=log)
 
@@ -994,44 +990,44 @@ class Players:
                 ),
             )
         )
-        
-def SetupPartyFormation(
-henchmen : SequenceABC[int | str],
-heroes : SequenceABC[int | HeroType | str | tuple[int | HeroType | str, Optional[str]]],
-players : SequenceABC[str | int | tuple[str | int, Optional[str]]],
-account_heroes : SequenceABC[tuple[str, SequenceABC[tuple[int | HeroType | str, Optional[str]]]]],
-timeout_ms: int = 15000,
-poll_interval_ms: int = 100,
-aftercast_ms: int = 150,
-log: bool = False,
-) -> BehaviorTree:
 
-    children: list[BehaviorTree | BehaviorTree.Node] = []
-    if henchmen:
-        ConsoleLog("SetupPartyFormation", f'Setting up henchmen: {henchmen}', log=log)
-        children.append(SetupHenchmen(henchmen, log=log))
-    else:
-        ConsoleLog("SetupPartyFormation", 'No henchmen to set up.', log=log)
+def SetupPartyFormation(
+    henchmen : SequenceABC[int | str],
+    heroes : SequenceABC[int | HeroType | str | tuple[int | HeroType | str, Optional[str]]],
+    players : SequenceABC[str | int | tuple[str | int, Optional[str]]],
+    account_heroes : SequenceABC[tuple[str, SequenceABC[tuple[int | HeroType | str, Optional[str]]]]],
+    timeout_ms: int = 15000,
+    poll_interval_ms: int = 100,
+    aftercast_ms: int = 150,
+    log: bool = False,
+    ) -> BehaviorTree:
+
+        children: list[BehaviorTree | BehaviorTree.Node] = []
+        if henchmen:
+            ConsoleLog("SetupPartyFormation", f'Setting up henchmen: {henchmen}', log=log)
+            children.append(Henchmen.SetupHenchmen(henchmen, log=log))
+        else:
+            ConsoleLog("SetupPartyFormation", 'No henchmen to set up.', log=log)
+            
+        if heroes:
+            ConsoleLog("SetupPartyFormation", f'Setting up heroes: {heroes}', log=log)
+            children.append(Heroes.SetupHeroes(heroes, aftercast_ms=aftercast_ms, log=log))
+        else:
+            ConsoleLog("SetupPartyFormation", 'No heroes to set up.', log=log)
+            
+        if players:
+            ConsoleLog("SetupPartyFormation", f'Setting up players: {players}', log=log)
+            children.append(Multiboxing.SetupPlayers(players, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
+        else:
+            ConsoleLog("SetupPartyFormation", 'No players to set up.', log=log)
+            
+        for account_email, account_hero_list in account_heroes:
+            ConsoleLog("SetupPartyFormation", f'Setting up heroes for account {account_email}: {account_hero_list}', log=log)
+            children.append(Multiboxing.RequestHeroSetup(account_email, account_hero_list, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
         
-    if heroes:
-        ConsoleLog("SetupPartyFormation", f'Setting up heroes: {heroes}', log=log)
-        children.append(SetupHeroes(heroes, aftercast_ms=aftercast_ms, log=log))
-    else:
-        ConsoleLog("SetupPartyFormation", 'No heroes to set up.', log=log)
-        
-    if players:
-        ConsoleLog("SetupPartyFormation", f'Setting up players: {players}', log=log)
-        children.append(SetupPlayers(players, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
-    else:
-        ConsoleLog("SetupPartyFormation", 'No players to set up.', log=log)
-        
-    for account_email, account_hero_list in account_heroes:
-        ConsoleLog("SetupPartyFormation", f'Setting up heroes for account {account_email}: {account_hero_list}', log=log)
-        children.append(RequestHeroSetup(account_email, account_hero_list, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log))
-    
-    return BehaviorTree(
-        BehaviorTree.SequenceNode(
-            name="SetupPartyFormation",
-            children=children
+        return BehaviorTree(
+            BehaviorTree.SequenceNode(
+                name="SetupPartyFormation",
+                children=children
+            )
         )
-    )
