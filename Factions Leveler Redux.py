@@ -362,7 +362,7 @@ def _get_henchmen_for_current_map() -> list[int]:
 
 
 def _add_henchmen_from_blackboard(node: BehaviorTree.Node) -> BehaviorTree:
-    return BT.SetupParty(henchman_ids=node.blackboard["current_map_henchmen"])
+    return BT.SetupParty(henchmen=node.blackboard["current_map_henchmen"])
 
 
 def PrepareForBattle() -> BehaviorTree:
