@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import datetime
 from datetime import timezone
@@ -2385,14 +2386,14 @@ def LoadSkillTemplateOnHero(index: int, message: SharedMessageStruct):
     if sender_data is None:
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
-    
     extra = tuple(GLOBAL_CACHE.ShMem.GetAllAccounts()._c_wchar_array_to_str(arr) for arr in message.ExtraData)
     param_hero_id = int(message.Params[0]) if len(message.Params) > 0 else 0
     hero_id = HeroType(param_hero_id) if param_hero_id in HeroType._value2member_map_ else None
     template = extra[0] if extra else ""
-        
-    if template:
-        GLOBAL_CACHE.SkillBar.LoadHeroSkillTemplate(hero_id, template)
+    
+    if hero_id and template:
+        hero_index = Party.GetHeroIndex(hero_id)
+        GLOBAL_CACHE.SkillBar.LoadHeroSkillTemplate(hero_index, template)
         yield from Routines.Yield.wait(100)
     
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
@@ -2416,15 +2417,15 @@ def AddHero(index: int, message: SharedMessageStruct):
         GLOBAL_CACHE.Party.Heroes.AddHero(hero_id)
         
         if hero_build_template:
-            ConsoleLog(MODULE_NAME, f"Waiting to apply build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) after adding to party.", Console.MessageType.Info, True)
+            ConsoleLog(MODULE_NAME, f"Waiting to apply build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) after adding to party.", Console.MessageType.Info, False)    )
             yield from Routines.Yield.wait(100)  # wait for hero to be added before applying build
             hero_index = Party.GetHeroIndex(hero_id)
             
             if hero_index > 0:
-                ConsoleLog(MODULE_NAME, f"Applying build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) in party slot {hero_index}.", Console.MessageType.Info, True)
+                ConsoleLog(MODULE_NAME, f"Applying build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) in party slot {hero_index}.", Console.MessageType.Info, False)
                 GLOBAL_CACHE.SkillBar.LoadHeroSkillTemplate(hero_index, hero_build_template)
             else:
-                ConsoleLog(MODULE_NAME, f"Failed to find hero {hero_id.name} (ID: {hero_id.value}) in party after adding, cannot apply build template.", Console.MessageType.Warning, True)
+                ConsoleLog(MODULE_NAME, f"Failed to find hero {hero_id.name} (ID: {hero_id.value}) in party after adding, cannot apply build template.", Console.MessageType.Warning, False)
             
             
         yield from Routines.Yield.wait(100)
@@ -2439,7 +2440,6 @@ def KickHero(index: int, message: SharedMessageStruct):
         GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
         return
     
-    extra = tuple(GLOBAL_CACHE.ShMem.GetAllAccounts()._c_wchar_array_to_str(arr) for arr in message.ExtraData)
     param_hero_id = int(message.Params[0]) if len(message.Params) > 0 else 0
     hero_id = HeroType(param_hero_id) if param_hero_id in HeroType._value2member_map_ else None
             
