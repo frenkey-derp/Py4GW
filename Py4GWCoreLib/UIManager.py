@@ -1252,7 +1252,7 @@ class FrameInfo:
             
     def FrameExists(self):
         self.update_frame_id()
-        return UIManager.FrameExists(self.FrameID)
+        return UIManager.FrameExists(self.GetFrameID())
     
     def DrawFrame(self, color:int):
         if self.FrameExists():
@@ -1264,39 +1264,39 @@ class FrameInfo:
             
     def FrameClick(self, current_state: Optional[int] = None, wparam_value: Optional[int] = None, lparam_value: Optional[int] = None):
         if self.FrameExists():
-            UIManager.FrameClick(self.FrameID)
+            UIManager.FrameClick(self.GetFrameID())
     
             if current_state is not None:
                 UIManager.TestMouseAction(self.FrameID, current_state, wparam_value or 0, lparam_value or 0)
             
     def GetCoords(self):
         if self.FrameExists():
-            return UIManager.GetFrameCoords(self.FrameID)
+            return UIManager.GetFrameCoords(self.GetFrameID())
         return (0,0,0,0)
     
     def GetContentCoords(self):
         if self.FrameExists():
-            return UIManager.GetContentFrameCoords(self.FrameID)
+            return UIManager.GetContentFrameCoords(self.GetFrameID())
         return (0,0,0,0)
     
     def GetViewPortScale(self):
         if self.FrameExists():
-            return UIManager.GetViewPortScale(self.FrameID)
+            return UIManager.GetViewPortScale(self.GetFrameID())
         return (1.0,1.0)
     
     def GetViewportDimensions(self):
         if self.FrameExists():
-            return UIManager.GetViewportDimensions(self.FrameID)
+            return UIManager.GetViewportDimensions(self.GetFrameID())
         return (0,0)
     
     def IsMouseOver(self):
         if self.FrameExists():
-            return UIManager.IsMouseOver(self.FrameID)
+            return UIManager.IsMouseOver(self.GetFrameID())
         return False
     
     def GetIOEvents(self) -> list[UIManager.IOEvent]:
         if self.FrameExists():
-            return UIManager.GetIOEventsForFrame(self.FrameID)
+            return UIManager.GetIOEventsForFrame(self.GetFrameID())
         return []
             
 #region WindowFrames
@@ -2007,7 +2007,7 @@ class MerchantWindow:
     @frame_cache(category="MerchantWindow", source_lib="IsOpen")
     def IsOpen() -> bool:        
         return WindowFrame.MerchantWindowFrame.FrameExists() and \
-            UIManager.GetFrameByID(WindowFrame.BuyMerchantButtonFrame.FrameID).frame_hash == WindowFrame.BuyMerchantButtonFrame.BlackBoard.get('hash', -1)
+            UIManager.GetFrameByID(WindowFrame.BuyMerchantButtonFrame.GetFrameID()).frame_hash == WindowFrame.BuyMerchantButtonFrame.BlackBoard.get('hash', -1)
     
             
     @staticmethod
@@ -2061,7 +2061,7 @@ class CrafterWindow:
     @frame_cache(category="CrafterWindow", source_lib="IsOpen")
     def IsOpen() -> bool:        
         return WindowFrame.CrafterCraftButtonFrame.FrameExists() and \
-            UIManager.GetFrameByID(WindowFrame.CrafterCraftButtonFrame.FrameID).frame_hash == WindowFrame.CrafterCraftButtonFrame.BlackBoard.get('hash', -1)
+            UIManager.GetFrameByID(WindowFrame.CrafterCraftButtonFrame.GetFrameID()).frame_hash == WindowFrame.CrafterCraftButtonFrame.BlackBoard.get('hash', -1)
 
     @staticmethod
     def Close() -> bool:
@@ -2082,7 +2082,7 @@ class CrafterWindow:
             return False
         
         frame = WindowFrame.CrafterCustomizeButtonFrame        
-        return frame.FrameExists() and UIManager.GetFrameByID(frame.FrameID).frame_hash == frame.BlackBoard.get('hash', -1)
+        return frame.FrameExists() and UIManager.GetFrameByID(frame.GetFrameID()).frame_hash == frame.BlackBoard.get('hash', -1)
 
     @staticmethod
     def CustomizeWeapon() -> bool:
