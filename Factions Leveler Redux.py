@@ -3,25 +3,21 @@ from __future__ import annotations
 import math
 from typing import Callable
 
-
-
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.BottingTree import BottingTree
 from Py4GWCoreLib.IniManager import IniManager
-from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Item_enums import Bags
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.routines_src.Agents import Agents as RoutinesAgents
 from Py4GWCoreLib.routines_src.Checks import Checks
 from Py4GWCoreLib.routines_src.behaviourtrees_src.constants import *
 
-
 from Sources.ApoSource.ApoBottingLib import wrappers as BT
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.native_src.internals.types import PointOrPath
-from Py4GWCoreLib.native_src.internals.types import PointPath
 
 
 MODULE_NAME = "Beautiful Shing Jea"
@@ -361,11 +357,11 @@ def _get_henchmen_for_current_map() -> list[int]:
     return [2, 3, 5, 6, 7, 9, 10]
 
 
-def _add_henchmen_from_blackboard(node: BehaviorTree.Node) -> BehaviorTree:
-    return BT.SetupParty(henchmen=node.blackboard["current_map_henchmen"])
+def _add_henchmen_from_blackboard(node: BehaviorTree.Node, log: bool = False) -> BehaviorTree:
+    return BT.SetupParty(henchmen=node.blackboard["current_map_henchmen"], log=log)
 
 
-def PrepareForBattle() -> BehaviorTree:
+def PrepareForBattle(log: bool = False) -> BehaviorTree:
     bot = ensure_botting_tree()
     restock_candy_apple_qty = 0# 10
     restock_war_supplies_qty = 0# 10
@@ -380,13 +376,13 @@ def PrepareForBattle() -> BehaviorTree:
             name="Prepare For Battle",
             children=[
                 bot.Config.Aggressive(),
-                BT.LoadSkillbarFromMap(LEVELING_SKILLBAR_MAP),
-                BT.SaveBlackboardValue("current_map_henchmen", _get_henchmen_for_current_map),
+                BT.LoadSkillbarFromMap(LEVELING_SKILLBAR_MAP, log=log),
+                BT.SaveBlackboardValue("current_map_henchmen", _get_henchmen_for_current_map, log=log),
                 BehaviorTree.SubtreeNode(
                     name="AddHenchmenForCurrentMap",
-                    subtree_fn=_add_henchmen_from_blackboard,
+                    subtree_fn=lambda node: _add_henchmen_from_blackboard(node, log=log),
                 ),
-                BT.RestockItemsFromList(restock_list,allow_missing=True,),
+                BT.RestockItemsFromList(restock_list, allow_missing=True, log=log),
             ],
         )
 
@@ -1093,7 +1089,7 @@ def _build_early_armor_materials(
             totals_by_model[model_id] = totals_by_model.get(model_id, 0) + int(quantity)
 
     return [
-        (model_id, max(1, math.ceil(total_quantity / 10)))
+        (model_id, total_quantity)
         for model_id, total_quantity in totals_by_model.items()
         if total_quantity > 0
     ]
@@ -1117,6 +1113,7 @@ def _build_monastery_armor_routine(
     armor_crafter_coords: PointOrPath,
     armor_data: list[tuple[int, list[int], list[int]]],
     profession: str,
+    log : bool = False,
 ) -> BehaviorTree:
     craft_and_equip_steps: list[BehaviorTree | BehaviorTree.Node] = []
 
@@ -1127,18 +1124,19 @@ def _build_monastery_armor_routine(
                 cost=20,
                 trade_model_ids=mats,
                 quantity_list=qtys,
+                log=log,
             )
         )
-        craft_and_equip_steps.append(BT.EquipItemByModelID(item_id))
-
+        craft_and_equip_steps.append(BT.EquipItemByModelID(item_id, log=log))
+     
     return BT.Sequence(
         name="Buy And Craft Profession Armor",
         children=[
-            BT.MoveAndInteract(material_merchant_coords),
-            BT.BuyMaterials(_build_early_armor_materials(profession, armor_data)),
-            BT.MoveAndInteract(rare_material_merchant_coords),
-            BT.BuyMaterials(_build_tsumei_rare_materials(profession)),
-            BT.MoveAndInteract(armor_crafter_coords),
+            BT.MoveAndInteract(material_merchant_coords, log=log),
+            BT.BuyMaterials(_build_early_armor_materials(profession, armor_data), log=log),
+            BT.MoveAndInteract(rare_material_merchant_coords, log=log),
+            BT.BuyMaterials(_build_tsumei_rare_materials(profession), log=log),
+            BT.MoveAndInteract(armor_crafter_coords, log=log),
             *craft_and_equip_steps,
         ],
     )
@@ -1148,6 +1146,7 @@ def _build_monastery_armor_nodes(
     material_merchant_coords: PointOrPath,
     rare_material_merchant_coords: PointOrPath,
     armor_crafter_coords: PointOrPath,
+    log: bool = False,
 ) -> dict[str, BehaviorTree]:
     return {
         f"{profession}Node": _build_monastery_armor_routine(
@@ -1156,12 +1155,13 @@ def _build_monastery_armor_nodes(
             armor_crafter_coords,
             armor_data,
             profession,
+            log=log,
         )
         for profession, armor_data in MONASTERY_ARMOR_DATA.items()
     }
 
 
-def _build_tsumei_weapon_craft_routine(profession: str) -> BehaviorTree:
+def _build_tsumei_weapon_craft_routine(profession: str, log: bool = False) -> BehaviorTree:
     profession_data = TSUMEI_VILLAGE_WEAPON_COMMON_MATERIALS_DATA.get(profession, {})
     recipes = profession_data.get("recipes", {})
     craft_and_equip_steps: list[BehaviorTree | BehaviorTree.Node] = []
@@ -1184,11 +1184,12 @@ def _build_tsumei_weapon_craft_routine(profession: str) -> BehaviorTree:
                     cost=recipe_data.get("cost", 0),
                     trade_model_ids=common_materials + rare_materials,
                     quantity_list=common_quantities + rare_quantities,
+                    log=log,
                 ),
             )
         )
         craft_and_equip_steps.append(
-            BT.EquipItemByModelID(model_id),
+            BT.EquipItemByModelID(model_id, log=log),
         )
 
     return BT.Sequence(
@@ -1197,23 +1198,24 @@ def _build_tsumei_weapon_craft_routine(profession: str) -> BehaviorTree:
     )
 
 
-def _build_tsumei_weapon_nodes() -> dict[str, BehaviorTree]:
+def _build_tsumei_weapon_nodes(log: bool = False) -> dict[str, BehaviorTree]:
     return {
-        f"{profession}Node": _build_tsumei_weapon_craft_routine(profession)
+        f"{profession}Node": _build_tsumei_weapon_craft_routine(profession, log=log)
         for profession in TSUMEI_VILLAGE_WEAPON_COMMON_MATERIALS_DATA
     }
 
 
-def DestroyTrash() -> BehaviorTree:
+def DestroyTrash(log: bool = False) -> BehaviorTree:
+    ConsoleLog(MODULE_NAME, f"Destroying trash items: {TRASH_ITEM_MODELS}", log=log)
     return BT.Sequence(
             name="Destroy Trash Items",
             children = [
-                BT.DestroyItems(TRASH_ITEM_MODELS),
+                BT.DestroyItems(TRASH_ITEM_MODELS, log=log),
             ]
         )
 
 
-def BuyAndCraftMonasteryArmor() -> BehaviorTree:
+def BuyAndCraftMonasteryArmor(log: bool = False) -> BehaviorTree:
     MATERIAL_MERCHANT_COORDS = [(-10896.94, 10807.54), (-10942.73, 10783.19), (-10614.00, 10996.00),]
     RARE_MATERIAL_MERCHANT_COORDS = (-10589.20, 10745.83)
     ARMOR_CRAFTER_COORDS = [(-10896.94, 10807.54), (-7115.00, 12636.00)]
@@ -1222,20 +1224,21 @@ def BuyAndCraftMonasteryArmor() -> BehaviorTree:
     return BT.Sequence(
             name="Buy And Craft Monastery Armor",
             map_id_or_name=SHING_JEA_MONASTERY,
-            map_prep=PrepareForBattle(),
+            map_prep=PrepareForBattle(log=log),
             children=[
-                BT.BalanceGold(target_gold=1600),
+                BT.BalanceGold(target_gold=1600, log=log),
                 BT.GetNodeByProfession(
                     **_build_monastery_armor_nodes(
                         MATERIAL_MERCHANT_COORDS,
                         RARE_MATERIAL_MERCHANT_COORDS,
                         ARMOR_CRAFTER_COORDS,
+                        log=log,
                     )
                 ),
-                DestroyTrash(),
-                BT.Travel(TSUMEI_VILLAGE),
-                BT.MoveAndInteract(WEAPON_CRAFTER_COORDS),
-                BT.GetNodeByProfession(**_build_tsumei_weapon_nodes()),
+                DestroyTrash(log=log),
+                BT.Travel(TSUMEI_VILLAGE, log=log),
+                BT.MoveAndInteract(WEAPON_CRAFTER_COORDS, log=log),
+                BT.GetNodeByProfession(**_build_tsumei_weapon_nodes(log=log)),
             ],
         )
 
@@ -1513,19 +1516,19 @@ def Unlock_Secondary_Profession() -> BehaviorTree:
     
     
 
-def Extend_Inventory_Space() -> BehaviorTree:
+def Extend_Inventory_Space(log: bool = False) -> BehaviorTree:
     merchant = (-11866, 11444)
     return BT.Sequence(
             name="Extend Inventory Space",
             map_id_or_name=SHING_JEA_MONASTERY,
             map_prep=PrepareForBattle(),
             children=[
-                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2),
+                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch, log=log),
+                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1, log=log),
+                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2, log=log),
             ],
         )
     
@@ -1548,7 +1551,7 @@ def To_Minister_Chos_Estate() -> BehaviorTree:
             children=[
                 ensure_botting_tree().Config.Pacifist(),
                 BT.MoveAndExitMap(FROM_SHING_JEA_MONASTERY_TO_SUNQUA_VALE, target_map_id=SUNQUA_VALE),
-                BT.HandleAutoQuest(togo_coords, log=True),
+                BT.HandleAutoQuest(togo_coords, log=False),
                 BT.HandleQuest(318, intro_quest_path, 0x80000B, mode="skip", success_map_id=minister_cho_state_map_id),
                 BT.WaitForMapToChange(map_id=minister_cho_state_map_id),
                 BT.HandleQuest(318, (7884, -10029), 0x813E07, mode="complete"),
@@ -1730,9 +1733,8 @@ def get_execution_steps() -> list[tuple[str, Callable[[], BehaviorTree]]]:
         ("Buy And Craft Monastery Armor", BuyAndCraftMonasteryArmor),
         ("Talk With Masters", Talk_With_Masters),
         ("First Secondary Profession Block", FirstSecondaryBlock),
-    ]
     
-    """
+    
         ("Unlock Secondary Profession", Unlock_Secondary_Profession),
 
         ("Extend Inventory Space", Extend_Inventory_Space),
@@ -1742,7 +1744,6 @@ def get_execution_steps() -> list[tuple[str, Callable[[], BehaviorTree]]]:
         ("Warning The Tengu", Warning_The_Tengu),
         ("The Threat Grows - Cash Crops & Togo's Ultimatum", The_Threat_Grows_CashCrops_Togos_Utimatum),
     ]
-    """
 
 def ensure_botting_tree() -> BottingTree:
     global botting_tree

@@ -44,6 +44,8 @@ from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_textu
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
 from Py4GWCoreLib.item_mods_src.upgrades import (
+    HalvesCastingTimeAttributeUpgrade,
+    HalvesRechargeTimeAttributeUpgrade,
     Inscription,
     Insignia,
     RangeInstruction,
@@ -87,10 +89,12 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
+    RequirementFilter,
     StackQuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
     FullStacksQuantityCondition,
+    HalvesCastAndRechargeAttributeCondition,
     UnidentifiedCondition,
     UpgradeRangesCondition,
     WeaponRequirementCondition,
@@ -347,6 +351,8 @@ class UI:
     }
     
     UpgradeTexture = NamedTuple("UpgradeTextures", [("prefix", str), ("suffix", str)])
+    HalvesCastingTimeAttributeUpgrade_INSTANCE = HalvesCastingTimeAttributeUpgrade()
+    HalvesRechargeTimeAttributeUpgrade_INSTANCE = HalvesRechargeTimeAttributeUpgrade()
 
     # -------------------------------------------------------------------------
     # Construction / state
@@ -1177,6 +1183,31 @@ class UI:
         return f"Damage: {value}"
 
     @staticmethod
+    def _get_requirement_popup_attributes() -> list[Attribute]:
+        return [attribute for attribute in Attribute if attribute != Attribute.None_]
+
+    def _format_requirement_attribute_summary(self, requirement_filter: RequirementFilter) -> str:
+        allowed = requirement_filter.allowed_attributes
+        disallowed = requirement_filter.disallowed_attributes
+        if not allowed and not disallowed:
+            return "All attributes allowed"
+
+        parts: list[str] = []
+        if allowed:
+            allowed_label = ", ".join(self._humanize_name(attribute.name) for attribute in allowed[:2])
+            if len(allowed) > 2:
+                allowed_label += f" +{len(allowed) - 2}"
+            parts.append(f"Allow: {allowed_label}")
+
+        if disallowed:
+            disallowed_label = ", ".join(self._humanize_name(attribute.name) for attribute in disallowed[:2])
+            if len(disallowed) > 2:
+                disallowed_label += f" +{len(disallowed) - 2}"
+            parts.append(f"Block: {disallowed_label}")
+
+        return " | ".join(parts)
+
+    @staticmethod
     def _get_default_weapon_value_range(item_type: Optional[ItemType], requirement: int) -> Optional[tuple[int, int]]:
         if item_type is None:
             return None
@@ -1783,6 +1814,43 @@ class UI:
         self._sync_selected_sorting_group()
         self._refresh_sorting_assigned_slot_cache()
 
+    def _can_convert_rule_to_custom(self, rule: Rule) -> bool:
+        if isinstance(rule, CustomRule):
+            return False
+
+        # Only surface conversion when we can preserve all editable rule state.
+        if isinstance(rule, (ExtractUpgradeRule)):
+            return False
+
+        return all(self._supports_custom_condition_editor(type(condition)) for condition in rule.conditions)
+
+    def _convert_rule_to_custom(self, config_info: ConfigInfo[RuleConfig], rule: Rule) -> CustomRule | None:
+        if not self._can_convert_rule_to_custom(rule):
+            return None
+
+        try:
+            rule_index = config_info.config.index(rule)
+        except ValueError:
+            return None
+
+        custom_conditions: list[Condition] = []
+        for condition in rule.conditions:
+            cloned_condition = Condition.from_dict(condition.to_dict())
+            if cloned_condition is None:
+                return None
+            custom_conditions.append(cloned_condition)
+
+        custom_rule = CustomRule(custom_conditions, action=rule.action, condition_operator=rule.condition_operator)
+        custom_rule.name = rule.name
+        custom_rule.enabled = rule.enabled
+        custom_rule.result_interpretation = rule.result_interpretation
+
+        config_info.config[rule_index] = custom_rule
+        config_info.save()
+        self._set_active_rule(custom_rule)
+
+        return custom_rule
+
     def draw_preview_window(self, config_info: ConfigInfo):    
         preview_config = self._get_config_info_by_type(self.preview_window_config_type)
         if preview_config is None:
@@ -1960,6 +2028,13 @@ class UI:
                     config_info.save()
                     self._set_active_rule(duplicated_rule)
 
+            if self._can_convert_rule_to_custom(rule):
+                if ImGui.menu_item("Convert To Custom Rule"):
+                    converted_rule = self._convert_rule_to_custom(config_info, rule)
+                    if converted_rule is not None:
+                        self.context_menu_rule = converted_rule
+                        PyImGui.close_current_popup()
+
             ImGui.separator()
 
             copy_target = self._get_rule_copy_target_config(config_info)
@@ -1973,9 +2048,11 @@ class UI:
                 ImGui.separator()
 
             if ImGui.menu_item("Delete Rule"):
+                deleted_index = config_info.config.index(rule)
                 config_info.config.remove(rule)
                 config_info.save()
-                self._set_active_rule(None)
+                replacement_rule = config_info.config[min(deleted_index, len(config_info.config) - 1)] if config_info.config else None
+                self._set_active_rule(replacement_rule)
 
             ImGui.end_popup()
             return True
@@ -3508,7 +3585,7 @@ class UI:
             item_height = 50
             self.rules_hovered = False
             scroll_y = 0.0           
-            selected_rule = self.config.config[self.rule_index] if self.config else None
+            selected_rule = self.rule if self.rule in config_info.config else None
                     
             if ImGui.begin_child("##rules", (0, 0), border=False):                
                 io = PyImGui.get_io()
@@ -5144,23 +5221,86 @@ class UI:
                     for requirement in range(0, 14):
                         selected = requirement in condition.requirements
                         default_range = ui._get_default_weapon_value_range(detail_item_type, requirement) or (0, 0)
-                        current_range = condition.requirements.get(requirement)
+                        current_filter = condition.requirements.get(requirement)
+                        current_range = current_filter.value_range if current_filter is not None else None
                         min_value = current_range.min_value if current_range is not None else default_range[0]
                         max_value = current_range.max_value if current_range is not None else default_range[1]
                         if current_range is not None and current_range.min_value == 0 and current_range.max_value == 0 and default_range != (0, 0):
                             min_value, max_value = default_range
                         value_text = ui._format_weapon_value_range(detail_item_type, requirement)
+                        attribute_popup_id = f"##requirement_attributes_popup_{editor_id}_{requirement}"
+                        row_height = 56 if selected else 40
 
-                        if ImGui.begin_selectable(f"##requirement_selectable_{editor_id}_{requirement}", selected=selected, size=(0, 40), border_color=UI.GRAY_COLOR.rgb_tuple):
+                        if ImGui.begin_selectable(f"##requirement_selectable_{editor_id}_{requirement}", selected=selected, size=(0, row_height), border_color=UI.GRAY_COLOR.rgb_tuple):
                             ImGui.text(string_table.decode(GWEncoded._requires_attribute_level(attribute_level=requirement, attribute=UI.ITEM_TYPE_ATTRIBUTES.get(detail_item_type or ItemType.Unknown, Attribute.None_))))
                             ImGui.text_colored(value_text, UI.GRAY_COLOR.color_tuple, font_size=12)
+                            if selected and current_filter is not None:
+                                ImGui.text_colored(
+                                    ui._format_requirement_attribute_summary(current_filter) + " (Right-click to edit attributes)",
+                                    UI.GRAY_COLOR.color_tuple,
+                                    font_size=11,
+                                )
 
                         if ImGui.end_selectable():
                             if not selected:
-                                condition.requirements[requirement] = DamageRange(min_value, max_value)
+                                condition.requirements[requirement] = RequirementFilter(
+                                    value_range=DamageRange(min_value, max_value),
+                                )
                             else:
                                 condition.requirements.pop(requirement, None)
                             changed = True
+
+                        if selected and PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
+                            PyImGui.open_popup(attribute_popup_id)
+
+                        PyImGui.set_next_window_size((420, 420), cond=PyImGui.ImGuiCond.Appearing)
+                        if selected and PyImGui.begin_popup(attribute_popup_id):
+                            current_filter = condition.requirements.get(requirement)
+                            if current_filter is not None:
+                                ImGui.text(f"Requirement {requirement} Attributes")
+                                ImGui.separator()
+                                ImGui.text_wrapped("Left-click an attribute to cycle through Any, Allowed, and Blocked. If no attributes are explicitly allowed, any attribute may pass unless it is blocked.")
+                                ImGui.separator()
+
+                                if ImGui.button("Clear Attribute Filters", -1):
+                                    current_filter.allowed_attributes.clear()
+                                    current_filter.disallowed_attributes.clear()
+                                    changed = True
+
+                                if ImGui.begin_child(f"##requirement_attributes_list_{editor_id}_{requirement}", (0, 300), border=False):
+                                    for attribute in ui._get_requirement_popup_attributes():
+                                        is_allowed = attribute in current_filter.allowed_attributes
+                                        is_disallowed = attribute in current_filter.disallowed_attributes
+                                        state_label = "Allowed" if is_allowed else "Blocked" if is_disallowed else "Any"
+                                        state_color = UI.GREEN_COLOR.color_tuple if is_allowed else UI.RED_COLOR.color_tuple if is_disallowed else UI.GRAY_COLOR.color_tuple
+                                        selectable_id = f"##requirement_attribute_{editor_id}_{requirement}_{attribute.name}"
+
+                                        if ImGui.begin_selectable(selectable_id, False, (0, 36)):
+                                            ImGui.text(ui._humanize_name(attribute.name))
+                                            PyImGui.same_line(max(220, PyImGui.get_content_region_avail()[0] - 80), 0)
+                                            ImGui.text_colored(state_label, state_color, font_size=12)
+
+                                        if ImGui.end_selectable():
+                                            if is_allowed:
+                                                current_filter.allowed_attributes = [entry for entry in current_filter.allowed_attributes if entry != attribute]
+                                                if attribute not in current_filter.disallowed_attributes:
+                                                    current_filter.disallowed_attributes.append(attribute)
+                                            elif is_disallowed:
+                                                current_filter.disallowed_attributes = [entry for entry in current_filter.disallowed_attributes if entry != attribute]
+                                            else:
+                                                current_filter.disallowed_attributes = [entry for entry in current_filter.disallowed_attributes if entry != attribute]
+                                                if attribute not in current_filter.allowed_attributes:
+                                                    current_filter.allowed_attributes.append(attribute)
+                                            changed = True
+
+                                        if PyImGui.is_item_hovered():
+                                            ImGui.show_tooltip("Click to cycle: Any -> Allowed -> Blocked -> Any")
+                                ImGui.end_child()
+
+                                if ImGui.button("Close", -1):
+                                    PyImGui.close_current_popup()
+
+                            PyImGui.end_popup()
                 ImGui.end_child()
 
             UI.ConditionEditor.EndConditionContainer()
@@ -5319,6 +5459,15 @@ class UI:
                     condition.identified = identified
                     changed = True
             UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForHalvesCastAndRechargeAttributeCondition(ui: "UI", rule: Rule, condition: HalvesCastAndRechargeAttributeCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                ImGui.text_wrapped(f"Match items with a '{UI.HalvesCastingTimeAttributeUpgrade_INSTANCE.description_plain}' or '{UI.HalvesRechargeTimeAttributeUpgrade_INSTANCE.description_plain}' modifier of the items attribute.")
+            UI.ConditionEditor.EndConditionContainer()
+            
             return changed
 
         @staticmethod
@@ -5763,6 +5912,9 @@ class UI:
             
             case UnidentifiedCondition():
                 return UI.ConditionEditor.ForUnidentifiedCondition(self, rule, condition, draw_size)
+
+            case HalvesCastAndRechargeAttributeCondition():
+                return UI.ConditionEditor.ForHalvesCastAndRechargeAttributeCondition(self, rule, condition, draw_size)
             
             case ArmorUpgradesCondition():
                 return UI.ConditionEditor.ForArmorUpgradesCondition(self, rule, condition, draw_size)
@@ -5797,6 +5949,7 @@ class UI:
             InherentFiltersCondition,
             InscribableCondition,
             UnidentifiedCondition,
+            HalvesCastAndRechargeAttributeCondition,
             ArmorUpgradesCondition,
             MaxWeaponUpgradesCondition,
             UpgradeRangesCondition,
@@ -5876,7 +6029,7 @@ class UI:
                 return clamp(control_height + control_height + 12 + max(1, len(condition.materials)) * row_48)
 
             case WeaponRequirementCondition():
-                return clamp(14 * row_40 + 12)
+                return clamp(4 * row_40 + 12)
 
             case InherentFiltersCondition():
                 return clamp(140 + max(1, len(condition.inherents)) * 90)
@@ -5885,6 +6038,9 @@ class UI:
                 return clamp(control_height + 8 + row_28)
 
             case UnidentifiedCondition():
+                return clamp(control_height + 8 + row_28)
+
+            case HalvesCastAndRechargeAttributeCondition():
                 return clamp(control_height + 8 + row_28)
 
             case ArmorUpgradesCondition():
@@ -5997,13 +6153,15 @@ class UI:
                 ImGui.text_wrapped("This rule matches a weapon type, with configurable requirement damage ranges and optional inherent upgrade filters.")
                 avail = PyImGui.get_content_region_avail()
                 width = (avail[0] - 5) * 0.5
-                height = avail[1]
+                height = (avail[1] - 5) * 0.5
                 changed = False
                 
-                for condition in rule.conditions:
-                    changed = self._draw_condition_editor(rule, condition, size=(width, height)) or changed
-                    PyImGui.same_line(0, 5)
+                changed = UI.ConditionEditor.ForExactItemTypeCondition(self, rule, rule._item_type_condition(), size=(width, height)) or changed
+                PyImGui.same_line(0, 5)
+                changed = UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
 
+                changed = UI.ConditionEditor.ForInherentFiltersCondition(self, rule, rule._inherent_condition(), size=(width * 2, height)) or changed
+                
                 return changed
 
             case SalvagesToMaterialRule():

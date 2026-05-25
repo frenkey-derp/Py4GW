@@ -12,9 +12,10 @@ from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.IniManager import IniManager
 from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Item
+from Py4GWCoreLib.ItemArray import ItemArray
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.Party import Party
 from Py4GWCoreLib.Routines import Routines
-from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, INVENTORY_WITH_EQUIPMENT_BAGS, STORAGE_BAGS, Bags, ItemType, Rarity, SalvageMode
 from Py4GWCoreLib.enums_src.Region_enums import ServerLanguage
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
@@ -27,7 +28,6 @@ Utils.ClearSubModules("Sources.frenkeyLib.ItemHandling")
 Utils.ClearSubModules("Sources.frenkeyLib.Core")
 Utils.ClearSubModules("Sources.frenkeyLib.BTDev")
 
-from Sources.frenkeyLib.BTDev.party import SetupPartyFormation
 from Py4GWCoreLib.routines_src.behaviourtrees_src.items import BTItems
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
@@ -997,20 +997,13 @@ def main():
                 ImGui.end_tab_item()
             
             if ImGui.begin_tab_item("Testing"):
-                if ImGui.button("Spawn And Destroy Bonus Items", -1):
-                    # tree = SetupParty(henchman_ids=[2, 3, 4], hero_ids=[HeroType.Gwen, HeroType.GeneralMorgahn, HeroType.MasterOfWhispers, HeroType.Livia])
-                    template = "OQBDAqwDO/gcQRAna6GCZAiA"
-                    henchmen = ["Cynn", "Eve", 4]
-                    heroes = [HeroType.Koss, ("Gwen", template)]
-                    players = [("Kenedia Bentone", "OQBCAswEb5JwuIcppzBYRQOA")]
-                    account_heroes = [("games.lasse.93+GWAlt4@gmail.com", [("Gwen", template)])]
-                    tree = SetupPartyFormation(henchmen, heroes, players, account_heroes, log=True)
+                if ImGui.button("Spawn And Destroy Bonus Items", -1):    
+                    items = ItemArray.GetItemArray([Bags.NoBag])
                     
-                    # skillbar = SkillBar()
-                    # skillbar.LoadHeroSkillTemplate(HeroType.Gwen.value, template)
+                    for item_id in items:
+                        item = ItemSnapshot.from_item_id(item_id)
+                        Py4GW.Console.Log(MODULE_NAME, f"Item in NoBag: ID={item.id}, Name={item.name}, Valid={item.is_valid}") if item and item.is_valid else None
                     
-                    # GLOBAL_CACHE.ShMem.SendMessage("games.lasse.93+GWAlt5@gmail.com", "games.lasse.93+GWAlt4@gmail.com", SharedCommandType.AddHero, (HeroType.Gwen.value, 0, 0, 0), (template, '', '', ''))
-                    pass
                 
                 ImGui.end_tab_item()
                 
@@ -1031,3 +1024,4 @@ def main():
             fully_decoded = (not encoded.name_enc or decoded.name_enc != "") and (not encoded.info_string or decoded.info_string != "") and (not encoded.singular_name or decoded.singular_name != "") and (not encoded.complete_name_enc or decoded.complete_name_enc != "")
         except Exception as e:
             Py4GW.Console.Log(MODULE_NAME, f"Error decoding item strings: {e}", Py4GW.Console.MessageType.Error)
+

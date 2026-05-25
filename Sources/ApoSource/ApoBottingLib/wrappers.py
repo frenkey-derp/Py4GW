@@ -1354,12 +1354,13 @@ def MoveAndBuyMaterials(pos: PointOrPath, model_id: int, quantity:int = 1, log: 
 
 def MoveAndBuyMerchantItem(pos: PointOrPath, model_id: int, quantity: int = 1, log: bool = False, aftercast_ms: int = 350) -> BehaviorTree:
     return RoutinesBT.Composite.Sequence(
-        MoveAndInteract(pos=pos),
+        MoveAndInteract(pos=pos, log=log),
         _pause_heroai_for_action(
             RoutinesBT.Items.Utility.ResolveItemIDFromNPCThen(
                 identifier=model_id,
                 npc_type=TradingNPCType.Merchant,
                 next_node_fn=lambda resolved_id: RoutinesBT.Items.Merchant.BuyItem(item_id=resolved_id, quantity=quantity, allow_withdraw_gold=True, log=log, aftercast_ms=aftercast_ms),
+                log=log,
             )
         ),
         name="MoveAndBuyMerchantItem",
@@ -1444,8 +1445,8 @@ def EquipInventoryBag(modelID_or_encStr: int | str,target_bag: int,timeout_ms: i
     return RoutinesBT.Items.EquipInventoryBag(modelID_or_encStr=modelID_or_encStr,target_bag=target_bag,timeout_ms=timeout_ms,poll_interval_ms=poll_interval_ms,log=log,)
 
 def DestroyItems(model_ids: list[int], log: bool = False, aftercast_ms: int = 75) -> BehaviorTree:
-    return RoutinesBT.Items.Utility.ResolveItemIdsThen(list(model_ids),
-                                                       next_node_fn=lambda resolved_ids: RoutinesBT.Items.Items.DestroyItems(item_ids=resolved_ids,log=log,aftercast_ms=aftercast_ms,))
+    return RoutinesBT.Items.Utility.ResolveItemIdsThen(list(model_ids), allow_partial=True, fail_if_none_resolved=False,
+                                                       next_node_fn=lambda resolved_ids: RoutinesBT.Items.Items.DestroyItems(item_ids=resolved_ids,succeed_always=True,log=log,aftercast_ms=aftercast_ms,))
     
 def DestroyBonusItems(exclude_list: Optional[list[int]] = [], log: bool = False, aftercast_ms: int = 75) -> BehaviorTree:
     return RoutinesBT.Items.BonusItems.DestroyBonusItems(exclude_list=exclude_list,log=log,aftercast_ms=aftercast_ms,)
@@ -1469,10 +1470,11 @@ def RestockItems(model_id: int, desired_quantity: int, allow_missing: bool = Fal
         allow_partial=allow_missing,
     )
 
-def RestockItemsFromList(items: SequenceABC[tuple[int, int]], allow_missing: bool = False) -> BehaviorTree:
+def RestockItemsFromList(items: SequenceABC[tuple[int, int]], allow_missing: bool = False, log: bool = False) -> BehaviorTree:
     return RoutinesBT.Items.Inventory.RestockItems(
         identifiers_and_quantities=items,
         allow_partial=allow_missing,
+        log=log,
     )
 
 def HasItemQuantity(model_id: int, quantity: int) -> BehaviorTree:
@@ -1481,6 +1483,7 @@ def HasItemQuantity(model_id: int, quantity: int) -> BehaviorTree:
 def DepositModelToStorage(model_id: int, aftercast_ms: int = 150) -> BehaviorTree:
     return RoutinesBT.Items.Utility.ResolveItemIDThen(
         identifier=model_id,
+        fail_if_none_resolved=False,
         next_node_fn=lambda resolved_id: RoutinesBT.Items.Items.DepositItems(item_ids=[resolved_id], aftercast_ms=aftercast_ms,)
         )
 
@@ -1498,7 +1501,7 @@ def BalanceGold(target_gold: int, allow_partial: bool = True, log: bool = False,
 def BuyMaterial(model_id: int, quantity: int = 1, allow_withdraw_gold: bool = True, log: bool = False, aftercast_ms: int = 125) -> BehaviorTree:
     return _pause_heroai_for_action(
         RoutinesBT.Items.Utility.ResolveItemIDFromNPCThen(
-            identifier=model_id,
+            identifier=model_id,            
             npc_type=TradingNPCType.Trader,
             next_node_fn=lambda resolved_id: RoutinesBT.Items.Trader.BuyItem(item_id=resolved_id, quantity=quantity, allow_withdraw_gold=allow_withdraw_gold, log=log, aftercast_ms=aftercast_ms),
         )
@@ -1535,9 +1538,9 @@ def ExchangeCollectorItem(output_model_id: int,trade_model_ids: list[int],quanti
         RoutinesBT.Items.Collector.ExchangeItemModelID(output_model_id=output_model_id,trade_model_ids=trade_model_ids,quantity_list=quantity_list,cost=cost,aftercast_ms=aftercast_ms,)    
     )
 
-def CraftItem(output_model_id: int,cost: int,trade_model_ids: list[int],quantity_list: list[int],aftercast_ms: int = 350,) -> BehaviorTree:
+def CraftItem(output_model_id: int,cost: int,trade_model_ids: list[int],quantity_list: list[int],aftercast_ms: int = 350, log : bool = False) -> BehaviorTree:
     return _pause_heroai_for_action(
-        RoutinesBT.Items.Crafting.CraftItemModelID(output_model_id=output_model_id, cost=cost, material_model_ids=trade_model_ids, material_quantities=quantity_list,aftercast_ms=aftercast_ms,)
+        RoutinesBT.Items.Crafting.CraftItemModelID(output_model_id=output_model_id, cost=cost, material_model_ids=trade_model_ids, material_quantities=quantity_list,aftercast_ms=aftercast_ms, log=log,)
     )
      
 def NeedsInventoryCleanup(exclude_models: list[int] | None = None) -> BehaviorTree:
@@ -1784,7 +1787,7 @@ def CreateParty(
 def SetupParty(
     henchmen : Optional[SequenceABC[int]] = None,
     heroes : Optional[SequenceABC[int | HeroType | str | tuple[int | HeroType | str, Optional[str]]]] = None,
-    players : Optional[SequenceABC[str | int | tuple[str | int, Optional[str]]]] = None,
+    players : Optional[SequenceABC[str | tuple[str, Optional[str]]]] = None,
     account_heroes : Optional[SequenceABC[tuple[str, SequenceABC[tuple[int | HeroType | str, Optional[str]]]]]] = None,
     require_outpost: bool = True,
     leave_if_no_leader: bool = True,

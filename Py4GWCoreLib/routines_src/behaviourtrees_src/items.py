@@ -327,7 +327,7 @@ class BTItems:
         )
 
     @staticmethod
-    def GetItemNameByItemID(item_id: int) -> BehaviorTree:
+    def GetItemNameByItemID(item_id: int, log: bool = False) -> BehaviorTree:
         """
         Build a tree that requests and retrieves an item name by item id.
 
@@ -352,6 +352,11 @@ class BTItems:
               Notes: Returns success immediately after sending the request.
             """
             GLOBAL_CACHE.Item.RequestName(item_id)
+            _log(
+                "GetItemNameByItemID",
+                f"Requested item name for item_id={item_id}.",
+                log=log,
+            )
             return BehaviorTree.NodeState.SUCCESS
 
         def _check_item_name_ready(node):
@@ -387,6 +392,19 @@ class BTItems:
                 name = GLOBAL_CACHE.Item.GetName(item_id)
 
             node.blackboard["result"] = name
+            if name:
+                _log(
+                    "GetItemNameByItemID",
+                    f"Resolved item_id={item_id} to '{name}'.",
+                    log=log,
+                )
+            else:
+                _log(
+                    "GetItemNameByItemID",
+                    f"Failed to resolve item name for item_id={item_id} before timeout.",
+                    message_type=Console.MessageType.Warning,
+                    log=log,
+                )
             return BehaviorTree.NodeState.SUCCESS if name else BehaviorTree.NodeState.FAILURE
 
         tree = BehaviorTree.SequenceNode(
@@ -493,23 +511,21 @@ class BTItems:
             node.blackboard["merchant_sell_queued_count"] = 0
 
             if not sellable_item_ids:
-                if log:
-                    _log(
-                        "SellInventoryItems",
-                        "No eligible inventory items found to sell.",
-                        message_type=Console.MessageType.Info,
-                        log=True,
-                    )
-                return BehaviorTree.NodeState.SUCCESS
-
-            if log:
-                excluded_models_text = ", ".join(str(model_id) for model_id in sorted(set(exclude_models or []))) or "none"
                 _log(
                     "SellInventoryItems",
-                    f"Selling {len(sellable_item_ids)} inventory items. Excluded models: {excluded_models_text}.",
+                    "No eligible inventory items found to sell.",
                     message_type=Console.MessageType.Info,
-                    log=True,
+                    log=log,
                 )
+                return BehaviorTree.NodeState.SUCCESS
+
+            excluded_models_text = ", ".join(str(model_id) for model_id in sorted(set(exclude_models or []))) or "none"
+            _log(
+                "SellInventoryItems",
+                f"Selling {len(sellable_item_ids)} inventory items. Excluded models: {excluded_models_text}.",
+                message_type=Console.MessageType.Info,
+                log=log,
+            )
 
             return BehaviorTree.NodeState.SUCCESS
 
@@ -552,13 +568,12 @@ class BTItems:
             if not ActionQueueManager().IsEmpty("ACTION"):
                 return BehaviorTree.NodeState.RUNNING
 
-            if log:
-                _log(
-                    "SellInventoryItems",
-                    f"Sold {queued_count} inventory items through merchant queue.",
-                    message_type=Console.MessageType.Info,
-                    log=True,
-                )
+            _log(
+                "SellInventoryItems",
+                f"Sold {queued_count} inventory items through merchant queue.",
+                message_type=Console.MessageType.Info,
+                log=log,
+            )
             return BehaviorTree.NodeState.SUCCESS
 
         tree = BehaviorTree.SequenceNode(
@@ -597,6 +612,18 @@ class BTItems:
             zero_value_item_ids = BTItems._collect_zero_value_inventory_item_ids(exclude_models=exclude_models)
             node.blackboard["zero_value_destroy_item_ids"] = zero_value_item_ids
             node.blackboard["zero_value_destroy_index"] = 0
+            if zero_value_item_ids:
+                _log(
+                    "DestroyZeroValueItems",
+                    f"Found {len(zero_value_item_ids)} zero-value items to destroy.",
+                    log=log,
+                )
+            else:
+                _log(
+                    "DestroyZeroValueItems",
+                    "No zero-value items found to destroy.",
+                    log=log,
+                )
             return BehaviorTree.NodeState.SUCCESS
 
         def _destroy_items(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
@@ -616,13 +643,12 @@ class BTItems:
             node.blackboard["zero_value_destroy_index"] = item_index + 1
             state["next_attempt_ms"] = int(now + aftercast_ms)
 
-            if log:
-                _log(
-                    "DestroyZeroValueItems",
-                    f"Queued destroy for zero-value item model {model_id} (item_id={item_id}).",
-                    message_type=Console.MessageType.Info,
-                    log=True,
-                )
+            _log(
+                "DestroyZeroValueItems",
+                f"Queued destroy for zero-value item model {model_id} (item_id={item_id}).",
+                message_type=Console.MessageType.Info,
+                log=log,
+            )
 
             return BehaviorTree.NodeState.RUNNING
 
@@ -739,7 +765,9 @@ class BTItems:
         def ResolveItemIDFromNPCThen(
             identifier: ItemIdentifier,
             next_node_fn: Callable[[int], BehaviorTree | BehaviorTree.Node],
-            npc_type : TradingNPCType = TradingNPCType.Unknown
+            npc_type : TradingNPCType = TradingNPCType.Unknown,
+            fail_if_none_resolved: bool = True,            
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a tree that resolves an item id from the currently open trader window based on the provided identifier.
@@ -769,7 +797,17 @@ class BTItems:
                         break
 
                 node.blackboard['resolved_item_id'] = item_id
-                return BehaviorTree.NodeState.SUCCESS if item_id else BehaviorTree.NodeState.FAILURE
+                _log(
+                    "ResolveItemIDFromNPCThen",
+                    f"Resolved item id {item_id} from trader {npc_type.name} for identifier {identifier}.",
+                    message_type=Console.MessageType.Info,
+                    log=log,
+                )
+                
+                if fail_if_none_resolved:
+                    return BehaviorTree.NodeState.SUCCESS if item_id else BehaviorTree.NodeState.FAILURE
+                else:
+                    return BehaviorTree.NodeState.SUCCESS
 
             tree = BehaviorTree.SequenceNode(
                 name=f"ResolveItemIDFromTrader({identifier})",
@@ -790,7 +828,8 @@ class BTItems:
         def ResolveItemIDsFromNPCThen(
             identifiers: list[ItemIdentifier],
             next_node_fn: Callable[[list[int]], BehaviorTree | BehaviorTree.Node],
-            npc_type : TradingNPCType = TradingNPCType.Unknown
+            npc_type : TradingNPCType = TradingNPCType.Unknown,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a tree that resolves multiple item ids from the currently open trader window based on the provided identifiers.
@@ -823,6 +862,12 @@ class BTItems:
                     resolved_item_ids.append(item_id)
 
                 node.blackboard['resolved_item_ids'] = resolved_item_ids
+                _log(
+                    "ResolveItemIDsFromNPCThen",
+                    f"Resolved item ids {resolved_item_ids} from trader {npc_type.name} for identifiers {identifiers}.",
+                    message_type=Console.MessageType.Info if all(resolved_item_ids) else Console.MessageType.Warning,
+                    log=log,
+                )
                 return BehaviorTree.NodeState.SUCCESS if all(resolved_item_ids) else BehaviorTree.NodeState.FAILURE
 
             tree = BehaviorTree.SequenceNode(
@@ -844,8 +889,10 @@ class BTItems:
         def ResolveItemIDThen(
             identifier: ItemIdentifier,
             next_node_fn: Callable[[int], BehaviorTree | BehaviorTree.Node],
-            bags: Optional[list[Bags] | Bags] = None,            
+            bags: Optional[list[Bags] | Bags] = None,
+            fail_if_none_resolved: bool = True,            
             blackboard_key: str = 'resolved_item_id',
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a tree that resolves an item id at runtime and then continues with a dynamic child node.
@@ -862,7 +909,16 @@ class BTItems:
             def _resolve_item_id(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
                 item_id = BTItems.Utility.GetItemID(identifier, bags=bags)
                 node.blackboard[blackboard_key] = item_id
-                return BehaviorTree.NodeState.SUCCESS if item_id else BehaviorTree.NodeState.FAILURE
+                _log(
+                    "ResolveItemIDThen",
+                    f"Resolved identifier {identifier} to item_id={item_id} using bags={bags}.",
+                    message_type=Console.MessageType.Info if item_id else Console.MessageType.Warning,
+                    log=log,
+                )
+                if fail_if_none_resolved:
+                    return BehaviorTree.NodeState.SUCCESS if item_id else BehaviorTree.NodeState.FAILURE
+                else:
+                    return BehaviorTree.NodeState.SUCCESS
 
             tree = BehaviorTree.SequenceNode(
                 name='ResolveItemIDThenRoot',
@@ -884,7 +940,10 @@ class BTItems:
             identifiers: list[ItemIdentifier],
             next_node_fn: Callable[[list[int]], BehaviorTree | BehaviorTree.Node],
             bags: Optional[list[Bags] | Bags] = None,
+            allow_partial: bool = False,
+            fail_if_none_resolved: bool = True,
             blackboard_key: str = 'resolved_item_ids',
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a tree that resolves multiple item ids at runtime and then continues with a dynamic child node.
@@ -901,7 +960,24 @@ class BTItems:
             def _resolve_item_ids(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
                 item_ids = [BTItems.Utility.GetItemID(identifier, bags=bags) for identifier in identifiers]
                 node.blackboard[blackboard_key] = item_ids
-                return BehaviorTree.NodeState.SUCCESS if all(item_ids) else BehaviorTree.NodeState.FAILURE
+                _log(
+                    "ResolveItemIdsThen",
+                    f"Resolved identifiers {identifiers} to item ids {item_ids} using bags={bags}.",
+                    message_type=Console.MessageType.Info if any(item_ids) else Console.MessageType.Warning,
+                    log=log,
+                )
+                
+                partial_match = any(item_ids)
+                all_match = all(item_ids)
+                
+                if fail_if_none_resolved and not partial_match:
+                    return BehaviorTree.NodeState.FAILURE
+                
+                elif allow_partial:
+                    return BehaviorTree.NodeState.SUCCESS
+                
+                else:
+                    return BehaviorTree.NodeState.SUCCESS if all_match else BehaviorTree.NodeState.FAILURE
 
             tree = BehaviorTree.SequenceNode(
                 name='ResolveItemIDsThenRoot',
@@ -1333,6 +1409,7 @@ class BTItems:
             identifier: ItemIdentifier,
             quantity: int,
             allow_partial: bool = True,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build an action node that restocks inventory from storage bags.
@@ -1354,12 +1431,23 @@ class BTItems:
                 left_to_restock = max(0, quantity - current_qty)
                 
                 if left_to_restock <= 0:
+                    _log(
+                        "Inventory.Restock",
+                        f"Already have required quantity for identifier {identifier}: current={current_qty}, target={quantity}.",
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.SUCCESS
                 
                 storage_snapshot = ItemSnapshot.get_bags_snapshot(STORAGE_BAGS)
                 desired_items = [i for bag in storage_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.model_id == model_id and i.item_type == item_type] if storage_snapshot else []
                 
                 if not desired_items:
+                    _log(
+                        "Inventory.Restock",
+                        f"No storage items found for identifier {identifier}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
                 
                 item_ids = []
@@ -1387,14 +1475,38 @@ class BTItems:
                         break
 
                 if planned_total <= 0:
+                    _log(
+                        "Inventory.Restock",
+                        f"Could not plan any transfer for identifier {identifier}; left_to_restock={left_to_restock}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
 
                 if not allow_partial and left_to_restock > 0:
+                    _log(
+                        "Inventory.Restock",
+                        f"Partial restock for identifier {identifier} is not allowed; planned={planned_total}, target={quantity}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
                 
                 instructions = BTItems.Items.GetTransferInstructions(item_ids, INVENTORY_BAGS, quantities=quantities)
                 if not instructions:
+                    _log(
+                        "Inventory.Restock",
+                        f"Failed to build transfer instructions for identifier {identifier}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
+                
+                _log(
+                    "Inventory.Restock",
+                    f"Restocking identifier {identifier}: moving planned total {planned_total} toward target {quantity}.",
+                    log=log,
+                )
                 
                 for bag in instructions.values():
                     for dest in bag.values():
@@ -1415,6 +1527,7 @@ class BTItems:
         def RestockItems(
             identifiers_and_quantities: Sequence[tuple[ItemIdentifier, int]],
             allow_partial: bool = True,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build an action node that restocks multiple inventory items from storage bags.
@@ -1432,6 +1545,7 @@ class BTItems:
                     identifier=identifier,
                     quantity=quantity,
                     allow_partial=allow_partial,
+                    log=log,
                 )
                 for identifier, quantity in identifiers_and_quantities
             ]
@@ -1483,6 +1597,8 @@ class BTItems:
         def WithdrawGold(
             amount: int = 0,
             allow_partial: bool = True,
+            log: bool = False,
+            aftercast_ms: int = 250,
         ) -> BehaviorTree:
             """
             Build an action node that withdraws gold from storage to reach a target inventory amount.
@@ -1491,6 +1607,7 @@ class BTItems:
             
             def _withdraw():
                 if not BTItems.Inventory._can_access_storage_gold():
+                    _log("WithdrawGold", "Cannot access storage gold in the current location.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 gold_on_character, gold_in_storage = BTItems.Inventory._get_gold_amounts()
@@ -1498,16 +1615,20 @@ class BTItems:
                 amount_to_withdraw = min(requested_amount, gold_in_storage, MAX_GOLD_CHARACTER - gold_on_character)
 
                 if requested_amount <= 0:
+                    _log("WithdrawGold", "No gold needs to be withdrawn.", log=log)
                     return BehaviorTree.NodeState.SUCCESS
                 if amount_to_withdraw <= 0:
+                    _log("WithdrawGold", f"Failed to withdraw gold. requested={requested_amount}, storage={gold_in_storage}, character={gold_on_character}.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
                 if not allow_partial and amount_to_withdraw < requested_amount:
+                    _log("WithdrawGold", f"Failed to withdraw full requested amount {requested_amount}; only {amount_to_withdraw} is available.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
+                _log("WithdrawGold", f"Withdrawing {amount_to_withdraw} gold.", log=log)
                 Inventory.WithdrawGold(amount_to_withdraw)
                 return BehaviorTree.NodeState.SUCCESS
 
-            return BehaviorTree(BehaviorTree.ActionNode(name=f"Inventory.WithdrawGold({amount})", action_fn=_withdraw))
+            return BehaviorTree(BehaviorTree.ActionNode(name=f"Inventory.WithdrawGold({amount})", action_fn=_withdraw, aftercast_ms=aftercast_ms))
         
         @staticmethod
         def BalanceGold(
@@ -1625,7 +1746,8 @@ class BTItems:
         @staticmethod 
         def IsItemInBags(
             identifier: ItemIdentifier,
-            bags : Bags | list[Bags] = INVENTORY_BAGS
+            bags : Bags | list[Bags] = INVENTORY_BAGS,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a condition node that checks for the presence of an inventory item matching the provided identifier.
@@ -1642,6 +1764,12 @@ class BTItems:
             bags = bags if isinstance(bags, list) else [bags]
             def _is_item_in_inventory(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
                 item_id = BTItems.Utility.GetItemID(identifier, bags=bags)
+                _log(
+                    "IsItemInBags",
+                    f"Checked identifier {identifier} in bags {[bag.name for bag in bags]}: item_id={item_id}.",
+                    message_type=Console.MessageType.Info if item_id else Console.MessageType.Warning,
+                    log=log,
+                )
                 return BehaviorTree.NodeState.SUCCESS if item_id else BehaviorTree.NodeState.FAILURE
 
             return BehaviorTree(BehaviorTree.ConditionNode(name=f"IsItemInInventory({identifier})", condition_fn=_is_item_in_inventory))
@@ -1649,6 +1777,7 @@ class BTItems:
         @staticmethod
         def IsItemEquipped(
             identifier: ItemIdentifier,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a condition node that checks if an item matching the provided identifier is currently equipped.
@@ -1661,13 +1790,14 @@ class BTItems:
               UserDescription: Use this when you want a BT condition that checks for an equipped item based on model id, item name, or encoded name.
               Notes: Returns success if at least one matching equipped item is found; otherwise, returns failure.
             """
-            return BTItems.Inventory.IsItemInBags(identifier=identifier, bags=Bags.EquippedItems)
+            return BTItems.Inventory.IsItemInBags(identifier=identifier, bags=Bags.EquippedItems, log=log)
         
         @staticmethod
         def HasItemQuantity(
             identifier: ItemIdentifier,
             quantity: int,
-            bags : Bags | list[Bags] = INVENTORY_BAGS
+            bags : Bags | list[Bags] = INVENTORY_BAGS,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build a condition node that checks for at least a certain quantity of items matching the provided identifier.
@@ -1686,14 +1816,32 @@ class BTItems:
                 item_id = BTItems.Utility.GetItemID(identifier, bags=bags)
                 
                 if not item_id:
+                    _log(
+                        "HasItemQuantity",
+                        f"No item found for identifier {identifier} in bags {[bag.name for bag in bags]}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
                 
                 item = ItemSnapshot.from_item_id(item_id)
                 if not item or not item.is_valid:
+                    _log(
+                        "HasItemQuantity",
+                        f"Resolved item_id={item_id} for identifier {identifier}, but the item is invalid.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
                 
                 inventory_snapshot = ItemSnapshot.get_inventory_snapshot(*bags)
                 total_quantity = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and (i.model_id == item.model_id and i.item_type == item.item_type)) if inventory_snapshot else 0
+                _log(
+                    "HasItemQuantity",
+                    f"Checked quantity for identifier {identifier}: total={total_quantity}, required={quantity}.",
+                    message_type=Console.MessageType.Info if total_quantity >= quantity else Console.MessageType.Warning,
+                    log=log,
+                )
                 
                 return BehaviorTree.NodeState.SUCCESS if total_quantity >= quantity else BehaviorTree.NodeState.FAILURE
 
@@ -1719,6 +1867,7 @@ class BTItems:
             allow_partial: bool = True,
             allow_withdraw_gold: bool = False,
             remaining_storage_gold: int = 0,
+            log: bool = False,
         ) -> BehaviorTree:
             """
             Build an action node that restocks a merchant item until the requested inventory quantity is met.
@@ -1733,18 +1882,21 @@ class BTItems:
             """
             def _restock(node: BehaviorTree.Node):
                 if not MerchantWindow.IsOpen():
+                    _log("Merchant.Restock", "Merchant window is not open.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
                 
                 inventory_snapshot = ItemSnapshot.get_inventory_snapshot(Bags.Backpack, Bags.Bag2)
                 current_qty = sum(i.quantity for bag in inventory_snapshot.values() for i in bag.values() if i is not None and i.is_valid and i.model_id == model_id and i.item_type == item_type) if inventory_snapshot else 0
                 
                 if current_qty >= quantity:
+                    _log("Merchant.Restock", f"Already stocked enough of model {model_id}: current={current_qty}, target={quantity}.", log=log)
                     return BehaviorTree.NodeState.SUCCESS
                 
                 offered_items = Trading.Merchant.GetOfferedItems()
                 item_id = next((iid for iid in offered_items if Item.GetModelID(iid) == model_id and Item.GetItemType(iid)[0] == item_type), None)
                 
                 if not item_id:
+                    _log("Merchant.Restock", f"Merchant does not offer model {model_id} with item type {item_type}.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 available_gold = BTItems.Inventory._get_spendable_gold(allow_withdraw_gold, remaining_storage_gold)
@@ -1756,17 +1908,22 @@ class BTItems:
                 count = min(quantity_to_buy, affordable_qty, space_for_qty)
                 
                 if not has_space or count <= 0:
+                    _log("Merchant.Restock", f"Cannot restock model {model_id}; no space or no affordable quantity.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 if price > 0 and Inventory.GetGoldOnCharacter() < price:
                     if allow_withdraw_gold and BTItems.Inventory._withdraw_gold_for_amount(price, remaining_storage_gold) > 0:
+                        _log("Merchant.Restock", f"Withdrawing gold before restocking model {model_id}.", log=log)
                         return BehaviorTree.NodeState.RUNNING
+                    _log("Merchant.Restock", f"Not enough gold to restock model {model_id}.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
                                      
+                _log("Merchant.Restock", f"Buying {count} of model {model_id} to reach target {quantity}.", log=log)
                 for _ in range(max(0, count)):
                     Trading.Merchant.BuyItem(item_id, price)
 
                 if not allow_partial and current_qty + count < quantity:
+                    _log("Merchant.Restock", f"Partial merchant restock for model {model_id} is not allowed.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.RUNNING
 
                 return BehaviorTree.NodeState.SUCCESS
@@ -1781,6 +1938,7 @@ class BTItems:
             allow_partial: bool = True,
             deposit_gold: bool = False,
             remaining_inv_gold: int = 5000,
+            log: bool = False,
             aftercast_ms: int = 250,
         ) -> BehaviorTree:
         
@@ -1789,6 +1947,7 @@ class BTItems:
                 allow_partial=allow_partial,
                 deposit_gold=deposit_gold,
                 remaining_inv_gold=remaining_inv_gold,
+                log=log,
                 aftercast_ms=aftercast_ms,
             )
         
@@ -1798,6 +1957,7 @@ class BTItems:
             allow_partial: bool = True,
             deposit_gold: bool = False,
             remaining_inv_gold: int = 5000,
+            log: bool = False,
             aftercast_ms: int = 250,
         ) -> BehaviorTree:
             """
@@ -1813,14 +1973,17 @@ class BTItems:
             """
             def _sell(node: BehaviorTree.Node):
                 if not MerchantWindow.IsOpen():
+                    _log("Merchant.SellItems", "Merchant window is not open.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
                 
                 items = [item for item in (ItemSnapshot.from_item_id(iid) for iid in item_ids) if item and item.is_valid and item.is_inventory_item]
                 if not items:
+                    _log("Merchant.SellItems", "No valid inventory items were provided to sell.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 if deposit_gold and Inventory.GetGoldOnCharacter() > remaining_inv_gold:
                     if BTItems.Inventory._deposit_gold_to_limit(remaining_inv_gold) > 0:
+                        _log("Merchant.SellItems", f"Depositing gold to keep {remaining_inv_gold} on character before selling.", log=log)
                         return BehaviorTree.NodeState.RUNNING
 
                 current_gold = Inventory.GetGoldOnCharacter()
@@ -1838,8 +2001,10 @@ class BTItems:
                     sellable_items.append(item)
 
                 if not sellable_items:
+                    _log("Merchant.SellItems", "No sellable items fit the current gold-cap constraints.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
                 if not allow_partial and len(sellable_items) < len(items):
+                    _log("Merchant.SellItems", "Not all requested items can be sold and partial selling is disabled.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 sold_any = False
@@ -1847,6 +2012,7 @@ class BTItems:
                     if item is None or not item.is_valid or not item.is_inventory_item:
                         continue
                     
+                    _log("Merchant.SellItems", f"Selling {item.names.plain} (ID: {item.id}) x{item.quantity}.", log=log)
                     Trading.Merchant.SellItem(item.id, Item.Properties.GetValue(item.id) * item.quantity)
                     sold_any = True
 
@@ -1873,6 +2039,7 @@ class BTItems:
                 allow_withdraw_gold=allow_withdraw_gold,
                 remaining_storage_gold=remaining_storage_gold,
                 aftercast_ms=aftercast_ms,
+                log=log,
             )
         
         @staticmethod
@@ -1881,6 +2048,7 @@ class BTItems:
             allow_partial: bool = True,
             allow_withdraw_gold: bool = False,
             remaining_storage_gold: int = 0,
+            log: bool = False,
             aftercast_ms: int = 250,
         ) -> BehaviorTree:
             """
@@ -1896,12 +2064,14 @@ class BTItems:
             """
             def _buy(node: BehaviorTree.Node):
                 if not MerchantWindow.IsOpen():
+                    _log("Merchant.BuyItems", "Merchant window is not open.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
                 
                 offered_items = Trading.Merchant.GetOfferedItems()
                 valid_item_ids_quantities = [(item_id, qty) for item_id, qty in item_ids_quantities if item_id in offered_items]
                 
                 if not valid_item_ids_quantities:
+                    _log("Merchant.BuyItems", "None of the requested items are offered by the merchant.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 bought_any = False
@@ -1917,23 +2087,30 @@ class BTItems:
                     
                     if not has_space or count <= 0:
                         all_requested_fulfilled = False
+                        _log("Merchant.BuyItems", f"Cannot buy {get_item_name(offered_item_id)} x{quantity} - not enough space in inventory.", message_type=Console.MessageType.Warning, log=log)
                         continue
 
                     if price > 0 and Inventory.GetGoldOnCharacter() < price and allow_withdraw_gold:
                         pending_withdraw = BTItems.Inventory._withdraw_gold_for_amount(price, remaining_storage_gold) > 0
                         if pending_withdraw:
+                            _log("Merchant.BuyItems", f"Withdrawing gold for {get_item_name(offered_item_id)} x{quantity}.", message_type=Console.MessageType.Info, log=log)
                             break
                                         
                     for _ in range(max(0, count)):
+                        _log("Merchant.BuyItems", f"Buying {get_item_name(offered_item_id)} x{quantity}.", message_type=Console.MessageType.Info, log=log)
                         Trading.Merchant.BuyItem(offered_item_id, price)
                         bought_any = True
+                        
                     if count < quantity:
                         all_requested_fulfilled = False
 
                 if pending_withdraw:
                     return BehaviorTree.NodeState.RUNNING
+                
                 if not allow_partial and not all_requested_fulfilled:
+                    _log("Merchant.BuyItems", "Failed to buy all requested items and partial purchases are not allowed.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
+                
                 return _success_if(bought_any)
 
             return BehaviorTree(
@@ -2318,6 +2495,7 @@ class BTItems:
             item_ids: list[int],
             quantities: Optional[list[int]] = None,
             aftercast_ms: int = 250,
+            log: bool = False,
         ):
             """
             Build an action node that uses one or more inventory items.
@@ -2332,20 +2510,24 @@ class BTItems:
             """
             def _use(node: BehaviorTree.Node):
                 if not item_ids:
+                    _log("Items.UseItems", "No item ids were provided.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 used_any = False
                 items = [ItemSnapshot.from_item_id(iid) for iid in item_ids]
                 
-                for item in items:
+                for index, item in enumerate(items):
                     if item is None or not item.is_valid or not item.is_inventory_item:
                         continue
                     
-                    quantity = quantities[items.index(item)] if quantities and items.index(item) < len(quantities) else 1
+                    quantity = quantities[index] if quantities and index < len(quantities) else 1
+                    _log("Items.UseItems", f"Using {item.names.plain} (ID: {item.id}) x{quantity}.", log=log)
                     for _ in range(max(0, quantity)):
                         Inventory.UseItem(item.id)
                         used_any = True
 
+                if not used_any:
+                    _log("Items.UseItems", "No valid inventory items were used.", message_type=Console.MessageType.Warning, log=log)
                 return BehaviorTree.NodeState.SUCCESS if used_any else BehaviorTree.NodeState.FAILURE
 
             return BehaviorTree(
@@ -2357,6 +2539,7 @@ class BTItems:
             item_ids: list[int],
             aftercast_ms: int = 250,
             succeed_if_any_dropped: bool = True,
+            log: bool = False,
         ):
             """
             Build an action node that drops one or more inventory items.
@@ -2371,6 +2554,7 @@ class BTItems:
             """
             def _drop(node: BehaviorTree.Node):
                 if not item_ids:
+                    _log("Items.DropItems", "No item ids were provided.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 dropped_any = False
@@ -2380,9 +2564,12 @@ class BTItems:
                     if item is None or not item.is_valid or not item.is_inventory_item:
                         continue
                     
+                    _log("Items.DropItems", f"Dropping {item.names.plain} (ID: {item.id}) x{item.quantity}.", log=log)
                     Inventory.DropItem(item.id, item.quantity)
                     dropped_any = True
 
+                if not dropped_any:
+                    _log("Items.DropItems", "No valid inventory items were dropped.", message_type=Console.MessageType.Warning, log=log)
                 return BehaviorTree.NodeState.SUCCESS if dropped_any else BehaviorTree.NodeState.FAILURE
 
             return BehaviorTree(
@@ -2395,6 +2582,7 @@ class BTItems:
             fail_if_no_kit: bool = True,
             succeed_if_already_identified: bool = True,
             aftercast_ms: int = 250,
+            log: bool = False,
         ):
             """
             Build an action node that identifies one or more inventory items.
@@ -2409,6 +2597,7 @@ class BTItems:
             """
             def _identify(node: BehaviorTree.Node):
                 if not item_ids:
+                    _log("Items.IdentifyItems", "No item ids were provided.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE
 
                 identified_any = False
@@ -2421,11 +2610,15 @@ class BTItems:
                     kit_id = Inventory.GetFirstIDKit()
                     
                     if kit_id == 0:
+                        _log("Items.IdentifyItems", f"No identification kit available for {item.names.plain} (ID: {item.id}).", message_type=Console.MessageType.Warning, log=log)
                         return BehaviorTree.NodeState.FAILURE if fail_if_no_kit else (BehaviorTree.NodeState.SUCCESS if identified_any else (BehaviorTree.NodeState.SUCCESS if succeed_if_already_identified else BehaviorTree.NodeState.FAILURE))
                     
+                    _log("Items.IdentifyItems", f"Identifying {item.names.plain} (ID: {item.id}) with kit {kit_id}.", log=log)
                     Inventory.IdentifyItem(item.id, kit_id)
                     identified_any = True
 
+                if not identified_any and not succeed_if_already_identified:
+                    _log("Items.IdentifyItems", "No valid inventory items were identified.", message_type=Console.MessageType.Warning, log=log)
                 return BehaviorTree.NodeState.SUCCESS if identified_any else (BehaviorTree.NodeState.SUCCESS if succeed_if_already_identified else BehaviorTree.NodeState.FAILURE)
 
             return BehaviorTree(
@@ -3075,7 +3268,7 @@ class BTItems:
             target : list[Bags],
             quantities: Optional[list[int]] = None,
             fill_materials_first: bool = False,
-            log_plans: bool = False,
+            log: bool = False,
         ) -> dict[Bags, dict[int, BTItems.Items.ItemTransferInstructions]]:
             """
             Build a destination-slot transfer plan for moving items into target bags.
@@ -3187,23 +3380,25 @@ class BTItems:
                 destinations = BTItems.Items._get_planned_destinations_for_item(moving_instructions, item.id)
                 destination_text = ", ".join(destinations) if destinations else "no destination"
 
-                if log_plans:
-                    if planned_qty <= 0:
-                        _log(
-                            "GetTransferInstructions",
-                            f"Could not plan a move for '{item.names.plain}' (ID: {item.id}).",
-                        )
-                    elif planned_qty < requested_qty:
-                        _log(
-                            "GetTransferInstructions",
-                            f"Planned partial move of {planned_qty}/{requested_qty} for '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
-                        )
-                        
-                    elif planned_qty == requested_qty:
-                        _log(
-                            "GetTransferInstructions",
-                            f"Planned to move {requested_qty} of '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
-                        )
+                if planned_qty <= 0:
+                    _log(
+                        "GetTransferInstructions",
+                        f"Could not plan a move for '{item.names.plain}' (ID: {item.id}).",
+                        log=log,
+                    )
+                elif planned_qty < requested_qty:
+                    _log(
+                        "GetTransferInstructions",
+                        f"Planned partial move of {planned_qty}/{requested_qty} for '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
+                        log=log,
+                    )
+                    
+                elif planned_qty == requested_qty:
+                    _log(
+                        "GetTransferInstructions",
+                        f"Planned to move {requested_qty} of '{item.names.plain}' (ID: {item.id}).\n{destination_text}.",
+                        log=log,
+                    )
                 
             return moving_instructions            
         
@@ -3215,6 +3410,7 @@ class BTItems:
             fail_if_no_space: bool = True,
             aftercast_ms: int = 250,
             precomputed_instructions: Optional[dict[Bags, dict[int, "BTItems.Items.ItemTransferInstructions"]]] = None,
+            log: bool = False,
         ):
             """
             Build an action node that deposits items into storage bags using transfer planning.
@@ -3233,14 +3429,18 @@ class BTItems:
                 moved_any = False
                 
                 if not instructions:
+                    _log("Items.DepositItems", f"No deposit instructions could be created for item ids {item_ids}.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE if fail_if_no_space else BehaviorTree.NodeState.SUCCESS
                 
                 for bag in instructions.values():
                     for dest in bag.values():
                         for item, qty in dest.items:
+                            _log("Items.DepositItems", f"Depositing {item.names.plain} (ID: {item.id}) x{qty} to {dest.bag.name} slot {dest.slot}.", log=log)
                             BTItems.Items._move_item_to_transfer_destination(item, dest, qty, node.name)
                             moved_any = True
                 
+                if not moved_any:
+                    _log("Items.DepositItems", "Deposit instructions existed, but no item was moved.", message_type=Console.MessageType.Warning, log=log)
                 return BehaviorTree.NodeState.SUCCESS if moved_any else BehaviorTree.NodeState.FAILURE
 
             return BehaviorTree(
@@ -3258,7 +3458,7 @@ class BTItems:
                 item_ids,
                 target,
                 fill_materials_first=fill_materials_first,
-                log_plans=log_plans,
+                log=log_plans,
             )
 
             return BTItems.Items._get_planned_transfer_item_ids(instructions)
@@ -3270,6 +3470,7 @@ class BTItems:
             fill_materials_first: bool = True,
             fail_if_no_space: bool = True,
             aftercast_ms: int = 250,
+            log: bool = False,
         ):                   
             """
             Build an action node that withdraws items from storage into inventory using transfer planning.
@@ -3287,14 +3488,18 @@ class BTItems:
                 moved_any = False
                 
                 if not instructions:
+                    _log("Items.WithdrawItems", f"No withdraw instructions could be created for item ids {item_ids}.", message_type=Console.MessageType.Warning, log=log)
                     return BehaviorTree.NodeState.FAILURE if fail_if_no_space else BehaviorTree.NodeState.SUCCESS
                 
                 for bag in instructions.values():
                     for dest in bag.values():
                         for item, qty in dest.items:
+                            _log("Items.WithdrawItems", f"Withdrawing {item.names.plain} (ID: {item.id}) x{qty} to {dest.bag.name} slot {dest.slot}.", log=log)
                             BTItems.Items._move_item_to_transfer_destination(item, dest, qty, node.name)
                             moved_any = True
                 
+                if not moved_any:
+                    _log("Items.WithdrawItems", "Withdraw instructions existed, but no item was moved.", message_type=Console.MessageType.Warning, log=log)
                 return BehaviorTree.NodeState.SUCCESS if moved_any else BehaviorTree.NodeState.FAILURE
 
             return BehaviorTree(
@@ -4107,6 +4312,7 @@ class BTItems:
             allow_partial: bool = True,
             allow_withdraw_gold: bool = False,
             remaining_storage_gold: int = 0,
+            log: bool = False,
             aftercast_ms: int = 250,            
         ) -> BehaviorTree:
             """
@@ -4124,6 +4330,12 @@ class BTItems:
                 k = min(len(material_model_ids), len(material_quantities))
 
                 if output_model_id <= 0 or k == 0 or quantity <= 0:
+                    _log(
+                        "Crafting.CraftItemByModelID",
+                        f"Invalid recipe configuration: output_model_id={output_model_id}, material_model_ids={material_model_ids}, material_quantities={material_quantities}, quantity={quantity}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
 
                 recipe_model_ids = material_model_ids[:k]
@@ -4133,6 +4345,12 @@ class BTItems:
                     recipe_quantities,
                 )
                 if any(required_quantity <= 0 for required_quantity in recipe_quantities):
+                    _log(
+                        "Crafting.CraftItemByModelID",
+                        f"Invalid recipe configuration: output_model_id={output_model_id}, material_model_ids={material_model_ids}, material_quantities={material_quantities}, quantity={quantity}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
 
                 state_key = f"{node.id}_craft_item_model_id"
@@ -4147,9 +4365,21 @@ class BTItems:
                         available_gold=BTItems.Inventory._get_spendable_gold(allow_withdraw_gold, remaining_storage_gold),
                     )
                     if craftable_now <= 0:
+                        _log(
+                            "Crafting.CraftItemByModelID",
+                            f"Cannot craft item with output model ID {output_model_id} due to insufficient materials or gold.",
+                            message_type=Console.MessageType.Info,
+                            log=log,
+                        )
                         return BehaviorTree.NodeState.FAILURE
 
                     if not allow_partial and craftable_now < quantity:
+                        _log(
+                            "Crafting.CraftItemByModelID",
+                            f"Cannot craft full quantity {quantity} of item with output model ID {output_model_id} (craftable: {craftable_now}) and partial crafting is not allowed.",
+                            message_type=Console.MessageType.Info,
+                            log=log,
+                        )
                         return BehaviorTree.NodeState.FAILURE
 
                     state = {
@@ -4163,14 +4393,32 @@ class BTItems:
 
                 if crafted_quantity >= target_quantity:
                     node.blackboard.pop(state_key, None)
+                    _log(
+                        "Crafting.CraftItemByModelID",
+                        f"Crafting complete for item with output model ID {output_model_id}: crafted {crafted_quantity}/{target_quantity}.",
+                        message_type=Console.MessageType.Info,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.SUCCESS
 
                 if BTItems.Crafting._compact_ingredient_stacks(recipe_model_ids):
+                    _log(
+                        "Crafting.CraftItemByModelID",
+                        f"Compacted ingredient stacks for crafting item with output model ID {output_model_id}.",
+                        message_type=Console.MessageType.Debug,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.RUNNING
 
                 output_item_id = BTItems.Crafting._get_output_item_id(output_model_id)
                 if output_item_id == 0:
                     node.blackboard.pop(state_key, None)
+                    _log(
+                        "Crafting.CraftItemByModelID",
+                        f"Failed to resolve output item ID for model ID {output_model_id}.",
+                        message_type=Console.MessageType.Warning,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
 
                 ingredients, available_by_model = BTItems.Crafting._get_live_ingredients(recipe_model_ids, recipe_quantities)
@@ -4183,15 +4431,47 @@ class BTItems:
                     ):
                         node.blackboard.pop(state_key, None)
                         if allow_partial and crafted_quantity > 0:
+                            _log(
+                                "Crafting.CraftItemByModelID",
+                                f"Partially crafted {crafted_quantity}/{target_quantity} of item with output model ID {output_model_id} due to insufficient materials, and partial crafting is allowed.",
+                                message_type=Console.MessageType.Info,
+                                log=log,
+                            )
                             return BehaviorTree.NodeState.SUCCESS
+                        
+                        _log(
+                            "Crafting.CraftItemByModelID",
+                            f"Insufficient materials for crafting item with output model ID {output_model_id}. Needed {ingredient.required_quantity} of model ID {ingredient.model_id}, but only {available_by_model.get(ingredient.model_id, 0)} available.",
+                            message_type=Console.MessageType.Info,
+                            log=log,
+                        )
                         return BehaviorTree.NodeState.FAILURE
 
                 if cost > 0 and Inventory.GetGoldOnCharacter() < cost:
                     if allow_withdraw_gold and BTItems.Inventory._withdraw_gold_for_amount(cost, remaining_storage_gold) > 0:
+                        _log(
+                            "Crafting.CraftItemByModelID",
+                            f"Withdrew gold for crafting item with output model ID {output_model_id}.",
+                            message_type=Console.MessageType.Debug,
+                            log=log,
+                        )
                         return BehaviorTree.NodeState.RUNNING
                     node.blackboard.pop(state_key, None)
                     if allow_partial and crafted_quantity > 0:
+                        _log(
+                            "Crafting.CraftItemByModelID",
+                            f"Partially crafted {crafted_quantity}/{target_quantity} of item with output model ID {output_model_id} due to insufficient gold, and partial crafting is allowed.",
+                            message_type=Console.MessageType.Info,
+                            log=log,
+                        )
                         return BehaviorTree.NodeState.SUCCESS
+                    
+                    _log(
+                        "Crafting.CraftItemByModelID",
+                        f"Insufficient gold for crafting item with output model ID {output_model_id}. Needed {cost} gold, but only {Inventory.GetGoldOnCharacter()} available.",
+                        message_type=Console.MessageType.Info,
+                        log=log,
+                    )
                     return BehaviorTree.NodeState.FAILURE
 
                 Trading.Crafter.CraftItem(
@@ -4202,6 +4482,12 @@ class BTItems:
                 )
                 state["crafted_quantity"] = crafted_quantity + 1
                 node.blackboard[state_key] = state
+                _log(
+                    "Crafting.CraftItemByModelID",
+                    f"Crafted 1 unit of item with output model ID {output_model_id} (crafted {state['crafted_quantity']}/{state['target_quantity']}).",
+                    message_type=Console.MessageType.Info,
+                    log=log,
+                )
                 return BehaviorTree.NodeState.RUNNING
             
             return BehaviorTree(

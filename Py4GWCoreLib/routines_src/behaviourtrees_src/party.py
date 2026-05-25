@@ -12,16 +12,13 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import NamedTuple, Optional
 
-from PyParty import HenchmanPartyMember, HeroPartyMember
+from PyParty import HeroPartyMember
 
-from Py4GWCoreLib.Agent import Agent
-from Py4GWCoreLib.AgentArray import AgentArray
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
 from Py4GWCoreLib.GlobalCache.shared_memory_src.AccountStruct import AccountStruct
 from Py4GWCoreLib.Skillbar import SkillBar
 from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
-from Py4GWCoreLib.native_src.context.AgentContext import AgentLivingStruct
 
 from ...Map import Map
 from ...Party import Party
@@ -287,7 +284,7 @@ class BTParty:
     def SetupParty(
         henchmen : Optional[Sequence[int]] = None,
         heroes : Optional[Sequence[int | HeroType | str | tuple[int | HeroType | str, Optional[str]]]] = None,
-        players : Optional[Sequence[str | int | tuple[str | int, Optional[str]]]] = None,
+        players : Optional[Sequence[str | tuple[str, Optional[str]]]] = None,
         account_heroes : Optional[Sequence[tuple[str, Sequence[tuple[int | HeroType | str, Optional[str]]]]]] = None,
         require_outpost: bool = True,
         leave_if_no_leader: bool = True,
@@ -1000,89 +997,73 @@ class BTParty:
 
     class Multiboxing:
         @staticmethod
-        def _get_player_entry(identifier : str | int) -> Optional[PlayerEntry]:
+        def _on_same_map(account: AccountStruct) -> bool:
+            mapid = Map.GetMapID() or 0
+            region = Map.GetRegion() or 0
+            district = Map.GetDistrict() or 0
+            language = Map.GetLanguage() or 0
+            return account.AgentData.Map.MapID == mapid and account.AgentData.Map.Region == region and account.AgentData.Map.District == district and account.AgentData.Map.Language == language
+        
+        @staticmethod
+        def _get_player_entry(identifier : str) -> Optional[PlayerEntry]:
             shared_accounts = GLOBAL_CACHE.ShMem.GetAllAccountData() or []
             
-            def _get_owner_account(character_name: str) -> Optional[AccountStruct]:
-                for acc in shared_accounts:
-                    if _normalized(character_name) == _normalized(acc.AgentData.CharacterName):
+            def _get_owner_account(identifier: str) -> Optional[AccountStruct]:
+                for acc in shared_accounts:                    
+                    if _normalized(identifier) == _normalized(acc.AgentData.CharacterName):
                         return acc
+                    
+                    elif _normalized(identifier) == _normalized(acc.AccountEmail):
+                        return acc
+                    
                 return None
             
-            if isinstance(identifier, int):
-                agent = Agent.GetAgentByID(identifier)
-                if agent and Agent.IsPlayer(identifier):
-                    character_name = str(Agent.GetNameByID(identifier) or '').strip()
-                    account = _get_owner_account(character_name)
-                
-                    if account is None:
-                        return PlayerEntry(
-                            character_name=character_name,
-                            character_name_normalized=_normalized(character_name),
-                            account_email='',    
-                            account=None,
-                            template=None,
-                            is_on_same_map=True,
-                            login_number=Agent.GetLoginNumber(identifier),
-                        )
-                    else:
-                        identifier = account.AgentData.CharacterName
+            account = _get_owner_account(identifier) or next((acc for acc in shared_accounts if _normalized(identifier) == _normalized(acc.AccountEmail)), None)
             
-            if isinstance(identifier, str):
-                account = _get_owner_account(identifier) or next((acc for acc in shared_accounts if _normalized(identifier) == _normalized(acc.AccountEmail)), None)
+            if account is not None:
+                on_same_map = BTParty.Multiboxing._on_same_map(account)
                 
                 if account is not None:
-                    mapid = Map.GetMapID() or 0
-                    region = Map.GetRegion() or 0
-                    district = Map.GetDistrict() or 0
-                    language = Map.GetLanguage() or 0
-                    on_same_map = account.AgentData.Map.MapID == mapid and account.AgentData.Map.Region == region and account.AgentData.Map.District == district and account.AgentData.Map.Language == language
-                    
-                    if account is not None:
-                        return PlayerEntry(
-                            character_name=account.AgentData.CharacterName,
-                            character_name_normalized=_normalized(account.AgentData.CharacterName),
-                            account_email=str(account.AccountEmail or '').strip(),
-                            account=account,
-                            template=None,
-                            is_on_same_map=on_same_map,
-                            login_number=account.AgentData.LoginNumber,
-                        )
-                else:
-                    players = [agent for agent_id in AgentArray.GetAllyArray() if (agent := Agent.GetAgentByID(agent_id)) and Agent.IsPlayer(agent_id)]
-                    for player in players:
-                        character_name = str(Agent.GetNameByID(player.agent_id) or '').strip()
-                        
-                        if _normalized(character_name) == _normalized(identifier):
-                            return PlayerEntry(
-                                character_name=character_name,
-                                character_name_normalized=_normalized(character_name),
-                                account_email='',
-                                account=None,
-                                template=None,
-                                is_on_same_map=True,
-                                login_number=Agent.GetLoginNumber(player.agent_id),
-                            )
+                    return PlayerEntry(
+                        character_name=account.AgentData.CharacterName,
+                        character_name_normalized=_normalized(account.AgentData.CharacterName),
+                        account_email=str(account.AccountEmail or '').strip(),
+                        account=account,
+                        template=None,
+                        is_on_same_map=on_same_map,
+                        login_number=account.AgentData.LoginNumber,
+                    )
+        
+            
             
             return None
 
         @staticmethod
         def _get_current_player_entries() -> list[PlayerEntry]:
-            players = [agent for agent_id in AgentArray.GetAllyArray() if (agent := Agent.GetAgentByID(agent_id)) and Agent.IsPlayer(agent_id)]
-            player_entries: list[PlayerEntry] = []
+            party_players = Party.GetPlayers() or []
+            player_entries : list[PlayerEntry] = []
+            shared_accounts = GLOBAL_CACHE.ShMem.GetAllAccountData() or []
             
-            for member in Party.GetPlayers():
-                agent = next((agent for agent in players if Agent.GetLoginNumber(agent.agent_id) == member.login_number), None)
+            for member in party_players:
+                name = Party.Players.GetPlayerNameByLoginNumber(member.login_number) or ''
+                account = next((acc for acc in shared_accounts if BTParty.Multiboxing._on_same_map(acc) and member.login_number == acc.AgentData.LoginNumber), None)
                 
-                if agent and (entry := BTParty.Multiboxing._get_player_entry(agent.agent_id)) is not None:
-                    player_entries.append(entry)
+                player_entries.append(PlayerEntry(
+                    character_name=name,
+                    character_name_normalized=_normalized(name),
+                    account_email='',
+                    account=account,
+                    template=None,
+                    is_on_same_map=True,
+                    login_number=member.login_number,
+                ))
                     
             return player_entries
 
         @staticmethod
-        def InvitePlayers(players : Sequence[str | int], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+        def InvitePlayers(players : Sequence[str], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
             def invite_players(
-                players: Sequence[str | int],
+                players: Sequence[str],
                 timeout_ms: int = 15000,
                 poll_interval_ms: int = 100,
                 aftercast_ms: int = 150,
@@ -1090,57 +1071,35 @@ class BTParty:
             ) -> BehaviorTree:
                 childs: list[BehaviorTree | BehaviorTree.Node] = []
                 from Sources.ApoSource.ApoBottingLib.wrappers import InviteAccountByEmail, SummonAccountByEmail
-
+                current_party_players = BTParty.Multiboxing._get_current_player_entries()
+                
                 for identifier in players:
                     entry = BTParty.Multiboxing._get_player_entry(identifier)
                     if entry is None:
-                        ConsoleLog("InvitePlayers", f'Could not resolve player entry for identifier: {identifier}', log=log)
-                        return BehaviorTree(
-                            BehaviorTree.FailerNode(
-                                name="InvitePlayers",
-                            )
-                        )
+                        if not any(_normalized(identifier) == player.character_name_normalized for player in current_party_players):
+                            #Invite blindly since we could invite a regular player which just can not share any data                        
+                            ConsoleLog("InvitePlayers", f'Could not resolve player entry for identifier: {identifier}. {identifier} is not in the current party. Inviting blindly.', log=log)
+                            Party.Players.InvitePlayer(identifier)
+                        else:
+                            ConsoleLog("InvitePlayers", f'Could not resolve player entry for identifier: {identifier}. However, {identifier} is already in the current party, so we will assume it is correct and skip inviting.', log=log)
+                        
+                        continue
 
-                    if entry.is_on_same_map:
-                        if entry.account_email:
-                            ConsoleLog("InvitePlayers", f'Invite multiboxing account by email: {entry.character_name} ({entry.account_email})', log=log)
-                            childs.append(InviteAccountByEmail(entry.account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
+                    if entry.account_email:
+                        if entry.is_on_same_map:
+                                ConsoleLog("InvitePlayers", f'Invite multiboxing account by email: {entry.character_name} ({entry.account_email})', log=log)
+                                childs.append(InviteAccountByEmail(entry.account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
 
                         else:
-                            ConsoleLog("InvitePlayers", f'Invite unknown player by character name: {entry.character_name}', log=log)
-                            childs.append(
-                                BehaviorTree.ActionNode(
-                                    name=f'DispatchInvitePlayer({entry.character_name})',
-                                    action_fn=lambda _node=None, player_name=entry.character_name: (
-                                        ConsoleLog("InvitePlayers", f'Dispatch direct invite by name: {player_name}', log=log),
-                                        Party.Players.InvitePlayer(str(player_name)),
-                                        BehaviorTree.NodeState.SUCCESS,
-                                    )[1],
-                                    aftercast_ms=aftercast_ms,
-                                ))
-
-                            childs.append(
-                                BehaviorTree.WaitUntilNode(
-                                    name=f'WaitForInvitedPlayer({entry.character_name})',
-                                    condition_fn=lambda player_name=entry.character_name: any(
-                                        _normalized(player.character_name) == _normalized(player_name)
-                                        for player in BTParty.Multiboxing._get_current_player_entries()
-                                    ),
-                                    throttle_interval_ms=poll_interval_ms,
-                                    timeout_ms=timeout_ms,
-                                ),
-                            )
-
-                    elif entry.account_email:
-                        ConsoleLog("InvitePlayers", f'Summon and Invite multiboxing account by email: {entry.character_name} ({entry.account_email})', log=log)
-                        childs.append(SummonAccountByEmail(entry.account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
-                        childs.append(InviteAccountByEmail(entry.account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
+                            ConsoleLog("InvitePlayers", f'Summon and Invite multiboxing account by email: {entry.character_name} ({entry.account_email})', log=log)
+                            childs.append(SummonAccountByEmail(entry.account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
+                            childs.append(InviteAccountByEmail(entry.account_email, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, log=log))
 
                     else:
-                        ConsoleLog("InvitePlayers", f'Cannot invite player, no valid invitation method: {entry.character_name}', log=log)
+                        ConsoleLog("InvitePlayers", f'Cannot invite player {entry.character_name} by email since no email is available.', log=log)
                         return BehaviorTree(
                             BehaviorTree.FailerNode(
-                                name="InvitePlayers",
+                                name="InvitePlayers - Failed to invite player without email: " + entry.character_name,
                             )
                         )
 
@@ -1165,7 +1124,7 @@ class BTParty:
             )
 
         @staticmethod
-        def SendTemplateRequestToPlayers(players : Sequence[tuple[str | int, str]], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+        def SendTemplateRequestToPlayers(players : Sequence[tuple[str, str]], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
             def _send_template_request() -> BehaviorTree.NodeState:
                 for identifier, template in players:
                     if not template:
@@ -1186,7 +1145,8 @@ class BTParty:
                             ExtraData=(template, '', '', ''),
                         )
                     else:
-                        ConsoleLog("SendTemplateRequestToPlayers", f'Cannot send template request to player, no valid method: {entry.character_name}', log=log)
+                        ConsoleLog("SendTemplateRequestToPlayers", f'Cannot send template request to players not present in the shared memory. Tried to send template to: {entry.character_name}', log=log)
+                        return BehaviorTree.NodeState.FAILURE
                 
                 return BehaviorTree.NodeState.SUCCESS
             
@@ -1199,33 +1159,33 @@ class BTParty:
             )
 
         @staticmethod
-        def InvitePlayersAndSendTemplateRequest(players_and_templates : Sequence[tuple[str | int, Optional[str]]], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+        def InvitePlayersAndSendTemplateRequest(players_and_templates : Sequence[tuple[str, Optional[str]]], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
             players = [identifier for identifier, _ in players_and_templates]
-            templates = [(identifier, template) for identifier, template in players_and_templates if template]
+            players_and_templates = [(identifier, template) for identifier, template in players_and_templates if template]
             
             return BehaviorTree(
                 BehaviorTree.SequenceNode(
                     name="InvitePlayersAndSendTemplateRequest",
                     children=[
                         BTParty.Multiboxing.InvitePlayers(players, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
-                        BTParty.Multiboxing.SendTemplateRequestToPlayers(templates, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
+                        BTParty.Multiboxing.SendTemplateRequestToPlayers(players_and_templates, timeout_ms=timeout_ms, poll_interval_ms=poll_interval_ms, aftercast_ms=aftercast_ms, log=log),
                     ]
                 )
             )
 
         @staticmethod
-        def KickPlayers(players : Sequence[str | int], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+        def KickPlayers(players : Sequence[str], aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
             def _kick() -> BehaviorTree.NodeState:
-                current_party = BTParty.Multiboxing._get_current_player_entries()
                 for identifier in players:
                     entry = BTParty.Multiboxing._get_player_entry(identifier)
                     
                     if entry is None:
-                        continue
+                        ConsoleLog("KickPlayers", f'Cannot kick player, entry not found: {identifier}', log=log)
+                        return BehaviorTree.NodeState.FAILURE
                     
                     if entry.login_number is None:
                         ConsoleLog("KickPlayers", f'Cannot kick player with unknown login number, skipping: {entry.character_name}', log=log)
-                        continue
+                        return BehaviorTree.NodeState.FAILURE
                     
                     ConsoleLog("KickPlayers", f'Kicking player: {entry.character_name}', log=log)
                     Party.Players.KickPlayer(entry.login_number)
@@ -1241,10 +1201,10 @@ class BTParty:
             )
             
         @staticmethod
-        def SetupPlayers(players : Sequence[str | int | tuple[str | int, Optional[str]]], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
-            players_to_invite: list[str | int] = []
-            players_to_send_template: list[tuple[str | int, str]] = []
-            players_to_kick: list[str | int] = []
+        def SetupPlayers(players : Sequence[str | tuple[str, Optional[str]]], timeout_ms: int = 15000, poll_interval_ms: int = 100, aftercast_ms: int = 150, log: bool = False) -> BehaviorTree:
+            players_to_invite: list[str] = []
+            players_to_send_template: list[tuple[str, str]] = []
+            players_to_kick: list[str] = []
             
             current_party = BTParty.Multiboxing._get_current_player_entries()
             

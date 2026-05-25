@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias
 
-from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, NICK_CYCLE_COUNT, ItemType, Rarity, SalvageMode
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
-from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
+from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, HalvesCastingTimeAttributeUpgrade, HalvesRechargeTimeAttributeUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
 from Py4GWCoreLib.item_data.ItemData import COMMON_MATERIALS, DAMAGE_RANGES, RARE_MATERIALS
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
@@ -15,6 +15,13 @@ from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 class DamageRange(NamedTuple):
     min_value: int
     max_value: int
+
+
+@dataclass
+class RequirementFilter:
+    value_range: DamageRange
+    allowed_attributes: list[Attribute] = field(default_factory=list)
+    disallowed_attributes: list[Attribute] = field(default_factory=list)
 
 
 @dataclass
@@ -38,7 +45,7 @@ class InherentFilter:
         return InherentFilter(inherent=inherent, ranges=ranges)
 
 
-WeaponRequirementRanges: TypeAlias = dict[int, DamageRange]
+WeaponRequirementRanges: TypeAlias = dict[int, RequirementFilter]
 InherentFilters: TypeAlias = list[InherentFilter]
 
 ModelIdAndItemType = NamedTuple("ModelIdAndItemType", [("model_id", ModelID | int), ("item_type", ItemType)])
@@ -65,6 +72,41 @@ def _default_damage_range(item_type: Optional[ItemType], requirement: int) -> Da
     return DamageRange(min_value, max_value)
 
 
+def _normalize_attribute_list(attributes: Any) -> list[Attribute]:
+    normalized: list[Attribute] = []
+    if not isinstance(attributes, list):
+        return normalized
+
+    for attribute in attributes:
+        if isinstance(attribute, Attribute):
+            if attribute not in normalized and attribute != Attribute.None_:
+                normalized.append(attribute)
+            continue
+
+        if isinstance(attribute, str) and attribute in Attribute.__members__:
+            parsed_attribute = Attribute[attribute]
+            if parsed_attribute not in normalized and parsed_attribute != Attribute.None_:
+                normalized.append(parsed_attribute)
+
+    return normalized
+
+
+def _normalize_requirement_filter(value: Any) -> RequirementFilter | None:
+    if isinstance(value, RequirementFilter):
+        return RequirementFilter(
+            value_range=DamageRange(int(value.value_range.min_value), int(value.value_range.max_value)),
+            allowed_attributes=_normalize_attribute_list(value.allowed_attributes),
+            disallowed_attributes=_normalize_attribute_list(value.disallowed_attributes),
+        )
+
+    if isinstance(value, DamageRange):
+        return RequirementFilter(
+            value_range=DamageRange(int(value.min_value), int(value.max_value)),
+        )
+
+    return None
+
+
 def normalize_requirement_ranges(
     requirements: Optional[WeaponRequirementRanges],
     item_type: Optional[ItemType] = None,
@@ -72,22 +114,27 @@ def normalize_requirement_ranges(
     requirement_max: int = 13,
 ) -> WeaponRequirementRanges:
     if requirements is not None:
-        return {
-            int(requirement): DamageRange(int(value.min_value), int(value.max_value))
-            for requirement, value in requirements.items()
-        }
+        normalized: WeaponRequirementRanges = {}
+        for requirement, value in requirements.items():
+            normalized_filter = _normalize_requirement_filter(value)
+            if normalized_filter is None:
+                continue
+            normalized[int(requirement)] = normalized_filter
+        return normalized
 
     return {}
 
 
-def serialize_requirement_ranges(requirements: WeaponRequirementRanges) -> list[dict[str, int]]:
+def serialize_requirement_ranges(requirements: WeaponRequirementRanges) -> list[dict[str, Any]]:
     return [
         {
             "requirement": requirement,
-            "min_value": value.min_value,
-            "max_value": value.max_value,
+            "min_value": requirement_filter.value_range.min_value,
+            "max_value": requirement_filter.value_range.max_value,
+            "allowed_attributes": [attribute.name for attribute in requirement_filter.allowed_attributes],
+            "disallowed_attributes": [attribute.name for attribute in requirement_filter.disallowed_attributes],
         }
-        for requirement, value in sorted(requirements.items())
+        for requirement, requirement_filter in sorted(requirements.items())
     ]
 
 
@@ -103,7 +150,11 @@ def deserialize_requirement_ranges(data: dict[str, Any], item_type: Optional[Ite
             min_value = entry.get("min_value")
             max_value = entry.get("max_value")
             if isinstance(requirement, int) and isinstance(min_value, int) and isinstance(max_value, int):
-                requirements[requirement] = DamageRange(min_value, max_value)
+                requirements[requirement] = RequirementFilter(
+                    value_range=DamageRange(min_value, max_value),
+                    allowed_attributes=_normalize_attribute_list(entry.get("allowed_attributes", [])),
+                    disallowed_attributes=_normalize_attribute_list(entry.get("disallowed_attributes", [])),
+                )
 
         return requirements
 
@@ -116,14 +167,40 @@ def deserialize_requirement_ranges(data: dict[str, Any], item_type: Optional[Ite
 
 
 def requirement_range_matches(item_snapshot: ItemSnapshot, requirements: WeaponRequirementRanges) -> bool:
-    value_range = requirements.get(int(item_snapshot.requirement))
-    if value_range is None:
+    requirement_filter = requirements.get(int(item_snapshot.requirement))
+    if requirement_filter is None:
         return False
 
+    value_range = requirement_filter.value_range
     if value_range.min_value == 0 and value_range.max_value == 0:
         value_range = _default_damage_range(item_snapshot.item_type, item_snapshot.requirement)
 
-    return item_snapshot.min_damage >= value_range.min_value and item_snapshot.max_damage <= value_range.max_value
+    if item_snapshot.min_damage < value_range.min_value or item_snapshot.max_damage > value_range.max_value:
+        return False
+
+    item_attribute = item_snapshot.attribute
+    if item_attribute in requirement_filter.disallowed_attributes:
+        return False
+
+    if requirement_filter.allowed_attributes and item_attribute not in requirement_filter.allowed_attributes:
+        return False
+
+    return True
+
+
+def requirement_comparison_data(requirements: WeaponRequirementRanges) -> tuple[Any, ...]:
+    return tuple(
+        sorted(
+            (
+                requirement,
+                requirement_filter.value_range.min_value,
+                requirement_filter.value_range.max_value,
+                tuple(attribute.name for attribute in requirement_filter.allowed_attributes),
+                tuple(attribute.name for attribute in requirement_filter.disallowed_attributes),
+            )
+            for requirement, requirement_filter in requirements.items()
+        )
+    )
 
 
 def _normalize_range_bounds(min_value: Any, max_value: Any, fallback: DamageRange) -> DamageRange:
@@ -722,7 +799,7 @@ class WeaponRequirementCondition(Condition):
         return item_snapshot is not None and requirement_range_matches(item_snapshot, self.requirements)
 
     def _comparison_data(self) -> Any:
-        return tuple(sorted(self.requirements.items()))
+        return requirement_comparison_data(self.requirements)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {"requirements": serialize_requirement_ranges(self.requirements)}
@@ -779,6 +856,26 @@ class InscribableCondition(Condition):
     
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         self.inscribable = bool(data.get("inscribable", True))
+
+
+class HalvesCastAndRechargeAttributeCondition(Condition):
+    """Matches spellcasting weapons with either a HCT or HSR inherent sharing the same attribute as the weapon itself."""
+    def __init__(self,):
+        super().__init__()
+        
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        if item_snapshot is None:
+            return False
+
+        item_inherents = item_snapshot.inherents or []
+        upgrade = next((inherent for inherent in item_inherents if isinstance(inherent, (HalvesCastingTimeAttributeUpgrade, HalvesRechargeTimeAttributeUpgrade))), None)
+        
+        if upgrade is None:
+            return False
+
+        item_attribute = item_snapshot.attribute
+        return item_attribute == upgrade.attribute
 
 
 class SalvagesToMaterialsCondition(Condition):

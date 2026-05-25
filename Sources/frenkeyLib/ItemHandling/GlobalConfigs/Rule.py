@@ -149,6 +149,43 @@ class Rule:
             "conditions": [condition.to_dict() for condition in self.conditions],
         }
 
+    def _deserialize_conditions(self, serialized_conditions: Any) -> None:
+        parsed_conditions: list[Condition] = []
+        for entry in serialized_conditions if isinstance(serialized_conditions, list) else []:
+            if not isinstance(entry, dict):
+                continue
+
+            condition = Condition.from_dict(entry)
+            if condition is not None:
+                parsed_conditions.append(condition)
+
+        if not self.conditions:
+            self.conditions = parsed_conditions
+            return
+
+        merged_conditions = list(self.conditions)
+        consumed_indices: set[int] = set()
+        extra_conditions: list[Condition] = []
+
+        for parsed_condition in parsed_conditions:
+            replacement_index = next(
+                (
+                    index
+                    for index, existing_condition in enumerate(merged_conditions)
+                    if index not in consumed_indices and type(existing_condition) is type(parsed_condition)
+                ),
+                None,
+            )
+
+            if replacement_index is None:
+                extra_conditions.append(parsed_condition)
+                continue
+
+            merged_conditions[replacement_index] = parsed_condition
+            consumed_indices.add(replacement_index)
+
+        self.conditions = merged_conditions + extra_conditions
+
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         operator_name = data.get("condition_operator")
         if isinstance(operator_name, str) and operator_name in ConditionOperator.__members__:
@@ -156,14 +193,7 @@ class Rule:
         else:
             self.condition_operator = ConditionOperator.All
 
-        self.conditions = []
-        for entry in data.get("conditions", []):
-            if not isinstance(entry, dict):
-                continue
-
-            condition = Condition.from_dict(entry)
-            if condition is not None:
-                self.conditions.append(condition)
+        self._deserialize_conditions(data.get("conditions", []))
 
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -491,12 +521,8 @@ class WeaponTypeRule(Rule):
         conditions: list[Condition] = [
             ExactItemTypeCondition(item_type),
             WeaponRequirementCondition(requirements, item_type, requirement_min, requirement_max),
+            InherentFiltersCondition(normalize_inherent_filters(inherents), inscribable),
         ]
-        normalized_inherents = normalize_inherent_filters(inherents)
-        if normalized_inherents:
-            conditions.append(InherentFiltersCondition(normalized_inherents))
-        if inscribable:
-            conditions.append(InscribableCondition())
 
         super().__init__(conditions)
         self._only_max_damage = only_max_damage
@@ -526,8 +552,11 @@ class WeaponTypeRule(Rule):
     @inherents.setter
     def inherents(self, value: Sequence[InherentFilter | Inherent]) -> None:
         normalized = normalize_inherent_filters(value)
-        self._replace_optional_condition(InherentFiltersCondition, InherentFiltersCondition(normalized) if normalized else None)
-
+        inherent_condition = self._inherent_condition()
+        
+        if inherent_condition is not None:
+            inherent_condition.inherents = normalized if normalized else []
+            
     @property
     def requirement_min(self) -> int:
         return self._requirement_condition().requirement_min
@@ -558,7 +587,10 @@ class WeaponTypeRule(Rule):
 
     @inscribable.setter
     def inscribable(self, value: bool) -> None:
-        self._replace_optional_condition(InscribableCondition, InscribableCondition() if value else None)
+        inherent_condition = self._inherent_condition()
+        
+        if inherent_condition is not None:
+            inherent_condition.inscribable = value
 
     def _serialize_data(self) -> dict[str, Any]:
         payload = super()._serialize_data()
@@ -567,6 +599,7 @@ class WeaponTypeRule(Rule):
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         super()._deserialize_data(data)
+        
         self._only_max_damage = bool(data.get("only_max_damage", True))
 
     def _item_type_condition(self) -> ExactItemTypeCondition:
@@ -575,8 +608,8 @@ class WeaponTypeRule(Rule):
     def _requirement_condition(self) -> WeaponRequirementCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
-    def _inherent_condition(self) -> Optional[InherentFiltersCondition]:
-        return next((condition for condition in self.conditions if isinstance(condition, InherentFiltersCondition)), None)
+    def _inherent_condition(self) -> InherentFiltersCondition:
+        return self.conditions[2]  # type: ignore[return-value]
 
     def _replace_optional_condition(self, condition_type: type[Condition], replacement: Optional[Condition]) -> None:
         self.conditions = [condition for condition in self.conditions if not isinstance(condition, condition_type)]
