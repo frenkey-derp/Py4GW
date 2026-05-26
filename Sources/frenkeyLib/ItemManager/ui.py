@@ -21,7 +21,8 @@ import inspect
 import os
 import re
 import time
-from typing import Any, Callable, Generic, NamedTuple, Optional, TypeVar
+from dataclasses import dataclass
+from typing import Any, Callable, Generic, NamedTuple, Optional, TypeVar, cast
 
 import Py4GW
 import PyImGui
@@ -46,6 +47,7 @@ from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
 from Py4GWCoreLib.item_mods_src.upgrades import (
     HalvesCastingTimeAttributeUpgrade,
     HalvesRechargeTimeAttributeUpgrade,
+    Inherent,
     Inscription,
     Insignia,
     RangeInstruction,
@@ -108,6 +110,27 @@ from Sources.frenkeyLib.ItemManager.config import Config
 
 
 TConfig = TypeVar("TConfig", bound=Any)
+
+
+@dataclass
+class RecalculationCacheEntry:
+    signature: Any
+    value: Any
+
+
+@dataclass
+class InherentConditionRowState:
+    inherent_type: type[Upgrade]
+    inherent: Inherent
+    label: str
+    description: str
+    range_instructions: tuple[RangeInstruction, ...]
+    inherent_filter: InherentFilter | None
+    description_text_size: tuple[float, float]
+
+    @property
+    def already_selected(self) -> bool:
+        return self.inherent_filter is not None
 
 
 class ConfigInfo(Generic[TConfig]):
@@ -572,6 +595,7 @@ class UI:
         self._live_search_normalized_cache: dict[str, tuple[str, str]] = {}
         self._live_search_results_cache: dict[str, tuple[str, list[Any]]] = {}
         self._search_field_state: dict[str, str] = {}
+        self._recalculation_cache: dict[str, RecalculationCacheEntry] = {}
         self.inventory_preview_search: str = ""
         self.inventory_preview_show_no_action: bool = False
         self.inventory_preview_show_hold: bool = False
@@ -1137,6 +1161,74 @@ class UI:
 
     def _clear_search_field_value(self, key: str) -> None:
         self._search_field_state.pop(key, None)
+
+    def _get_recalculated_value(
+        self,
+        key: str,
+        signature: Any,
+        calculator: Callable[[], TConfig],
+    ) -> TConfig:
+        entry = self._recalculation_cache.get(key)
+        if entry is None or entry.signature != signature:
+            value = calculator()
+            self._recalculation_cache[key] = RecalculationCacheEntry(signature=signature, value=value)
+            return value
+
+        return cast(TConfig, entry.value)
+
+    def _invalidate_recalculated_value(self, key: str) -> None:
+        self._recalculation_cache.pop(key, None)
+
+    def _invalidate_recalculation_scope(self, prefix: str) -> None:
+        for key in [entry_key for entry_key in self._recalculation_cache if entry_key.startswith(prefix)]:
+            self._recalculation_cache.pop(key, None)
+
+    @staticmethod
+    def _build_inherent_filter_condition_signature(condition: InherentFiltersCondition) -> tuple[Any, ...]:
+        return tuple(
+            sorted(
+                (
+                    type(inherent_filter.inherent).__name__,
+                    tuple(
+                        sorted(
+                            (target, value_range.min_value, value_range.max_value)
+                            for target, value_range in inherent_filter.ranges.items()
+                        )
+                    ),
+                )
+                for inherent_filter in condition.inherents
+            )
+        )
+
+    def _build_inherent_condition_row_states(
+        self,
+        condition: InherentFiltersCondition,
+        inherent_entries: list[tuple[type[Upgrade], str, str]],
+    ) -> list[InherentConditionRowState]:
+        selected_by_type = {
+            type(inherent_filter.inherent): inherent_filter
+            for inherent_filter in condition.inherents
+        }
+
+        row_states: list[InherentConditionRowState] = []
+        for inherent_type, label, description in inherent_entries:
+            inherent = inherent_type()
+            if not isinstance(inherent, Inherent):
+                continue
+
+            row_states.append(
+                InherentConditionRowState(
+                    inherent_type=inherent_type,
+                    inherent=inherent,
+                    label=label,
+                    description=description,
+                    range_instructions=tuple(self._get_range_instructions(inherent)),
+                    inherent_filter=selected_by_type.get(inherent_type),
+                    description_text_size=PyImGui.calc_text_size(description),
+                )
+            )
+
+        return row_states
 
     @staticmethod
     def _format_nick_weeks_label(weeks_until_next_nick: int) -> str:
@@ -4566,24 +4658,27 @@ class UI:
                             already_selected = model_file_id in selected_model_file_ids
                             item_name = ui._get_item_display_name(item)
 
-                            if ImGui.begin_selectable(f"##model_file_id_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
-                                ui._draw_item_texture(item)
-                                PyImGui.same_line(0, 8)
-                                PyImGui.begin_group()
-                                ImGui.text(item_name)
-                                x, y = PyImGui.get_cursor_pos()
-                                PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                                PyImGui.end_group()
+                            if PyImGui.is_rect_visible(10, 36):
+                                if ImGui.begin_selectable(f"##model_file_id_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
+                                    ui._draw_item_texture(item)
+                                    PyImGui.same_line(0, 8)
+                                    PyImGui.begin_group()
+                                    ImGui.text(item_name)
+                                    x, y = PyImGui.get_cursor_pos()
+                                    PyImGui.set_cursor_pos(x, y - 4)
+                                    ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                    PyImGui.end_group()
 
-                            if ImGui.end_selectable() and not already_selected:
-                                condition.model_file_ids.append(model_file_id)
-                                changed = True
-                                PyImGui.close_current_popup()
+                                if ImGui.end_selectable() and not already_selected:
+                                    condition.model_file_ids.append(model_file_id)
+                                    changed = True
+                                    PyImGui.close_current_popup()
 
-                            if PyImGui.is_item_hovered():
-                                tooltip = f"{item_name}\nModel File ID: {model_file_id}"
-                                ImGui.show_tooltip(tooltip)
+                                if PyImGui.is_item_hovered():
+                                    tooltip = f"{item_name}\nModel File ID: {model_file_id}"
+                                    ImGui.show_tooltip(tooltip)
+                            else:
+                                ImGui.dummy(0, 36)
                     ImGui.end_child()
 
                     if ImGui.button("Cancel", -1):
@@ -4659,34 +4754,37 @@ class UI:
                             key = (int(item.model_file_id), item.item_type)
                             already_selected = key in selected_entries
                             item_name = ui._get_item_display_name(item)
-
-                            if ImGui.begin_selectable(f"##model_file_id_item_type_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
-                                ui._draw_item_texture(item)
-                                PyImGui.same_line(0, 8)
-                                PyImGui.begin_group()
-                                ImGui.text(item_name)
-                                x, y = PyImGui.get_cursor_pos()
-                                PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(
-                                    f"{ui._humanize_name(item.item_type.name)} | Model File ID: {item.model_file_id}",
-                                    UI.GRAY_COLOR.color_tuple,
-                                    font_size=12,
-                                )
-                                PyImGui.end_group()
-
-                            if ImGui.end_selectable() and not already_selected:
-                                condition.model_file_ids_and_item_types.append(
-                                    ModelFileIdAndItemType(
-                                        model_file_id=int(item.model_file_id),
-                                        item_type=item.item_type,
+                            if PyImGui.is_rect_visible(10, 36):
+                                if ImGui.begin_selectable(f"##model_file_id_item_type_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
+                                    ui._draw_item_texture(item)
+                                    PyImGui.same_line(0, 8)
+                                    PyImGui.begin_group()
+                                    ImGui.text(item_name)
+                                    x, y = PyImGui.get_cursor_pos()
+                                    PyImGui.set_cursor_pos(x, y - 4)
+                                    ImGui.text_colored(
+                                        f"{ui._humanize_name(item.item_type.name)} | Model File ID: {item.model_file_id}",
+                                        UI.GRAY_COLOR.color_tuple,
+                                        font_size=12,
                                     )
-                                )
-                                changed = True
-                                PyImGui.close_current_popup()
+                                    PyImGui.end_group()
 
-                            if PyImGui.is_item_hovered():
-                                tooltip = f"{item_name}\n{ui._humanize_name(item.item_type.name)}\nModel File ID: {item.model_file_id}"
-                                ImGui.show_tooltip(tooltip)
+                                if ImGui.end_selectable() and not already_selected:
+                                    condition.model_file_ids_and_item_types.append(
+                                        ModelFileIdAndItemType(
+                                            model_file_id=int(item.model_file_id),
+                                            item_type=item.item_type,
+                                        )
+                                    )
+                                    changed = True
+                                    PyImGui.close_current_popup()
+
+                                if PyImGui.is_item_hovered():
+                                    tooltip = f"{item_name}\n{ui._humanize_name(item.item_type.name)}\nModel File ID: {item.model_file_id}"
+                                    ImGui.show_tooltip(tooltip)
+                            else:
+                                ImGui.dummy(0, 36)
+                                
                     ImGui.end_child()
 
                     if ImGui.button("Cancel", -1):
@@ -4731,6 +4829,10 @@ class UI:
             popup_id = f"##model_id_item_type_condition_add_popup_{id(condition)}"
             search_state_key = f"model_id_item_types_condition_{id(condition)}"
             selected_models = [(model_id, item_type) for model_id, item_type in condition.modelids_and_itemtypes]
+            selected_model_ids = {
+                int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                for model_id, _ in selected_models
+            }
 
             style = ImGui.get_style()
             spacing = style.ItemSpacing.value2 or 0
@@ -4765,13 +4867,13 @@ class UI:
 
                         for item in matching_items:
                             modelid_item_type = int(item.model_id)
-                            already_selected = any(modelid_item_type == (int(mid.value) if isinstance(mid, ModelID) else mid) for mid, _ in selected_models)
+                            already_selected = modelid_item_type in selected_model_ids
 
                             item_name = item.name or f"Model {item.model_id}"
                             if already_selected:
                                 continue
 
-                            if PyImGui.is_rect_visible(10, 42):
+                            if PyImGui.is_rect_visible(10, 36):
                                 if ImGui.begin_selectable(f"##model_id_candidate_{id(condition)}_{item.item_type.name}_{modelid_item_type}", False, (0, 36)):
                                     UI._draw_item_texture(item, (32, 32))
                                     PyImGui.same_line(0, 8)
@@ -5204,7 +5306,7 @@ class UI:
 
                 if ImGui.begin_child(f"##added_material_candidates_{id(condition)}", (0, 0), border=False):
                     for index, mid in enumerate(condition.materials):
-                        material = next((m for m in ui._salvage_material_options if int(m.model_id) == int(mid)), None)
+                        material = ui._find_item_by_model_id(int(mid))
                         unique_id = f"salvage_material_condition_{id(condition)}_{material.name}_{index}" if material is not None else f"salvage_material_condition_{id(condition)}_{mid}_{index}"
                         if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                             if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
@@ -5338,6 +5440,7 @@ class UI:
             changed = False
             unique_id = str(id(condition))
             search_state_key = f"inherent_filters_condition_{unique_id}"
+            recalc_cache_key = f"condition_editor:inherent_rows:{unique_id}"
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 try:
@@ -5354,6 +5457,14 @@ class UI:
                             lambda normalized_query: cast(list[Any], ui._get_filtered_inherent_option_entries(normalized_query)),
                         )
                         inherent_entries = cast(list[tuple[type[Upgrade], str, str]], inherent_entries_raw)
+                        row_states = ui._get_recalculated_value(
+                            recalc_cache_key,
+                            (
+                                current_search,
+                                ui._build_inherent_filter_condition_signature(condition),
+                            ),
+                            lambda: ui._build_inherent_condition_row_states(condition, inherent_entries),
+                        )
 
                         if ImGui.begin_child(f"##inherent_selectables_{unique_id}", (0, 0), border=False):
                             if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_inscribable", selected=condition.inscribable, size=selectable_size):
@@ -5374,29 +5485,26 @@ class UI:
                                 ImGui.text_colored("Matches any item with an inscription slot, regardless of the inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
                                 ImGui.end_tooltip()
                                     
-                            for index, (inherent_type, label, description) in enumerate(inherent_entries):
-                                inherent = inherent_type()
-                                if not isinstance(inherent, Inherent):
-                                    continue
-                                already_selected = any(type(existing.inherent) is inherent_type for existing in condition.inherents)
-
-                                inherent_filter = next((existing for existing in condition.inherents if type(existing.inherent) is inherent_type), None)
+                            for index, row_state in enumerate(row_states):
+                                inherent = row_state.inherent
+                                inherent_type = row_state.inherent_type
+                                inherent_filter = row_state.inherent_filter
+                                already_selected = row_state.already_selected
                                 entry_size = (selected_selectable_size if already_selected else selectable_size)
                                 
                                 if PyImGui.is_rect_visible(10, entry_size[1]):
                                     if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_{inherent_type.__name__}", selected=already_selected, size=entry_size):
-                                        ImGui.text(label)
+                                        ImGui.text(row_state.label)
                                         x, y = PyImGui.get_cursor_pos()
                                         PyImGui.set_cursor_pos(x, y - 4)
-                                        ImGui.text_colored(description, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(row_state.description, UI.GRAY_COLOR.color_tuple, font_size=12)
 
                                         if already_selected and inherent_filter is not None:
-                                            range_instructions = ui._get_range_instructions(inherent)
                                             PyImGui.begin_group()
-                                            if len(range_instructions) == 0:
+                                            if len(row_state.range_instructions) == 0:
                                                 ImGui.text_colored("Fixed inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
                                             else:
-                                                for instruction in range_instructions:
+                                                for instruction in row_state.range_instructions:
                                                     current_range = inherent_filter.ranges.get(
                                                         instruction.target,
                                                         DamageRange(int(instruction.min_value), int(instruction.max_value)),
@@ -5437,10 +5545,10 @@ class UI:
                                         changed = True
 
                                     if PyImGui.is_item_hovered():
-                                        text_size = PyImGui.calc_text_size(inherent.description_plain)
+                                        text_size = row_state.description_text_size
                                         PyImGui.set_next_window_size(((text_size[0] + 20) * (1 if inherent_filter is None else 2), 0), cond=PyImGui.ImGuiCond.Appearing)
                                         ImGui.begin_tooltip()
-                                        ImGui.text(label, font_size=16)
+                                        ImGui.text(row_state.label, font_size=16)
                                         _, _, item_size = ImGui.get_item_rect()
                                         ImGui.separator()
 
@@ -5448,7 +5556,7 @@ class UI:
                                             width = max((text_size[0] + 20) * 2, item_size[0])
                                             if PyImGui.begin_child(f"##instruction_details_{unique_id}_{index}", (width, text_size[1] + 0), border=False):
                                                 PyImGui.columns(2, "##inherent_tooltip_columns", False)
-                                                for instruction in ui._get_range_instructions(inherent):
+                                                for instruction in row_state.range_instructions:
                                                     setattr(inherent, instruction.target, inherent_filter.ranges[instruction.target].min_value)
                                                     ImGui.text(inherent.description_plain)
                                                     PyImGui.next_column()
@@ -5457,7 +5565,7 @@ class UI:
                                                 PyImGui.end_columns()
                                             PyImGui.end_child()
                                         else:
-                                            ImGui.text(description)
+                                            ImGui.text(row_state.description)
                                         ImGui.end_tooltip()
                                 else:
                                     ImGui.dummy(*entry_size)  
