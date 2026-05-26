@@ -475,12 +475,6 @@ class UI:
 
         self.profession : Profession = Profession._None
         self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
-        self.max_weapon_upgrade_search: str = ""
-        self.upgrade_range_search: str = ""
-        self.model_id_search: str = ""
-        self.model_file_id_search: str = ""
-        self.encoded_name_search: str = ""
-        self.material_search: str = ""
         self.armor_upgrade_price_threshold: int = 250
         self._armor_upgrade_quote_cache_generation: int | None = None
         self._armor_upgrade_quote_cache_profession: Profession | None = None
@@ -577,7 +571,7 @@ class UI:
         self._salvage_material_search_cache: dict[str, list[ItemData]] = {}
         self._live_search_normalized_cache: dict[str, tuple[str, str]] = {}
         self._live_search_results_cache: dict[str, tuple[str, list[Any]]] = {}
-        self.inherent_upgrade_search: str = ""
+        self._search_field_state: dict[str, str] = {}
         self.inventory_preview_search: str = ""
         self.inventory_preview_show_no_action: bool = False
         self.inventory_preview_show_hold: bool = False
@@ -589,7 +583,6 @@ class UI:
         ]
         self.sorting_selected_bag: Bags = Bags.Backpack
         self.sorting_preview_selected_bags: list[Bags] = list(INVENTORY_BAGS)
-        self.sorting_group_model_id_search: str = ""
         self.loot_preview_search: str = ""
         self.loot_preview_show_no_action: bool = False
         self.loot_preview_distance: int = int(Range.SafeCompass.value)
@@ -1134,6 +1127,16 @@ class UI:
             results = result_entry[1]
 
         return search_query, results
+
+    def _get_search_field_value(self, key: str) -> str:
+        return self._search_field_state.get(key, '')
+
+    def _set_search_field_value(self, key: str, value: str) -> str:
+        self._search_field_state[key] = value
+        return value
+
+    def _clear_search_field_value(self, key: str) -> None:
+        self._search_field_state.pop(key, None)
 
     @staticmethod
     def _format_nick_weeks_label(weeks_until_next_nick: int) -> str:
@@ -2451,6 +2454,7 @@ class UI:
     def _draw_sort_argument_model_id_order(self, argument: SortArgument, unique_id: str) -> bool:
         changed = False
         popup_id = f'##sort_argument_model_ids_{unique_id}'
+        search_state_key = f'sort_argument_model_ids_{unique_id}'
         selected_entries = {
             normalized_entry
             for normalized_entry in (
@@ -2464,21 +2468,23 @@ class UI:
         element_height = 48
 
         if ImGui.button(f'Add Item##{unique_id}', -1):
-            # self.sorting_group_model_id_search = ''
+            self._clear_search_field_value(search_state_key)
             PyImGui.open_popup(popup_id)
 
         PyImGui.set_next_window_size((320, 0), cond=PyImGui.ImGuiCond.Appearing)
         if PyImGui.begin_popup(popup_id):
             ImGui.text('Add Prioritized Item')
             PyImGui.set_next_item_width(-1)
-            _, self.sorting_group_model_id_search = ImGui.search_field(
+            current_search = self._get_search_field_value(search_state_key)
+            _, current_search = ImGui.search_field(
                 f'##sort_argument_model_id_search_{unique_id}',
-                self.sorting_group_model_id_search,
+                current_search,
                 'Search items...',
             )
+            self._set_search_field_value(search_state_key, current_search)
             search_query, matching_model_ids_raw = self._get_live_search_results(
-                f'sort_argument_model_ids_{unique_id}',
-                self.sorting_group_model_id_search,
+                search_state_key,
+                current_search,
                 lambda normalized_query: cast(list[Any], self._filter_cached_entries(self._model_id_item_search_cache, normalized_query, self._model_id_item_search_entries)),
             )
             matching_items = cast(list[ItemData], matching_model_ids_raw)
@@ -2748,6 +2754,7 @@ class UI:
     def _draw_slot_group_model_ids(self, matcher: SlotMatcherConfig, unique_id: str) -> bool:
         changed = False
         popup_id = f'##sorting_slot_group_model_ids_{unique_id}'
+        search_state_key = f'sorting_group_model_ids_{unique_id}'
         selected_model_ids = {
             int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
             for model_id in matcher.model_ids
@@ -2757,7 +2764,7 @@ class UI:
         element_height = 48
 
         if ImGui.button(f'Add Model ID##{unique_id}', -1):
-            # self.sorting_group_model_id_search = ''
+            self._clear_search_field_value(search_state_key)
             PyImGui.open_popup(popup_id)
 
         PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -2765,15 +2772,17 @@ class UI:
             ImGui.text('Add Model ID')
 
             PyImGui.set_next_item_width(-1)
-            _, self.sorting_group_model_id_search = ImGui.search_field(
+            current_search = self._get_search_field_value(search_state_key)
+            _, current_search = ImGui.search_field(
                 f'##sorting_model_id_search_{unique_id}',
-                self.sorting_group_model_id_search,
+                current_search,
                 'Search model ids or enter an integer...',
             )
+            self._set_search_field_value(search_state_key, current_search)
             PyImGui.set_next_item_width(-1)
             search_query, matching_model_ids_raw = self._get_live_search_results(
-                f'sorting_group_model_ids_{unique_id}',
-                self.sorting_group_model_id_search,
+                search_state_key,
+                current_search,
                 lambda normalized_query: cast(list[Any], self._filter_cached_entries(self._model_id_search_cache, normalized_query, self._model_id_search_entries)),
             )
             matching_model_ids = cast(list[ModelID], matching_model_ids_raw)
@@ -4235,6 +4244,7 @@ class UI:
         def ForModelIdsCondition(ui : "UI", rule : Rule, condition: ModelIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = "##model_ids_rule_add_popup"
+            search_state_key = f"model_ids_condition_{id(condition)}"
             selected_model_ids = {
                 int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
                 for model_id in condition.model_ids
@@ -4257,10 +4267,12 @@ class UI:
                     ImGui.text("Add Model ID")
 
                     PyImGui.set_next_item_width(-1)
-                    _, ui.model_id_search = ImGui.search_field("##model_id_enum_search", ui.model_id_search, "Search model ids or enter an integer...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field("##model_id_enum_search", current_search, "Search model ids or enter an integer...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     search_query, matching_model_ids_raw = ui._get_live_search_results(
-                        f"model_ids_condition_{id(condition)}",
-                        ui.model_id_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_id_search_cache, normalized_query, ui._model_id_search_entries)),
                     )
                     matching_model_ids = cast(list[ModelID], matching_model_ids_raw)
@@ -4379,6 +4391,7 @@ class UI:
         def ForEncodedNamesCondition(ui: "UI", rule: Rule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##encoded_name_condition_add_popup_{id(condition)}"
+            search_state_key = f"encoded_names_condition_{id(condition)}"
             selected_encoded_names = set(condition.encoded_names)
             
             style = ImGui.get_style()
@@ -4391,7 +4404,7 @@ class UI:
                         
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.button("Add Encoded Name", -1):
-                    ui.encoded_name_search = ""
+                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((500, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -4400,10 +4413,12 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
-                    _, ui.encoded_name_search = ImGui.search_field(f"##encoded_name_search_{id(condition)}", ui.encoded_name_search, "Search by item name or paste an encoded name...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##encoded_name_search_{id(condition)}", current_search, "Search by item name or paste an encoded name...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     search_query, matching_items_raw = ui._get_live_search_results(
-                        f"encoded_names_condition_{id(condition)}",
-                        ui.encoded_name_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._encoded_name_search_cache, normalized_query, ui._encoded_name_search_entries)),
                     )
                     matching_items = cast(list[ItemData], matching_items_raw)
@@ -4415,8 +4430,8 @@ class UI:
                         or (i > 0 and ui._get_item_encoded_name_string(matching_items[i]) == ui._get_item_encoded_name_string(matching_items[i - 1]))
                     ]
 
-                    if ui.encoded_name_search.strip() and ui.encoded_name_search.strip() not in selected_encoded_names:
-                        manual_encoded_name = ui.encoded_name_search.strip()
+                    if current_search.strip() and current_search.strip() not in selected_encoded_names:
+                        manual_encoded_name = current_search.strip()
 
                         if PyImGui.is_rect_visible(10, 40):
                             if ImGui.begin_selectable(f"##manual_encoded_name_{id(condition)}", False, (0, 40)):
@@ -4497,6 +4512,7 @@ class UI:
         def ForModelFileIdsCondition(ui: "UI", rule: Rule, condition: ModelFileIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##model_file_id_condition_add_popup_{id(condition)}"
+            search_state_key = f"model_file_ids_condition_{id(condition)}"
             selected_model_file_ids = set(condition.model_file_ids)
                         
             style = ImGui.get_style()
@@ -4509,7 +4525,7 @@ class UI:
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.button("Add Model File ID", -1):
-                    ui.model_file_id_search = ""
+                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((450, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -4518,10 +4534,12 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
-                    _, ui.model_file_id_search = ImGui.search_field(f"##model_file_id_search_{id(condition)}", ui.model_file_id_search, "Search by item name or enter a model file id...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##model_file_id_search_{id(condition)}", current_search, "Search by item name or enter a model file id...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     search_query, matching_items_raw = ui._get_live_search_results(
-                        f"model_file_ids_condition_{id(condition)}",
-                        ui.model_file_id_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_file_id_search_cache, normalized_query, ui._model_file_id_search_entries)),
                     )
                     matching_items = cast(list[ItemData], matching_items_raw)
@@ -4604,6 +4622,7 @@ class UI:
         def ForModelFileIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelFileIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##model_file_id_item_type_condition_add_popup_{id(condition)}"
+            search_state_key = f"model_file_id_item_types_condition_{id(condition)}"
             selected_entries = {(entry.model_file_id, entry.item_type) for entry in condition.model_file_ids_and_item_types}
 
             style = ImGui.get_style()
@@ -4616,7 +4635,7 @@ class UI:
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.button("Add Model File ID", -1):
-                    ui.model_file_id_search = ""
+                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((450, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -4625,10 +4644,12 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
-                    _, ui.model_file_id_search = ImGui.search_field(f"##model_file_id_item_type_search_{id(condition)}", ui.model_file_id_search, "Search by item name or model file id...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##model_file_id_item_type_search_{id(condition)}", current_search, "Search by item name or model file id...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     search_query, matching_items_raw = ui._get_live_search_results(
-                        f"model_file_id_item_types_condition_{id(condition)}",
-                        ui.model_file_id_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_file_id_search_cache, normalized_query, ui._model_file_id_search_entries)),
                     )
                     matching_items = cast(list[ItemData], matching_items_raw)
@@ -4708,6 +4729,7 @@ class UI:
         def ForModelIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##model_id_item_type_condition_add_popup_{id(condition)}"
+            search_state_key = f"model_id_item_types_condition_{id(condition)}"
             selected_models = [(model_id, item_type) for model_id, item_type in condition.modelids_and_itemtypes]
 
             style = ImGui.get_style()
@@ -4727,10 +4749,12 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
-                    search_changed, ui.model_id_search = ImGui.search_field(f"##model_id_search_{id(condition)}", ui.model_id_search, "Search by name or model id...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    search_changed, current_search = ImGui.search_field(f"##model_id_search_{id(condition)}", current_search, "Search by name or model id...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     search_query, matching_items_raw = ui._get_live_search_results(
-                        f"model_id_item_types_condition_{id(condition)}",
-                        ui.model_id_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_id_item_search_cache, normalized_query, ui._model_id_item_search_entries)),
                     )
                     matching_items = cast(list[ItemData], matching_items_raw)
@@ -5116,6 +5140,7 @@ class UI:
         def ForSalvagesToMaterialsCondition(ui: "UI", rule: Rule, condition: SalvagesToMaterialsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##salvage_material_condition_add_popup_{id(condition)}"
+            search_state_key = f"salvage_materials_condition_{id(condition)}"
             selected_materials = set(condition.materials)
 
             style = ImGui.get_style()
@@ -5127,7 +5152,7 @@ class UI:
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.button("Add Material", -1):
-                    ui.material_search = ""
+                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((420, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -5136,10 +5161,12 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
-                    _, ui.material_search = ImGui.search_field(f"##salvage_material_search_{id(condition)}", ui.material_search, "Search material name or model id...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##salvage_material_search_{id(condition)}", current_search, "Search material name or model id...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     search_query, matching_materials_raw = ui._get_live_search_results(
-                        f"salvage_materials_condition_{id(condition)}",
-                        ui.material_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._salvage_material_search_cache, normalized_query, ui._salvage_material_search_entries)),
                     )
                     ImGui.show_tooltip("Search by material name or model id.")
@@ -5310,6 +5337,7 @@ class UI:
         def ForInherentFiltersCondition(ui: "UI", rule: Rule, condition: InherentFiltersCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             unique_id = str(id(condition))
+            search_state_key = f"inherent_filters_condition_{unique_id}"
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 try:
@@ -5317,10 +5345,12 @@ class UI:
                     selected_selectable_size = (0, 90)
                     if ImGui.begin_child(f"##inherent_candidates_{unique_id}", (0, 0), border=True):
                         PyImGui.set_next_item_width(-1)
-                        _, ui.inherent_upgrade_search = ImGui.search_field(f"##inherent_search_{unique_id}", ui.inherent_upgrade_search, "Search inherent upgrades...")
+                        current_search = ui._get_search_field_value(search_state_key)
+                        _, current_search = ImGui.search_field(f"##inherent_search_{unique_id}", current_search, "Search inherent upgrades...")
+                        ui._set_search_field_value(search_state_key, current_search)
                         _, inherent_entries_raw = ui._get_live_search_results(
-                            f"inherent_filters_condition_{unique_id}",
-                            ui.inherent_upgrade_search,
+                            search_state_key,
+                            current_search,
                             lambda normalized_query: cast(list[Any], ui._get_filtered_inherent_option_entries(normalized_query)),
                         )
                         inherent_entries = cast(list[tuple[type[Upgrade], str, str]], inherent_entries_raw)
@@ -5603,6 +5633,7 @@ class UI:
         @staticmethod
         def ForMaxWeaponUpgradesCondition(ui: "UI", rule: Rule, condition: MaxWeaponUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            search_state_key = f"max_weapon_upgrades_condition_{id(condition)}"
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.begin_table(f"##weapon_upgrade_condition_table_{id(condition)}", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
                     PyImGui.table_setup_column("Mod Type", PyImGui.TableColumnFlags.WidthFixed, 150)
@@ -5618,7 +5649,7 @@ class UI:
                                 ImGui.text_aligned(mod_type_name, height=24, alignment=Alignment.MidLeft)
                             if ImGui.end_selectable():
                                 if ui.mod_type != mod_type:
-                                    ui.max_weapon_upgrade_search = ""
+                                    ui._clear_search_field_value(search_state_key)
                                 ui.mod_type = mod_type
                     ImGui.end_child()
 
@@ -5627,10 +5658,12 @@ class UI:
                     style.ToggleButtonEnabled.push_color(ui._get_rarity_color(Rarity.Gold).opacity(0.85).rgb_tuple)
                     style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
                     PyImGui.set_next_item_width(-1)
-                    _, ui.max_weapon_upgrade_search = ImGui.search_field(f"##upgrade_search_{id(condition)}", ui.max_weapon_upgrade_search, "Search Upgrades...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##upgrade_search_{id(condition)}", current_search, "Search Upgrades...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     _, matching_upgrade_types_raw = ui._get_live_search_results(
                         f"max_weapon_upgrades_condition_{id(condition)}_{ui.mod_type.name}",
-                        ui.max_weapon_upgrade_search,
+                        current_search,
                         lambda normalized_query: cast(
                             list[Any],
                             [
@@ -5720,9 +5753,10 @@ class UI:
         def ForUpgradeRangesCondition(ui: "UI", rule: Rule, condition: UpgradeRangesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##upgrade_range_add_popup_{id(condition)}"
+            search_state_key = f"upgrade_ranges_condition_{id(condition)}"
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
                 if ImGui.button("Add Range Upgrade", -1):
-                    ui.upgrade_range_search = ""
+                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -5730,10 +5764,12 @@ class UI:
                     ImGui.text("Add Upgrade Range Rule")
                     ImGui.separator()
                     PyImGui.set_next_item_width(-1)
-                    _, ui.upgrade_range_search = ImGui.search_field(f"##upgrade_range_search_{id(condition)}", ui.upgrade_range_search, "Search Upgrades...")
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##upgrade_range_search_{id(condition)}", current_search, "Search Upgrades...")
+                    ui._set_search_field_value(search_state_key, current_search)
                     _, range_options_raw = ui._get_live_search_results(
-                        f"upgrade_ranges_condition_{id(condition)}",
-                        ui.upgrade_range_search,
+                        search_state_key,
+                        current_search,
                         lambda normalized_query: cast(list[Any], ui._get_filtered_range_upgrade_options(normalized_query)),
                     )
                     range_options = cast(list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]], range_options_raw)
@@ -6068,11 +6104,8 @@ class UI:
 
         PyImGui.same_line(0, 8)
         if PyImGui.begin_combo(f"##custom_rule_add_condition_{id(rule)}", "Add Condition", PyImGui.ImGuiComboFlags.NoFlag):
-            existing_condition_types = {type(condition) for condition in rule.conditions}
             for condition_type in self._get_condition_types():
                 if not self._supports_custom_condition_editor(condition_type):
-                    continue
-                if condition_type in existing_condition_types:
                     continue
 
                 if ImGui.selectable(self._humanize_name(condition_type.__name__).replace("Condition", ""), False):
