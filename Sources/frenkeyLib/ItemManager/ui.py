@@ -39,7 +39,7 @@ from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment
 from Py4GWCoreLib.UIManager import MerchantWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
-from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, Bags, ItemAction, ItemType
+from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, ItemAction, ItemType, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
@@ -74,12 +74,16 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import BagSortP
 from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
+    ArmorCondition,
     ArmorUpgradesCondition,
     Condition,
+    DamageCondition,
     DamageRange,
     DyeColorsCondition,
+    EnergyCondition,
     EncodedNamesCondition,
     ExactItemTypeCondition,
+    AttributeRequirement,
     InherentFilter,
     InherentFiltersCondition,
     InscribableCondition,
@@ -92,6 +96,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsCondition,
     NickItemCondition,
     RequirementFilter,
+    WeaponRequirementsCondition,
     StackQuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
@@ -5083,6 +5088,110 @@ class UI:
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
+
+        @staticmethod
+        def ForDamageCondition(ui: "UI", rule: Rule, condition: DamageCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+
+            size = size if size is not None else (0, 148)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                available_width = PyImGui.get_content_region_avail()[0]
+                slider_width = max(80, (available_width - 8) / 2)
+
+                ImGui.text("Minimum damage")
+                PyImGui.push_item_width(slider_width)
+                new_min_damage_min = ImGui.slider_int(f"##damage_min_damage_min_{id(condition)}", condition.min_damage_min, 0, 100)
+                ImGui.show_tooltip("Minimum allowed value for the item's minimum damage.")
+                PyImGui.same_line(0, 8)
+                new_min_damage_max = ImGui.slider_int(f"##damage_min_damage_max_{id(condition)}", condition.min_damage_max, 0, 100)
+                ImGui.show_tooltip("Maximum allowed value for the item's minimum damage.")
+
+                ImGui.text("Maximum damage")
+                new_max_damage_min = ImGui.slider_int(f"##damage_max_damage_min_{id(condition)}", condition.max_damage_min, 0, 100)
+                ImGui.show_tooltip("Minimum allowed value for the item's maximum damage.")
+                PyImGui.same_line(0, 8)
+                new_max_damage_max = ImGui.slider_int(f"##damage_max_damage_max_{id(condition)}", condition.max_damage_max, 0, 100)
+                ImGui.show_tooltip("Maximum allowed value for the item's maximum damage.")
+                PyImGui.pop_item_width()
+
+                if new_min_damage_min > new_min_damage_max:
+                    new_min_damage_min, new_min_damage_max = new_min_damage_max, new_min_damage_min
+                if new_max_damage_min > new_max_damage_max:
+                    new_max_damage_min, new_max_damage_max = new_max_damage_max, new_max_damage_min
+
+                if (
+                    new_min_damage_min != condition.min_damage_min
+                    or new_min_damage_max != condition.min_damage_max
+                    or new_max_damage_min != condition.max_damage_min
+                    or new_max_damage_max != condition.max_damage_max
+                ):
+                    condition.min_damage_min = new_min_damage_min
+                    condition.min_damage_max = new_min_damage_max
+                    condition.max_damage_min = new_max_damage_min
+                    condition.max_damage_max = new_max_damage_max
+                    changed = True
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForArmorCondition(ui: "UI", rule: Rule, condition: ArmorCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+
+            size = size if size is not None else (0, 72)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                available_width = PyImGui.get_content_region_avail()[0]
+                slider_width = max(80, (available_width - 8) / 2)
+
+                PyImGui.push_item_width(slider_width)
+                new_min = ImGui.slider_int(f"##armor_condition_min_{id(condition)}", condition.min_armor, 0, 100)
+                ImGui.show_tooltip("Minimum armor required for the rule to apply.")
+                PyImGui.same_line(0, 8)
+                new_max = ImGui.slider_int(f"##armor_condition_max_{id(condition)}", condition.max_armor, 0, 100)
+                ImGui.show_tooltip("Maximum armor allowed for the rule to apply.")
+                PyImGui.pop_item_width()
+
+                if new_min > new_max:
+                    new_min, new_max = new_max, new_min
+
+                if new_min != condition.min_armor or new_max != condition.max_armor:
+                    condition.min_armor = new_min
+                    condition.max_armor = new_max
+                    changed = True
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForEnergyCondition(ui: "UI", rule: Rule, condition: EnergyCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+
+            size = size if size is not None else (0, 72)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                available_width = PyImGui.get_content_region_avail()[0]
+                slider_width = max(80, (available_width - 8) / 2)
+
+                PyImGui.push_item_width(slider_width)
+                new_min = ImGui.slider_int(f"##energy_condition_min_{id(condition)}", condition.min_energy, -20, 100)
+                ImGui.show_tooltip("Minimum energy required for the rule to apply.")
+                PyImGui.same_line(0, 8)
+                new_max = ImGui.slider_int(f"##energy_condition_max_{id(condition)}", condition.max_energy, -20, 100)
+                ImGui.show_tooltip("Maximum energy allowed for the rule to apply.")
+                PyImGui.pop_item_width()
+
+                if new_min > new_max:
+                    new_min, new_max = new_max, new_min
+
+                if new_min != condition.min_energy or new_max != condition.max_energy:
+                    condition.min_energy = new_min
+                    condition.max_energy = new_max
+                    changed = True
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
         
         @staticmethod
         def ForFullStacksQuantityCondition(ui: "UI", rule: Rule, condition: FullStacksQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
@@ -5627,7 +5736,7 @@ class UI:
                                         ImGui.text(row_state.label, font_size=16)
                                         _, _, item_size = ImGui.get_item_rect()
                                         ImGui.separator()
-
+ 
                                         if inherent_filter is not None:
                                             width = max((text_size[0] + 20) * 2, item_size[0])
                                             if PyImGui.begin_child(f"##instruction_details_{unique_id}_{index}", (width, text_size[1] + 0), border=False):
@@ -5672,6 +5781,180 @@ class UI:
                 if identified != condition.identified:
                     condition.identified = identified
                     changed = True
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForWeaponRequirementsCondition(ui: "UI", rule: Rule, condition: WeaponRequirementsCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            popup_id = f"##requirements_condition_add_popup_{id(condition)}"
+            search_state_key = f"weapon_requirements_condition_attribute_search_{id(condition)}"
+            size = size if size is not None else (0, 0)
+            weapon_types = sorted(WEAPON_TYPES, key=lambda item_type: item_type.name)
+            weapon_type_label = "Select Item Type" if condition.weapon_type == ItemType.Unknown else ui._humanize_name(condition.weapon_type.name)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                PyImGui.set_next_item_width(-1)
+                if PyImGui.begin_combo(f"##weapon_requirements_condition_item_type_{id(condition)}", weapon_type_label, PyImGui.ImGuiComboFlags.NoFlag):
+                    for weapon_type in weapon_types:
+                        if ImGui.selectable(ui._humanize_name(weapon_type.name), selected=condition.weapon_type == weapon_type):
+                            condition.weapon_type = weapon_type
+                            changed = True
+                    ImGui.end_combo()
+                ImGui.show_tooltip("Choose the weapon item type these requirements apply to.")
+
+                PyImGui.begin_disabled(condition.weapon_type == ItemType.Unknown)
+                if ImGui.button("Add Requirement", -1):
+                    PyImGui.open_popup(popup_id)
+                PyImGui.end_disabled()
+                if condition.weapon_type == ItemType.Unknown and PyImGui.is_item_hovered():
+                    ImGui.show_tooltip("Select an item type first.")
+
+                PyImGui.set_next_window_size((320, 0), cond=PyImGui.ImGuiCond.Appearing)
+                if PyImGui.begin_popup(popup_id):
+                    ImGui.text("Add Requirement")
+                    ImGui.separator()
+
+                    if ImGui.begin_child(f"##requirements_condition_candidates_{id(condition)}", (0, 320), border=True):
+                        for requirement_level in range(0, 14):
+                            if ImGui.begin_selectable(f"##weapon_requirements_condition_level_{id(condition)}_{requirement_level}", False, (0, 34)):
+                                ImGui.text(f"Requirement {requirement_level}")
+                                PyImGui.same_line(0, 8)
+                                count = sum(1 for entry in condition.requirements if entry.attribute_level == requirement_level)
+                                if count > 0:
+                                    ImGui.text_colored(f"{count} existing", UI.GRAY_COLOR.color_tuple, font_size=12)
+
+                            if ImGui.end_selectable():
+                                selected_weapon_type: WeaponType | None = None
+                                if condition.weapon_type in WEAPON_TYPES:
+                                    selected_weapon_type = cast(WeaponType, condition.weapon_type)
+
+                                new_requirement = AttributeRequirement(attribute=[], attribute_level=requirement_level, weapon_type=selected_weapon_type)
+                                new_requirement.apply_max_ranges(condition.weapon_type)
+                                condition.requirements.append(new_requirement)
+                                changed = True
+                                PyImGui.close_current_popup()
+                        ImGui.end_child()
+
+                    if ImGui.button("Close", -1):
+                        PyImGui.close_current_popup()
+
+                    PyImGui.end_popup()
+
+                if ImGui.begin_child(f"##requirements_condition_rows_{id(condition)}", (0, 0), border=False):
+                    for index, requirement in enumerate(condition.requirements):
+                        unique_id = f"weapon_requirements_condition_{id(condition)}_{requirement.attribute_level}_{index}"
+                        attribute_popup_id = f"##weapon_requirements_condition_attributes_popup_{unique_id}"
+                        bounds = requirement.get_ranges_for_weapon_type(condition.weapon_type) if condition.weapon_type in WEAPON_TYPES else None
+                        summary_text = "Any Attribute" if not requirement.attributes else ", ".join(ui._humanize_name(attribute.name) for attribute in requirement.attributes[:2])
+                        if len(requirement.attributes) > 2:
+                            summary_text += f" +{len(requirement.attributes) - 2}"
+
+                        value_summary = ""
+                        if requirement.has_energy_range:
+                            value_summary = f"Energy >= {requirement.min_values[0]}"
+                        elif requirement.has_armor_range:
+                            value_summary = f"Armor >= {requirement.min_values[0]}"
+                        elif requirement.has_damage_ranges:
+                            value_summary = f"Damage >= {requirement.min_values[0]}-{requirement.min_values[1]}"
+
+                        open_config_popup = False
+                        if ImGui.begin_child(f"##{unique_id}", (0, 58), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_COPY}##{unique_id}", 28, 26):
+                                duplicate_requirement = AttributeRequirement.from_dict(requirement.to_dict())
+                                if duplicate_requirement is not None:
+                                    duplicate_requirement.weapon_type = condition.weapon_type
+                                    condition.requirements.insert(index + 1, duplicate_requirement)
+                                    changed = True
+
+                            PyImGui.same_line(0, 4)
+                            if ImGui.button(f"Configure##{unique_id}", 74, 26):
+                                open_config_popup = True
+
+                            PyImGui.same_line(0, 4)
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 28, 26):
+                                condition.requirements.pop(index)
+                                changed = True
+                                ImGui.end_child()
+                                break
+
+                            PyImGui.same_line(0, 8)
+                            PyImGui.begin_group()
+                            ImGui.text(f"Requirement {requirement.attribute_level}")
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(summary_text, UI.GRAY_COLOR.color_tuple, font_size=12)
+                            if value_summary:
+                                PyImGui.same_line(0, 8)
+                                ImGui.text_colored(value_summary, UI.GRAY_COLOR.color_tuple, font_size=12)
+                            PyImGui.end_group()
+
+                            if PyImGui.is_item_clicked(0):
+                                open_config_popup = True
+                        ImGui.end_child()
+
+                        if open_config_popup:
+                            ui._clear_search_field_value(search_state_key)
+                            PyImGui.open_popup(attribute_popup_id)
+
+                        PyImGui.set_next_window_size((380, 0), cond=PyImGui.ImGuiCond.Appearing)
+                        if PyImGui.begin_popup(attribute_popup_id):
+                            ImGui.text(f"Requirement {requirement.attribute_level}")
+                            ImGui.separator()
+                            PyImGui.set_next_item_width(-1)
+                            current_search = ui._get_search_field_value(search_state_key)
+                            _, current_search = ImGui.search_field(f"##weapon_requirements_condition_attribute_search_{unique_id}", current_search, "Search attributes...")
+                            ui._set_search_field_value(search_state_key, current_search)
+                            normalized_query = current_search.strip().lower()
+
+                            if ImGui.button("Clear Attributes", -1):
+                                requirement.attributes.clear()
+                                changed = True
+
+                            if ImGui.begin_child(f"##weapon_requirements_condition_attribute_list_{unique_id}", (0, 180), border=True):
+                                for attribute in ui._get_requirement_popup_attributes():
+                                    attribute_label = ui._humanize_name(attribute.name)
+                                    if normalized_query and normalized_query not in attribute_label.lower() and normalized_query not in attribute.name.lower():
+                                        continue
+
+                                    selected = attribute in requirement.attributes
+                                    if ImGui.begin_selectable(f"##weapon_requirements_condition_attribute_{unique_id}_{attribute.name}", selected, (0, 28)):
+                                        ImGui.text(attribute_label)
+                                    if ImGui.end_selectable():
+                                        if selected:
+                                            requirement.attributes = [entry for entry in requirement.attributes if entry != attribute]
+                                        else:
+                                            requirement.attributes.append(attribute)
+                                        changed = True
+                            ImGui.end_child()
+
+                            ImGui.separator()
+                            if requirement.has_energy_range and bounds is not None:
+                                min_energy = ImGui.slider_int("Minimum Energy", requirement.min_values[0], bounds[0][0], bounds[0][1])
+                                if min_energy != requirement.min_values[0]:
+                                    requirement.min_values = (min_energy, requirement.min_values[1])
+                                    changed = True
+
+                            elif requirement.has_armor_range and bounds is not None:
+                                min_armor = ImGui.slider_int("Minimum Armor", requirement.min_values[0], bounds[0][0], bounds[0][1])
+                                if min_armor != requirement.min_values[0]:
+                                    requirement.min_values = (min_armor, requirement.min_values[1])
+                                    changed = True
+
+                            elif requirement.has_damage_ranges and bounds is not None:
+                                min_damage = ImGui.slider_int("Minimum Damage", requirement.min_values[0], bounds[0][0], bounds[1][0])
+                                max_damage = ImGui.slider_int("Maximum Damage", requirement.min_values[1], bounds[1][0], bounds[1][1])
+                                if min_damage != requirement.min_values[0] or max_damage != requirement.min_values[1]:
+                                    requirement.min_values = (min_damage, max_damage)
+                                    requirement.apply_max_ranges(condition.weapon_type)
+                                    changed = True
+
+                            if ImGui.button("Close", -1):
+                                PyImGui.close_current_popup()
+
+                            PyImGui.end_popup()
+                ImGui.end_child()
+
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
@@ -6148,12 +6431,24 @@ class UI:
 
             case StackQuantityCondition():
                 return UI.ConditionEditor.ForStackQuantityCondition(self, rule, condition, draw_size)
+
+            case DamageCondition():
+                return UI.ConditionEditor.ForDamageCondition(self, rule, condition, draw_size)
+
+            case ArmorCondition():
+                return UI.ConditionEditor.ForArmorCondition(self, rule, condition, draw_size)
+
+            case EnergyCondition():
+                return UI.ConditionEditor.ForEnergyCondition(self, rule, condition, draw_size)
             
             case FullStacksQuantityCondition():
                 return UI.ConditionEditor.ForFullStacksQuantityCondition(self, rule, condition, draw_size)
 
             case NickItemCondition():
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, draw_size)
+
+            case WeaponRequirementsCondition():
+                return UI.ConditionEditor.ForWeaponRequirementsCondition(self, rule, condition, draw_size)
 
             case IsMaterialCondition():
                 return UI.ConditionEditor.ForIsMaterialCondition(self, rule, condition, draw_size)
@@ -6205,8 +6500,12 @@ class UI:
             ItemTypesCondition,
             ExactItemTypeCondition,
             StackQuantityCondition,
+            DamageCondition,
+            ArmorCondition,
+            EnergyCondition,
             FullStacksQuantityCondition,
             NickItemCondition,
+            WeaponRequirementsCondition,
             IsMaterialCondition,
             RaritiesCondition,
             DyeColorsCondition,
@@ -6275,8 +6574,20 @@ class UI:
             case StackQuantityCondition():
                 return clamp(control_height + row_25 + 6)
 
+            case DamageCondition():
+                return clamp(control_height + (row_28 * 4) + 18)
+
+            case ArmorCondition():
+                return clamp(control_height + row_25 + 6)
+
+            case EnergyCondition():
+                return clamp(control_height + row_25 + 6)
+
             case NickItemCondition():
                 return clamp(control_height + 24 + min(320, max(40, len(self._get_nick_item_preview_items(condition.weeks_before_next_cycle)) * row_28)))
+
+            case WeaponRequirementsCondition():
+                return clamp(control_height + section_gap + max(1, len(condition.requirements)) * 232)
 
             case IsMaterialCondition():
                 return clamp(control_height + (row_25 * 2) + 8)

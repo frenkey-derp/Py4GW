@@ -1,6 +1,7 @@
 import datetime
 from enum import Enum, Flag, auto
 from enum import IntEnum
+from typing import Literal, TypeAlias, TypeIs, cast, get_args
 from .Model_enums import ModelID
 
 MAX_STACK_SIZE = 250
@@ -147,32 +148,15 @@ class ItemType(IntEnum):
     def is_armor_type(self) -> bool:
         return self in ARMOR_TYPES
 
-WEAPON_TYPES = frozenset(
-    {
-        ItemType.Axe,
-        ItemType.Bow,
-        ItemType.Daggers,
-        ItemType.Hammer,
-        ItemType.Offhand,
-        ItemType.Scythe,
-        ItemType.Shield,
-        ItemType.Spear,
-        ItemType.Staff,
-        ItemType.Sword,
-        ItemType.Wand,
-    }
-)
+WeaponType: TypeAlias = Literal[ItemType.Axe, ItemType.Bow, ItemType.Daggers, ItemType.Hammer, ItemType.Offhand, ItemType.Scythe, ItemType.Shield, ItemType.Spear, ItemType.Staff, ItemType.Sword, ItemType.Wand]
+WEAPON_TYPES: frozenset[ItemType] = frozenset(cast(tuple[ItemType, ...], get_args(WeaponType)))
 
-ARMOR_TYPES = frozenset(
-    {
-        ItemType.Headpiece,
-        ItemType.Chestpiece,
-        ItemType.Gloves,
-        ItemType.Leggings,
-        ItemType.Boots,
-        ItemType.Salvage,
-    }
-)
+
+def is_weapon_type_literal(item_type: ItemType) -> TypeIs[WeaponType]:
+    return item_type in WEAPON_TYPES
+
+ArmorType: TypeAlias = Literal[ItemType.Headpiece, ItemType.Chestpiece, ItemType.Gloves, ItemType.Leggings, ItemType.Boots, ItemType.Salvage]
+ARMOR_TYPES = frozenset(cast(tuple[ItemType, ...], get_args(ArmorType)))
 
 ITEM_TYPE_META_TYPES: dict[ItemType, list[ItemType]] = {
     ItemType.Weapon: [

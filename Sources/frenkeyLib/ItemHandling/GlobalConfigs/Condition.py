@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias
 
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, NICK_CYCLE_COUNT, ItemType, Rarity, SalvageMode
+from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, NICK_CYCLE_COUNT, WEAPON_TYPES, ItemType, Rarity, SalvageMode, WeaponType, is_weapon_type_literal
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, HalvesCastingTimeAttributeUpgrade, HalvesRechargeTimeAttributeUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
@@ -685,6 +685,317 @@ class StackQuantityCondition(Condition):
         self.max_quantity = max(0, min(250, int(max_quantity if isinstance(max_quantity, int) else 250)))
         if self.min_quantity > self.max_quantity:
             self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+
+class AttributeRequirement:
+    def __init__(self, attribute : list[Attribute] = [], attribute_level: int = 0, weapon_type: Optional[WeaponType] = None):
+        self.attributes = attribute
+        self.weapon_type : ItemType = ItemType.Unknown if weapon_type is None else weapon_type
+        
+        self.attribute_level : int = attribute_level
+        self.min_values : tuple[int, int] = (0, 0)
+            
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "attributes": [attribute.name for attribute in self.attributes],
+            "attribute_level": self.attribute_level,
+            "weapon_type": self.weapon_type.name,
+            "min_values": self.min_values,
+        }
+        
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> Optional["AttributeRequirement"]:        
+        requirement = AttributeRequirement()
+        
+        attribute_names = data.get("attributes", [])
+        attribute_level = data.get("attribute_level", 0)
+        weapon_type_name = data.get("weapon_type")
+        min_values = data.get("min_values", (0, 0))
+        
+        if isinstance(attribute_names, list):
+            requirement.attributes = [Attribute[name] for name in attribute_names if name in Attribute.__members__]
+        
+        if isinstance(attribute_level, int):
+            requirement.attribute_level = attribute_level
+
+        if isinstance(weapon_type_name, str) and weapon_type_name in ItemType.__members__:
+            weapon_type = ItemType[weapon_type_name]
+            
+            if weapon_type == ItemType.Unknown or weapon_type in WEAPON_TYPES:
+                requirement.weapon_type = weapon_type
+
+        if isinstance(min_values, (list, tuple)) and len(min_values) == 2 and all(isinstance(value, int) for value in min_values):
+            requirement.min_values = (min_values[0], min_values[1])
+            
+        return requirement
+    
+    def get_ranges_for_weapon_type(self, item_type: ItemType, attribute_level : Optional[int] = None) -> Optional[tuple[tuple[int, int], tuple[int, int]]]:
+        attribute_level = attribute_level if attribute_level is not None else self.attribute_level
+        
+        if item_type.is_weapon_type() and not item_type in [ItemType.Offhand, ItemType.Shield]:
+            if (ranges := DAMAGE_RANGES.get(item_type)) and ranges is not None:
+                if (req_0_range := ranges.get(0)) is not None and (max_range := ranges.get(attribute_level)) is not None:
+                    return req_0_range, max_range
+                                    
+        return None
+    
+    @staticmethod
+    def _clamp(value: int, minimum: int, maximum: int) -> int:
+        return max(minimum, min(value, maximum))
+    
+    def apply_max_ranges(self, item_type : ItemType):
+        if (ranges := self.get_ranges_for_weapon_type(item_type, self.attribute_level)) is None:
+            return
+            
+        req_0, max_range = ranges
+
+        if req_0 is None or max_range is None:
+            return
+
+        min_value, max_value = self.min_values
+
+        self.min_values = (
+            self._clamp(min_value, req_0[0], max_range[0]),
+            self._clamp(max_value, max_range[0], max_range[1]),
+        )
+        self.weapon_type = item_type
+    
+    @property
+    def has_damage_ranges(self) -> bool:
+        return self.weapon_type.is_weapon_type() and not self.weapon_type in [ItemType.Offhand, ItemType.Shield]
+    
+    @property
+    def has_armor_range(self) -> bool:
+        return self.weapon_type == ItemType.Shield
+    
+    @property
+    def has_energy_range(self) -> bool:
+        return self.weapon_type == ItemType.Offhand   
+    
+class WeaponRequirementsCondition(Condition):
+    """Matches weapons with any specified requirement for a certain attribute."""
+
+    def __init__(self, requirements: Optional[list[AttributeRequirement]] = None):
+        self._weapon_type : ItemType = ItemType.Unknown        
+        self.requirements: list[AttributeRequirement] = requirements if requirements is not None else []
+
+    @property
+    def weapon_type(self) -> ItemType:
+        return self._weapon_type
+
+    @weapon_type.setter
+    def weapon_type(self, value: ItemType) -> None:
+        self._weapon_type = value
+        
+        for requirement in self.requirements:
+            requirement.apply_max_ranges(value)
+
+    def is_valid(self) -> bool:
+        return len(self.requirements) > 0
+    
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        if item_snapshot is None:
+            return False
+
+        if item_snapshot.item_type != self.weapon_type:
+            return False
+
+        for requirement in self.requirements:
+            if requirement.weapon_type == ItemType.Unknown or item_snapshot.item_type.matches(requirement.weapon_type):    
+                if (not requirement.attributes or (item_snapshot.attribute in requirement.attributes)):
+                    if item_snapshot.requirement == requirement.attribute_level:                    
+                        if requirement.has_energy_range and (item_snapshot.energy is None or item_snapshot.energy < requirement.min_values[0]):
+                            continue
+                        
+                        if requirement.has_armor_range and (item_snapshot.armor is None or item_snapshot.armor < requirement.min_values[0]):
+                            continue
+                        
+                        if requirement.has_damage_ranges:
+                            if item_snapshot.min_damage is None or item_snapshot.max_damage is None:
+                                continue
+                            
+                            if item_snapshot.min_damage < requirement.min_values[0] or item_snapshot.max_damage < requirement.min_values[1]:
+                                continue
+                            
+                        return True
+
+        return False
+    
+    def _comparison_data(self) -> Any:
+        return tuple(
+            sorted(
+                (tuple(attribute.name for attribute in requirement.attributes), requirement.attribute_level, requirement.weapon_type.name)
+                for requirement in self.requirements
+            )
+        )
+        
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "requirements": [requirement.to_dict() for requirement in self.requirements],
+            "weapon_type": self.weapon_type.name,
+        }
+    
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        raw_requirements = data.get("requirements", [])
+        self.requirements = []
+        for raw_requirement in raw_requirements:
+            if not isinstance(raw_requirement, dict):
+                continue
+            
+            requirement = AttributeRequirement.from_dict(raw_requirement)
+            if requirement is not None:
+                self.requirements.append(requirement)
+                    
+        weapon_type_name = data.get("weapon_type")
+        if isinstance(weapon_type_name, str) and weapon_type_name in ItemType.__members__:
+            weapon_type = ItemType[weapon_type_name]
+            
+            if weapon_type == ItemType.Unknown or weapon_type in WEAPON_TYPES:
+                self.weapon_type = weapon_type
+
+class WeaponTypeCondition(Condition):
+    """Matches items that are weapons of the specified type and within the specified requirement ranges."""
+    
+    def __init__(self, weapon_type: Optional[WeaponType] = None, requirements: Optional[list[AttributeRequirement]] = None):        
+        self.requirements: list[AttributeRequirement] = requirements if requirements is not None else []
+        self.weapon_type = self._set_weapon_type(weapon_type if weapon_type is not None and weapon_type in WEAPON_TYPES else ItemType.Unknown)
+
+    def _set_weapon_type(self, weapon_type: ItemType) -> None:
+        if weapon_type is not None and weapon_type in WEAPON_TYPES:
+            self.weapon_type = weapon_type
+            
+            for requirement in self.requirements:
+                requirement.apply_max_ranges(self.weapon_type)
+            
+        else:
+            self.weapon_type = ItemType.Unknown
+            
+            
+    def is_valid(self) -> bool:
+        return self.weapon_type is not None and self.weapon_type.matches(ItemType.Weapon)
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        return item_snapshot is not None and self.weapon_type is not None and item_snapshot.item_type.matches(self.weapon_type)
+
+    def _comparison_data(self) -> Any:
+        return self.weapon_type.name if self.weapon_type is not None else None
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"weapon_type": self.weapon_type.name if self.weapon_type is not None else None}
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        weapon_type_name = data.get("weapon_type")
+        weapon_type = ItemType[weapon_type_name] if isinstance(weapon_type_name, str) and weapon_type_name in ItemType.__members__ else ItemType.Unknown
+        self._set_weapon_type(weapon_type if weapon_type in WEAPON_TYPES else ItemType.Unknown)
+
+class DamageCondition(Condition):
+    """Matches items whose min and max damage both fall inside configured inclusive ranges."""
+    def __init__(
+        self,
+        min_damage_min: int = 0,
+        min_damage_max: int = 0,
+        max_damage_min: int = 0,
+        max_damage_max: int = 40,
+    ):
+        self.min_damage_min = max(0, min(100, int(min_damage_min)))
+        self.min_damage_max = max(0, min(100, int(min_damage_max)))
+        self.max_damage_min = max(0, min(100, int(max_damage_min)))
+        self.max_damage_max = max(0, min(100, int(max_damage_max)))
+        if self.min_damage_min > self.min_damage_max:
+            self.min_damage_min, self.min_damage_max = self.min_damage_max, self.min_damage_min
+        if self.max_damage_min > self.max_damage_max:
+            self.max_damage_min, self.max_damage_max = self.max_damage_max, self.max_damage_min
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        if item_snapshot is None:
+            return False
+
+        return (
+            self.min_damage_min <= item_snapshot.min_damage <= self.min_damage_max
+            and self.max_damage_min <= item_snapshot.max_damage <= self.max_damage_max
+        )
+
+    def _comparison_data(self) -> Any:
+        return (
+            self.min_damage_min,
+            self.min_damage_max,
+            self.max_damage_min,
+            self.max_damage_max,
+        )
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "min_damage_min": self.min_damage_min,
+            "min_damage_max": self.min_damage_max,
+            "max_damage_min": self.max_damage_min,
+            "max_damage_max": self.max_damage_max,
+        }
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.__init__(
+            min_damage_min=int(data.get("min_damage_min", 0) if isinstance(data.get("min_damage_min", 0), int) else 0),
+            min_damage_max=int(data.get("min_damage_max", 40) if isinstance(data.get("min_damage_max", 40), int) else 40),
+            max_damage_min=int(data.get("max_damage_min", 0) if isinstance(data.get("max_damage_min", 0), int) else 0),
+            max_damage_max=int(data.get("max_damage_max", 40) if isinstance(data.get("max_damage_max", 40), int) else 40),
+        )
+
+
+class ArmorCondition(Condition):
+    """Matches items whose armor value falls inside the configured inclusive range."""
+    def __init__(self, min_armor: int = 0, max_armor: int = 16):
+        self.min_armor = max(0, min(16, int(min_armor)))
+        self.max_armor = max(0, min(16, int(max_armor)))
+        if self.min_armor > self.max_armor:
+            self.min_armor, self.max_armor = self.max_armor, self.min_armor
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        return item_snapshot is not None and self.min_armor <= item_snapshot.armor <= self.max_armor
+
+    def _comparison_data(self) -> Any:
+        return (self.min_armor, self.max_armor)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "min_armor": self.min_armor,
+            "max_armor": self.max_armor,
+        }
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.__init__(
+            min_armor=int(data.get("min_armor", 0) if isinstance(data.get("min_armor", 0), int) else 0),
+            max_armor=int(data.get("max_armor", 16) if isinstance(data.get("max_armor", 16), int) else 16),
+        )
+
+
+class EnergyCondition(Condition):
+    """Matches items whose energy value falls inside the configured inclusive range."""
+    def __init__(self, min_energy: int = 0, max_energy: int = 12):
+        self.min_energy = max(0, min(12, int(min_energy)))
+        self.max_energy = max(0, min(12, int(max_energy)))
+        if self.min_energy > self.max_energy:
+            self.min_energy, self.max_energy = self.max_energy, self.min_energy
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        return item_snapshot is not None and self.min_energy <= item_snapshot.energy <= self.max_energy
+
+    def _comparison_data(self) -> Any:
+        return (self.min_energy, self.max_energy)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {
+            "min_energy": self.min_energy,
+            "max_energy": self.max_energy,
+        }
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.__init__(
+            min_energy=int(data.get("min_energy", 0) if isinstance(data.get("min_energy", 0), int) else 0),
+            max_energy=int(data.get("max_energy", 12) if isinstance(data.get("max_energy", 12), int) else 12),
+        )
 
 
 class FullStacksQuantityCondition(Condition):
