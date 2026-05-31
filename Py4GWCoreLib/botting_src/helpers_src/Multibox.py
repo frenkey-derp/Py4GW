@@ -556,7 +556,7 @@ class _Multibox:
         if not consumable_effects:
             return
 
-        tree = BT.Items.UseConsumables(consumable_effects, aftercast_ms=100)
+        tree = BT.Items.Consumables.UseConsumables(consumable_effects, aftercast_ms=100)
         yield from _run_bt_tree(tree, throttle_ms=100)
 
     def _use_summoning_stone_message(self):

@@ -8,20 +8,18 @@ from typing import TypeAlias
 from Py4GWCoreLib.Agent import Agent
 from Py4GWCoreLib.BottingTree import BottingTree
 from Py4GWCoreLib.IniManager import IniManager
-from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Item_enums import Bags
 from Py4GWCoreLib.Map import Map
+from Py4GWCoreLib.py4gwcorelib_src.Console import ConsoleLog
 from Py4GWCoreLib.routines_src.Agents import Agents as RoutinesAgents
 from Py4GWCoreLib.routines_src.Checks import Checks
 from Py4GWCoreLib.routines_src.behaviourtrees_src.constants import *
 
-
 from Sources.ApoSource.ApoBottingLib import wrappers as BT
 from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.native_src.internals.types import PointOrPath
-from Py4GWCoreLib.native_src.internals.types import PointPath
 
 
 MODULE_NAME = "Beautiful Shing Jea"
@@ -141,14 +139,14 @@ CraftStepList: TypeAlias = list[CraftStep]
 
 
 MONASTERY_COMMON_BUY_BY_PROFESSION: dict[str, BuyList] = {
-    "Warrior": [(ModelID.Bolt_Of_Cloth.value, 1), (ModelID.Iron_Ingot.value, 2), (ModelID.Wood_Plank.value, 1)],
-    "Ranger": [(ModelID.Tanned_Hide_Square.value, 1), (ModelID.Wood_Plank.value, 1)],
-    "Monk": [(ModelID.Bolt_Of_Cloth.value, 1), (ModelID.Pile_Of_Glittering_Dust.value, 1), (ModelID.Wood_Plank.value, 1)],
-    "Necromancer": [(ModelID.Tanned_Hide_Square.value, 1), (ModelID.Pile_Of_Glittering_Dust.value, 1), (ModelID.Bone.value, 1)],
-    "Mesmer": [(ModelID.Bolt_Of_Cloth.value, 1), (ModelID.Pile_Of_Glittering_Dust.value, 1), (ModelID.Wood_Plank.value, 1)],
-    "Elementalist": [(ModelID.Bolt_Of_Cloth.value, 1), (ModelID.Pile_Of_Glittering_Dust.value, 1), (ModelID.Iron_Ingot.value, 1)],
-    "Assassin": [(ModelID.Bolt_Of_Cloth.value, 1), (ModelID.Iron_Ingot.value, 1)],
-    "Ritualist": [(ModelID.Bolt_Of_Cloth.value, 1), (ModelID.Bone.value, 1), (ModelID.Plant_Fiber.value, 1)],
+    "Warrior": [(ModelID.Bolt_Of_Cloth.value, 10), (ModelID.Iron_Ingot.value, 20), (ModelID.Wood_Plank.value, 10)],
+    "Ranger": [(ModelID.Tanned_Hide_Square.value, 10), (ModelID.Wood_Plank.value, 10)],
+    "Monk": [(ModelID.Bolt_Of_Cloth.value, 10), (ModelID.Pile_Of_Glittering_Dust.value, 10), (ModelID.Wood_Plank.value, 10)],
+    "Necromancer": [(ModelID.Tanned_Hide_Square.value, 10), (ModelID.Pile_Of_Glittering_Dust.value, 10), (ModelID.Bone.value, 10)],
+    "Mesmer": [(ModelID.Bolt_Of_Cloth.value, 10), (ModelID.Pile_Of_Glittering_Dust.value, 10), (ModelID.Wood_Plank.value, 10)],
+    "Elementalist": [(ModelID.Bolt_Of_Cloth.value, 10), (ModelID.Pile_Of_Glittering_Dust.value, 10), (ModelID.Iron_Ingot.value, 10)],
+    "Assassin": [(ModelID.Bolt_Of_Cloth.value, 10), (ModelID.Iron_Ingot.value, 10)],
+    "Ritualist": [(ModelID.Bolt_Of_Cloth.value, 10), (ModelID.Bone.value, 10), (ModelID.Plant_Fiber.value, 10)],
 }
 
 
@@ -321,13 +319,14 @@ def _get_henchmen_for_current_map() -> list[int]:
     return [2, 3, 5, 6, 7, 9, 10]
 
 
-def PrepareForBattle() -> BehaviorTree:
+def PrepareForBattle(log: bool = False) -> BehaviorTree:
+    bot = ensure_botting_tree()
     restock_candy_apple_qty = 0# 10
     restock_war_supplies_qty = 0# 10
     restock_honeycomb_qty = 0# 20
     
-    def _add_henchmen_from_blackboard(node: BehaviorTree.Node) -> BehaviorTree:
-        return BT.CreateParty(henchman_ids=node.blackboard["current_map_henchmen"])
+    def _add_henchmen_from_blackboard(node: BehaviorTree.Node, log: bool = False) -> BehaviorTree:
+        return BT.SetupParty(henchmen=node.blackboard["current_map_henchmen"], log=log)
 
     
     restock_list = [
@@ -340,7 +339,6 @@ def PrepareForBattle() -> BehaviorTree:
             children=[
                 Aggressive(),
                 BT.LoadSkillbarFromMap(LEVELING_SKILLBAR_MAP),
-                BT.LeaveParty(),
                 BT.SaveBlackboardValue("current_map_henchmen", _get_henchmen_for_current_map),
                 BT.Subtree(name="AddHenchmenForCurrentMap",subtree_fn=_add_henchmen_from_blackboard,),
                 BT.RestockItemsFromList(restock_list,allow_missing=True,),
@@ -366,7 +364,13 @@ def Exit_Monastery_Overlook() -> BehaviorTree:
             name="MoveToProfessionCoords",
             children=[
                 BT.GetValuesByProfession( profession_values=MASTER_COORDS_BY_PROFESSION,target_key="profession_coords",),
-                BT.HandleAutoQuest( pos=node.blackboard["profession_coords"],buttons=[0, 0],)
+                BT.Subtree(
+                    name="HandleProfessionQuest",
+                    subtree_fn=lambda inner_node: BT.HandleAutoQuest(
+                        pos=inner_node.blackboard["profession_coords"],
+                        buttons=[0, 0],
+                    ),
+                ),
             ]
         )
           
@@ -378,7 +382,12 @@ def Exit_Monastery_Overlook() -> BehaviorTree:
                     profession_values=STARTER_WEAPON_MODEL_IDS,
                     target_key="starter_weapon_model_id",
                 ),
-                BT.EquipItemByModelID(node.blackboard["starter_weapon_model_id"])
+                BT.Subtree(
+                    name="EquipStarterWeaponFromBlackboard",
+                    subtree_fn=lambda inner_node: BT.EquipItemByModelID(
+                        inner_node.blackboard["starter_weapon_model_id"]
+                    ),
+                ),
             ]
         )
 
@@ -1076,17 +1085,16 @@ def Unlock_Xunlai_Storage() -> BehaviorTree:
             ],
         )
     
-def DestroyTrash() -> BehaviorTree:
+def DestroyTrash(log: bool = False) -> BehaviorTree:
     return BT.Sequence(
             name="Destroy Trash Items",
             children = [
-                BT.DestroyItems(TRASH_ITEM_MODELS),
+                BT.DestroyItems(TRASH_ITEM_MODELS, log=log),
             ]
         )
 
 
-#region crafting
-def BuyAndCraftMonasteryArmor() -> BehaviorTree:
+def BuyAndCraftMonasteryArmor(log: bool = False) -> BehaviorTree:
     MATERIAL_MERCHANT_COORDS = [(-10896.94, 10807.54), (-10942.73, 10783.19), (-10614.00, 10996.00),]
     RARE_MATERIAL_MERCHANT_COORDS = (-10589.20, 10745.83)
     ARMOR_CRAFTER_COORDS = [(-10896.94, 10807.54), (-7115.00, 12636.00)]
@@ -1097,16 +1105,14 @@ def BuyAndCraftMonasteryArmor() -> BehaviorTree:
             map_id_or_name=SHING_JEA_MONASTERY,
             map_prep=PrepareForBattle(),
             children=[
-                BT.EqualizeGold(target_gold=1600),
+                BT.BalanceGold(target_gold=1600),
                 BT.MoveAndInteract(MATERIAL_MERCHANT_COORDS),
                 BT.BuyMaterialsByProfession(
                     profession_materials=MONASTERY_COMMON_BUY_BY_PROFESSION,
-                    rare_trader=False,
                 ),
                 BT.MoveAndInteract(RARE_MATERIAL_MERCHANT_COORDS),
                 BT.BuyMaterialsByProfession(
                     profession_materials=TSUMEI_RARE_BUY_BY_PROFESSION,
-                    rare_trader=True,
                 ),
                 BT.MoveAndInteract(ARMOR_CRAFTER_COORDS),
                 BT.CraftItemsByProfession(
@@ -1121,6 +1127,14 @@ def BuyAndCraftMonasteryArmor() -> BehaviorTree:
             ],
         )
 
+OTHER_MASTER_COORDS_BY_PROFESSION: dict[str, list[PointOrPath]] = {
+    profession: [
+        coords
+        for other_profession, coords in MASTER_COORDS_BY_PROFESSION.items()
+        if other_profession != profession
+    ]
+    for profession in MASTER_COORDS_BY_PROFESSION
+}
 
 
 def _talk_with_other_masters(node: BehaviorTree.Node) -> BehaviorTree:
@@ -1290,10 +1304,8 @@ def An_Audience_WithMasterTogo_Reward() -> BehaviorTree:
                 BT.MoveAndExitMap((-3762, 9471),target_map_id=SHING_JEA_MONASTERY,),
             ],
         )
-
-
-
-def CapturePet_And_to_minister_cho() -> BehaviorTree:
+    
+def CapturePet_And_to_minister_cho(log: bool = False) -> BehaviorTree:
     bot = ensure_botting_tree()
     PET_CAPTURE_COORDS = (13585.15, -10782.06)
     PET_MODEL_ID = 3005
@@ -1314,15 +1326,15 @@ def CapturePet_And_to_minister_cho() -> BehaviorTree:
             map_prep=PrepareForBattle(),
             children=[
                 BT.MoveAndExitMap(FROM_SHING_JEA_MONASTERY_TO_SUNQUA_VALE, target_map_id=SUNQUA_VALE),
-                BT.HandleAutoQuest(togo_coords, log=True),
+                BT.HandleAutoQuest(togo_coords, log=log),
                 Pacifist(),
-                BT.Move(PET_CAPTURE_COORDS, pause_on_combat=False),
-                BT.MoveAndTargetByModelID(PET_MODEL_ID, pause_on_combat=False),
-                BT.CastSkillID(CHARM_PET_SKILL_ID),
-                BT.Wait(15000),
-                BT.HandleQuest(318, intro_quest_path, 0x80000B, mode="skip", success_map_id=MINISTER_CHO_STATE),
+                BT.Move(PET_CAPTURE_COORDS, pause_on_combat=False, log=log),
+                BT.MoveAndTargetByModelID(PET_MODEL_ID, pause_on_combat=False, log=log),
+                BT.CastSkillID(CHARM_PET_SKILL_ID, log=log),
+                BT.Wait(15000, log=log),
+                BT.HandleQuest(318, intro_quest_path, 0x80000B, mode="skip", success_map_id=MINISTER_CHO_STATE, log=log),
                 BT.WaitForMapToChange(map_id=MINISTER_CHO_STATE),
-                BT.HandleQuest(318, (7884, -10029), 0x813E07, mode="complete"),
+                BT.HandleQuest(318, (7884, -10029), 0x813E07, mode="complete", log=log),
             ],
         )
 
@@ -1434,21 +1446,23 @@ def Warning_The_Tengu() -> BehaviorTree:
         )
     
 
-def Extend_Inventory_Space() -> BehaviorTree:
+def Extend_Inventory_Space(log: bool = False) -> BehaviorTree:
     merchant = (-11866, 11444)
+
     return BT.Sequence(
             name="Extend Inventory Space",
             map_id_or_name=SHING_JEA_MONASTERY,
             map_prep=PrepareForBattle(),
             children=[
-                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2),
+                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch, log=log),
+                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1, log=log),
+                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2, log=log),
             ],
         )
+    
     
 
 def _move_and_kneel(coords: PointOrPath) -> BehaviorTree:
@@ -1521,6 +1535,7 @@ def get_execution_steps() -> list[tuple[str, Callable[[], BehaviorTree]]]:
         ("Appearance of the Naga and R/Mo/Me/A Secondaries", R_Mo_Me_A_secondaries_and_Appearance_of_the_naga),
         ("W/E/Rt/N and Secondaries", W_E_Rt_N_and_secondaries),
         ("An Audience With Master Togo Reward", An_Audience_WithMasterTogo_Reward),
+        ("Extend Inventory Space", Extend_Inventory_Space),
         ("Capture Pet", CapturePet_And_to_minister_cho),
         ("Minister Cho's Estate Mission", Minister_Chos_Estate_Mission),
         ("Attribute Points Quest 1", Attribute_Points_Quest_1),

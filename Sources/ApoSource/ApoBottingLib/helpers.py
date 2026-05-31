@@ -39,18 +39,27 @@ _WAITSPECIAL_EMOTES: tuple[str, ...] = (
 _heroai_pause_counter = 0
 
 
+def _has_headless_heroai_context(node: BehaviorTree.Node) -> bool:
+    return 'headless_heroai_enabled' in node.blackboard or 'HEROAI_STATUS' in node.blackboard
+
+
 def _save_headless_heroai_state() -> BehaviorTree:
     started = {'value': False}
 
     def _save(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
+        if not _has_headless_heroai_context(node):
+            node.blackboard.pop(_HEROAI_GUARD_KEY, None)
+            started['value'] = False
+            return BehaviorTree.NodeState.SUCCESS
+
         if not started['value']:
             ActionQueueManager().ResetAllQueues()
-            node.blackboard[_HEROAI_GUARD_KEY] = bool(node.blackboard.get('headless_heroai_enabled', True))
+            node.blackboard[_HEROAI_GUARD_KEY] = bool(node.blackboard.get('headless_heroai_enabled', False))
             node.blackboard['headless_heroai_enabled_request'] = False
             node.blackboard['headless_heroai_reset_runtime_request'] = True
             started['value'] = True
 
-        if bool(node.blackboard.get('headless_heroai_enabled', True)):
+        if bool(node.blackboard.get('headless_heroai_enabled', False)):
             return BehaviorTree.NodeState.RUNNING
         if node.blackboard.get('HEROAI_STATUS', '') != HeroAIStatus.DISABLED.value:
             return BehaviorTree.NodeState.RUNNING
@@ -71,7 +80,11 @@ def _save_headless_heroai_state() -> BehaviorTree:
 
 def _restore_headless_heroai_state() -> BehaviorTree:
     def _restore(node: BehaviorTree.Node) -> BehaviorTree.NodeState:
-        restore_enabled = bool(node.blackboard.pop(_HEROAI_GUARD_KEY, node.blackboard.get('headless_heroai_enabled', True)))
+        if not _has_headless_heroai_context(node):
+            node.blackboard.pop(_HEROAI_GUARD_KEY, None)
+            return BehaviorTree.NodeState.SUCCESS
+
+        restore_enabled = bool(node.blackboard.pop(_HEROAI_GUARD_KEY, node.blackboard.get('headless_heroai_enabled', False)))
         node.blackboard['headless_heroai_enabled_request'] = restore_enabled
         node.blackboard['headless_heroai_reset_runtime_request'] = True
         return BehaviorTree.NodeState.SUCCESS
