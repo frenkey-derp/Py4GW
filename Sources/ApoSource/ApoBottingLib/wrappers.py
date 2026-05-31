@@ -331,9 +331,8 @@ def BuyMaterialsByProfession(
 ) -> BehaviorTree:
     def _buy_for_profession(node: BehaviorTree.Node) -> BehaviorTree:
         materials = cast(list[tuple[int, int]], node.blackboard["profession_buy_materials"])
-        return BuyMaterialsFromList(
+        return BuyMaterials(
             materials=materials,
-            rare_trader=rare_trader,
             log=log,
             aftercast_ms=aftercast_ms,
         )

@@ -10,6 +10,14 @@ This file is both:
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import NamedTuple, Optional
+
+from PyParty import HeroPartyMember
+
+from Py4GWCoreLib.GlobalCache.shared_memory_src.AccountStruct import AccountStruct
+from Py4GWCoreLib.Skillbar import SkillBar
+from Py4GWCoreLib.enums_src.Hero_enums import HeroType
+from Py4GWCoreLib.enums_src.Multiboxing_enums import SharedCommandType
 
 from ...Agent import Agent
 from ...GlobalCache import GLOBAL_CACHE

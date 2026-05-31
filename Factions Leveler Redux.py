@@ -1074,7 +1074,7 @@ def Unlock_Xunlai_Storage() -> BehaviorTree:
             ],
         )
     
-def DestroyTrash() -> BehaviorTree:
+def DestroyTrash(log: bool = False) -> BehaviorTree:
     return BT.Sequence(
             name="Destroy Trash Items",
             children = [
@@ -1092,20 +1092,29 @@ def BuyAndCraftMonasteryArmor(log: bool = False) -> BehaviorTree:
     return BT.Sequence(
             name="Buy And Craft Monastery Armor",
             map_id_or_name=SHING_JEA_MONASTERY,
-            map_prep=PrepareForBattle(log=log),
+            map_prep=PrepareForBattle(),
             children=[
-                BT.BalanceGold(target_gold=1600, log=log),
-                BT.GetNodeByProfession(
-                    **_build_monastery_armor_nodes(
-                        MATERIAL_MERCHANT_COORDS,
-                        RARE_MATERIAL_MERCHANT_COORDS,
-                        ARMOR_CRAFTER_COORDS,
-                    )
+                BT.BalanceGold(target_gold=1600),
+                BT.MoveAndInteract(MATERIAL_MERCHANT_COORDS),
+                BT.BuyMaterialsByProfession(
+                    profession_materials=MONASTERY_COMMON_BUY_BY_PROFESSION,
+                    rare_trader=False,
+                ),
+                BT.MoveAndInteract(RARE_MATERIAL_MERCHANT_COORDS),
+                BT.BuyMaterialsByProfession(
+                    profession_materials=TSUMEI_RARE_BUY_BY_PROFESSION,
+                    rare_trader=True,
+                ),
+                BT.MoveAndInteract(ARMOR_CRAFTER_COORDS),
+                BT.CraftItemsByProfession(
+                    profession_craft_steps=MONASTERY_ARMOR_CRAFT_BY_PROFESSION,
                 ),
                 DestroyTrash(),
                 BT.Travel(TSUMEI_VILLAGE),
                 BT.MoveAndInteract(WEAPON_CRAFTER_COORDS),
-                BT.GetNodeByProfession(**_build_tsumei_weapon_nodes()),
+                BT.CraftItemsByProfession(
+                    profession_craft_steps=TSUMEI_WEAPON_CRAFT_BY_PROFESSION,
+                ),
             ],
         )
 
@@ -1286,24 +1295,6 @@ def An_Audience_WithMasterTogo_Reward() -> BehaviorTree:
                 BT.MoveAndExitMap((-3762, 9471),target_map_id=SHING_JEA_MONASTERY,),
             ],
         )
-
-
-
-def Extend_Inventory_Space(log: bool = False) -> BehaviorTree:
-    merchant = (-11866, 11444)
-    return BT.Sequence(
-            name="Extend Inventory Space",
-            map_id_or_name=SHING_JEA_MONASTERY,
-            map_prep=PrepareForBattle(),
-            children=[
-                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1, log=log),
-                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch, log=log),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1, log=log),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2, log=log),
-            ],
-        )
     
 def CapturePet_And_to_minister_cho(log: bool = False) -> BehaviorTree:
     bot = ensure_botting_tree()
@@ -1333,7 +1324,7 @@ def CapturePet_And_to_minister_cho(log: bool = False) -> BehaviorTree:
                 BT.CastSkillID(CHARM_PET_SKILL_ID, log=log),
                 BT.Wait(15000, log=log),
                 BT.HandleQuest(318, intro_quest_path, 0x80000B, mode="skip", success_map_id=MINISTER_CHO_STATE, log=log),
-                BT.WaitForMapToChange(map_id=MINISTER_CHO_STATE, log=log),
+                BT.WaitForMapToChange(map_id=MINISTER_CHO_STATE),
                 BT.HandleQuest(318, (7884, -10029), 0x813E07, mode="complete", log=log),
             ],
         )
@@ -1446,21 +1437,23 @@ def Warning_The_Tengu() -> BehaviorTree:
         )
     
 
-def Extend_Inventory_Space() -> BehaviorTree:
+def Extend_Inventory_Space(log: bool = False) -> BehaviorTree:
     merchant = (-11866, 11444)
+
     return BT.Sequence(
             name="Extend Inventory Space",
             map_id_or_name=SHING_JEA_MONASTERY,
             map_prep=PrepareForBattle(),
             children=[
-                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1),
-                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1),
-                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2),
+                BT.MoveAndBuyMerchantItem(merchant, ModelID.Belt_Pouch.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Belt_Pouch.value, Bags.BeltPouch, log=log),
+                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag1, log=log),
+                BT.BuyMerchantItem(ModelID.Bag.value, quantity=1, log=log),
+                BT.EquipInventoryBag(ModelID.Bag.value, Bags.Bag2, log=log),
             ],
         )
+    
     
 
 def _move_and_kneel(coords: PointOrPath) -> BehaviorTree:
