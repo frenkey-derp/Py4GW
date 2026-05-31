@@ -913,12 +913,12 @@ class UI:
 
     @staticmethod
     def _draw_item_texture(item: Optional[ItemData], size: tuple[float, float] = (32, 32)) -> None:
-        # UI._draw_texture_from_model_file_id(getattr(item, "model_file_id", -1), size)
-        texture = get_texture_for_model(item.model_id) if item and getattr(item, "model_id", -1) > 0 else None
-        if texture and "0-File_Not_found.png" in texture:
-            texture = None
+        UI._draw_texture_from_model_file_id(getattr(item, "model_file_id", -1), size)
+        # texture = get_texture_for_model(item.model_id) if item and getattr(item, "model_id", -1) > 0 else None
+        # if texture and "0-File_Not_found.png" in texture:
+        #     texture = None
 
-        UI._draw_texture_or_dummy(texture, size)
+        # UI._draw_texture_or_dummy(texture, size)
 
     def _rebuild_item_ui_caches(self) -> None:
         from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
