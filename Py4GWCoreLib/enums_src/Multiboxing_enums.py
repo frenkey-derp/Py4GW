@@ -49,6 +49,7 @@ class SharedCommandType(IntEnum):
     SendManualDialog = auto()
     TravelToGuildHall = auto()
     
+    SetActiveTitle = auto()
     SetActiveQuest = auto()
     AbandonQuest = auto()
 
@@ -72,9 +73,10 @@ class SharedCommandType(IntEnum):
     UseSkillCombatPrep = auto() #handled in CombatPrep only by Mark
     LootEx = auto() # privately Handled Command, by frenkey
     Pycons = auto()
-    BroadcastChatCommand = auto() 
+    BroadcastChatCommand = auto()
     ConsoleMessage = auto()
     SetHeadlessLooting = auto()
+    SetResurrectionScroll = auto()
     #endregion
 
 class ReloadType(IntEnum):

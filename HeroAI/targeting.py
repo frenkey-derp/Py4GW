@@ -162,7 +162,11 @@ def TargetAllyNonWeaponSpelled(distance=Range.Earshot.value):
 
 def TargetLowestAllyEnergy(other_ally=False, filter_skill_id=0, less_energy=1.0):
     global BLOOD_IS_POWER, BLOOD_RITUAL
-    from .utils import (CheckForEffect, GetEnergyValues)
+    from Py4GWCoreLib.GlobalCache.WhiteboardLocks import (
+        BLOOD_ENERGY_BUFF_LOCK_KEY,
+        filter_unlocked_buff_targets,
+    )
+    from .utils import (CheckForEffect, GetEnergyValues, IsValidEnergyValue)
     
     
     distance = Range.Spellcast.value
@@ -170,8 +174,12 @@ def TargetLowestAllyEnergy(other_ally=False, filter_skill_id=0, less_energy=1.0)
     ally_array = FilterAllyArray(ally_array, distance, other_ally, filter_skill_id)
     ally_array = AgentArray.Filter.ByCondition(ally_array, lambda agent_id: not CheckForEffect(agent_id, BLOOD_IS_POWER))
     ally_array = AgentArray.Filter.ByCondition(ally_array, lambda agent_id: not CheckForEffect(agent_id, BLOOD_RITUAL))
+    ally_array = filter_unlocked_buff_targets(ally_array, BLOOD_ENERGY_BUFF_LOCK_KEY)
     
-    ally_array = AgentArray.Filter.ByCondition(ally_array, lambda agent_id: GetEnergyValues(agent_id) <= less_energy)
+    ally_array = AgentArray.Filter.ByCondition(
+        ally_array,
+        lambda agent_id: IsValidEnergyValue(GetEnergyValues(agent_id)) and GetEnergyValues(agent_id) <= less_energy,
+    )
 
     # Prioritize the ally with the lowest current energy, breaking ties by distance to the caster so
     # the closest eligible ally wins when energy values match.

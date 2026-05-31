@@ -267,6 +267,82 @@ class BuildMgr:
             return True
         return self._matches_required_weapon(required_weapon)
 
+    def _meets_custom_skill_shared_conditions(self, skill_id: int) -> bool:
+        custom_skill = self.GetCustomSkill(skill_id)
+        if custom_skill is None:
+            return True
+
+        conditions = custom_skill.Conditions
+
+        from Py4GWCoreLib import Agent, AgentArray, Player, Range, Routines
+
+        player_id = Player.GetAgentID()
+        player_x, player_y = Player.GetXY()
+
+        if conditions.CloseToAggro and not (self.IsInAggro() or self.IsCloseToAggro()):
+            return False
+
+        if conditions.LessSelfEnergyPercentage != 0:
+            if Agent.GetEnergy(player_id) > conditions.LessSelfEnergyPercentage:
+                return False
+
+        if conditions.Overcast != 0:
+            if Agent.GetOvercast(player_id) < conditions.Overcast:
+                return False
+
+        if conditions.RequiresSpiritInEarshot:
+            spirit_array = AgentArray.GetSpiritPetArray()
+            spirit_array = AgentArray.Filter.ByDistance(
+                spirit_array,
+                (player_x, player_y),
+                Range.Earshot.value,
+            )
+            spirit_array = AgentArray.Filter.ByCondition(
+                spirit_array,
+                lambda agent_id: Agent.IsAlive(agent_id),
+            )
+            if not spirit_array:
+                return False
+
+        if conditions.EnemyCount != 0:
+            enemy_array = Routines.Agents.GetFilteredEnemyArray(
+                player_x,
+                player_y,
+                conditions.EnemiesInRange,
+            )
+            if len(enemy_array or []) < conditions.EnemyCount:
+                return False
+
+        if conditions.AlliesInRange != 0:
+            ally_array = Routines.Agents.GetFilteredAllyArray(
+                player_x,
+                player_y,
+                conditions.AlliesInRangeArea,
+                other_ally=True,
+            )
+            if len(ally_array or []) < conditions.AlliesInRange:
+                return False
+
+        if conditions.SpiritsInRange != 0:
+            spirit_array = Routines.Agents.GetFilteredSpiritArray(
+                player_x,
+                player_y,
+                conditions.SpiritsInRangeArea,
+            )
+            if len(spirit_array or []) < conditions.SpiritsInRange:
+                return False
+
+        if conditions.MinionsInRange != 0:
+            minion_array = Routines.Agents.GetFilteredMinionArray(
+                player_x,
+                player_y,
+                conditions.MinionsInRangeArea,
+            )
+            if len(minion_array or []) < conditions.MinionsInRange:
+                return False
+
+        return True
+
     def _get_shared_skill_toggle(self, slot: int) -> bool:
         if not (1 <= int(slot) <= 8):
             return False
@@ -1435,6 +1511,7 @@ class BuildMgr:
         from HeroAI.types import Skilltarget, SkillType
         from Py4GWCoreLib import Routines
         from Py4GWCoreLib.Agent import Agent
+        from Py4GWCoreLib.Skill import Skill
         from Py4GWCoreLib.enums_src.GameData_enums import Allegiance
 
         if not target_agent_id:
@@ -1490,6 +1567,15 @@ class BuildMgr:
                 if Routines.Checks.Agents.HasEffect(target_agent_id, skill_id, exact_weapon_spell=True):
                     return False
             elif Routines.Checks.Agents.IsWeaponSpelled(target_agent_id):
+                return False
+
+        blood_is_power_id = Skill.GetID("Blood_is_Power")
+        blood_ritual_id = Skill.GetID("Blood_Ritual")
+        if skill_id in (blood_is_power_id, blood_ritual_id):
+            if (
+                Routines.Checks.Agents.HasEffect(target_agent_id, blood_is_power_id)
+                or Routines.Checks.Agents.HasEffect(target_agent_id, blood_ritual_id)
+            ):
                 return False
 
         return True
@@ -1609,7 +1695,8 @@ class BuildMgr:
         skill_id: int,
         extra_condition: bool | Callable[[], bool] = True,
     ) -> bool:
-        from Py4GWCoreLib import Player, Routines, SkillBar
+        from HeroAI.types import SkillType
+        from Py4GWCoreLib import GLOBAL_CACHE, Player, Routines, SkillBar
 
         if not Routines.Checks.Map.IsExplorable():
             return False
@@ -1621,6 +1708,16 @@ class BuildMgr:
             return False
         if not Routines.Checks.Skills.IsSkillIDReady(skill_id):
             return False
+        skill_type, _ = GLOBAL_CACHE.Skill.GetType(skill_id)
+        if skill_type == SkillType.Shout.value:
+            player_id = Player.GetAgentID()
+            vocal_minority_id = GLOBAL_CACHE.Skill.GetID("Vocal_Minority")
+            well_of_silence_id = GLOBAL_CACHE.Skill.GetID("Well_of_Silence")
+            if (
+                Routines.Checks.Agents.HasEffect(player_id, vocal_minority_id)
+                or Routines.Checks.Agents.HasEffect(player_id, well_of_silence_id)
+            ):
+                return False
 
         slot = SkillBar.GetSlotBySkillID(skill_id)
         if not (1 <= slot <= 8):
@@ -1628,6 +1725,8 @@ class BuildMgr:
         if not self.IsSharedSkillToggleEnabled(slot):
             return False
         if not self._meets_custom_skill_weapon_requirement(skill_id):
+            return False
+        if not self._meets_custom_skill_shared_conditions(skill_id):
             return False
         if not Routines.Checks.Skills.HasEnoughAdrenalineBySlot(slot):
             return False
@@ -1641,7 +1740,8 @@ class BuildMgr:
         slot: int,
         extra_condition: bool | Callable[[], bool] = True,
     ) -> bool:
-        from Py4GWCoreLib import Player, Routines, SkillBar
+        from HeroAI.types import SkillType
+        from Py4GWCoreLib import GLOBAL_CACHE, Player, Routines, SkillBar
 
         if not Routines.Checks.Map.IsExplorable():
             return False
@@ -1655,9 +1755,21 @@ class BuildMgr:
         skill_id = SkillBar.GetSkillIDBySlot(slot)
         if not skill_id:
             return False
+        skill_type, _ = GLOBAL_CACHE.Skill.GetType(skill_id)
+        if skill_type == SkillType.Shout.value:
+            player_id = Player.GetAgentID()
+            vocal_minority_id = GLOBAL_CACHE.Skill.GetID("Vocal_Minority")
+            well_of_silence_id = GLOBAL_CACHE.Skill.GetID("Well_of_Silence")
+            if (
+                Routines.Checks.Agents.HasEffect(player_id, vocal_minority_id)
+                or Routines.Checks.Agents.HasEffect(player_id, well_of_silence_id)
+            ):
+                return False
         if not self.IsSharedSkillToggleEnabled(slot):
             return False
         if not self._meets_custom_skill_weapon_requirement(skill_id):
+            return False
+        if not self._meets_custom_skill_shared_conditions(skill_id):
             return False
         if not Routines.Checks.Skills.HasEnoughEnergy(Player.GetAgentID(), skill_id):
             return False

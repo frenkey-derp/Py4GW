@@ -18,6 +18,9 @@ Power_Drain_ID = Skill.GetID("Power_Drain")
 Shatter_Hex_ID = Skill.GetID("Shatter_Hex")
 Flesh_of_My_Flesh_ID = Skill.GetID("Flesh_of_My_Flesh")
 Breath_of_the_Great_Dwarf_ID = Skill.GetID("Breath_of_the_Great_Dwarf")
+Ebon_Battle_Standard_of_Courage_ID = Skill.GetID("Ebon_Battle_Standard_of_Courage")
+Ebon_Battle_Standard_of_Honor_ID = Skill.GetID("Ebon_Battle_Standard_of_Honor")
+Tryptophan_Signet_ID = Skill.GetID("Tryptophan_Signet")
 
 
 @dataclass(slots=True)
@@ -50,7 +53,10 @@ class Panic(BuildMgr):
                 Shatter_Hex_ID,
                 Overload_ID,
                 Flesh_of_My_Flesh_ID,
-                Breath_of_the_Great_Dwarf_ID
+                Breath_of_the_Great_Dwarf_ID,
+                Ebon_Battle_Standard_of_Courage_ID,
+                Ebon_Battle_Standard_of_Honor_ID,
+                Tryptophan_Signet_ID,
             ],
         )
         if match_only:
@@ -68,6 +74,9 @@ class Panic(BuildMgr):
             Overload_ID,
             Power_Drain_ID,
             Shatter_Hex_ID,
+            Ebon_Battle_Standard_of_Courage_ID,
+            Ebon_Battle_Standard_of_Honor_ID,
+            Tryptophan_Signet_ID,
         ])
         self.SetSkillCastingFn(self._run_local_skill_logic)
         self.skills: SkillsTemplate = SkillsTemplate(self)
@@ -111,6 +120,12 @@ class Panic(BuildMgr):
             )):
                 return True
 
+        if self.IsSkillEquipped(Ebon_Battle_Standard_of_Courage_ID) and (yield from self.skills.Any.NoAttribute.Ebon_Battle_Standard_of_Courage()):
+            return True
+
+        if self.IsSkillEquipped(Ebon_Battle_Standard_of_Honor_ID) and (yield from self.skills.Any.NoAttribute.Ebon_Battle_Standard_of_Honor()):
+            return True
+
         if not snapshot.in_aggro:
             return False
 
@@ -121,6 +136,9 @@ class Panic(BuildMgr):
             return True
 
         if snapshot.enemy_in_spellcast and (yield from self.skills.Any.PvE.Ebon_Vanguard_Assassin_Support()):
+            return True
+        
+        if self.IsSkillEquipped(Tryptophan_Signet_ID) and (yield from self.skills.Any.PvE.Tryptophan_Signet()):
             return True
 
         if snapshot.enemy_in_spellcast and (yield from self.skills.Mesmer.DominationMagic.Panic()):
@@ -135,13 +153,13 @@ class Panic(BuildMgr):
         if snapshot.player_energy_pct >= 0.50 and (yield from self.skills.Mesmer.DominationMagic.Shatter_Hex(min_priority=HexRemovalPriority.MEDIUM)):
             return True
 
+        if snapshot.enemy_casting_spell and (yield from self.skills.Mesmer.DominationMagic.Mistrust()):
+            return True
+
         if snapshot.enemy_casting and (yield from self.skills.Mesmer.DominationMagic.Overload()):
             return True
 
         if snapshot.enemy_casting and (yield from self.skills.Any.PvE.Cry_of_Pain(require_mesmer_hex=True)):
-            return True
-
-        if snapshot.enemy_casting_spell and (yield from self.skills.Mesmer.DominationMagic.Mistrust()):
             return True
 
         if snapshot.enemy_in_spellcast and (yield from self.skills.Mesmer.DominationMagic.Unnatural_Signet()):
