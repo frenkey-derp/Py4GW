@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import datetime
 from datetime import timezone
@@ -11,7 +12,6 @@ from Py4GWCoreLib import ActionQueueManager
 from Py4GWCoreLib import CombatPrepSkillsType
 from Py4GWCoreLib import Console
 from Py4GWCoreLib import ConsoleLog
-from Py4GWCoreLib import LootConfig
 import PyImGui
 from Py4GWCoreLib import Range, TitleID
 from Py4GWCoreLib import Routines
@@ -21,9 +21,13 @@ from Py4GWCoreLib import UIManager
 from Py4GWCoreLib import AutoPathing
 from Py4GWCoreLib import IniHandler
 from Py4GWCoreLib.GlobalCache.WhiteboardLocks import post_loot_lock, clear_loot_lock
+from Py4GWCoreLib.GlobalCache.shared_memory_src.AccountStruct import AccountStruct
 from Py4GWCoreLib.Py4GWcorelib import Keystroke
 from Py4GWCoreLib.Quest import Quest
+from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
+from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
+from Py4GWCoreLib.py4gwcorelib_src.Lootconfig_src import LootConfig
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
@@ -841,17 +845,6 @@ def MerchantItems(index: int, message: SharedMessageStruct):
         wait_ms += 250
     _merchant_busy = True
 
-    def _extra_data(message: SharedMessageStruct) -> tuple[str, str, str, str]:
-        values: list[str] = []
-        for raw in message.ExtraData:
-            try:
-                values.append(_c_wchar_array_to_str(raw))
-            except Exception:
-                values.append("")
-        while len(values) < 4:
-            values.append("")
-        return tuple(values[:4])
-
     extra0, extra1, extra2, extra3 = _extra_data(message)
     mode = extra0.strip().lower()
 
@@ -936,7 +929,7 @@ def MerchantMaterials(index: int, message: SharedMessageStruct):
                 values.append("")
         while len(values) < 4:
             values.append("")
-        return tuple(values[:4])
+        return tuple(values[:4])  # type: ignore[return-value]
 
     def _parse_selected_models(raw: str) -> set[int] | None:
         if not raw.strip():
@@ -963,7 +956,7 @@ def MerchantMaterials(index: int, message: SharedMessageStruct):
     mode = extra0.strip().lower()
     selected_models = _parse_selected_models(extra1)
 
-    def _parse_exact_quantity(raw: str, default: int = 250) -> int | None:
+    def _parse_exact_quantity(raw: str, default: int = 250) -> int:
         value = str(raw).strip()
         if value == "":
             return int(default)
@@ -971,7 +964,7 @@ def MerchantMaterials(index: int, message: SharedMessageStruct):
             parsed = int(value)
         except Exception:
             return int(default)
-        return parsed if parsed > 0 else None
+        return parsed    
 
     try:
         x = float(message.Params[0])
@@ -1844,25 +1837,6 @@ def ConsoleMessage(index: int, message: SharedMessageStruct):
 
 # endregion
 
-# region SetActiveTitle
-def SetActiveTitle(index: int, message: SharedMessageStruct):
-    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
-
-    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
-    if sender_data is None:
-        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
-        return
-
-    title_id = int(message.Params[0] or 0)
-    if title_id > 0:
-        Player.SetActiveTitle(title_id)
-
-    yield from Routines.Yield.wait(100)
-    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
-    ConsoleLog(MODULE_NAME, "SetActiveTitle message processed and finished.", Console.MessageType.Info, False)
-
-# endregion
-
 # region SetWindowGeometry
 def SetWindowGeometry(index: int, message: SharedMessageStruct):
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
@@ -2469,6 +2443,77 @@ def LoadSkillTemplate(index: int, message: SharedMessageStruct):
     ConsoleLog(MODULE_NAME, "LoadSkillTemplate message processed and finished.", Console.MessageType.Info, False)
 # endregion
 
+def LoadSkillTemplateOnHero(index: int, message: SharedMessageStruct):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    extra = tuple(GLOBAL_CACHE.ShMem.GetAllAccounts()._c_wchar_array_to_str(arr) for arr in message.ExtraData)
+    param_hero_id = int(message.Params[0]) if len(message.Params) > 0 else 0
+    hero_id = HeroType(param_hero_id) if param_hero_id in HeroType._value2member_map_ else None
+    template = extra[0] if extra else ""
+    
+    if hero_id and template:
+        hero_index = Party.GetHeroIndex(hero_id)
+        GLOBAL_CACHE.SkillBar.LoadHeroSkillTemplate(hero_index, template)
+        yield from Routines.Yield.wait(100)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "LoadSkillTemplateOnHero message processed and finished.", Console.MessageType.Info, False)
+
+def AddHero(index: int, message: SharedMessageStruct):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    extra = tuple(GLOBAL_CACHE.ShMem.GetAllAccounts()._c_wchar_array_to_str(arr) for arr in message.ExtraData)
+    param_hero_id = int(message.Params[0]) if len(message.Params) > 0 else 0
+    hero_id = HeroType(param_hero_id) if param_hero_id in HeroType._value2member_map_ else None
+    
+    hero_build_template = str(extra[0]) if extra else ""
+
+    if hero_id:
+        GLOBAL_CACHE.Party.Heroes.AddHero(hero_id)
+        
+        if hero_build_template:
+            ConsoleLog(MODULE_NAME, f"Waiting to apply build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) after adding to party.", Console.MessageType.Info, False)
+            yield from Routines.Yield.wait(100)  # wait for hero to be added before applying build
+            hero_index = Party.GetHeroIndex(hero_id)
+            
+            if hero_index > 0:
+                ConsoleLog(MODULE_NAME, f"Applying build template '{hero_build_template}' to hero {hero_id.name} (ID: {hero_id.value}) in party slot {hero_index}.", Console.MessageType.Info, False)
+                GLOBAL_CACHE.SkillBar.LoadHeroSkillTemplate(hero_index, hero_build_template)
+            else:
+                ConsoleLog(MODULE_NAME, f"Failed to find hero {hero_id.name} (ID: {hero_id.value}) in party after adding, cannot apply build template.", Console.MessageType.Warning, False)
+            
+            
+        yield from Routines.Yield.wait(100)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    
+def KickHero(index: int, message: SharedMessageStruct):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    sender_data = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(message.SenderEmail)
+    
+    if sender_data is None:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        return
+    
+    param_hero_id = int(message.Params[0]) if len(message.Params) > 0 else 0
+    hero_id = HeroType(param_hero_id) if param_hero_id in HeroType._value2member_map_ else None
+            
+    if hero_id:
+        GLOBAL_CACHE.Party.Heroes.KickHero(hero_id)
+        yield from Routines.Yield.wait(100)
+    
+    GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+    ConsoleLog(MODULE_NAME, "KickHero message processed and finished.", Console.MessageType.Info, False)
+
 #region SkipCutscene
 def SkipCutscene(index: int, message: SharedMessageStruct):
     GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
@@ -2744,6 +2789,21 @@ def EquipItem(index: int, message: SharedMessageStruct):
     GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
 # endregion
 
+#region Reload
+def Reload(index: int, message: SharedMessageStruct):
+    GLOBAL_CACHE.ShMem.MarkMessageAsRunning(message.ReceiverEmail, index)
+    try:    
+        # Implementation follows in a future PR    
+        pass
+    except Exception as exc:
+        ConsoleLog(MODULE_NAME, f"ReloadConfig message error: {exc}", Console.MessageType.Error, False)
+    finally:
+        GLOBAL_CACHE.ShMem.MarkMessageAsFinished(message.ReceiverEmail, index)
+        
+    yield None
+
+#endregions
+
 # region ProcessMessages
 def ProcessMessages():
     account_email = Player.GetAccountEmail()
@@ -2843,6 +2903,12 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(SwitchCharacter(index, message))
         case SharedCommandType.LoadSkillTemplate:
             GLOBAL_CACHE.Coroutines.append(LoadSkillTemplate(index, message))
+        case SharedCommandType.LoadSkillTemplateOnHero:
+            GLOBAL_CACHE.Coroutines.append(LoadSkillTemplateOnHero(index, message))
+        case SharedCommandType.AddHero:
+            GLOBAL_CACHE.Coroutines.append(AddHero(index, message))
+        case SharedCommandType.KickHero:
+            GLOBAL_CACHE.Coroutines.append(KickHero(index, message))
         case SharedCommandType.SkipCutscene:
             GLOBAL_CACHE.Coroutines.append(SkipCutscene(index, message))
         case SharedCommandType.TravelToGuildHall:

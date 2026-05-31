@@ -902,19 +902,22 @@ class BTUpkeepers:
             effective_exclude_list.append(imp_model_id)
 
         children: list[BehaviorTree | BehaviorTree.Node] = [
-            BTItems.SpawnBonusItems(log=log, aftercast_ms=spawn_settle_ms),
-            BTItems.DestroyBonusItems(exclude_list=effective_exclude_list, log=log, aftercast_ms=35),
+            BTItems.BonusItems.SpawnBonusItems(log=log, aftercast_ms=spawn_settle_ms),
+            BTItems.BonusItems.DestroyBonusItems(exclude_list=effective_exclude_list, log=log, aftercast_ms=35),
         ]
 
         if move_to_slot:
             children.append(
-                BTItems.MoveModelToBagSlot(
-                    modelID_or_encStr=imp_model_id,
-                    target_bag=target_bag,
-                    slot=slot,
-                    log=log,
-                    required=True,
-                    aftercast_ms=spawn_settle_ms,
+                BTItems.Utility.ResolveItemIDThen(
+                    identifier=imp_model_id,
+                    next_node_fn=lambda resolved_item_id: BTItems.Bags.MoveTo(
+                        item_id=resolved_item_id,
+                        target_bag=target_bag,
+                        slot=slot,
+                        log=log,
+                        required=True,
+                        aftercast_ms=spawn_settle_ms,
+                    )
                 )
             )
 
@@ -1036,7 +1039,7 @@ class BTUpkeepers:
                     slot=slot,
                     exclude_list=effective_exclude_list,
                     log=log,
-                    move_to_slot=False,
+                    move_to_slot=True,
                 )
 
             state["spawn_tree"].blackboard = node.blackboard
@@ -1090,9 +1093,7 @@ class BTUpkeepers:
           UserDescription: Use this as a service tree when you want the imp stone to be used automatically during leveling or farming flows.
           Notes: Skips use while loading, in outposts, when dead, at level 20, during summoning sickness, or when an imp is already alive.
         """
-        state = {
-            "last_attempt_ms": 0,
-        }
+        service_key = "explorable_imp_service"
 
         summoning_sickness_effect_id = 2886
         summon_creature_model_ids = {
@@ -1103,7 +1104,16 @@ class BTUpkeepers:
         def _get_imp_item_id() -> int:
             return BTUpkeepers._find_inventory_item_by_model_id(imp_model_id)
 
-        def _has_alive_imp() -> bool:
+        def _get_service_state(node: BehaviorTree.Node) -> dict:
+            return node.blackboard.setdefault(
+                service_key,
+                {
+                    "last_attempt_ms": 0,
+                    "imp_agent_id": 0,
+                },
+            )
+
+        def _has_alive_imp(node: BehaviorTree.Node) -> bool:
             """
             Check whether a summoned imp is already alive in the party.
 
@@ -1113,11 +1123,24 @@ class BTUpkeepers:
               Display: Internal Has Alive Imp Helper
               Purpose: Detect an existing summoned imp before attempting to use the imp stone again.
               UserDescription: Internal support routine.
-              Notes: Looks at other party members and filters out dead summons.
+              Notes: Prefers a cached imp agent id and falls back to scanning nearby party others to seed the cache.
             """
-            for other in GLOBAL_CACHE.Party.GetOthers():
-                if Agent.GetModelID(other) in summon_creature_model_ids and not Agent.IsDead(other):
+            state = _get_service_state(node)
+            party_others = list(GLOBAL_CACHE.Party.GetOthers())
+            cached_imp_agent_id = int(state.get("imp_agent_id", 0) or 0)
+
+            if cached_imp_agent_id > 0:
+                if cached_imp_agent_id not in party_others or ((model_id := Agent.GetModelID(cached_imp_agent_id)) and model_id in summon_creature_model_ids and Agent.IsDead(cached_imp_agent_id)):
+                    state["imp_agent_id"] = 0
+                        
+                if state["imp_agent_id"] > 0:
                     return True
+
+            for other in party_others:
+                if Agent.GetModelID(other) in summon_creature_model_ids and not Agent.IsDead(other):
+                    state["imp_agent_id"] = int(other)
+                    return True
+                
             return False
 
         def _tick_explorable_imp_service(node: BehaviorTree.Node):
@@ -1132,10 +1155,13 @@ class BTUpkeepers:
               UserDescription: Internal support routine.
               Notes: Skips use when the player is dead, level-capped, loading, ineligible, or already protected by an active imp or summoning sickness.
             """
+            state = _get_service_state(node)
+
             if Map.IsMapLoading() or not Checks.Map.MapValid() or not Map.IsMapReady():
                 return BehaviorTree.NodeState.RUNNING
 
             if not Map.IsExplorable():
+                state["imp_agent_id"] = 0
                 return BehaviorTree.NodeState.RUNNING
 
             if Agent.IsDead(Player.GetAgentID()):
@@ -1151,7 +1177,7 @@ class BTUpkeepers:
             if GLOBAL_CACHE.Effects.HasEffect(Player.GetAgentID(), summoning_sickness_effect_id):
                 return BehaviorTree.NodeState.RUNNING
 
-            if _has_alive_imp():
+            if _has_alive_imp(node):
                 return BehaviorTree.NodeState.RUNNING
 
             from ...Py4GWcorelib import Utils

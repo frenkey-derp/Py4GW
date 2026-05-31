@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional, Callable, Generator, Any
 
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS
+
 from ...Agent import Agent
 from ...GlobalCache.WhiteboardLocks import clear_loot_lock, post_loot_lock
 from ...Player import Player
@@ -544,13 +546,17 @@ class Items:
 
     @staticmethod
     def UseConsumables(consumable_effects: list[tuple[int, str]]) -> Generator[Any, Any, bool]:
-        tree = BT.Items.UseConsumables(consumable_effects, aftercast_ms=100)
+        tree = BT.Items.Consumables.UseConsumables(consumable_effects, aftercast_ms=100)
         result = yield from _run_bt_tree(tree, return_bool=True, throttle_ms=100)
         return bool(result)
 
     @staticmethod
     def UseConsumable(model_id: int, effect_name: str = "") -> Generator[Any, Any, bool]:
-        tree = BT.Items.UseConsumable(int(model_id), effect_name, aftercast_ms=100)
+        tree = BT.Items.Utility.ResolveItemIDThen(
+            identifier=model_id,
+            bags=INVENTORY_BAGS,
+            next_node_fn=lambda item_id: BT.Items.Consumables.UseConsumable(item_id, effect_name, aftercast_ms=100)
+        )
         result = yield from _run_bt_tree(tree, return_bool=True, throttle_ms=100)
         return bool(result)
 
