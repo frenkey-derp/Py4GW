@@ -382,13 +382,14 @@ class UI:
         ItemType.Quest_Item : 230579,
         ItemType.Bundle : 358543,
         
+        ItemType.Costume_Headpiece : 2654,
+        ItemType.Costume : 2656,
+        
         ItemType.Weapon : 205892,
         ItemType.MartialWeapon : 205890,
         ItemType.OffhandOrShield : 205891,
         ItemType.EquippableItem : 205889,
         ItemType.SpellcastingWeapon : 205889,
-        ItemType.Costume : 2656,
-        ItemType.Costume_Headpiece : 2654,
         # ItemType.Unknown : ModelID.Unknown
     }
     
@@ -4398,6 +4399,7 @@ class UI:
     
     class ConditionEditor:
         NO_HEADER_TABLE_CELL_PADDING_Y = 4
+        NO_HEADER_TABLE_CELL_PADDING_X = 4
 
         class ConditionSizes:
             def __init__(self):
@@ -4417,8 +4419,6 @@ class UI:
             spacing_x = style.ItemSpacing.value1 or 0
             spacing_y = style.ItemSpacing.value2 or 0
             
-            cell_spacing_x = style.CellPadding.value1 or 0
-            cell_spacing_y = style.CellPadding.value2 or 0
             window_padding_y = style.WindowPadding.value2 or 0
             button_padding_y = style.ButtonPadding.get_current().value2 or 0
             
@@ -4431,56 +4431,41 @@ class UI:
             max_height = UI.RULE_CONTENT_RECT[1]
             
             is_last_condition = rule.conditions and condition == rule.conditions[-1]
+    
+            sizes["element_height"] = 0
+            sizes["element_width"] = 0
+            items_amount = 0
+            base_height = 0
             
             match condition:                
                 case ModelIdsCondition():
                     base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
-                    sizes["cell_spacing_y"] = cell_spacing_y
                     sizes["element_height"] = 48
                     sizes["element_width"] = 250
-                    
-                    columns = max(1, int(avail_width // (sizes["element_width"] + (spacing_x + cell_spacing_x))))
-                    rows = (len(condition.model_ids) + columns - 1) // columns
-                    
-                    sizes["columns"] = columns
-                    sizes["rows"] = rows
-                    
-                    sizes["width"] = avail_width
-                    table_row_height = sizes["element_height"] + (UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_Y * 2)
-                    table_height = math.ceil(rows * table_row_height)
-                    
-                    sizes["wrapper_height"] = window_padding_y + (header_height + spacing_y) + (base_height + spacing_y) + spacing_y
-                    sizes["content_height"] = min(table_height, max_height - sizes["wrapper_height"])
-                    height = sizes["wrapper_height"] + sizes["content_height"]
-                    
-                    sizes["height"] = max(height, avail_height) if is_last_condition else height
+                    items_amount = len(condition.model_ids)
                     
                 case ItemTypesCondition():
                     sizes["element_height"] = 32
-                    sizes["element_width"] = 200
-                    
-                    columns = max(1, int(avail_width // (sizes["element_width"] + (spacing_x + cell_spacing_x))))
-                    rows = (len(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.keys()) + columns - 1) // columns
-                    
-                    sizes["columns"] = columns
-                    sizes["rows"] = rows
-                    sizes["width"] = avail_width
-                    height = (header_height + (rows * (sizes["element_height"] + cell_spacing_y)) + cell_spacing_y + spacing_y) if not is_last_condition else avail_height
-                    sizes["height"] = max(height, avail_height) if is_last_condition else height
+                    sizes["element_width"] = 180
+                    items_amount = len(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.keys())
         
                 case ModelFileIdsCondition():
-                    base_height = 36
-                    sizes["element_height"] = 56
-                    sizes["element_width"] = 200
+                    base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
+                    sizes["element_height"] = 48
+                    sizes["element_width"] = 250
+                    items_amount = len(condition.model_file_ids)
                     
-                    columns = max(1, int(avail_width // (sizes["element_width"] + (spacing_x + cell_spacing_x))))
-                    rows = (len(condition.model_file_ids) + columns - 1) // columns
-                    
-                    sizes["columns"] = columns
-                    sizes["rows"] = rows
-                    sizes["width"] = avail_width
-                    height = (header_height + base_height + (rows * (sizes["element_height"] + cell_spacing_y)) + cell_spacing_y + spacing_y) if not is_last_condition else avail_height
-                    sizes["height"] = max(height, avail_height) if is_last_condition else height
+            sizes["columns"] = max(1, int(avail_width // (sizes["element_width"] + UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_X)))
+            sizes["rows"] = (items_amount + sizes["columns"] - 1) // sizes["columns"]
+            sizes["width"] = avail_width
+            table_row_height = sizes["element_height"] + (UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_Y * 2)
+            table_height = math.ceil(sizes["rows"] * table_row_height)
+            
+            sizes["wrapper_height"] = window_padding_y + (header_height + spacing_y) + (base_height + spacing_y) + spacing_y
+            sizes["content_height"] = min(table_height, max_height - sizes["wrapper_height"])
+            height = sizes["wrapper_height"] + sizes["content_height"]
+            
+            sizes["height"] = max(height, avail_height) if is_last_condition else height            
                     
             return sizes
         
@@ -4550,7 +4535,7 @@ class UI:
                 if ImGui.button("Add Model ID", -1):
                     PyImGui.open_popup(popup_id)
 
-                if ui._begin_no_header_table(condition_id, columns, size=(0, sizes.get("content_height", 0))):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
                     last_index = len(condition.model_ids) - 1
                     
                     for index, model_id in enumerate(condition.model_ids[:]):
@@ -4653,7 +4638,7 @@ class UI:
             element_height = sizes.get("element_height", 32)            
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
-                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1)):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
                     last_index = len(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS) - 1
                     
                     for index, (item_type, model_file_id) in enumerate(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.items()):
@@ -4692,7 +4677,6 @@ class UI:
             selected_model_file_ids = set(condition.model_file_ids)
 
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
-            element_width = sizes.get("element_width", 32)    
             element_height = sizes.get("element_height", 56)    
             columns = sizes.get("columns", 1)
 
@@ -4700,6 +4684,37 @@ class UI:
                 if ImGui.button("Add Model File ID", -1):
                     ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
+                    
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
+                    last_index = len(condition.model_file_ids) - 1
+                    
+                    for index, model_file_id in enumerate(condition.model_file_ids):
+                        item = ui._find_item_by_model_file_id(model_file_id)
+                        unique_id = f"model_file_id_condition_{id(condition)}_{model_file_id}_{index}"
+
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
+                                condition.model_file_ids.pop(index)
+                                changed = True
+                                ImGui.end_child()
+                                break
+
+                            PyImGui.same_line(0, 8)
+                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
+                            PyImGui.same_line(0, 8)
+                            PyImGui.begin_group()
+                            ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            PyImGui.end_group()
+                        ImGui.end_child()
+                        
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                            
+                    ui._end_no_header_table()
+
 
                 PyImGui.set_next_window_size((450, 0), cond=PyImGui.ImGuiCond.Appearing)
                 if PyImGui.begin_popup(popup_id):
@@ -4768,36 +4783,6 @@ class UI:
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup()
-
-                if ui._begin_no_header_table(condition_id, columns):
-                    last_index = len(condition.model_file_ids) - 1
-                    
-                    for index, model_file_id in enumerate(condition.model_file_ids):
-                        item = ui._find_item_by_model_file_id(model_file_id)
-                        unique_id = f"model_file_id_condition_{id(condition)}_{model_file_id}_{index}"
-
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
-                                condition.model_file_ids.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
-                        
-                        if index != last_index:
-                            PyImGui.table_next_column()
-                            
-                    ui._end_no_header_table()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
