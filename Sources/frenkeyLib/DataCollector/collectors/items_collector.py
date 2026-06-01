@@ -72,14 +72,14 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
             key_decoder=resolved_key_decoder,
             key_encoder=resolved_key_encoder,
         )
+        self.Nick_Items: dict[int, ItemData] = {}
+        self.Nick_Cycle: list[ItemData] = []
+        
         self.load()
         
         self.storage_checked_for_context = False
         self.force_scan = False
         self.checked_model_keys: list[tuple[ItemType, int]] = []
-        
-        self.Nick_Items: dict[int, ItemData] = {}
-        self.Nick_Cycle: list[ItemData] = []
         
     @property
     def all_items(self) -> list[ItemData]:
@@ -279,7 +279,7 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
     def load(self):
         super().load()
         
-        self.Nick_Items = {item.nick_index: item for item_type in self.values() for item in item_type.values() if item.nick_index is not None}
+        self.Nick_Items = {item.nick_index: item for item in self.all_items if item.nick_index is not None}
         self.Nick_Cycle = [self.Nick_Items[index] for index in range(1, NICK_CYCLE_COUNT + 1) if index in self.Nick_Items]
     
 ITEMS = ItemCollector(*BaseCollector.get_path_providers("items.json"))
