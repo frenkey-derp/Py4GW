@@ -18,6 +18,7 @@ To keep it navigable, the class is organized in broad sections:
 
 import json
 import inspect
+import math
 import os
 import re
 import time
@@ -65,6 +66,7 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.routines_src.BehaviourTrees import BT
+from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
@@ -294,6 +296,8 @@ class UI:
     GREEN_COLOR : Color = ColorPalette.GetColor("gw_green")
     RED_COLOR : Color = ColorPalette.GetColor("red")
     GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
+    SCREEN_SIZE : tuple[float, float] = (0.0, 0.0)
+    RULE_CONTENT_RECT : tuple[float, float] = (0.0, 0.0)
     
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
     _RULE_TYPES_CACHE: list[type[Rule]] | None = None
@@ -334,47 +338,57 @@ class UI:
         ItemType.Wand : Attribute.None_,
     }
     
-    ITEM_TYPE_REPRESENTATIVE_MODEL_IDS = {
-        ItemType.Salvage : ModelID.Ancient_Armor_Remnant,
-        ItemType.Axe : ModelID.Totem_Axe,        
-        ItemType.Bag : ModelID.Bag,
-        ItemType.Boots : ModelID.Battle_Commendation,
-        ItemType.Bow : ModelID.Bow_Grip,
-        ItemType.Bundle : ModelID.War_Supplies,
-        ItemType.Chestpiece : ModelID.Battle_Commendation,
-        ItemType.Rune_Mod : ModelID.Sword_Hilt,
-        ItemType.Usable : ModelID.Creme_Brulee,
-        ItemType.Dye : ModelID.Vial_Of_Dye,
-        ItemType.Materials_Zcoins : ModelID.Iron_Ingot,
-        ItemType.Offhand : ModelID.Focus_Core,
-        ItemType.Gloves : ModelID.Battle_Commendation,
-        ItemType.Hammer : ModelID.Hammer_Haft,
-        ItemType.Headpiece : ModelID.Battle_Commendation,
-        ItemType.CC_Shards : ModelID.Candy_Cane_Shard,
-        ItemType.Key : ModelID.Obsidian_Key,
-        ItemType.Leggings : ModelID.Battle_Commendation,
-        ItemType.Gold_Coin : ModelID.Gold_Coins,
-        ItemType.Quest_Item : ModelID.Encrypted_Charr_Battle_Plans,
-        ItemType.Wand : ModelID.WandWrapping,
-        ItemType.Shield : ModelID.Shield_Handle,
-        ItemType.Staff : ModelID.Staff_Head,
-        ItemType.Sword : ModelID.Sword_Hilt,
-        ItemType.Kit : ModelID.Salvage_Kit,
-        ItemType.Trophy : ModelID.Quetzal_Crest,
-        ItemType.Scroll : ModelID.Passage_Scroll_Fow,
-        ItemType.Daggers : ModelID.Dagger_Handle,
-        ItemType.Present : ModelID.Birthday_Present,
-        ItemType.Minipet : ModelID.Water_Djinn_Mini,
-        ItemType.Scythe : ModelID.Scythe_Snathe,
-        ItemType.Spear : ModelID.Spearhead,
-        # ItemType.Weapon : ModelID.Weapon,
-        # ItemType.MartialWeapon : ModelID.MartialWeapon,
-        # ItemType.OffhandOrShield : ModelID.OffhandOrShield,
-        # ItemType.EquippableItem : ModelID.EquippableItem,
-        # ItemType.SpellcastingWeapon : ModelID.SpellcastingWeapon,
-        # ItemType.Storybook : ModelID.Book,
-        # ItemType.Costume : ModelID.Costume,
-        # ItemType.Costume_Headpiece : ModelID.Costume_Headpiece,
+    ITEM_UPGRADE_MODEL_FILE_IDS = {
+        ItemType.Bow : (91655, 91653),
+    }
+    
+    ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS = {
+        ItemType.Salvage : 116994,
+        ItemType.Rune_Mod : 151854,
+        ItemType.Materials_Zcoins : 19672,
+        ItemType.Dye : 9383,
+        ItemType.Usable : 205878,
+        
+        ItemType.Axe : 9483, 
+        ItemType.Bow : 97341,        
+        ItemType.Hammer : 39779,
+        ItemType.Wand : 94904,
+        ItemType.Shield : 15449,
+        ItemType.Staff : 87301,
+        ItemType.Sword : 231460,
+        ItemType.Daggers : 164910,
+        ItemType.Scythe : 205952,
+        ItemType.Spear : 205960,
+        ItemType.Offhand : 341789,
+        
+        ItemType.Headpiece : 73,        
+        ItemType.Chestpiece : 71,
+        ItemType.Gloves : 72,
+        ItemType.Leggings : 74,
+        ItemType.Boots : 70,
+        
+        ItemType.CC_Shards : 158543,
+        ItemType.Key : 153939,
+        ItemType.Gold_Coin : 231507,
+        ItemType.Kit : 79229,
+        ItemType.Trophy : 123464,
+        ItemType.Scroll : 275575,
+        
+        ItemType.Bag : 111926,
+        ItemType.Storybook : 330029,
+        ItemType.Present : 193281,        
+        ItemType.Minipet : 284865,
+        
+        ItemType.Quest_Item : 230579,
+        ItemType.Bundle : 358543,
+        
+        ItemType.Weapon : 205892,
+        ItemType.MartialWeapon : 205890,
+        ItemType.OffhandOrShield : 205891,
+        ItemType.EquippableItem : 205889,
+        ItemType.SpellcastingWeapon : 205889,
+        ItemType.Costume : 2656,
+        ItemType.Costume_Headpiece : 2654,
         # ItemType.Unknown : ModelID.Unknown
     }
     
@@ -1382,9 +1396,9 @@ class UI:
         return ITEM_DAMAGE_RANGES.get(item_type, {}).get(min(requirement, 9))
 
     @staticmethod
-    def _draw_texture_from_model_file_id(model_file_id: int, size: tuple[float, float]) -> None:
-        model_file_id = Item.GetTrueModelFileID(model_file_id)
-        model_file_texture : Optional[str] = f"gwdat://{int(model_file_id)}" if int(model_file_id or 0) > 0 else None
+    def _draw_texture_from_model_file_id(model_file_id: Optional[int], size: tuple[float, float]) -> None:
+        model_file_id = Item.GetTrueModelFileID(model_file_id) if model_file_id is not None else None
+        model_file_texture : Optional[str] = f"gwdat://{int(model_file_id)}" if model_file_id is not None and int(model_file_id) > 0 else None
         UI._draw_texture_or_dummy(model_file_texture, size)
 
     @staticmethod
@@ -2074,6 +2088,10 @@ class UI:
     def draw_explorer(self):
         self._refresh_global_config_profile_context()
         style = ImGui.get_style()
+        io = PyImGui.get_io()
+        
+        self.SCREEN_SIZE = (io.display_size_x, io.display_size_y)
+        
         # style.TableBorderLight.push_color_direct((255,255,255,255))
         # style.TableBorderStrong.push_color_direct((255,255,255,255))
         style.CellPadding.push_style_var_direct(10, 10)
@@ -4359,16 +4377,125 @@ class UI:
 
         return []
 
+    def _begin_no_header_table(self, id: str, column_count: int, flags : Optional[int] = None, size: tuple[float, float] = (0, 0)) -> bool:
+        flags = flags if flags is not None else PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.NoSavedSettings | PyImGui.TableFlags.NoPadOuterX
+        style = ImGui.get_style()
+        style.CellPadding.push_style_var_direct(4, 4)
+        open = ImGui.begin_table(id, column_count, flags, size[0], size[1])
+        
+        if open:
+            PyImGui.table_next_row()
+            PyImGui.table_next_column()
+            
+            return True
+        
+        return False
+    
+    def _end_no_header_table(self) -> None:        
+        style = ImGui.get_style()
+        style.CellPadding.pop_style_var_direct()
+        ImGui.end_table()
+    
     class ConditionEditor:
+        NO_HEADER_TABLE_CELL_PADDING_Y = 4
+
+        class ConditionSizes:
+            def __init__(self):
+                self.width : float = 0
+                self.height : float = 0
+                self.element_height : float = 0
+                self.element_width : float = 0
+                self.spacing : float = 0
+                
+                
+        @staticmethod
+        def GetSizes(rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> dict[str, int]:
+            sizes = {}
+            style = ImGui.get_style()
+            
+            header_height = 24
+            spacing_x = style.ItemSpacing.value1 or 0
+            spacing_y = style.ItemSpacing.value2 or 0
+            
+            cell_spacing_x = style.CellPadding.value1 or 0
+            cell_spacing_y = style.CellPadding.value2 or 0
+            window_padding_y = style.WindowPadding.value2 or 0
+            button_padding_y = style.ButtonPadding.get_current().value2 or 0
+            
+            sizes["spacing"] = spacing_y
+            
+            avail = PyImGui.get_content_region_avail() if size is None else size
+            avail_width = avail[0]
+            avail_height = avail[1]
+            
+            max_height = UI.RULE_CONTENT_RECT[1]
+            
+            is_last_condition = rule.conditions and condition == rule.conditions[-1]
+            
+            match condition:                
+                case ModelIdsCondition():
+                    base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
+                    sizes["cell_spacing_y"] = cell_spacing_y
+                    sizes["element_height"] = 48
+                    sizes["element_width"] = 250
+                    
+                    columns = max(1, int(avail_width // (sizes["element_width"] + (spacing_x + cell_spacing_x))))
+                    rows = (len(condition.model_ids) + columns - 1) // columns
+                    
+                    sizes["columns"] = columns
+                    sizes["rows"] = rows
+                    
+                    sizes["width"] = avail_width
+                    table_row_height = sizes["element_height"] + (UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_Y * 2)
+                    table_height = math.ceil(rows * table_row_height)
+                    
+                    sizes["wrapper_height"] = window_padding_y + (header_height + spacing_y) + (base_height + spacing_y) + spacing_y
+                    sizes["content_height"] = min(table_height, max_height - sizes["wrapper_height"])
+                    height = sizes["wrapper_height"] + sizes["content_height"]
+                    
+                    sizes["height"] = max(height, avail_height) if is_last_condition else height
+                    
+                case ItemTypesCondition():
+                    sizes["element_height"] = 32
+                    sizes["element_width"] = 200
+                    
+                    columns = max(1, int(avail_width // (sizes["element_width"] + (spacing_x + cell_spacing_x))))
+                    rows = (len(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.keys()) + columns - 1) // columns
+                    
+                    sizes["columns"] = columns
+                    sizes["rows"] = rows
+                    sizes["width"] = avail_width
+                    height = (header_height + (rows * (sizes["element_height"] + cell_spacing_y)) + cell_spacing_y + spacing_y) if not is_last_condition else avail_height
+                    sizes["height"] = max(height, avail_height) if is_last_condition else height
+        
+                case ModelFileIdsCondition():
+                    base_height = 36
+                    sizes["element_height"] = 56
+                    sizes["element_width"] = 200
+                    
+                    columns = max(1, int(avail_width // (sizes["element_width"] + (spacing_x + cell_spacing_x))))
+                    rows = (len(condition.model_file_ids) + columns - 1) // columns
+                    
+                    sizes["columns"] = columns
+                    sizes["rows"] = rows
+                    sizes["width"] = avail_width
+                    height = (header_height + base_height + (rows * (sizes["element_height"] + cell_spacing_y)) + cell_spacing_y + spacing_y) if not is_last_condition else avail_height
+                    sizes["height"] = max(height, avail_height) if is_last_condition else height
+                    
+            return sizes
+        
+        
         @staticmethod
         def BeginConditionContainer(ui : "UI", rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> bool:
             is_custom_rule = isinstance(rule, CustomRule)
             single_condition = len(rule.conditions) == 1
             show_condition_wrapper = not single_condition or is_custom_rule
             size = size if size is not None else (0, 0)
+            title = ui._humanize_name(type(condition).__name__).replace("Condition", "")
             
-            if ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper):
-                title = ui._humanize_name(type(condition).__name__).replace("Condition", "")
+            
+            is_open = ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper)
+            if is_open:
                 description = inspect.getdoc(type(condition)) or ""
                 description = re.sub(r":class:`([^`]+)`", r"\1", description).replace("**", "").strip()
                 style = ImGui.get_style()
@@ -4414,18 +4541,43 @@ class UI:
                 for model_id in condition.model_ids
             }
             
-            style = ImGui.get_style()
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_height = sizes.get("element_height", 0)
+            columns = sizes.get("columns", 1)
+            condition_id = f"model_ids_condition_{id(condition)}"
             
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 48
-            base_height = 50 + spacing
-            available_height = PyImGui.get_content_region_avail()[1]
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.model_ids), available_height))
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Model ID", -1):
                     PyImGui.open_popup(popup_id)
 
+                if ui._begin_no_header_table(condition_id, columns, size=(0, sizes.get("content_height", 0))):
+                    last_index = len(condition.model_ids) - 1
+                    
+                    for index, model_id in enumerate(condition.model_ids[:]):
+                        model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
+                        label = ui._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
+                        unique_id = f"model_ids_rule_{id(condition)}_{model_id_value}_{index}"
+
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
+                                condition.model_ids.pop(index)
+                                changed = True
+
+                            PyImGui.same_line(0, 8)
+                            PyImGui.begin_group()
+                            ImGui.text(label)
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            PyImGui.end_group()
+                        ImGui.end_child()
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                        
+                            
+                        
+                    ui._end_no_header_table()
+                
                 PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
                 if PyImGui.begin_popup(popup_id):
                     ImGui.text("Add Model ID")
@@ -4486,30 +4638,7 @@ class UI:
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup()
-
-                if ImGui.begin_child("##added_model_id_candidates", (0, 0), border=False):
-                    for index, model_id in enumerate(condition.model_ids):
-                        model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                        label = ui._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
-                        unique_id = f"model_ids_rule_{id(condition)}_{model_id_value}_{index}"
-
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
-                                condition.model_ids.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(label)
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
-                ImGui.end_child()
-                
+                    
             UI.ConditionEditor.EndConditionContainer()
 
             return changed
@@ -4517,174 +4646,57 @@ class UI:
         @staticmethod
         def ForItemTypesCondition(ui : "UI", rule : Rule, condition: ItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            condition_id = f"item_types_condition_{id(condition)}"
             
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 25
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
+            spacing = sizes.get("spacing", 0)
+            element_height = sizes.get("element_height", 32)            
             
-            width = PyImGui.get_content_region_avail()[0]
-            columns = max(1, int(width // 200))
-            
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * (len(ItemType) / columns), available_height))
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                if ImGui.begin_child(f"##item_types_{id(condition)}", (0, 0), border=False):
-                    PyImGui.columns(columns, "item_type_columns", False)
-                    sorted_item_types = ui._sorted_item_types
-                    for item_type in sorted_item_types:
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1)):
+                    last_index = len(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS) - 1
+                    
+                    for index, (item_type, model_file_id) in enumerate(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.items()):
                         is_selected = item_type in condition.item_types
-                        selected = ImGui.checkbox(f"{ui._humanize_name(item_type.name)}", is_selected)
-
-                        if selected != is_selected:
+                        
+                        if ImGui.begin_selectable(f"##item_type_{item_type.name}", is_selected, (0, element_height), selected_color = UI.GREEN_COLOR.opacity(0.5).rgb_tuple if is_selected else None):
+                            ui._draw_texture_from_model_file_id(model_file_id, (element_height - spacing, element_height - spacing))
+                            PyImGui.same_line(0, 5)
+                            ImGui.text_aligned(ui._humanize_name(item_type.name), alignment=Alignment.MidLeft, height=element_height - spacing)
+                        
+                        if ImGui.end_selectable():
                             if item_type in condition.item_types:
                                 condition.item_types.remove(item_type)
                             else:
                                 condition.item_types.append(item_type)
                             changed = True
+                            
+                        ImGui.show_tooltip(ui._humanize_name(item_type.name))
 
-                        PyImGui.next_column()
-                    PyImGui.end_columns()
-                ImGui.end_child()
-                
-            UI.ConditionEditor.EndConditionContainer()
-            return changed
-
-        @staticmethod
-        def ForEncodedNamesCondition(ui: "UI", rule: Rule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
-            changed = False
-            popup_id = f"##encoded_name_condition_add_popup_{id(condition)}"
-            search_state_key = f"encoded_names_condition_{id(condition)}"
-            popup_rows_cache_key = f"condition_editor:encoded_name_rows:{id(condition)}"
-            selected_encoded_names = set(condition.encoded_names)
-            
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 56
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.encoded_names), available_height))
+                        if index != last_index:
+                            PyImGui.table_next_column()
                         
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                if ImGui.button("Add Encoded Name", -1):
-                    ui._clear_search_field_value(search_state_key)
-                    PyImGui.open_popup(popup_id)
-
-                PyImGui.set_next_window_size((500, 0), cond=PyImGui.ImGuiCond.Appearing)
-                if PyImGui.begin_popup(popup_id):
-                    ImGui.text("Add Encoded Name")
-                    ImGui.separator()
-
-                    PyImGui.set_next_item_width(-1)
-                    current_search = ui._get_search_field_value(search_state_key)
-                    _, current_search = ImGui.search_field(f"##encoded_name_search_{id(condition)}", current_search, "Search by item name or paste an encoded name...")
-                    ui._set_search_field_value(search_state_key, current_search)
-                    search_query, matching_items_raw = ui._get_live_search_results(
-                        search_state_key,
-                        current_search,
-                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._encoded_name_search_cache, normalized_query, ui._encoded_name_search_entries)),
-                    )
-                    matching_items = cast(list[ItemData], matching_items_raw)
-                    candidate_rows = ui._get_recalculated_value(
-                        popup_rows_cache_key,
-                        (current_search, ui._build_bytes_signature(selected_encoded_names)),
-                        lambda: ui._build_encoded_name_candidate_rows(matching_items, selected_encoded_names),
-                    )
-
-                    if current_search.strip() and current_search.strip() not in selected_encoded_names:
-                        manual_encoded_name = current_search.strip()
-
-                        if PyImGui.is_rect_visible(10, 40):
-                            if ImGui.begin_selectable(f"##manual_encoded_name_{id(condition)}", False, (0, 40)):
-                                ImGui.text("Use typed encoded name")
-                                x, y = PyImGui.get_cursor_pos()
-                                PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(manual_encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
-
-                            if ImGui.end_selectable():
-                                condition.encoded_names.append(ui._convert_str_to_encoded_bytes(manual_encoded_name))
-                                changed = True
-                                PyImGui.close_current_popup()
-                        else:
-                            ImGui.dummy(0, 40)
-
-                    if ImGui.begin_child(f"##encoded_name_candidates_{id(condition)}", (0, 320), border=True):
-                        for item, encoded_name, item_name in candidate_rows:
-
-                            if PyImGui.is_rect_visible(10, 40):
-                                if ImGui.begin_selectable(f"##encoded_name_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 40)):
-                                    ui._draw_item_texture(item)
-                                    PyImGui.same_line(0, 8)
-                                    PyImGui.begin_group()
-                                    ImGui.text(item_name)
-                                    x, y = PyImGui.get_cursor_pos()
-                                    PyImGui.set_cursor_pos(x, y - 4)
-                                    ImGui.text_colored(item_name, UI.GRAY_COLOR.color_tuple, font_size=12)
-                                    PyImGui.end_group()
-
-                                if ImGui.end_selectable():
-                                    condition.encoded_names.append(encoded_name)
-                                    changed = True
-                                    PyImGui.close_current_popup()
-
-                                if PyImGui.is_item_hovered():
-                                    tooltip = f"{item_name}\n{ui._humanize_name(item.item_type.name)}\nModel ID: {item.model_id}"
-                                    ImGui.show_tooltip(tooltip)
-                            else:
-                                ImGui.dummy(0, 40)
-                    ImGui.end_child()
-
-                    if ImGui.button("Cancel", -1):
-                        PyImGui.close_current_popup()
-
-                    PyImGui.end_popup()
-
-                if ImGui.begin_child(f"##added_encoded_name_candidates_{id(condition)}", (0, 0), border=False):
-                    for index, encoded_name in enumerate(condition.encoded_names):
-                        item = ui._find_item_by_encoded_name(encoded_name)
-                        unique_id = f"encoded_name_condition_{id(condition)}_{index}"
-
-                        if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
-                                condition.encoded_names.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item)
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(ui._get_item_display_name(item) if item is not None else "Custom Encoded Name")
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(string_table.decode(encoded_name), UI.GRAY_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
-                ImGui.end_child()
-
+                    ui._end_no_header_table()
+                
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
         @staticmethod
         def ForModelFileIdsCondition(ui: "UI", rule: Rule, condition: ModelFileIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            
+            condition_id = f"model_file_ids_condition_{id(condition)}"
             popup_id = f"##model_file_id_condition_add_popup_{id(condition)}"
             search_state_key = f"model_file_ids_condition_{id(condition)}"
             popup_rows_cache_key = f"condition_editor:model_file_id_rows:{id(condition)}"
             selected_model_file_ids = set(condition.model_file_ids)
-                        
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 56
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.model_file_ids), available_height))
 
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_width = sizes.get("element_width", 32)    
+            element_height = sizes.get("element_height", 56)    
+            columns = sizes.get("columns", 1)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Model File ID", -1):
                     ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
@@ -4757,20 +4769,22 @@ class UI:
 
                     PyImGui.end_popup()
 
-                if ImGui.begin_child(f"##added_model_file_id_candidates_{id(condition)}", (0, 0), border=False):
+                if ui._begin_no_header_table(condition_id, columns):
+                    last_index = len(condition.model_file_ids) - 1
+                    
                     for index, model_file_id in enumerate(condition.model_file_ids):
                         item = ui._find_item_by_model_file_id(model_file_id)
                         unique_id = f"model_file_id_condition_{id(condition)}_{model_file_id}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
                                 condition.model_file_ids.pop(index)
                                 changed = True
                                 ImGui.end_child()
                                 break
 
                             PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item)
+                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
                             PyImGui.same_line(0, 8)
                             PyImGui.begin_group()
                             ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
@@ -4779,7 +4793,11 @@ class UI:
                             ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                         ImGui.end_child()
-                ImGui.end_child()
+                        
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                            
+                    ui._end_no_header_table()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -5034,6 +5052,123 @@ class UI:
                                 UI.GRAY_COLOR.color_tuple,
                                 font_size=12,
                             )
+                            PyImGui.end_group()
+                        ImGui.end_child()
+                ImGui.end_child()
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForEncodedNamesCondition(ui: "UI", rule: Rule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            popup_id = f"##encoded_name_condition_add_popup_{id(condition)}"
+            search_state_key = f"encoded_names_condition_{id(condition)}"
+            popup_rows_cache_key = f"condition_editor:encoded_name_rows:{id(condition)}"
+            selected_encoded_names = set(condition.encoded_names)
+            
+            style = ImGui.get_style()
+            spacing = style.ItemSpacing.value2 or 0
+            element_height = 56
+            base_height = 30 + element_height
+            available_height = PyImGui.get_content_region_avail()[1]
+            
+            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.encoded_names), available_height))
+                        
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+                if ImGui.button("Add Encoded Name", -1):
+                    ui._clear_search_field_value(search_state_key)
+                    PyImGui.open_popup(popup_id)
+
+                PyImGui.set_next_window_size((500, 0), cond=PyImGui.ImGuiCond.Appearing)
+                if PyImGui.begin_popup(popup_id):
+                    ImGui.text("Add Encoded Name")
+                    ImGui.separator()
+
+                    PyImGui.set_next_item_width(-1)
+                    current_search = ui._get_search_field_value(search_state_key)
+                    _, current_search = ImGui.search_field(f"##encoded_name_search_{id(condition)}", current_search, "Search by item name or paste an encoded name...")
+                    ui._set_search_field_value(search_state_key, current_search)
+                    search_query, matching_items_raw = ui._get_live_search_results(
+                        search_state_key,
+                        current_search,
+                        lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._encoded_name_search_cache, normalized_query, ui._encoded_name_search_entries)),
+                    )
+                    matching_items = cast(list[ItemData], matching_items_raw)
+                    candidate_rows = ui._get_recalculated_value(
+                        popup_rows_cache_key,
+                        (current_search, ui._build_bytes_signature(selected_encoded_names)),
+                        lambda: ui._build_encoded_name_candidate_rows(matching_items, selected_encoded_names),
+                    )
+
+                    if current_search.strip() and current_search.strip() not in selected_encoded_names:
+                        manual_encoded_name = current_search.strip()
+
+                        if PyImGui.is_rect_visible(10, 40):
+                            if ImGui.begin_selectable(f"##manual_encoded_name_{id(condition)}", False, (0, 40)):
+                                ImGui.text("Use typed encoded name")
+                                x, y = PyImGui.get_cursor_pos()
+                                PyImGui.set_cursor_pos(x, y - 4)
+                                ImGui.text_colored(manual_encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+
+                            if ImGui.end_selectable():
+                                condition.encoded_names.append(ui._convert_str_to_encoded_bytes(manual_encoded_name))
+                                changed = True
+                                PyImGui.close_current_popup()
+                        else:
+                            ImGui.dummy(0, 40)
+
+                    if ImGui.begin_child(f"##encoded_name_candidates_{id(condition)}", (0, 320), border=True):
+                        for item, encoded_name, item_name in candidate_rows:
+
+                            if PyImGui.is_rect_visible(10, 40):
+                                if ImGui.begin_selectable(f"##encoded_name_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 40)):
+                                    ui._draw_item_texture(item)
+                                    PyImGui.same_line(0, 8)
+                                    PyImGui.begin_group()
+                                    ImGui.text(item_name)
+                                    x, y = PyImGui.get_cursor_pos()
+                                    PyImGui.set_cursor_pos(x, y - 4)
+                                    ImGui.text_colored(item_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                    PyImGui.end_group()
+
+                                if ImGui.end_selectable():
+                                    condition.encoded_names.append(encoded_name)
+                                    changed = True
+                                    PyImGui.close_current_popup()
+
+                                if PyImGui.is_item_hovered():
+                                    tooltip = f"{item_name}\n{ui._humanize_name(item.item_type.name)}\nModel ID: {item.model_id}"
+                                    ImGui.show_tooltip(tooltip)
+                            else:
+                                ImGui.dummy(0, 40)
+                    ImGui.end_child()
+
+                    if ImGui.button("Cancel", -1):
+                        PyImGui.close_current_popup()
+
+                    PyImGui.end_popup()
+
+                if ImGui.begin_child(f"##added_encoded_name_candidates_{id(condition)}", (0, 0), border=False):
+                    for index, encoded_name in enumerate(condition.encoded_names):
+                        item = ui._find_item_by_encoded_name(encoded_name)
+                        unique_id = f"encoded_name_condition_{id(condition)}_{index}"
+
+                        if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                                condition.encoded_names.pop(index)
+                                changed = True
+                                ImGui.end_child()
+                                break
+
+                            PyImGui.same_line(0, 8)
+                            ui._draw_item_texture(item)
+                            PyImGui.same_line(0, 8)
+                            PyImGui.begin_group()
+                            ImGui.text(ui._get_item_display_name(item) if item is not None else "Custom Encoded Name")
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(string_table.decode(encoded_name), UI.GRAY_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                         ImGui.end_child()
                 ImGui.end_child()
@@ -6405,86 +6540,84 @@ class UI:
             return changed
 
     def _draw_condition_editor(self, rule: Rule, condition: Condition, size: Optional[tuple[float, float]] = None) -> bool:
-        draw_size = size if size is not None else (0, 0)
-        
         match condition:
             case ModelIdsCondition():
-                return UI.ConditionEditor.ForModelIdsCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForModelIdsCondition(self, rule, condition, size)
             
             case ItemTypesCondition():
-                return UI.ConditionEditor.ForItemTypesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForItemTypesCondition(self, rule, condition, size)
             
             case EncodedNamesCondition():
-                return UI.ConditionEditor.ForEncodedNamesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForEncodedNamesCondition(self, rule, condition, size)
             
             case ModelFileIdsCondition():
-                return UI.ConditionEditor.ForModelFileIdsCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForModelFileIdsCondition(self, rule, condition, size)
             
             case ModelFileIdsAndItemTypesCondition():
-                return UI.ConditionEditor.ForModelFileIdsAndItemTypesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForModelFileIdsAndItemTypesCondition(self, rule, condition, size)
             
             case ModelIdsAndItemTypesCondition():
-                return UI.ConditionEditor.ForModelIdsAndItemTypesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForModelIdsAndItemTypesCondition(self, rule, condition, size)
             
             case ExactItemTypeCondition():
-                return UI.ConditionEditor.ForExactItemTypeCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForExactItemTypeCondition(self, rule, condition, size)
 
             case StackQuantityCondition():
-                return UI.ConditionEditor.ForStackQuantityCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForStackQuantityCondition(self, rule, condition, size)
 
             case DamageCondition():
-                return UI.ConditionEditor.ForDamageCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForDamageCondition(self, rule, condition, size)
 
             case ArmorCondition():
-                return UI.ConditionEditor.ForArmorCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForArmorCondition(self, rule, condition, size)
 
             case EnergyCondition():
-                return UI.ConditionEditor.ForEnergyCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForEnergyCondition(self, rule, condition, size)
             
             case FullStacksQuantityCondition():
-                return UI.ConditionEditor.ForFullStacksQuantityCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForFullStacksQuantityCondition(self, rule, condition, size)
 
             case NickItemCondition():
-                return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, size)
 
             case WeaponRequirementsCondition():
-                return UI.ConditionEditor.ForWeaponRequirementsCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForWeaponRequirementsCondition(self, rule, condition, size)
 
             case IsMaterialCondition():
-                return UI.ConditionEditor.ForIsMaterialCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForIsMaterialCondition(self, rule, condition, size)
              
             case RaritiesCondition():
-                return UI.ConditionEditor.ForRaritiesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForRaritiesCondition(self, rule, condition, size)
             
             case DyeColorsCondition():
-                return UI.ConditionEditor.ForDyeColorsCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForDyeColorsCondition(self, rule, condition, size)
             
             case SalvagesToMaterialsCondition():
-                return UI.ConditionEditor.ForSalvagesToMaterialsCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForSalvagesToMaterialsCondition(self, rule, condition, size)
             
             case WeaponRequirementCondition():
-                return UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, condition, size)
             
             case InherentFiltersCondition():
-                return UI.ConditionEditor.ForInherentFiltersCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForInherentFiltersCondition(self, rule, condition, size)
             
             case InscribableCondition():
-                return UI.ConditionEditor.ForInscribableCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForInscribableCondition(self, rule, condition, size)
             
             case UnidentifiedCondition():
-                return UI.ConditionEditor.ForUnidentifiedCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForUnidentifiedCondition(self, rule, condition, size)
 
             case HalvesCastAndRechargeAttributeCondition():
-                return UI.ConditionEditor.ForHalvesCastAndRechargeAttributeCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForHalvesCastAndRechargeAttributeCondition(self, rule, condition, size)
             
             case ArmorUpgradesCondition():
-                return UI.ConditionEditor.ForArmorUpgradesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForArmorUpgradesCondition(self, rule, condition, size)
             
             case MaxWeaponUpgradesCondition():
-                return UI.ConditionEditor.ForMaxWeaponUpgradesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForMaxWeaponUpgradesCondition(self, rule, condition, size)
             
             case UpgradeRangesCondition():
-                return UI.ConditionEditor.ForUpgradeRangesCondition(self, rule, condition, draw_size)
+                return UI.ConditionEditor.ForUpgradeRangesCondition(self, rule, condition, size)
             
             case _:
                 ImGui.text("No editor available for this condition.")
@@ -6658,13 +6791,14 @@ class UI:
         ImGui.separator()
         
         if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
+            avail = PyImGui.get_content_region_avail()
+            UI.RULE_CONTENT_RECT = (avail[0], avail[1])
+            
             if not rule.conditions:
                 ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
             else:
                 for condition in rule.conditions:
-                    condition_height = self._estimate_condition_editor_height(rule, condition, max_height=500)
-                    
-                    if self._draw_condition_editor(rule, condition, size=(0, condition_height)):
+                    if self._draw_condition_editor(rule, condition):
                         changed = True
         ImGui.end_child()
         
