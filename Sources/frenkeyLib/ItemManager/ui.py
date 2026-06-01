@@ -647,6 +647,10 @@ class UI:
         self._profile_action_mode: str = ''
         self._profile_action_source_name: str = ''
         self._profile_action_target_name: str = ''
+        self._rule_delete_popup_id: str = '##rule_delete_popup'
+        self._rule_delete_popup_requested: bool = False
+        self._rule_delete_target_config: ConfigInfo[RuleConfig] | None = None
+        self._rule_delete_target_rule: Rule | None = None
         self.buy_preview_show_satisfied: bool = True
         
         self.selected_bag_slots : list[tuple[Bags, int]] = []
@@ -1932,6 +1936,48 @@ class UI:
 
         PyImGui.end_popup_modal()
 
+    def _open_rule_delete_popup(self, config_info: ConfigInfo[RuleConfig], rule: Rule) -> None:
+        self._rule_delete_target_config = config_info
+        self._rule_delete_target_rule = rule
+        self._rule_delete_popup_requested = True
+
+    def _draw_rule_delete_popup(self) -> None:
+        if self._rule_delete_popup_requested:
+            PyImGui.open_popup(f'Delete Rule##{self._rule_delete_popup_id}')
+            self._rule_delete_popup_requested = False
+
+        target_config = self._rule_delete_target_config
+        target_rule = self._rule_delete_target_rule
+        if target_config is None or target_rule is None:
+            return
+
+        PyImGui.set_next_window_size((380, 0), PyImGui.ImGuiCond.Always)
+        if not PyImGui.begin_popup_modal(f'Delete Rule##{self._rule_delete_popup_id}', True, PyImGui.WindowFlags.AlwaysAutoResize):
+            return
+
+        rule_name = target_rule.name or self._humanize_name(target_rule.__class__.__name__)
+        ImGui.text_wrapped(f'Are you sure you want to delete rule "{rule_name}"?')
+
+        btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
+        if ImGui.button('Delete', btn_width):
+            if target_rule in target_config.config:
+                deleted_index = target_config.config.index(target_rule)
+                target_config.config.remove(target_rule)
+                target_config.save()
+                replacement_rule = target_config.config[min(deleted_index, len(target_config.config) - 1)] if target_config.config else None
+                self._set_active_rule(replacement_rule)
+            self._rule_delete_target_config = None
+            self._rule_delete_target_rule = None
+            PyImGui.close_current_popup()
+
+        PyImGui.same_line(0, 8)
+        if ImGui.button('Cancel', btn_width):
+            self._rule_delete_target_config = None
+            self._rule_delete_target_rule = None
+            PyImGui.close_current_popup()
+
+        PyImGui.end_popup_modal()
+
     def _draw_manage_profile_window(self, config_info: ConfigInfo | None = None) -> None:
         target_config = self._get_config_info_by_type(self.manage_profile_window_config_type)
         if target_config is None or not self.show_manage_profile_window:
@@ -2273,13 +2319,10 @@ class UI:
                 ImGui.separator()
 
             if ImGui.menu_item("Delete Rule"):
-                deleted_index = config_info.config.index(rule)
-                config_info.config.remove(rule)
-                config_info.save()
-                replacement_rule = config_info.config[min(deleted_index, len(config_info.config) - 1)] if config_info.config else None
-                self._set_active_rule(replacement_rule)
+                self._open_rule_delete_popup(config_info, rule)
 
             ImGui.end_popup()
+            self._draw_rule_delete_popup()
             return True
 
         return False
@@ -3786,6 +3829,7 @@ class UI:
         active_drag = self._drag_rule_source_config is config_info and self._drag_rule is not None
         self._drag_rule_target_rect = None
         style = ImGui.get_style()
+        self._draw_rule_delete_popup()
         
         if ImGui.begin_table("##config_table", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Navigation", PyImGui.TableColumnFlags.WidthFixed, 200)
@@ -4595,6 +4639,7 @@ class UI:
             show_condition_wrapper = not single_condition or is_custom_rule
             size = size if size is not None else (0, 0)
             title = ui._humanize_name(type(condition).__name__).replace("Condition", "")
+            delete_popup_id = f"Delete Condition##{id(condition)}"
             
             
             is_open = ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper)
@@ -4619,12 +4664,28 @@ class UI:
                         style.FramePadding.pop_style_var_direct()
                         
                         if clicked:
-                            rule.conditions.remove(condition)
-                            ui._save_active_config()
-                            
-                            return False
+                            PyImGui.open_popup(delete_popup_id)
                         
                     ImGui.separator()
+
+                PyImGui.set_next_window_size((360, 0), PyImGui.ImGuiCond.Always)
+                if PyImGui.begin_popup_modal(delete_popup_id, True, PyImGui.WindowFlags.AlwaysAutoResize):
+                    ImGui.text_wrapped(f'Are you sure you want to delete the "{title}" condition?')
+
+                    btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
+                    if ImGui.button('Delete', btn_width):
+                        if condition in rule.conditions:
+                            rule.conditions.remove(condition)
+                            ui._save_active_config()
+                        PyImGui.close_current_popup()
+                        PyImGui.end_popup_modal()
+                        return False
+
+                    PyImGui.same_line(0, 8)
+                    if ImGui.button('Cancel', btn_width):
+                        PyImGui.close_current_popup()
+
+                    PyImGui.end_popup_modal()
                     
                 return True
             
